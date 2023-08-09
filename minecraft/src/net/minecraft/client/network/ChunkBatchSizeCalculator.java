@@ -2,38 +2,32 @@ package net.minecraft.client.network;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ChunkBatchSizeCalculator {
-	private final int[] field_45584;
-	private final int[] field_45585;
-	private int field_45586;
-	private int field_45587;
+	private static final int field_45939 = 49;
+	private static final int field_45940 = 3;
+	private double averageNanosPerChunk = 2000000.0;
+	private int sampleSize = 1;
+	private volatile long startTime = Util.getMeasuringTimeNano();
 
-	public ChunkBatchSizeCalculator(int i) {
-		this.field_45584 = new int[i];
-		this.field_45585 = new int[i];
+	public void onStartChunkSend() {
+		this.startTime = Util.getMeasuringTimeNano();
 	}
 
-	public void method_52769(int i, long l) {
-		this.field_45584[this.field_45586] = i;
-		this.field_45585[this.field_45586] = (int)MathHelper.clamp((float)l, 0.0F, 15000.0F);
-		this.field_45586 = (this.field_45586 + 1) % this.field_45584.length;
-		if (this.field_45587 < this.field_45584.length) {
-			this.field_45587++;
+	public void onChunkSent(int batchSize) {
+		if (batchSize > 0) {
+			double d = (double)(Util.getMeasuringTimeNano() - this.startTime);
+			double e = d / (double)batchSize;
+			double f = MathHelper.clamp(e, this.averageNanosPerChunk / 3.0, this.averageNanosPerChunk * 3.0);
+			this.averageNanosPerChunk = (this.averageNanosPerChunk * (double)this.sampleSize + f) / (double)(this.sampleSize + 1);
+			this.sampleSize = Math.min(49, this.sampleSize + 1);
 		}
 	}
 
-	public double method_52768() {
-		int i = 0;
-		int j = 0;
-
-		for (int k = 0; k < Math.min(this.field_45587, this.field_45584.length); k++) {
-			i += this.field_45584[k];
-			j += this.field_45585[k];
-		}
-
-		return (double)j * 1.0 / (double)i;
+	public float getDesiredChunksPerTick() {
+		return (float)(7000000.0 / this.averageNanosPerChunk);
 	}
 }

@@ -14,8 +14,8 @@ public class MultipliedFloatSupplier implements FloatSupplier {
 	public float get(Random random) {
 		float f = 1.0F;
 
-		for (int i = 0; i < this.multipliers.length; i++) {
-			f *= this.multipliers[i].get(random);
+		for (FloatSupplier floatSupplier : this.multipliers) {
+			f *= floatSupplier.get(random);
 		}
 
 		return f;

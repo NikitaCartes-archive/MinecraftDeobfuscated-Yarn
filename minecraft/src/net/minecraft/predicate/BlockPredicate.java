@@ -1,58 +1,57 @@
 package net.minecraft.predicate;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import java.util.Set;
-import javax.annotation.Nullable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Collection;
+import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 
-public class BlockPredicate {
-	public static final BlockPredicate ANY = new BlockPredicate(null, null, StatePredicate.ANY, NbtPredicate.ANY);
-	@Nullable
-	private final TagKey<Block> tag;
-	@Nullable
-	private final Set<Block> blocks;
-	private final StatePredicate state;
-	private final NbtPredicate nbt;
+public record BlockPredicate(Optional<TagKey<Block>> tag, Optional<RegistryEntryList<Block>> blocks, Optional<StatePredicate> state, Optional<NbtPredicate> nbt) {
+	private static final Codec<RegistryEntryList<Block>> BLOCK_ENTRY_LIST_CODEC = Registries.BLOCK
+		.createEntryCodec()
+		.listOf()
+		.xmap(RegistryEntryList::of, registryEntryList -> registryEntryList.stream().toList());
+	public static final Codec<BlockPredicate> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.BLOCK), "tag").forGetter(BlockPredicate::tag),
+					Codecs.createStrictOptionalFieldCodec(BLOCK_ENTRY_LIST_CODEC, "blocks").forGetter(BlockPredicate::blocks),
+					Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(BlockPredicate::state),
+					Codecs.createStrictOptionalFieldCodec(NbtPredicate.CODEC, "nbt").forGetter(BlockPredicate::nbt)
+				)
+				.apply(instance, BlockPredicate::new)
+	);
 
-	public BlockPredicate(@Nullable TagKey<Block> tag, @Nullable Set<Block> blocks, StatePredicate state, NbtPredicate nbt) {
-		this.tag = tag;
-		this.blocks = blocks;
-		this.state = state;
-		this.nbt = nbt;
+	static Optional<BlockPredicate> create(
+		Optional<TagKey<Block>> tag, Optional<RegistryEntryList<Block>> blocks, Optional<StatePredicate> state, Optional<NbtPredicate> nbt
+	) {
+		return tag.isEmpty() && blocks.isEmpty() && state.isEmpty() && nbt.isEmpty() ? Optional.empty() : Optional.of(new BlockPredicate(tag, blocks, state, nbt));
 	}
 
 	public boolean test(ServerWorld world, BlockPos pos) {
-		if (this == ANY) {
-			return true;
-		} else if (!world.canSetBlock(pos)) {
+		if (!world.canSetBlock(pos)) {
 			return false;
 		} else {
 			BlockState blockState = world.getBlockState(pos);
-			if (this.tag != null && !blockState.isIn(this.tag)) {
+			if (this.tag.isPresent() && !blockState.isIn((TagKey<Block>)this.tag.get())) {
 				return false;
-			} else if (this.blocks != null && !this.blocks.contains(blockState.getBlock())) {
+			} else if (this.blocks.isPresent() && !blockState.isIn((RegistryEntryList<Block>)this.blocks.get())) {
 				return false;
-			} else if (!this.state.test(blockState)) {
+			} else if (this.state.isPresent() && !((StatePredicate)this.state.get()).test(blockState)) {
 				return false;
 			} else {
-				if (this.nbt != NbtPredicate.ANY) {
+				if (this.nbt.isPresent()) {
 					BlockEntity blockEntity = world.getBlockEntity(pos);
-					if (blockEntity == null || !this.nbt.test(blockEntity.createNbtWithIdentifyingData())) {
+					if (blockEntity == null || !((NbtPredicate)this.nbt.get()).test(blockEntity.createNbtWithIdentifyingData())) {
 						return false;
 					}
 				}
@@ -62,68 +61,11 @@ public class BlockPredicate {
 		}
 	}
 
-	public static BlockPredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "block");
-			NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
-			Set<Block> set = null;
-			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "blocks", null);
-			if (jsonArray != null) {
-				ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
-
-				for (JsonElement jsonElement : jsonArray) {
-					Identifier identifier = new Identifier(JsonHelper.asString(jsonElement, "block"));
-					builder.add((Block)Registries.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block id '" + identifier + "'")));
-				}
-
-				set = builder.build();
-			}
-
-			TagKey<Block> tagKey = null;
-			if (jsonObject.has("tag")) {
-				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tagKey = TagKey.of(RegistryKeys.BLOCK, identifier2);
-			}
-
-			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
-			return new BlockPredicate(tagKey, set, statePredicate, nbtPredicate);
-		} else {
-			return ANY;
-		}
-	}
-
-	public JsonElement toJson() {
-		if (this == ANY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			if (this.blocks != null) {
-				JsonArray jsonArray = new JsonArray();
-
-				for (Block block : this.blocks) {
-					jsonArray.add(Registries.BLOCK.getId(block).toString());
-				}
-
-				jsonObject.add("blocks", jsonArray);
-			}
-
-			if (this.tag != null) {
-				jsonObject.addProperty("tag", this.tag.id().toString());
-			}
-
-			jsonObject.add("nbt", this.nbt.toJson());
-			jsonObject.add("state", this.state.toJson());
-			return jsonObject;
-		}
-	}
-
 	public static class Builder {
-		@Nullable
-		private Set<Block> blocks;
-		@Nullable
-		private TagKey<Block> tag;
-		private StatePredicate state = StatePredicate.ANY;
-		private NbtPredicate nbt = NbtPredicate.ANY;
+		private Optional<RegistryEntryList<Block>> blocks = Optional.empty();
+		private Optional<TagKey<Block>> tag = Optional.empty();
+		private Optional<StatePredicate> state = Optional.empty();
+		private Optional<NbtPredicate> nbt = Optional.empty();
 
 		private Builder() {
 		}
@@ -133,32 +75,32 @@ public class BlockPredicate {
 		}
 
 		public BlockPredicate.Builder blocks(Block... blocks) {
-			this.blocks = ImmutableSet.copyOf(blocks);
+			this.blocks = Optional.of(RegistryEntryList.of(Block::getRegistryEntry, blocks));
 			return this;
 		}
 
-		public BlockPredicate.Builder blocks(Iterable<Block> blocks) {
-			this.blocks = ImmutableSet.copyOf(blocks);
+		public BlockPredicate.Builder blocks(Collection<Block> blocks) {
+			this.blocks = Optional.of(RegistryEntryList.of(Block::getRegistryEntry, blocks));
 			return this;
 		}
 
 		public BlockPredicate.Builder tag(TagKey<Block> tag) {
-			this.tag = tag;
+			this.tag = Optional.of(tag);
 			return this;
 		}
 
 		public BlockPredicate.Builder nbt(NbtCompound nbt) {
-			this.nbt = new NbtPredicate(nbt);
+			this.nbt = Optional.of(new NbtPredicate(nbt));
 			return this;
 		}
 
-		public BlockPredicate.Builder state(StatePredicate state) {
-			this.state = state;
+		public BlockPredicate.Builder state(StatePredicate.Builder state) {
+			this.state = state.build();
 			return this;
 		}
 
-		public BlockPredicate build() {
-			return new BlockPredicate(this.tag, this.blocks, this.state, this.nbt);
+		public Optional<BlockPredicate> build() {
+			return BlockPredicate.create(this.tag, this.blocks, this.state, this.nbt);
 		}
 	}
 }

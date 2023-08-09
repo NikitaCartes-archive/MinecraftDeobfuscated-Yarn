@@ -103,11 +103,6 @@ public class PlayerSkinProvider {
 			);
 	}
 
-	public boolean areTexturesSigned(GameProfile profile) {
-		Property property = getTextureEntry(profile);
-		return property != null && property.hasSignature();
-	}
-
 	@Nullable
 	static Property getTextureEntry(GameProfile profile) {
 		return Iterables.getFirst(profile.getProperties().get("textures"), null);

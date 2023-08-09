@@ -20,6 +20,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextVisitFactory;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Environment(EnvType.CLIENT)
 public class MessageHandler {
+	private static final Text VALIDATION_ERROR_TEXT = Text.translatable("chat.validation_error").formatted(Formatting.RED, Formatting.ITALIC);
 	private final MinecraftClient client;
 	private final Deque<MessageHandler.ProcessableMessage> delayedMessages = Queues.<MessageHandler.ProcessableMessage>newArrayDeque();
 	private long chatDelay;
@@ -132,6 +134,19 @@ public class MessageHandler {
 			}
 
 			return bl2;
+		});
+	}
+
+	public void onUnverifiedMessage(UUID sender, MessageType.Parameters parameters) {
+		this.process(null, () -> {
+			if (this.client.shouldBlockMessages(sender)) {
+				return false;
+			} else {
+				Text text = parameters.applyChatDecoration(VALIDATION_ERROR_TEXT);
+				this.client.inGameHud.getChatHud().addMessage(text, null, MessageIndicator.chatError());
+				this.lastProcessTime = Util.getMeasuringTimeMs();
+				return true;
+			}
 		});
 	}
 

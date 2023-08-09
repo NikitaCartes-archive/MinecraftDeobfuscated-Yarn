@@ -1,8 +1,8 @@
 package net.minecraft.loot.entry;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataKey;
@@ -13,12 +13,16 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
 public class LootTableEntry extends LeafEntry {
-	final Identifier id;
+	public static final Codec<LootTableEntry> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(lootTableEntry -> lootTableEntry.id))
+				.<int, int, List<LootCondition>, List<LootFunction>>and(method_53290(instance))
+				.apply(instance, LootTableEntry::new)
+	);
+	private final Identifier id;
 
-	LootTableEntry(Identifier id, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+	private LootTableEntry(Identifier id, int weight, int quality, List<LootCondition> conditions, List<LootFunction> functions) {
 		super(weight, quality, conditions, functions);
 		this.id = id;
 	}
@@ -51,19 +55,5 @@ public class LootTableEntry extends LeafEntry {
 
 	public static LeafEntry.Builder<?> builder(Identifier id) {
 		return builder((weight, quality, conditions, functions) -> new LootTableEntry(id, weight, quality, conditions, functions));
-	}
-
-	public static class Serializer extends LeafEntry.Serializer<LootTableEntry> {
-		public void addEntryFields(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
-			super.addEntryFields(jsonObject, lootTableEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", lootTableEntry.id.toString());
-		}
-
-		protected LootTableEntry fromJson(
-			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
-		) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			return new LootTableEntry(identifier, i, j, lootConditions, lootFunctions);
-		}
 	}
 }

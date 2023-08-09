@@ -13,18 +13,9 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 
-public class FloatRangeArgument {
+public record FloatRangeArgument(@Nullable Float min, @Nullable Float max) {
 	public static final FloatRangeArgument ANY = new FloatRangeArgument(null, null);
 	public static final SimpleCommandExceptionType ONLY_INTS_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.range.ints"));
-	@Nullable
-	private final Float min;
-	@Nullable
-	private final Float max;
-
-	public FloatRangeArgument(@Nullable Float min, @Nullable Float max) {
-		this.min = min;
-		this.max = max;
-	}
 
 	public static FloatRangeArgument exactly(float value) {
 		return new FloatRangeArgument(value, value);
@@ -56,16 +47,6 @@ public class FloatRangeArgument {
 		} else {
 			return this.min != null && (double)(this.min * this.min) > value ? false : this.max == null || !((double)(this.max * this.max) < value);
 		}
-	}
-
-	@Nullable
-	public Float getMin() {
-		return this.min;
-	}
-
-	@Nullable
-	public Float getMax() {
-		return this.max;
 	}
 
 	public JsonElement toJson() {

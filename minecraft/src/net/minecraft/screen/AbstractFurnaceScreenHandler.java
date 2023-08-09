@@ -15,6 +15,7 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.FurnaceFuelSlot;
 import net.minecraft.screen.slot.FurnaceOutputSlot;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenHandler<Inventory> {
@@ -173,19 +174,19 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 		return AbstractFurnaceBlockEntity.canUseAsFuel(itemStack);
 	}
 
-	public int getCookProgress() {
+	public float getCookProgress() {
 		int i = this.propertyDelegate.get(2);
 		int j = this.propertyDelegate.get(3);
-		return j != 0 && i != 0 ? i * 24 / j : 0;
+		return j != 0 && i != 0 ? MathHelper.clamp((float)i / (float)j, 0.0F, 1.0F) : 0.0F;
 	}
 
-	public int getFuelProgress() {
+	public float getFuelProgress() {
 		int i = this.propertyDelegate.get(1);
 		if (i == 0) {
 			i = 200;
 		}
 
-		return this.propertyDelegate.get(0) * 13 / i;
+		return MathHelper.clamp((float)this.propertyDelegate.get(0) / (float)i, 0.0F, 1.0F);
 	}
 
 	public boolean isBurning() {

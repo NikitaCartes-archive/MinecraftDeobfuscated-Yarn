@@ -116,8 +116,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 		int i = 0;
 
-		for (int j = 0; j < list.size(); j++) {
-			RedstoneTorchBlock.BurnoutEntry burnoutEntry = (RedstoneTorchBlock.BurnoutEntry)list.get(j);
+		for (RedstoneTorchBlock.BurnoutEntry burnoutEntry : list) {
 			if (burnoutEntry.pos.equals(pos)) {
 				if (++i >= 8) {
 					return true;

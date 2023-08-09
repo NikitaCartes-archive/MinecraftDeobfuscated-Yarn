@@ -820,11 +820,11 @@ public class InGameHud {
 					int aa = n - y * 8 - 9;
 					context.drawGuiTexture(identifier, aa, z, 9, 9);
 					if (y * 2 + 1 < k) {
-						context.drawGuiTexture(identifier2, aa, z, 9, 9);
+						context.drawGuiTexture(identifier3, aa, z, 9, 9);
 					}
 
 					if (y * 2 + 1 == k) {
-						context.drawGuiTexture(identifier3, aa, z, 9, 9);
+						context.drawGuiTexture(identifier2, aa, z, 9, 9);
 					}
 				}
 

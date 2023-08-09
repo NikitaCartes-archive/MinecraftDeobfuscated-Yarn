@@ -336,8 +336,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().horizontalLengthSquared() > 0.01) {
 				List<Entity> list = this.getWorld().getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.canBePushedBy(this));
 				if (!list.isEmpty()) {
-					for (int l = 0; l < list.size(); l++) {
-						Entity entity = (Entity)list.get(l);
+					for (Entity entity : list) {
 						if (!(entity instanceof PlayerEntity)
 							&& !(entity instanceof IronGolemEntity)
 							&& !(entity instanceof AbstractMinecartEntity)

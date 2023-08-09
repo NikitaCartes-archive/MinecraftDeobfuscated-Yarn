@@ -3,7 +3,6 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.util.Identifier;
 
 public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Conditions> {
@@ -37,7 +36,7 @@ public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Condit
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+		public JsonObject toJson() {
 			return new JsonObject();
 		}
 	}

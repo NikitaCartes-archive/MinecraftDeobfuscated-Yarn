@@ -115,7 +115,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	@Override
-	public void attack(LivingEntity target, float pullProgress) {
+	public void shootAt(LivingEntity target, float pullProgress) {
 		SnowballEntity snowballEntity = new SnowballEntity(this.getWorld(), this);
 		double d = target.getEyeY() - 1.1F;
 		double e = target.getX() - this.getX();

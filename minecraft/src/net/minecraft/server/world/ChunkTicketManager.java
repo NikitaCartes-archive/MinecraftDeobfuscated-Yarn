@@ -50,11 +50,11 @@ public abstract class ChunkTicketManager {
 	private final ChunkTicketManager.DistanceFromNearestPlayerTracker distanceFromNearestPlayerTracker = new ChunkTicketManager.DistanceFromNearestPlayerTracker(8);
 	private final SimulationDistanceLevelPropagator simulationDistanceTracker = new SimulationDistanceLevelPropagator();
 	private final ChunkTicketManager.NearbyChunkTicketUpdater nearbyChunkTicketUpdater = new ChunkTicketManager.NearbyChunkTicketUpdater(32);
-	final Set<ChunkHolder> chunkHolders = Sets.<ChunkHolder>newHashSet();
+	final Set<ChunkHolder> chunkHoldersWithPendingUpdates = Sets.<ChunkHolder>newHashSet();
 	final ChunkTaskPrioritySystem levelUpdateListener;
 	final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> playerTicketThrottler;
 	final MessageListener<ChunkTaskPrioritySystem.UnblockingMessage> playerTicketThrottlerUnblocker;
-	final LongSet chunkPositions = new LongOpenHashSet();
+	final LongSet freshPlayerTicketPositions = new LongOpenHashSet();
 	final Executor mainThreadExecutor;
 	private long age;
 	private int simulationDistance = 10;
@@ -108,7 +108,15 @@ public abstract class ChunkTicketManager {
 	@Nullable
 	protected abstract ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i);
 
-	public boolean tick(ThreadedAnvilChunkStorage chunkStorage) {
+	/**
+	 * Update the states related to chunk tickets and chunk loading levels, which mainly involves three kind of updates:
+	 * <ul>
+	 * <li>Add or remove PLAYER tickets when necessary.</li>
+	 * <li>Update the expected loading states of chunks depending on their new levels.</li>
+	 * <li>Special updates of chunks with PLAYER tickets added recently.</li>
+	 * </ul>
+	 */
+	public boolean update(ThreadedAnvilChunkStorage chunkStorage) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		this.simulationDistanceTracker.updateLevels();
 		this.nearbyChunkTicketUpdater.updateLevels();
@@ -117,13 +125,13 @@ public abstract class ChunkTicketManager {
 		if (bl) {
 		}
 
-		if (!this.chunkHolders.isEmpty()) {
-			this.chunkHolders.forEach(holder -> holder.tick(chunkStorage, this.mainThreadExecutor));
-			this.chunkHolders.clear();
+		if (!this.chunkHoldersWithPendingUpdates.isEmpty()) {
+			this.chunkHoldersWithPendingUpdates.forEach(holder -> holder.updateFutures(chunkStorage, this.mainThreadExecutor));
+			this.chunkHoldersWithPendingUpdates.clear();
 			return true;
 		} else {
-			if (!this.chunkPositions.isEmpty()) {
-				LongIterator longIterator = this.chunkPositions.iterator();
+			if (!this.freshPlayerTicketPositions.isEmpty()) {
+				LongIterator longIterator = this.freshPlayerTicketPositions.iterator();
 
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
@@ -141,7 +149,7 @@ public abstract class ChunkTicketManager {
 					}
 				}
 
-				this.chunkPositions.clear();
+				this.freshPlayerTicketPositions.clear();
 			}
 
 			return bl;
@@ -447,7 +455,7 @@ public abstract class ChunkTicketManager {
 					ChunkTicketManager.this.playerTicketThrottler.send(ChunkTaskPrioritySystem.createMessage(() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> {
 							if (this.isWithinViewDistance(this.getLevel(pos))) {
 								ChunkTicketManager.this.addTicket(pos, chunkTicket);
-								ChunkTicketManager.this.chunkPositions.add(pos);
+								ChunkTicketManager.this.freshPlayerTicketPositions.add(pos);
 							} else {
 								ChunkTicketManager.this.playerTicketThrottlerUnblocker.send(ChunkTaskPrioritySystem.createUnblockingMessage(() -> {
 								}, pos, false));
@@ -531,7 +539,7 @@ public abstract class ChunkTicketManager {
 			if (i != level) {
 				chunkHolder = ChunkTicketManager.this.setLevel(id, level, chunkHolder, i);
 				if (chunkHolder != null) {
-					ChunkTicketManager.this.chunkHolders.add(chunkHolder);
+					ChunkTicketManager.this.chunkHoldersWithPendingUpdates.add(chunkHolder);
 				}
 			}
 		}

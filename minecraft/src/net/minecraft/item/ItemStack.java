@@ -50,6 +50,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenTexts;
@@ -392,6 +393,10 @@ public final class ItemStack {
 	 */
 	public boolean itemMatches(RegistryEntry<Item> itemEntry) {
 		return this.getItem().getRegistryEntry() == itemEntry;
+	}
+
+	public boolean itemMatches(RegistryEntryList<Item> registryEntryList) {
+		return registryEntryList.contains(this.getRegistryEntry());
 	}
 
 	/**
@@ -1323,7 +1328,7 @@ public final class ItemStack {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
 				if (!nbtCompound.contains("Slot", NbtElement.STRING_TYPE) || nbtCompound.getString("Slot").equals(slot.getName())) {
 					Optional<EntityAttribute> optional = Registries.ATTRIBUTE.getOrEmpty(Identifier.tryParse(nbtCompound.getString("AttributeName")));
-					if (optional.isPresent()) {
+					if (!optional.isEmpty()) {
 						EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtCompound);
 						if (entityAttributeModifier != null
 							&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L

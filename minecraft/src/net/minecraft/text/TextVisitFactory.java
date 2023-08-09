@@ -197,7 +197,7 @@ public class TextVisitFactory {
 	 * @see StringVisitable#visit(StringVisitable.StyledVisitor, Style)
 	 */
 	public static boolean visitFormatted(StringVisitable text, Style style, CharacterVisitor visitor) {
-		return !text.visit((stylex, string) -> visitFormatted(string, 0, stylex, visitor) ? Optional.empty() : VISIT_TERMINATED, style).isPresent();
+		return text.visit((stylex, string) -> visitFormatted(string, 0, stylex, visitor) ? Optional.empty() : VISIT_TERMINATED, style).isEmpty();
 	}
 
 	/**

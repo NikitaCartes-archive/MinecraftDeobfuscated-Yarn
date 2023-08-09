@@ -236,7 +236,7 @@ public class ServerChunkManager extends ChunkManager {
 			if (this.isMissingForLevel(chunkHolder, i)) {
 				Profiler profiler = this.world.getProfiler();
 				profiler.push("chunkLoad");
-				this.tick();
+				this.updateChunks();
 				chunkHolder = this.getChunkHolder(l);
 				profiler.pop();
 				if (this.isMissingForLevel(chunkHolder, i)) {
@@ -293,8 +293,11 @@ public class ServerChunkManager extends ChunkManager {
 		return this.mainThreadExecutor.runTask();
 	}
 
-	boolean tick() {
-		boolean bl = this.ticketManager.tick(this.threadedAnvilChunkStorage);
+	/**
+	 * Update expected chunk loading states by updating {@code PLAYER} tickets and {@code Future}s.
+	 */
+	boolean updateChunks() {
+		boolean bl = this.ticketManager.update(this.threadedAnvilChunkStorage);
 		boolean bl2 = this.threadedAnvilChunkStorage.updateHolderMap();
 		if (!bl && !bl2) {
 			return false;
@@ -317,7 +320,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	public void save(boolean flush) {
-		this.tick();
+		this.updateChunks();
 		this.threadedAnvilChunkStorage.save(flush);
 	}
 
@@ -332,7 +335,7 @@ public class ServerChunkManager extends ChunkManager {
 	public void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks) {
 		this.world.getProfiler().push("purge");
 		this.ticketManager.purge();
-		this.tick();
+		this.updateChunks();
 		this.world.getProfiler().swap("chunks");
 		if (tickChunks) {
 			this.tickChunks();
@@ -584,7 +587,7 @@ public class ServerChunkManager extends ChunkManager {
 
 		@Override
 		protected boolean runTask() {
-			if (ServerChunkManager.this.tick()) {
+			if (ServerChunkManager.this.updateChunks()) {
 				return true;
 			} else {
 				ServerChunkManager.this.lightingProvider.tick();

@@ -1,59 +1,56 @@
 package net.minecraft.loot.entry;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.loot.LootChoice;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public abstract class CombinedEntry extends LootPoolEntry {
-	protected final LootPoolEntry[] children;
+	protected final List<LootPoolEntry> children;
 	private final EntryCombiner predicate;
 
-	protected CombinedEntry(LootPoolEntry[] children, LootCondition[] conditions) {
+	protected CombinedEntry(List<LootPoolEntry> terms, List<LootCondition> conditions) {
 		super(conditions);
-		this.children = children;
-		this.predicate = this.combine(children);
+		this.children = terms;
+		this.predicate = this.combine(terms);
 	}
 
 	@Override
 	public void validate(LootTableReporter reporter) {
 		super.validate(reporter);
-		if (this.children.length == 0) {
+		if (this.children.isEmpty()) {
 			reporter.report("Empty children list");
 		}
 
-		for (int i = 0; i < this.children.length; i++) {
-			this.children[i].validate(reporter.makeChild(".entry[" + i + "]"));
+		for (int i = 0; i < this.children.size(); i++) {
+			((LootPoolEntry)this.children.get(i)).validate(reporter.makeChild(".entry[" + i + "]"));
 		}
 	}
 
-	protected abstract EntryCombiner combine(EntryCombiner[] children);
+	protected abstract EntryCombiner combine(List<? extends EntryCombiner> list);
 
 	@Override
 	public final boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {
 		return !this.test(lootContext) ? false : this.predicate.expand(lootContext, consumer);
 	}
 
-	public static <T extends CombinedEntry> LootPoolEntry.Serializer<T> createSerializer(CombinedEntry.Factory<T> factory) {
-		return new LootPoolEntry.Serializer<T>() {
-			public void addEntryFields(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
-				jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.children));
-			}
-
-			public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-				LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "children", jsonDeserializationContext, LootPoolEntry[].class);
-				return factory.create(lootPoolEntrys, lootConditions);
-			}
-		};
+	public static <T extends CombinedEntry> Codec<T> createCodec(CombinedEntry.Factory<T> factory) {
+		return RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(LootPoolEntryTypes.CODEC.listOf(), "children", List.of()).forGetter(combinedEntry -> combinedEntry.children)
+					)
+					.and(method_53287(instance).t1())
+					.apply(instance, factory::create)
+		);
 	}
 
 	@FunctionalInterface
 	public interface Factory<T extends CombinedEntry> {
-		T create(LootPoolEntry[] children, LootCondition[] conditions);
+		T create(List<LootPoolEntry> list, List<LootCondition> list2);
 	}
 }

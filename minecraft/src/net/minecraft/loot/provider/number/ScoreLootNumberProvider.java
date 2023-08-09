@@ -1,28 +1,25 @@
 package net.minecraft.loot.provider.number;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.score.ContextLootScoreProvider;
 import net.minecraft.loot.provider.score.LootScoreProvider;
+import net.minecraft.loot.provider.score.LootScoreProviderTypes;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
 
-public class ScoreLootNumberProvider implements LootNumberProvider {
-	final LootScoreProvider target;
-	final String score;
-	final float scale;
-
-	ScoreLootNumberProvider(LootScoreProvider target, String score, float scale) {
-		this.target = target;
-		this.score = score;
-		this.scale = scale;
-	}
+public record ScoreLootNumberProvider(LootScoreProvider target, String score, float scale) implements LootNumberProvider {
+	public static final Codec<ScoreLootNumberProvider> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					LootScoreProviderTypes.CODEC.fieldOf("target").forGetter(ScoreLootNumberProvider::target),
+					Codec.STRING.fieldOf("score").forGetter(ScoreLootNumberProvider::score),
+					Codec.FLOAT.fieldOf("scale").orElse(1.0F).forGetter(ScoreLootNumberProvider::scale)
+				)
+				.apply(instance, ScoreLootNumberProvider::new)
+	);
 
 	@Override
 	public LootNumberProviderType getType() {
@@ -57,21 +54,6 @@ public class ScoreLootNumberProvider implements LootNumberProvider {
 					? 0.0F
 					: (float)scoreboard.getPlayerScore(string, scoreboardObjective).getScore() * this.scale;
 			}
-		}
-	}
-
-	public static class Serializer implements JsonSerializer<ScoreLootNumberProvider> {
-		public ScoreLootNumberProvider fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			String string = JsonHelper.getString(jsonObject, "score");
-			float f = JsonHelper.getFloat(jsonObject, "scale", 1.0F);
-			LootScoreProvider lootScoreProvider = JsonHelper.deserialize(jsonObject, "target", jsonDeserializationContext, LootScoreProvider.class);
-			return new ScoreLootNumberProvider(lootScoreProvider, string, f);
-		}
-
-		public void toJson(JsonObject jsonObject, ScoreLootNumberProvider scoreLootNumberProvider, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("score", scoreLootNumberProvider.score);
-			jsonObject.add("target", jsonSerializationContext.serialize(scoreLootNumberProvider.target));
-			jsonObject.addProperty("scale", scoreLootNumberProvider.scale);
 		}
 	}
 }

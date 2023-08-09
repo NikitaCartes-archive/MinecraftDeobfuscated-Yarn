@@ -1,26 +1,23 @@
 package net.minecraft.loot.condition;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
+import net.minecraft.util.dynamic.Codecs;
 
-public class TimeCheckLootCondition implements LootCondition {
-	@Nullable
-	final Long period;
-	final BoundedIntUnaryOperator value;
-
-	TimeCheckLootCondition(@Nullable Long period, BoundedIntUnaryOperator value) {
-		this.period = period;
-		this.value = value;
-	}
+public record TimeCheckLootCondition(Optional<Long> period, BoundedIntUnaryOperator value) implements LootCondition {
+	public static final Codec<TimeCheckLootCondition> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(Codec.LONG, "period").forGetter(TimeCheckLootCondition::period),
+					BoundedIntUnaryOperator.CODEC.fieldOf("value").forGetter(TimeCheckLootCondition::value)
+				)
+				.apply(instance, TimeCheckLootCondition::new)
+	);
 
 	@Override
 	public LootConditionType getType() {
@@ -35,8 +32,8 @@ public class TimeCheckLootCondition implements LootCondition {
 	public boolean test(LootContext lootContext) {
 		ServerWorld serverWorld = lootContext.getWorld();
 		long l = serverWorld.getTimeOfDay();
-		if (this.period != null) {
-			l %= this.period;
+		if (this.period.isPresent()) {
+			l %= this.period.get();
 		}
 
 		return this.value.test(lootContext, (int)l);
@@ -47,8 +44,7 @@ public class TimeCheckLootCondition implements LootCondition {
 	}
 
 	public static class Builder implements LootCondition.Builder {
-		@Nullable
-		private Long period;
+		private Optional<Long> period = Optional.empty();
 		private final BoundedIntUnaryOperator value;
 
 		public Builder(BoundedIntUnaryOperator value) {
@@ -56,25 +52,12 @@ public class TimeCheckLootCondition implements LootCondition {
 		}
 
 		public TimeCheckLootCondition.Builder period(long period) {
-			this.period = period;
+			this.period = Optional.of(period);
 			return this;
 		}
 
 		public TimeCheckLootCondition build() {
 			return new TimeCheckLootCondition(this.period, this.value);
-		}
-	}
-
-	public static class Serializer implements JsonSerializer<TimeCheckLootCondition> {
-		public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("period", timeCheckLootCondition.period);
-			jsonObject.add("value", jsonSerializationContext.serialize(timeCheckLootCondition.value));
-		}
-
-		public TimeCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			Long long_ = jsonObject.has("period") ? JsonHelper.getLong(jsonObject, "period") : null;
-			BoundedIntUnaryOperator boundedIntUnaryOperator = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, BoundedIntUnaryOperator.class);
-			return new TimeCheckLootCondition(long_, boundedIntUnaryOperator);
 		}
 	}
 }

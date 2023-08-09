@@ -382,6 +382,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			.thenApplyAsync(either -> either.mapLeft(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)), this.mainThreadExecutor);
 	}
 
+	/**
+	 * Sets the loading level of {@code ChunkHolder}s. Nonexistent {@code ChunkHolder}s will be created automatically
+	 * if their loading level is 45 or lower, and chunks whose loading levels are 46 or higher will be scheduled to be removed.
+	 */
 	@Nullable
 	ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i) {
 		if (!ChunkLevels.isAccessible(i) && !ChunkLevels.isAccessible(level)) {
@@ -1179,7 +1183,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	protected void tickEntityMovement() {
 		for (ServerPlayerEntity serverPlayerEntity : this.playerChunkWatchingManager.getPlayersWatchingChunk()) {
 			this.sendWatchPackets(serverPlayerEntity);
-			serverPlayerEntity.networkHandler.chunkDataSender.sendChunkBatches(serverPlayerEntity);
 		}
 
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();

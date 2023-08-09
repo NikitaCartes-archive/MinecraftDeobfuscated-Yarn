@@ -5,7 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
@@ -14,10 +16,12 @@ import org.lwjgl.glfw.GLFW;
  */
 @Environment(EnvType.CLIENT)
 public abstract class ScrollableWidget extends ClickableWidget implements Drawable, Element {
-	private static final int FOCUSED_BORDER_COLOR = -1;
-	private static final int UNFOCUSED_BORDER_COLOR = -6250336;
-	private static final int BOX_COLOR = -16777216;
+	private static final ButtonTextures TEXT_FIELD_TEXTURES = new ButtonTextures(
+		new Identifier("widget/text_field"), new Identifier("widget/text_field_highlighted")
+	);
+	private static final Identifier SCROLLER_TEXTURE = new Identifier("widget/scroller");
 	private static final int PADDING = 4;
+	private static final int field_45907 = 8;
 	private double scrollY;
 	private boolean scrollbarDragged;
 
@@ -161,19 +165,15 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	}
 
 	protected void drawBox(DrawContext context, int x, int y, int width, int height) {
-		int i = this.isFocused() ? -1 : -6250336;
-		context.fill(x, y, x + width, y + height, i);
-		context.fill(x + 1, y + 1, x + width - 1, y + height - 1, -16777216);
+		Identifier identifier = TEXT_FIELD_TEXTURES.get(this.isNarratable(), this.isFocused());
+		context.drawGuiTexture(identifier, x, y, width, height);
 	}
 
 	private void drawScrollbar(DrawContext context) {
 		int i = this.getScrollbarThumbHeight();
 		int j = this.getX() + this.width;
-		int k = this.getX() + this.width + 8;
-		int l = Math.max(this.getY(), (int)this.scrollY * (this.height - i) / this.getMaxScrollY() + this.getY());
-		int m = l + i;
-		context.fill(j, l, k, m, -8355712);
-		context.fill(j, l, k - 1, m - 1, -4144960);
+		int k = Math.max(this.getY(), (int)this.scrollY * (this.height - i) / this.getMaxScrollY() + this.getY());
+		context.drawGuiTexture(SCROLLER_TEXTURE, j, k, 8, i);
 	}
 
 	protected boolean isVisible(int top, int bottom) {

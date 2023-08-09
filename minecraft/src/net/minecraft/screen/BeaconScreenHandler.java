@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.world.World;
@@ -20,6 +21,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 	private static final int INVENTORY_END = 28;
 	private static final int HOTBAR_START = 28;
 	private static final int HOTBAR_END = 37;
+	private static final int field_45758 = 0;
 	private final Inventory payment = new SimpleInventory(1) {
 		@Override
 		public boolean isValid(int slot, ItemStack stack) {
@@ -132,20 +134,29 @@ public class BeaconScreenHandler extends ScreenHandler {
 		return this.propertyDelegate.get(0);
 	}
 
+	public static int getRawIdForStatusEffect(@Nullable StatusEffect statusEffect) {
+		return statusEffect == null ? 0 : Registries.STATUS_EFFECT.getRawId(statusEffect) + 1;
+	}
+
+	@Nullable
+	public static StatusEffect getStatusEffectForRawId(int id) {
+		return id == 0 ? null : Registries.STATUS_EFFECT.get(id - 1);
+	}
+
 	@Nullable
 	public StatusEffect getPrimaryEffect() {
-		return StatusEffect.byRawId(this.propertyDelegate.get(1));
+		return getStatusEffectForRawId(this.propertyDelegate.get(1));
 	}
 
 	@Nullable
 	public StatusEffect getSecondaryEffect() {
-		return StatusEffect.byRawId(this.propertyDelegate.get(2));
+		return getStatusEffectForRawId(this.propertyDelegate.get(2));
 	}
 
 	public void setEffects(Optional<StatusEffect> primary, Optional<StatusEffect> secondary) {
 		if (this.paymentSlot.hasStack()) {
-			this.propertyDelegate.set(1, (Integer)primary.map(StatusEffect::getRawId).orElse(-1));
-			this.propertyDelegate.set(2, (Integer)secondary.map(StatusEffect::getRawId).orElse(-1));
+			this.propertyDelegate.set(1, getRawIdForStatusEffect((StatusEffect)primary.orElse(null)));
+			this.propertyDelegate.set(2, getRawIdForStatusEffect((StatusEffect)secondary.orElse(null)));
 			this.paymentSlot.takeStack(1);
 			this.context.run(World::markDirty);
 		}

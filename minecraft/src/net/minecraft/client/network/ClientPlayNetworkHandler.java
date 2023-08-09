@@ -253,6 +253,7 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CP
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -279,7 +280,6 @@ import net.minecraft.stat.StatHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -331,8 +331,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private MessageChain.Packer messagePacker = MessageChain.Packer.NONE;
 	private LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 	private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
-	private volatile long chunkSendStartTime = Util.getMeasuringTimeMs();
-	private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator(50);
+	private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
+	private final PingMeasurer pingMeasurer;
+	private boolean displayedUnsecureChatWarning = false;
 
 	public ClientPlayNetworkHandler(MinecraftClient client, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
 		super(client, clientConnection, clientConnectionState);
@@ -341,6 +342,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.enabledFeatures = clientConnectionState.enabledFeatures();
 		this.advancementHandler = new ClientAdvancementManager(client, this.worldSession);
 		this.commandSource = new ClientCommandSource(this, client);
+		this.pingMeasurer = new PingMeasurer(this, client.pingPerformanceLog);
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -359,7 +361,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onGameJoin(GameJoinS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.method_52802();
+		this.refreshTagBasedData();
 		this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
 		CommonPlayerSpawnInfo commonPlayerSpawnInfo = packet.commonPlayerSpawnInfo();
 		List<RegistryKey<World>> list = Lists.<RegistryKey<World>>newArrayList(packet.dimensionIds());
@@ -828,6 +830,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			UUID uUID = packet.sender();
 			PlayerListEntry playerListEntry = this.getPlayerListEntry(uUID);
 			if (playerListEntry == null) {
+				LOGGER.error("Received player chat packet for unknown player with ID: {}", uUID);
 				this.connection.disconnect(CHAT_VALIDATION_FAILED_TEXT);
 			} else {
 				PublicPlayerSession publicPlayerSession = playerListEntry.getSession();
@@ -840,7 +843,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 				SignedMessage signedMessage = new SignedMessage(messageLink, packet.signature(), (MessageBody)optional.get(), packet.unsignedContent(), packet.filterMask());
 				if (!playerListEntry.getMessageVerifier().isVerified(signedMessage)) {
-					this.connection.disconnect(CHAT_VALIDATION_FAILED_TEXT);
+					this.client.getMessageHandler().onUnverifiedMessage(uUID, (MessageType.Parameters)optional2.get());
 				} else {
 					this.client.getMessageHandler().onChatMessage(signedMessage, playerListEntry.getProfile(), (MessageType.Parameters)optional2.get());
 					this.signatureStorage.add(signedMessage);
@@ -1123,10 +1126,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onOpenHorseScreen(OpenHorseScreenS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getHorseId());
-		if (entity instanceof AbstractHorseEntity) {
+		if (this.world.getEntityById(packet.getHorseId()) instanceof AbstractHorseEntity abstractHorseEntity) {
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
-			AbstractHorseEntity abstractHorseEntity = (AbstractHorseEntity)entity;
 			SimpleInventory simpleInventory = new SimpleInventory(packet.getSlotCount());
 			HorseScreenHandler horseScreenHandler = new HorseScreenHandler(packet.getSyncId(), clientPlayerEntity.getInventory(), simpleInventory, abstractHorseEntity);
 			clientPlayerEntity.currentScreenHandler = horseScreenHandler;
@@ -1498,10 +1499,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		super.onSynchronizeTags(packet);
-		this.method_52802();
+		this.refreshTagBasedData();
 	}
 
-	private void method_52802() {
+	private void refreshTagBasedData() {
 		if (!this.connection.isLocal()) {
 			Blocks.refreshShapeCache();
 		}
@@ -1610,9 +1611,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			packet.getFavicon().ifPresent(this.serverInfo::setFavicon);
 			this.serverInfo.setSecureChatEnforced(packet.isSecureChatEnforced());
 			ServerList.updateServerListEntry(this.serverInfo);
-			if (!packet.isSecureChatEnforced()) {
+			if (!this.displayedUnsecureChatWarning && !packet.isSecureChatEnforced()) {
 				SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, UNSECURE_SERVER_TOAST_TITLE, UNSECURE_SERVER_TOAST_TEXT);
 				this.client.getToastManager().add(systemToast);
+				this.displayedUnsecureChatWarning = true;
 			}
 		}
 	}
@@ -1736,7 +1738,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			PublicPlayerSession.Serialized serialized = receivedEntry.chatSession();
 			if (serialized != null) {
 				try {
-					PublicPlayerSession publicPlayerSession = serialized.toSession(gameProfile, signatureVerifier, PlayerPublicKey.EXPIRATION_GRACE_PERIOD);
+					PublicPlayerSession publicPlayerSession = serialized.toSession(gameProfile, signatureVerifier);
 					currentEntry.setSession(publicPlayerSession);
 				} catch (PlayerPublicKey.PublicKeyException var7) {
 					LOGGER.error("Failed to validate profile key for player: '{}'", gameProfile.getName(), var7);
@@ -2160,20 +2162,18 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	@Override
 	public void onStartChunkSend(StartChunkSendS2CPacket packet) {
-		this.chunkSendStartTime = Util.getMeasuringTimeMs();
+		this.chunkBatchSizeCalculator.onStartChunkSend();
 	}
 
 	@Override
 	public void onChunkSent(ChunkSentS2CPacket packet) {
-		long l = Util.getMeasuringTimeMs() - this.chunkSendStartTime;
-		int i = packet.batchSize();
-		if (i > 0) {
-			this.chunkBatchSizeCalculator.method_52769(i, l);
-		}
+		this.chunkBatchSizeCalculator.onChunkSent(packet.batchSize());
+		this.sendPacket(new AcknowledgeChunksC2SPacket(this.chunkBatchSizeCalculator.getDesiredChunksPerTick()));
+	}
 
-		double d = Math.max(0.0, this.chunkBatchSizeCalculator.method_52768());
-		float f = (float)(25.0 / d);
-		this.sendPacket(new AcknowledgeChunksC2SPacket(f));
+	@Override
+	public void onPingResult(PingResultS2CPacket packet) {
+		this.pingMeasurer.onPingResult(packet);
 	}
 
 	private void updateLighting(int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet inited, BitSet uninited, Iterator<byte[]> nibbles) {
@@ -2319,6 +2319,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		this.sendQueuedPackets();
+		if (this.client.options.debugPacketSizeEnabled) {
+			this.pingMeasurer.ping();
+		}
+
 		this.worldSession.tick();
 	}
 

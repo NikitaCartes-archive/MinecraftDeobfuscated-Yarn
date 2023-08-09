@@ -115,8 +115,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			Box box = ShulkerEntity.calculateBoundingBox(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
 			List<Entity> list = world.getOtherEntities(null, box);
 			if (!list.isEmpty()) {
-				for (int i = 0; i < list.size(); i++) {
-					Entity entity = (Entity)list.get(i);
+				for (Entity entity : list) {
 					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
 						entity.move(
 							MovementType.SHULKER_BOX,

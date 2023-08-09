@@ -1,6 +1,7 @@
 package net.minecraft.client.network;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -28,19 +29,19 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.listener.ServerPacketListener;
+import net.minecraft.network.packet.BrandCustomPayload;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.UnknownCustomPayload;
+import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
-import net.minecraft.network.packet.c2s.common.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
+import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
-import net.minecraft.network.packet.s2c.common.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
-import net.minecraft.network.packet.s2c.custom.BrandCustomPayload;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -51,10 +52,12 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public abstract class ClientCommonNetworkHandler implements ClientCommonPacketListener {
 	private static final Text LOST_CONNECTION_TEXT = Text.translatable("disconnect.lost");
+	private static final Logger LOGGER = LogUtils.getLogger();
 	protected final MinecraftClient client;
 	protected final ClientConnection connection;
 	@Nullable
@@ -81,9 +84,9 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	@Override
-	public void onPlayPing(PlayPingS2CPacket packet) {
+	public void onPing(CommonPingS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.sendPacket(new PlayPongC2SPacket(packet.getParameter()));
+		this.sendPacket(new CommonPongC2SPacket(packet.getParameter()));
 	}
 
 	@Override
@@ -238,6 +241,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	public void onDisconnected(Text reason) {
 		this.worldSession.onUnload();
 		this.client.disconnect(this.createDisconnectedScreen(reason));
+		LOGGER.warn("Client disconnected with reason: {}", reason.getString());
 	}
 
 	protected Screen createDisconnectedScreen(Text reason) {

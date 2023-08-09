@@ -1,8 +1,8 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
@@ -25,11 +25,11 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 	}
 
 	public TravelCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("start_position"));
-		DistancePredicate distancePredicate = DistancePredicate.fromJson(jsonObject.get("distance"));
-		return new TravelCriterion.Conditions(this.id, lootContextPredicate, locationPredicate, distancePredicate);
+		Optional<LocationPredicate> optional2 = LocationPredicate.fromJson(jsonObject.get("start_position"));
+		Optional<DistancePredicate> optional3 = DistancePredicate.fromJson(jsonObject.get("distance"));
+		return new TravelCriterion.Conditions(this.id, optional, optional2, optional3);
 	}
 
 	public void trigger(ServerPlayerEntity player, Vec3d startPos) {
@@ -38,41 +38,43 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final LocationPredicate startPos;
-		private final DistancePredicate distance;
+		private final Optional<LocationPredicate> startPos;
+		private final Optional<DistancePredicate> distance;
 
-		public Conditions(Identifier id, LootContextPredicate entity, LocationPredicate startPos, DistancePredicate distance) {
-			super(id, entity);
+		public Conditions(Identifier id, Optional<LootContextPredicate> playerPredicate, Optional<LocationPredicate> startPos, Optional<DistancePredicate> distance) {
+			super(id, playerPredicate);
 			this.startPos = startPos;
 			this.distance = distance;
 		}
 
-		public static TravelCriterion.Conditions fallFromHeight(EntityPredicate.Builder entity, DistancePredicate distance, LocationPredicate startPos) {
-			return new TravelCriterion.Conditions(Criteria.FALL_FROM_HEIGHT.id, EntityPredicate.asLootContextPredicate(entity.build()), startPos, distance);
+		public static TravelCriterion.Conditions fallFromHeight(EntityPredicate.Builder entity, DistancePredicate distance, LocationPredicate.Builder builder) {
+			return new TravelCriterion.Conditions(
+				Criteria.FALL_FROM_HEIGHT.id, EntityPredicate.contextPredicateFromEntityPredicate(entity), builder.build(), Optional.of(distance)
+			);
 		}
 
 		public static TravelCriterion.Conditions rideEntityInLava(EntityPredicate.Builder entity, DistancePredicate distance) {
 			return new TravelCriterion.Conditions(
-				Criteria.RIDE_ENTITY_IN_LAVA.id, EntityPredicate.asLootContextPredicate(entity.build()), LocationPredicate.ANY, distance
+				Criteria.RIDE_ENTITY_IN_LAVA.id, EntityPredicate.contextPredicateFromEntityPredicate(entity), Optional.empty(), Optional.of(distance)
 			);
 		}
 
 		public static TravelCriterion.Conditions netherTravel(DistancePredicate distance) {
-			return new TravelCriterion.Conditions(Criteria.NETHER_TRAVEL.id, LootContextPredicate.EMPTY, LocationPredicate.ANY, distance);
+			return new TravelCriterion.Conditions(Criteria.NETHER_TRAVEL.id, Optional.empty(), Optional.empty(), Optional.of(distance));
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("start_position", this.startPos.toJson());
-			jsonObject.add("distance", this.distance.toJson());
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.startPos.ifPresent(locationPredicate -> jsonObject.add("start_position", locationPredicate.toJson()));
+			this.distance.ifPresent(distancePredicate -> jsonObject.add("distance", distancePredicate.toJson()));
 			return jsonObject;
 		}
 
-		public boolean matches(ServerWorld world, Vec3d startPos, Vec3d endPos) {
-			return !this.startPos.test(world, startPos.x, startPos.y, startPos.z)
+		public boolean matches(ServerWorld world, Vec3d pos, Vec3d endPos) {
+			return this.startPos.isPresent() && !((LocationPredicate)this.startPos.get()).test(world, pos.x, pos.y, pos.z)
 				? false
-				: this.distance.test(startPos.x, startPos.y, startPos.z, endPos.x, endPos.y, endPos.z);
+				: !this.distance.isPresent() || ((DistancePredicate)this.distance.get()).test(pos.x, pos.y, pos.z, endPos.x, endPos.y, endPos.z);
 		}
 	}
 }

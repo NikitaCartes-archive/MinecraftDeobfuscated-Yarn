@@ -80,22 +80,22 @@ public class JigsawBlockScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 20, 300, 20, Text.translatable("jigsaw_block.pool"));
+		this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 20, 300, 20, Text.translatable("jigsaw_block.pool"));
 		this.poolField.setMaxLength(128);
 		this.poolField.setText(this.jigsaw.getPool().getValue().toString());
 		this.poolField.setChangedListener(pool -> this.updateDoneButtonState());
 		this.addSelectableChild(this.poolField);
-		this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 55, 300, 20, Text.translatable("jigsaw_block.name"));
+		this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 55, 300, 20, Text.translatable("jigsaw_block.name"));
 		this.nameField.setMaxLength(128);
 		this.nameField.setText(this.jigsaw.getName().toString());
 		this.nameField.setChangedListener(name -> this.updateDoneButtonState());
 		this.addSelectableChild(this.nameField);
-		this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 90, 300, 20, Text.translatable("jigsaw_block.target"));
+		this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 90, 300, 20, Text.translatable("jigsaw_block.target"));
 		this.targetField.setMaxLength(128);
 		this.targetField.setText(this.jigsaw.getTarget().toString());
 		this.targetField.setChangedListener(target -> this.updateDoneButtonState());
 		this.addSelectableChild(this.targetField);
-		this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 125, 300, 20, Text.translatable("jigsaw_block.final_state"));
+		this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 125, 300, 20, Text.translatable("jigsaw_block.final_state"));
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.addSelectableChild(this.finalStateField);

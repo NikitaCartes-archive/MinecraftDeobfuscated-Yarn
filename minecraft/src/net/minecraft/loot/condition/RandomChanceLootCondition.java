@@ -1,18 +1,13 @@
 package net.minecraft.loot.condition;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
 
-public class RandomChanceLootCondition implements LootCondition {
-	final float chance;
-
-	RandomChanceLootCondition(float chance) {
-		this.chance = chance;
-	}
+public record RandomChanceLootCondition(float chance) implements LootCondition {
+	public static final Codec<RandomChanceLootCondition> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(Codec.FLOAT.fieldOf("chance").forGetter(RandomChanceLootCondition::chance)).apply(instance, RandomChanceLootCondition::new)
+	);
 
 	@Override
 	public LootConditionType getType() {
@@ -25,15 +20,5 @@ public class RandomChanceLootCondition implements LootCondition {
 
 	public static LootCondition.Builder builder(float chance) {
 		return () -> new RandomChanceLootCondition(chance);
-	}
-
-	public static class Serializer implements JsonSerializer<RandomChanceLootCondition> {
-		public void toJson(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("chance", randomChanceLootCondition.chance);
-		}
-
-		public RandomChanceLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			return new RandomChanceLootCondition(JsonHelper.getFloat(jsonObject, "chance"));
-		}
 	}
 }

@@ -93,6 +93,7 @@ public class Util {
 	 * as the format string. Example: {@code 2022-01-01_00.00.00}
 	 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
+	public static final long field_45714 = 1000000L;
 	public static TimeSupplier.Nanoseconds nanoTimeSupplier = System::nanoTime;
 	public static final Ticker TICKER = new Ticker() {
 		@Override

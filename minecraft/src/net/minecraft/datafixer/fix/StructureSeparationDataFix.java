@@ -99,7 +99,7 @@ public class StructureSeparationDataFix extends DataFix {
 		Dynamic<T> dynamic2;
 		if (optional.equals(Optional.of("customized"))) {
 			dynamic2 = method_29916(dynamic, l);
-		} else if (!optional.isPresent()) {
+		} else if (optional.isEmpty()) {
 			dynamic2 = method_29916(dynamic, l);
 		} else {
 			String bl6 = (String)optional.get();
@@ -266,7 +266,7 @@ public class StructureSeparationDataFix extends DataFix {
 		MutableInt mutableInt3 = new MutableInt(128);
 		MutableBoolean mutableBoolean = new MutableBoolean(false);
 		Map<String, StructureSeparationDataFix.Information> map = Maps.<String, StructureSeparationDataFix.Information>newHashMap();
-		if (!optionalDynamic.result().isPresent()) {
+		if (optionalDynamic.result().isEmpty()) {
 			mutableBoolean.setTrue();
 			map.put("minecraft:village", STRUCTURE_SPACING.get("minecraft:village"));
 		}

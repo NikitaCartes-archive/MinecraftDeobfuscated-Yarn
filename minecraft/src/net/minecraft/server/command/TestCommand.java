@@ -249,11 +249,11 @@ public class TestCommand {
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		ServerWorld serverWorld = source.getWorld();
 		Optional<BlockPos> optional = StructureTestUtil.findContainingStructureBlock(blockPos, 15, serverWorld);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			optional = StructureTestUtil.findContainingStructureBlock(blockPos, 200, serverWorld);
 		}
 
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			source.sendError(Text.literal("Can't find a structure block that contains the targeted pos " + blockPos));
 			return 0;
 		} else {

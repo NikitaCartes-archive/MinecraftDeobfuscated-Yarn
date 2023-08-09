@@ -1366,7 +1366,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public boolean hasModelOffset() {
-			return !this.offsetter.isEmpty();
+			return this.offsetter.isPresent();
 		}
 
 		public boolean onSyncedBlockEvent(World world, BlockPos pos, int type, int data) {
@@ -1497,6 +1497,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public boolean isIn(RegistryEntryList<Block> blocks) {
 			return blocks.contains(this.getBlock().getRegistryEntry());
+		}
+
+		public boolean isOf(RegistryEntry<Block> blockEntry) {
+			return this.isOf(blockEntry.value());
 		}
 
 		public Stream<TagKey<Block>> streamTags() {

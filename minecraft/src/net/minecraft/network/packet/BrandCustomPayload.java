@@ -1,7 +1,6 @@
-package net.minecraft.network.packet.s2c.custom;
+package net.minecraft.network.packet;
 
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
 public record BrandCustomPayload(String brand) implements CustomPayload {

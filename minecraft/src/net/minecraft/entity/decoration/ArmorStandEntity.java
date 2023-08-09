@@ -1,6 +1,5 @@
 package net.minecraft.entity.decoration;
 
-import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -291,10 +290,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	protected void tickCramming() {
-		List<Entity> list = this.getWorld().getOtherEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
-
-		for (int i = 0; i < list.size(); i++) {
-			Entity entity = (Entity)list.get(i);
+		for (Entity entity : this.getWorld().getOtherEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE)) {
 			if (this.squaredDistanceTo(entity) <= 0.2) {
 				entity.pushAwayFrom(this);
 			}

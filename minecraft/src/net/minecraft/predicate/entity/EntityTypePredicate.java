@@ -1,97 +1,44 @@
 package net.minecraft.predicate.entity;
 
-import com.google.common.base.Joiner;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import javax.annotation.Nullable;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import java.util.Optional;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
-public abstract class EntityTypePredicate {
-	public static final EntityTypePredicate ANY = new EntityTypePredicate() {
-		@Override
-		public boolean matches(EntityType<?> type) {
-			return true;
-		}
-
-		@Override
-		public JsonElement toJson() {
-			return JsonNull.INSTANCE;
-		}
-	};
-	private static final Joiner COMMA_JOINER = Joiner.on(", ");
-
-	public abstract boolean matches(EntityType<?> type);
-
-	public abstract JsonElement toJson();
-
-	public static EntityTypePredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			String string = JsonHelper.asString(json, "type");
-			if (string.startsWith("#")) {
-				Identifier identifier = new Identifier(string.substring(1));
-				return new EntityTypePredicate.Tagged(TagKey.of(RegistryKeys.ENTITY_TYPE, identifier));
-			} else {
-				Identifier identifier = new Identifier(string);
-				EntityType<?> entityType = (EntityType<?>)Registries.ENTITY_TYPE
-					.getOrEmpty(identifier)
-					.orElseThrow(
-						() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registries.ENTITY_TYPE.getIds()))
-					);
-				return new EntityTypePredicate.Single(entityType);
+public record EntityTypePredicate(RegistryEntryList<EntityType<?>> types) {
+	public static final Codec<EntityTypePredicate> CODEC = Codec.either(TagKey.codec(RegistryKeys.ENTITY_TYPE), Registries.ENTITY_TYPE.createEntryCodec())
+		.flatComapMap(
+			either -> either.map(
+					tagKey -> new EntityTypePredicate(Registries.ENTITY_TYPE.getOrCreateEntryList(tagKey)),
+					registryEntry -> new EntityTypePredicate(RegistryEntryList.of(registryEntry))
+				),
+			entityTypePredicate -> {
+				RegistryEntryList<EntityType<?>> registryEntryList = entityTypePredicate.types();
+				Optional<TagKey<EntityType<?>>> optional = registryEntryList.getTagKey();
+				if (optional.isPresent()) {
+					return DataResult.success(Either.left((TagKey)optional.get()));
+				} else {
+					return registryEntryList.size() == 1
+						? DataResult.success(Either.right(registryEntryList.get(0)))
+						: DataResult.error(() -> "Entity type set must have a single element, but got " + registryEntryList.size());
+				}
 			}
-		} else {
-			return ANY;
-		}
-	}
+		);
 
 	public static EntityTypePredicate create(EntityType<?> type) {
-		return new EntityTypePredicate.Single(type);
+		return new EntityTypePredicate(RegistryEntryList.of(type.getRegistryEntry()));
 	}
 
 	public static EntityTypePredicate create(TagKey<EntityType<?>> tag) {
-		return new EntityTypePredicate.Tagged(tag);
+		return new EntityTypePredicate(Registries.ENTITY_TYPE.getOrCreateEntryList(tag));
 	}
 
-	static class Single extends EntityTypePredicate {
-		private final EntityType<?> type;
-
-		public Single(EntityType<?> type) {
-			this.type = type;
-		}
-
-		@Override
-		public boolean matches(EntityType<?> type) {
-			return this.type == type;
-		}
-
-		@Override
-		public JsonElement toJson() {
-			return new JsonPrimitive(Registries.ENTITY_TYPE.getId(this.type).toString());
-		}
-	}
-
-	static class Tagged extends EntityTypePredicate {
-		private final TagKey<EntityType<?>> tag;
-
-		public Tagged(TagKey<EntityType<?>> tag) {
-			this.tag = tag;
-		}
-
-		@Override
-		public boolean matches(EntityType<?> type) {
-			return type.isIn(this.tag);
-		}
-
-		@Override
-		public JsonElement toJson() {
-			return new JsonPrimitive("#" + this.tag.id());
-		}
+	public boolean matches(EntityType<?> type) {
+		return type.isIn(this.types);
 	}
 }

@@ -44,15 +44,15 @@ public class LootTableProvider implements DataProvider {
 	public CompletableFuture<?> run(DataWriter writer) {
 		final Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
 		Map<RandomSeed.XoroshiroSeed, Identifier> map2 = new Object2ObjectOpenHashMap<>();
-		this.lootTypeGenerators.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().get()).accept((identifierx, builder) -> {
-				Identifier identifier2 = (Identifier)map2.put(RandomSequence.createSeed(identifierx), identifierx);
-				if (identifier2 != null) {
-					Util.error("Loot table random sequence seed collision on " + identifier2 + " and " + identifierx);
+		this.lootTypeGenerators.forEach(generator -> ((LootTableGenerator)generator.provider().get()).accept((id, builder) -> {
+				Identifier identifierx = (Identifier)map2.put(RandomSequence.createSeed(id), id);
+				if (identifierx != null) {
+					Util.error("Loot table random sequence seed collision on " + identifierx + " and " + id);
 				}
 
-				builder.randomSequenceId(identifierx);
-				if (map.put(identifierx, builder.type(lootTypeGenerator.paramSet).build()) != null) {
-					throw new IllegalStateException("Duplicate loot table " + identifierx);
+				builder.randomSequenceId(id);
+				if (map.put(id, builder.type(generator.paramSet).build()) != null) {
+					throw new IllegalStateException("Duplicate loot table " + id);
 				}
 			}));
 		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, new LootDataLookup() {
@@ -79,7 +79,7 @@ public class LootTableProvider implements DataProvider {
 				Identifier identifierx = (Identifier)entry.getKey();
 				LootTable lootTable = (LootTable)entry.getValue();
 				Path path = this.pathResolver.resolveJson(identifierx);
-				return DataProvider.writeToPath(writer, LootDataType.LOOT_TABLES.getGson().toJsonTree(lootTable), path);
+				return DataProvider.writeCodecToPath(writer, LootTable.CODEC, lootTable, path);
 			}).toArray(CompletableFuture[]::new));
 		}
 	}

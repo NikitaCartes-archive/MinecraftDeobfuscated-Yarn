@@ -2,11 +2,8 @@ package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -17,17 +14,15 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
 
-public class EntityScoresLootCondition implements LootCondition {
-	final Map<String, BoundedIntUnaryOperator> scores;
-	final LootContext.EntityTarget target;
-
-	EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget target) {
-		this.scores = ImmutableMap.copyOf(scores);
-		this.target = target;
-	}
+public record EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget target) implements LootCondition {
+	public static final Codec<EntityScoresLootCondition> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.unboundedMap(Codec.STRING, BoundedIntUnaryOperator.CODEC).fieldOf("scores").forGetter(EntityScoresLootCondition::scores),
+					LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(EntityScoresLootCondition::target)
+				)
+				.apply(instance, EntityScoresLootCondition::new)
+	);
 
 	@Override
 	public LootConditionType getType() {
@@ -77,7 +72,7 @@ public class EntityScoresLootCondition implements LootCondition {
 	}
 
 	public static class Builder implements LootCondition.Builder {
-		private final Map<String, BoundedIntUnaryOperator> scores = Maps.<String, BoundedIntUnaryOperator>newHashMap();
+		private final ImmutableMap.Builder<String, BoundedIntUnaryOperator> scores = ImmutableMap.builder();
 		private final LootContext.EntityTarget target;
 
 		public Builder(LootContext.EntityTarget target) {
@@ -91,34 +86,7 @@ public class EntityScoresLootCondition implements LootCondition {
 
 		@Override
 		public LootCondition build() {
-			return new EntityScoresLootCondition(this.scores, this.target);
-		}
-	}
-
-	public static class Serializer implements JsonSerializer<EntityScoresLootCondition> {
-		public void toJson(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
-			JsonObject jsonObject2 = new JsonObject();
-
-			for (Entry<String, BoundedIntUnaryOperator> entry : entityScoresLootCondition.scores.entrySet()) {
-				jsonObject2.add((String)entry.getKey(), jsonSerializationContext.serialize(entry.getValue()));
-			}
-
-			jsonObject.add("scores", jsonObject2);
-			jsonObject.add("entity", jsonSerializationContext.serialize(entityScoresLootCondition.target));
-		}
-
-		public EntityScoresLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			Set<Entry<String, JsonElement>> set = JsonHelper.getObject(jsonObject, "scores").entrySet();
-			Map<String, BoundedIntUnaryOperator> map = Maps.<String, BoundedIntUnaryOperator>newLinkedHashMap();
-
-			for (Entry<String, JsonElement> entry : set) {
-				map.put(
-					(String)entry.getKey(),
-					(BoundedIntUnaryOperator)JsonHelper.deserialize((JsonElement)entry.getValue(), "score", jsonDeserializationContext, BoundedIntUnaryOperator.class)
-				);
-			}
-
-			return new EntityScoresLootCondition(map, JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class));
+			return new EntityScoresLootCondition(this.scores.build(), this.target);
 		}
 	}
 }

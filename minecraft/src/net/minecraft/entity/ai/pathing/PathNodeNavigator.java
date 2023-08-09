@@ -111,7 +111,7 @@ public class PathNodeNavigator {
 				.map(targetPathNodex -> this.createPath(targetPathNodex.getNearestNode(), (BlockPos)positions.get(targetPathNodex), false))
 				.min(Comparator.comparingDouble(Path::getManhattanDistanceFromTarget).thenComparingInt(Path::getLength));
 		profiler.pop();
-		return !optional.isPresent() ? null : (Path)optional.get();
+		return optional.isEmpty() ? null : (Path)optional.get();
 	}
 
 	protected float getDistance(PathNode a, PathNode b) {

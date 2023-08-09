@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -70,10 +71,10 @@ import org.slf4j.Logger;
 public class RealmsMainScreen extends RealmsScreen {
 	static final Identifier INFO_ICON_TEXTURE = new Identifier("icon/info");
 	static final Identifier NEW_REALM_ICON_TEXTURE = new Identifier("icon/new_realm");
-	private static final Identifier EXPIRED_STATUS_TEXTURE = new Identifier("realm_status/expired");
-	private static final Identifier EXPIRES_SOON_STATUS_TEXTURE = new Identifier("realm_status/expires_soon");
-	private static final Identifier OPEN_STATUS_TEXTURE = new Identifier("realm_status/open");
-	private static final Identifier CLOSED_STATUS_TEXTURE = new Identifier("realm_status/closed");
+	static final Identifier EXPIRED_STATUS_TEXTURE = new Identifier("realm_status/expired");
+	static final Identifier EXPIRES_SOON_STATUS_TEXTURE = new Identifier("realm_status/expires_soon");
+	static final Identifier OPEN_STATUS_TEXTURE = new Identifier("realm_status/open");
+	static final Identifier CLOSED_STATUS_TEXTURE = new Identifier("realm_status/closed");
 	private static final Identifier INVITE_ICON_TEXTURE = new Identifier("icon/invite");
 	private static final Identifier NEWS_ICON_TEXTURE = new Identifier("icon/news");
 	static final Logger LOGGER = LogUtils.getLogger();
@@ -89,11 +90,11 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static final Text PLAY_TEXT = Text.translatable("mco.selectServer.play");
 	private static final Text LEAVE_TEXT = Text.translatable("mco.selectServer.leave");
 	private static final Text CONFIGURE_TEXT = Text.translatable("mco.selectServer.configure");
-	private static final Text EXPIRED_TEXT = Text.translatable("mco.selectServer.expired");
-	private static final Text EXPIRES_SOON_TEXT = Text.translatable("mco.selectServer.expires.soon");
-	private static final Text EXPIRES_IN_A_DAY_TEXT = Text.translatable("mco.selectServer.expires.day");
-	private static final Text OPEN_TEXT = Text.translatable("mco.selectServer.open");
-	private static final Text CLOSED_TEXT = Text.translatable("mco.selectServer.closed");
+	static final Text EXPIRED_TEXT = Text.translatable("mco.selectServer.expired");
+	static final Text EXPIRES_SOON_TEXT = Text.translatable("mco.selectServer.expires.soon");
+	static final Text EXPIRES_IN_A_DAY_TEXT = Text.translatable("mco.selectServer.expires.day");
+	static final Text OPEN_TEXT = Text.translatable("mco.selectServer.open");
+	static final Text CLOSED_TEXT = Text.translatable("mco.selectServer.closed");
 	static final Text UNINITIALIZED_BUTTON_NARRATION = Text.translatable("gui.narrate.button", UNINITIALIZED_TEXT);
 	private static final Text NO_REALMS_TEXT = Text.translatable("mco.selectServer.noRealms");
 	private static final Tooltip NO_PENDING_TOOLTIP = Tooltip.of(Text.translatable("mco.invites.nopending"));
@@ -569,40 +570,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		return this.isSelfOwnedServer(serverData) && !serverData.expired;
 	}
 
-	void drawExpired(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawGuiTexture(EXPIRED_STATUS_TEXTURE, x, y, 10, 28);
-		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < this.height - 40 && mouseY > 32) {
-			this.setTooltip(EXPIRED_TEXT);
-		}
-	}
-
-	void drawExpiring(DrawContext context, int x, int y, int mouseX, int mouseY, int remainingDays) {
-		context.drawGuiTexture(EXPIRES_SOON_STATUS_TEXTURE, x, y, 10, 28);
-		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < this.height - 40 && mouseY > 32) {
-			if (remainingDays <= 0) {
-				this.setTooltip(EXPIRES_SOON_TEXT);
-			} else if (remainingDays == 1) {
-				this.setTooltip(EXPIRES_IN_A_DAY_TEXT);
-			} else {
-				this.setTooltip(Text.translatable("mco.selectServer.expires.days", remainingDays));
-			}
-		}
-	}
-
-	void drawOpen(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawGuiTexture(OPEN_STATUS_TEXTURE, x, y, 10, 28);
-		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < this.height - 40 && mouseY > 32) {
-			this.setTooltip(OPEN_TEXT);
-		}
-	}
-
-	void drawClose(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawGuiTexture(CLOSED_STATUS_TEXTURE, x, y, 10, 28);
-		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < this.height - 40 && mouseY > 32) {
-			this.setTooltip(CLOSED_TEXT);
-		}
-	}
-
 	private void drawEnvironmentText(DrawContext context, String text, int color) {
 		context.getMatrices().push();
 		context.getMatrices().translate((float)(this.width / 2 - 25), 20.0F, 0.0F);
@@ -812,13 +779,26 @@ public class RealmsMainScreen extends RealmsScreen {
 		private void drawServerState(RealmsServer server, DrawContext context, int x, int y, int mouseX, int mouseY, int xOffset, int yOffset) {
 			int i = x + xOffset + 22;
 			if (server.expired) {
-				RealmsMainScreen.this.drawExpired(context, i, y + yOffset, mouseX, mouseY);
+				this.drawServerState(context, i, y + yOffset, mouseX, mouseY, RealmsMainScreen.EXPIRED_STATUS_TEXTURE, () -> RealmsMainScreen.EXPIRED_TEXT);
 			} else if (server.state == RealmsServer.State.CLOSED) {
-				RealmsMainScreen.this.drawClose(context, i, y + yOffset, mouseX, mouseY);
+				this.drawServerState(context, i, y + yOffset, mouseX, mouseY, RealmsMainScreen.CLOSED_STATUS_TEXTURE, () -> RealmsMainScreen.CLOSED_TEXT);
 			} else if (RealmsMainScreen.this.isSelfOwnedServer(server) && server.daysLeft < 7) {
-				RealmsMainScreen.this.drawExpiring(context, i, y + yOffset, mouseX, mouseY, server.daysLeft);
+				this.drawServerState(context, i, y + yOffset, mouseX, mouseY, RealmsMainScreen.EXPIRES_SOON_STATUS_TEXTURE, () -> {
+					if (server.daysLeft <= 0) {
+						return RealmsMainScreen.EXPIRES_SOON_TEXT;
+					} else {
+						return (Text)(server.daysLeft == 1 ? RealmsMainScreen.EXPIRES_IN_A_DAY_TEXT : Text.translatable("mco.selectServer.expires.days", server.daysLeft));
+					}
+				});
 			} else if (server.state == RealmsServer.State.OPEN) {
-				RealmsMainScreen.this.drawOpen(context, i, y + yOffset, mouseX, mouseY);
+				this.drawServerState(context, i, y + yOffset, mouseX, mouseY, RealmsMainScreen.OPEN_STATUS_TEXTURE, () -> RealmsMainScreen.OPEN_TEXT);
+			}
+		}
+
+		private void drawServerState(DrawContext context, int x, int y, int mouseX, int mouseY, Identifier texture, Supplier<Text> tooltipGetter) {
+			context.drawGuiTexture(texture, x, y, 10, 28);
+			if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < RealmsMainScreen.this.height - 40 && mouseY > 32) {
+				RealmsMainScreen.this.setTooltip((Text)tooltipGetter.get());
 			}
 		}
 

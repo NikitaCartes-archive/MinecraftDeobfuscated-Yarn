@@ -1,8 +1,8 @@
 package net.minecraft.loot.entry;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,14 +14,20 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
 public class TagEntry extends LeafEntry {
-	final TagKey<Item> name;
-	final boolean expand;
+	public static final Codec<TagEntry> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("name").forGetter(tagEntry -> tagEntry.name),
+					Codec.BOOL.fieldOf("expand").forGetter(tagEntry -> tagEntry.expand)
+				)
+				.<int, int, List<LootCondition>, List<LootFunction>>and(method_53290(instance))
+				.apply(instance, TagEntry::new)
+	);
+	private final TagKey<Item> name;
+	private final boolean expand;
 
-	TagEntry(TagKey<Item> name, boolean expand, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+	private TagEntry(TagKey<Item> name, boolean expand, int weight, int quality, List<LootCondition> conditions, List<LootFunction> functions) {
 		super(weight, quality, conditions, functions);
 		this.name = name;
 		this.expand = expand;
@@ -65,22 +71,5 @@ public class TagEntry extends LeafEntry {
 
 	public static LeafEntry.Builder<?> expandBuilder(TagKey<Item> name) {
 		return builder((weight, quality, conditions, functions) -> new TagEntry(name, true, weight, quality, conditions, functions));
-	}
-
-	public static class Serializer extends LeafEntry.Serializer<TagEntry> {
-		public void addEntryFields(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
-			super.addEntryFields(jsonObject, tagEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", tagEntry.name.id().toString());
-			jsonObject.addProperty("expand", tagEntry.expand);
-		}
-
-		protected TagEntry fromJson(
-			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
-		) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, identifier);
-			boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
-			return new TagEntry(tagKey, bl, i, j, lootConditions, lootFunctions);
-		}
 	}
 }

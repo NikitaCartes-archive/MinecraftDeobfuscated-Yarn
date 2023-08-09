@@ -134,8 +134,6 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 			if (player.isCreative()) {
 				stack.increment(1);
 			}
-
-			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 		}
 	}
 

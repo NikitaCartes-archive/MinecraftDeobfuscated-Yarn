@@ -1,12 +1,15 @@
 package net.minecraft.loot.entry;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.loot.condition.LootCondition;
 
 public class GroupEntry extends CombinedEntry {
-	GroupEntry(LootPoolEntry[] lootPoolEntrys, LootCondition[] lootConditions) {
-		super(lootPoolEntrys, lootConditions);
+	public static final Codec<GroupEntry> CODEC = createCodec(GroupEntry::new);
+
+	GroupEntry(List<LootPoolEntry> list, List<LootCondition> list2) {
+		super(list, list2);
 	}
 
 	@Override
@@ -15,29 +18,27 @@ public class GroupEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(EntryCombiner[] children) {
-		switch (children.length) {
-			case 0:
-				return ALWAYS_TRUE;
-			case 1:
-				return children[0];
-			case 2:
-				EntryCombiner entryCombiner = children[0];
-				EntryCombiner entryCombiner2 = children[1];
-				return (context, choiceConsumer) -> {
+	protected EntryCombiner combine(List<? extends EntryCombiner> list) {
+		return switch (list.size()) {
+			case 0 -> ALWAYS_TRUE;
+			case 1 -> (EntryCombiner)list.get(0);
+			case 2 -> {
+				EntryCombiner entryCombiner = (EntryCombiner)list.get(0);
+				EntryCombiner entryCombiner2 = (EntryCombiner)list.get(1);
+				yield (context, choiceConsumer) -> {
 					entryCombiner.expand(context, choiceConsumer);
 					entryCombiner2.expand(context, choiceConsumer);
 					return true;
 				};
-			default:
-				return (context, lootChoiceExpander) -> {
-					for (EntryCombiner entryCombinerx : children) {
-						entryCombinerx.expand(context, lootChoiceExpander);
-					}
+			}
+			default -> (context, lootChoiceExpander) -> {
+			for (EntryCombiner entryCombinerx : list) {
+				entryCombinerx.expand(context, lootChoiceExpander);
+			}
 
-					return true;
-				};
-		}
+			return true;
+		};
+		};
 	}
 
 	public static GroupEntry.Builder create(LootPoolEntry.Builder<?>... entries) {
@@ -45,7 +46,7 @@ public class GroupEntry extends CombinedEntry {
 	}
 
 	public static class Builder extends LootPoolEntry.Builder<GroupEntry.Builder> {
-		private final List<LootPoolEntry> entries = Lists.<LootPoolEntry>newArrayList();
+		private final ImmutableList.Builder<LootPoolEntry> entries = ImmutableList.builder();
 
 		public Builder(LootPoolEntry.Builder<?>... entries) {
 			for (LootPoolEntry.Builder<?> builder : entries) {
@@ -65,7 +66,7 @@ public class GroupEntry extends CombinedEntry {
 
 		@Override
 		public LootPoolEntry build() {
-			return new GroupEntry((LootPoolEntry[])this.entries.toArray(new LootPoolEntry[0]), this.getConditions());
+			return new GroupEntry(this.entries.build(), this.getConditions());
 		}
 	}
 }

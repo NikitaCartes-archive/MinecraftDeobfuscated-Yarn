@@ -1,9 +1,9 @@
 package net.minecraft.loot.entry;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.Products.P1;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.loot.LootTableReporter;
@@ -11,22 +11,26 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
-import org.apache.commons.lang3.ArrayUtils;
+import net.minecraft.util.dynamic.Codecs;
 
 public abstract class LootPoolEntry implements EntryCombiner {
-	protected final LootCondition[] conditions;
+	protected final List<LootCondition> conditions;
 	private final Predicate<LootContext> conditionPredicate;
 
-	protected LootPoolEntry(LootCondition[] conditions) {
+	protected LootPoolEntry(List<LootCondition> conditions) {
 		this.conditions = conditions;
 		this.conditionPredicate = LootConditionTypes.matchingAll(conditions);
 	}
 
+	protected static <T extends LootPoolEntry> P1<Mu<T>, List<LootCondition>> method_53287(Instance<T> instance) {
+		return instance.group(
+			Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(lootPoolEntry -> lootPoolEntry.conditions)
+		);
+	}
+
 	public void validate(LootTableReporter reporter) {
-		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].validate(reporter.makeChild(".condition[" + i + "]"));
+		for (int i = 0; i < this.conditions.size(); i++) {
+			((LootCondition)this.conditions.get(i)).validate(reporter.makeChild(".condition[" + i + "]"));
 		}
 	}
 
@@ -37,7 +41,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 	public abstract LootPoolEntryType getType();
 
 	public abstract static class Builder<T extends LootPoolEntry.Builder<T>> implements LootConditionConsumingBuilder<T> {
-		private final List<LootCondition> conditions = Lists.<LootCondition>newArrayList();
+		private final ImmutableList.Builder<LootCondition> conditions = ImmutableList.builder();
 
 		protected abstract T getThisBuilder();
 
@@ -50,8 +54,8 @@ public abstract class LootPoolEntry implements EntryCombiner {
 			return this.getThisBuilder();
 		}
 
-		protected LootCondition[] getConditions() {
-			return (LootCondition[])this.conditions.toArray(new LootCondition[0]);
+		protected List<LootCondition> getConditions() {
+			return this.conditions.build();
 		}
 
 		public AlternativeEntry.Builder alternatively(LootPoolEntry.Builder<?> builder) {
@@ -67,24 +71,5 @@ public abstract class LootPoolEntry implements EntryCombiner {
 		}
 
 		public abstract LootPoolEntry build();
-	}
-
-	public abstract static class Serializer<T extends LootPoolEntry> implements JsonSerializer<T> {
-		public final void toJson(JsonObject jsonObject, T lootPoolEntry, JsonSerializationContext jsonSerializationContext) {
-			if (!ArrayUtils.isEmpty((Object[])lootPoolEntry.conditions)) {
-				jsonObject.add("conditions", jsonSerializationContext.serialize(lootPoolEntry.conditions));
-			}
-
-			this.addEntryFields(jsonObject, lootPoolEntry, jsonSerializationContext);
-		}
-
-		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
-			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
-		}
-
-		public abstract void addEntryFields(JsonObject json, T entry, JsonSerializationContext context);
-
-		public abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions);
 	}
 }

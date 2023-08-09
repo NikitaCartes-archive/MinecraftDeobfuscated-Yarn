@@ -1,21 +1,14 @@
 package net.minecraft.loot.provider.number;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
-import net.minecraft.util.JsonSerializing;
 
-public final class ConstantLootNumberProvider implements LootNumberProvider {
-	final float value;
-
-	ConstantLootNumberProvider(float value) {
-		this.value = value;
-	}
+public record ConstantLootNumberProvider(float value) implements LootNumberProvider {
+	public static final Codec<ConstantLootNumberProvider> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(Codec.FLOAT.fieldOf("value").forGetter(ConstantLootNumberProvider::value)).apply(instance, ConstantLootNumberProvider::new)
+	);
+	public static final Codec<ConstantLootNumberProvider> field_45887 = Codec.FLOAT.xmap(ConstantLootNumberProvider::new, ConstantLootNumberProvider::value);
 
 	@Override
 	public LootNumberProviderType getType() {
@@ -41,26 +34,5 @@ public final class ConstantLootNumberProvider implements LootNumberProvider {
 
 	public int hashCode() {
 		return this.value != 0.0F ? Float.floatToIntBits(this.value) : 0;
-	}
-
-	public static class CustomSerializer implements JsonSerializing.ElementSerializer<ConstantLootNumberProvider> {
-		public JsonElement toJson(ConstantLootNumberProvider constantLootNumberProvider, JsonSerializationContext jsonSerializationContext) {
-			return new JsonPrimitive(constantLootNumberProvider.value);
-		}
-
-		public ConstantLootNumberProvider fromJson(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) {
-			return new ConstantLootNumberProvider(JsonHelper.asFloat(jsonElement, "value"));
-		}
-	}
-
-	public static class Serializer implements JsonSerializer<ConstantLootNumberProvider> {
-		public void toJson(JsonObject jsonObject, ConstantLootNumberProvider constantLootNumberProvider, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("value", constantLootNumberProvider.value);
-		}
-
-		public ConstantLootNumberProvider fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			float f = JsonHelper.getFloat(jsonObject, "value");
-			return new ConstantLootNumberProvider(f);
-		}
 	}
 }

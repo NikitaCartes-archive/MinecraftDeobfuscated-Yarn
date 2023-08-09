@@ -166,8 +166,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 							this.inventory.setStack(0, itemStack3);
 						}
 
-						for (int k = 0; k < list.size(); k++) {
-							EnchantmentLevelEntry enchantmentLevelEntry = (EnchantmentLevelEntry)list.get(k);
+						for (EnchantmentLevelEntry enchantmentLevelEntry : list) {
 							if (bl) {
 								EnchantedBookItem.addEnchantment(itemStack3, enchantmentLevelEntry);
 							} else {

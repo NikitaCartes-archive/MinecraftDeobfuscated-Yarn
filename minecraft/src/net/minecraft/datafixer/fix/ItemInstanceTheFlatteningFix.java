@@ -415,7 +415,7 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 		OpticFinder<?> opticFinder2 = type.findField("tag");
 		return this.fixTypeEverywhereTyped("ItemInstanceTheFlatteningFix", type, typed -> {
 			Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
-			if (!optional.isPresent()) {
+			if (optional.isEmpty()) {
 				return typed;
 			} else {
 				Typed<?> typed2 = typed;

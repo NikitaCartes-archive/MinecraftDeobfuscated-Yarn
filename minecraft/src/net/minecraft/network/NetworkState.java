@@ -19,9 +19,9 @@ import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.BundlePacket;
 import net.minecraft.network.packet.BundleSplitterPacket;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
-import net.minecraft.network.packet.c2s.common.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -77,10 +77,10 @@ import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
+import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
-import net.minecraft.network.packet.s2c.common.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
@@ -196,7 +196,7 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CP
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
+import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
@@ -267,7 +267,8 @@ public enum NetworkState {
 					.register(OpenWrittenBookS2CPacket.class, OpenWrittenBookS2CPacket::new)
 					.register(OpenScreenS2CPacket.class, OpenScreenS2CPacket::new)
 					.register(SignEditorOpenS2CPacket.class, SignEditorOpenS2CPacket::new)
-					.register(PlayPingS2CPacket.class, PlayPingS2CPacket::new)
+					.register(CommonPingS2CPacket.class, CommonPingS2CPacket::new)
+					.register(PingResultS2CPacket.class, PingResultS2CPacket::new)
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
 					.register(ChatMessageS2CPacket.class, ChatMessageS2CPacket::new)
@@ -361,12 +362,13 @@ public enum NetworkState {
 					.register(VehicleMoveC2SPacket.class, VehicleMoveC2SPacket::new)
 					.register(BoatPaddleStateC2SPacket.class, BoatPaddleStateC2SPacket::new)
 					.register(PickFromInventoryC2SPacket.class, PickFromInventoryC2SPacket::new)
+					.register(QueryPingC2SPacket.class, QueryPingC2SPacket::new)
 					.register(CraftRequestC2SPacket.class, CraftRequestC2SPacket::new)
 					.register(UpdatePlayerAbilitiesC2SPacket.class, UpdatePlayerAbilitiesC2SPacket::new)
 					.register(PlayerActionC2SPacket.class, PlayerActionC2SPacket::new)
 					.register(ClientCommandC2SPacket.class, ClientCommandC2SPacket::new)
 					.register(PlayerInputC2SPacket.class, PlayerInputC2SPacket::new)
-					.register(PlayPongC2SPacket.class, PlayPongC2SPacket::new)
+					.register(CommonPongC2SPacket.class, CommonPongC2SPacket::new)
 					.register(RecipeCategoryOptionsC2SPacket.class, RecipeCategoryOptionsC2SPacket::new)
 					.register(RecipeBookDataC2SPacket.class, RecipeBookDataC2SPacket::new)
 					.register(RenameItemC2SPacket.class, RenameItemC2SPacket::new)
@@ -400,7 +402,7 @@ public enum NetworkState {
 				NetworkSide.CLIENTBOUND,
 				new NetworkState.InternalPacketHandler()
 					.register(QueryResponseS2CPacket.class, QueryResponseS2CPacket::new)
-					.register(QueryPongS2CPacket.class, QueryPongS2CPacket::new)
+					.register(PingResultS2CPacket.class, PingResultS2CPacket::new)
 			)
 	),
 	LOGIN(
@@ -434,7 +436,7 @@ public enum NetworkState {
 					.register(DisconnectS2CPacket.class, DisconnectS2CPacket::new)
 					.register(ReadyS2CPacket.class, ReadyS2CPacket::new)
 					.register(KeepAliveS2CPacket.class, KeepAliveS2CPacket::new)
-					.register(PlayPingS2CPacket.class, PlayPingS2CPacket::new)
+					.register(CommonPingS2CPacket.class, CommonPingS2CPacket::new)
 					.register(DynamicRegistriesS2CPacket.class, DynamicRegistriesS2CPacket::new)
 					.register(ResourcePackSendS2CPacket.class, ResourcePackSendS2CPacket::new)
 					.register(FeaturesS2CPacket.class, FeaturesS2CPacket::new)
@@ -446,7 +448,7 @@ public enum NetworkState {
 					.register(CustomPayloadC2SPacket.class, CustomPayloadC2SPacket::new)
 					.register(ReadyC2SPacket.class, ReadyC2SPacket::new)
 					.register(KeepAliveC2SPacket.class, KeepAliveC2SPacket::new)
-					.register(PlayPongC2SPacket.class, PlayPongC2SPacket::new)
+					.register(CommonPongC2SPacket.class, CommonPongC2SPacket::new)
 					.register(ResourcePackStatusC2SPacket.class, ResourcePackStatusC2SPacket::new)
 			)
 	);

@@ -119,8 +119,8 @@ public class EntitySelectorReader {
 	public EntitySelector build() {
 		Box box;
 		if (this.dx == null && this.dy == null && this.dz == null) {
-			if (this.distance.getMax() != null) {
-				double d = (Double)this.distance.getMax();
+			if (this.distance.getMax().isPresent()) {
+				double d = (Double)this.distance.getMax().get();
 				box = new Box(-d, -d, -d, d + 1.0, d + 1.0, d + 1.0);
 			} else {
 				box = null;
@@ -182,8 +182,8 @@ public class EntitySelectorReader {
 	}
 
 	private Predicate<Entity> rotationPredicate(FloatRangeArgument angleRange, ToDoubleFunction<Entity> entityToAngle) {
-		double d = (double)MathHelper.wrapDegrees(angleRange.getMin() == null ? 0.0F : angleRange.getMin());
-		double e = (double)MathHelper.wrapDegrees(angleRange.getMax() == null ? 359.0F : angleRange.getMax());
+		double d = (double)MathHelper.wrapDegrees(angleRange.min() == null ? 0.0F : angleRange.min());
+		double e = (double)MathHelper.wrapDegrees(angleRange.max() == null ? 359.0F : angleRange.max());
 		return entity -> {
 			double f = MathHelper.wrapDegrees(entityToAngle.applyAsDouble(entity));
 			return d > e ? f >= d || f <= e : f >= d && f <= e;

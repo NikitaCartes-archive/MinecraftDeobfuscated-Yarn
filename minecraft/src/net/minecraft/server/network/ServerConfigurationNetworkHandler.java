@@ -9,6 +9,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ServerConfigurationPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
+import net.minecraft.network.packet.BrandCustomPayload;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
@@ -16,7 +17,6 @@ import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
-import net.minecraft.network.packet.s2c.custom.BrandCustomPayload;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.SerializableRegistries;
@@ -72,7 +72,7 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 		this.pollTask();
 	}
 
-	public void queueJoinWorldTask() {
+	public void endConfiguration() {
 		this.tasks.add(new JoinWorldTask());
 		this.pollTask();
 	}

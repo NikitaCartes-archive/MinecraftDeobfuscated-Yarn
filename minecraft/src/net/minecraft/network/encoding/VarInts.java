@@ -3,10 +3,10 @@ package net.minecraft.network.encoding;
 import io.netty.buffer.ByteBuf;
 
 public class VarInts {
-	private static final int field_45682 = 5;
-	private static final int field_45683 = 127;
-	private static final int field_45684 = 128;
-	private static final int field_45685 = 7;
+	private static final int MAX_BYTES = 5;
+	private static final int DATA_BITS_MASK = 127;
+	private static final int MORE_BITS_MASK = 128;
+	private static final int DATA_BITS_PER_BYTE = 7;
 
 	public static int getSizeInBytes(int i) {
 		for (int j = 1; j < 5; j++) {

@@ -132,41 +132,41 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 		}
 	}
 
-	public RegistryEntry.Reference<T> set(int i, RegistryKey<T> registryKey, T object, Lifecycle lifecycle) {
-		this.assertNotFrozen(registryKey);
-		Validate.notNull(registryKey);
-		Validate.notNull(object);
-		if (this.idToEntry.containsKey(registryKey.getValue())) {
-			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate key '" + registryKey + "' to registry")));
+	public RegistryEntry.Reference<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle) {
+		this.assertNotFrozen(key);
+		Validate.notNull(key);
+		Validate.notNull(value);
+		if (this.idToEntry.containsKey(key.getValue())) {
+			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate key '" + key + "' to registry")));
 		}
 
-		if (this.valueToEntry.containsKey(object)) {
-			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate value '" + object + "' to registry")));
+		if (this.valueToEntry.containsKey(value)) {
+			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate value '" + value + "' to registry")));
 		}
 
 		RegistryEntry.Reference<T> reference;
 		if (this.intrusiveValueToEntry != null) {
-			reference = (RegistryEntry.Reference<T>)this.intrusiveValueToEntry.remove(object);
+			reference = (RegistryEntry.Reference<T>)this.intrusiveValueToEntry.remove(value);
 			if (reference == null) {
-				throw new AssertionError("Missing intrusive holder for " + registryKey + ":" + object);
+				throw new AssertionError("Missing intrusive holder for " + key + ":" + value);
 			}
 
-			reference.setRegistryKey(registryKey);
+			reference.setRegistryKey(key);
 		} else {
-			reference = (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(registryKey, key -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), key));
+			reference = (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, keyx -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), keyx));
 		}
 
-		this.keyToEntry.put(registryKey, reference);
-		this.idToEntry.put(registryKey.getValue(), reference);
-		this.valueToEntry.put(object, reference);
-		this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), i + 1));
-		this.rawIdToEntry.set(i, reference);
-		this.entryToRawId.put(object, i);
-		if (this.nextId <= i) {
-			this.nextId = i + 1;
+		this.keyToEntry.put(key, reference);
+		this.idToEntry.put(key.getValue(), reference);
+		this.valueToEntry.put(value, reference);
+		this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), rawId + 1));
+		this.rawIdToEntry.set(rawId, reference);
+		this.entryToRawId.put(value, rawId);
+		if (this.nextId <= rawId) {
+			this.nextId = rawId + 1;
 		}
 
-		this.entryToLifecycle.put(object, lifecycle);
+		this.entryToLifecycle.put(value, lifecycle);
 		this.lifecycle = this.lifecycle.add(lifecycle);
 		this.cachedEntries = null;
 		return reference;

@@ -737,7 +737,7 @@ public class ExecuteCommand {
 			.add(LootContextParameters.ORIGIN, source.getPosition())
 			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
-		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(null);
+		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
 		lootContext.markActive(LootContext.predicate(condition));
 		return condition.test(lootContext);
 	}

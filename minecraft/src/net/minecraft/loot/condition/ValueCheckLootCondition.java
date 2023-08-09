@@ -1,25 +1,23 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.Sets;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.loot.provider.number.LootNumberProvider;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
+import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 
-public class ValueCheckLootCondition implements LootCondition {
-	final LootNumberProvider value;
-	final BoundedIntUnaryOperator range;
-
-	ValueCheckLootCondition(LootNumberProvider value, BoundedIntUnaryOperator range) {
-		this.value = value;
-		this.range = range;
-	}
+public record ValueCheckLootCondition(LootNumberProvider value, BoundedIntUnaryOperator range) implements LootCondition {
+	public static final Codec<ValueCheckLootCondition> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					LootNumberProviderTypes.CODEC.fieldOf("value").forGetter(ValueCheckLootCondition::value),
+					BoundedIntUnaryOperator.CODEC.fieldOf("range").forGetter(ValueCheckLootCondition::range)
+				)
+				.apply(instance, ValueCheckLootCondition::new)
+	);
 
 	@Override
 	public LootConditionType getType() {
@@ -37,18 +35,5 @@ public class ValueCheckLootCondition implements LootCondition {
 
 	public static LootCondition.Builder builder(LootNumberProvider value, BoundedIntUnaryOperator range) {
 		return () -> new ValueCheckLootCondition(value, range);
-	}
-
-	public static class Serializer implements JsonSerializer<ValueCheckLootCondition> {
-		public void toJson(JsonObject jsonObject, ValueCheckLootCondition valueCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.add("value", jsonSerializationContext.serialize(valueCheckLootCondition.value));
-			jsonObject.add("range", jsonSerializationContext.serialize(valueCheckLootCondition.range));
-		}
-
-		public ValueCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, LootNumberProvider.class);
-			BoundedIntUnaryOperator boundedIntUnaryOperator = JsonHelper.deserialize(jsonObject, "range", jsonDeserializationContext, BoundedIntUnaryOperator.class);
-			return new ValueCheckLootCondition(lootNumberProvider, boundedIntUnaryOperator);
-		}
 	}
 }

@@ -2,9 +2,9 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -15,14 +15,25 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.provider.number.LootNumberProvider;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.util.dynamic.Codecs;
 
 public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	public static final int field_31854 = 0;
-	final LootNumberProvider countRange;
-	final int limit;
+	public static final Codec<LootingEnchantLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<LootNumberProvider, int>and(
+					instance.group(
+						LootNumberProviderTypes.CODEC.fieldOf("count").forGetter(lootingEnchantLootFunction -> lootingEnchantLootFunction.countRange),
+						Codecs.createStrictOptionalFieldCodec(Codec.INT, "limit", 0).forGetter(lootingEnchantLootFunction -> lootingEnchantLootFunction.limit)
+					)
+				)
+				.apply(instance, LootingEnchantLootFunction::new)
+	);
+	private final LootNumberProvider countRange;
+	private final int limit;
 
-	LootingEnchantLootFunction(LootCondition[] conditions, LootNumberProvider countRange, int limit) {
+	LootingEnchantLootFunction(List<LootCondition> conditions, LootNumberProvider countRange, int limit) {
 		super(conditions);
 		this.countRange = countRange;
 		this.limit = limit;
@@ -38,7 +49,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 		return Sets.<LootContextParameter<?>>union(ImmutableSet.of(LootContextParameters.KILLER_ENTITY), this.countRange.getRequiredParameters());
 	}
 
-	boolean hasLimit() {
+	private boolean hasLimit() {
 		return this.limit > 0;
 	}
 
@@ -85,21 +96,6 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 		@Override
 		public LootFunction build() {
 			return new LootingEnchantLootFunction(this.getConditions(), this.countRange, this.limit);
-		}
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<LootingEnchantLootFunction> {
-		public void toJson(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
-			jsonObject.add("count", jsonSerializationContext.serialize(lootingEnchantLootFunction.countRange));
-			if (lootingEnchantLootFunction.hasLimit()) {
-				jsonObject.add("limit", jsonSerializationContext.serialize(lootingEnchantLootFunction.limit));
-			}
-		}
-
-		public LootingEnchantLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			int i = JsonHelper.getInt(jsonObject, "limit", 0);
-			return new LootingEnchantLootFunction(lootConditions, JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, LootNumberProvider.class), i);
 		}
 	}
 }

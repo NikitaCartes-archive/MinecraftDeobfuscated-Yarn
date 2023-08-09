@@ -30,13 +30,13 @@ public class RegistryCodecs {
 
 	public static <T> Codec<Registry<T>> createRegistryCodec(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> elementCodec) {
 		return managerEntry(registryRef, elementCodec.fieldOf("element")).codec().listOf().xmap(entries -> {
-			MutableRegistry<T> mutableRegistry = new SimpleRegistry<>(registryRef, lifecycle);
+			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryRef, lifecycle);
 
 			for (RegistryCodecs.RegistryManagerEntry<T> registryManagerEntry : entries) {
-				mutableRegistry.set(registryManagerEntry.rawId(), registryManagerEntry.key(), registryManagerEntry.value(), lifecycle);
+				simpleRegistry.set(registryManagerEntry.rawId(), registryManagerEntry.key(), registryManagerEntry.value(), lifecycle);
 			}
 
-			return mutableRegistry;
+			return simpleRegistry;
 		}, registry -> {
 			Builder<RegistryCodecs.RegistryManagerEntry<T>> builder = ImmutableList.builder();
 

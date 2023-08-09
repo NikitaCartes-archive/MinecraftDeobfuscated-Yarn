@@ -14,6 +14,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -23,11 +24,13 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TextFieldWidget extends ClickableWidget implements Drawable {
+	private static final ButtonTextures TEXTURES = new ButtonTextures(new Identifier("widget/text_field"), new Identifier("widget/text_field_highlighted"));
 	public static final int field_32194 = -1;
 	public static final int field_32195 = 1;
 	public static final int field_45353 = 4;
@@ -35,9 +38,6 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	private static final int VERTICAL_CURSOR_COLOR = -3092272;
 	private static final String HORIZONTAL_CURSOR = "_";
 	public static final int DEFAULT_EDITABLE_COLOR = 14737632;
-	private static final int field_32201 = -1;
-	private static final int BORDER_COLOR = -6250336;
-	private static final int BACKGROUND_COLOR = -16777216;
 	private static final int field_45354 = 300;
 	private final TextRenderer textRenderer;
 	private String text = "";
@@ -363,9 +363,8 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.isVisible()) {
 			if (this.drawsBackground()) {
-				int i = this.isFocused() ? -1 : -6250336;
-				context.fill(this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, i);
-				context.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, -16777216);
+				Identifier identifier = TEXTURES.get(this.isNarratable(), this.isFocused());
+				context.drawGuiTexture(identifier, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 			}
 
 			int i = this.editable ? this.editableColor : this.uneditableColor;
@@ -458,7 +457,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		return this.selectionStart;
 	}
 
-	private boolean drawsBackground() {
+	public boolean drawsBackground() {
 		return this.drawsBackground;
 	}
 

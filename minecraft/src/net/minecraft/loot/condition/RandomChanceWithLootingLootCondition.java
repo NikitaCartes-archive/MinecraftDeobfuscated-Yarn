@@ -1,9 +1,8 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -11,17 +10,15 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
 
-public class RandomChanceWithLootingLootCondition implements LootCondition {
-	final float chance;
-	final float lootingMultiplier;
-
-	RandomChanceWithLootingLootCondition(float chance, float lootingMultiplier) {
-		this.chance = chance;
-		this.lootingMultiplier = lootingMultiplier;
-	}
+public record RandomChanceWithLootingLootCondition(float chance, float lootingMultiplier) implements LootCondition {
+	public static final Codec<RandomChanceWithLootingLootCondition> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.FLOAT.fieldOf("chance").forGetter(RandomChanceWithLootingLootCondition::chance),
+					Codec.FLOAT.fieldOf("looting_multiplier").forGetter(RandomChanceWithLootingLootCondition::lootingMultiplier)
+				)
+				.apply(instance, RandomChanceWithLootingLootCondition::new)
+	);
 
 	@Override
 	public LootConditionType getType() {
@@ -45,18 +42,5 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 
 	public static LootCondition.Builder builder(float chance, float lootingMultiplier) {
 		return () -> new RandomChanceWithLootingLootCondition(chance, lootingMultiplier);
-	}
-
-	public static class Serializer implements JsonSerializer<RandomChanceWithLootingLootCondition> {
-		public void toJson(
-			JsonObject jsonObject, RandomChanceWithLootingLootCondition randomChanceWithLootingLootCondition, JsonSerializationContext jsonSerializationContext
-		) {
-			jsonObject.addProperty("chance", randomChanceWithLootingLootCondition.chance);
-			jsonObject.addProperty("looting_multiplier", randomChanceWithLootingLootCondition.lootingMultiplier);
-		}
-
-		public RandomChanceWithLootingLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			return new RandomChanceWithLootingLootCondition(JsonHelper.getFloat(jsonObject, "chance"), JsonHelper.getFloat(jsonObject, "looting_multiplier"));
-		}
 	}
 }

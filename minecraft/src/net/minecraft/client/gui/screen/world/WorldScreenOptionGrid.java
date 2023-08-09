@@ -140,7 +140,7 @@ class WorldScreenOptionGrid {
 			Optional<WorldScreenOptionGrid.TooltipBoxDisplay> optional = gridBuilder.tooltipBoxDisplay;
 			CyclingButtonWidget.Builder<Boolean> builder = CyclingButtonWidget.onOffBuilder(this.getter.getAsBoolean());
 			builder.omitKeyText();
-			boolean bl = this.tooltip != null && !optional.isPresent();
+			boolean bl = this.tooltip != null && optional.isEmpty();
 			if (bl) {
 				Tooltip tooltip = Tooltip.of(this.tooltip);
 				builder.tooltip(value -> tooltip);

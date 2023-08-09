@@ -379,7 +379,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	public void attack(LivingEntity target, float pullProgress) {
+	public void shootAt(LivingEntity target, float pullProgress) {
 		this.shoot(this, 1.6F);
 	}
 

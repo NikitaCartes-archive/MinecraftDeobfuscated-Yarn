@@ -609,8 +609,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
 							return new DeathMessageS2CPacket(this.getId(), text3);
 						}
-					),
-					true
+					)
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
@@ -823,7 +822,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				.getOrEmpty(NetherPortalBlock.AXIS)
 				.orElse(Direction.Axis.X);
 			Optional<BlockLocating.Rectangle> optional2 = destWorld.getPortalForcer().createPortal(destPos, axis);
-			if (!optional2.isPresent()) {
+			if (optional2.isEmpty()) {
 				LOGGER.error("Unable to create a portal, likely target out of worldborder");
 			}
 
@@ -1318,7 +1317,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				} else {
 					return null;
 				}
-			}), true);
+			}));
 		}
 	}
 

@@ -15,6 +15,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
@@ -25,19 +26,7 @@ public class StatusEffect {
 	@Nullable
 	private String translationKey;
 	private Supplier<StatusEffectInstance.FactorCalculationData> factorCalculationDataSupplier = () -> null;
-
-	@Nullable
-	public static StatusEffect byRawId(int rawId) {
-		return Registries.STATUS_EFFECT.get(rawId);
-	}
-
-	public static int getRawId(StatusEffect type) {
-		return Registries.STATUS_EFFECT.getRawId(type);
-	}
-
-	public static int getRawIdNullable(@Nullable StatusEffect type) {
-		return Registries.STATUS_EFFECT.getRawId(type);
-	}
+	private final RegistryEntry.Reference<StatusEffect> registryEntry = Registries.STATUS_EFFECT.createEntry(this);
 
 	protected StatusEffect(StatusEffectCategory category, int color) {
 		this.category = category;
@@ -125,6 +114,11 @@ public class StatusEffect {
 
 	public boolean isBeneficial() {
 		return this.category == StatusEffectCategory.BENEFICIAL;
+	}
+
+	@Deprecated
+	public RegistryEntry.Reference<StatusEffect> getRegistryEntry() {
+		return this.registryEntry;
 	}
 
 	class EffectAttributeModifierCreator implements AttributeModifierCreator {

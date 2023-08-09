@@ -1,12 +1,12 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -17,19 +17,35 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
-import net.minecraft.state.StateManager;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
 public class CopyStateFunction extends ConditionalLootFunction {
-	final Block block;
-	final Set<Property<?>> properties;
+	public static final Codec<CopyStateFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<RegistryEntry<Block>, List<String>>and(
+					instance.group(
+						Registries.BLOCK.createEntryCodec().fieldOf("block").forGetter(copyStateFunction -> copyStateFunction.block),
+						Codec.STRING.listOf().fieldOf("properties").forGetter(copyStateFunction -> copyStateFunction.properties.stream().map(Property::getName).toList())
+					)
+				)
+				.apply(instance, CopyStateFunction::new)
+	);
+	private final RegistryEntry<Block> block;
+	private final Set<Property<?>> properties;
 
-	CopyStateFunction(LootCondition[] conditions, Block block, Set<Property<?>> properties) {
+	CopyStateFunction(List<LootCondition> conditions, RegistryEntry<Block> block, Set<Property<?>> properties) {
 		super(conditions);
 		this.block = block;
 		this.properties = properties;
+	}
+
+	private CopyStateFunction(List<LootCondition> conditions, RegistryEntry<Block> block, List<String> properties) {
+		this(
+			conditions,
+			block,
+			(Set<Property<?>>)properties.stream().map(block.value().getStateManager()::getProperty).filter(Objects::nonNull).collect(Collectors.toSet())
+		);
 	}
 
 	@Override
@@ -55,7 +71,11 @@ public class CopyStateFunction extends ConditionalLootFunction {
 				nbtCompound.put("BlockStateTag", nbtCompound2);
 			}
 
-			this.properties.stream().filter(blockState::contains).forEach(property -> nbtCompound2.putString(property.getName(), getPropertyName(blockState, property)));
+			for (Property<?> property : this.properties) {
+				if (blockState.contains(property)) {
+					nbtCompound2.putString(property.getName(), getPropertyName(blockState, property));
+				}
+			}
 		}
 
 		return stack;
@@ -71,15 +91,15 @@ public class CopyStateFunction extends ConditionalLootFunction {
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<CopyStateFunction.Builder> {
-		private final Block block;
-		private final Set<Property<?>> properties = Sets.<Property<?>>newHashSet();
+		private final RegistryEntry<Block> block;
+		private final ImmutableSet.Builder<Property<?>> properties = ImmutableSet.builder();
 
 		Builder(Block block) {
-			this.block = block;
+			this.block = block.getRegistryEntry();
 		}
 
 		public CopyStateFunction.Builder addProperty(Property<?> property) {
-			if (!this.block.getStateManager().getProperties().contains(property)) {
+			if (!this.block.value().getStateManager().getProperties().contains(property)) {
 				throw new IllegalStateException("Property " + property + " is not present on block " + this.block);
 			} else {
 				this.properties.add(property);
@@ -93,30 +113,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new CopyStateFunction(this.getConditions(), this.block, this.properties);
-		}
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<CopyStateFunction> {
-		public void toJson(JsonObject jsonObject, CopyStateFunction copyStateFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, copyStateFunction, jsonSerializationContext);
-			jsonObject.addProperty("block", Registries.BLOCK.getId(copyStateFunction.block).toString());
-			JsonArray jsonArray = new JsonArray();
-			copyStateFunction.properties.forEach(property -> jsonArray.add(property.getName()));
-			jsonObject.add("properties", jsonArray);
-		}
-
-		public CopyStateFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-			Block block = (Block)Registries.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
-			StateManager<Block, BlockState> stateManager = block.getStateManager();
-			Set<Property<?>> set = Sets.<Property<?>>newHashSet();
-			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "properties", null);
-			if (jsonArray != null) {
-				jsonArray.forEach(property -> set.add(stateManager.getProperty(JsonHelper.asString(property, "property"))));
-			}
-
-			return new CopyStateFunction(lootConditions, block, set);
+			return new CopyStateFunction(this.getConditions(), this.block, this.properties.build());
 		}
 	}
 }

@@ -2,8 +2,15 @@ package net.minecraft.predicate.entity;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -20,133 +27,132 @@ import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
-public class EntityPredicate {
-	public static final EntityPredicate ANY = new EntityPredicate(
-		EntityTypePredicate.ANY,
-		DistancePredicate.ANY,
-		LocationPredicate.ANY,
-		LocationPredicate.ANY,
-		EntityEffectPredicate.EMPTY,
-		NbtPredicate.ANY,
-		EntityFlagsPredicate.ANY,
-		EntityEquipmentPredicate.ANY,
-		TypeSpecificPredicate.ANY,
-		null
+public record EntityPredicate(
+	Optional<EntityTypePredicate> type,
+	Optional<DistancePredicate> distance,
+	Optional<LocationPredicate> location,
+	Optional<LocationPredicate> steppingOn,
+	Optional<EntityEffectPredicate> effects,
+	Optional<NbtPredicate> nbt,
+	Optional<EntityFlagsPredicate> flags,
+	Optional<EntityEquipmentPredicate> equipment,
+	Optional<TypeSpecificPredicate> typeSpecific,
+	Optional<EntityPredicate> vehicle,
+	Optional<EntityPredicate> passenger,
+	Optional<EntityPredicate> targetedEntity,
+	Optional<String> team
+) {
+	public static final Codec<EntityPredicate> CODEC = Codecs.createRecursive(
+		codec -> RecordCodecBuilder.create(
+				instance -> instance.group(
+							Codecs.createStrictOptionalFieldCodec(EntityTypePredicate.CODEC, "type").forGetter(EntityPredicate::type),
+							Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(EntityPredicate::distance),
+							Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "location").forGetter(EntityPredicate::location),
+							Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "stepping_on").forGetter(EntityPredicate::steppingOn),
+							Codecs.createStrictOptionalFieldCodec(EntityEffectPredicate.CODEC, "effects").forGetter(EntityPredicate::effects),
+							Codecs.createStrictOptionalFieldCodec(NbtPredicate.CODEC, "nbt").forGetter(EntityPredicate::nbt),
+							Codecs.createStrictOptionalFieldCodec(EntityFlagsPredicate.CODEC, "flags").forGetter(EntityPredicate::flags),
+							Codecs.createStrictOptionalFieldCodec(EntityEquipmentPredicate.CODEC, "equipment").forGetter(EntityPredicate::equipment),
+							Codecs.createStrictOptionalFieldCodec(TypeSpecificPredicate.CODEC, "type_specific").forGetter(EntityPredicate::typeSpecific),
+							Codecs.createStrictOptionalFieldCodec(codec, "vehicle").forGetter(EntityPredicate::vehicle),
+							Codecs.createStrictOptionalFieldCodec(codec, "passenger").forGetter(EntityPredicate::passenger),
+							Codecs.createStrictOptionalFieldCodec(codec, "targeted_entity").forGetter(EntityPredicate::targetedEntity),
+							Codecs.createStrictOptionalFieldCodec(Codec.STRING, "team").forGetter(EntityPredicate::team)
+						)
+						.apply(instance, EntityPredicate::new)
+			)
 	);
-	private final EntityTypePredicate type;
-	private final DistancePredicate distance;
-	private final LocationPredicate location;
-	private final LocationPredicate steppingOn;
-	private final EntityEffectPredicate effects;
-	private final NbtPredicate nbt;
-	private final EntityFlagsPredicate flags;
-	private final EntityEquipmentPredicate equipment;
-	private final TypeSpecificPredicate typeSpecific;
-	private final EntityPredicate vehicle;
-	private final EntityPredicate passenger;
-	private final EntityPredicate targetedEntity;
-	@Nullable
-	private final String team;
 
-	private EntityPredicate(
-		EntityTypePredicate type,
-		DistancePredicate distance,
-		LocationPredicate location,
-		LocationPredicate steppingOn,
-		EntityEffectPredicate effects,
-		NbtPredicate nbt,
-		EntityFlagsPredicate flags,
-		EntityEquipmentPredicate equipment,
-		TypeSpecificPredicate typeSpecific,
-		@Nullable String team
+	public static Optional<EntityPredicate> create(
+		Optional<EntityTypePredicate> type,
+		Optional<DistancePredicate> distance,
+		Optional<LocationPredicate> location,
+		Optional<LocationPredicate> steppingOn,
+		Optional<EntityEffectPredicate> effects,
+		Optional<NbtPredicate> nbt,
+		Optional<EntityFlagsPredicate> flags,
+		Optional<EntityEquipmentPredicate> equipment,
+		Optional<TypeSpecificPredicate> typeSpecific,
+		Optional<EntityPredicate> vehicle,
+		Optional<EntityPredicate> passenger,
+		Optional<EntityPredicate> targetedEntity,
+		Optional<String> team
 	) {
-		this.type = type;
-		this.distance = distance;
-		this.location = location;
-		this.steppingOn = steppingOn;
-		this.effects = effects;
-		this.nbt = nbt;
-		this.flags = flags;
-		this.equipment = equipment;
-		this.typeSpecific = typeSpecific;
-		this.passenger = this;
-		this.vehicle = this;
-		this.targetedEntity = this;
-		this.team = team;
+		return type.isEmpty()
+				&& distance.isEmpty()
+				&& location.isEmpty()
+				&& steppingOn.isEmpty()
+				&& effects.isEmpty()
+				&& nbt.isEmpty()
+				&& flags.isEmpty()
+				&& equipment.isEmpty()
+				&& typeSpecific.isEmpty()
+				&& vehicle.isEmpty()
+				&& passenger.isEmpty()
+				&& targetedEntity.isEmpty()
+				&& team.isEmpty()
+			? Optional.empty()
+			: Optional.of(
+				new EntityPredicate(type, distance, location, steppingOn, effects, nbt, flags, equipment, typeSpecific, vehicle, passenger, targetedEntity, team)
+			);
 	}
 
-	EntityPredicate(
-		EntityTypePredicate type,
-		DistancePredicate distance,
-		LocationPredicate location,
-		LocationPredicate steppingOn,
-		EntityEffectPredicate effects,
-		NbtPredicate nbt,
-		EntityFlagsPredicate flags,
-		EntityEquipmentPredicate equipment,
-		TypeSpecificPredicate typeSpecific,
-		EntityPredicate vehicle,
-		EntityPredicate passenger,
-		EntityPredicate targetedEntity,
-		@Nullable String team
+	public static Optional<LootContextPredicate> contextPredicateFromJson(
+		JsonObject json, String key, AdvancementEntityPredicateDeserializer predicateDeserializer
 	) {
-		this.type = type;
-		this.distance = distance;
-		this.location = location;
-		this.steppingOn = steppingOn;
-		this.effects = effects;
-		this.nbt = nbt;
-		this.flags = flags;
-		this.equipment = equipment;
-		this.typeSpecific = typeSpecific;
-		this.vehicle = vehicle;
-		this.passenger = passenger;
-		this.targetedEntity = targetedEntity;
-		this.team = team;
-	}
-
-	public static LootContextPredicate contextPredicateFromJson(JsonObject json, String key, AdvancementEntityPredicateDeserializer predicateDeserializer) {
 		JsonElement jsonElement = json.get(key);
 		return contextPredicateFromJsonElement(key, predicateDeserializer, jsonElement);
 	}
 
-	public static LootContextPredicate[] contextPredicateArrayFromJson(JsonObject json, String key, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+	public static List<LootContextPredicate> contextPredicateArrayFromJson(
+		JsonObject json, String key, AdvancementEntityPredicateDeserializer predicateDeserializer
+	) {
 		JsonElement jsonElement = json.get(key);
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			JsonArray jsonArray = JsonHelper.asArray(jsonElement, key);
-			LootContextPredicate[] lootContextPredicates = new LootContextPredicate[jsonArray.size()];
+			List<LootContextPredicate> list = new ArrayList(jsonArray.size());
 
 			for (int i = 0; i < jsonArray.size(); i++) {
-				lootContextPredicates[i] = contextPredicateFromJsonElement(key + "[" + i + "]", predicateDeserializer, jsonArray.get(i));
+				contextPredicateFromJsonElement(key + "[" + i + "]", predicateDeserializer, jsonArray.get(i)).ifPresent(list::add);
 			}
 
-			return lootContextPredicates;
+			return List.copyOf(list);
 		} else {
-			return new LootContextPredicate[0];
+			return List.of();
 		}
 	}
 
-	private static LootContextPredicate contextPredicateFromJsonElement(
+	private static Optional<LootContextPredicate> contextPredicateFromJsonElement(
 		String key, AdvancementEntityPredicateDeserializer predicateDeserializer, @Nullable JsonElement json
 	) {
-		LootContextPredicate lootContextPredicate = LootContextPredicate.fromJson(key, predicateDeserializer, json, LootContextTypes.ADVANCEMENT_ENTITY);
-		if (lootContextPredicate != null) {
-			return lootContextPredicate;
+		Optional<Optional<LootContextPredicate>> optional = LootContextPredicate.fromJson(key, predicateDeserializer, json, LootContextTypes.ADVANCEMENT_ENTITY);
+		if (optional.isPresent()) {
+			return (Optional<LootContextPredicate>)optional.get();
 		} else {
-			EntityPredicate entityPredicate = fromJson(json);
-			return asLootContextPredicate(entityPredicate);
+			Optional<EntityPredicate> optional2 = fromJson(json);
+			return contextPredicateFromEntityPredicate(optional2);
 		}
+	}
+
+	public static Optional<LootContextPredicate> contextPredicateFromEntityPredicate(EntityPredicate.Builder builder) {
+		return contextPredicateFromEntityPredicate(builder.build());
+	}
+
+	public static Optional<LootContextPredicate> contextPredicateFromEntityPredicate(Optional<EntityPredicate> entityPredicate) {
+		return entityPredicate.map(EntityPredicate::asLootContextPredicate);
+	}
+
+	public static List<LootContextPredicate> contextPredicateFromEntityPredicates(EntityPredicate.Builder... builders) {
+		return Stream.of(builders).flatMap(builder -> contextPredicateFromEntityPredicate(builder).stream()).toList();
 	}
 
 	public static LootContextPredicate asLootContextPredicate(EntityPredicate predicate) {
-		if (predicate == ANY) {
-			return LootContextPredicate.EMPTY;
-		} else {
-			LootCondition lootCondition = EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, predicate).build();
-			return new LootContextPredicate(new LootCondition[]{lootCondition});
-		}
+		LootCondition lootCondition = EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, predicate).build();
+		return new LootContextPredicate(List.of(lootCondition));
 	}
 
 	public boolean test(ServerPlayerEntity player, @Nullable Entity entity) {
@@ -154,51 +160,51 @@ public class EntityPredicate {
 	}
 
 	public boolean test(ServerWorld world, @Nullable Vec3d pos, @Nullable Entity entity) {
-		if (this == ANY) {
-			return true;
-		} else if (entity == null) {
+		if (entity == null) {
 			return false;
-		} else if (!this.type.matches(entity.getType())) {
+		} else if (this.type.isPresent() && !((EntityTypePredicate)this.type.get()).matches(entity.getType())) {
 			return false;
 		} else {
 			if (pos == null) {
-				if (this.distance != DistancePredicate.ANY) {
+				if (this.distance.isPresent()) {
 					return false;
 				}
-			} else if (!this.distance.test(pos.x, pos.y, pos.z, entity.getX(), entity.getY(), entity.getZ())) {
+			} else if (this.distance.isPresent() && !((DistancePredicate)this.distance.get()).test(pos.x, pos.y, pos.z, entity.getX(), entity.getY(), entity.getZ())) {
 				return false;
 			}
 
-			if (!this.location.test(world, entity.getX(), entity.getY(), entity.getZ())) {
+			if (this.location.isPresent() && !((LocationPredicate)this.location.get()).test(world, entity.getX(), entity.getY(), entity.getZ())) {
 				return false;
 			} else {
-				if (this.steppingOn != LocationPredicate.ANY) {
+				if (this.steppingOn.isPresent()) {
 					Vec3d vec3d = Vec3d.ofCenter(entity.getSteppingPos());
-					if (!this.steppingOn.test(world, vec3d.getX(), vec3d.getY(), vec3d.getZ())) {
+					if (!((LocationPredicate)this.steppingOn.get()).test(world, vec3d.getX(), vec3d.getY(), vec3d.getZ())) {
 						return false;
 					}
 				}
 
-				if (!this.effects.test(entity)) {
+				if (this.effects.isPresent() && !((EntityEffectPredicate)this.effects.get()).test(entity)) {
 					return false;
-				} else if (!this.nbt.test(entity)) {
+				} else if (this.nbt.isPresent() && !((NbtPredicate)this.nbt.get()).test(entity)) {
 					return false;
-				} else if (!this.flags.test(entity)) {
+				} else if (this.flags.isPresent() && !((EntityFlagsPredicate)this.flags.get()).test(entity)) {
 					return false;
-				} else if (!this.equipment.test(entity)) {
+				} else if (this.equipment.isPresent() && !((EntityEquipmentPredicate)this.equipment.get()).test(entity)) {
 					return false;
-				} else if (!this.typeSpecific.test(entity, world, pos)) {
+				} else if (this.typeSpecific.isPresent() && !((TypeSpecificPredicate)this.typeSpecific.get()).test(entity, world, pos)) {
 					return false;
-				} else if (!this.vehicle.test(world, pos, entity.getVehicle())) {
+				} else if (this.vehicle.isPresent() && !((EntityPredicate)this.vehicle.get()).test(world, pos, entity.getVehicle())) {
 					return false;
-				} else if (this.passenger != ANY && entity.getPassengerList().stream().noneMatch(entityx -> this.passenger.test(world, pos, entityx))) {
+				} else if (this.passenger.isPresent()
+					&& entity.getPassengerList().stream().noneMatch(entityx -> ((EntityPredicate)this.passenger.get()).test(world, pos, entityx))) {
 					return false;
-				} else if (!this.targetedEntity.test(world, pos, entity instanceof MobEntity ? ((MobEntity)entity).getTarget() : null)) {
+				} else if (this.targetedEntity.isPresent()
+					&& !((EntityPredicate)this.targetedEntity.get()).test(world, pos, entity instanceof MobEntity ? ((MobEntity)entity).getTarget() : null)) {
 					return false;
 				} else {
-					if (this.team != null) {
+					if (this.team.isPresent()) {
 						AbstractTeam abstractTeam = entity.getScoreboardTeam();
-						if (abstractTeam == null || !this.team.equals(abstractTeam.getName())) {
+						if (abstractTeam == null || !((String)this.team.get()).equals(abstractTeam.getName())) {
 							return false;
 						}
 					}
@@ -209,62 +215,12 @@ public class EntityPredicate {
 		}
 	}
 
-	public static EntityPredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "entity");
-			EntityTypePredicate entityTypePredicate = EntityTypePredicate.fromJson(jsonObject.get("type"));
-			DistancePredicate distancePredicate = DistancePredicate.fromJson(jsonObject.get("distance"));
-			LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
-			LocationPredicate locationPredicate2 = LocationPredicate.fromJson(jsonObject.get("stepping_on"));
-			EntityEffectPredicate entityEffectPredicate = EntityEffectPredicate.fromJson(jsonObject.get("effects"));
-			NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
-			EntityFlagsPredicate entityFlagsPredicate = EntityFlagsPredicate.fromJson(jsonObject.get("flags"));
-			EntityEquipmentPredicate entityEquipmentPredicate = EntityEquipmentPredicate.fromJson(jsonObject.get("equipment"));
-			TypeSpecificPredicate typeSpecificPredicate = TypeSpecificPredicate.fromJson(jsonObject.get("type_specific"));
-			EntityPredicate entityPredicate = fromJson(jsonObject.get("vehicle"));
-			EntityPredicate entityPredicate2 = fromJson(jsonObject.get("passenger"));
-			EntityPredicate entityPredicate3 = fromJson(jsonObject.get("targeted_entity"));
-			String string = JsonHelper.getString(jsonObject, "team", null);
-			return new EntityPredicate.Builder()
-				.type(entityTypePredicate)
-				.distance(distancePredicate)
-				.location(locationPredicate)
-				.steppingOn(locationPredicate2)
-				.effects(entityEffectPredicate)
-				.nbt(nbtPredicate)
-				.flags(entityFlagsPredicate)
-				.equipment(entityEquipmentPredicate)
-				.typeSpecific(typeSpecificPredicate)
-				.team(string)
-				.vehicle(entityPredicate)
-				.passenger(entityPredicate2)
-				.targetedEntity(entityPredicate3)
-				.build();
-		} else {
-			return ANY;
-		}
+	public static Optional<EntityPredicate> fromJson(@Nullable JsonElement json) {
+		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
 	}
 
 	public JsonElement toJson() {
-		if (this == ANY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("type", this.type.toJson());
-			jsonObject.add("distance", this.distance.toJson());
-			jsonObject.add("location", this.location.toJson());
-			jsonObject.add("stepping_on", this.steppingOn.toJson());
-			jsonObject.add("effects", this.effects.toJson());
-			jsonObject.add("nbt", this.nbt.toJson());
-			jsonObject.add("flags", this.flags.toJson());
-			jsonObject.add("equipment", this.equipment.toJson());
-			jsonObject.add("type_specific", this.typeSpecific.toJson());
-			jsonObject.add("vehicle", this.vehicle.toJson());
-			jsonObject.add("passenger", this.passenger.toJson());
-			jsonObject.add("targeted_entity", this.targetedEntity.toJson());
-			jsonObject.addProperty("team", this.team);
-			return jsonObject;
-		}
+		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 
 	public static LootContext createAdvancementEntityLootContext(ServerPlayerEntity player, Entity target) {
@@ -272,106 +228,110 @@ public class EntityPredicate {
 			.add(LootContextParameters.THIS_ENTITY, target)
 			.add(LootContextParameters.ORIGIN, player.getPos())
 			.build(LootContextTypes.ADVANCEMENT_ENTITY);
-		return new LootContext.Builder(lootContextParameterSet).build(null);
+		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
 	}
 
 	public static class Builder {
-		private EntityTypePredicate type = EntityTypePredicate.ANY;
-		private DistancePredicate distance = DistancePredicate.ANY;
-		private LocationPredicate location = LocationPredicate.ANY;
-		private LocationPredicate steppingOn = LocationPredicate.ANY;
-		private EntityEffectPredicate effects = EntityEffectPredicate.EMPTY;
-		private NbtPredicate nbt = NbtPredicate.ANY;
-		private EntityFlagsPredicate flags = EntityFlagsPredicate.ANY;
-		private EntityEquipmentPredicate equipment = EntityEquipmentPredicate.ANY;
-		private TypeSpecificPredicate typeSpecific = TypeSpecificPredicate.ANY;
-		private EntityPredicate vehicle = EntityPredicate.ANY;
-		private EntityPredicate passenger = EntityPredicate.ANY;
-		private EntityPredicate targetedEntity = EntityPredicate.ANY;
-		@Nullable
-		private String team;
+		private Optional<EntityTypePredicate> type = Optional.empty();
+		private Optional<DistancePredicate> distance = Optional.empty();
+		private Optional<LocationPredicate> location = Optional.empty();
+		private Optional<LocationPredicate> steppingOn = Optional.empty();
+		private Optional<EntityEffectPredicate> effects = Optional.empty();
+		private Optional<NbtPredicate> nbt = Optional.empty();
+		private Optional<EntityFlagsPredicate> flags = Optional.empty();
+		private Optional<EntityEquipmentPredicate> equipment = Optional.empty();
+		private Optional<TypeSpecificPredicate> typeSpecific = Optional.empty();
+		private Optional<EntityPredicate> vehicle = Optional.empty();
+		private Optional<EntityPredicate> passenger = Optional.empty();
+		private Optional<EntityPredicate> targetedEntity = Optional.empty();
+		private Optional<String> team = Optional.empty();
 
 		public static EntityPredicate.Builder create() {
 			return new EntityPredicate.Builder();
 		}
 
 		public EntityPredicate.Builder type(EntityType<?> type) {
-			this.type = EntityTypePredicate.create(type);
+			this.type = Optional.of(EntityTypePredicate.create(type));
 			return this;
 		}
 
 		public EntityPredicate.Builder type(TagKey<EntityType<?>> tag) {
-			this.type = EntityTypePredicate.create(tag);
+			this.type = Optional.of(EntityTypePredicate.create(tag));
 			return this;
 		}
 
 		public EntityPredicate.Builder type(EntityTypePredicate type) {
-			this.type = type;
+			this.type = Optional.of(type);
 			return this;
 		}
 
 		public EntityPredicate.Builder distance(DistancePredicate distance) {
-			this.distance = distance;
+			this.distance = Optional.of(distance);
 			return this;
 		}
 
-		public EntityPredicate.Builder location(LocationPredicate location) {
-			this.location = location;
+		public EntityPredicate.Builder location(LocationPredicate.Builder location) {
+			this.location = location.build();
 			return this;
 		}
 
-		public EntityPredicate.Builder steppingOn(LocationPredicate location) {
-			this.steppingOn = location;
+		public EntityPredicate.Builder steppingOn(LocationPredicate.Builder steppingOn) {
+			this.steppingOn = steppingOn.build();
 			return this;
 		}
 
-		public EntityPredicate.Builder effects(EntityEffectPredicate effects) {
-			this.effects = effects;
+		public EntityPredicate.Builder effects(EntityEffectPredicate.Builder effects) {
+			this.effects = effects.build();
 			return this;
 		}
 
 		public EntityPredicate.Builder nbt(NbtPredicate nbt) {
-			this.nbt = nbt;
+			this.nbt = Optional.of(nbt);
 			return this;
 		}
 
-		public EntityPredicate.Builder flags(EntityFlagsPredicate flags) {
-			this.flags = flags;
+		public EntityPredicate.Builder flags(EntityFlagsPredicate.Builder flags) {
+			this.flags = flags.build();
+			return this;
+		}
+
+		public EntityPredicate.Builder equipment(EntityEquipmentPredicate.Builder equipment) {
+			this.equipment = equipment.build();
 			return this;
 		}
 
 		public EntityPredicate.Builder equipment(EntityEquipmentPredicate equipment) {
-			this.equipment = equipment;
+			this.equipment = Optional.of(equipment);
 			return this;
 		}
 
 		public EntityPredicate.Builder typeSpecific(TypeSpecificPredicate typeSpecific) {
-			this.typeSpecific = typeSpecific;
+			this.typeSpecific = Optional.of(typeSpecific);
 			return this;
 		}
 
-		public EntityPredicate.Builder vehicle(EntityPredicate vehicle) {
-			this.vehicle = vehicle;
+		public EntityPredicate.Builder vehicle(EntityPredicate.Builder vehicle) {
+			this.vehicle = vehicle.build();
 			return this;
 		}
 
-		public EntityPredicate.Builder passenger(EntityPredicate passenger) {
-			this.passenger = passenger;
+		public EntityPredicate.Builder passenger(EntityPredicate.Builder passenger) {
+			this.passenger = passenger.build();
 			return this;
 		}
 
-		public EntityPredicate.Builder targetedEntity(EntityPredicate targetedEntity) {
-			this.targetedEntity = targetedEntity;
+		public EntityPredicate.Builder targetedEntity(EntityPredicate.Builder targetedEntity) {
+			this.targetedEntity = targetedEntity.build();
 			return this;
 		}
 
-		public EntityPredicate.Builder team(@Nullable String team) {
-			this.team = team;
+		public EntityPredicate.Builder team(String team) {
+			this.team = Optional.of(team);
 			return this;
 		}
 
-		public EntityPredicate build() {
-			return new EntityPredicate(
+		public Optional<EntityPredicate> build() {
+			return EntityPredicate.create(
 				this.type,
 				this.distance,
 				this.location,

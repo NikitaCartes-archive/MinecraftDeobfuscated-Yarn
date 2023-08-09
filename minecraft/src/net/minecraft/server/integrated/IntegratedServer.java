@@ -58,7 +58,7 @@ public class IntegratedServer extends MinecraftServer {
 		super(
 			serverThread, session, dataPackManager, saveLoader, client.getNetworkProxy(), client.getDataFixer(), apiServices, worldGenerationProgressListenerFactory
 		);
-		this.setHostProfile(client.getSession().getProfile());
+		this.setHostProfile(client.getGameProfile());
 		this.setDemo(client.isDemo());
 		this.setPlayerManager(new IntegratedPlayerManager(this, this.getCombinedDynamicRegistries(), this.saveHandler));
 		this.client = client;

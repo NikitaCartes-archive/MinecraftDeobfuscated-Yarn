@@ -204,33 +204,32 @@ public class Explosion {
 		List<Entity> list = this.world.getOtherEntities(this.entity, new Box((double)k, (double)r, (double)t, (double)lx, (double)s, (double)u));
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 
-		for (int v = 0; v < list.size(); v++) {
-			Entity entity = (Entity)list.get(v);
+		for (Entity entity : list) {
 			if (!entity.isImmuneToExplosion()) {
-				double w = Math.sqrt(entity.squaredDistanceTo(vec3d)) / (double)q;
-				if (w <= 1.0) {
-					double x = entity.getX() - this.x;
-					double y = (entity instanceof TntEntity ? entity.getY() : entity.getEyeY()) - this.y;
-					double z = entity.getZ() - this.z;
-					double aa = Math.sqrt(x * x + y * y + z * z);
-					if (aa != 0.0) {
-						x /= aa;
-						y /= aa;
-						z /= aa;
-						double ab = (double)getExposure(vec3d, entity);
-						double ac = (1.0 - w) * ab;
-						entity.damage(this.getDamageSource(), (float)((int)((ac * ac + ac) / 2.0 * 7.0 * (double)q + 1.0)));
-						double ad;
+				double v = Math.sqrt(entity.squaredDistanceTo(vec3d)) / (double)q;
+				if (v <= 1.0) {
+					double w = entity.getX() - this.x;
+					double x = (entity instanceof TntEntity ? entity.getY() : entity.getEyeY()) - this.y;
+					double y = entity.getZ() - this.z;
+					double z = Math.sqrt(w * w + x * x + y * y);
+					if (z != 0.0) {
+						w /= z;
+						x /= z;
+						y /= z;
+						double aa = (double)getExposure(vec3d, entity);
+						double ab = (1.0 - v) * aa;
+						entity.damage(this.getDamageSource(), (float)((int)((ab * ab + ab) / 2.0 * 7.0 * (double)q + 1.0)));
+						double ac;
 						if (entity instanceof LivingEntity livingEntity) {
-							ad = ProtectionEnchantment.transformExplosionKnockback(livingEntity, ac);
+							ac = ProtectionEnchantment.transformExplosionKnockback(livingEntity, ab);
 						} else {
-							ad = ac;
+							ac = ab;
 						}
 
-						x *= ad;
-						y *= ad;
-						z *= ad;
-						Vec3d vec3d2 = new Vec3d(x, y, z);
+						w *= ac;
+						x *= ac;
+						y *= ac;
+						Vec3d vec3d2 = new Vec3d(w, x, y);
 						entity.setVelocity(entity.getVelocity().add(vec3d2));
 						if (entity instanceof PlayerEntity) {
 							PlayerEntity playerEntity = (PlayerEntity)entity;

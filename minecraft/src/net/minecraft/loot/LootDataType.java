@@ -1,45 +1,33 @@
 package net.minecraft.loot;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContextAware;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 
 public class LootDataType<T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final LootDataType<LootCondition> PREDICATES = new LootDataType<>(
-		LootGsons.getConditionGsonBuilder().create(), parserFactory(LootCondition.class, LootManager::and), "predicates", validator()
-	);
-	public static final LootDataType<LootFunction> ITEM_MODIFIERS = new LootDataType<>(
-		LootGsons.getFunctionGsonBuilder().create(), parserFactory(LootFunction.class, LootManager::and), "item_modifiers", validator()
-	);
-	public static final LootDataType<LootTable> LOOT_TABLES = new LootDataType<>(
-		LootGsons.getTableGsonBuilder().create(), parserFactory(LootTable.class), "loot_tables", tableValidator()
-	);
-	private final Gson gson;
-	private final BiFunction<Identifier, JsonElement, Optional<T>> parser;
+	public static final LootDataType<LootCondition> PREDICATES = new LootDataType<>(LootConditionTypes.CODEC, "predicates", validator());
+	public static final LootDataType<LootFunction> ITEM_MODIFIERS = new LootDataType<>(LootFunctionTypes.CODEC, "item_modifiers", validator());
+	public static final LootDataType<LootTable> LOOT_TABLES = new LootDataType<>(LootTable.CODEC, "loot_tables", tableValidator());
+	private final Codec<T> codec;
 	private final String id;
 	private final LootDataType.Validator<T> validator;
 
-	private LootDataType(
-		Gson gson, BiFunction<Gson, String, BiFunction<Identifier, JsonElement, Optional<T>>> parserFactory, String id, LootDataType.Validator<T> validator
-	) {
-		this.gson = gson;
+	private LootDataType(Codec<T> codec, String id, LootDataType.Validator<T> validator) {
+		this.codec = codec;
 		this.id = id;
 		this.validator = validator;
-		this.parser = (BiFunction<Identifier, JsonElement, Optional<T>>)parserFactory.apply(gson, id);
-	}
-
-	public Gson getGson() {
-		return this.gson;
 	}
 
 	public String getId() {
@@ -51,39 +39,13 @@ public class LootDataType<T> {
 	}
 
 	public Optional<T> parse(Identifier id, JsonElement json) {
-		return (Optional<T>)this.parser.apply(id, json);
+		DataResult<T> dataResult = this.codec.parse(JsonOps.INSTANCE, json);
+		dataResult.error().ifPresent(partialResult -> LOGGER.error("Couldn't parse element {}:{} - {}", this.id, id, partialResult.message()));
+		return dataResult.result();
 	}
 
 	public static Stream<LootDataType<?>> stream() {
 		return Stream.of(PREDICATES, ITEM_MODIFIERS, LOOT_TABLES);
-	}
-
-	private static <T> BiFunction<Gson, String, BiFunction<Identifier, JsonElement, Optional<T>>> parserFactory(Class<T> clazz) {
-		return (gson, dataTypeId) -> (id, json) -> {
-				try {
-					return Optional.of(gson.fromJson(json, clazz));
-				} catch (Exception var6) {
-					LOGGER.error("Couldn't parse element {}:{}", dataTypeId, id, var6);
-					return Optional.empty();
-				}
-			};
-	}
-
-	private static <T> BiFunction<Gson, String, BiFunction<Identifier, JsonElement, Optional<T>>> parserFactory(Class<T> clazz, Function<T[], T> combiner) {
-		Class<T[]> class_ = clazz.arrayType();
-		return (gson, dataTypeId) -> (id, json) -> {
-				try {
-					if (json.isJsonArray()) {
-						T[] objects = (T[])((Object[])gson.fromJson(json, class_));
-						return Optional.of(combiner.apply(objects));
-					} else {
-						return Optional.of(gson.fromJson(json, clazz));
-					}
-				} catch (Exception var8) {
-					LOGGER.error("Couldn't parse element {}:{}", dataTypeId, id, var8);
-					return Optional.empty();
-				}
-			};
 	}
 
 	private static <T extends LootContextAware> LootDataType.Validator<T> validator() {

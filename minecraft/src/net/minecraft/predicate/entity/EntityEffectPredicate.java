@@ -1,12 +1,13 @@
 package net.minecraft.predicate.entity;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import java.util.Collections;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -15,111 +16,85 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 
-public class EntityEffectPredicate {
-	public static final EntityEffectPredicate EMPTY = new EntityEffectPredicate(Collections.emptyMap());
-	private final Map<StatusEffect, EntityEffectPredicate.EffectData> effects;
-
-	public EntityEffectPredicate(Map<StatusEffect, EntityEffectPredicate.EffectData> effects) {
-		this.effects = effects;
-	}
-
-	public static EntityEffectPredicate create() {
-		return new EntityEffectPredicate(Maps.<StatusEffect, EntityEffectPredicate.EffectData>newLinkedHashMap());
-	}
-
-	public EntityEffectPredicate withEffect(StatusEffect statusEffect) {
-		this.effects.put(statusEffect, new EntityEffectPredicate.EffectData());
-		return this;
-	}
-
-	public EntityEffectPredicate withEffect(StatusEffect statusEffect, EntityEffectPredicate.EffectData data) {
-		this.effects.put(statusEffect, data);
-		return this;
-	}
+public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> effects) {
+	public static final Codec<EntityEffectPredicate> CODEC = Codec.unboundedMap(
+			Registries.STATUS_EFFECT.createEntryCodec(), EntityEffectPredicate.EffectData.CODEC
+		)
+		.xmap(EntityEffectPredicate::new, EntityEffectPredicate::effects);
 
 	public boolean test(Entity entity) {
-		if (this == EMPTY) {
+		if (entity instanceof LivingEntity livingEntity && this.test(livingEntity.getActiveStatusEffects())) {
 			return true;
-		} else {
-			return entity instanceof LivingEntity ? this.test(((LivingEntity)entity).getActiveStatusEffects()) : false;
 		}
+
+		return false;
 	}
 
 	public boolean test(LivingEntity livingEntity) {
-		return this == EMPTY ? true : this.test(livingEntity.getActiveStatusEffects());
+		return this.test(livingEntity.getActiveStatusEffects());
 	}
 
 	public boolean test(Map<StatusEffect, StatusEffectInstance> effects) {
-		if (this == EMPTY) {
-			return true;
-		} else {
-			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
-				StatusEffectInstance statusEffectInstance = (StatusEffectInstance)effects.get(entry.getKey());
-				if (!((EntityEffectPredicate.EffectData)entry.getValue()).test(statusEffectInstance)) {
-					return false;
-				}
+		for (Entry<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
+			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)effects.get(((RegistryEntry)entry.getKey()).value());
+			if (!((EntityEffectPredicate.EffectData)entry.getValue()).test(statusEffectInstance)) {
+				return false;
 			}
-
-			return true;
 		}
+
+		return true;
 	}
 
-	public static EntityEffectPredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "effects");
-			Map<StatusEffect, EntityEffectPredicate.EffectData> map = Maps.<StatusEffect, EntityEffectPredicate.EffectData>newLinkedHashMap();
-
-			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-				Identifier identifier = new Identifier((String)entry.getKey());
-				StatusEffect statusEffect = (StatusEffect)Registries.STATUS_EFFECT
-					.getOrEmpty(identifier)
-					.orElseThrow(() -> new JsonSyntaxException("Unknown effect '" + identifier + "'"));
-				EntityEffectPredicate.EffectData effectData = EntityEffectPredicate.EffectData.fromJson(
-					JsonHelper.asObject((JsonElement)entry.getValue(), (String)entry.getKey())
-				);
-				map.put(statusEffect, effectData);
-			}
-
-			return new EntityEffectPredicate(map);
-		} else {
-			return EMPTY;
-		}
+	public static Optional<EntityEffectPredicate> fromJson(@Nullable JsonElement json) {
+		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
 	}
 
 	public JsonElement toJson() {
-		if (this == EMPTY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
+		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
+	}
 
-			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
-				jsonObject.add(Registries.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).toJson());
-			}
+	public static class Builder {
+		private final ImmutableMap.Builder<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> EFFECTS = ImmutableMap.builder();
 
-			return jsonObject;
+		public static EntityEffectPredicate.Builder create() {
+			return new EntityEffectPredicate.Builder();
+		}
+
+		public EntityEffectPredicate.Builder addEffect(StatusEffect effect) {
+			this.EFFECTS.put(effect.getRegistryEntry(), new EntityEffectPredicate.EffectData());
+			return this;
+		}
+
+		public EntityEffectPredicate.Builder addEffect(StatusEffect effect, EntityEffectPredicate.EffectData effectData) {
+			this.EFFECTS.put(effect.getRegistryEntry(), effectData);
+			return this;
+		}
+
+		public Optional<EntityEffectPredicate> build() {
+			ImmutableMap<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> immutableMap = this.EFFECTS.build();
+			return immutableMap.isEmpty() ? Optional.empty() : Optional.of(new EntityEffectPredicate(immutableMap));
 		}
 	}
 
-	public static class EffectData {
-		private final NumberRange.IntRange amplifier;
-		private final NumberRange.IntRange duration;
-		@Nullable
-		private final Boolean ambient;
-		@Nullable
-		private final Boolean visible;
-
-		public EffectData(NumberRange.IntRange amplifier, NumberRange.IntRange duration, @Nullable Boolean ambient, @Nullable Boolean visible) {
-			this.amplifier = amplifier;
-			this.duration = duration;
-			this.ambient = ambient;
-			this.visible = visible;
-		}
+	public static record EffectData(NumberRange.IntRange amplifier, NumberRange.IntRange duration, Optional<Boolean> ambient, Optional<Boolean> visible) {
+		public static final Codec<EntityEffectPredicate.EffectData> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "amplifier", NumberRange.IntRange.ANY)
+							.forGetter(EntityEffectPredicate.EffectData::amplifier),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "duration", NumberRange.IntRange.ANY)
+							.forGetter(EntityEffectPredicate.EffectData::duration),
+						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "ambient").forGetter(EntityEffectPredicate.EffectData::ambient),
+						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "visible").forGetter(EntityEffectPredicate.EffectData::visible)
+					)
+					.apply(instance, EntityEffectPredicate.EffectData::new)
+		);
 
 		public EffectData() {
-			this(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, null, null);
+			this(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, Optional.empty(), Optional.empty());
 		}
 
 		public boolean test(@Nullable StatusEffectInstance statusEffectInstance) {
@@ -130,27 +105,10 @@ public class EntityEffectPredicate {
 			} else if (!this.duration.test(statusEffectInstance.getDuration())) {
 				return false;
 			} else {
-				return this.ambient != null && this.ambient != statusEffectInstance.isAmbient()
+				return this.ambient.isPresent() && this.ambient.get() != statusEffectInstance.isAmbient()
 					? false
-					: this.visible == null || this.visible == statusEffectInstance.shouldShowParticles();
+					: !this.visible.isPresent() || (Boolean)this.visible.get() == statusEffectInstance.shouldShowParticles();
 			}
-		}
-
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("amplifier", this.amplifier.toJson());
-			jsonObject.add("duration", this.duration.toJson());
-			jsonObject.addProperty("ambient", this.ambient);
-			jsonObject.addProperty("visible", this.visible);
-			return jsonObject;
-		}
-
-		public static EntityEffectPredicate.EffectData fromJson(JsonObject json) {
-			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(json.get("amplifier"));
-			NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(json.get("duration"));
-			Boolean boolean_ = json.has("ambient") ? JsonHelper.getBoolean(json, "ambient") : null;
-			Boolean boolean2 = json.has("visible") ? JsonHelper.getBoolean(json, "visible") : null;
-			return new EntityEffectPredicate.EffectData(intRange, intRange2, boolean_, boolean2);
 		}
 	}
 }

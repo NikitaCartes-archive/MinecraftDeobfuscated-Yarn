@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -39,11 +40,11 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 		this.progressions.remove(tracker);
 	}
 
-	protected abstract T conditionsFromJson(JsonObject obj, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer);
+	protected abstract T conditionsFromJson(JsonObject obj, Optional<LootContextPredicate> predicate, AdvancementEntityPredicateDeserializer predicateDeserializer);
 
 	public final T conditionsFromJson(JsonObject jsonObject, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
-		LootContextPredicate lootContextPredicate = EntityPredicate.contextPredicateFromJson(jsonObject, "player", advancementEntityPredicateDeserializer);
-		return this.conditionsFromJson(jsonObject, lootContextPredicate, advancementEntityPredicateDeserializer);
+		Optional<LootContextPredicate> optional = EntityPredicate.contextPredicateFromJson(jsonObject, "player", advancementEntityPredicateDeserializer);
+		return this.conditionsFromJson(jsonObject, optional, advancementEntityPredicateDeserializer);
 	}
 
 	protected void trigger(ServerPlayerEntity player, Predicate<T> predicate) {
@@ -55,12 +56,15 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 
 			for (Criterion.ConditionsContainer<T> conditionsContainer : set) {
 				T abstractCriterionConditions = conditionsContainer.getConditions();
-				if (predicate.test(abstractCriterionConditions) && abstractCriterionConditions.getPlayerPredicate().test(lootContext)) {
-					if (list == null) {
-						list = Lists.<Criterion.ConditionsContainer<T>>newArrayList();
-					}
+				if (predicate.test(abstractCriterionConditions)) {
+					Optional<LootContextPredicate> optional = abstractCriterionConditions.getPlayerPredicate();
+					if (optional.isEmpty() || ((LootContextPredicate)optional.get()).test(lootContext)) {
+						if (list == null) {
+							list = Lists.<Criterion.ConditionsContainer<T>>newArrayList();
+						}
 
-					list.add(conditionsContainer);
+						list.add(conditionsContainer);
+					}
 				}
 			}
 

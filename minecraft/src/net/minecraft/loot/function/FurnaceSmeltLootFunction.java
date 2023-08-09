@@ -1,8 +1,9 @@
 package net.minecraft.loot.function;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
@@ -14,9 +15,12 @@ import org.slf4j.Logger;
 
 public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final Codec<FurnaceSmeltLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance).apply(instance, FurnaceSmeltLootFunction::new)
+	);
 
-	FurnaceSmeltLootFunction(LootCondition[] lootConditions) {
-		super(lootConditions);
+	private FurnaceSmeltLootFunction(List<LootCondition> conditions) {
+		super(conditions);
 	}
 
 	@Override
@@ -44,11 +48,5 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 
 	public static ConditionalLootFunction.Builder<?> builder() {
 		return builder(FurnaceSmeltLootFunction::new);
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<FurnaceSmeltLootFunction> {
-		public FurnaceSmeltLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			return new FurnaceSmeltLootFunction(lootConditions);
-		}
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import net.minecraft.advancement.Advancement;
@@ -94,28 +95,41 @@ public class EntitySelectorOptions {
 					reader.setPredicate(readerx -> readerx.getName().getString().equals(string) != bl);
 				}
 			}, reader -> !reader.selectsName(), Text.translatable("argument.entity.options.name.description"));
-			putOption("distance", reader -> {
-				int i = reader.getReader().getCursor();
-				NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(reader.getReader());
-				if ((floatRange.getMin() == null || !((Double)floatRange.getMin() < 0.0)) && (floatRange.getMax() == null || !((Double)floatRange.getMax() < 0.0))) {
-					reader.setDistance(floatRange);
-					reader.setLocalWorldOnly();
-				} else {
-					reader.getReader().setCursor(i);
-					throw NEGATIVE_DISTANCE_EXCEPTION.createWithContext(reader.getReader());
-				}
-			}, reader -> reader.getDistance().isDummy(), Text.translatable("argument.entity.options.distance.description"));
-			putOption("level", reader -> {
-				int i = reader.getReader().getCursor();
-				NumberRange.IntRange intRange = NumberRange.IntRange.parse(reader.getReader());
-				if ((intRange.getMin() == null || (Integer)intRange.getMin() >= 0) && (intRange.getMax() == null || (Integer)intRange.getMax() >= 0)) {
-					reader.setLevelRange(intRange);
-					reader.setIncludesNonPlayers(false);
-				} else {
-					reader.getReader().setCursor(i);
-					throw NEGATIVE_LEVEL_EXCEPTION.createWithContext(reader.getReader());
-				}
-			}, reader -> reader.getLevelRange().isDummy(), Text.translatable("argument.entity.options.level.description"));
+			putOption(
+				"distance",
+				reader -> {
+					int i = reader.getReader().getCursor();
+					NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(reader.getReader());
+					if ((!floatRange.getMin().isPresent() || !((Double)floatRange.getMin().get() < 0.0))
+						&& (!floatRange.getMax().isPresent() || !((Double)floatRange.getMax().get() < 0.0))) {
+						reader.setDistance(floatRange);
+						reader.setLocalWorldOnly();
+					} else {
+						reader.getReader().setCursor(i);
+						throw NEGATIVE_DISTANCE_EXCEPTION.createWithContext(reader.getReader());
+					}
+				},
+				reader -> reader.getDistance().isDummy(),
+				Text.translatable("argument.entity.options.distance.description")
+			);
+			putOption(
+				"level",
+				reader -> {
+					int i = reader.getReader().getCursor();
+					NumberRange.IntRange intRange = NumberRange.IntRange.parse(reader.getReader());
+					if ((!intRange.getMin().isPresent() || (Integer)intRange.getMin().get() >= 0) && (!intRange.getMax().isPresent() || (Integer)intRange.getMax().get() >= 0)
+						)
+					 {
+						reader.setLevelRange(intRange);
+						reader.setIncludesNonPlayers(false);
+					} else {
+						reader.getReader().setCursor(i);
+						throw NEGATIVE_LEVEL_EXCEPTION.createWithContext(reader.getReader());
+					}
+				},
+				reader -> reader.getLevelRange().isDummy(),
+				Text.translatable("argument.entity.options.level.description")
+			);
 			putOption("x", reader -> {
 				reader.setLocalWorldOnly();
 				reader.setX(reader.getReader().readDouble());
@@ -464,7 +478,7 @@ public class EntitySelectorOptions {
 										.add(LootContextParameters.THIS_ENTITY, entity)
 										.add(LootContextParameters.ORIGIN, entity.getPos())
 										.build(LootContextTypes.SELECTOR);
-									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(null);
+									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
 									lootContext.markActive(LootContext.predicate(lootCondition));
 									return bl ^ lootCondition.test(lootContext);
 								}

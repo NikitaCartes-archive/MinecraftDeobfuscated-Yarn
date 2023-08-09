@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
@@ -11,18 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditionType;
-import net.minecraft.loot.condition.LootConditionTypes;
-import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.loot.function.LootFunction;
-import net.minecraft.loot.function.LootFunctionType;
-import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -32,6 +24,7 @@ import org.slf4j.Logger;
 
 public class LootManager implements ResourceReloader, LootDataLookup {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Gson GSON = new GsonBuilder().create();
 	public static final LootDataKey<LootTable> EMPTY_LOOT_TABLE = new LootDataKey<>(LootDataType.LOOT_TABLES, LootTables.EMPTY);
 	private Map<LootDataKey<?>, ?> keyToValue = Map.of();
 	private Multimap<LootDataType<?>, Identifier> typeToIds = ImmutableMultimap.of();
@@ -59,7 +52,7 @@ public class LootManager implements ResourceReloader, LootDataLookup {
 		results.put(type, map);
 		return CompletableFuture.runAsync(() -> {
 			Map<Identifier, JsonElement> map2 = new HashMap();
-			JsonDataLoader.load(resourceManager, type.getId(), type.getGson(), map2);
+			JsonDataLoader.load(resourceManager, type.getId(), GSON, map2);
 			map2.forEach((id, json) -> type.parse(id, json).ifPresent(value -> map.put(id, value)));
 		}, executor);
 	}
@@ -103,69 +96,5 @@ public class LootManager implements ResourceReloader, LootDataLookup {
 
 	public Collection<Identifier> getIds(LootDataType<?> type) {
 		return this.typeToIds.get(type);
-	}
-
-	public static LootCondition and(LootCondition[] predicates) {
-		return new LootManager.AndCondition(predicates);
-	}
-
-	public static LootFunction and(LootFunction[] modifiers) {
-		return new LootManager.AndFunction(modifiers);
-	}
-
-	static class AndCondition implements LootCondition {
-		private final LootCondition[] terms;
-		private final Predicate<LootContext> predicate;
-
-		AndCondition(LootCondition[] terms) {
-			this.terms = terms;
-			this.predicate = LootConditionTypes.matchingAll(terms);
-		}
-
-		public final boolean test(LootContext lootContext) {
-			return this.predicate.test(lootContext);
-		}
-
-		@Override
-		public void validate(LootTableReporter reporter) {
-			LootCondition.super.validate(reporter);
-
-			for (int i = 0; i < this.terms.length; i++) {
-				this.terms[i].validate(reporter.makeChild(".term[" + i + "]"));
-			}
-		}
-
-		@Override
-		public LootConditionType getType() {
-			throw new UnsupportedOperationException();
-		}
-	}
-
-	static class AndFunction implements LootFunction {
-		protected final LootFunction[] functions;
-		private final BiFunction<ItemStack, LootContext, ItemStack> applier;
-
-		public AndFunction(LootFunction[] functions) {
-			this.functions = functions;
-			this.applier = LootFunctionTypes.join(functions);
-		}
-
-		public ItemStack apply(ItemStack itemStack, LootContext lootContext) {
-			return (ItemStack)this.applier.apply(itemStack, lootContext);
-		}
-
-		@Override
-		public void validate(LootTableReporter reporter) {
-			LootFunction.super.validate(reporter);
-
-			for (int i = 0; i < this.functions.length; i++) {
-				this.functions[i].validate(reporter.makeChild(".function[" + i + "]"));
-			}
-		}
-
-		@Override
-		public LootFunctionType getType() {
-			throw new UnsupportedOperationException();
-		}
 	}
 }

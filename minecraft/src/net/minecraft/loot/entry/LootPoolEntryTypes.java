@@ -1,27 +1,22 @@
 package net.minecraft.loot.entry;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonSerializer;
-import net.minecraft.util.JsonSerializing;
 
 public class LootPoolEntryTypes {
-	public static final LootPoolEntryType EMPTY = register("empty", new EmptyEntry.Serializer());
-	public static final LootPoolEntryType ITEM = register("item", new ItemEntry.Serializer());
-	public static final LootPoolEntryType LOOT_TABLE = register("loot_table", new LootTableEntry.Serializer());
-	public static final LootPoolEntryType DYNAMIC = register("dynamic", new DynamicEntry.Serializer());
-	public static final LootPoolEntryType TAG = register("tag", new TagEntry.Serializer());
-	public static final LootPoolEntryType ALTERNATIVES = register("alternatives", CombinedEntry.createSerializer(AlternativeEntry::new));
-	public static final LootPoolEntryType SEQUENCE = register("sequence", CombinedEntry.createSerializer(SequenceEntry::new));
-	public static final LootPoolEntryType GROUP = register("group", CombinedEntry.createSerializer(GroupEntry::new));
+	public static final Codec<LootPoolEntry> CODEC = Registries.LOOT_POOL_ENTRY_TYPE.getCodec().dispatch(LootPoolEntry::getType, LootPoolEntryType::codec);
+	public static final LootPoolEntryType EMPTY = register("empty", EmptyEntry.CODEC);
+	public static final LootPoolEntryType ITEM = register("item", ItemEntry.CODEC);
+	public static final LootPoolEntryType LOOT_TABLE = register("loot_table", LootTableEntry.CODEC);
+	public static final LootPoolEntryType DYNAMIC = register("dynamic", DynamicEntry.CODEC);
+	public static final LootPoolEntryType TAG = register("tag", TagEntry.CODEC);
+	public static final LootPoolEntryType ALTERNATIVES = register("alternatives", AlternativeEntry.CODEC);
+	public static final LootPoolEntryType SEQUENCE = register("sequence", SequenceEntry.CODEC);
+	public static final LootPoolEntryType GROUP = register("group", GroupEntry.CODEC);
 
-	private static LootPoolEntryType register(String id, JsonSerializer<? extends LootPoolEntry> jsonSerializer) {
-		return Registry.register(Registries.LOOT_POOL_ENTRY_TYPE, new Identifier(id), new LootPoolEntryType(jsonSerializer));
-	}
-
-	public static Object createGsonSerializer() {
-		return JsonSerializing.<LootPoolEntry, LootPoolEntryType>createSerializerBuilder(Registries.LOOT_POOL_ENTRY_TYPE, "entry", "type", LootPoolEntry::getType)
-			.build();
+	private static LootPoolEntryType register(String id, Codec<? extends LootPoolEntry> codec) {
+		return Registry.register(Registries.LOOT_POOL_ENTRY_TYPE, new Identifier(id), new LootPoolEntryType(codec));
 	}
 }

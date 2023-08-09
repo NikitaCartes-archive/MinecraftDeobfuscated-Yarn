@@ -12,6 +12,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
@@ -19,6 +21,14 @@ import org.slf4j.Logger;
 public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int INFINITE = -1;
+	private static final String ID_NBT_KEY = "id";
+	private static final String AMBIENT_NBT_KEY = "ambient";
+	private static final String HIDDEN_EFFECT_NBT_KEY = "hidden_effect";
+	private static final String AMPLIFIER_NBT_KEY = "amplifier";
+	private static final String DURATION_NBT_KEY = "duration";
+	private static final String SHOW_PARTICLES_NBT_KEY = "show_particles";
+	private static final String SHOW_ICON_NBT_KEY = "show_icon";
+	private static final String FACTOR_CALCULATION_DATA_NBT_KEY = "factor_calculation_data";
 	private final StatusEffect type;
 	private int duration;
 	private int amplifier;
@@ -262,21 +272,22 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	}
 
 	public NbtCompound writeNbt(NbtCompound nbt) {
-		nbt.putInt("Id", StatusEffect.getRawId(this.getEffectType()));
+		Identifier identifier = Registries.STATUS_EFFECT.getId(this.type);
+		nbt.putString("id", identifier.toString());
 		this.writeTypelessNbt(nbt);
 		return nbt;
 	}
 
 	private void writeTypelessNbt(NbtCompound nbt) {
-		nbt.putByte("Amplifier", (byte)this.getAmplifier());
-		nbt.putInt("Duration", this.getDuration());
-		nbt.putBoolean("Ambient", this.isAmbient());
-		nbt.putBoolean("ShowParticles", this.shouldShowParticles());
-		nbt.putBoolean("ShowIcon", this.shouldShowIcon());
+		nbt.putByte("amplifier", (byte)this.getAmplifier());
+		nbt.putInt("duration", this.getDuration());
+		nbt.putBoolean("ambient", this.isAmbient());
+		nbt.putBoolean("show_particles", this.shouldShowParticles());
+		nbt.putBoolean("show_icon", this.shouldShowIcon());
 		if (this.hiddenEffect != null) {
 			NbtCompound nbtCompound = new NbtCompound();
 			this.hiddenEffect.writeNbt(nbtCompound);
-			nbt.put("HiddenEffect", nbtCompound);
+			nbt.put("hidden_effect", nbtCompound);
 		}
 
 		this.factorCalculationData
@@ -284,40 +295,40 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 				factorCalculationData -> StatusEffectInstance.FactorCalculationData.CODEC
 						.encodeStart(NbtOps.INSTANCE, factorCalculationData)
 						.resultOrPartial(LOGGER::error)
-						.ifPresent(factorCalculationDataNbt -> nbt.put("FactorCalculationData", factorCalculationDataNbt))
+						.ifPresent(factorCalculationDataNbt -> nbt.put("factor_calculation_data", factorCalculationDataNbt))
 			);
 	}
 
 	@Nullable
 	public static StatusEffectInstance fromNbt(NbtCompound nbt) {
-		int i = nbt.getInt("Id");
-		StatusEffect statusEffect = StatusEffect.byRawId(i);
+		String string = nbt.getString("id");
+		StatusEffect statusEffect = Registries.STATUS_EFFECT.get(Identifier.tryParse(string));
 		return statusEffect == null ? null : fromNbt(statusEffect, nbt);
 	}
 
 	private static StatusEffectInstance fromNbt(StatusEffect type, NbtCompound nbt) {
-		int i = nbt.getByte("Amplifier");
-		int j = nbt.getInt("Duration");
-		boolean bl = nbt.getBoolean("Ambient");
+		int i = nbt.getByte("amplifier");
+		int j = nbt.getInt("duration");
+		boolean bl = nbt.getBoolean("ambient");
 		boolean bl2 = true;
-		if (nbt.contains("ShowParticles", NbtElement.BYTE_TYPE)) {
-			bl2 = nbt.getBoolean("ShowParticles");
+		if (nbt.contains("show_particles", NbtElement.BYTE_TYPE)) {
+			bl2 = nbt.getBoolean("show_particles");
 		}
 
 		boolean bl3 = bl2;
-		if (nbt.contains("ShowIcon", NbtElement.BYTE_TYPE)) {
-			bl3 = nbt.getBoolean("ShowIcon");
+		if (nbt.contains("show_icon", NbtElement.BYTE_TYPE)) {
+			bl3 = nbt.getBoolean("show_icon");
 		}
 
 		StatusEffectInstance statusEffectInstance = null;
-		if (nbt.contains("HiddenEffect", NbtElement.COMPOUND_TYPE)) {
-			statusEffectInstance = fromNbt(type, nbt.getCompound("HiddenEffect"));
+		if (nbt.contains("hidden_effect", NbtElement.COMPOUND_TYPE)) {
+			statusEffectInstance = fromNbt(type, nbt.getCompound("hidden_effect"));
 		}
 
 		Optional<StatusEffectInstance.FactorCalculationData> optional;
-		if (nbt.contains("FactorCalculationData", NbtElement.COMPOUND_TYPE)) {
+		if (nbt.contains("factor_calculation_data", NbtElement.COMPOUND_TYPE)) {
 			optional = StatusEffectInstance.FactorCalculationData.CODEC
-				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("FactorCalculationData")))
+				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("factor_calculation_data")))
 				.resultOrPartial(LOGGER::error);
 		} else {
 			optional = Optional.empty();

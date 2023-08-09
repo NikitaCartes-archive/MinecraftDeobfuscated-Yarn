@@ -87,6 +87,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.event.GameEvent;
 import org.joml.Vector3f;
 
 public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.Type> {
@@ -400,10 +401,9 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		NbtList nbtList = nbt.getList("Trusted", NbtElement.INT_ARRAY_TYPE);
 
-		for (int i = 0; i < nbtList.size(); i++) {
-			this.addTrustedUuid(NbtHelper.toUuid(nbtList.get(i)));
+		for (NbtElement nbtElement : nbt.getList("Trusted", NbtElement.INT_ARRAY_TYPE)) {
+			this.addTrustedUuid(NbtHelper.toUuid(nbtElement));
 		}
 
 		this.setSleeping(nbt.getBoolean("Sleeping"));
@@ -959,6 +959,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 
 			FoxEntity.this.playSound(SoundEvents.BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES, 1.0F, 1.0F);
 			FoxEntity.this.getWorld().setBlockState(this.targetPos, state.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), Block.NOTIFY_LISTENERS);
+			FoxEntity.this.getWorld().emitGameEvent(GameEvent.BLOCK_CHANGE, this.targetPos, GameEvent.Emitter.of(FoxEntity.this));
 		}
 
 		@Override

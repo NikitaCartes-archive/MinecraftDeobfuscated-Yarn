@@ -1,32 +1,30 @@
 package net.minecraft.predicate.entity;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
-public class DistancePredicate {
-	public static final DistancePredicate ANY = new DistancePredicate(
-		NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY
+public record DistancePredicate(
+	NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, NumberRange.FloatRange horizontal, NumberRange.FloatRange absolute
+) {
+	public static final Codec<DistancePredicate> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "x", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::x),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "y", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::y),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "z", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::z),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "horizontal", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::horizontal),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "absolute", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::absolute)
+				)
+				.apply(instance, DistancePredicate::new)
 	);
-	private final NumberRange.FloatRange x;
-	private final NumberRange.FloatRange y;
-	private final NumberRange.FloatRange z;
-	private final NumberRange.FloatRange horizontal;
-	private final NumberRange.FloatRange absolute;
-
-	public DistancePredicate(
-		NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, NumberRange.FloatRange horizontal, NumberRange.FloatRange absolute
-	) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.horizontal = horizontal;
-		this.absolute = absolute;
-	}
 
 	public static DistancePredicate horizontal(NumberRange.FloatRange horizontal) {
 		return new DistancePredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, horizontal, NumberRange.FloatRange.ANY);
@@ -51,31 +49,11 @@ public class DistancePredicate {
 		}
 	}
 
-	public static DistancePredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "distance");
-			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("x"));
-			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("y"));
-			NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject.get("z"));
-			NumberRange.FloatRange floatRange4 = NumberRange.FloatRange.fromJson(jsonObject.get("horizontal"));
-			NumberRange.FloatRange floatRange5 = NumberRange.FloatRange.fromJson(jsonObject.get("absolute"));
-			return new DistancePredicate(floatRange, floatRange2, floatRange3, floatRange4, floatRange5);
-		} else {
-			return ANY;
-		}
+	public static Optional<DistancePredicate> fromJson(@Nullable JsonElement json) {
+		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
 	}
 
 	public JsonElement toJson() {
-		if (this == ANY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("x", this.x.toJson());
-			jsonObject.add("y", this.y.toJson());
-			jsonObject.add("z", this.z.toJson());
-			jsonObject.add("horizontal", this.horizontal.toJson());
-			jsonObject.add("absolute", this.absolute.toJson());
-			return jsonObject;
-		}
+		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 }

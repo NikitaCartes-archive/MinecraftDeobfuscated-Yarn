@@ -1,10 +1,9 @@
 package net.minecraft.loot.condition;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,17 +12,26 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.dynamic.Codecs;
 
-public class BlockStatePropertyLootCondition implements LootCondition {
-	final Block block;
-	final StatePredicate properties;
+public record BlockStatePropertyLootCondition(RegistryEntry<Block> block, Optional<StatePredicate> properties) implements LootCondition {
+	public static final Codec<BlockStatePropertyLootCondition> CODEC = Codecs.validate(
+		RecordCodecBuilder.create(
+			instance -> instance.group(
+						Registries.BLOCK.createEntryCodec().fieldOf("block").forGetter(BlockStatePropertyLootCondition::block),
+						Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "properties").forGetter(BlockStatePropertyLootCondition::properties)
+					)
+					.apply(instance, BlockStatePropertyLootCondition::new)
+		),
+		BlockStatePropertyLootCondition::validateHasProperties
+	);
 
-	BlockStatePropertyLootCondition(Block block, StatePredicate properties) {
-		this.block = block;
-		this.properties = properties;
+	private static DataResult<BlockStatePropertyLootCondition> validateHasProperties(BlockStatePropertyLootCondition condition) {
+		return (DataResult<BlockStatePropertyLootCondition>)condition.properties()
+			.flatMap(predicate -> predicate.findMissing(condition.block().value().getStateManager()))
+			.map(property -> DataResult.error(() -> "Block " + condition.block() + " has no property" + property))
+			.orElse(DataResult.success(condition));
 	}
 
 	@Override
@@ -33,12 +41,12 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.BLOCK_STATE);
+		return Set.of(LootContextParameters.BLOCK_STATE);
 	}
 
 	public boolean test(LootContext lootContext) {
 		BlockState blockState = lootContext.get(LootContextParameters.BLOCK_STATE);
-		return blockState != null && blockState.isOf(this.block) && this.properties.test(blockState);
+		return blockState != null && blockState.isOf(this.block) && (this.properties.isEmpty() || ((StatePredicate)this.properties.get()).test(blockState));
 	}
 
 	public static BlockStatePropertyLootCondition.Builder builder(Block block) {
@@ -46,11 +54,11 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 	}
 
 	public static class Builder implements LootCondition.Builder {
-		private final Block block;
-		private StatePredicate propertyValues = StatePredicate.ANY;
+		private final RegistryEntry<Block> block;
+		private Optional<StatePredicate> propertyValues = Optional.empty();
 
 		public Builder(Block block) {
-			this.block = block;
+			this.block = block.getRegistryEntry();
 		}
 
 		public BlockStatePropertyLootCondition.Builder properties(StatePredicate.Builder builder) {
@@ -61,23 +69,6 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 		@Override
 		public LootCondition build() {
 			return new BlockStatePropertyLootCondition(this.block, this.propertyValues);
-		}
-	}
-
-	public static class Serializer implements JsonSerializer<BlockStatePropertyLootCondition> {
-		public void toJson(JsonObject jsonObject, BlockStatePropertyLootCondition blockStatePropertyLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("block", Registries.BLOCK.getId(blockStatePropertyLootCondition.block).toString());
-			jsonObject.add("properties", blockStatePropertyLootCondition.properties.toJson());
-		}
-
-		public BlockStatePropertyLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-			Block block = (Block)Registries.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
-			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("properties"));
-			statePredicate.check(block.getStateManager(), propertyName -> {
-				throw new JsonSyntaxException("Block " + block + " has no property " + propertyName);
-			});
-			return new BlockStatePropertyLootCondition(block, statePredicate);
 		}
 	}
 }

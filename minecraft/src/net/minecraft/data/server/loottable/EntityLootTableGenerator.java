@@ -31,7 +31,7 @@ import net.minecraft.util.Identifier;
 
 public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	protected static final EntityPredicate.Builder NEEDS_ENTITY_ON_FIRE = EntityPredicate.Builder.create()
-		.flags(EntityFlagsPredicate.Builder.create().onFire(true).build());
+		.flags(EntityFlagsPredicate.Builder.create().onFire(true));
 	private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(
 		EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER
 	);

@@ -265,7 +265,7 @@ public class StructureTemplateManager {
 
 	public boolean saveTemplate(Identifier id) {
 		Optional<StructureTemplate> optional = (Optional<StructureTemplate>)this.templates.get(id);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			return false;
 		} else {
 			StructureTemplate structureTemplate = (StructureTemplate)optional.get();

@@ -8,8 +8,8 @@ import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageVerifier;
 
 public record PublicPlayerSession(UUID sessionId, PlayerPublicKey publicKeyData) {
-	public MessageVerifier createVerifier() {
-		return new MessageVerifier.Impl(this.publicKeyData.createSignatureInstance());
+	public MessageVerifier createVerifier(Duration gracePeriod) {
+		return new MessageVerifier.Impl(this.publicKeyData.createSignatureInstance(), () -> this.publicKeyData.data().isExpired(gracePeriod));
 	}
 
 	public MessageChain.Unpacker createUnpacker(UUID sender) {
@@ -34,10 +34,8 @@ public record PublicPlayerSession(UUID sessionId, PlayerPublicKey publicKeyData)
 			serialized.publicKeyData.write(buf);
 		}
 
-		public PublicPlayerSession toSession(GameProfile gameProfile, SignatureVerifier servicesSignatureVerifier, Duration gracePeriod) throws PlayerPublicKey.PublicKeyException {
-			return new PublicPlayerSession(
-				this.sessionId, PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, gameProfile.getId(), this.publicKeyData, gracePeriod)
-			);
+		public PublicPlayerSession toSession(GameProfile gameProfile, SignatureVerifier servicesSignatureVerifier) throws PlayerPublicKey.PublicKeyException {
+			return new PublicPlayerSession(this.sessionId, PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, gameProfile.getId(), this.publicKeyData));
 		}
 	}
 }

@@ -163,6 +163,7 @@ import net.minecraft.datafixer.fix.RenameVariantsFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StatsRenameFix;
 import net.minecraft.datafixer.fix.StatusEffectDurationFix;
+import net.minecraft.datafixer.fix.StatusEffectFix;
 import net.minecraft.datafixer.fix.StriderGravityFix;
 import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
@@ -1148,6 +1149,8 @@ public class Schemas {
 		builder.addFixer(new RandomSequenceSettingsFix(schema190));
 		Schema schema191 = builder.addSchema(3566, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new RenameScoreboardDisplaySlotFix(schema191));
+		Schema schema192 = builder.addSchema(3568, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StatusEffectFix(schema192));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

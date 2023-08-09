@@ -20,9 +20,13 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.Codec.ResultFunction;
+import com.mojang.serialization.MapCodec.MapCodecCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -63,19 +67,7 @@ import org.joml.Vector3f;
 public class Codecs {
 	public static final Codec<JsonElement> JSON_ELEMENT = Codec.PASSTHROUGH
 		.xmap(dynamic -> dynamic.convert(JsonOps.INSTANCE).getValue(), element -> new Dynamic<>(JsonOps.INSTANCE, element));
-	public static final Codec<Text> TEXT = JSON_ELEMENT.flatXmap(element -> {
-		try {
-			return DataResult.success(Text.Serializer.fromJson(element));
-		} catch (JsonParseException var2) {
-			return DataResult.error(var2::getMessage);
-		}
-	}, text -> {
-		try {
-			return DataResult.success(Text.Serializer.toJsonTree(text));
-		} catch (IllegalArgumentException var2) {
-			return DataResult.error(var2::getMessage);
-		}
-	});
+	public static final Codec<Text> TEXT = method_53054(Text.Serializer::fromJson, Text.Serializer::toJsonTree);
 	public static final Codec<Text> STRINGIFIED_TEXT = Codec.STRING.flatXmap(json -> {
 		try {
 			return DataResult.success(Text.Serializer.fromJson(json));
@@ -209,6 +201,23 @@ public class Codecs {
 		path -> !Identifier.isPathValid(path) ? DataResult.error(() -> "Invalid string to use as a resource path element: " + path) : DataResult.success(path)
 	);
 
+	@Deprecated
+	public static <T> Codec<T> method_53054(Function<JsonElement, T> function, Function<T, JsonElement> function2) {
+		return JSON_ELEMENT.flatXmap(jsonElement -> {
+			try {
+				return DataResult.success(function.apply(jsonElement));
+			} catch (JsonParseException var3) {
+				return DataResult.error(var3::getMessage);
+			}
+		}, object -> {
+			try {
+				return DataResult.success((JsonElement)function2.apply(object));
+			} catch (IllegalArgumentException var3) {
+				return DataResult.error(var3::getMessage);
+			}
+		});
+	}
+
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
 	 * 
@@ -340,7 +349,7 @@ public class Codecs {
 	}
 
 	public static <T> Codec<T> validate(Codec<T> codec, Function<T, DataResult<T>> validator) {
-		return codec.flatXmap(validator, validator);
+		return codec instanceof MapCodecCodec<T> mapCodecCodec ? validate(mapCodecCodec.codec(), validator).codec() : codec.flatXmap(validator, validator);
 	}
 
 	public static <T> MapCodec<T> validate(MapCodec<T> codec, Function<T, DataResult<T>> validator) {
@@ -378,8 +387,21 @@ public class Codecs {
 		);
 	}
 
+	public static <T> Codec<T> createRecursive(Function<Codec<T>, Codec<T>> function) {
+		return new Codecs.Recursive<>(function);
+	}
+
 	public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
-		return new Codecs.Lazy<>(supplier);
+		return new Codecs.Recursive<>(codec -> (Codec)supplier.get());
+	}
+
+	public static <A> MapCodec<Optional<A>> createStrictOptionalFieldCodec(Codec<A> codec, String field) {
+		return new Codecs.StrictOptionalField<>(field, codec);
+	}
+
+	public static <A> MapCodec<A> createStrictOptionalFieldCodec(Codec<A> codec, String field, A fallback) {
+		return createStrictOptionalFieldCodec(codec, field)
+			.xmap(optional -> optional.orElse(fallback), object2 -> Objects.equals(object2, fallback) ? Optional.empty() : Optional.of(object2));
 	}
 
 	public static <E> MapCodec<E> createContextRetrievalCodec(Function<DynamicOps<?>, DataResult<E>> retriever) {
@@ -469,12 +491,16 @@ public class Codecs {
 		);
 	}
 
-	public static <T> Codec<T> either(Codec<T> a, Codec<T> b) {
+	public static <T> Codec<T> either(Codec<T> a, Codec<? extends T> b) {
 		return Codec.either(a, b).xmap(either -> either.map(o -> o, o -> o), com.mojang.datafixers.util.Either::left);
 	}
 
 	public static <T, U> Codec<T> either(Codec<T> serialized, Codec<U> alternative, Function<U, T> alternativeMapper) {
 		return Codec.either(serialized, alternative).xmap(either -> either.map(o -> o, alternativeMapper), com.mojang.datafixers.util.Either::left);
+	}
+
+	public static <T> Codec<Object2BooleanMap<T>> method_53058(Codec<T> codec) {
+		return Codec.unboundedMap(codec, Codec.BOOL).xmap(Object2BooleanOpenHashMap::new, Object2ObjectOpenHashMap::new);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {
@@ -491,13 +517,13 @@ public class Codecs {
 			DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> dataResult = this.first
 				.decode(ops, input)
 				.map(pair -> pair.mapFirst(com.mojang.datafixers.util.Either::left));
-			if (!dataResult.error().isPresent()) {
+			if (dataResult.error().isEmpty()) {
 				return dataResult;
 			} else {
 				DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> dataResult2 = this.second
 					.decode(ops, input)
 					.map(pair -> pair.mapFirst(com.mojang.datafixers.util.Either::right));
-				return !dataResult2.error().isPresent() ? dataResult2 : dataResult.apply2((pair, pair2) -> pair2, dataResult2);
+				return dataResult2.error().isEmpty() ? dataResult2 : dataResult.apply2((pair, pair2) -> pair2, dataResult2);
 			}
 		}
 
@@ -525,20 +551,68 @@ public class Codecs {
 		}
 	}
 
-	static record Lazy<A>(Supplier<Codec<A>> delegate) implements Codec<A> {
-		Lazy(Supplier<Codec<A>> delegate) {
-			Supplier<Codec<A>> var2 = Suppliers.memoize(delegate::get);
-			this.delegate = var2;
+	static class Recursive<T> implements Codec<T> {
+		private final Supplier<Codec<T>> supplier;
+
+		Recursive(Function<Codec<T>, Codec<T>> function) {
+			this.supplier = Suppliers.memoize(() -> (Codec<T>)function.apply(this));
 		}
 
 		@Override
-		public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
-			return ((Codec)this.delegate.get()).decode(ops, input);
+		public <S> DataResult<Pair<T, S>> decode(DynamicOps<S> dynamicOps, S object) {
+			return ((Codec)this.supplier.get()).decode(dynamicOps, object);
 		}
 
 		@Override
-		public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
-			return ((Codec)this.delegate.get()).encode(input, ops, prefix);
+		public <S> DataResult<S> encode(T object, DynamicOps<S> dynamicOps, S object2) {
+			return ((Codec)this.supplier.get()).encode(object, dynamicOps, object2);
+		}
+
+		public String toString() {
+			return "RecursiveCodec[" + this.supplier + "]";
+		}
+	}
+
+	static final class StrictOptionalField<A> extends MapCodec<Optional<A>> {
+		private final String field;
+		private final Codec<A> codec;
+
+		public StrictOptionalField(String field, Codec<A> codec) {
+			this.field = field;
+			this.codec = codec;
+		}
+
+		@Override
+		public <T> DataResult<Optional<A>> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
+			T object = mapLike.get(this.field);
+			return object == null ? DataResult.success(Optional.empty()) : this.codec.parse(dynamicOps, object).map(Optional::of);
+		}
+
+		public <T> RecordBuilder<T> encode(Optional<A> optional, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
+			return optional.isPresent() ? recordBuilder.add(this.field, this.codec.encodeStart(dynamicOps, (A)optional.get())) : recordBuilder;
+		}
+
+		@Override
+		public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
+			return Stream.of(dynamicOps.createString(this.field));
+		}
+
+		public boolean equals(Object object) {
+			if (this == object) {
+				return true;
+			} else {
+				return !(object instanceof Codecs.StrictOptionalField<?> strictOptionalField)
+					? false
+					: Objects.equals(this.field, strictOptionalField.field) && Objects.equals(this.codec, strictOptionalField.codec);
+			}
+		}
+
+		public int hashCode() {
+			return Objects.hash(new Object[]{this.field, this.codec});
+		}
+
+		public String toString() {
+			return "StrictOptionalFieldCodec[" + this.field + ": " + this.codec + "]";
 		}
 	}
 

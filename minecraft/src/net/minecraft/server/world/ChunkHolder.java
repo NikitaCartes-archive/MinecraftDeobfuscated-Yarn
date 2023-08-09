@@ -355,7 +355,11 @@ public class ChunkHolder {
 		threadedAnvilChunkStorage.onChunkStatusChange(this.pos, chunkLevelType);
 	}
 
-	protected void tick(ThreadedAnvilChunkStorage chunkStorage, Executor executor) {
+	/**
+	 * Updates {@code Futures} indicating the expected loading state of the underlying chunk of this {@code ChunkHolder}.
+	 * Note that the method merely makes actual loading process possible, but do not perform these actions.
+	 */
+	protected void updateFutures(ThreadedAnvilChunkStorage chunkStorage, Executor executor) {
 		ChunkStatus chunkStatus = ChunkLevels.getStatus(this.lastTickLevel);
 		ChunkStatus chunkStatus2 = ChunkLevels.getStatus(this.level);
 		boolean bl = ChunkLevels.isAccessible(this.lastTickLevel);

@@ -21,6 +21,7 @@ import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -32,6 +33,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -50,6 +52,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	public static final int PROPERTY_COUNT = 3;
 	private static final int field_31305 = 10;
 	private static final Text CONTAINER_NAME_TEXT = Text.translatable("container.beacon");
+	private static final String PRIMARY_EFFECT_NBT_KEY = "primary_effect";
+	private static final String SECONDARY_EFFECT_NBT_KEY = "secondary_effect";
 	List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
 	private List<BeaconBlockEntity.BeamSegment> field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
 	int level;
@@ -66,8 +70,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		public int get(int index) {
 			return switch (index) {
 				case 0 -> BeaconBlockEntity.this.level;
-				case 1 -> StatusEffect.getRawIdNullable(BeaconBlockEntity.this.primary);
-				case 2 -> StatusEffect.getRawIdNullable(BeaconBlockEntity.this.secondary);
+				case 1 -> BeaconScreenHandler.getRawIdForStatusEffect(BeaconBlockEntity.this.primary);
+				case 2 -> BeaconScreenHandler.getRawIdForStatusEffect(BeaconBlockEntity.this.secondary);
 				default -> 0;
 			};
 		}
@@ -83,10 +87,10 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 						BeaconBlockEntity.playSound(BeaconBlockEntity.this.world, BeaconBlockEntity.this.pos, SoundEvents.BLOCK_BEACON_POWER_SELECT);
 					}
 
-					BeaconBlockEntity.this.primary = BeaconBlockEntity.getPotionEffectById(value);
+					BeaconBlockEntity.this.primary = BeaconBlockEntity.getEffectOrNull(BeaconScreenHandler.getStatusEffectForRawId(value));
 					break;
 				case 2:
-					BeaconBlockEntity.this.secondary = BeaconBlockEntity.getPotionEffectById(value);
+					BeaconBlockEntity.this.secondary = BeaconBlockEntity.getEffectOrNull(BeaconScreenHandler.getStatusEffectForRawId(value));
 			}
 		}
 
@@ -95,6 +99,11 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			return 3;
 		}
 	};
+
+	@Nullable
+	static StatusEffect getEffectOrNull(@Nullable StatusEffect effect) {
+		return EFFECTS.contains(effect) ? effect : null;
+	}
 
 	public BeaconBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.BEACON, pos, state);
@@ -260,17 +269,30 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		return this.createNbt();
 	}
 
+	private static void writeStatusEffect(NbtCompound nbt, String key, @Nullable StatusEffect effect) {
+		if (effect != null) {
+			Identifier identifier = Registries.STATUS_EFFECT.getId(effect);
+			if (identifier != null) {
+				nbt.putString(key, identifier.toString());
+			}
+		}
+	}
+
 	@Nullable
-	static StatusEffect getPotionEffectById(int id) {
-		StatusEffect statusEffect = StatusEffect.byRawId(id);
-		return EFFECTS.contains(statusEffect) ? statusEffect : null;
+	private static StatusEffect readStatusEffect(NbtCompound nbt, String key) {
+		if (nbt.contains(key, NbtElement.STRING_TYPE)) {
+			Identifier identifier = Identifier.tryParse(nbt.getString(key));
+			return getEffectOrNull(Registries.STATUS_EFFECT.get(identifier));
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
-		this.primary = getPotionEffectById(nbt.getInt("Primary"));
-		this.secondary = getPotionEffectById(nbt.getInt("Secondary"));
+		this.primary = readStatusEffect(nbt, "primary_effect");
+		this.secondary = readStatusEffect(nbt, "secondary_effect");
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
 			this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
 		}
@@ -281,8 +303,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		nbt.putInt("Primary", StatusEffect.getRawIdNullable(this.primary));
-		nbt.putInt("Secondary", StatusEffect.getRawIdNullable(this.secondary));
+		writeStatusEffect(nbt, "primary_effect", this.primary);
+		writeStatusEffect(nbt, "secondary_effect", this.secondary);
 		nbt.putInt("Levels", this.level);
 		if (this.customName != null) {
 			nbt.putString("CustomName", Text.Serializer.toJson(this.customName));

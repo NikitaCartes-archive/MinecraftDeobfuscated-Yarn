@@ -1,24 +1,20 @@
 package net.minecraft.loot.condition;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import javax.annotation.Nullable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
+import net.minecraft.util.dynamic.Codecs;
 
-public class WeatherCheckLootCondition implements LootCondition {
-	@Nullable
-	final Boolean raining;
-	@Nullable
-	final Boolean thundering;
-
-	WeatherCheckLootCondition(@Nullable Boolean raining, @Nullable Boolean thundering) {
-		this.raining = raining;
-		this.thundering = thundering;
-	}
+public record WeatherCheckLootCondition(Optional<Boolean> raining, Optional<Boolean> thundering) implements LootCondition {
+	public static final Codec<WeatherCheckLootCondition> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "raining").forGetter(WeatherCheckLootCondition::raining),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "thundering").forGetter(WeatherCheckLootCondition::thundering)
+				)
+				.apply(instance, WeatherCheckLootCondition::new)
+	);
 
 	@Override
 	public LootConditionType getType() {
@@ -27,7 +23,9 @@ public class WeatherCheckLootCondition implements LootCondition {
 
 	public boolean test(LootContext lootContext) {
 		ServerWorld serverWorld = lootContext.getWorld();
-		return this.raining != null && this.raining != serverWorld.isRaining() ? false : this.thundering == null || this.thundering == serverWorld.isThundering();
+		return this.raining.isPresent() && this.raining.get() != serverWorld.isRaining()
+			? false
+			: !this.thundering.isPresent() || (Boolean)this.thundering.get() == serverWorld.isThundering();
 	}
 
 	public static WeatherCheckLootCondition.Builder create() {
@@ -35,36 +33,21 @@ public class WeatherCheckLootCondition implements LootCondition {
 	}
 
 	public static class Builder implements LootCondition.Builder {
-		@Nullable
-		private Boolean raining;
-		@Nullable
-		private Boolean thundering;
+		private Optional<Boolean> raining = Optional.empty();
+		private Optional<Boolean> thundering = Optional.empty();
 
-		public WeatherCheckLootCondition.Builder raining(@Nullable Boolean raining) {
-			this.raining = raining;
+		public WeatherCheckLootCondition.Builder raining(boolean raining) {
+			this.raining = Optional.of(raining);
 			return this;
 		}
 
-		public WeatherCheckLootCondition.Builder thundering(@Nullable Boolean thundering) {
-			this.thundering = thundering;
+		public WeatherCheckLootCondition.Builder thundering(boolean thundering) {
+			this.thundering = Optional.of(thundering);
 			return this;
 		}
 
 		public WeatherCheckLootCondition build() {
 			return new WeatherCheckLootCondition(this.raining, this.thundering);
-		}
-	}
-
-	public static class Serializer implements JsonSerializer<WeatherCheckLootCondition> {
-		public void toJson(JsonObject jsonObject, WeatherCheckLootCondition weatherCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("raining", weatherCheckLootCondition.raining);
-			jsonObject.addProperty("thundering", weatherCheckLootCondition.thundering);
-		}
-
-		public WeatherCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			Boolean boolean_ = jsonObject.has("raining") ? JsonHelper.getBoolean(jsonObject, "raining") : null;
-			Boolean boolean2 = jsonObject.has("thundering") ? JsonHelper.getBoolean(jsonObject, "thundering") : null;
-			return new WeatherCheckLootCondition(boolean_, boolean2);
 		}
 	}
 }

@@ -1,9 +1,9 @@
 package net.minecraft.loot.function;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.Products.P1;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -13,17 +13,22 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
-import org.apache.commons.lang3.ArrayUtils;
+import net.minecraft.util.dynamic.Codecs;
 
 public abstract class ConditionalLootFunction implements LootFunction {
-	protected final LootCondition[] conditions;
+	protected final List<LootCondition> conditions;
 	private final Predicate<LootContext> predicate;
 
-	protected ConditionalLootFunction(LootCondition[] conditions) {
+	protected ConditionalLootFunction(List<LootCondition> conditions) {
 		this.conditions = conditions;
 		this.predicate = LootConditionTypes.matchingAll(conditions);
+	}
+
+	protected static <T extends ConditionalLootFunction> P1<Mu<T>, List<LootCondition>> method_53344(Instance<T> instance) {
+		return instance.group(
+			Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of())
+				.forGetter(conditionalLootFunction -> conditionalLootFunction.conditions)
+		);
 	}
 
 	public final ItemStack apply(ItemStack itemStack, LootContext lootContext) {
@@ -36,17 +41,17 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	public void validate(LootTableReporter reporter) {
 		LootFunction.super.validate(reporter);
 
-		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].validate(reporter.makeChild(".conditions[" + i + "]"));
+		for (int i = 0; i < this.conditions.size(); i++) {
+			((LootCondition)this.conditions.get(i)).validate(reporter.makeChild(".conditions[" + i + "]"));
 		}
 	}
 
-	protected static ConditionalLootFunction.Builder<?> builder(Function<LootCondition[], LootFunction> joiner) {
+	protected static ConditionalLootFunction.Builder<?> builder(Function<List<LootCondition>, LootFunction> joiner) {
 		return new ConditionalLootFunction.Joiner(joiner);
 	}
 
 	public abstract static class Builder<T extends ConditionalLootFunction.Builder<T>> implements LootFunction.Builder, LootConditionConsumingBuilder<T> {
-		private final List<LootCondition> conditionList = Lists.<LootCondition>newArrayList();
+		private final ImmutableList.Builder<LootCondition> conditionList = ImmutableList.builder();
 
 		public T conditionally(LootCondition.Builder builder) {
 			this.conditionList.add(builder.build());
@@ -59,15 +64,15 @@ public abstract class ConditionalLootFunction implements LootFunction {
 
 		protected abstract T getThisBuilder();
 
-		protected LootCondition[] getConditions() {
-			return (LootCondition[])this.conditionList.toArray(new LootCondition[0]);
+		protected List<LootCondition> getConditions() {
+			return this.conditionList.build();
 		}
 	}
 
 	static final class Joiner extends ConditionalLootFunction.Builder<ConditionalLootFunction.Joiner> {
-		private final Function<LootCondition[], LootFunction> joiner;
+		private final Function<List<LootCondition>, LootFunction> joiner;
 
-		public Joiner(Function<LootCondition[], LootFunction> joiner) {
+		public Joiner(Function<List<LootCondition>, LootFunction> joiner) {
 			this.joiner = joiner;
 		}
 
@@ -79,20 +84,5 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		public LootFunction build() {
 			return (LootFunction)this.joiner.apply(this.getConditions());
 		}
-	}
-
-	public abstract static class Serializer<T extends ConditionalLootFunction> implements JsonSerializer<T> {
-		public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
-			if (!ArrayUtils.isEmpty((Object[])conditionalLootFunction.conditions)) {
-				jsonObject.add("conditions", jsonSerializationContext.serialize(conditionalLootFunction.conditions));
-			}
-		}
-
-		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
-			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
-		}
-
-		public abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions);
 	}
 }

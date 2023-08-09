@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -15,7 +16,6 @@ import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
@@ -23,6 +23,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -39,14 +40,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class MooshroomEntity extends CowEntity implements Shearable, VariantHolder<MooshroomEntity.Type> {
 	private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
 	private static final int MUTATION_CHANCE = 1024;
+	private static final String STEW_EFFECTS_NBT_KEY = "stew_effects";
 	@Nullable
-	private StatusEffect stewEffect;
-	private int stewEffectDuration;
+	private List<SuspiciousStewIngredient.StewEffect> stewEffects;
 	@Nullable
 	private UUID lightningId;
 
@@ -85,12 +85,11 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		if (itemStack.isOf(Items.BOWL) && !this.isBaby()) {
 			boolean bl = false;
 			ItemStack itemStack2;
-			if (this.stewEffect != null) {
+			if (this.stewEffects != null) {
 				bl = true;
 				itemStack2 = new ItemStack(Items.SUSPICIOUS_STEW);
-				SuspiciousStewItem.addEffectToStew(itemStack2, this.stewEffect, this.stewEffectDuration);
-				this.stewEffect = null;
-				this.stewEffectDuration = 0;
+				SuspiciousStewItem.writeEffectsToStew(itemStack2, this.stewEffects);
+				this.stewEffects = null;
 			} else {
 				itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
 			}
@@ -115,7 +114,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 
 			return ActionResult.success(this.getWorld().isClient);
 		} else if (this.getVariant() == MooshroomEntity.Type.BROWN && itemStack.isIn(ItemTags.SMALL_FLOWERS)) {
-			if (this.stewEffect != null) {
+			if (this.stewEffects != null) {
 				for (int i = 0; i < 2; i++) {
 					this.getWorld()
 						.addParticle(
@@ -129,12 +128,11 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 						);
 				}
 			} else {
-				Optional<Pair<StatusEffect, Integer>> optional = this.getStewEffectFrom(itemStack);
-				if (!optional.isPresent()) {
+				Optional<List<SuspiciousStewIngredient.StewEffect>> optional = this.getStewEffectFrom(itemStack);
+				if (optional.isEmpty()) {
 					return ActionResult.PASS;
 				}
 
-				Pair<StatusEffect, Integer> pair = (Pair<StatusEffect, Integer>)optional.get();
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -152,8 +150,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 						);
 				}
 
-				this.stewEffect = pair.getLeft();
-				this.stewEffectDuration = pair.getRight();
+				this.stewEffects = (List<SuspiciousStewIngredient.StewEffect>)optional.get();
 				this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
 			}
 
@@ -203,9 +200,11 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putString("Type", this.getVariant().asString());
-		if (this.stewEffect != null) {
-			nbt.putInt("EffectId", StatusEffect.getRawId(this.stewEffect));
-			nbt.putInt("EffectDuration", this.stewEffectDuration);
+		if (this.stewEffects != null) {
+			SuspiciousStewIngredient.StewEffect.LIST_CODEC
+				.encodeStart(NbtOps.INSTANCE, this.stewEffects)
+				.result()
+				.ifPresent(nbtElement -> nbt.put("stew_effects", nbtElement));
 		}
 	}
 
@@ -213,20 +212,17 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.setVariant(MooshroomEntity.Type.fromName(nbt.getString("Type")));
-		if (nbt.contains("EffectId", NbtElement.NUMBER_TYPE)) {
-			this.stewEffect = StatusEffect.byRawId(nbt.getInt("EffectId"));
-		}
-
-		if (nbt.contains("EffectDuration", NbtElement.NUMBER_TYPE)) {
-			this.stewEffectDuration = nbt.getInt("EffectDuration");
+		if (nbt.contains("stew_effects", NbtElement.LIST_TYPE)) {
+			SuspiciousStewIngredient.StewEffect.LIST_CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("stew_effects"))
+				.result()
+				.ifPresent(stewEffects -> this.stewEffects = stewEffects);
 		}
 	}
 
-	private Optional<Pair<StatusEffect, Integer>> getStewEffectFrom(ItemStack flower) {
+	private Optional<List<SuspiciousStewIngredient.StewEffect>> getStewEffectFrom(ItemStack flower) {
 		SuspiciousStewIngredient suspiciousStewIngredient = SuspiciousStewIngredient.of(flower.getItem());
-		return suspiciousStewIngredient != null
-			? Optional.of(Pair.of(suspiciousStewIngredient.getEffectInStew(), suspiciousStewIngredient.getEffectInStewDuration()))
-			: Optional.empty();
+		return suspiciousStewIngredient != null ? Optional.of(suspiciousStewIngredient.getStewEffects()) : Optional.empty();
 	}
 
 	public void setVariant(MooshroomEntity.Type type) {

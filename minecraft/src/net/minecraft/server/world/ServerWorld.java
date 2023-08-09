@@ -967,7 +967,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private void addPlayer(ServerPlayerEntity player) {
 		Entity entity = this.getEntityLookup().get(player.getUuid());
 		if (entity != null) {
-			LOGGER.warn("Force-added player with duplicate UUID {}", player.getUuid().toString());
+			LOGGER.warn("Force-added player with duplicate UUID {}", player.getUuid());
 			entity.detach();
 			this.removePlayer((ServerPlayerEntity)entity, Entity.RemovalReason.DISCARDED);
 		}

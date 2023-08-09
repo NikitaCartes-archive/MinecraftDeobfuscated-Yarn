@@ -103,40 +103,40 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		drawEntity(context, i + 26, j + 8, i + 75, j + 78, 30, 0.0625F, this.mouseX, this.mouseY, this.client.player);
 	}
 
-	public static void drawEntity(DrawContext context, int x, int y, int i, int j, int k, float f, float mouseX, float mouseY, LivingEntity entity) {
-		float g = (float)(x + i) / 2.0F;
-		float h = (float)(y + j) / 2.0F;
-		context.enableScissor(x, y, i, j);
-		float l = (float)Math.atan((double)((g - mouseX) / 40.0F));
-		float m = (float)Math.atan((double)((h - mouseY) / 40.0F));
+	public static void drawEntity(DrawContext context, int x1, int y1, int x2, int y2, int size, float f, float mouseX, float mouseY, LivingEntity entity) {
+		float g = (float)(x1 + x2) / 2.0F;
+		float h = (float)(y1 + y2) / 2.0F;
+		context.enableScissor(x1, y1, x2, y2);
+		float i = (float)Math.atan((double)((g - mouseX) / 40.0F));
+		float j = (float)Math.atan((double)((h - mouseY) / 40.0F));
 		Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
-		Quaternionf quaternionf2 = new Quaternionf().rotateX(m * 20.0F * (float) (Math.PI / 180.0));
+		Quaternionf quaternionf2 = new Quaternionf().rotateX(j * 20.0F * (float) (Math.PI / 180.0));
 		quaternionf.mul(quaternionf2);
-		float n = entity.bodyYaw;
-		float o = entity.getYaw();
-		float p = entity.getPitch();
-		float q = entity.prevHeadYaw;
-		float r = entity.headYaw;
-		entity.bodyYaw = 180.0F + l * 20.0F;
-		entity.setYaw(180.0F + l * 40.0F);
-		entity.setPitch(-m * 20.0F);
+		float k = entity.bodyYaw;
+		float l = entity.getYaw();
+		float m = entity.getPitch();
+		float n = entity.prevHeadYaw;
+		float o = entity.headYaw;
+		entity.bodyYaw = 180.0F + i * 20.0F;
+		entity.setYaw(180.0F + i * 40.0F);
+		entity.setPitch(-j * 20.0F);
 		entity.headYaw = entity.getYaw();
 		entity.prevHeadYaw = entity.getYaw();
 		Vector3f vector3f = new Vector3f(0.0F, entity.getHeight() / 2.0F + f, 0.0F);
-		drawEntity(context, g, h, k, vector3f, quaternionf, quaternionf2, entity);
-		entity.bodyYaw = n;
-		entity.setYaw(o);
-		entity.setPitch(p);
-		entity.prevHeadYaw = q;
-		entity.headYaw = r;
+		drawEntity(context, g, h, size, vector3f, quaternionf, quaternionf2, entity);
+		entity.bodyYaw = k;
+		entity.setYaw(l);
+		entity.setPitch(m);
+		entity.prevHeadYaw = n;
+		entity.headYaw = o;
 		context.disableScissor();
 	}
 
 	public static void drawEntity(
-		DrawContext context, float f, float g, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity
+		DrawContext context, float x, float y, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity
 	) {
 		context.getMatrices().push();
-		context.getMatrices().translate((double)f, (double)g, 50.0);
+		context.getMatrices().translate((double)x, (double)y, 50.0);
 		context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling((float)size, (float)size, (float)(-size)));
 		context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
 		context.getMatrices().multiply(quaternionf);

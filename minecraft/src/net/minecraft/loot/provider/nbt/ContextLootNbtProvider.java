@@ -1,11 +1,8 @@
 package net.minecraft.loot.provider.nbt;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,9 +12,6 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.NbtPredicate;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
-import net.minecraft.util.JsonSerializing;
 
 public class ContextLootNbtProvider implements LootNbtProvider {
 	private static final String BLOCK_ENTITY_TARGET_NAME = "block_entity";
@@ -39,7 +33,22 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 		}
 	};
 	public static final ContextLootNbtProvider BLOCK_ENTITY = new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
-	final ContextLootNbtProvider.Target target;
+	private static final Codec<ContextLootNbtProvider.Target> field_45881 = Codec.STRING.xmap(string -> {
+		if (string.equals("block_entity")) {
+			return BLOCK_ENTITY_TARGET;
+		} else {
+			LootContext.EntityTarget entityTarget = LootContext.EntityTarget.fromString(string);
+			return getTarget(entityTarget);
+		}
+	}, ContextLootNbtProvider.Target::getName);
+	public static final Codec<ContextLootNbtProvider> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(field_45881.fieldOf("target").forGetter(contextLootNbtProvider -> contextLootNbtProvider.target))
+				.apply(instance, ContextLootNbtProvider::new)
+	);
+	public static final Codec<ContextLootNbtProvider> field_45880 = field_45881.xmap(
+		ContextLootNbtProvider::new, contextLootNbtProvider -> contextLootNbtProvider.target
+	);
+	private final ContextLootNbtProvider.Target target;
 
 	private static ContextLootNbtProvider.Target getTarget(LootContext.EntityTarget entityTarget) {
 		return new ContextLootNbtProvider.Target() {
@@ -84,37 +93,6 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 
 	public static LootNbtProvider fromTarget(LootContext.EntityTarget target) {
 		return new ContextLootNbtProvider(getTarget(target));
-	}
-
-	static ContextLootNbtProvider fromTarget(String target) {
-		if (target.equals("block_entity")) {
-			return new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
-		} else {
-			LootContext.EntityTarget entityTarget = LootContext.EntityTarget.fromString(target);
-			return new ContextLootNbtProvider(getTarget(entityTarget));
-		}
-	}
-
-	public static class CustomSerializer implements JsonSerializing.ElementSerializer<ContextLootNbtProvider> {
-		public JsonElement toJson(ContextLootNbtProvider contextLootNbtProvider, JsonSerializationContext jsonSerializationContext) {
-			return new JsonPrimitive(contextLootNbtProvider.target.getName());
-		}
-
-		public ContextLootNbtProvider fromJson(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) {
-			String string = jsonElement.getAsString();
-			return ContextLootNbtProvider.fromTarget(string);
-		}
-	}
-
-	public static class Serializer implements JsonSerializer<ContextLootNbtProvider> {
-		public void toJson(JsonObject jsonObject, ContextLootNbtProvider contextLootNbtProvider, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("target", contextLootNbtProvider.target.getName());
-		}
-
-		public ContextLootNbtProvider fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			String string = JsonHelper.getString(jsonObject, "target");
-			return ContextLootNbtProvider.fromTarget(string);
-		}
 	}
 
 	interface Target {

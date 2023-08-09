@@ -1,12 +1,12 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -26,11 +26,11 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 	}
 
 	protected ThrownItemPickedUpByEntityCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new ThrownItemPickedUpByEntityCriterion.Conditions(this.id, lootContextPredicate, itemPredicate, lootContextPredicate2);
+		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("item"));
+		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+		return new ThrownItemPickedUpByEntityCriterion.Conditions(this.id, optional, optional2, optional3);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack, @Nullable Entity entity) {
@@ -39,36 +39,38 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final ItemPredicate item;
-		private final LootContextPredicate entity;
+		private final Optional<ItemPredicate> item;
+		private final Optional<LootContextPredicate> entity;
 
-		public Conditions(Identifier id, LootContextPredicate player, ItemPredicate item, LootContextPredicate entity) {
-			super(id, player);
+		public Conditions(Identifier id, Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, Optional<LootContextPredicate> entity) {
+			super(id, playerPredicate);
 			this.item = item;
 			this.entity = entity;
 		}
 
 		public static ThrownItemPickedUpByEntityCriterion.Conditions createThrownItemPickedUpByEntity(
-			LootContextPredicate player, ItemPredicate item, LootContextPredicate entity
+			LootContextPredicate player, Optional<ItemPredicate> item, Optional<LootContextPredicate> entity
 		) {
-			return new ThrownItemPickedUpByEntityCriterion.Conditions(Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.getId(), player, item, entity);
+			return new ThrownItemPickedUpByEntityCriterion.Conditions(Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.getId(), Optional.of(player), item, entity);
 		}
 
 		public static ThrownItemPickedUpByEntityCriterion.Conditions createThrownItemPickedUpByPlayer(
-			LootContextPredicate player, ItemPredicate item, LootContextPredicate entity
+			Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, Optional<LootContextPredicate> entity
 		) {
-			return new ThrownItemPickedUpByEntityCriterion.Conditions(Criteria.THROWN_ITEM_PICKED_UP_BY_PLAYER.getId(), player, item, entity);
+			return new ThrownItemPickedUpByEntityCriterion.Conditions(Criteria.THROWN_ITEM_PICKED_UP_BY_PLAYER.getId(), playerPredicate, item, entity);
 		}
 
-		public boolean test(ServerPlayerEntity player, ItemStack stack, LootContext entityContext) {
-			return !this.item.test(stack) ? false : this.entity.test(entityContext);
+		public boolean test(ServerPlayerEntity player, ItemStack stack, LootContext entity) {
+			return this.item.isPresent() && !((ItemPredicate)this.item.get()).test(stack)
+				? false
+				: !this.entity.isPresent() || ((LootContextPredicate)this.entity.get()).test(entity);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("item", this.item.toJson());
-			jsonObject.add("entity", this.entity.toJson(predicateSerializer));
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
+			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
 			return jsonObject;
 		}
 	}

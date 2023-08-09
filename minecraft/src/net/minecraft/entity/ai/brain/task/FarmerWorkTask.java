@@ -23,7 +23,7 @@ public class FarmerWorkTask extends VillagerWorkTask {
 	@Override
 	protected void performAdditionalWork(ServerWorld world, VillagerEntity entity) {
 		Optional<GlobalPos> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
-		if (optional.isPresent()) {
+		if (!optional.isEmpty()) {
 			GlobalPos globalPos = (GlobalPos)optional.get();
 			BlockState blockState = world.getBlockState(globalPos.getPos());
 			if (blockState.isOf(Blocks.COMPOSTER)) {

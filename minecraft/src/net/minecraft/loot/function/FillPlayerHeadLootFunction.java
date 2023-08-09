@@ -1,10 +1,10 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -14,12 +14,16 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.JsonHelper;
 
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
-	final LootContext.EntityTarget entity;
+	public static final Codec<FillPlayerHeadLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.and(LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(fillPlayerHeadLootFunction -> fillPlayerHeadLootFunction.entity))
+				.apply(instance, FillPlayerHeadLootFunction::new)
+	);
+	private final LootContext.EntityTarget entity;
 
-	public FillPlayerHeadLootFunction(LootCondition[] conditions, LootContext.EntityTarget entity) {
+	public FillPlayerHeadLootFunction(List<LootCondition> conditions, LootContext.EntityTarget entity) {
 		super(conditions);
 		this.entity = entity;
 	}
@@ -45,18 +49,6 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(LootContext.EntityTarget target) {
-		return builder(conditions -> new FillPlayerHeadLootFunction(conditions, target));
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<FillPlayerHeadLootFunction> {
-		public void toJson(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);
-			jsonObject.add("entity", jsonSerializationContext.serialize(fillPlayerHeadLootFunction.entity));
-		}
-
-		public FillPlayerHeadLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class);
-			return new FillPlayerHeadLootFunction(lootConditions, entityTarget);
-		}
+		return builder(list -> new FillPlayerHeadLootFunction(list, target));
 	}
 }

@@ -45,6 +45,7 @@ import net.minecraft.network.handler.PacketDeflater;
 import net.minecraft.network.handler.PacketEncoder;
 import net.minecraft.network.handler.PacketEncoderException;
 import net.minecraft.network.handler.PacketInflater;
+import net.minecraft.network.handler.PacketSizeLogger;
 import net.minecraft.network.handler.PacketUnbundler;
 import net.minecraft.network.handler.PacketValidator;
 import net.minecraft.network.handler.SizePrepender;
@@ -54,12 +55,14 @@ import net.minecraft.network.listener.ClientQueryPacketListener;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.handshake.ConnectionIntent;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.PerformanceLog;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -118,6 +121,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private boolean errored;
 	@Nullable
 	private volatile Text pendingDisconnectionReason;
+	@Nullable
+	PacketSizeLogger packetSizeLogger;
 
 	public ClientConnection(NetworkSide side) {
 		this.side = side;
@@ -280,16 +285,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.send(packet, null);
 	}
 
-	public void sendWithoutFlush(Packet<?> packet) {
-		this.sendWithoutFlush(packet, null);
-	}
-
 	public void send(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
 		this.send(packet, callbacks, true);
-	}
-
-	public void sendWithoutFlush(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
-		this.send(packet, callbacks, false);
 	}
 
 	public void send(Packet<?> packet, @Nullable PacketCallbacks callbacks, boolean flush) {
@@ -389,6 +386,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		if (this.ticks++ % 20 == 0) {
 			this.updateStats();
 		}
+
+		if (this.packetSizeLogger != null) {
+			this.packetSizeLogger.push();
+		}
 	}
 
 	protected void updateStats() {
@@ -441,8 +442,12 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.side.getOpposite();
 	}
 
-	public static ClientConnection connect(InetSocketAddress address, boolean useEpoll) {
+	public static ClientConnection connect(InetSocketAddress address, boolean useEpoll, @Nullable PerformanceLog packetSizeLog) {
 		ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
+		if (packetSizeLog != null) {
+			clientConnection.resetPacketSizeLog(packetSizeLog);
+		}
+
 		ChannelFuture channelFuture = connect(address, useEpoll, clientConnection);
 		channelFuture.syncUninterruptibly();
 		return clientConnection;
@@ -470,17 +475,17 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				}
 
 				ChannelPipeline channelPipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
-				ClientConnection.addHandlers(channelPipeline, NetworkSide.CLIENTBOUND);
+				ClientConnection.addHandlers(channelPipeline, NetworkSide.CLIENTBOUND, connection.packetSizeLogger);
 				channelPipeline.addLast("packet_handler", connection);
 			}
 		}).channel(class_).connect(address.getAddress(), address.getPort());
 	}
 
-	public static void addHandlers(ChannelPipeline pipeline, NetworkSide side) {
+	public static void addHandlers(ChannelPipeline pipeline, NetworkSide side, @Nullable PacketSizeLogger packetSizeLogger) {
 		NetworkSide networkSide = side.getOpposite();
 		AttributeKey<NetworkState.PacketHandler<?>> attributeKey = getProtocolAttributeKey(side);
 		AttributeKey<NetworkState.PacketHandler<?>> attributeKey2 = getProtocolAttributeKey(networkSide);
-		pipeline.addLast("splitter", new SplitterHandler())
+		pipeline.addLast("splitter", new SplitterHandler(packetSizeLogger))
 			.addLast("decoder", new DecoderHandler(attributeKey))
 			.addLast("prepender", new SizePrepender())
 			.addLast("encoder", new PacketEncoder(attributeKey2))
@@ -606,5 +611,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	public float getAveragePacketsSent() {
 		return this.averagePacketsSent;
+	}
+
+	public void resetPacketSizeLog(PerformanceLog log) {
+		this.packetSizeLogger = new PacketSizeLogger(log);
 	}
 }

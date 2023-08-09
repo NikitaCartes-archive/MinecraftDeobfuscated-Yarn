@@ -78,7 +78,7 @@ public class EntityRidingToPassengerFix extends DataFix {
 								);
 								optional = Optional.of(Pair.of(TypeReferences.ENTITY_TREE.typeName(), Pair.of(either, pair2.getSecond().getSecond())));
 								Optional<OldEntityTree> optional2 = pair2.getSecond().getFirst().left();
-								if (!optional2.isPresent()) {
+								if (optional2.isEmpty()) {
 									return (Pair)optional.orElseThrow(() -> new IllegalStateException("Should always have an entity tree here"));
 								}
 

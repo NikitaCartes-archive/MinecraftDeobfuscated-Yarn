@@ -1,13 +1,12 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,11 +22,11 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 	}
 
 	protected RecipeCraftedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe_id"));
-		ItemPredicate[] itemPredicates = ItemPredicate.deserializeAll(jsonObject.get("ingredients"));
-		return new RecipeCraftedCriterion.Conditions(lootContextPredicate, identifier, List.of(itemPredicates));
+		List<ItemPredicate> list = ItemPredicate.deserializeAll(jsonObject.get("ingredients"));
+		return new RecipeCraftedCriterion.Conditions(optional, identifier, list);
 	}
 
 	public void trigger(ServerPlayerEntity player, Identifier recipeId, List<ItemStack> ingredients) {
@@ -38,18 +37,18 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 		private final Identifier recipeId;
 		private final List<ItemPredicate> ingredients;
 
-		public Conditions(LootContextPredicate player, Identifier recipeId, List<ItemPredicate> ingredients) {
-			super(RecipeCraftedCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Identifier recipeId, List<ItemPredicate> ingredients) {
+			super(RecipeCraftedCriterion.ID, playerPredicate);
 			this.recipeId = recipeId;
 			this.ingredients = ingredients;
 		}
 
-		public static RecipeCraftedCriterion.Conditions create(Identifier recipeId, List<ItemPredicate> ingredients) {
-			return new RecipeCraftedCriterion.Conditions(LootContextPredicate.EMPTY, recipeId, ingredients);
+		public static RecipeCraftedCriterion.Conditions create(Identifier recipeId, List<ItemPredicate.Builder> ingredients) {
+			return new RecipeCraftedCriterion.Conditions(Optional.empty(), recipeId, ingredients.stream().flatMap(builder -> builder.build().stream()).toList());
 		}
 
 		public static RecipeCraftedCriterion.Conditions create(Identifier recipeId) {
-			return new RecipeCraftedCriterion.Conditions(LootContextPredicate.EMPTY, recipeId, List.of());
+			return new RecipeCraftedCriterion.Conditions(Optional.empty(), recipeId, List.of());
 		}
 
 		boolean matches(Identifier recipeId, List<ItemStack> ingredients) {
@@ -80,17 +79,11 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
 			jsonObject.addProperty("recipe_id", this.recipeId.toString());
-			if (this.ingredients.size() > 0) {
-				JsonArray jsonArray = new JsonArray();
-
-				for (ItemPredicate itemPredicate : this.ingredients) {
-					jsonArray.add(itemPredicate.toJson());
-				}
-
-				jsonObject.add("ingredients", jsonArray);
+			if (!this.ingredients.isEmpty()) {
+				jsonObject.add("ingredients", ItemPredicate.toJson(this.ingredients));
 			}
 
 			return jsonObject;

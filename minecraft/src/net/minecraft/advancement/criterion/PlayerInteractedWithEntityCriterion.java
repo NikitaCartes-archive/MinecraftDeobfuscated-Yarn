@@ -1,11 +1,11 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -21,11 +21,11 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 	}
 
 	protected PlayerInteractedWithEntityCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new PlayerInteractedWithEntityCriterion.Conditions(lootContextPredicate, itemPredicate, lootContextPredicate2);
+		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("item"));
+		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+		return new PlayerInteractedWithEntityCriterion.Conditions(optional, optional2, optional3);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack, Entity entity) {
@@ -34,34 +34,36 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final ItemPredicate item;
-		private final LootContextPredicate entity;
+		private final Optional<ItemPredicate> item;
+		private final Optional<LootContextPredicate> entity;
 
-		public Conditions(LootContextPredicate player, ItemPredicate item, LootContextPredicate entity) {
-			super(PlayerInteractedWithEntityCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, Optional<LootContextPredicate> entity) {
+			super(PlayerInteractedWithEntityCriterion.ID, playerPredicate);
 			this.item = item;
 			this.entity = entity;
 		}
 
 		public static PlayerInteractedWithEntityCriterion.Conditions create(
-			LootContextPredicate player, ItemPredicate.Builder itemBuilder, LootContextPredicate entity
+			Optional<LootContextPredicate> playerPredicate, ItemPredicate.Builder item, Optional<LootContextPredicate> entity
 		) {
-			return new PlayerInteractedWithEntityCriterion.Conditions(player, itemBuilder.build(), entity);
+			return new PlayerInteractedWithEntityCriterion.Conditions(playerPredicate, item.build(), entity);
 		}
 
-		public static PlayerInteractedWithEntityCriterion.Conditions create(ItemPredicate.Builder itemBuilder, LootContextPredicate entity) {
-			return create(LootContextPredicate.EMPTY, itemBuilder, entity);
+		public static PlayerInteractedWithEntityCriterion.Conditions create(ItemPredicate.Builder item, Optional<LootContextPredicate> entity) {
+			return create(Optional.empty(), item, entity);
 		}
 
-		public boolean test(ItemStack stack, LootContext context) {
-			return !this.item.test(stack) ? false : this.entity.test(context);
+		public boolean test(ItemStack stack, LootContext entity) {
+			return this.item.isPresent() && !((ItemPredicate)this.item.get()).test(stack)
+				? false
+				: this.entity.isEmpty() || ((LootContextPredicate)this.entity.get()).test(entity);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("item", this.item.toJson());
-			jsonObject.add("entity", this.entity.toJson(predicateSerializer));
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
+			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
 			return jsonObject;
 		}
 	}

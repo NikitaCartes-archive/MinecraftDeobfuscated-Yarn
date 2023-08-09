@@ -34,7 +34,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.seedEdit = new TextFieldWidget(this.textRenderer, 208, 20, Text.translatable("mco.reset.world.seed"));
+		this.seedEdit = new TextFieldWidget(this.textRenderer, 210, 20, Text.translatable("mco.reset.world.seed"));
 		this.seedEdit.setMaxLength(32);
 		this.setInitialFocus(this.seedEdit);
 		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
@@ -42,7 +42,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
 		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.vertical().spacing(4));
 		directionalLayoutWidget2.add(new TextWidget(RESET_SEED_TEXT, this.textRenderer), Positioner::alignLeft);
-		directionalLayoutWidget2.add(this.seedEdit, positioner -> positioner.margin(1));
+		directionalLayoutWidget2.add(this.seedEdit);
 		directionalLayoutWidget.add(
 			CyclingButtonWidget.<RealmsWorldGeneratorType>builder(RealmsWorldGeneratorType::getText)
 				.values(RealmsWorldGeneratorType.values())

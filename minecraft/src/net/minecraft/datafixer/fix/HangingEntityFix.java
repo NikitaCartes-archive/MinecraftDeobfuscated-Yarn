@@ -17,7 +17,7 @@ public class HangingEntityFix extends DataFix {
 	}
 
 	private Dynamic<?> fixDecorationPosition(Dynamic<?> dynamic, boolean isPainting, boolean isItemFrame) {
-		if ((isPainting || isItemFrame) && !dynamic.get("Facing").asNumber().result().isPresent()) {
+		if ((isPainting || isItemFrame) && dynamic.get("Facing").asNumber().result().isEmpty()) {
 			int i;
 			if (dynamic.get("Direction").asNumber().result().isPresent()) {
 				i = dynamic.get("Direction").asByte((byte)0) % OFFSETS.length;

@@ -45,10 +45,11 @@ public class IntProperty extends Property<Integer> {
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (object instanceof IntProperty && super.equals(object)) {
-			IntProperty intProperty = (IntProperty)object;
-			return this.values.equals(intProperty.values);
 		} else {
+			if (object instanceof IntProperty intProperty && super.equals(object)) {
+				return this.values.equals(intProperty.values);
+			}
+
 			return false;
 		}
 	}

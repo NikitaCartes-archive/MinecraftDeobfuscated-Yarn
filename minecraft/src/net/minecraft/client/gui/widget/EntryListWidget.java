@@ -24,10 +24,13 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractParentElement implements Drawable, Selectable {
+	protected static final int field_45909 = 6;
+	private static final Identifier SCROLLER_TEXTURE = new Identifier("widget/scroller");
 	protected final MinecraftClient client;
 	protected final int itemHeight;
 	private final List<E> children = new EntryListWidget.Entries();
@@ -188,12 +191,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		int i = this.getScrollbarPositionX();
-		int j = i + 6;
 		this.hoveredEntry = this.isMouseOver((double)mouseX, (double)mouseY) ? this.getEntryAtPosition((double)mouseX, (double)mouseY) : null;
 		if (this.renderBackground) {
 			context.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
-			int k = 32;
+			int i = 32;
 			context.drawTexture(
 				Screen.OPTIONS_BACKGROUND_TEXTURE,
 				this.left,
@@ -206,32 +207,32 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				32
 			);
 			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			int l = 4;
+			int j = 4;
 			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.top, this.right, this.top + 4, -16777216, 0, 0);
 			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216, 0);
 		}
 
-		int k = this.getRowLeft();
-		int l = this.top + 4 - (int)this.getScrollAmount();
+		int i = this.getRowLeft();
+		int j = this.top + 4 - (int)this.getScrollAmount();
 		this.enableScissor(context);
 		if (this.renderHeader) {
-			this.renderHeader(context, k, l);
+			this.renderHeader(context, i, j);
 		}
 
 		this.renderList(context, mouseX, mouseY, delta);
 		context.disableScissor();
-		int m = this.getMaxScroll();
-		if (m > 0) {
-			int n = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
-			n = MathHelper.clamp(n, 32, this.bottom - this.top - 8);
-			int o = (int)this.getScrollAmount() * (this.bottom - this.top - n) / m + this.top;
-			if (o < this.top) {
-				o = this.top;
+		int k = this.getMaxScroll();
+		if (k > 0) {
+			int l = this.getScrollbarPositionX();
+			int m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
+			m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
+			int n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / k + this.top;
+			if (n < this.top) {
+				n = this.top;
 			}
 
-			context.fill(i, this.top, j, this.bottom, -16777216);
-			context.fill(i, o, j, o + n, -8355712);
-			context.fill(i, o, j - 1, o + n - 1, -4144960);
+			context.fill(l, this.top, l + 6, this.bottom, -16777216);
+			context.drawGuiTexture(SCROLLER_TEXTURE, l, n, 6, m);
 		}
 
 		this.renderDecorations(context, mouseX, mouseY);

@@ -2,12 +2,21 @@ package net.minecraft.loot.context;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import java.util.Optional;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 
 public class LootContextTypes {
 	private static final BiMap<Identifier, LootContextType> MAP = HashBiMap.create();
+	public static final Codec<LootContextType> CODEC = Identifier.CODEC
+		.comapFlatMap(
+			identifier -> (DataResult)Optional.ofNullable((LootContextType)MAP.get(identifier))
+					.map(DataResult::success)
+					.orElseGet(() -> DataResult.error(() -> "No parameter set exists with id: '" + identifier + "'")),
+			MAP.inverse()::get
+		);
 	public static final LootContextType EMPTY = register("empty", builder -> {
 	});
 	public static final LootContextType CHEST = register(
@@ -85,15 +94,5 @@ public class LootContextTypes {
 		} else {
 			return lootContextType;
 		}
-	}
-
-	@Nullable
-	public static LootContextType get(Identifier id) {
-		return (LootContextType)MAP.get(id);
-	}
-
-	@Nullable
-	public static Identifier getId(LootContextType type) {
-		return (Identifier)MAP.inverse().get(type);
 	}
 }

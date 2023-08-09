@@ -54,7 +54,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 				true,
 				false
 			)
-			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.STONE_TOOL_MATERIALS).build()))
+			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.STONE_TOOL_MATERIALS)))
 			.build(exporter, "story/mine_stone");
 		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement2)
@@ -249,7 +249,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 				true,
 				false
 			)
-			.criterion("in_stronghold", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.STRONGHOLD)))
+			.criterion("in_stronghold", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.STRONGHOLD)))
 			.build(exporter, "story/follow_ender_eye");
 		Advancement.Builder.create()
 			.parent(advancement11)

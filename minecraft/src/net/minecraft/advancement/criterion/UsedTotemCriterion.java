@@ -1,10 +1,10 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,10 +19,10 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 	}
 
 	public UsedTotemCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new UsedTotemCriterion.Conditions(lootContextPredicate, itemPredicate);
+		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("item"));
+		return new UsedTotemCriterion.Conditions(optional, optional2);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
@@ -30,29 +30,29 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final ItemPredicate item;
+		private final Optional<ItemPredicate> item;
 
-		public Conditions(LootContextPredicate player, ItemPredicate item) {
-			super(UsedTotemCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item) {
+			super(UsedTotemCriterion.ID, playerPredicate);
 			this.item = item;
 		}
 
 		public static UsedTotemCriterion.Conditions create(ItemPredicate itemPredicate) {
-			return new UsedTotemCriterion.Conditions(LootContextPredicate.EMPTY, itemPredicate);
+			return new UsedTotemCriterion.Conditions(Optional.empty(), Optional.of(itemPredicate));
 		}
 
 		public static UsedTotemCriterion.Conditions create(ItemConvertible item) {
-			return new UsedTotemCriterion.Conditions(LootContextPredicate.EMPTY, ItemPredicate.Builder.create().items(item).build());
+			return new UsedTotemCriterion.Conditions(Optional.empty(), ItemPredicate.Builder.create().items(item).build());
 		}
 
 		public boolean matches(ItemStack stack) {
-			return this.item.test(stack);
+			return this.item.isEmpty() || ((ItemPredicate)this.item.get()).test(stack);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("item", this.item.toJson());
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
 			return jsonObject;
 		}
 	}

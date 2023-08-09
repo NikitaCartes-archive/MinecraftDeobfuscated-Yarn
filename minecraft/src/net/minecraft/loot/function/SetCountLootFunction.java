@@ -1,22 +1,32 @@
 package net.minecraft.loot.function;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.util.math.MathHelper;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
-	final LootNumberProvider countRange;
-	final boolean add;
+	public static final Codec<SetCountLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<LootNumberProvider, boolean>and(
+					instance.group(
+						LootNumberProviderTypes.CODEC.fieldOf("count").forGetter(setCountLootFunction -> setCountLootFunction.countRange),
+						Codec.BOOL.fieldOf("add").orElse(false).forGetter(setCountLootFunction -> setCountLootFunction.add)
+					)
+				)
+				.apply(instance, SetCountLootFunction::new)
+	);
+	private final LootNumberProvider countRange;
+	private final boolean add;
 
-	SetCountLootFunction(LootCondition[] conditions, LootNumberProvider countRange, boolean add) {
+	private SetCountLootFunction(List<LootCondition> conditions, LootNumberProvider countRange, boolean add) {
 		super(conditions);
 		this.countRange = countRange;
 		this.add = add;
@@ -40,24 +50,10 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(LootNumberProvider countRange) {
-		return builder(conditions -> new SetCountLootFunction(conditions, countRange, false));
+		return builder(list -> new SetCountLootFunction(list, countRange, false));
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(LootNumberProvider countRange, boolean add) {
-		return builder(conditions -> new SetCountLootFunction(conditions, countRange, add));
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<SetCountLootFunction> {
-		public void toJson(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setCountLootFunction, jsonSerializationContext);
-			jsonObject.add("count", jsonSerializationContext.serialize(setCountLootFunction.countRange));
-			jsonObject.addProperty("add", setCountLootFunction.add);
-		}
-
-		public SetCountLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, LootNumberProvider.class);
-			boolean bl = JsonHelper.getBoolean(jsonObject, "add", false);
-			return new SetCountLootFunction(lootConditions, lootNumberProvider, bl);
-		}
+		return builder(list -> new SetCountLootFunction(list, countRange, add));
 	}
 }

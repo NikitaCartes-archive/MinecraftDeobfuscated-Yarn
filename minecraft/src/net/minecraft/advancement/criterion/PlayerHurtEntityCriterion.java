@@ -1,12 +1,12 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,11 +21,11 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 	}
 
 	public PlayerHurtEntityCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		DamagePredicate damagePredicate = DamagePredicate.fromJson(jsonObject.get("damage"));
-		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new PlayerHurtEntityCriterion.Conditions(lootContextPredicate, damagePredicate, lootContextPredicate2);
+		Optional<DamagePredicate> optional2 = DamagePredicate.fromJson(jsonObject.get("damage"));
+		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+		return new PlayerHurtEntityCriterion.Conditions(optional, optional2, optional3);
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource damage, float dealt, float taken, boolean blocked) {
@@ -34,50 +34,50 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final DamagePredicate damage;
-		private final LootContextPredicate entity;
+		private final Optional<DamagePredicate> damage;
+		private final Optional<LootContextPredicate> entity;
 
-		public Conditions(LootContextPredicate player, DamagePredicate damage, LootContextPredicate entity) {
-			super(PlayerHurtEntityCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<DamagePredicate> damage, Optional<LootContextPredicate> entity) {
+			super(PlayerHurtEntityCriterion.ID, playerPredicate);
 			this.damage = damage;
 			this.entity = entity;
 		}
 
 		public static PlayerHurtEntityCriterion.Conditions create() {
-			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, DamagePredicate.ANY, LootContextPredicate.EMPTY);
+			return new PlayerHurtEntityCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.empty());
 		}
 
-		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate damagePredicate) {
-			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, damagePredicate, LootContextPredicate.EMPTY);
+		public static PlayerHurtEntityCriterion.Conditions method_35296(Optional<DamagePredicate> optional) {
+			return new PlayerHurtEntityCriterion.Conditions(Optional.empty(), optional, Optional.empty());
 		}
 
-		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder damagePredicateBuilder) {
-			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, damagePredicateBuilder.build(), LootContextPredicate.EMPTY);
+		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder damage) {
+			return new PlayerHurtEntityCriterion.Conditions(Optional.empty(), damage.build(), Optional.empty());
 		}
 
-		public static PlayerHurtEntityCriterion.Conditions create(EntityPredicate hurtEntityPredicate) {
-			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, DamagePredicate.ANY, EntityPredicate.asLootContextPredicate(hurtEntityPredicate));
+		public static PlayerHurtEntityCriterion.Conditions create(Optional<EntityPredicate> entity) {
+			return new PlayerHurtEntityCriterion.Conditions(Optional.empty(), Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity));
 		}
 
-		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate damagePredicate, EntityPredicate hurtEntityPredicate) {
-			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, damagePredicate, EntityPredicate.asLootContextPredicate(hurtEntityPredicate));
+		public static PlayerHurtEntityCriterion.Conditions create(Optional<DamagePredicate> damage, Optional<EntityPredicate> entity) {
+			return new PlayerHurtEntityCriterion.Conditions(Optional.empty(), damage, EntityPredicate.contextPredicateFromEntityPredicate(entity));
 		}
 
-		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder damagePredicateBuilder, EntityPredicate hurtEntityPredicate) {
-			return new PlayerHurtEntityCriterion.Conditions(
-				LootContextPredicate.EMPTY, damagePredicateBuilder.build(), EntityPredicate.asLootContextPredicate(hurtEntityPredicate)
-			);
+		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder damage, Optional<EntityPredicate> entity) {
+			return new PlayerHurtEntityCriterion.Conditions(Optional.empty(), damage.build(), EntityPredicate.contextPredicateFromEntityPredicate(entity));
 		}
 
-		public boolean matches(ServerPlayerEntity player, LootContext entityContext, DamageSource source, float dealt, float taken, boolean blocked) {
-			return !this.damage.test(player, source, dealt, taken, blocked) ? false : this.entity.test(entityContext);
+		public boolean matches(ServerPlayerEntity player, LootContext entity, DamageSource damageSource, float dealt, float taken, boolean blocked) {
+			return this.damage.isPresent() && !((DamagePredicate)this.damage.get()).test(player, damageSource, dealt, taken, blocked)
+				? false
+				: !this.entity.isPresent() || ((LootContextPredicate)this.entity.get()).test(entity);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("damage", this.damage.toJson());
-			jsonObject.add("entity", this.entity.toJson(predicateSerializer));
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.damage.ifPresent(damagePredicate -> jsonObject.add("damage", damagePredicate.toJson()));
+			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
 			return jsonObject;
 		}
 	}

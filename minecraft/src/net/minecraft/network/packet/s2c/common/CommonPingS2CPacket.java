@@ -8,11 +8,10 @@ import net.minecraft.network.packet.Packet;
  * A packet sent by the server; the client will reply with a pong packet on the
  * first tick after it receives this packet, with the same {@link #parameter}.
  * 
- * @see net.minecraft.network.packet.c2s.common.PlayPongC2SPacket
+ * @see net.minecraft.network.packet.c2s.common.CommonPongC2SPacket
  * @see net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket
- * @see net.minecraft.network.packet.s2c.query.QueryPongS2CPacket
  */
-public class PlayPingS2CPacket implements Packet<ClientCommonPacketListener> {
+public class CommonPingS2CPacket implements Packet<ClientCommonPacketListener> {
 	/**
 	 * The parameter of this ping packet.
 	 * 
@@ -23,11 +22,11 @@ public class PlayPingS2CPacket implements Packet<ClientCommonPacketListener> {
 	 */
 	private final int parameter;
 
-	public PlayPingS2CPacket(int parameter) {
+	public CommonPingS2CPacket(int parameter) {
 		this.parameter = parameter;
 	}
 
-	public PlayPingS2CPacket(PacketByteBuf buf) {
+	public CommonPingS2CPacket(PacketByteBuf buf) {
 		this.parameter = buf.readInt();
 	}
 
@@ -37,7 +36,7 @@ public class PlayPingS2CPacket implements Packet<ClientCommonPacketListener> {
 	}
 
 	public void apply(ClientCommonPacketListener clientCommonPacketListener) {
-		clientCommonPacketListener.onPlayPing(this);
+		clientCommonPacketListener.onPing(this);
 	}
 
 	public int getParameter() {

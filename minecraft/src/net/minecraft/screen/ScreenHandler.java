@@ -1012,19 +1012,17 @@ public abstract class ScreenHandler {
 		if (inventory == null) {
 			return 0;
 		} else {
-			int i = 0;
 			float f = 0.0F;
 
-			for (int j = 0; j < inventory.size(); j++) {
-				ItemStack itemStack = inventory.getStack(j);
+			for (int i = 0; i < inventory.size(); i++) {
+				ItemStack itemStack = inventory.getStack(i);
 				if (!itemStack.isEmpty()) {
 					f += (float)itemStack.getCount() / (float)Math.min(inventory.getMaxCountPerStack(), itemStack.getMaxCount());
-					i++;
 				}
 			}
 
 			f /= (float)inventory.size();
-			return MathHelper.floor(f * 14.0F) + (i > 0 ? 1 : 0);
+			return MathHelper.lerpPositive(f, 0, 15);
 		}
 	}
 

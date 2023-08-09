@@ -1,10 +1,6 @@
 package net.minecraft.loot.condition;
 
-import net.minecraft.util.JsonSerializableType;
-import net.minecraft.util.JsonSerializer;
+import com.mojang.serialization.Codec;
 
-public class LootConditionType extends JsonSerializableType<LootCondition> {
-	public LootConditionType(JsonSerializer<? extends LootCondition> jsonSerializer) {
-		super(jsonSerializer);
-	}
+public record LootConditionType(Codec<? extends LootCondition> codec) {
 }

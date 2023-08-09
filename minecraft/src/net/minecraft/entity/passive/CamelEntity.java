@@ -428,6 +428,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 					}
 				}
 
+				this.emitGameEvent(GameEvent.EAT);
 				return true;
 			}
 		}

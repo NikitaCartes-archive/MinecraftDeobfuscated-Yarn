@@ -1,12 +1,12 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
@@ -22,11 +22,11 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 	}
 
 	public EffectsChangedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		EntityEffectPredicate entityEffectPredicate = EntityEffectPredicate.fromJson(jsonObject.get("effects"));
-		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "source", advancementEntityPredicateDeserializer);
-		return new EffectsChangedCriterion.Conditions(lootContextPredicate, entityEffectPredicate, lootContextPredicate2);
+		Optional<EntityEffectPredicate> optional2 = EntityEffectPredicate.fromJson(jsonObject.get("effects"));
+		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "source", advancementEntityPredicateDeserializer);
+		return new EffectsChangedCriterion.Conditions(optional, optional2, optional3);
 	}
 
 	public void trigger(ServerPlayerEntity player, @Nullable Entity source) {
@@ -35,32 +35,34 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityEffectPredicate effects;
-		private final LootContextPredicate source;
+		private final Optional<EntityEffectPredicate> effects;
+		private final Optional<LootContextPredicate> source;
 
-		public Conditions(LootContextPredicate player, EntityEffectPredicate effects, LootContextPredicate source) {
-			super(EffectsChangedCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<EntityEffectPredicate> effects, Optional<LootContextPredicate> source) {
+			super(EffectsChangedCriterion.ID, playerPredicate);
 			this.effects = effects;
 			this.source = source;
 		}
 
-		public static EffectsChangedCriterion.Conditions create(EntityEffectPredicate effects) {
-			return new EffectsChangedCriterion.Conditions(LootContextPredicate.EMPTY, effects, LootContextPredicate.EMPTY);
+		public static EffectsChangedCriterion.Conditions create(EntityEffectPredicate.Builder effects) {
+			return new EffectsChangedCriterion.Conditions(Optional.empty(), effects.build(), Optional.empty());
 		}
 
-		public static EffectsChangedCriterion.Conditions create(EntityPredicate source) {
-			return new EffectsChangedCriterion.Conditions(LootContextPredicate.EMPTY, EntityEffectPredicate.EMPTY, EntityPredicate.asLootContextPredicate(source));
+		public static EffectsChangedCriterion.Conditions create(Optional<EntityPredicate> source) {
+			return new EffectsChangedCriterion.Conditions(Optional.empty(), Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(source));
 		}
 
 		public boolean matches(ServerPlayerEntity player, @Nullable LootContext context) {
-			return !this.effects.test((LivingEntity)player) ? false : this.source == LootContextPredicate.EMPTY || context != null && this.source.test(context);
+			return this.effects.isPresent() && !((EntityEffectPredicate)this.effects.get()).test((LivingEntity)player)
+				? false
+				: !this.source.isPresent() || context != null && ((LootContextPredicate)this.source.get()).test(context);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("effects", this.effects.toJson());
-			jsonObject.add("source", this.source.toJson(predicateSerializer));
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.effects.ifPresent(entityEffectPredicate -> jsonObject.add("effects", entityEffectPredicate.toJson()));
+			this.source.ifPresent(lootContextPredicate -> jsonObject.add("source", lootContextPredicate.toJson()));
 			return jsonObject;
 		}
 	}

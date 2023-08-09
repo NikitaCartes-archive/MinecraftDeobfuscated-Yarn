@@ -291,7 +291,7 @@ public class MapState extends PersistentState {
 
 	private void removeIcon(String id) {
 		MapIcon mapIcon = (MapIcon)this.icons.remove(id);
-		if (mapIcon != null && mapIcon.getType().shouldUseIconCountLimit()) {
+		if (mapIcon != null && mapIcon.type().shouldUseIconCountLimit()) {
 			this.iconCount--;
 		}
 
@@ -374,7 +374,7 @@ public class MapState extends PersistentState {
 		MapIcon mapIcon = new MapIcon(type, b, c, d, text);
 		MapIcon mapIcon2 = (MapIcon)this.icons.put(key, mapIcon);
 		if (!mapIcon.equals(mapIcon2)) {
-			if (mapIcon2 != null && mapIcon2.getType().shouldUseIconCountLimit()) {
+			if (mapIcon2 != null && mapIcon2.type().shouldUseIconCountLimit()) {
 				this.iconCount--;
 			}
 
@@ -490,7 +490,7 @@ public class MapState extends PersistentState {
 
 	public boolean hasMonumentIcon() {
 		for (MapIcon mapIcon : this.icons.values()) {
-			if (mapIcon.getType() == MapIcon.Type.MANSION || mapIcon.getType() == MapIcon.Type.MONUMENT) {
+			if (mapIcon.type() == MapIcon.Type.MANSION || mapIcon.type() == MapIcon.Type.MONUMENT) {
 				return true;
 			}
 		}
@@ -505,7 +505,7 @@ public class MapState extends PersistentState {
 		for (int i = 0; i < icons.size(); i++) {
 			MapIcon mapIcon = (MapIcon)icons.get(i);
 			this.icons.put("icon-" + i, mapIcon);
-			if (mapIcon.getType().shouldUseIconCountLimit()) {
+			if (mapIcon.type().shouldUseIconCountLimit()) {
 				this.iconCount++;
 			}
 		}

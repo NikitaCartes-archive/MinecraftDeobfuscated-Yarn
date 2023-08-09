@@ -185,7 +185,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			long l = chunkSectionPosAsLong(chunkPos, i);
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
-			if (optional != null && optional.isPresent()) {
+			if (optional != null && !optional.isEmpty()) {
 				DataResult<T> dataResult = ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(l))).encodeStart(ops, optional.get());
 				String string = Integer.toString(i);
 				dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(ops.createString(string), object));
@@ -214,7 +214,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	protected void onUpdate(long pos) {
 		Optional<R> optional = this.loadedElements.get(pos);
-		if (optional != null && optional.isPresent()) {
+		if (optional != null && !optional.isEmpty()) {
 			this.unsavedElements.add(pos);
 		} else {
 			LOGGER.warn("No data for position: {}", ChunkSectionPos.from(pos));

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -1170,23 +1171,25 @@ public class TradeOffers {
 	}
 
 	static class SellSuspiciousStewFactory implements TradeOffers.Factory {
-		final StatusEffect effect;
-		final int duration;
-		final int experience;
+		private final List<SuspiciousStewIngredient.StewEffect> stewEffects;
+		private final int experience;
 		private final float multiplier;
 
 		public SellSuspiciousStewFactory(StatusEffect effect, int duration, int experience) {
-			this.effect = effect;
-			this.duration = duration;
+			this(List.of(new SuspiciousStewIngredient.StewEffect(effect, duration)), experience, 0.05F);
+		}
+
+		public SellSuspiciousStewFactory(List<SuspiciousStewIngredient.StewEffect> stewEffects, int experience, float multiplier) {
+			this.stewEffects = stewEffects;
 			this.experience = experience;
-			this.multiplier = 0.05F;
+			this.multiplier = multiplier;
 		}
 
 		@Nullable
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
-			SuspiciousStewItem.addEffectToStew(itemStack, this.effect, this.duration);
+			SuspiciousStewItem.writeEffectsToStew(itemStack, this.stewEffects);
 			return new TradeOffer(new ItemStack(Items.EMERALD, 1), itemStack, 12, this.experience, this.multiplier);
 		}
 	}

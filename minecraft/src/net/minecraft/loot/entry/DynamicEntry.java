@@ -1,20 +1,24 @@
 package net.minecraft.loot.entry;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
 public class DynamicEntry extends LeafEntry {
-	final Identifier name;
+	public static final Codec<DynamicEntry> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(dynamicEntry -> dynamicEntry.name))
+				.<int, int, List<LootCondition>, List<LootFunction>>and(method_53290(instance))
+				.apply(instance, DynamicEntry::new)
+	);
+	private final Identifier name;
 
-	DynamicEntry(Identifier name, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+	private DynamicEntry(Identifier name, int weight, int quality, List<LootCondition> conditions, List<LootFunction> functions) {
 		super(weight, quality, conditions, functions);
 		this.name = name;
 	}
@@ -31,19 +35,5 @@ public class DynamicEntry extends LeafEntry {
 
 	public static LeafEntry.Builder<?> builder(Identifier name) {
 		return builder((weight, quality, conditions, functions) -> new DynamicEntry(name, weight, quality, conditions, functions));
-	}
-
-	public static class Serializer extends LeafEntry.Serializer<DynamicEntry> {
-		public void addEntryFields(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
-			super.addEntryFields(jsonObject, dynamicEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", dynamicEntry.name.toString());
-		}
-
-		protected DynamicEntry fromJson(
-			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
-		) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			return new DynamicEntry(identifier, i, j, lootConditions, lootFunctions);
-		}
 	}
 }

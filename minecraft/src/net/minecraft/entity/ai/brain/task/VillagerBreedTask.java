@@ -63,7 +63,7 @@ public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
 
 	private void goHome(ServerWorld world, VillagerEntity first, VillagerEntity second) {
 		Optional<BlockPos> optional = this.getReachableHome(world, first);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			world.sendEntityStatus(second, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
 			world.sendEntityStatus(first, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
 		} else {
@@ -85,7 +85,7 @@ public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
 		Brain<VillagerEntity> brain = villager.getBrain();
 		Optional<PassiveEntity> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET)
 			.filter(passiveEntity -> passiveEntity.getType() == EntityType.VILLAGER);
-		return !optional.isPresent()
+		return optional.isEmpty()
 			? false
 			: LookTargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER)
 				&& villager.isReadyToBreed()

@@ -1,10 +1,11 @@
 package net.minecraft.predicate.entity;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.mojang.logging.LogUtils;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.predicate.BlockPredicate;
@@ -14,137 +15,77 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.structure.Structure;
-import org.slf4j.Logger;
 
-public class LocationPredicate {
-	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final LocationPredicate ANY = new LocationPredicate(
-		NumberRange.FloatRange.ANY,
-		NumberRange.FloatRange.ANY,
-		NumberRange.FloatRange.ANY,
-		null,
-		null,
-		null,
-		null,
-		LightPredicate.ANY,
-		BlockPredicate.ANY,
-		FluidPredicate.ANY
+public record LocationPredicate(
+	Optional<LocationPredicate.PositionRange> position,
+	Optional<RegistryKey<Biome>> biome,
+	Optional<RegistryKey<Structure>> structure,
+	Optional<RegistryKey<World>> dimension,
+	Optional<Boolean> smokey,
+	Optional<LightPredicate> light,
+	Optional<BlockPredicate> block,
+	Optional<FluidPredicate> fluid
+) {
+	public static final Codec<LocationPredicate> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(LocationPredicate.PositionRange.CODEC, "position").forGetter(LocationPredicate::position),
+					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.BIOME), "biome").forGetter(LocationPredicate::biome),
+					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.STRUCTURE), "structure").forGetter(LocationPredicate::structure),
+					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.WORLD), "dimension").forGetter(LocationPredicate::dimension),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "smokey").forGetter(LocationPredicate::smokey),
+					Codecs.createStrictOptionalFieldCodec(LightPredicate.CODEC, "light").forGetter(LocationPredicate::light),
+					Codecs.createStrictOptionalFieldCodec(BlockPredicate.CODEC, "block").forGetter(LocationPredicate::block),
+					Codecs.createStrictOptionalFieldCodec(FluidPredicate.CODEC, "fluid").forGetter(LocationPredicate::fluid)
+				)
+				.apply(instance, LocationPredicate::new)
 	);
-	private final NumberRange.FloatRange x;
-	private final NumberRange.FloatRange y;
-	private final NumberRange.FloatRange z;
-	@Nullable
-	private final RegistryKey<Biome> biome;
-	@Nullable
-	private final RegistryKey<Structure> feature;
-	@Nullable
-	private final RegistryKey<World> dimension;
-	@Nullable
-	private final Boolean smokey;
-	private final LightPredicate light;
-	private final BlockPredicate block;
-	private final FluidPredicate fluid;
 
-	public LocationPredicate(
-		NumberRange.FloatRange x,
-		NumberRange.FloatRange y,
-		NumberRange.FloatRange z,
-		@Nullable RegistryKey<Biome> biome,
-		@Nullable RegistryKey<Structure> feature,
-		@Nullable RegistryKey<World> dimension,
-		@Nullable Boolean smokey,
-		LightPredicate light,
-		BlockPredicate block,
-		FluidPredicate fluid
+	static Optional<LocationPredicate> create(
+		Optional<LocationPredicate.PositionRange> position,
+		Optional<RegistryKey<Biome>> biome,
+		Optional<RegistryKey<Structure>> structure,
+		Optional<RegistryKey<World>> dimension,
+		Optional<Boolean> smokey,
+		Optional<LightPredicate> light,
+		Optional<BlockPredicate> block,
+		Optional<FluidPredicate> fluid
 	) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.biome = biome;
-		this.feature = feature;
-		this.dimension = dimension;
-		this.smokey = smokey;
-		this.light = light;
-		this.block = block;
-		this.fluid = fluid;
-	}
-
-	public static LocationPredicate biome(RegistryKey<Biome> biome) {
-		return new LocationPredicate(
-			NumberRange.FloatRange.ANY,
-			NumberRange.FloatRange.ANY,
-			NumberRange.FloatRange.ANY,
-			biome,
-			null,
-			null,
-			null,
-			LightPredicate.ANY,
-			BlockPredicate.ANY,
-			FluidPredicate.ANY
-		);
-	}
-
-	public static LocationPredicate dimension(RegistryKey<World> dimension) {
-		return new LocationPredicate(
-			NumberRange.FloatRange.ANY,
-			NumberRange.FloatRange.ANY,
-			NumberRange.FloatRange.ANY,
-			null,
-			null,
-			dimension,
-			null,
-			LightPredicate.ANY,
-			BlockPredicate.ANY,
-			FluidPredicate.ANY
-		);
-	}
-
-	public static LocationPredicate feature(RegistryKey<Structure> feature) {
-		return new LocationPredicate(
-			NumberRange.FloatRange.ANY,
-			NumberRange.FloatRange.ANY,
-			NumberRange.FloatRange.ANY,
-			null,
-			feature,
-			null,
-			null,
-			LightPredicate.ANY,
-			BlockPredicate.ANY,
-			FluidPredicate.ANY
-		);
-	}
-
-	public static LocationPredicate y(NumberRange.FloatRange y) {
-		return new LocationPredicate(
-			NumberRange.FloatRange.ANY, y, NumberRange.FloatRange.ANY, null, null, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY
-		);
+		return position.isEmpty()
+				&& biome.isEmpty()
+				&& structure.isEmpty()
+				&& dimension.isEmpty()
+				&& smokey.isEmpty()
+				&& light.isEmpty()
+				&& block.isEmpty()
+				&& fluid.isEmpty()
+			? Optional.empty()
+			: Optional.of(new LocationPredicate(position, biome, structure, dimension, smokey, light, block, fluid));
 	}
 
 	public boolean test(ServerWorld world, double x, double y, double z) {
-		if (!this.x.test(x)) {
+		if (this.position.isPresent() && !((LocationPredicate.PositionRange)this.position.get()).test(x, y, z)) {
 			return false;
-		} else if (!this.y.test(y)) {
-			return false;
-		} else if (!this.z.test(z)) {
-			return false;
-		} else if (this.dimension != null && this.dimension != world.getRegistryKey()) {
+		} else if (this.dimension.isPresent() && this.dimension.get() != world.getRegistryKey()) {
 			return false;
 		} else {
 			BlockPos blockPos = BlockPos.ofFloored(x, y, z);
 			boolean bl = world.canSetBlock(blockPos);
-			if (this.biome == null || bl && world.getBiome(blockPos).matchesKey(this.biome)) {
-				if (this.feature == null || bl && world.getStructureAccessor().getStructureContaining(blockPos, this.feature).hasChildren()) {
-					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
-						if (!this.light.test(world, blockPos)) {
+			if (!this.biome.isPresent() || bl && world.getBiome(blockPos).matchesKey((RegistryKey<Biome>)this.biome.get())) {
+				if (!this.structure.isPresent()
+					|| bl && world.getStructureAccessor().getStructureContaining(blockPos, (RegistryKey<Structure>)this.structure.get()).hasChildren()) {
+					if (!this.smokey.isPresent() || bl && (Boolean)this.smokey.get() == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
+						if (this.light.isPresent() && !((LightPredicate)this.light.get()).test(world, blockPos)) {
 							return false;
 						} else {
-							return !this.block.test(world, blockPos) ? false : this.fluid.test(world, blockPos);
+							return this.block.isPresent() && !((BlockPredicate)this.block.get()).test(world, blockPos)
+								? false
+								: !this.fluid.isPresent() || ((FluidPredicate)this.fluid.get()).test(world, blockPos);
 						}
 					} else {
 						return false;
@@ -159,98 +100,43 @@ public class LocationPredicate {
 	}
 
 	public JsonElement toJson() {
-		if (this == ANY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			if (!this.x.isDummy() || !this.y.isDummy() || !this.z.isDummy()) {
-				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.add("x", this.x.toJson());
-				jsonObject2.add("y", this.y.toJson());
-				jsonObject2.add("z", this.z.toJson());
-				jsonObject.add("position", jsonObject2);
-			}
-
-			if (this.dimension != null) {
-				World.CODEC.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(LOGGER::error).ifPresent(json -> jsonObject.add("dimension", json));
-			}
-
-			if (this.feature != null) {
-				jsonObject.addProperty("structure", this.feature.getValue().toString());
-			}
-
-			if (this.biome != null) {
-				jsonObject.addProperty("biome", this.biome.getValue().toString());
-			}
-
-			if (this.smokey != null) {
-				jsonObject.addProperty("smokey", this.smokey);
-			}
-
-			jsonObject.add("light", this.light.toJson());
-			jsonObject.add("block", this.block.toJson());
-			jsonObject.add("fluid", this.fluid.toJson());
-			return jsonObject;
-		}
+		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 
-	public static LocationPredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "location");
-			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "position", new JsonObject());
-			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject2.get("x"));
-			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));
-			NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject2.get("z"));
-			RegistryKey<World> registryKey = jsonObject.has("dimension")
-				? (RegistryKey)Identifier.CODEC
-					.parse(JsonOps.INSTANCE, jsonObject.get("dimension"))
-					.resultOrPartial(LOGGER::error)
-					.map(identifier -> RegistryKey.of(RegistryKeys.WORLD, identifier))
-					.orElse(null)
-				: null;
-			RegistryKey<Structure> registryKey2 = jsonObject.has("structure")
-				? (RegistryKey)Identifier.CODEC
-					.parse(JsonOps.INSTANCE, jsonObject.get("structure"))
-					.resultOrPartial(LOGGER::error)
-					.map(identifier -> RegistryKey.of(RegistryKeys.STRUCTURE, identifier))
-					.orElse(null)
-				: null;
-			RegistryKey<Biome> registryKey3 = null;
-			if (jsonObject.has("biome")) {
-				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-				registryKey3 = RegistryKey.of(RegistryKeys.BIOME, identifier);
-			}
-
-			Boolean boolean_ = jsonObject.has("smokey") ? jsonObject.get("smokey").getAsBoolean() : null;
-			LightPredicate lightPredicate = LightPredicate.fromJson(jsonObject.get("light"));
-			BlockPredicate blockPredicate = BlockPredicate.fromJson(jsonObject.get("block"));
-			FluidPredicate fluidPredicate = FluidPredicate.fromJson(jsonObject.get("fluid"));
-			return new LocationPredicate(
-				floatRange, floatRange2, floatRange3, registryKey3, registryKey2, registryKey, boolean_, lightPredicate, blockPredicate, fluidPredicate
-			);
-		} else {
-			return ANY;
-		}
+	public static Optional<LocationPredicate> fromJson(@Nullable JsonElement json) {
+		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
 	}
 
 	public static class Builder {
 		private NumberRange.FloatRange x = NumberRange.FloatRange.ANY;
 		private NumberRange.FloatRange y = NumberRange.FloatRange.ANY;
 		private NumberRange.FloatRange z = NumberRange.FloatRange.ANY;
-		@Nullable
-		private RegistryKey<Biome> biome;
-		@Nullable
-		private RegistryKey<Structure> feature;
-		@Nullable
-		private RegistryKey<World> dimension;
-		@Nullable
-		private Boolean smokey;
-		private LightPredicate light = LightPredicate.ANY;
-		private BlockPredicate block = BlockPredicate.ANY;
-		private FluidPredicate fluid = FluidPredicate.ANY;
+		private Optional<RegistryKey<Biome>> biome = Optional.empty();
+		private Optional<RegistryKey<Structure>> feature = Optional.empty();
+		private Optional<RegistryKey<World>> dimension = Optional.empty();
+		private Optional<Boolean> smokey = Optional.empty();
+		private Optional<LightPredicate> light = Optional.empty();
+		private Optional<BlockPredicate> block = Optional.empty();
+		private Optional<FluidPredicate> fluid = Optional.empty();
 
 		public static LocationPredicate.Builder create() {
 			return new LocationPredicate.Builder();
+		}
+
+		public static LocationPredicate.Builder createBiome(RegistryKey<Biome> biome) {
+			return create().biome(biome);
+		}
+
+		public static LocationPredicate.Builder createDimension(RegistryKey<World> dimension) {
+			return create().dimension(dimension);
+		}
+
+		public static LocationPredicate.Builder createStructure(RegistryKey<Structure> structure) {
+			return create().structure(structure);
+		}
+
+		public static LocationPredicate.Builder createY(NumberRange.FloatRange y) {
+			return create().y(y);
 		}
 
 		public LocationPredicate.Builder x(NumberRange.FloatRange x) {
@@ -268,43 +154,64 @@ public class LocationPredicate {
 			return this;
 		}
 
-		public LocationPredicate.Builder biome(@Nullable RegistryKey<Biome> biome) {
-			this.biome = biome;
+		public LocationPredicate.Builder biome(RegistryKey<Biome> biome) {
+			this.biome = Optional.of(biome);
 			return this;
 		}
 
-		public LocationPredicate.Builder feature(@Nullable RegistryKey<Structure> feature) {
-			this.feature = feature;
+		public LocationPredicate.Builder structure(RegistryKey<Structure> structure) {
+			this.feature = Optional.of(structure);
 			return this;
 		}
 
-		public LocationPredicate.Builder dimension(@Nullable RegistryKey<World> dimension) {
-			this.dimension = dimension;
+		public LocationPredicate.Builder dimension(RegistryKey<World> dimension) {
+			this.dimension = Optional.of(dimension);
 			return this;
 		}
 
-		public LocationPredicate.Builder light(LightPredicate light) {
-			this.light = light;
+		public LocationPredicate.Builder light(LightPredicate.Builder light) {
+			this.light = light.build();
 			return this;
 		}
 
-		public LocationPredicate.Builder block(BlockPredicate block) {
-			this.block = block;
+		public LocationPredicate.Builder block(BlockPredicate.Builder block) {
+			this.block = block.build();
 			return this;
 		}
 
-		public LocationPredicate.Builder fluid(FluidPredicate fluid) {
-			this.fluid = fluid;
+		public LocationPredicate.Builder fluid(FluidPredicate.Builder fluid) {
+			this.fluid = fluid.build();
 			return this;
 		}
 
-		public LocationPredicate.Builder smokey(Boolean smokey) {
-			this.smokey = smokey;
+		public LocationPredicate.Builder smokey(boolean smokey) {
+			this.smokey = Optional.of(smokey);
 			return this;
 		}
 
-		public LocationPredicate build() {
-			return new LocationPredicate(this.x, this.y, this.z, this.biome, this.feature, this.dimension, this.smokey, this.light, this.block, this.fluid);
+		public Optional<LocationPredicate> build() {
+			return LocationPredicate.create(
+				LocationPredicate.PositionRange.create(this.x, this.y, this.z), this.biome, this.feature, this.dimension, this.smokey, this.light, this.block, this.fluid
+			);
+		}
+	}
+
+	static record PositionRange(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z) {
+		public static final Codec<LocationPredicate.PositionRange> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "x", NumberRange.FloatRange.ANY).forGetter(LocationPredicate.PositionRange::x),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "y", NumberRange.FloatRange.ANY).forGetter(LocationPredicate.PositionRange::y),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "z", NumberRange.FloatRange.ANY).forGetter(LocationPredicate.PositionRange::z)
+					)
+					.apply(instance, LocationPredicate.PositionRange::new)
+		);
+
+		static Optional<LocationPredicate.PositionRange> create(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z) {
+			return x.isDummy() && y.isDummy() && z.isDummy() ? Optional.empty() : Optional.of(new LocationPredicate.PositionRange(x, y, z));
+		}
+
+		public boolean test(double x, double y, double z) {
+			return this.x.test(x) && this.y.test(y) && this.z.test(z);
 		}
 	}
 }

@@ -652,6 +652,7 @@ public class GameOptions {
 	public boolean debugEnabled;
 	public boolean debugProfilerEnabled;
 	public boolean debugTpsEnabled;
+	public boolean debugPacketSizeEnabled;
 	public String lastServer = "";
 	public boolean smoothCameraEnabled;
 	private final SimpleOption<Integer> fov = new SimpleOption<>(

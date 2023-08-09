@@ -200,11 +200,8 @@ public class EntitySelector {
 			Vec3d vec3d = (Vec3d)this.positionOffset.apply(source.getPosition());
 			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
 			if (this.senderOnly) {
-				if (source.getEntity() instanceof ServerPlayerEntity) {
-					ServerPlayerEntity serverPlayerEntity2 = (ServerPlayerEntity)source.getEntity();
-					if (predicate.test(serverPlayerEntity2)) {
-						return Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity2);
-					}
+				if (source.getEntity() instanceof ServerPlayerEntity serverPlayerEntity2 && predicate.test(serverPlayerEntity2)) {
+					return Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity2);
 				}
 
 				return Collections.emptyList();

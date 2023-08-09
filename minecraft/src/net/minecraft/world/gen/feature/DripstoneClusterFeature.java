@@ -67,10 +67,10 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		Optional<CaveSurface> optional = CaveSurface.create(
 			world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::cannotGenerate
 		);
-		if (optional.isPresent()) {
+		if (!optional.isEmpty()) {
 			OptionalInt optionalInt = ((CaveSurface)optional.get()).getCeilingHeight();
 			OptionalInt optionalInt2 = ((CaveSurface)optional.get()).getFloorHeight();
-			if (optionalInt.isPresent() || optionalInt2.isPresent()) {
+			if (!optionalInt.isEmpty() || !optionalInt2.isEmpty()) {
 				boolean bl = random.nextFloat() < wetness;
 				CaveSurface caveSurface;
 				if (bl && optionalInt2.isPresent() && this.canWaterSpawn(world, pos.withY(optionalInt2.getAsInt()))) {

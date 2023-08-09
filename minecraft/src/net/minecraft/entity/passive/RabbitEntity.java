@@ -64,6 +64,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.event.GameEvent;
 
 public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEntity.RabbitType> {
 	public static final double field_30356 = 0.6;
@@ -469,6 +470,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 						world.breakBlock(blockPos, true, this.rabbit);
 					} else {
 						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(i - 1)), Block.NOTIFY_LISTENERS);
+						world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(this.rabbit));
 						world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
 					}
 

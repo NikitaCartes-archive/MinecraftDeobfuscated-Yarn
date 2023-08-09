@@ -1,8 +1,8 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -17,10 +17,10 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 	}
 
 	protected PlayerGeneratesContainerLootCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "loot_table"));
-		return new PlayerGeneratesContainerLootCriterion.Conditions(lootContextPredicate, identifier);
+		return new PlayerGeneratesContainerLootCriterion.Conditions(optional, identifier);
 	}
 
 	public void trigger(ServerPlayerEntity player, Identifier id) {
@@ -30,13 +30,13 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Identifier lootTable;
 
-		public Conditions(LootContextPredicate entity, Identifier lootTable) {
-			super(PlayerGeneratesContainerLootCriterion.ID, entity);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Identifier lootTable) {
+			super(PlayerGeneratesContainerLootCriterion.ID, playerPredicate);
 			this.lootTable = lootTable;
 		}
 
 		public static PlayerGeneratesContainerLootCriterion.Conditions create(Identifier lootTable) {
-			return new PlayerGeneratesContainerLootCriterion.Conditions(LootContextPredicate.EMPTY, lootTable);
+			return new PlayerGeneratesContainerLootCriterion.Conditions(Optional.empty(), lootTable);
 		}
 
 		public boolean test(Identifier lootTable) {
@@ -44,8 +44,8 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
 			jsonObject.addProperty("loot_table", this.lootTable.toString());
 			return jsonObject;
 		}

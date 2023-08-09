@@ -491,12 +491,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					.conditionally(
 						LocationCheckLootCondition.builder(
 							LocationPredicate.Builder.create()
-								.block(
-									BlockPredicate.Builder.create()
-										.blocks(tallGrass)
-										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER).build())
-										.build()
-								),
+								.block(BlockPredicate.Builder.create().blocks(tallGrass).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))),
 							new BlockPos(0, 1, 0)
 						)
 					)
@@ -510,12 +505,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					.conditionally(
 						LocationCheckLootCondition.builder(
 							LocationPredicate.Builder.create()
-								.block(
-									BlockPredicate.Builder.create()
-										.blocks(tallGrass)
-										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER).build())
-										.build()
-								),
+								.block(BlockPredicate.Builder.create().blocks(tallGrass).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))),
 							new BlockPos(0, -1, 0)
 						)
 					)

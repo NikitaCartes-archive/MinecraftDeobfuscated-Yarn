@@ -255,7 +255,9 @@ public class WorldCreator {
 	}
 
 	private static Optional<List<WorldCreator.WorldType>> getWorldPresetList(Registry<WorldPreset> registry, TagKey<WorldPreset> tag) {
-		return registry.getEntryList(tag).map(entryList -> entryList.stream().map(WorldCreator.WorldType::new).toList()).filter(list -> !list.isEmpty());
+		return registry.getEntryList(tag)
+			.map(entryList -> entryList.stream().map(WorldCreator.WorldType::new).toList())
+			.filter(worldTypeList -> !worldTypeList.isEmpty());
 	}
 
 	public void setGameRules(GameRules gameRules) {

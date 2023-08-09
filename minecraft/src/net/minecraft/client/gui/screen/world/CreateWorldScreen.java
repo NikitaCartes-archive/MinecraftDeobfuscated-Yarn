@@ -622,7 +622,7 @@ public class CreateWorldScreen extends Screen {
 			GridWidget.Adder adder2 = new GridWidget().setRowSpacing(4).createAdder(1);
 			adder2.add(new TextWidget(CreateWorldScreen.ENTER_NAME_TEXT, CreateWorldScreen.this.client.textRenderer), adder2.copyPositioner().marginLeft(1));
 			this.worldNameField = adder2.add(
-				new TextFieldWidget(CreateWorldScreen.this.textRenderer, 208, 20, Text.translatable("selectWorld.enterName")), adder2.copyPositioner().margin(1)
+				new TextFieldWidget(CreateWorldScreen.this.textRenderer, 210, 20, Text.translatable("selectWorld.enterName")), adder2.copyPositioner()
 			);
 			this.worldNameField.setText(CreateWorldScreen.this.worldCreator.getWorldName());
 			this.worldNameField.setChangedListener(CreateWorldScreen.this.worldCreator::setWorldName);
@@ -736,9 +736,7 @@ public class CreateWorldScreen extends Screen {
 				CyclingButtonWidget.<WorldCreator.WorldType>builder(WorldCreator.WorldType::getName)
 					.values(this.getWorldTypes())
 					.narration(CreateWorldScreen.WorldTab::getWorldTypeNarrationMessage)
-					.build(
-						0, 0, 150, 20, Text.translatable("selectWorld.mapType"), (cyclingButtonWidgetx, worldType) -> CreateWorldScreen.this.worldCreator.setWorldType(worldType)
-					)
+					.build(0, 0, 150, 20, Text.translatable("selectWorld.mapType"), (button, worldType) -> CreateWorldScreen.this.worldCreator.setWorldType(worldType))
 			);
 			cyclingButtonWidget.setValue(CreateWorldScreen.this.worldCreator.getWorldType());
 			CreateWorldScreen.this.worldCreator.addListener(creator -> {
@@ -756,12 +754,12 @@ public class CreateWorldScreen extends Screen {
 			CreateWorldScreen.this.worldCreator.addListener(creator -> this.customizeButton.active = !creator.isDebug() && creator.getLevelScreenProvider() != null);
 			GridWidget.Adder adder2 = new GridWidget().setRowSpacing(4).createAdder(1);
 			adder2.add(new TextWidget(ENTER_SEED_TEXT, CreateWorldScreen.this.textRenderer).alignLeft());
-			this.seedField = adder2.add(new TextFieldWidget(CreateWorldScreen.this.textRenderer, 308, 20, Text.translatable("selectWorld.enterSeed")) {
+			this.seedField = adder2.add(new TextFieldWidget(CreateWorldScreen.this.textRenderer, 310, 20, Text.translatable("selectWorld.enterSeed")) {
 				@Override
 				protected MutableText getNarrationMessage() {
 					return super.getNarrationMessage().append(ScreenTexts.SENTENCE_SEPARATOR).append(CreateWorldScreen.WorldTab.SEED_INFO_TEXT);
 				}
-			}, adder.copyPositioner().margin(1));
+			});
 			this.seedField.setPlaceholder(SEED_INFO_TEXT);
 			this.seedField.setText(CreateWorldScreen.this.worldCreator.getSeed());
 			this.seedField.setChangedListener(seed -> CreateWorldScreen.this.worldCreator.setSeed(this.seedField.getText()));

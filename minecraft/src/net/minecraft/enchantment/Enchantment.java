@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -22,14 +23,15 @@ public abstract class Enchantment {
 	public final EnchantmentTarget target;
 	@Nullable
 	protected String translationKey;
+	private final RegistryEntry.Reference<Enchantment> registryEntry = Registries.ENCHANTMENT.createEntry(this);
 
 	@Nullable
 	public static Enchantment byRawId(int id) {
 		return Registries.ENCHANTMENT.get(id);
 	}
 
-	protected Enchantment(Enchantment.Rarity weight, EnchantmentTarget target, EquipmentSlot[] slotTypes) {
-		this.rarity = weight;
+	protected Enchantment(Enchantment.Rarity rarity, EnchantmentTarget target, EquipmentSlot[] slotTypes) {
+		this.rarity = rarity;
 		this.target = target;
 		this.slotTypes = slotTypes;
 	}
@@ -151,6 +153,11 @@ public abstract class Enchantment {
 	 */
 	public boolean isAvailableForRandomSelection() {
 		return true;
+	}
+
+	@Deprecated
+	public RegistryEntry.Reference<Enchantment> getRegistryEntry() {
+		return this.registryEntry;
 	}
 
 	/**

@@ -1,25 +1,20 @@
 package net.minecraft.loot.condition;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.loot.LootDataKey;
 import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
 import org.slf4j.Logger;
 
-public class ReferenceLootCondition implements LootCondition {
+public record ReferenceLootCondition(Identifier id) implements LootCondition {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	final Identifier id;
-
-	ReferenceLootCondition(Identifier id) {
-		this.id = id;
-	}
+	public static final Codec<ReferenceLootCondition> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(ReferenceLootCondition::id)).apply(instance, ReferenceLootCondition::new)
+	);
 
 	@Override
 	public LootConditionType getType() {
@@ -66,16 +61,5 @@ public class ReferenceLootCondition implements LootCondition {
 
 	public static LootCondition.Builder builder(Identifier id) {
 		return () -> new ReferenceLootCondition(id);
-	}
-
-	public static class Serializer implements JsonSerializer<ReferenceLootCondition> {
-		public void toJson(JsonObject jsonObject, ReferenceLootCondition referenceLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("name", referenceLootCondition.id.toString());
-		}
-
-		public ReferenceLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			return new ReferenceLootCondition(identifier);
-		}
 	}
 }

@@ -1,10 +1,7 @@
 package net.minecraft.loot.context;
 
 import com.google.common.collect.Sets;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -18,6 +15,7 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.random.Random;
 
 public class LootContext {
@@ -110,29 +108,22 @@ public class LootContext {
 			return this.parameters.getWorld();
 		}
 
-		public LootContext build(@Nullable Identifier randomSequenceId) {
+		public LootContext build(Optional<Identifier> randomId) {
 			ServerWorld serverWorld = this.getWorld();
 			MinecraftServer minecraftServer = serverWorld.getServer();
-			Random random;
-			if (this.random != null) {
-				random = this.random;
-			} else if (randomSequenceId != null) {
-				random = serverWorld.getOrCreateRandom(randomSequenceId);
-			} else {
-				random = serverWorld.getRandom();
-			}
-
+			Random random = (Random)Optional.ofNullable(this.random).or(() -> randomId.map(serverWorld::getOrCreateRandom)).orElseGet(serverWorld::getRandom);
 			return new LootContext(this.parameters, random, minecraftServer.getLootManager());
 		}
 	}
 
-	public static enum EntityTarget {
+	public static enum EntityTarget implements StringIdentifiable {
 		THIS("this", LootContextParameters.THIS_ENTITY),
 		KILLER("killer", LootContextParameters.KILLER_ENTITY),
 		DIRECT_KILLER("direct_killer", LootContextParameters.DIRECT_KILLER_ENTITY),
 		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER);
 
-		final String type;
+		public static final StringIdentifiable.Codec<LootContext.EntityTarget> CODEC = StringIdentifiable.createCodec(LootContext.EntityTarget::values);
+		private final String type;
 		private final LootContextParameter<? extends Entity> parameter;
 
 		private EntityTarget(String type, LootContextParameter<? extends Entity> parameter) {
@@ -145,23 +136,17 @@ public class LootContext {
 		}
 
 		public static LootContext.EntityTarget fromString(String type) {
-			for (LootContext.EntityTarget entityTarget : values()) {
-				if (entityTarget.type.equals(type)) {
-					return entityTarget;
-				}
+			LootContext.EntityTarget entityTarget = (LootContext.EntityTarget)CODEC.byId(type);
+			if (entityTarget != null) {
+				return entityTarget;
+			} else {
+				throw new IllegalArgumentException("Invalid entity target " + type);
 			}
-
-			throw new IllegalArgumentException("Invalid entity target " + type);
 		}
 
-		public static class Serializer extends TypeAdapter<LootContext.EntityTarget> {
-			public void write(JsonWriter jsonWriter, LootContext.EntityTarget entityTarget) throws IOException {
-				jsonWriter.value(entityTarget.type);
-			}
-
-			public LootContext.EntityTarget read(JsonReader jsonReader) throws IOException {
-				return LootContext.EntityTarget.fromString(jsonReader.nextString());
-			}
+		@Override
+		public String asString() {
+			return this.type;
 		}
 	}
 

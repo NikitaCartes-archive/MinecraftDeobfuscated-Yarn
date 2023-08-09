@@ -91,7 +91,7 @@ public class DirectConnectScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
-		context.drawTextWithShadow(this.textRenderer, ENTER_IP_TEXT, this.width / 2 - 100, 100, 10526880);
+		context.drawTextWithShadow(this.textRenderer, ENTER_IP_TEXT, this.width / 2 - 100 + 1, 100, 10526880);
 		this.addressField.render(context, mouseX, mouseY, delta);
 	}
 }

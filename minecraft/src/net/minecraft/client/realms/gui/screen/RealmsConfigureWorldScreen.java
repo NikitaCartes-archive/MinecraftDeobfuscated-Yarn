@@ -3,6 +3,7 @@ package net.minecraft.client.realms.gui.screen;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -232,7 +233,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, -1);
 			context.drawCenteredTextWithShadow(this.textRenderer, string, this.width / 2, 24, j);
 			int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
-			this.drawServerStatus(context, l, 7, mouseX, mouseY);
+			this.drawServerState(context, l, 7, mouseX, mouseY);
 			if (this.isMinigame()) {
 				context.drawText(
 					this.textRenderer, Text.translatable("mco.configure.world.minigame", this.server.getMinigameName()), this.left_x + 80 + 20 + 10, row(13), -1, false
@@ -375,51 +376,30 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			);
 	}
 
-	private void drawServerStatus(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	private void drawServerState(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (this.server.expired) {
-			this.drawExpired(context, x, y, mouseX, mouseY);
+			this.drawServerState(context, x, y, mouseX, mouseY, EXPIRED_STATUS_TEXTURE, () -> EXPIRED_TEXT);
 		} else if (this.server.state == RealmsServer.State.CLOSED) {
-			this.drawClosed(context, x, y, mouseX, mouseY);
+			this.drawServerState(context, x, y, mouseX, mouseY, CLOSED_STATUS_TEXTURE, () -> CLOSED_TEXT);
 		} else if (this.server.state == RealmsServer.State.OPEN) {
 			if (this.server.daysLeft < 7) {
-				this.drawExpiring(context, x, y, mouseX, mouseY, this.server.daysLeft);
+				this.drawServerState(context, x, y, mouseX, mouseY, EXPIRES_SOON_STATUS_TEXTURE, () -> {
+					if (this.server.daysLeft <= 0) {
+						return EXPIRES_SOON_TEXT;
+					} else {
+						return (Text)(this.server.daysLeft == 1 ? EXPIRES_IN_A_DAY_TEXT : Text.translatable("mco.selectServer.expires.days", this.server.daysLeft));
+					}
+				});
 			} else {
-				this.drawOpen(context, x, y, mouseX, mouseY);
+				this.drawServerState(context, x, y, mouseX, mouseY, OPEN_STATUS_TEXTURE, () -> OPEN_TEXT);
 			}
 		}
 	}
 
-	private void drawExpired(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawGuiTexture(EXPIRED_STATUS_TEXTURE, x, y, 10, 28);
+	private void drawServerState(DrawContext context, int x, int y, int mouseX, int mouseY, Identifier texture, Supplier<Text> tooltipGetter) {
+		context.drawGuiTexture(texture, x, y, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
-			this.tooltip = EXPIRED_TEXT;
-		}
-	}
-
-	private void drawExpiring(DrawContext context, int x, int y, int mouseX, int mouseY, int remainingDays) {
-		context.drawGuiTexture(EXPIRES_SOON_STATUS_TEXTURE, x, y, 10, 28);
-		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
-			if (remainingDays <= 0) {
-				this.tooltip = EXPIRES_SOON_TEXT;
-			} else if (remainingDays == 1) {
-				this.tooltip = EXPIRES_IN_A_DAY_TEXT;
-			} else {
-				this.tooltip = Text.translatable("mco.selectServer.expires.days", remainingDays);
-			}
-		}
-	}
-
-	private void drawOpen(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawGuiTexture(OPEN_STATUS_TEXTURE, x, y, 10, 28);
-		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
-			this.tooltip = OPEN_TEXT;
-		}
-	}
-
-	private void drawClosed(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawGuiTexture(CLOSED_STATUS_TEXTURE, x, y, 10, 28);
-		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
-			this.tooltip = CLOSED_TEXT;
+			this.tooltip = (Text)tooltipGetter.get();
 		}
 	}
 

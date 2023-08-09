@@ -99,7 +99,7 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 		this.client.player.getInventory().populateRecipeFinder(this.recipeFinder);
 		this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
 		String string = this.searchField != null ? this.searchField.getText() : "";
-		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 26, j + 14, 79, 9 + 3, Text.translatable("itemGroup.search"));
+		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 13, 81, 9 + 5, Text.translatable("itemGroup.search"));
 		this.searchField.setMaxLength(50);
 		this.searchField.setVisible(true);
 		this.searchField.setEditableColor(16777215);

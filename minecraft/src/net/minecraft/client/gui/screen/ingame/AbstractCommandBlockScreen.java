@@ -141,12 +141,12 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, SET_COMMAND_TEXT, this.width / 2, 20, 16777215);
-		context.drawTextWithShadow(this.textRenderer, COMMAND_TEXT, this.width / 2 - 150, 40, 10526880);
+		context.drawTextWithShadow(this.textRenderer, COMMAND_TEXT, this.width / 2 - 150 + 1, 40, 10526880);
 		this.consoleCommandTextField.render(context, mouseX, mouseY, delta);
 		int i = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
 			i += 5 * 9 + 1 + this.getTrackOutputButtonHeight() - 135;
-			context.drawTextWithShadow(this.textRenderer, PREVIOUS_OUTPUT_TEXT, this.width / 2 - 150, i + 4, 10526880);
+			context.drawTextWithShadow(this.textRenderer, PREVIOUS_OUTPUT_TEXT, this.width / 2 - 150 + 1, i + 4, 10526880);
 			this.previousOutputTextField.render(context, mouseX, mouseY, delta);
 		}
 

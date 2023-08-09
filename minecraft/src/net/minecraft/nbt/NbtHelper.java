@@ -190,18 +190,18 @@ public final class NbtHelper {
 			}
 
 			return true;
-		} else if (standard instanceof NbtList && ignoreListOrder) {
-			NbtList nbtList = (NbtList)standard;
-			NbtList nbtList2 = (NbtList)subject;
-			if (nbtList.isEmpty()) {
-				return nbtList2.isEmpty();
-			} else {
-				for (int i = 0; i < nbtList.size(); i++) {
-					NbtElement nbtElement2 = nbtList.get(i);
+		} else {
+			if (standard instanceof NbtList nbtList && ignoreListOrder) {
+				NbtList nbtList2 = (NbtList)subject;
+				if (nbtList.isEmpty()) {
+					return nbtList2.isEmpty();
+				}
+
+				for (NbtElement nbtElement2 : nbtList) {
 					boolean bl = false;
 
-					for (int j = 0; j < nbtList2.size(); j++) {
-						if (matches(nbtElement2, nbtList2.get(j), ignoreListOrder)) {
+					for (NbtElement nbtElement3 : nbtList2) {
+						if (matches(nbtElement2, nbtElement3, ignoreListOrder)) {
 							bl = true;
 							break;
 						}
@@ -214,7 +214,7 @@ public final class NbtHelper {
 
 				return true;
 			}
-		} else {
+
 			return standard.equals(subject);
 		}
 	}
@@ -317,7 +317,7 @@ public final class NbtHelper {
 		if (optional.isPresent()) {
 			return state.with(property, (Comparable)optional.get());
 		} else {
-			LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", key, properties.getString(key), root.toString());
+			LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", key, properties.getString(key), root);
 			return state;
 		}
 	}

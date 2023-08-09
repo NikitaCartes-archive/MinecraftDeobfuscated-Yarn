@@ -217,7 +217,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	@Override
-	public void attack(LivingEntity target, float pullProgress) {
+	public void shootAt(LivingEntity target, float pullProgress) {
 		if (!this.isDrinking()) {
 			Vec3d vec3d = target.getVelocity();
 			double d = target.getX() + vec3d.x - this.getX();

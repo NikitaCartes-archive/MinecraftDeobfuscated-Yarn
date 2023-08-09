@@ -37,12 +37,8 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 	 * 
 	 * @throws PublicKeyException when the key is expired or malformed
 	 */
-	public static PlayerPublicKey verifyAndDecode(
-		SignatureVerifier servicesSignatureVerifier, UUID playerUuid, PlayerPublicKey.PublicKeyData publicKeyData, Duration gracePeriod
-	) throws PlayerPublicKey.PublicKeyException {
-		if (publicKeyData.isExpired(gracePeriod)) {
-			throw new PlayerPublicKey.PublicKeyException(EXPIRED_PUBLIC_KEY_TEXT);
-		} else if (!publicKeyData.verifyKey(servicesSignatureVerifier, playerUuid)) {
+	public static PlayerPublicKey verifyAndDecode(SignatureVerifier servicesSignatureVerifier, UUID playerUuid, PlayerPublicKey.PublicKeyData publicKeyData) throws PlayerPublicKey.PublicKeyException {
+		if (!publicKeyData.verifyKey(servicesSignatureVerifier, playerUuid)) {
 			throw new PlayerPublicKey.PublicKeyException(INVALID_PUBLIC_KEY_SIGNATURE_TEXT);
 		} else {
 			return new PlayerPublicKey(publicKeyData);

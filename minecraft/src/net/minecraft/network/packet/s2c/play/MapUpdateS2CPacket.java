@@ -58,11 +58,11 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeByte(this.scale);
 		buf.writeBoolean(this.locked);
 		buf.writeNullable(this.icons, (buf2, icons) -> buf2.writeCollection(icons, (b, icon) -> {
-				b.writeEnumConstant(icon.getType());
-				b.writeByte(icon.getX());
-				b.writeByte(icon.getZ());
-				b.writeByte(icon.getRotation() & 15);
-				b.writeNullable(icon.getText(), PacketByteBuf::writeText);
+				b.writeEnumConstant(icon.type());
+				b.writeByte(icon.x());
+				b.writeByte(icon.z());
+				b.writeByte(icon.rotation() & 15);
+				b.writeNullable(icon.text(), PacketByteBuf::writeText);
 			}));
 		if (this.updateData != null) {
 			buf.writeByte(this.updateData.width);

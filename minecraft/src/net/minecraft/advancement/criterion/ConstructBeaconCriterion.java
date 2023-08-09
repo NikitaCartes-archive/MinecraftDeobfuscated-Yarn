@@ -1,9 +1,9 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -17,10 +17,10 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 	}
 
 	public ConstructBeaconCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));
-		return new ConstructBeaconCriterion.Conditions(lootContextPredicate, intRange);
+		return new ConstructBeaconCriterion.Conditions(optional, intRange);
 	}
 
 	public void trigger(ServerPlayerEntity player, int level) {
@@ -30,17 +30,17 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 	public static class Conditions extends AbstractCriterionConditions {
 		private final NumberRange.IntRange level;
 
-		public Conditions(LootContextPredicate player, NumberRange.IntRange level) {
-			super(ConstructBeaconCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, NumberRange.IntRange level) {
+			super(ConstructBeaconCriterion.ID, playerPredicate);
 			this.level = level;
 		}
 
 		public static ConstructBeaconCriterion.Conditions create() {
-			return new ConstructBeaconCriterion.Conditions(LootContextPredicate.EMPTY, NumberRange.IntRange.ANY);
+			return new ConstructBeaconCriterion.Conditions(Optional.empty(), NumberRange.IntRange.ANY);
 		}
 
 		public static ConstructBeaconCriterion.Conditions level(NumberRange.IntRange level) {
-			return new ConstructBeaconCriterion.Conditions(LootContextPredicate.EMPTY, level);
+			return new ConstructBeaconCriterion.Conditions(Optional.empty(), level);
 		}
 
 		public boolean matches(int level) {
@@ -48,8 +48,8 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
 			jsonObject.add("level", this.level.toJson());
 			return jsonObject;
 		}

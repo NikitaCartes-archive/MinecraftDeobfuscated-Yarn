@@ -654,13 +654,12 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			return this.prefersNewDamageableItem(newStack, oldStack);
 		} else if (newStack.getItem() instanceof CrossbowItem && oldStack.getItem() instanceof CrossbowItem) {
 			return this.prefersNewDamageableItem(newStack, oldStack);
-		} else if (newStack.getItem() instanceof ArmorItem) {
+		} else if (newStack.getItem() instanceof ArmorItem armorItem) {
 			if (EnchantmentHelper.hasBindingCurse(oldStack)) {
 				return false;
 			} else if (!(oldStack.getItem() instanceof ArmorItem)) {
 				return true;
 			} else {
-				ArmorItem armorItem = (ArmorItem)newStack.getItem();
 				ArmorItem armorItem2 = (ArmorItem)oldStack.getItem();
 				if (armorItem.getProtection() != armorItem2.getProtection()) {
 					return armorItem.getProtection() > armorItem2.getProtection();
@@ -676,11 +675,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 					return true;
 				}
 
-				if (oldStack.getItem() instanceof MiningToolItem) {
-					MiningToolItem miningToolItem = (MiningToolItem)newStack.getItem();
-					MiningToolItem miningToolItem2 = (MiningToolItem)oldStack.getItem();
-					if (miningToolItem.getAttackDamage() != miningToolItem2.getAttackDamage()) {
-						return miningToolItem.getAttackDamage() > miningToolItem2.getAttackDamage();
+				if (oldStack.getItem() instanceof MiningToolItem miningToolItem) {
+					MiningToolItem miningToolItem2 = (MiningToolItem)newStack.getItem();
+					if (miningToolItem2.getAttackDamage() != miningToolItem.getAttackDamage()) {
+						return miningToolItem2.getAttackDamage() > miningToolItem.getAttackDamage();
 					}
 
 					return this.prefersNewDamageableItem(newStack, oldStack);

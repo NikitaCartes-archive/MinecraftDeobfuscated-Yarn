@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -127,9 +128,11 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	/**
-	 * <p>Takes a string of the form {@code <namespace>:<path>}, for example {@code minecraft:iron_ingot}.
+	 * <p>Takes a string of the form {@code <namespace>:<path>} or {@code <path>} which will use the default namespace, for example {@code minecraft:iron_ingot} or {@code iron_ingot}.
 	 * <p>The string will be split (on the {@code :}) into an identifier with the specified path and namespace.
 	 * Prefer using the {@link net.minecraft.util.Identifier#Identifier(java.lang.String, java.lang.String) Identifier(java.lang.String, java.lang.String)} constructor that takes the namespace and path as individual parameters to avoid mistakes.
+	 * <p>If there is no colon in the given string argument, the namespace will be set to {@value #DEFAULT_NAMESPACE}, and the path will be the given argument.
+	 * If the colon is the first character of the given string argument (i.e. the namespace is empty), the namespace will also be set to {@value #DEFAULT_NAMESPACE}, and the path will be the given argument without the initial colon.
 	 * @throws InvalidIdentifierException if the string cannot be parsed as an identifier.
 	 */
 	public Identifier(String id) {
@@ -169,6 +172,9 @@ public class Identifier implements Comparable<Identifier> {
 		}
 	}
 
+	/**
+	 * Splits the {@code id} into an array of two strings at the first occurrence of {@code delimiter}, excluding the delimiter character, or uses {@value #DEFAULT_NAMESPACE} for the first string in the resulting array when the deliminator does not exist or is the first character.
+	 */
 	protected static String[] split(String id, char delimiter) {
 		String[] strings = new String[]{"minecraft", id};
 		int i = id.indexOf(delimiter);
@@ -382,7 +388,7 @@ public class Identifier implements Comparable<Identifier> {
 	protected interface ExtraData {
 	}
 
-	public static class Serializer implements JsonDeserializer<Identifier>, com.google.gson.JsonSerializer<Identifier> {
+	public static class Serializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {
 		public Identifier deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			return new Identifier(JsonHelper.asString(jsonElement, "location"));
 		}

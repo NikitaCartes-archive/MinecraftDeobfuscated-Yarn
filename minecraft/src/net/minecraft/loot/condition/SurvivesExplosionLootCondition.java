@@ -1,18 +1,16 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.math.random.Random;
 
 public class SurvivesExplosionLootCondition implements LootCondition {
-	static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
+	private static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
+	public static final Codec<SurvivesExplosionLootCondition> CODEC = Codec.unit(INSTANCE);
 
 	private SurvivesExplosionLootCondition() {
 	}
@@ -40,14 +38,5 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 
 	public static LootCondition.Builder builder() {
 		return () -> INSTANCE;
-	}
-
-	public static class Serializer implements JsonSerializer<SurvivesExplosionLootCondition> {
-		public void toJson(JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext) {
-		}
-
-		public SurvivesExplosionLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			return SurvivesExplosionLootCondition.INSTANCE;
-		}
 	}
 }

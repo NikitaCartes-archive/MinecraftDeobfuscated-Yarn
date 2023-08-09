@@ -311,9 +311,9 @@ public class Keyboard {
 			nbt.remove("Pos");
 			nbt.remove("Dimension");
 			String string = NbtHelper.toPrettyPrintedText(nbt).getString();
-			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", id.toString(), pos.x, pos.y, pos.z, string);
+			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", id, pos.x, pos.y, pos.z, string);
 		} else {
-			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", id.toString(), pos.x, pos.y, pos.z);
+			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", id, pos.x, pos.y, pos.z);
 		}
 
 		this.setClipboard(string2);
@@ -412,6 +412,7 @@ public class Keyboard {
 							this.client.options.debugEnabled = !this.client.options.debugEnabled;
 							this.client.options.debugProfilerEnabled = this.client.options.debugEnabled && Screen.hasShiftDown();
 							this.client.options.debugTpsEnabled = this.client.options.debugEnabled && Screen.hasAltDown();
+							this.client.options.debugPacketSizeEnabled = this.client.options.debugEnabled && Screen.hasControlDown() && !Screen.hasAltDown();
 						}
 					}
 				} else {

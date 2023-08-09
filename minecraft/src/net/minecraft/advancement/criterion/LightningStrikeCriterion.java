@@ -2,12 +2,12 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,11 +22,11 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 	}
 
 	public LightningStrikeCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "lightning", advancementEntityPredicateDeserializer);
-		LootContextPredicate lootContextPredicate3 = EntityPredicate.contextPredicateFromJson(jsonObject, "bystander", advancementEntityPredicateDeserializer);
-		return new LightningStrikeCriterion.Conditions(lootContextPredicate, lootContextPredicate2, lootContextPredicate3);
+		Optional<LootContextPredicate> optional2 = EntityPredicate.contextPredicateFromJson(jsonObject, "lightning", advancementEntityPredicateDeserializer);
+		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "bystander", advancementEntityPredicateDeserializer);
+		return new LightningStrikeCriterion.Conditions(optional, optional2, optional3);
 	}
 
 	public void trigger(ServerPlayerEntity player, LightningEntity lightning, List<Entity> bystanders) {
@@ -38,30 +38,32 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final LootContextPredicate lightning;
-		private final LootContextPredicate bystander;
+		private final Optional<LootContextPredicate> lightning;
+		private final Optional<LootContextPredicate> bystander;
 
-		public Conditions(LootContextPredicate player, LootContextPredicate lightning, LootContextPredicate bystander) {
-			super(LightningStrikeCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> lightning, Optional<LootContextPredicate> bystander) {
+			super(LightningStrikeCriterion.ID, playerPredicate);
 			this.lightning = lightning;
 			this.bystander = bystander;
 		}
 
-		public static LightningStrikeCriterion.Conditions create(EntityPredicate lightning, EntityPredicate bystander) {
+		public static LightningStrikeCriterion.Conditions create(Optional<EntityPredicate> lightning, Optional<EntityPredicate> bystander) {
 			return new LightningStrikeCriterion.Conditions(
-				LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(lightning), EntityPredicate.asLootContextPredicate(bystander)
+				Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(lightning), EntityPredicate.contextPredicateFromEntityPredicate(bystander)
 			);
 		}
 
 		public boolean test(LootContext lightning, List<LootContext> bystanders) {
-			return !this.lightning.test(lightning) ? false : this.bystander == LootContextPredicate.EMPTY || !bystanders.stream().noneMatch(this.bystander::test);
+			return this.lightning.isPresent() && !((LootContextPredicate)this.lightning.get()).test(lightning)
+				? false
+				: !this.bystander.isPresent() || !bystanders.stream().noneMatch(((LootContextPredicate)this.bystander.get())::test);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("lightning", this.lightning.toJson(predicateSerializer));
-			jsonObject.add("bystander", this.bystander.toJson(predicateSerializer));
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.lightning.ifPresent(lootContextPredicate -> jsonObject.add("lightning", lootContextPredicate.toJson()));
+			this.bystander.ifPresent(lootContextPredicate -> jsonObject.add("bystander", lootContextPredicate.toJson()));
 			return jsonObject;
 		}
 	}

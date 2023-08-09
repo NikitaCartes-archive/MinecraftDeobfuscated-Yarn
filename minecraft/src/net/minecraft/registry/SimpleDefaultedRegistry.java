@@ -21,9 +21,9 @@ public class SimpleDefaultedRegistry<T> extends SimpleRegistry<T> implements Def
 	}
 
 	@Override
-	public RegistryEntry.Reference<T> set(int i, RegistryKey<T> registryKey, T object, Lifecycle lifecycle) {
-		RegistryEntry.Reference<T> reference = super.set(i, registryKey, object, lifecycle);
-		if (this.defaultId.equals(registryKey.getValue())) {
+	public RegistryEntry.Reference<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle) {
+		RegistryEntry.Reference<T> reference = super.set(rawId, key, value, lifecycle);
+		if (this.defaultId.equals(key.getValue())) {
 			this.defaultEntry = reference;
 		}
 

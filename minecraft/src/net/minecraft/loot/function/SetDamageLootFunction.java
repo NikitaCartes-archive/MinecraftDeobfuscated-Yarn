@@ -1,25 +1,35 @@
 package net.minecraft.loot.function;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 
 public class SetDamageLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	final LootNumberProvider durabilityRange;
-	final boolean add;
+	public static final Codec<SetDamageLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<LootNumberProvider, boolean>and(
+					instance.group(
+						LootNumberProviderTypes.CODEC.fieldOf("damage").forGetter(setDamageLootFunction -> setDamageLootFunction.durabilityRange),
+						Codec.BOOL.fieldOf("add").orElse(false).forGetter(setDamageLootFunction -> setDamageLootFunction.add)
+					)
+				)
+				.apply(instance, SetDamageLootFunction::new)
+	);
+	private final LootNumberProvider durabilityRange;
+	private final boolean add;
 
-	SetDamageLootFunction(LootCondition[] conditions, LootNumberProvider durabilityRange, boolean add) {
+	private SetDamageLootFunction(List<LootCondition> conditions, LootNumberProvider durabilityRange, boolean add) {
 		super(conditions);
 		this.durabilityRange = durabilityRange;
 		this.add = add;
@@ -55,19 +65,5 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 
 	public static ConditionalLootFunction.Builder<?> builder(LootNumberProvider durabilityRange, boolean add) {
 		return builder(conditions -> new SetDamageLootFunction(conditions, durabilityRange, add));
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<SetDamageLootFunction> {
-		public void toJson(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setDamageLootFunction, jsonSerializationContext);
-			jsonObject.add("damage", jsonSerializationContext.serialize(setDamageLootFunction.durabilityRange));
-			jsonObject.addProperty("add", setDamageLootFunction.add);
-		}
-
-		public SetDamageLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonObject, "damage", jsonDeserializationContext, LootNumberProvider.class);
-			boolean bl = JsonHelper.getBoolean(jsonObject, "add", false);
-			return new SetDamageLootFunction(lootConditions, lootNumberProvider, bl);
-		}
 	}
 }

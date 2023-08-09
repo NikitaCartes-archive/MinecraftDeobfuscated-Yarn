@@ -1,8 +1,8 @@
 package net.minecraft.predicate;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
@@ -10,85 +10,69 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.JsonHelper;
 
-public class DamagePredicate {
-	public static final DamagePredicate ANY = DamagePredicate.Builder.create().build();
-	private final NumberRange.FloatRange dealt;
-	private final NumberRange.FloatRange taken;
-	private final EntityPredicate sourceEntity;
-	@Nullable
-	private final Boolean blocked;
-	private final DamageSourcePredicate type;
-
-	public DamagePredicate() {
-		this.dealt = NumberRange.FloatRange.ANY;
-		this.taken = NumberRange.FloatRange.ANY;
-		this.sourceEntity = EntityPredicate.ANY;
-		this.blocked = null;
-		this.type = DamageSourcePredicate.EMPTY;
-	}
-
-	public DamagePredicate(
-		NumberRange.FloatRange dealt, NumberRange.FloatRange taken, EntityPredicate sourceEntity, @Nullable Boolean blocked, DamageSourcePredicate type
+public record DamagePredicate(
+	NumberRange.FloatRange dealt,
+	NumberRange.FloatRange taken,
+	Optional<EntityPredicate> sourceEntity,
+	Optional<Boolean> blocked,
+	Optional<DamageSourcePredicate> source
+) {
+	static Optional<DamagePredicate> create(
+		NumberRange.FloatRange dealt,
+		NumberRange.FloatRange taken,
+		Optional<EntityPredicate> sourceEntity,
+		Optional<Boolean> blocked,
+		Optional<DamageSourcePredicate> type
 	) {
-		this.dealt = dealt;
-		this.taken = taken;
-		this.sourceEntity = sourceEntity;
-		this.blocked = blocked;
-		this.type = type;
+		return dealt.isDummy() && taken.isDummy() && sourceEntity.isEmpty() && blocked.isEmpty() && type.isEmpty()
+			? Optional.empty()
+			: Optional.of(new DamagePredicate(dealt, taken, sourceEntity, blocked, type));
 	}
 
 	public boolean test(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
-		if (this == ANY) {
-			return true;
-		} else if (!this.dealt.test((double)dealt)) {
+		if (!this.dealt.test((double)dealt)) {
 			return false;
 		} else if (!this.taken.test((double)taken)) {
 			return false;
-		} else if (!this.sourceEntity.test(player, source.getAttacker())) {
+		} else if (this.sourceEntity.isPresent() && !((EntityPredicate)this.sourceEntity.get()).test(player, source.getAttacker())) {
 			return false;
 		} else {
-			return this.blocked != null && this.blocked != blocked ? false : this.type.test(player, source);
+			return this.blocked.isPresent() && this.blocked.get() != blocked
+				? false
+				: !this.source.isPresent() || ((DamageSourcePredicate)this.source.get()).test(player, source);
 		}
 	}
 
-	public static DamagePredicate fromJson(@Nullable JsonElement json) {
+	public static Optional<DamagePredicate> fromJson(@Nullable JsonElement json) {
 		if (json != null && !json.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(json, "damage");
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("dealt"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("taken"));
-			Boolean boolean_ = jsonObject.has("blocked") ? JsonHelper.getBoolean(jsonObject, "blocked") : null;
-			EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("source_entity"));
-			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.fromJson(jsonObject.get("type"));
-			return new DamagePredicate(floatRange, floatRange2, entityPredicate, boolean_, damageSourcePredicate);
+			Optional<Boolean> optional = jsonObject.has("blocked") ? Optional.of(JsonHelper.getBoolean(jsonObject, "blocked")) : Optional.empty();
+			Optional<EntityPredicate> optional2 = EntityPredicate.fromJson(jsonObject.get("source_entity"));
+			Optional<DamageSourcePredicate> optional3 = DamageSourcePredicate.fromJson(jsonObject.get("type"));
+			return create(floatRange, floatRange2, optional2, optional, optional3);
 		} else {
-			return ANY;
+			return Optional.empty();
 		}
 	}
 
 	public JsonElement toJson() {
-		if (this == ANY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("dealt", this.dealt.toJson());
-			jsonObject.add("taken", this.taken.toJson());
-			jsonObject.add("source_entity", this.sourceEntity.toJson());
-			jsonObject.add("type", this.type.toJson());
-			if (this.blocked != null) {
-				jsonObject.addProperty("blocked", this.blocked);
-			}
-
-			return jsonObject;
-		}
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.add("dealt", this.dealt.toJson());
+		jsonObject.add("taken", this.taken.toJson());
+		this.sourceEntity.ifPresent(entityPredicate -> jsonObject.add("source_entity", entityPredicate.toJson()));
+		this.source.ifPresent(damageSourcePredicate -> jsonObject.add("type", damageSourcePredicate.toJson()));
+		this.blocked.ifPresent(boolean_ -> jsonObject.addProperty("blocked", boolean_));
+		return jsonObject;
 	}
 
 	public static class Builder {
 		private NumberRange.FloatRange dealt = NumberRange.FloatRange.ANY;
 		private NumberRange.FloatRange taken = NumberRange.FloatRange.ANY;
-		private EntityPredicate sourceEntity = EntityPredicate.ANY;
-		@Nullable
-		private Boolean blocked;
-		private DamageSourcePredicate type = DamageSourcePredicate.EMPTY;
+		private Optional<EntityPredicate> sourceEntity = Optional.empty();
+		private Optional<Boolean> blocked = Optional.empty();
+		private Optional<DamageSourcePredicate> type = Optional.empty();
 
 		public static DamagePredicate.Builder create() {
 			return new DamagePredicate.Builder();
@@ -105,17 +89,17 @@ public class DamagePredicate {
 		}
 
 		public DamagePredicate.Builder sourceEntity(EntityPredicate sourceEntity) {
-			this.sourceEntity = sourceEntity;
+			this.sourceEntity = Optional.of(sourceEntity);
 			return this;
 		}
 
 		public DamagePredicate.Builder blocked(Boolean blocked) {
-			this.blocked = blocked;
+			this.blocked = Optional.of(blocked);
 			return this;
 		}
 
 		public DamagePredicate.Builder type(DamageSourcePredicate type) {
-			this.type = type;
+			this.type = Optional.of(type);
 			return this;
 		}
 
@@ -124,8 +108,8 @@ public class DamagePredicate {
 			return this;
 		}
 
-		public DamagePredicate build() {
-			return new DamagePredicate(this.dealt, this.taken, this.sourceEntity, this.blocked, this.type);
+		public Optional<DamagePredicate> build() {
+			return DamagePredicate.create(this.dealt, this.taken, this.sourceEntity, this.blocked, this.type);
 		}
 	}
 }

@@ -3,6 +3,7 @@ package net.minecraft.data.server.recipe;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,8 +20,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.LootContextPredicate;
-import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.RecipeCategory;
@@ -545,9 +544,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("###")
 			.criterion(
 				"has_lots_of_items",
-				new InventoryChangedCriterion.Conditions(
-					LootContextPredicate.EMPTY, NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0]
-				)
+				new InventoryChangedCriterion.Conditions(Optional.empty(), NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, List.of())
 			)
 			.offerTo(exporter);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.TRANSPORTATION, Items.CHEST_MINECART)

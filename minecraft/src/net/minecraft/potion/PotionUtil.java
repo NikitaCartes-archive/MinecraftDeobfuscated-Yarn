@@ -25,7 +25,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class PotionUtil {
-	public static final String CUSTOM_POTION_EFFECTS_KEY = "CustomPotionEffects";
+	public static final String CUSTOM_POTION_EFFECTS_KEY = "custom_potion_effects";
 	public static final String CUSTOM_POTION_COLOR_KEY = "CustomPotionColor";
 	public static final String POTION_KEY = "Potion";
 	private static final int DEFAULT_COLOR = 16253176;
@@ -60,8 +60,8 @@ public class PotionUtil {
 	}
 
 	public static void getCustomPotionEffects(@Nullable NbtCompound nbt, List<StatusEffectInstance> list) {
-		if (nbt != null && nbt.contains("CustomPotionEffects", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("CustomPotionEffects", NbtElement.COMPOUND_TYPE);
+		if (nbt != null && nbt.contains("custom_potion_effects", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("custom_potion_effects", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
@@ -142,13 +142,13 @@ public class PotionUtil {
 			return stack;
 		} else {
 			NbtCompound nbtCompound = stack.getOrCreateNbt();
-			NbtList nbtList = nbtCompound.getList("CustomPotionEffects", NbtElement.LIST_TYPE);
+			NbtList nbtList = nbtCompound.getList("custom_potion_effects", NbtElement.LIST_TYPE);
 
 			for (StatusEffectInstance statusEffectInstance : effects) {
 				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
 			}
 
-			nbtCompound.put("CustomPotionEffects", nbtList);
+			nbtCompound.put("custom_potion_effects", nbtList);
 			return stack;
 		}
 	}

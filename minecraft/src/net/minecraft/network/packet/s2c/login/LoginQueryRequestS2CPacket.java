@@ -12,7 +12,7 @@ public record LoginQueryRequestS2CPacket(int queryId, LoginQueryRequestPayload p
 		this(buf.readVarInt(), readPayload(buf.readIdentifier(), buf));
 	}
 
-	private static UnknownLoginQueryRequestPayload readPayload(Identifier id, PacketByteBuf buf) {
+	private static LoginQueryRequestPayload readPayload(Identifier id, PacketByteBuf buf) {
 		return readUnknownPayload(id, buf);
 	}
 

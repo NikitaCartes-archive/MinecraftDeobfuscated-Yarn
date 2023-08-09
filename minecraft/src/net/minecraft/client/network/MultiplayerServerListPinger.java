@@ -25,7 +25,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ClientQueryPacketListener;
 import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
-import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
+import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.ServerMetadata;
@@ -47,7 +47,7 @@ public class MultiplayerServerListPinger {
 			this.showError(ConnectScreen.BLOCKED_HOST_TEXT, entry);
 		} else {
 			final InetSocketAddress inetSocketAddress = (InetSocketAddress)optional.get();
-			final ClientConnection clientConnection = ClientConnection.connect(inetSocketAddress, false);
+			final ClientConnection clientConnection = ClientConnection.connect(inetSocketAddress, false, null);
 			this.clientConnections.add(clientConnection);
 			entry.label = Text.translatable("multiplayer.status.pinging");
 			entry.ping = -1L;
@@ -104,7 +104,7 @@ public class MultiplayerServerListPinger {
 				}
 
 				@Override
-				public void onPong(QueryPongS2CPacket packet) {
+				public void onPingResult(PingResultS2CPacket packet) {
 					long l = this.startTime;
 					long m = Util.getMeasuringTimeMs();
 					entry.ping = m - l;

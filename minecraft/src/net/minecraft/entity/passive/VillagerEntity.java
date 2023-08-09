@@ -915,10 +915,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
 			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
 			if (list2.size() >= requiredCount) {
-				if (LargeEntitySpawnHelper.trySpawnAt(
+				if (!LargeEntitySpawnHelper.trySpawnAt(
 						EntityType.IRON_GOLEM, SpawnReason.MOB_SUMMONED, world, this.getBlockPos(), 10, 8, 6, LargeEntitySpawnHelper.Requirements.IRON_GOLEM
 					)
-					.isPresent()) {
+					.isEmpty()) {
 					list.forEach(GolemLastSeenSensor::rememberIronGolem);
 				}
 			}

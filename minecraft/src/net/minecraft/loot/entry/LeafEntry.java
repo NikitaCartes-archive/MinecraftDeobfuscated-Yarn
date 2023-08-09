@@ -1,9 +1,10 @@
 package net.minecraft.loot.entry;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.Products.P4;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -15,16 +16,15 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.loot.function.LootFunctionTypes;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
-import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class LeafEntry extends LootPoolEntry {
 	public static final int field_31847 = 1;
 	public static final int field_31848 = 0;
 	protected final int weight;
 	protected final int quality;
-	protected final LootFunction[] functions;
+	protected final List<LootFunction> functions;
 	final BiFunction<ItemStack, LootContext, ItemStack> compiledFunctions;
 	private final LootChoice choice = new LeafEntry.Choice() {
 		@Override
@@ -33,7 +33,7 @@ public abstract class LeafEntry extends LootPoolEntry {
 		}
 	};
 
-	protected LeafEntry(int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+	protected LeafEntry(int weight, int quality, List<LootCondition> conditions, List<LootFunction> functions) {
 		super(conditions);
 		this.weight = weight;
 		this.quality = quality;
@@ -41,12 +41,21 @@ public abstract class LeafEntry extends LootPoolEntry {
 		this.compiledFunctions = LootFunctionTypes.join(functions);
 	}
 
+	protected static <T extends LeafEntry> P4<Mu<T>, Integer, Integer, List<LootCondition>, List<LootFunction>> method_53290(Instance<T> instance) {
+		return instance.group(
+				Codecs.createStrictOptionalFieldCodec(Codec.INT, "weight", 1).forGetter(leafEntry -> leafEntry.weight),
+				Codecs.createStrictOptionalFieldCodec(Codec.INT, "quality", 0).forGetter(leafEntry -> leafEntry.quality)
+			)
+			.and(method_53287(instance).t1())
+			.and(Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(leafEntry -> leafEntry.functions));
+	}
+
 	@Override
 	public void validate(LootTableReporter reporter) {
 		super.validate(reporter);
 
-		for (int i = 0; i < this.functions.length; i++) {
-			this.functions[i].validate(reporter.makeChild(".functions[" + i + "]"));
+		for (int i = 0; i < this.functions.size(); i++) {
+			((LootFunction)this.functions.get(i)).validate(reporter.makeChild(".functions[" + i + "]"));
 		}
 	}
 
@@ -86,15 +95,15 @@ public abstract class LeafEntry extends LootPoolEntry {
 	public abstract static class Builder<T extends LeafEntry.Builder<T>> extends LootPoolEntry.Builder<T> implements LootFunctionConsumingBuilder<T> {
 		protected int weight = 1;
 		protected int quality = 0;
-		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
+		private final ImmutableList.Builder<LootFunction> functions = ImmutableList.builder();
 
 		public T apply(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this.getThisBuilder();
 		}
 
-		protected LootFunction[] getFunctions() {
-			return (LootFunction[])this.functions.toArray(new LootFunction[0]);
+		protected List<LootFunction> getFunctions() {
+			return this.functions.build();
 		}
 
 		public T weight(int weight) {
@@ -117,33 +126,6 @@ public abstract class LeafEntry extends LootPoolEntry {
 
 	@FunctionalInterface
 	protected interface Factory {
-		LeafEntry build(int weight, int quality, LootCondition[] conditions, LootFunction[] functions);
-	}
-
-	public abstract static class Serializer<T extends LeafEntry> extends LootPoolEntry.Serializer<T> {
-		public void addEntryFields(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
-			if (leafEntry.weight != 1) {
-				jsonObject.addProperty("weight", leafEntry.weight);
-			}
-
-			if (leafEntry.quality != 0) {
-				jsonObject.addProperty("quality", leafEntry.quality);
-			}
-
-			if (!ArrayUtils.isEmpty((Object[])leafEntry.functions)) {
-				jsonObject.add("functions", jsonSerializationContext.serialize(leafEntry.functions));
-			}
-		}
-
-		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			int i = JsonHelper.getInt(jsonObject, "weight", 1);
-			int j = JsonHelper.getInt(jsonObject, "quality", 0);
-			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
-			return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
-		}
-
-		protected abstract T fromJson(
-			JsonObject entryJson, JsonDeserializationContext context, int weight, int quality, LootCondition[] conditions, LootFunction[] functions
-		);
+		LeafEntry build(int weight, int quality, List<LootCondition> conditions, List<LootFunction> functions);
 	}
 }

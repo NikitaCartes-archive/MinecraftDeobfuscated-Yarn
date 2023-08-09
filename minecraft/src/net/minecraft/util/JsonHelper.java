@@ -26,6 +26,9 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Contract;
 
@@ -106,18 +109,18 @@ public class JsonHelper {
 		return object.has(element) ? asString(object.get(element), element) : defaultStr;
 	}
 
-	public static Item asItem(JsonElement element, String name) {
+	public static RegistryEntry<Item> asItem(JsonElement element, String name) {
 		if (element.isJsonPrimitive()) {
 			String string = element.getAsString();
-			return (Item)Registries.ITEM
-				.getOrEmpty(new Identifier(string))
+			return (RegistryEntry<Item>)Registries.ITEM
+				.getEntry(RegistryKey.of(RegistryKeys.ITEM, new Identifier(string)))
 				.orElseThrow(() -> new JsonSyntaxException("Expected " + name + " to be an item, was unknown string '" + string + "'"));
 		} else {
 			throw new JsonSyntaxException("Expected " + name + " to be an item, was " + getType(element));
 		}
 	}
 
-	public static Item getItem(JsonObject object, String key) {
+	public static RegistryEntry<Item> getItem(JsonObject object, String key) {
 		if (object.has(key)) {
 			return asItem(object.get(key), key);
 		} else {
@@ -127,8 +130,8 @@ public class JsonHelper {
 
 	@Nullable
 	@Contract("_,_,!null->!null;_,_,null->_")
-	public static Item getItem(JsonObject object, String key, @Nullable Item defaultItem) {
-		return object.has(key) ? asItem(object.get(key), key) : defaultItem;
+	public static RegistryEntry<Item> getItem(JsonObject object, String key, @Nullable RegistryEntry<Item> defaultValue) {
+		return object.has(key) ? asItem(object.get(key), key) : defaultValue;
 	}
 
 	public static boolean asBoolean(JsonElement element, String name) {

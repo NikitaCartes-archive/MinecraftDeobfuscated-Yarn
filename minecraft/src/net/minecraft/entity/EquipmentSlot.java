@@ -1,5 +1,7 @@
 package net.minecraft.entity;
 
+import net.minecraft.util.StringIdentifiable;
+
 /**
  * Provides enum types for several key slots found within an entity {@link net.minecraft.inventory.Inventory}.
  * <p>
@@ -15,7 +17,7 @@ package net.minecraft.entity;
  * methods such as {@link LivingEntity#getEquippedStack(EquipmentSlot)}, which will return the {@link net.minecraft.item.ItemStack}
  * held in the entity's inventory slot pointed at by the target slot.
  */
-public enum EquipmentSlot {
+public enum EquipmentSlot implements StringIdentifiable {
 	MAINHAND(EquipmentSlot.Type.HAND, 0, 0, "mainhand"),
 	OFFHAND(EquipmentSlot.Type.HAND, 1, 5, "offhand"),
 	FEET(EquipmentSlot.Type.ARMOR, 0, 1, "feet"),
@@ -23,6 +25,7 @@ public enum EquipmentSlot {
 	CHEST(EquipmentSlot.Type.ARMOR, 2, 3, "chest"),
 	HEAD(EquipmentSlot.Type.ARMOR, 3, 4, "head");
 
+	public static final StringIdentifiable.Codec<EquipmentSlot> CODEC = StringIdentifiable.createCodec(EquipmentSlot::values);
 	private final EquipmentSlot.Type type;
 	private final int entityId;
 	private final int armorStandId;
@@ -88,6 +91,11 @@ public enum EquipmentSlot {
 		return this.type == EquipmentSlot.Type.ARMOR;
 	}
 
+	@Override
+	public String asString() {
+		return this.name;
+	}
+
 	/**
 	 * {@return the slot where {@linkplain #getName the name} is equal to {@code name}}
 	 * If no slot matching the input name is found, this throws {@link IllegalArgumentException}.
@@ -95,13 +103,12 @@ public enum EquipmentSlot {
 	 * @throws IllegalArgumentException if no slot type could be found matching {@code name}
 	 */
 	public static EquipmentSlot byName(String name) {
-		for (EquipmentSlot equipmentSlot : values()) {
-			if (equipmentSlot.getName().equals(name)) {
-				return equipmentSlot;
-			}
+		EquipmentSlot equipmentSlot = (EquipmentSlot)CODEC.byId(name);
+		if (equipmentSlot != null) {
+			return equipmentSlot;
+		} else {
+			throw new IllegalArgumentException("Invalid slot '" + name + "'");
 		}
-
-		throw new IllegalArgumentException("Invalid slot '" + name + "'");
 	}
 
 	/**

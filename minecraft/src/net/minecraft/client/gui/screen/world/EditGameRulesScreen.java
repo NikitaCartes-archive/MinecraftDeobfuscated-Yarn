@@ -128,7 +128,7 @@ public class EditGameRulesScreen extends Screen {
 
 		public IntRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.IntRule rule) {
 			super(description, name);
-			this.valueWidget = new TextFieldWidget(EditGameRulesScreen.this.client.textRenderer, 10, 5, 42, 20, name.copy().append("\n").append(ruleName).append("\n"));
+			this.valueWidget = new TextFieldWidget(EditGameRulesScreen.this.client.textRenderer, 10, 5, 44, 20, name.copy().append("\n").append(ruleName).append("\n"));
 			this.valueWidget.setText(Integer.toString(rule.get()));
 			this.valueWidget.setChangedListener(value -> {
 				if (rule.validate(value)) {
@@ -145,7 +145,7 @@ public class EditGameRulesScreen extends Screen {
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			this.drawName(context, y, x);
-			this.valueWidget.setX(x + entryWidth - 44);
+			this.valueWidget.setX(x + entryWidth - 45);
 			this.valueWidget.setY(y);
 			this.valueWidget.render(context, mouseX, mouseY, tickDelta);
 		}

@@ -1,14 +1,10 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
@@ -21,18 +17,28 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
-	final boolean replace;
-	final List<Text> lore;
-	@Nullable
-	final LootContext.EntityTarget entity;
+	public static final Codec<SetLoreLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<boolean, List<Text>, Optional<LootContext.EntityTarget>>and(
+					instance.group(
+						Codec.BOOL.fieldOf("replace").orElse(false).forGetter(setLoreLootFunction -> setLoreLootFunction.replace),
+						Codecs.TEXT.listOf().fieldOf("lore").forGetter(setLoreLootFunction -> setLoreLootFunction.lore),
+						Codecs.createStrictOptionalFieldCodec(LootContext.EntityTarget.CODEC, "entity").forGetter(setLoreLootFunction -> setLoreLootFunction.entity)
+					)
+				)
+				.apply(instance, SetLoreLootFunction::new)
+	);
+	private final boolean replace;
+	private final List<Text> lore;
+	private final Optional<LootContext.EntityTarget> entity;
 
-	public SetLoreLootFunction(LootCondition[] conditions, boolean replace, List<Text> lore, @Nullable LootContext.EntityTarget entity) {
+	public SetLoreLootFunction(List<LootCondition> conditions, boolean replace, List<Text> lore, Optional<LootContext.EntityTarget> entity) {
 		super(conditions);
 		this.replace = replace;
-		this.lore = ImmutableList.copyOf(lore);
+		this.lore = List.copyOf(lore);
 		this.entity = entity;
 	}
 
@@ -43,7 +49,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.entity != null ? ImmutableSet.of(this.entity.getParameter()) : ImmutableSet.of();
+		return (Set<LootContextParameter<?>>)this.entity.map(entityTarget -> Set.of(entityTarget.getParameter())).orElseGet(Set::of);
 	}
 
 	@Override
@@ -54,7 +60,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 				nbtList.clear();
 			}
 
-			UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(context, this.entity);
+			UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null));
 			this.lore.stream().map(unaryOperator).map(Text.Serializer::toJson).map(NbtString::of).forEach(nbtList::add);
 		}
 
@@ -104,8 +110,8 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	public static class Builder extends ConditionalLootFunction.Builder<SetLoreLootFunction.Builder> {
 		private boolean replace;
-		private LootContext.EntityTarget target;
-		private final List<Text> lore = Lists.<Text>newArrayList();
+		private Optional<LootContext.EntityTarget> target = Optional.empty();
+		private final ImmutableList.Builder<Text> lore = ImmutableList.builder();
 
 		public SetLoreLootFunction.Builder replace(boolean replace) {
 			this.replace = replace;
@@ -113,7 +119,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 		}
 
 		public SetLoreLootFunction.Builder target(LootContext.EntityTarget target) {
-			this.target = target;
+			this.target = Optional.of(target);
 			return this;
 		}
 
@@ -128,33 +134,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new SetLoreLootFunction(this.getConditions(), this.replace, this.lore, this.target);
-		}
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<SetLoreLootFunction> {
-		public void toJson(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setLoreLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("replace", setLoreLootFunction.replace);
-			JsonArray jsonArray = new JsonArray();
-
-			for (Text text : setLoreLootFunction.lore) {
-				jsonArray.add(Text.Serializer.toJsonTree(text));
-			}
-
-			jsonObject.add("lore", jsonArray);
-			if (setLoreLootFunction.entity != null) {
-				jsonObject.add("entity", jsonSerializationContext.serialize(setLoreLootFunction.entity));
-			}
-		}
-
-		public SetLoreLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
-			List<Text> list = (List<Text>)Streams.stream(JsonHelper.getArray(jsonObject, "lore"))
-				.map(Text.Serializer::fromJson)
-				.collect(ImmutableList.toImmutableList());
-			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
-			return new SetLoreLootFunction(lootConditions, bl, list, entityTarget);
+			return new SetLoreLootFunction(this.getConditions(), this.replace, this.lore.build(), this.target);
 		}
 	}
 }

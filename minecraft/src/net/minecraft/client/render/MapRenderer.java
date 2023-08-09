@@ -117,8 +117,8 @@ public class MapRenderer implements AutoCloseable {
 			for (MapIcon mapIcon : this.state.getIcons()) {
 				if (!hidePlayerIcons || mapIcon.isAlwaysRendered()) {
 					matrices.push();
-					matrices.translate(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F, -0.02F);
-					matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)(mapIcon.getRotation() * 360) / 16.0F));
+					matrices.translate(0.0F + (float)mapIcon.x() / 2.0F + 64.0F, 0.0F + (float)mapIcon.z() / 2.0F + 64.0F, -0.02F);
+					matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)(mapIcon.rotation() * 360) / 16.0F));
 					matrices.scale(4.0F, 4.0F, 3.0F);
 					matrices.translate(-0.125F, 0.125F, 0.0F);
 					byte b = mapIcon.getTypeId();
@@ -134,13 +134,13 @@ public class MapRenderer implements AutoCloseable {
 					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(l, m).light(light).next();
 					vertexConsumer2.vertex(matrix4f2, -1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(g, m).light(light).next();
 					matrices.pop();
-					if (mapIcon.getText() != null) {
+					if (mapIcon.text() != null) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-						Text text = mapIcon.getText();
+						Text text = mapIcon.text();
 						float o = (float)textRenderer.getWidth(text);
 						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / 9.0F);
 						matrices.push();
-						matrices.translate(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F, -0.025F);
+						matrices.translate(0.0F + (float)mapIcon.x() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.z() / 2.0F + 64.0F + 4.0F, -0.025F);
 						matrices.scale(p, p, 1.0F);
 						matrices.translate(0.0F, 0.0F, -0.1F);
 						textRenderer.draw(

@@ -16,6 +16,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 
 public class ChiseledBookshelfBlockEntity extends BlockEntity implements Inventory {
@@ -40,6 +41,7 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 			}
 
 			((World)Objects.requireNonNull(this.world)).setBlockState(this.pos, blockState, Block.NOTIFY_ALL);
+			this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, this.pos, GameEvent.Emitter.of(blockState));
 		} else {
 			LOGGER.error("Expected slot 0-5, got {}", interactedSlot);
 		}

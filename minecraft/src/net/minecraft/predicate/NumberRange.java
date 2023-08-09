@@ -2,82 +2,57 @@ package net.minecraft.predicate;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonParseException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import java.util.function.BiFunction;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.text.Text;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 
-public abstract class NumberRange<T extends Number> {
-	public static final SimpleCommandExceptionType EXCEPTION_EMPTY = new SimpleCommandExceptionType(Text.translatable("argument.range.empty"));
-	public static final SimpleCommandExceptionType EXCEPTION_SWAPPED = new SimpleCommandExceptionType(Text.translatable("argument.range.swapped"));
-	@Nullable
-	protected final T min;
-	@Nullable
-	protected final T max;
+public interface NumberRange<T extends Number> {
+	SimpleCommandExceptionType EXCEPTION_EMPTY = new SimpleCommandExceptionType(Text.translatable("argument.range.empty"));
+	SimpleCommandExceptionType EXCEPTION_SWAPPED = new SimpleCommandExceptionType(Text.translatable("argument.range.swapped"));
 
-	protected NumberRange(@Nullable T min, @Nullable T max) {
-		this.min = min;
-		this.max = max;
+	Optional<T> getMin();
+
+	Optional<T> getMax();
+
+	default boolean isDummy() {
+		return this.getMin().isEmpty() && this.getMax().isEmpty();
 	}
 
-	@Nullable
-	public T getMin() {
-		return this.min;
+	default Optional<T> getConstantValue() {
+		Optional<T> optional = this.getMin();
+		Optional<T> optional2 = this.getMax();
+		return optional.equals(optional2) ? optional : Optional.empty();
 	}
 
-	@Nullable
-	public T getMax() {
-		return this.max;
+	static <T extends Number, R extends NumberRange<T>> Codec<R> method_53191(Codec<T> codec, NumberRange.Factory<T, R> factory) {
+		Codec<R> codec2 = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(codec, "min").forGetter(NumberRange::getMin),
+						Codecs.createStrictOptionalFieldCodec(codec, "max").forGetter(NumberRange::getMax)
+					)
+					.apply(instance, factory::create)
+		);
+		return Codec.either(codec2, codec)
+			.xmap(either -> either.map(numberRange -> numberRange, number -> factory.create(Optional.of(number), Optional.of(number))), numberRange -> {
+				Optional<T> optional = numberRange.getConstantValue();
+				return optional.isPresent() ? Either.right((Number)optional.get()) : Either.left(numberRange);
+			});
 	}
 
-	public boolean isDummy() {
-		return this.min == null && this.max == null;
-	}
-
-	public JsonElement toJson() {
-		if (this.isDummy()) {
-			return JsonNull.INSTANCE;
-		} else if (this.min != null && this.min.equals(this.max)) {
-			return new JsonPrimitive(this.min);
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			if (this.min != null) {
-				jsonObject.addProperty("min", this.min);
-			}
-
-			if (this.max != null) {
-				jsonObject.addProperty("max", this.max);
-			}
-
-			return jsonObject;
-		}
-	}
-
-	protected static <T extends Number, R extends NumberRange<T>> R fromJson(
-		@Nullable JsonElement json, R fallback, BiFunction<JsonElement, String, T> asNumber, NumberRange.Factory<T, R> factory
-	) {
-		if (json == null || json.isJsonNull()) {
-			return fallback;
-		} else if (JsonHelper.isNumber(json)) {
-			T number = (T)asNumber.apply(json, "value");
-			return factory.create(number, number);
-		} else {
-			JsonObject jsonObject = JsonHelper.asObject(json, "value");
-			T number2 = (T)(jsonObject.has("min") ? asNumber.apply(jsonObject.get("min"), "min") : null);
-			T number3 = (T)(jsonObject.has("max") ? asNumber.apply(jsonObject.get("max"), "max") : null);
-			return factory.create(number2, number3);
-		}
-	}
-
-	protected static <T extends Number, R extends NumberRange<T>> R parse(
+	static <T extends Number, R extends NumberRange<T>> R parse(
 		StringReader commandReader,
 		NumberRange.CommandFactory<T, R> commandFactory,
 		Function<String, T> converter,
@@ -90,23 +65,23 @@ public abstract class NumberRange<T extends Number> {
 			int i = commandReader.getCursor();
 
 			try {
-				T number = (T)map(fromStringReader(commandReader, converter, exceptionTypeSupplier), mapper);
-				T number2;
+				Optional<T> optional = fromStringReader(commandReader, converter, exceptionTypeSupplier).map(mapper);
+				Optional<T> optional2;
 				if (commandReader.canRead(2) && commandReader.peek() == '.' && commandReader.peek(1) == '.') {
 					commandReader.skip();
 					commandReader.skip();
-					number2 = (T)map(fromStringReader(commandReader, converter, exceptionTypeSupplier), mapper);
-					if (number == null && number2 == null) {
+					optional2 = fromStringReader(commandReader, converter, exceptionTypeSupplier).map(mapper);
+					if (optional.isEmpty() && optional2.isEmpty()) {
 						throw EXCEPTION_EMPTY.createWithContext(commandReader);
 					}
 				} else {
-					number2 = number;
+					optional2 = optional;
 				}
 
-				if (number == null && number2 == null) {
+				if (optional.isEmpty() && optional2.isEmpty()) {
 					throw EXCEPTION_EMPTY.createWithContext(commandReader);
 				} else {
-					return commandFactory.create(commandReader, number, number2);
+					return commandFactory.create(commandReader, optional, optional2);
 				}
 			} catch (CommandSyntaxException var8) {
 				commandReader.setCursor(i);
@@ -115,8 +90,7 @@ public abstract class NumberRange<T extends Number> {
 		}
 	}
 
-	@Nullable
-	private static <T extends Number> T fromStringReader(
+	private static <T extends Number> Optional<T> fromStringReader(
 		StringReader reader, Function<String, T> converter, Supplier<DynamicCommandExceptionType> exceptionTypeSupplier
 	) throws CommandSyntaxException {
 		int i = reader.getCursor();
@@ -127,10 +101,10 @@ public abstract class NumberRange<T extends Number> {
 
 		String string = reader.getString().substring(i, reader.getCursor());
 		if (string.isEmpty()) {
-			return null;
+			return Optional.empty();
 		} else {
 			try {
-				return (T)converter.apply(string);
+				return Optional.of((Number)converter.apply(string));
 			} catch (NumberFormatException var6) {
 				throw ((DynamicCommandExceptionType)exceptionTypeSupplier.get()).createWithContext(reader, string);
 			}
@@ -146,73 +120,67 @@ public abstract class NumberRange<T extends Number> {
 		}
 	}
 
-	@Nullable
-	private static <T> T map(@Nullable T object, Function<T, T> function) {
-		return (T)(object == null ? null : function.apply(object));
+	@FunctionalInterface
+	public interface CommandFactory<T extends Number, R extends NumberRange<T>> {
+		R create(StringReader reader, Optional<T> optional, Optional<T> optional2) throws CommandSyntaxException;
 	}
 
 	@FunctionalInterface
-	protected interface CommandFactory<T extends Number, R extends NumberRange<T>> {
-		R create(StringReader reader, @Nullable T min, @Nullable T max) throws CommandSyntaxException;
+	public interface Factory<T extends Number, R extends NumberRange<T>> {
+		R create(Optional<T> optional, Optional<T> optional2);
 	}
 
-	@FunctionalInterface
-	protected interface Factory<T extends Number, R extends NumberRange<T>> {
-		R create(@Nullable T min, @Nullable T max);
-	}
+	public static record FloatRange(Optional<Double> getMin, Optional<Double> getMax, Optional<Double> squaredMin, Optional<Double> squaredMax)
+		implements NumberRange<Double> {
+		public static final NumberRange.FloatRange ANY = new NumberRange.FloatRange(Optional.empty(), Optional.empty());
+		public static final Codec<NumberRange.FloatRange> CODEC = NumberRange.method_53191((Codec<T>)Codec.DOUBLE, NumberRange.FloatRange::new);
 
-	public static class FloatRange extends NumberRange<Double> {
-		public static final NumberRange.FloatRange ANY = new NumberRange.FloatRange(null, null);
-		@Nullable
-		private final Double squaredMin;
-		@Nullable
-		private final Double squaredMax;
+		private FloatRange(Optional<Double> optional, Optional<Double> optional2) {
+			this(optional, optional2, square(optional), square(optional2));
+		}
 
-		private static NumberRange.FloatRange create(StringReader reader, @Nullable Double min, @Nullable Double max) throws CommandSyntaxException {
-			if (min != null && max != null && min > max) {
+		private static NumberRange.FloatRange create(StringReader reader, Optional<Double> optional, Optional<Double> optional2) throws CommandSyntaxException {
+			if (optional.isPresent() && optional2.isPresent() && (Double)optional.get() > (Double)optional2.get()) {
 				throw EXCEPTION_SWAPPED.createWithContext(reader);
 			} else {
-				return new NumberRange.FloatRange(min, max);
+				return new NumberRange.FloatRange(optional, optional2);
 			}
 		}
 
-		@Nullable
-		private static Double square(@Nullable Double value) {
-			return value == null ? null : value * value;
-		}
-
-		private FloatRange(@Nullable Double min, @Nullable Double max) {
-			super(min, max);
-			this.squaredMin = square(min);
-			this.squaredMax = square(max);
+		private static Optional<Double> square(Optional<Double> optional) {
+			return optional.map(double_ -> double_ * double_);
 		}
 
 		public static NumberRange.FloatRange exactly(double value) {
-			return new NumberRange.FloatRange(value, value);
+			return new NumberRange.FloatRange(Optional.of(value), Optional.of(value));
 		}
 
 		public static NumberRange.FloatRange between(double min, double max) {
-			return new NumberRange.FloatRange(min, max);
+			return new NumberRange.FloatRange(Optional.of(min), Optional.of(max));
 		}
 
 		public static NumberRange.FloatRange atLeast(double value) {
-			return new NumberRange.FloatRange(value, null);
+			return new NumberRange.FloatRange(Optional.of(value), Optional.empty());
 		}
 
 		public static NumberRange.FloatRange atMost(double value) {
-			return new NumberRange.FloatRange(null, value);
+			return new NumberRange.FloatRange(Optional.empty(), Optional.of(value));
 		}
 
 		public boolean test(double value) {
-			return this.min != null && this.min > value ? false : this.max == null || !(this.max < value);
+			return this.getMin.isPresent() && this.getMin.get() > value ? false : this.getMax.isEmpty() || !((Double)this.getMax.get() < value);
 		}
 
 		public boolean testSqrt(double value) {
-			return this.squaredMin != null && this.squaredMin > value ? false : this.squaredMax == null || !(this.squaredMax < value);
+			return this.squaredMin.isPresent() && this.squaredMin.get() > value ? false : this.squaredMax.isEmpty() || !((Double)this.squaredMax.get() < value);
 		}
 
 		public static NumberRange.FloatRange fromJson(@Nullable JsonElement element) {
-			return fromJson(element, ANY, JsonHelper::asDouble, NumberRange.FloatRange::new);
+			return element != null && !element.isJsonNull() ? Util.getResult(CODEC.parse(JsonOps.INSTANCE, element), JsonParseException::new) : ANY;
+		}
+
+		public JsonElement toJson() {
+			return (JsonElement)(this.isDummy() ? JsonNull.INSTANCE : Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new));
 		}
 
 		public static NumberRange.FloatRange parse(StringReader reader) throws CommandSyntaxException {
@@ -220,62 +188,63 @@ public abstract class NumberRange<T extends Number> {
 		}
 
 		public static NumberRange.FloatRange parse(StringReader reader, Function<Double, Double> mapper) throws CommandSyntaxException {
-			return parse(reader, NumberRange.FloatRange::create, Double::parseDouble, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidDouble, mapper);
+			return NumberRange.parse(
+				reader, NumberRange.FloatRange::create, Double::parseDouble, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidDouble, (Function<T, T>)mapper
+			);
 		}
 	}
 
-	public static class IntRange extends NumberRange<Integer> {
-		public static final NumberRange.IntRange ANY = new NumberRange.IntRange(null, null);
-		@Nullable
-		private final Long minSquared;
-		@Nullable
-		private final Long maxSquared;
+	public static record IntRange(Optional<Integer> getMin, Optional<Integer> getMax, Optional<Long> minSquared, Optional<Long> maxSquared)
+		implements NumberRange<Integer> {
+		public static final NumberRange.IntRange ANY = new NumberRange.IntRange(Optional.empty(), Optional.empty());
+		public static final Codec<NumberRange.IntRange> CODEC = NumberRange.method_53191((Codec<T>)Codec.INT, NumberRange.IntRange::new);
 
-		private static NumberRange.IntRange parse(StringReader reader, @Nullable Integer min, @Nullable Integer max) throws CommandSyntaxException {
-			if (min != null && max != null && min > max) {
+		private IntRange(Optional<Integer> optional, Optional<Integer> optional2) {
+			this(optional, optional2, optional.map(integer -> integer.longValue() * integer.longValue()), squared(optional2));
+		}
+
+		private static NumberRange.IntRange parse(StringReader reader, Optional<Integer> optional, Optional<Integer> optional2) throws CommandSyntaxException {
+			if (optional.isPresent() && optional2.isPresent() && (Integer)optional.get() > (Integer)optional2.get()) {
 				throw EXCEPTION_SWAPPED.createWithContext(reader);
 			} else {
-				return new NumberRange.IntRange(min, max);
+				return new NumberRange.IntRange(optional, optional2);
 			}
 		}
 
-		@Nullable
-		private static Long squared(@Nullable Integer value) {
-			return value == null ? null : value.longValue() * value.longValue();
-		}
-
-		private IntRange(@Nullable Integer min, @Nullable Integer max) {
-			super(min, max);
-			this.minSquared = squared(min);
-			this.maxSquared = squared(max);
+		private static Optional<Long> squared(Optional<Integer> optional) {
+			return optional.map(integer -> integer.longValue() * integer.longValue());
 		}
 
 		public static NumberRange.IntRange exactly(int value) {
-			return new NumberRange.IntRange(value, value);
+			return new NumberRange.IntRange(Optional.of(value), Optional.of(value));
 		}
 
 		public static NumberRange.IntRange between(int min, int max) {
-			return new NumberRange.IntRange(min, max);
+			return new NumberRange.IntRange(Optional.of(min), Optional.of(max));
 		}
 
 		public static NumberRange.IntRange atLeast(int value) {
-			return new NumberRange.IntRange(value, null);
+			return new NumberRange.IntRange(Optional.of(value), Optional.empty());
 		}
 
 		public static NumberRange.IntRange atMost(int value) {
-			return new NumberRange.IntRange(null, value);
+			return new NumberRange.IntRange(Optional.empty(), Optional.of(value));
 		}
 
 		public boolean test(int value) {
-			return this.min != null && this.min > value ? false : this.max == null || this.max >= value;
+			return this.getMin.isPresent() && this.getMin.get() > value ? false : this.getMax.isEmpty() || (Integer)this.getMax.get() >= value;
 		}
 
 		public boolean testSqrt(long value) {
-			return this.minSquared != null && this.minSquared > value ? false : this.maxSquared == null || this.maxSquared >= value;
+			return this.minSquared.isPresent() && this.minSquared.get() > value ? false : this.maxSquared.isEmpty() || (Long)this.maxSquared.get() >= value;
 		}
 
 		public static NumberRange.IntRange fromJson(@Nullable JsonElement element) {
-			return fromJson(element, ANY, JsonHelper::asInt, NumberRange.IntRange::new);
+			return element != null && !element.isJsonNull() ? Util.getResult(CODEC.parse(JsonOps.INSTANCE, element), JsonParseException::new) : ANY;
+		}
+
+		public JsonElement toJson() {
+			return (JsonElement)(this.isDummy() ? JsonNull.INSTANCE : Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new));
 		}
 
 		public static NumberRange.IntRange parse(StringReader reader) throws CommandSyntaxException {
@@ -283,7 +252,9 @@ public abstract class NumberRange<T extends Number> {
 		}
 
 		public static NumberRange.IntRange fromStringReader(StringReader reader, Function<Integer, Integer> converter) throws CommandSyntaxException {
-			return parse(reader, NumberRange.IntRange::parse, Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, converter);
+			return NumberRange.parse(
+				reader, NumberRange.IntRange::parse, Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, (Function<T, T>)converter
+			);
 		}
 	}
 }

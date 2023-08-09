@@ -4,57 +4,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 public class SuspiciousStewItem extends Item {
-	public static final String EFFECTS_KEY = "Effects";
-	public static final String EFFECT_ID_KEY = "EffectId";
-	public static final String EFFECT_DURATION_KEY = "EffectDuration";
+	public static final String EFFECTS_KEY = "effects";
 	public static final int DEFAULT_DURATION = 160;
 
 	public SuspiciousStewItem(Item.Settings settings) {
 		super(settings);
 	}
 
-	public static void addEffectToStew(ItemStack stew, StatusEffect effect, int duration) {
+	public static void writeEffectsToStew(ItemStack stew, List<SuspiciousStewIngredient.StewEffect> stewEffects) {
 		NbtCompound nbtCompound = stew.getOrCreateNbt();
-		NbtList nbtList = nbtCompound.getList("Effects", NbtElement.LIST_TYPE);
-		NbtCompound nbtCompound2 = new NbtCompound();
-		nbtCompound2.putInt("EffectId", StatusEffect.getRawId(effect));
-		nbtCompound2.putInt("EffectDuration", duration);
-		nbtList.add(nbtCompound2);
-		nbtCompound.put("Effects", nbtList);
+		SuspiciousStewIngredient.StewEffect.LIST_CODEC
+			.encodeStart(NbtOps.INSTANCE, stewEffects)
+			.result()
+			.ifPresent(nbtElement -> nbtCompound.put("effects", nbtElement));
 	}
 
-	private static void forEachEffect(ItemStack stew, Consumer<StatusEffectInstance> effectConsumer) {
+	public static void addEffectsToStew(ItemStack stew, List<SuspiciousStewIngredient.StewEffect> stewEffects) {
+		NbtCompound nbtCompound = stew.getOrCreateNbt();
+		List<SuspiciousStewIngredient.StewEffect> list = new ArrayList();
+		forEachEffect(stew, list::add);
+		list.addAll(stewEffects);
+		SuspiciousStewIngredient.StewEffect.LIST_CODEC.encodeStart(NbtOps.INSTANCE, list).result().ifPresent(nbtElement -> nbtCompound.put("effects", nbtElement));
+	}
+
+	private static void forEachEffect(ItemStack stew, Consumer<SuspiciousStewIngredient.StewEffect> effectConsumer) {
 		NbtCompound nbtCompound = stew.getNbt();
-		if (nbtCompound != null && nbtCompound.contains("Effects", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbtCompound.getList("Effects", NbtElement.COMPOUND_TYPE);
-
-			for (int i = 0; i < nbtList.size(); i++) {
-				NbtCompound nbtCompound2 = nbtList.getCompound(i);
-				int j;
-				if (nbtCompound2.contains("EffectDuration", NbtElement.NUMBER_TYPE)) {
-					j = nbtCompound2.getInt("EffectDuration");
-				} else {
-					j = 160;
-				}
-
-				StatusEffect statusEffect = StatusEffect.byRawId(nbtCompound2.getInt("EffectId"));
-				if (statusEffect != null) {
-					effectConsumer.accept(new StatusEffectInstance(statusEffect, j));
-				}
-			}
+		if (nbtCompound != null && nbtCompound.contains("effects", NbtElement.LIST_TYPE)) {
+			SuspiciousStewIngredient.StewEffect.LIST_CODEC
+				.parse(NbtOps.INSTANCE, nbtCompound.getList("effects", NbtElement.COMPOUND_TYPE))
+				.result()
+				.ifPresent(list -> list.forEach(effectConsumer));
 		}
 	}
 
@@ -63,7 +55,7 @@ public class SuspiciousStewItem extends Item {
 		super.appendTooltip(stack, world, tooltip, context);
 		if (context.isCreative()) {
 			List<StatusEffectInstance> list = new ArrayList();
-			forEachEffect(stack, list::add);
+			forEachEffect(stack, effect -> list.add(effect.createStatusEffectInstance()));
 			PotionUtil.buildTooltip(list, tooltip, 1.0F);
 		}
 	}
@@ -71,7 +63,7 @@ public class SuspiciousStewItem extends Item {
 	@Override
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		ItemStack itemStack = super.finishUsing(stack, world, user);
-		forEachEffect(itemStack, user::addStatusEffect);
+		forEachEffect(itemStack, effect -> user.addStatusEffect(effect.createStatusEffectInstance()));
 		return user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode ? itemStack : new ItemStack(Items.BOWL);
 	}
 }

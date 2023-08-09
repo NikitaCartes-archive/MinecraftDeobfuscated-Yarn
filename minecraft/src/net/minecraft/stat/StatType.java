@@ -3,19 +3,17 @@ package net.minecraft.stat;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.annotation.Nullable;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 
 public class StatType<T> implements Iterable<Stat<T>> {
 	private final Registry<T> registry;
 	private final Map<T, Stat<T>> stats = new IdentityHashMap();
-	@Nullable
-	private Text name;
+	private final Text name;
 
-	public StatType(Registry<T> registry) {
+	public StatType(Registry<T> registry, Text name) {
 		this.registry = registry;
+		this.name = name;
 	}
 
 	public boolean hasStat(T key) {
@@ -38,15 +36,7 @@ public class StatType<T> implements Iterable<Stat<T>> {
 		return this.getOrCreateStat(key, StatFormatter.DEFAULT);
 	}
 
-	public String getTranslationKey() {
-		return "stat_type." + Registries.STAT_TYPE.getId(this).toString().replace(':', '.');
-	}
-
 	public Text getName() {
-		if (this.name == null) {
-			this.name = Text.translatable(this.getTranslationKey());
-		}
-
 		return this.name;
 	}
 }

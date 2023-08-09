@@ -2,7 +2,6 @@ package net.minecraft.client.network;
 
 import com.google.common.base.Suppliers;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -12,11 +11,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.SkinTextures;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.message.MessageVerifier;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -40,39 +39,14 @@ public class PlayerListEntry {
 
 	private static Supplier<SkinTextures> texturesSupplier(GameProfile profile) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		CompletableFuture<SkinTextures> completableFuture = fetchSkinTextures(profile, minecraftClient.getSkinProvider(), minecraftClient.getSessionService());
+		PlayerSkinProvider playerSkinProvider = minecraftClient.getSkinProvider();
+		CompletableFuture<SkinTextures> completableFuture = playerSkinProvider.fetchSkinTextures(profile);
 		boolean bl = !minecraftClient.uuidEquals(profile.getId());
 		SkinTextures skinTextures = DefaultSkinHelper.getTexture(profile);
 		return () -> {
 			SkinTextures skinTextures2 = (SkinTextures)completableFuture.getNow(skinTextures);
 			return bl && !skinTextures2.secure() ? skinTextures : skinTextures2;
 		};
-	}
-
-	private static CompletableFuture<SkinTextures> fetchSkinTextures(GameProfile profiles, PlayerSkinProvider skinProvider, MinecraftSessionService sessionService) {
-		CompletableFuture<GameProfile> completableFuture;
-		if (skinProvider.areTexturesSigned(profiles)) {
-			completableFuture = CompletableFuture.completedFuture(profiles);
-		} else {
-			completableFuture = CompletableFuture.supplyAsync(() -> fetchProfile(profiles, sessionService), Util.getIoWorkerExecutor());
-		}
-
-		return completableFuture.thenCompose(skinProvider::fetchSkinTextures);
-	}
-
-	private static GameProfile fetchProfile(GameProfile profile, MinecraftSessionService sessionService) {
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		profile.getProperties().clear();
-		if (minecraftClient.uuidEquals(profile.getId())) {
-			profile.getProperties().putAll(minecraftClient.getSessionProperties());
-		} else {
-			GameProfile gameProfile = sessionService.fetchProfile(profile.getId(), true);
-			if (gameProfile != null) {
-				gameProfile.getProperties().putAll(gameProfile.getProperties());
-			}
-		}
-
-		return profile;
 	}
 
 	public GameProfile getProfile() {
@@ -94,7 +68,7 @@ public class PlayerListEntry {
 
 	protected void setSession(PublicPlayerSession session) {
 		this.session = session;
-		this.messageVerifier = session.createVerifier();
+		this.messageVerifier = session.createVerifier(PlayerPublicKey.EXPIRATION_GRACE_PERIOD);
 	}
 
 	protected void resetSession(boolean secureChatEnforced) {

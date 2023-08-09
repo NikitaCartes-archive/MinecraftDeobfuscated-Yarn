@@ -1,9 +1,9 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -21,11 +21,11 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 	}
 
 	public ChangedDimensionCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(RegistryKeys.WORLD, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
 		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(RegistryKeys.WORLD, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
-		return new ChangedDimensionCriterion.Conditions(lootContextPredicate, registryKey, registryKey2);
+		return new ChangedDimensionCriterion.Conditions(optional, registryKey, registryKey2);
 	}
 
 	public void trigger(ServerPlayerEntity player, RegistryKey<World> from, RegistryKey<World> to) {
@@ -38,26 +38,26 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		@Nullable
 		private final RegistryKey<World> to;
 
-		public Conditions(LootContextPredicate player, @Nullable RegistryKey<World> from, @Nullable RegistryKey<World> to) {
-			super(ChangedDimensionCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable RegistryKey<World> from, @Nullable RegistryKey<World> to) {
+			super(ChangedDimensionCriterion.ID, playerPredicate);
 			this.from = from;
 			this.to = to;
 		}
 
 		public static ChangedDimensionCriterion.Conditions create() {
-			return new ChangedDimensionCriterion.Conditions(LootContextPredicate.EMPTY, null, null);
+			return new ChangedDimensionCriterion.Conditions(Optional.empty(), null, null);
 		}
 
 		public static ChangedDimensionCriterion.Conditions create(RegistryKey<World> from, RegistryKey<World> to) {
-			return new ChangedDimensionCriterion.Conditions(LootContextPredicate.EMPTY, from, to);
+			return new ChangedDimensionCriterion.Conditions(Optional.empty(), from, to);
 		}
 
 		public static ChangedDimensionCriterion.Conditions to(RegistryKey<World> to) {
-			return new ChangedDimensionCriterion.Conditions(LootContextPredicate.EMPTY, null, to);
+			return new ChangedDimensionCriterion.Conditions(Optional.empty(), null, to);
 		}
 
 		public static ChangedDimensionCriterion.Conditions from(RegistryKey<World> from) {
-			return new ChangedDimensionCriterion.Conditions(LootContextPredicate.EMPTY, from, null);
+			return new ChangedDimensionCriterion.Conditions(Optional.empty(), from, null);
 		}
 
 		public boolean matches(RegistryKey<World> from, RegistryKey<World> to) {
@@ -65,8 +65,8 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
 			if (this.from != null) {
 				jsonObject.addProperty("from", this.from.getValue().toString());
 			}

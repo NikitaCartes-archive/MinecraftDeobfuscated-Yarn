@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.CommandRegistryAccess;
@@ -455,7 +456,7 @@ public class ItemCommand {
 			.add(LootContextParameters.ORIGIN, source.getPosition())
 			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
-		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(null);
+		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
 		lootContext.markActive(LootContext.itemModifier(modifier));
 		return (ItemStack)modifier.apply(stack, lootContext);
 	}

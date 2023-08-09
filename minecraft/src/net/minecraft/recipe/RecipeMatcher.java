@@ -201,18 +201,17 @@ public class RecipeMatcher {
 
 				this.requirementsMatrix.clear(0, this.totalIngredients + this.totalRequiredItems + this.totalIngredients);
 				int l = 0;
-				List<Ingredient> list = this.recipe.getIngredients();
 
-				for (int m = 0; m < list.size(); m++) {
-					if (bl2 && ((Ingredient)list.get(m)).isEmpty()) {
+				for (Ingredient ingredient : this.recipe.getIngredients()) {
+					if (bl2 && ingredient.isEmpty()) {
 						output.add(0);
 					} else {
-						for (int n = 0; n < this.totalRequiredItems; n++) {
-							if (this.checkRequirement(false, l, n)) {
-								this.flipRequirement(true, n, l);
-								RecipeMatcher.this.addInput(this.requiredItems[n], multiplier);
+						for (int m = 0; m < this.totalRequiredItems; m++) {
+							if (this.checkRequirement(false, l, m)) {
+								this.flipRequirement(true, m, l);
+								RecipeMatcher.this.addInput(this.requiredItems[m], multiplier);
 								if (bl2) {
-									output.add(this.requiredItems[n]);
+									output.add(this.requiredItems[m]);
 								}
 							}
 						}

@@ -13,6 +13,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandler> extends HandledScreen<T> implements RecipeBookProvider {
@@ -79,12 +80,14 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		int j = this.y;
 		context.drawTexture(this.background, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		if (this.handler.isBurning()) {
-			int k = this.handler.getFuelProgress();
-			context.drawGuiTexture(this.litProgressTexture, 14, 14, 0, 12 - k, i + 56, j + 36 + 12 - k, 14, k + 1);
+			int k = 14;
+			int l = MathHelper.ceil(this.handler.getFuelProgress() * 13.0F) + 1;
+			context.drawGuiTexture(this.litProgressTexture, 14, 14, 0, 14 - l, i + 56, j + 36 + 14 - l, 14, l);
 		}
 
-		int k = this.handler.getCookProgress();
-		context.drawGuiTexture(this.burnProgressTexture, 24, 16, 0, 0, i + 79, j + 34, k + 1, 16);
+		int k = 24;
+		int l = MathHelper.ceil(this.handler.getCookProgress() * 24.0F);
+		context.drawGuiTexture(this.burnProgressTexture, 24, 16, 0, 0, i + 79, j + 34, l, 16);
 	}
 
 	@Override

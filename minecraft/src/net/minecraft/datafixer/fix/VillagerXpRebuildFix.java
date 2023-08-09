@@ -56,7 +56,7 @@ public class VillagerXpRebuildFix extends DataFix {
 						}
 
 						Optional<Number> optional = dynamic.get("Xp").asNumber().result();
-						if (!optional.isPresent()) {
+						if (optional.isEmpty()) {
 							typed2 = fixXp(typed2, i);
 						}
 

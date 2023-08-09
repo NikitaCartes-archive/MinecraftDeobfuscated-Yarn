@@ -1,24 +1,19 @@
 package net.minecraft.loot.provider.nbt;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
 
-public class StorageLootNbtProvider implements LootNbtProvider {
-	final Identifier source;
-
-	StorageLootNbtProvider(Identifier source) {
-		this.source = source;
-	}
+public record StorageLootNbtProvider(Identifier source) implements LootNbtProvider {
+	public static final Codec<StorageLootNbtProvider> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(Identifier.CODEC.fieldOf("source").forGetter(StorageLootNbtProvider::source)).apply(instance, StorageLootNbtProvider::new)
+	);
 
 	@Override
 	public LootNbtProviderType getType() {
@@ -34,16 +29,5 @@ public class StorageLootNbtProvider implements LootNbtProvider {
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return ImmutableSet.of();
-	}
-
-	public static class Serializer implements JsonSerializer<StorageLootNbtProvider> {
-		public void toJson(JsonObject jsonObject, StorageLootNbtProvider storageLootNbtProvider, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("source", storageLootNbtProvider.source.toString());
-		}
-
-		public StorageLootNbtProvider fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			String string = JsonHelper.getString(jsonObject, "source");
-			return new StorageLootNbtProvider(new Identifier(string));
-		}
 	}
 }

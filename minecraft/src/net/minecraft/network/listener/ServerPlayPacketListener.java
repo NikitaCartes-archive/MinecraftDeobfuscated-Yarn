@@ -51,7 +51,7 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 /**
  * A server side packet listener where play stage packets from a client are processed.
  */
-public interface ServerPlayPacketListener extends ServerCommonPacketListener {
+public interface ServerPlayPacketListener extends ServerQueryPingPacketListener, ServerCommonPacketListener {
 	@Override
 	default NetworkState getState() {
 		return NetworkState.PLAY;

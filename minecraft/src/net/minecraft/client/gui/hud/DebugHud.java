@@ -30,8 +30,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.hud.debug.PacketSizeChart;
+import net.minecraft.client.gui.hud.debug.PingChart;
+import net.minecraft.client.gui.hud.debug.RenderingChart;
+import net.minecraft.client.gui.hud.debug.TickChart;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
@@ -43,7 +46,6 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.MetricsData;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -90,14 +92,19 @@ public class DebugHud {
 	private WorldChunk chunk;
 	@Nullable
 	private CompletableFuture<WorldChunk> chunkFuture;
-	private static final int METRICS_RED = -65536;
-	private static final int METRICS_YELLOW = -256;
-	private static final int METRICS_GREEN = -16711936;
+	private final RenderingChart renderingChart;
+	private final PingChart pingChart;
+	private final PacketSizeChart packetSizeChart;
+	@Nullable
+	private TickChart tickChart;
 
 	public DebugHud(MinecraftClient client) {
 		this.client = client;
 		this.allocationRateCalculator = new DebugHud.AllocationRateCalculator();
 		this.textRenderer = client.textRenderer;
+		this.renderingChart = new RenderingChart(this.textRenderer, client.frameNanosLog);
+		this.pingChart = new PingChart(this.textRenderer, client.pingPerformanceLog);
+		this.packetSizeChart = new PacketSizeChart(this.textRenderer, client.receivedPacketSizeLog);
 	}
 
 	public void resetChunk() {
@@ -115,14 +122,41 @@ public class DebugHud {
 			this.drawRightText(context);
 			if (this.client.options.debugTpsEnabled) {
 				int i = context.getScaledWindowWidth();
-				this.drawMetricsData(context, this.client.getMetricsData(), 0, i / 2, true);
-				IntegratedServer integratedServer = this.client.getServer();
-				if (integratedServer != null) {
-					this.drawMetricsData(context, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
+				int j = i / 2;
+				this.renderingChart.render(context, 0, this.renderingChart.getWidth(j));
+				TickChart tickChart = this.getTickChart();
+				if (tickChart != null) {
+					int k = tickChart.getWidth(j);
+					tickChart.render(context, i - k, k);
 				}
+			}
+
+			if (this.client.options.debugPacketSizeEnabled) {
+				int i = context.getScaledWindowWidth();
+				int j = i / 2;
+				if (!this.client.isInSingleplayer()) {
+					this.packetSizeChart.render(context, 0, this.packetSizeChart.getWidth(j));
+				}
+
+				int l = this.pingChart.getWidth(j);
+				this.pingChart.render(context, i - l, l);
 			}
 		});
 		this.client.getProfiler().pop();
+	}
+
+	@Nullable
+	private TickChart getTickChart() {
+		if (this.tickChart != null) {
+			return this.tickChart;
+		} else {
+			IntegratedServer integratedServer = this.client.getServer();
+			if (integratedServer != null) {
+				this.tickChart = new TickChart(this.textRenderer, integratedServer.getTickNanosLog());
+			}
+
+			return this.tickChart;
+		}
 	}
 
 	protected void drawLeftText(DrawContext context) {
@@ -493,88 +527,6 @@ public class DebugHud {
 		}
 
 		return property.getName() + ": " + string;
-	}
-
-	private void drawMetricsData(DrawContext context, MetricsData metricsData, int x, int width, boolean showFps) {
-		int i = metricsData.getStartIndex();
-		int j = metricsData.getCurrentIndex();
-		long[] ls = metricsData.getSamples();
-		int l = x;
-		int m = Math.max(0, ls.length - width);
-		int n = ls.length - m;
-		int k = metricsData.wrapIndex(i + m);
-		long o = 0L;
-		int p = Integer.MAX_VALUE;
-		int q = Integer.MIN_VALUE;
-
-		for (int r = 0; r < n; r++) {
-			int s = (int)(ls[metricsData.wrapIndex(k + r)] / 1000000L);
-			p = Math.min(p, s);
-			q = Math.max(q, s);
-			o += (long)s;
-		}
-
-		int r = context.getScaledWindowHeight();
-		context.fill(RenderLayer.getGuiOverlay(), x, r - 60, x + n, r, -1873784752);
-
-		while (k != j) {
-			int s = metricsData.scaleSample(ls[k], showFps ? 30 : 60, showFps ? 60 : 20);
-			int t = showFps ? 100 : 60;
-			int u = this.getMetricsLineColor(MathHelper.clamp(s, 0, t), 0, t / 2, t);
-			context.fill(RenderLayer.getGuiOverlay(), l, r - s, l + 1, r, u);
-			l++;
-			k = metricsData.wrapIndex(k + 1);
-		}
-
-		if (showFps) {
-			context.fill(RenderLayer.getGuiOverlay(), x + 1, r - 30 + 1, x + 14, r - 30 + 10, -1873784752);
-			context.drawText(this.textRenderer, "60 FPS", x + 2, r - 30 + 2, 14737632, false);
-			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 30, -1);
-			context.fill(RenderLayer.getGuiOverlay(), x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
-			context.drawText(this.textRenderer, "30 FPS", x + 2, r - 60 + 2, 14737632, false);
-			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 60, -1);
-		} else {
-			context.fill(RenderLayer.getGuiOverlay(), x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
-			context.drawText(this.textRenderer, "20 TPS", x + 2, r - 60 + 2, 14737632, false);
-			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 60, -1);
-		}
-
-		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 1, -1);
-		context.drawVerticalLine(RenderLayer.getGuiOverlay(), x, r - 60, r, -1);
-		context.drawVerticalLine(RenderLayer.getGuiOverlay(), x + n - 1, r - 60, r, -1);
-		int s = this.client.options.getMaxFps().getValue();
-		if (showFps && s > 0 && s <= 250) {
-			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 1 - (int)(1800.0 / (double)s), -16711681);
-		}
-
-		String string = p + " ms min";
-		String string2 = o / (long)n + " ms avg";
-		String string3 = q + " ms max";
-		context.drawTextWithShadow(this.textRenderer, string, x + 2, r - 60 - 9, 14737632);
-		context.drawCenteredTextWithShadow(this.textRenderer, string2, x + n / 2, r - 60 - 9, 14737632);
-		context.drawTextWithShadow(this.textRenderer, string3, x + n - this.textRenderer.getWidth(string3), r - 60 - 9, 14737632);
-	}
-
-	private int getMetricsLineColor(int value, int greenValue, int yellowValue, int redValue) {
-		return value < yellowValue
-			? this.interpolateColor(-16711936, -256, (float)value / (float)yellowValue)
-			: this.interpolateColor(-256, -65536, (float)(value - yellowValue) / (float)(redValue - yellowValue));
-	}
-
-	private int interpolateColor(int color1, int color2, float dt) {
-		int i = color1 >> 24 & 0xFF;
-		int j = color1 >> 16 & 0xFF;
-		int k = color1 >> 8 & 0xFF;
-		int l = color1 & 0xFF;
-		int m = color2 >> 24 & 0xFF;
-		int n = color2 >> 16 & 0xFF;
-		int o = color2 >> 8 & 0xFF;
-		int p = color2 & 0xFF;
-		int q = MathHelper.clamp((int)MathHelper.lerp(dt, (float)i, (float)m), 0, 255);
-		int r = MathHelper.clamp((int)MathHelper.lerp(dt, (float)j, (float)n), 0, 255);
-		int s = MathHelper.clamp((int)MathHelper.lerp(dt, (float)k, (float)o), 0, 255);
-		int t = MathHelper.clamp((int)MathHelper.lerp(dt, (float)l, (float)p), 0, 255);
-		return q << 24 | r << 16 | s << 8 | t;
 	}
 
 	private static long toMiB(long bytes) {

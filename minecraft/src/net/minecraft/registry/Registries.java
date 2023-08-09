@@ -108,14 +108,14 @@ public class Registries {
 	public static final DefaultedRegistry<GameEvent> GAME_EVENT = createIntrusive(RegistryKeys.GAME_EVENT, "step", registry -> GameEvent.STEP);
 	public static final Registry<SoundEvent> SOUND_EVENT = create(RegistryKeys.SOUND_EVENT, registry -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = createIntrusive(RegistryKeys.FLUID, "empty", registry -> Fluids.EMPTY);
-	public static final Registry<StatusEffect> STATUS_EFFECT = create(RegistryKeys.STATUS_EFFECT, registry -> StatusEffects.LUCK);
+	public static final Registry<StatusEffect> STATUS_EFFECT = createIntrusive(RegistryKeys.STATUS_EFFECT, registry -> StatusEffects.LUCK);
 	public static final DefaultedRegistry<Block> BLOCK = createIntrusive(RegistryKeys.BLOCK, "air", registry -> Blocks.AIR);
-	public static final Registry<Enchantment> ENCHANTMENT = create(RegistryKeys.ENCHANTMENT, registry -> Enchantments.FORTUNE);
+	public static final Registry<Enchantment> ENCHANTMENT = createIntrusive(RegistryKeys.ENCHANTMENT, registry -> Enchantments.FORTUNE);
 	public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = createIntrusive(RegistryKeys.ENTITY_TYPE, "pig", registry -> EntityType.PIG);
 	public static final DefaultedRegistry<Item> ITEM = createIntrusive(RegistryKeys.ITEM, "air", registry -> Items.AIR);
-	public static final DefaultedRegistry<Potion> POTION = create(RegistryKeys.POTION, "empty", registry -> Potions.EMPTY);
+	public static final DefaultedRegistry<Potion> POTION = createIntrusive(RegistryKeys.POTION, "empty", registry -> Potions.EMPTY);
 	public static final Registry<ParticleType<?>> PARTICLE_TYPE = create(RegistryKeys.PARTICLE_TYPE, registry -> ParticleTypes.BLOCK);
-	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = create(RegistryKeys.BLOCK_ENTITY_TYPE, registry -> BlockEntityType.FURNACE);
+	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = createIntrusive(RegistryKeys.BLOCK_ENTITY_TYPE, registry -> BlockEntityType.FURNACE);
 	public static final DefaultedRegistry<PaintingVariant> PAINTING_VARIANT = create(
 		RegistryKeys.PAINTING_VARIANT, "kebab", PaintingVariants::registerAndGetDefault
 	);
@@ -215,6 +215,10 @@ public class Registries {
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {
 		return create(key, Lifecycle.stable(), initializer);
+	}
+
+	private static <T> Registry<T> createIntrusive(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {
+		return create(key, new SimpleRegistry<>(key, Lifecycle.stable(), true), initializer, Lifecycle.stable());
 	}
 
 	private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Registries.Initializer<T> initializer) {

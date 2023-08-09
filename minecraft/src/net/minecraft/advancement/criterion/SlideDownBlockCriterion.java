@@ -2,12 +2,12 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,17 +23,17 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 	}
 
 	public SlideDownBlockCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Block block = getBlock(jsonObject);
-		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
+		Optional<StatePredicate> optional2 = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
-			statePredicate.check(block.getStateManager(), key -> {
-				throw new JsonSyntaxException("Block " + block + " has no property " + key);
-			});
+			optional2.ifPresent(statePredicate -> statePredicate.check(block.getStateManager(), key -> {
+					throw new JsonSyntaxException("Block " + block + " has no property " + key);
+				}));
 		}
 
-		return new SlideDownBlockCriterion.Conditions(lootContextPredicate, block, statePredicate);
+		return new SlideDownBlockCriterion.Conditions(optional, block, optional2);
 	}
 
 	@Nullable
@@ -53,31 +53,31 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 	public static class Conditions extends AbstractCriterionConditions {
 		@Nullable
 		private final Block block;
-		private final StatePredicate state;
+		private final Optional<StatePredicate> state;
 
-		public Conditions(LootContextPredicate player, @Nullable Block block, StatePredicate state) {
-			super(SlideDownBlockCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable Block block, Optional<StatePredicate> state) {
+			super(SlideDownBlockCriterion.ID, playerPredicate);
 			this.block = block;
 			this.state = state;
 		}
 
 		public static SlideDownBlockCriterion.Conditions create(Block block) {
-			return new SlideDownBlockCriterion.Conditions(LootContextPredicate.EMPTY, block, StatePredicate.ANY);
+			return new SlideDownBlockCriterion.Conditions(Optional.empty(), block, Optional.empty());
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
 			if (this.block != null) {
 				jsonObject.addProperty("block", Registries.BLOCK.getId(this.block).toString());
 			}
 
-			jsonObject.add("state", this.state.toJson());
+			this.state.ifPresent(statePredicate -> jsonObject.add("state", statePredicate.toJson()));
 			return jsonObject;
 		}
 
 		public boolean test(BlockState state) {
-			return this.block != null && !state.isOf(this.block) ? false : this.state.test(state);
+			return this.block != null && !state.isOf(this.block) ? false : !this.state.isPresent() || ((StatePredicate)this.state.get()).test(state);
 		}
 	}
 }

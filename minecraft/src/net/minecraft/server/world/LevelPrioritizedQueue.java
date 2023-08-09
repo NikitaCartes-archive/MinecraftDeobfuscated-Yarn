@@ -66,7 +66,7 @@ public class LevelPrioritizedQueue<T> {
 				if (removeElement) {
 					list.clear();
 				} else {
-					list.removeIf(optional -> !optional.isPresent());
+					list.removeIf(optional -> optional.isEmpty());
 				}
 
 				if (list.isEmpty()) {

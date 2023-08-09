@@ -25,7 +25,7 @@ public class EntityHorseSaddleFix extends ChoiceFix {
 		OpticFinder<?> opticFinder2 = DSL.fieldFinder("SaddleItem", type);
 		Optional<? extends Typed<?>> optional = inputType.getOptionalTyped(opticFinder2);
 		Dynamic<?> dynamic = inputType.get(DSL.remainderFinder());
-		if (!optional.isPresent() && dynamic.get("Saddle").asBoolean(false)) {
+		if (optional.isEmpty() && dynamic.get("Saddle").asBoolean(false)) {
 			Typed<?> typed = (Typed<?>)type.pointTyped(inputType.getOps()).orElseThrow(IllegalStateException::new);
 			typed = typed.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), "minecraft:saddle"));
 			Dynamic<?> dynamic2 = dynamic.emptyMap();

@@ -1,7 +1,8 @@
 package net.minecraft.loot.entry;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
@@ -9,8 +10,10 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 
 public class EmptyEntry extends LeafEntry {
-	EmptyEntry(int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
+	public static final Codec<EmptyEntry> CODEC = RecordCodecBuilder.create(instance -> method_53290(instance).apply(instance, EmptyEntry::new));
+
+	private EmptyEntry(int weight, int quality, List<LootCondition> conditions, List<LootFunction> functions) {
+		super(weight, quality, conditions, functions);
 	}
 
 	@Override
@@ -24,13 +27,5 @@ public class EmptyEntry extends LeafEntry {
 
 	public static LeafEntry.Builder<?> builder() {
 		return builder(EmptyEntry::new);
-	}
-
-	public static class Serializer extends LeafEntry.Serializer<EmptyEntry> {
-		public EmptyEntry fromJson(
-			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
-		) {
-			return new EmptyEntry(i, j, lootConditions, lootFunctions);
-		}
 	}
 }

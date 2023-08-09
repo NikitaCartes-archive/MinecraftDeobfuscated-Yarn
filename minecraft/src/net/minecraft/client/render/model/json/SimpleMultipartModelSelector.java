@@ -58,7 +58,7 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 
 	private Predicate<BlockState> createPredicate(StateManager<Block, BlockState> stateFactory, Property<?> property, String valueString) {
 		Optional<?> optional = property.parse(valueString);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			throw new RuntimeException(
 				String.format(Locale.ROOT, "Unknown value '%s' for property '%s' on '%s' in '%s'", valueString, this.key, stateFactory.getOwner(), this.valueString)
 			);

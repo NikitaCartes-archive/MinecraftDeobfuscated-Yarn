@@ -1,11 +1,9 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.mojang.logging.LogUtils;
-import java.util.Locale;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -20,29 +18,40 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.structure.Structure;
-import org.slf4j.Logger;
 
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
-	static final Logger LOGGER = LogUtils.getLogger();
 	public static final TagKey<Structure> DEFAULT_DESTINATION = StructureTags.ON_TREASURE_MAPS;
-	public static final String MANSION = "mansion";
 	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
 	public static final byte field_31851 = 2;
 	public static final int field_31852 = 50;
 	public static final boolean field_31853 = true;
-	final TagKey<Structure> destination;
-	final MapIcon.Type decoration;
-	final byte zoom;
-	final int searchRadius;
-	final boolean skipExistingChunks;
+	public static final Codec<ExplorationMapLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<TagKey<Structure>, MapIcon.Type, byte, int, boolean>and(
+					instance.group(
+						Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.STRUCTURE), "destination", DEFAULT_DESTINATION)
+							.forGetter(explorationMapLootFunction -> explorationMapLootFunction.destination),
+						MapIcon.Type.CODEC.optionalFieldOf("decoration", DEFAULT_DECORATION).forGetter(explorationMapLootFunction -> explorationMapLootFunction.decoration),
+						Codecs.createStrictOptionalFieldCodec(Codec.BYTE, "zoom", (byte)2).forGetter(explorationMapLootFunction -> explorationMapLootFunction.zoom),
+						Codecs.createStrictOptionalFieldCodec(Codec.INT, "search_radius", 50).forGetter(explorationMapLootFunction -> explorationMapLootFunction.searchRadius),
+						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "skip_existing_chunks", true)
+							.forGetter(explorationMapLootFunction -> explorationMapLootFunction.skipExistingChunks)
+					)
+				)
+				.apply(instance, ExplorationMapLootFunction::new)
+	);
+	private final TagKey<Structure> destination;
+	private final MapIcon.Type decoration;
+	private final byte zoom;
+	private final int searchRadius;
+	private final boolean skipExistingChunks;
 
 	ExplorationMapLootFunction(
-		LootCondition[] conditions, TagKey<Structure> destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks
+		List<LootCondition> conditions, TagKey<Structure> destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks
 	) {
 		super(conditions);
 		this.destination = destination;
@@ -126,58 +135,6 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		@Override
 		public LootFunction build() {
 			return new ExplorationMapLootFunction(this.getConditions(), this.destination, this.decoration, this.zoom, this.searchRadius, this.skipExistingChunks);
-		}
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<ExplorationMapLootFunction> {
-		public void toJson(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);
-			if (!explorationMapLootFunction.destination.equals(ExplorationMapLootFunction.DEFAULT_DESTINATION)) {
-				jsonObject.addProperty("destination", explorationMapLootFunction.destination.id().toString());
-			}
-
-			if (explorationMapLootFunction.decoration != ExplorationMapLootFunction.DEFAULT_DECORATION) {
-				jsonObject.add("decoration", jsonSerializationContext.serialize(explorationMapLootFunction.decoration.toString().toLowerCase(Locale.ROOT)));
-			}
-
-			if (explorationMapLootFunction.zoom != 2) {
-				jsonObject.addProperty("zoom", explorationMapLootFunction.zoom);
-			}
-
-			if (explorationMapLootFunction.searchRadius != 50) {
-				jsonObject.addProperty("search_radius", explorationMapLootFunction.searchRadius);
-			}
-
-			if (!explorationMapLootFunction.skipExistingChunks) {
-				jsonObject.addProperty("skip_existing_chunks", explorationMapLootFunction.skipExistingChunks);
-			}
-		}
-
-		public ExplorationMapLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			TagKey<Structure> tagKey = getDestination(jsonObject);
-			String string = jsonObject.has("decoration") ? JsonHelper.getString(jsonObject, "decoration") : "mansion";
-			MapIcon.Type type = ExplorationMapLootFunction.DEFAULT_DECORATION;
-
-			try {
-				type = MapIcon.Type.valueOf(string.toUpperCase(Locale.ROOT));
-			} catch (IllegalArgumentException var10) {
-				ExplorationMapLootFunction.LOGGER
-					.error("Error while parsing loot table decoration entry. Found {}. Defaulting to {}", string, ExplorationMapLootFunction.DEFAULT_DECORATION);
-			}
-
-			byte b = JsonHelper.getByte(jsonObject, "zoom", (byte)2);
-			int i = JsonHelper.getInt(jsonObject, "search_radius", 50);
-			boolean bl = JsonHelper.getBoolean(jsonObject, "skip_existing_chunks", true);
-			return new ExplorationMapLootFunction(lootConditions, tagKey, type, b, i, bl);
-		}
-
-		private static TagKey<Structure> getDestination(JsonObject json) {
-			if (json.has("destination")) {
-				String string = JsonHelper.getString(json, "destination");
-				return TagKey.of(RegistryKeys.STRUCTURE, new Identifier(string));
-			} else {
-				return ExplorationMapLootFunction.DEFAULT_DESTINATION;
-			}
 		}
 	}
 }

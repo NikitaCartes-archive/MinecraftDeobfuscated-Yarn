@@ -133,10 +133,8 @@ public class Raid {
 		this.status = Raid.Status.fromName(nbt.getString("Status"));
 		this.heroesOfTheVillage.clear();
 		if (nbt.contains("HeroesOfTheVillage", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("HeroesOfTheVillage", NbtElement.INT_ARRAY_TYPE);
-
-			for (int i = 0; i < nbtList.size(); i++) {
-				this.heroesOfTheVillage.add(NbtHelper.toUuid(nbtList.get(i)));
+			for (NbtElement nbtElement : nbt.getList("HeroesOfTheVillage", NbtElement.INT_ARRAY_TYPE)) {
+				this.heroesOfTheVillage.add(NbtHelper.toUuid(nbtElement));
 			}
 		}
 	}
@@ -359,12 +357,14 @@ public class Raid {
 
 						for (UUID uUID : this.heroesOfTheVillage) {
 							Entity entity = this.world.getEntity(uUID);
-							if (entity instanceof LivingEntity && !entity.isSpectator()) {
+							if (entity instanceof LivingEntity) {
 								LivingEntity livingEntity = (LivingEntity)entity;
-								livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.HERO_OF_THE_VILLAGE, 48000, this.badOmenLevel - 1, false, false, true));
-								if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
-									serverPlayerEntity.incrementStat(Stats.RAID_WIN);
-									Criteria.HERO_OF_THE_VILLAGE.trigger(serverPlayerEntity);
+								if (!entity.isSpectator()) {
+									livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.HERO_OF_THE_VILLAGE, 48000, this.badOmenLevel - 1, false, false, true));
+									if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+										serverPlayerEntity.incrementStat(Stats.RAID_WIN);
+										Criteria.HERO_OF_THE_VILLAGE.trigger(serverPlayerEntity);
+									}
 								}
 							}
 						}

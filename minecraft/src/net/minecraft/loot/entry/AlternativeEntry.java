@@ -1,16 +1,18 @@
 package net.minecraft.loot.entry;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
-import org.apache.commons.lang3.ArrayUtils;
 
 public class AlternativeEntry extends CombinedEntry {
-	AlternativeEntry(LootPoolEntry[] lootPoolEntrys, LootCondition[] lootConditions) {
-		super(lootPoolEntrys, lootConditions);
+	public static final Codec<AlternativeEntry> CODEC = createCodec(AlternativeEntry::new);
+
+	AlternativeEntry(List<LootPoolEntry> list, List<LootCondition> list2) {
+		super(list, list2);
 	}
 
 	@Override
@@ -19,33 +21,29 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(EntryCombiner[] children) {
-		switch (children.length) {
-			case 0:
-				return ALWAYS_FALSE;
-			case 1:
-				return children[0];
-			case 2:
-				return children[0].or(children[1]);
-			default:
-				return (context, lootChoiceExpander) -> {
-					for (EntryCombiner entryCombiner : children) {
-						if (entryCombiner.expand(context, lootChoiceExpander)) {
-							return true;
-						}
-					}
+	protected EntryCombiner combine(List<? extends EntryCombiner> list) {
+		return switch (list.size()) {
+			case 0 -> ALWAYS_FALSE;
+			case 1 -> (EntryCombiner)list.get(0);
+			case 2 -> ((EntryCombiner)list.get(0)).or((EntryCombiner)list.get(1));
+			default -> (context, lootChoiceExpander) -> {
+			for (EntryCombiner entryCombiner : list) {
+				if (entryCombiner.expand(context, lootChoiceExpander)) {
+					return true;
+				}
+			}
 
-					return false;
-				};
-		}
+			return false;
+		};
+		};
 	}
 
 	@Override
 	public void validate(LootTableReporter reporter) {
 		super.validate(reporter);
 
-		for (int i = 0; i < this.children.length - 1; i++) {
-			if (ArrayUtils.isEmpty((Object[])this.children[i].conditions)) {
+		for (int i = 0; i < this.children.size() - 1; i++) {
+			if (((LootPoolEntry)this.children.get(i)).conditions.isEmpty()) {
 				reporter.report("Unreachable entry!");
 			}
 		}
@@ -60,7 +58,7 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	public static class Builder extends LootPoolEntry.Builder<AlternativeEntry.Builder> {
-		private final List<LootPoolEntry> children = Lists.<LootPoolEntry>newArrayList();
+		private final ImmutableList.Builder<LootPoolEntry> children = ImmutableList.builder();
 
 		public Builder(LootPoolEntry.Builder<?>... children) {
 			for (LootPoolEntry.Builder<?> builder : children) {
@@ -80,7 +78,7 @@ public class AlternativeEntry extends CombinedEntry {
 
 		@Override
 		public LootPoolEntry build() {
-			return new AlternativeEntry((LootPoolEntry[])this.children.toArray(new LootPoolEntry[0]), this.getConditions());
+			return new AlternativeEntry(this.children.build(), this.getConditions());
 		}
 	}
 }

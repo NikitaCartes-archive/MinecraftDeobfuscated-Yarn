@@ -1,10 +1,10 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -13,18 +13,16 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializer;
+import net.minecraft.registry.entry.RegistryEntry;
 
-public class TableBonusLootCondition implements LootCondition {
-	final Enchantment enchantment;
-	final float[] chances;
-
-	TableBonusLootCondition(Enchantment enchantment, float[] chances) {
-		this.enchantment = enchantment;
-		this.chances = chances;
-	}
+public record TableBonusLootCondition(RegistryEntry<Enchantment> enchantment, List<Float> chances) implements LootCondition {
+	public static final Codec<TableBonusLootCondition> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Registries.ENCHANTMENT.createEntryCodec().fieldOf("enchantment").forGetter(TableBonusLootCondition::enchantment),
+					Codec.FLOAT.listOf().fieldOf("chances").forGetter(TableBonusLootCondition::chances)
+				)
+				.apply(instance, TableBonusLootCondition::new)
+	);
 
 	@Override
 	public LootConditionType getType() {
@@ -38,28 +36,18 @@ public class TableBonusLootCondition implements LootCondition {
 
 	public boolean test(LootContext lootContext) {
 		ItemStack itemStack = lootContext.get(LootContextParameters.TOOL);
-		int i = itemStack != null ? EnchantmentHelper.getLevel(this.enchantment, itemStack) : 0;
-		float f = this.chances[Math.min(i, this.chances.length - 1)];
+		int i = itemStack != null ? EnchantmentHelper.getLevel(this.enchantment.value(), itemStack) : 0;
+		float f = (Float)this.chances.get(Math.min(i, this.chances.size() - 1));
 		return lootContext.getRandom().nextFloat() < f;
 	}
 
 	public static LootCondition.Builder builder(Enchantment enchantment, float... chances) {
-		return () -> new TableBonusLootCondition(enchantment, chances);
-	}
+		List<Float> list = new ArrayList(chances.length);
 
-	public static class Serializer implements JsonSerializer<TableBonusLootCondition> {
-		public void toJson(JsonObject jsonObject, TableBonusLootCondition tableBonusLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("enchantment", Registries.ENCHANTMENT.getId(tableBonusLootCondition.enchantment).toString());
-			jsonObject.add("chances", jsonSerializationContext.serialize(tableBonusLootCondition.chances));
+		for (float f : chances) {
+			list.add(f);
 		}
 
-		public TableBonusLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-			Enchantment enchantment = (Enchantment)Registries.ENCHANTMENT
-				.getOrEmpty(identifier)
-				.orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
-			float[] fs = JsonHelper.deserialize(jsonObject, "chances", jsonDeserializationContext, float[].class);
-			return new TableBonusLootCondition(enchantment, fs);
-		}
+		return () -> new TableBonusLootCondition(enchantment.getRegistryEntry(), list);
 	}
 }

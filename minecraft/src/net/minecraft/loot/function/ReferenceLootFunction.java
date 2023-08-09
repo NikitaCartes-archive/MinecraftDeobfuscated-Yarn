@@ -1,9 +1,9 @@
 package net.minecraft.loot.function;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataKey;
 import net.minecraft.loot.LootDataType;
@@ -11,14 +11,18 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import org.slf4j.Logger;
 
 public class ReferenceLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	final Identifier name;
+	public static final Codec<ReferenceLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.and(Identifier.CODEC.fieldOf("name").forGetter(referenceLootFunction -> referenceLootFunction.name))
+				.apply(instance, ReferenceLootFunction::new)
+	);
+	private final Identifier name;
 
-	ReferenceLootFunction(LootCondition[] conditions, Identifier name) {
+	private ReferenceLootFunction(List<LootCondition> conditions, Identifier name) {
 		super(conditions);
 		this.name = name;
 	}
@@ -70,16 +74,5 @@ public class ReferenceLootFunction extends ConditionalLootFunction {
 
 	public static ConditionalLootFunction.Builder<?> builder(Identifier name) {
 		return builder(conditions -> new ReferenceLootFunction(conditions, name));
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<ReferenceLootFunction> {
-		public void toJson(JsonObject jsonObject, ReferenceLootFunction referenceLootFunction, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("name", referenceLootFunction.name.toString());
-		}
-
-		public ReferenceLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			return new ReferenceLootFunction(lootConditions, identifier);
-		}
 	}
 }

@@ -163,10 +163,9 @@ public class CommandBossBar extends ServerBossBar {
 		commandBossBar.setDarkenSky(nbt.getBoolean("DarkenScreen"));
 		commandBossBar.setDragonMusic(nbt.getBoolean("PlayBossMusic"));
 		commandBossBar.setThickenFog(nbt.getBoolean("CreateWorldFog"));
-		NbtList nbtList = nbt.getList("Players", NbtElement.INT_ARRAY_TYPE);
 
-		for (int i = 0; i < nbtList.size(); i++) {
-			commandBossBar.addPlayer(NbtHelper.toUuid(nbtList.get(i)));
+		for (NbtElement nbtElement : nbt.getList("Players", NbtElement.INT_ARRAY_TYPE)) {
+			commandBossBar.addPlayer(NbtHelper.toUuid(nbtElement));
 		}
 
 		return commandBossBar;

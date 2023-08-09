@@ -1,9 +1,9 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -19,10 +19,10 @@ public class UsingItemCriterion extends AbstractCriterion<UsingItemCriterion.Con
 	}
 
 	public UsingItemCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new UsingItemCriterion.Conditions(lootContextPredicate, itemPredicate);
+		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("item"));
+		return new UsingItemCriterion.Conditions(optional, optional2);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
@@ -30,25 +30,25 @@ public class UsingItemCriterion extends AbstractCriterion<UsingItemCriterion.Con
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final ItemPredicate item;
+		private final Optional<ItemPredicate> item;
 
-		public Conditions(LootContextPredicate player, ItemPredicate item) {
-			super(UsingItemCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item) {
+			super(UsingItemCriterion.ID, playerPredicate);
 			this.item = item;
 		}
 
 		public static UsingItemCriterion.Conditions create(EntityPredicate.Builder player, ItemPredicate.Builder item) {
-			return new UsingItemCriterion.Conditions(EntityPredicate.asLootContextPredicate(player.build()), item.build());
+			return new UsingItemCriterion.Conditions(EntityPredicate.contextPredicateFromEntityPredicate(player), item.build());
 		}
 
 		public boolean test(ItemStack stack) {
-			return this.item.test(stack);
+			return !this.item.isPresent() || ((ItemPredicate)this.item.get()).test(stack);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("item", this.item.toJson());
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
 			return jsonObject;
 		}
 	}

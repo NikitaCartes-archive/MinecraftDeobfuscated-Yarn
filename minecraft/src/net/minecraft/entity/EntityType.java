@@ -138,6 +138,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -1017,6 +1018,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 
 	public boolean isIn(TagKey<EntityType<?>> tag) {
 		return this.registryEntry.isIn(tag);
+	}
+
+	public boolean isIn(RegistryEntryList<EntityType<?>> entityTypeEntryList) {
+		return entityTypeEntryList.contains(this.registryEntry);
 	}
 
 	@Nullable

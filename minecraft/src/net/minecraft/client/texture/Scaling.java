@@ -20,14 +20,28 @@ public interface Scaling {
 
 	@Environment(EnvType.CLIENT)
 	public static record NineSlice(int width, int height, Scaling.NineSlice.Border border) implements Scaling {
-		public static final Codec<Scaling.NineSlice> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codecs.POSITIVE_INT.fieldOf("width").forGetter(Scaling.NineSlice::width),
-						Codecs.POSITIVE_INT.fieldOf("height").forGetter(Scaling.NineSlice::height),
-						Scaling.NineSlice.Border.CODEC.fieldOf("border").forGetter(Scaling.NineSlice::border)
-					)
-					.apply(instance, Scaling.NineSlice::new)
+		public static final Codec<Scaling.NineSlice> CODEC = Codecs.validate(
+			RecordCodecBuilder.create(
+				instance -> instance.group(
+							Codecs.POSITIVE_INT.fieldOf("width").forGetter(Scaling.NineSlice::width),
+							Codecs.POSITIVE_INT.fieldOf("height").forGetter(Scaling.NineSlice::height),
+							Scaling.NineSlice.Border.CODEC.fieldOf("border").forGetter(Scaling.NineSlice::border)
+						)
+						.apply(instance, Scaling.NineSlice::new)
+			),
+			Scaling.NineSlice::validate
 		);
+
+		private static DataResult<Scaling.NineSlice> validate(Scaling.NineSlice nineSlice) {
+			Scaling.NineSlice.Border border = nineSlice.border();
+			if (border.left() + border.right() >= nineSlice.width()) {
+				return DataResult.error(() -> "Nine-sliced texture has no horizontal center slice: " + border.left() + " + " + border.right() + " >= " + nineSlice.width());
+			} else {
+				return border.top() + border.bottom() >= nineSlice.height()
+					? DataResult.error(() -> "Nine-sliced texture has no vertical center slice: " + border.top() + " + " + border.bottom() + " >= " + nineSlice.height())
+					: DataResult.success(nineSlice);
+			}
+		}
 
 		@Override
 		public Scaling.Type getType() {
@@ -43,10 +57,10 @@ public interface Scaling {
 				});
 			private static final Codec<Scaling.NineSlice.Border> DIFFERENT_SIDE_SIZES_CODEC = RecordCodecBuilder.create(
 				instance -> instance.group(
-							Codecs.POSITIVE_INT.fieldOf("left").forGetter(Scaling.NineSlice.Border::left),
-							Codecs.POSITIVE_INT.fieldOf("top").forGetter(Scaling.NineSlice.Border::top),
-							Codecs.POSITIVE_INT.fieldOf("right").forGetter(Scaling.NineSlice.Border::right),
-							Codecs.POSITIVE_INT.fieldOf("bottom").forGetter(Scaling.NineSlice.Border::bottom)
+							Codecs.NONNEGATIVE_INT.fieldOf("left").forGetter(Scaling.NineSlice.Border::left),
+							Codecs.NONNEGATIVE_INT.fieldOf("top").forGetter(Scaling.NineSlice.Border::top),
+							Codecs.NONNEGATIVE_INT.fieldOf("right").forGetter(Scaling.NineSlice.Border::right),
+							Codecs.NONNEGATIVE_INT.fieldOf("bottom").forGetter(Scaling.NineSlice.Border::bottom)
 						)
 						.apply(instance, Scaling.NineSlice.Border::new)
 			);

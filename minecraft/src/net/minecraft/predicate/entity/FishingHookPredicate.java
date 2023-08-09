@@ -1,55 +1,38 @@
 package net.minecraft.predicate.entity;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
-public class FishingHookPredicate implements TypeSpecificPredicate {
-	public static final FishingHookPredicate ALL = new FishingHookPredicate(false);
-	private static final String IN_OPEN_WATER = "in_open_water";
-	private final boolean inOpenWater;
-
-	private FishingHookPredicate(boolean inOpenWater) {
-		this.inOpenWater = inOpenWater;
-	}
+public record FishingHookPredicate(Optional<Boolean> inOpenWater) implements TypeSpecificPredicate {
+	public static final FishingHookPredicate ALL = new FishingHookPredicate(Optional.empty());
+	public static final MapCodec<FishingHookPredicate> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "in_open_water").forGetter(FishingHookPredicate::inOpenWater))
+				.apply(instance, FishingHookPredicate::new)
+	);
 
 	public static FishingHookPredicate of(boolean inOpenWater) {
-		return new FishingHookPredicate(inOpenWater);
-	}
-
-	public static FishingHookPredicate fromJson(JsonObject json) {
-		JsonElement jsonElement = json.get("in_open_water");
-		return jsonElement != null ? new FishingHookPredicate(JsonHelper.asBoolean(jsonElement, "in_open_water")) : ALL;
+		return new FishingHookPredicate(Optional.of(inOpenWater));
 	}
 
 	@Override
-	public JsonObject typeSpecificToJson() {
-		if (this == ALL) {
-			return new JsonObject();
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("in_open_water", new JsonPrimitive(this.inOpenWater));
-			return jsonObject;
-		}
-	}
-
-	@Override
-	public TypeSpecificPredicate.Deserializer getDeserializer() {
+	public TypeSpecificPredicate.Type getDeserializer() {
 		return TypeSpecificPredicate.Deserializers.FISHING_HOOK;
 	}
 
 	@Override
 	public boolean test(Entity entity, ServerWorld world, @Nullable Vec3d pos) {
-		if (this == ALL) {
+		if (this.inOpenWater.isEmpty()) {
 			return true;
 		} else {
-			return !(entity instanceof FishingBobberEntity fishingBobberEntity) ? false : this.inOpenWater == fishingBobberEntity.isInOpenWater();
+			return entity instanceof FishingBobberEntity fishingBobberEntity ? (Boolean)this.inOpenWater.get() == fishingBobberEntity.isInOpenWater() : false;
 		}
 	}
 }

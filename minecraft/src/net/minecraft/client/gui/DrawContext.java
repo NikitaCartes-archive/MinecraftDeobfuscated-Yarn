@@ -358,27 +358,31 @@ public class DrawContext {
 		if (scaling instanceof Scaling.Stretch) {
 			this.drawSprite(sprite, i, j, k, l, x, y, z, width, height);
 		} else {
-			this.drawGuiTexture(texture, x, y, z, width, height);
+			this.drawSprite(sprite, x, y, z, width, height);
 		}
 	}
 
 	private void drawSprite(Sprite sprite, int i, int j, int k, int l, int x, int y, int z, int width, int height) {
-		this.drawTexturedQuad(
-			sprite.getAtlasId(),
-			x,
-			x + width,
-			y,
-			y + height,
-			z,
-			sprite.getFrameU((float)k / (float)i),
-			sprite.getFrameU((float)(k + width) / (float)i),
-			sprite.getFrameV((float)l / (float)j),
-			sprite.getFrameV((float)(l + height) / (float)j)
-		);
+		if (width != 0 && height != 0) {
+			this.drawTexturedQuad(
+				sprite.getAtlasId(),
+				x,
+				x + width,
+				y,
+				y + height,
+				z,
+				sprite.getFrameU((float)k / (float)i),
+				sprite.getFrameU((float)(k + width) / (float)i),
+				sprite.getFrameV((float)l / (float)j),
+				sprite.getFrameV((float)(l + height) / (float)j)
+			);
+		}
 	}
 
 	private void drawSprite(Sprite sprite, int x, int y, int z, int width, int height) {
-		this.drawTexturedQuad(sprite.getAtlasId(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+		if (width != 0 && height != 0) {
+			this.drawTexturedQuad(sprite.getAtlasId(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+		}
 	}
 
 	/**
@@ -505,19 +509,19 @@ public class DrawContext {
 	}
 
 	private void drawSpriteTiled(Sprite sprite, int x, int y, int z, int width, int height, int i, int j, int tileWidth, int tileHeight, int k, int l) {
-		int m = 0;
+		if (width > 0 && height > 0) {
+			if (tileWidth > 0 && tileHeight > 0) {
+				for (int m = 0; m < width; m += tileWidth) {
+					int n = Math.min(tileWidth, width - m);
 
-		while (m < width) {
-			int n = Math.min(tileWidth, width - m);
-			int o = 0;
-
-			while (o < height) {
-				int p = Math.min(tileHeight, height - o);
-				this.drawSprite(sprite, k, l, i, j, x + m, y + o, z, n, p);
-				o += tileHeight;
+					for (int o = 0; o < height; o += tileHeight) {
+						int p = Math.min(tileHeight, height - o);
+						this.drawSprite(sprite, k, l, i, j, x + m, y + o, z, n, p);
+					}
+				}
+			} else {
+				throw new IllegalArgumentException("Tiled sprite texture size must be positive, got " + tileWidth + "x" + tileHeight);
 			}
-
-			m += tileWidth;
 		}
 	}
 

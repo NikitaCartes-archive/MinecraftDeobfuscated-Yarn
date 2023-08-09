@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.handshake;
 
-import net.minecraft.network.ConnectionIntent;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerHandshakePacketListener;

@@ -1,12 +1,8 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSyntaxException;
-import java.util.Arrays;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.inventory.Inventories;
@@ -17,20 +13,30 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.LootPoolEntry;
+import net.minecraft.loot.entry.LootPoolEntryTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SetContentsLootFunction extends ConditionalLootFunction {
-	final List<LootPoolEntry> entries;
-	final BlockEntityType<?> type;
+	public static final Codec<SetContentsLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<RegistryEntry<BlockEntityType<?>>, List<LootPoolEntry>>and(
+					instance.group(
+						Registries.BLOCK_ENTITY_TYPE.createEntryCodec().fieldOf("type").forGetter(setContentsLootFunction -> setContentsLootFunction.type),
+						LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(setContentsLootFunction -> setContentsLootFunction.entries)
+					)
+				)
+				.apply(instance, SetContentsLootFunction::new)
+	);
+	private final RegistryEntry<BlockEntityType<?>> type;
+	private final List<LootPoolEntry> entries;
 
-	SetContentsLootFunction(LootCondition[] conditions, BlockEntityType<?> type, List<LootPoolEntry> entries) {
+	SetContentsLootFunction(List<LootCondition> conditions, RegistryEntry<BlockEntityType<?>> blockEntityType, List<LootPoolEntry> entries) {
 		super(conditions);
-		this.type = type;
-		this.entries = ImmutableList.copyOf(entries);
+		this.type = blockEntityType;
+		this.entries = List.copyOf(entries);
 	}
 
 	@Override
@@ -55,7 +61,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 				nbtCompound2.copyFrom(nbtCompound);
 			}
 
-			BlockItem.setBlockEntityNbt(stack, this.type, nbtCompound2);
+			BlockItem.setBlockEntityNbt(stack, this.type.value(), nbtCompound2);
 			return stack;
 		}
 	}
@@ -74,7 +80,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<SetContentsLootFunction.Builder> {
-		private final List<LootPoolEntry> entries = Lists.<LootPoolEntry>newArrayList();
+		private final ImmutableList.Builder<LootPoolEntry> entries = ImmutableList.builder();
 		private final BlockEntityType<?> type;
 
 		public Builder(BlockEntityType<?> type) {
@@ -92,24 +98,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new SetContentsLootFunction(this.getConditions(), this.type, this.entries);
-		}
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<SetContentsLootFunction> {
-		public void toJson(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setContentsLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("type", Registries.BLOCK_ENTITY_TYPE.getId(setContentsLootFunction.type).toString());
-			jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));
-		}
-
-		public SetContentsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootPoolEntry[].class);
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "type"));
-			BlockEntityType<?> blockEntityType = (BlockEntityType<?>)Registries.BLOCK_ENTITY_TYPE
-				.getOrEmpty(identifier)
-				.orElseThrow(() -> new JsonSyntaxException("Unknown block entity type id '" + identifier + "'"));
-			return new SetContentsLootFunction(lootConditions, blockEntityType, Arrays.asList(lootPoolEntrys));
+			return new SetContentsLootFunction(this.getConditions(), this.type.getRegistryEntry(), this.entries.build());
 		}
 	}
 }

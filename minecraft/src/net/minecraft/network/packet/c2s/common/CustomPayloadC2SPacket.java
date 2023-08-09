@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerCommonPacketListener;
+import net.minecraft.network.packet.BrandCustomPayload;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.UnknownCustomPayload;
-import net.minecraft.network.packet.s2c.custom.BrandCustomPayload;
 import net.minecraft.util.Identifier;
 
 public record CustomPayloadC2SPacket(CustomPayload payload) implements Packet<ServerCommonPacketListener> {

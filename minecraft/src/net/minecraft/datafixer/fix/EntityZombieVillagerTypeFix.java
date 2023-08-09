@@ -17,7 +17,7 @@ public class EntityZombieVillagerTypeFix extends ChoiceFix {
 
 	public Dynamic<?> fixZombieType(Dynamic<?> dynamic) {
 		if (dynamic.get("IsVillager").asBoolean(false)) {
-			if (!dynamic.get("ZombieType").result().isPresent()) {
+			if (dynamic.get("ZombieType").result().isEmpty()) {
 				int i = this.clampType(dynamic.get("VillagerProfession").asInt(-1));
 				if (i == -1) {
 					i = this.clampType(RANDOM.nextInt(6));

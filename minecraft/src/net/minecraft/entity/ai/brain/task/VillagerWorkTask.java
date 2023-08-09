@@ -48,7 +48,7 @@ public class VillagerWorkTask extends MultiTickTask<VillagerEntity> {
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			return false;
 		} else {
 			GlobalPos globalPos = (GlobalPos)optional.get();

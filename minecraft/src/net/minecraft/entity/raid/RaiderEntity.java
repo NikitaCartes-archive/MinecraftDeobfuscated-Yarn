@@ -326,7 +326,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 					48,
 					this.raider.random
 				);
-			if (!optional.isPresent()) {
+			if (optional.isEmpty()) {
 				return false;
 			} else {
 				this.home = ((BlockPos)optional.get()).toImmutable();

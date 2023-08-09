@@ -1,11 +1,11 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
@@ -25,11 +25,11 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 	}
 
 	public OnKilledCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		return new OnKilledCriterion.Conditions(
 			this.id,
-			lootContextPredicate,
+			optional,
 			EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer),
 			DamageSourcePredicate.fromJson(jsonObject.get("killing_blow"))
 		);
@@ -41,61 +41,52 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final LootContextPredicate entity;
-		private final DamageSourcePredicate killingBlow;
+		private final Optional<LootContextPredicate> entity;
+		private final Optional<DamageSourcePredicate> killingBlow;
 
-		public Conditions(Identifier id, LootContextPredicate player, LootContextPredicate entity, DamageSourcePredicate killingBlow) {
-			super(id, player);
+		public Conditions(
+			Identifier id, Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> entity, Optional<DamageSourcePredicate> killingBlow
+		) {
+			super(id, playerPredicate);
 			this.entity = entity;
 			this.killingBlow = killingBlow;
 		}
 
-		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate killedEntityPredicate) {
+		public static OnKilledCriterion.Conditions createPlayerKilledEntity(Optional<EntityPredicate> entity) {
 			return new OnKilledCriterion.Conditions(
-				Criteria.PLAYER_KILLED_ENTITY.id, LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(killedEntityPredicate), DamageSourcePredicate.EMPTY
+				Criteria.PLAYER_KILLED_ENTITY.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity), Optional.empty()
 			);
 		}
 
 		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate.Builder killedEntityPredicateBuilder) {
 			return new OnKilledCriterion.Conditions(
-				Criteria.PLAYER_KILLED_ENTITY.id,
-				LootContextPredicate.EMPTY,
-				EntityPredicate.asLootContextPredicate(killedEntityPredicateBuilder.build()),
-				DamageSourcePredicate.EMPTY
+				Criteria.PLAYER_KILLED_ENTITY.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(killedEntityPredicateBuilder), Optional.empty()
 			);
 		}
 
 		public static OnKilledCriterion.Conditions createPlayerKilledEntity() {
-			return new OnKilledCriterion.Conditions(
-				Criteria.PLAYER_KILLED_ENTITY.id, LootContextPredicate.EMPTY, LootContextPredicate.EMPTY, DamageSourcePredicate.EMPTY
-			);
+			return new OnKilledCriterion.Conditions(Criteria.PLAYER_KILLED_ENTITY.id, Optional.empty(), Optional.empty(), Optional.empty());
 		}
 
-		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate killedEntityPredicate, DamageSourcePredicate damageSourcePredicate) {
+		public static OnKilledCriterion.Conditions createPlayerKilledEntity(Optional<EntityPredicate> entity, Optional<DamageSourcePredicate> killingBlow) {
 			return new OnKilledCriterion.Conditions(
-				Criteria.PLAYER_KILLED_ENTITY.id, LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(killedEntityPredicate), damageSourcePredicate
-			);
-		}
-
-		public static OnKilledCriterion.Conditions createPlayerKilledEntity(
-			EntityPredicate.Builder killedEntityPredicateBuilder, DamageSourcePredicate damageSourcePredicate
-		) {
-			return new OnKilledCriterion.Conditions(
-				Criteria.PLAYER_KILLED_ENTITY.id,
-				LootContextPredicate.EMPTY,
-				EntityPredicate.asLootContextPredicate(killedEntityPredicateBuilder.build()),
-				damageSourcePredicate
+				Criteria.PLAYER_KILLED_ENTITY.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity), killingBlow
 			);
 		}
 
 		public static OnKilledCriterion.Conditions createPlayerKilledEntity(
-			EntityPredicate killedEntityPredicate, DamageSourcePredicate.Builder damageSourcePredicateBuilder
+			EntityPredicate.Builder killedEntityPredicateBuilder, Optional<DamageSourcePredicate> killingBlow
 		) {
 			return new OnKilledCriterion.Conditions(
-				Criteria.PLAYER_KILLED_ENTITY.id,
-				LootContextPredicate.EMPTY,
-				EntityPredicate.asLootContextPredicate(killedEntityPredicate),
-				damageSourcePredicateBuilder.build()
+				Criteria.PLAYER_KILLED_ENTITY.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(killedEntityPredicateBuilder), killingBlow
+			);
+		}
+
+		public static OnKilledCriterion.Conditions createPlayerKilledEntity(
+			Optional<EntityPredicate> entity, DamageSourcePredicate.Builder damageSourcePredicateBuilder
+		) {
+			return new OnKilledCriterion.Conditions(
+				Criteria.PLAYER_KILLED_ENTITY.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity), damageSourcePredicateBuilder.build()
 			);
 		}
 
@@ -104,64 +95,51 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		) {
 			return new OnKilledCriterion.Conditions(
 				Criteria.PLAYER_KILLED_ENTITY.id,
-				LootContextPredicate.EMPTY,
-				EntityPredicate.asLootContextPredicate(killedEntityPredicateBuilder.build()),
+				Optional.empty(),
+				EntityPredicate.contextPredicateFromEntityPredicate(killedEntityPredicateBuilder),
 				killingBlowBuilder.build()
 			);
 		}
 
 		public static OnKilledCriterion.Conditions createKillMobNearSculkCatalyst() {
-			return new OnKilledCriterion.Conditions(
-				Criteria.KILL_MOB_NEAR_SCULK_CATALYST.id, LootContextPredicate.EMPTY, LootContextPredicate.EMPTY, DamageSourcePredicate.EMPTY
-			);
+			return new OnKilledCriterion.Conditions(Criteria.KILL_MOB_NEAR_SCULK_CATALYST.id, Optional.empty(), Optional.empty(), Optional.empty());
 		}
 
-		public static OnKilledCriterion.Conditions createEntityKilledPlayer(EntityPredicate killerEntityPredicate) {
+		public static OnKilledCriterion.Conditions createEntityKilledPlayer(Optional<EntityPredicate> entity) {
 			return new OnKilledCriterion.Conditions(
-				Criteria.ENTITY_KILLED_PLAYER.id, LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(killerEntityPredicate), DamageSourcePredicate.EMPTY
+				Criteria.ENTITY_KILLED_PLAYER.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity), Optional.empty()
 			);
 		}
 
 		public static OnKilledCriterion.Conditions createEntityKilledPlayer(EntityPredicate.Builder killerEntityPredicateBuilder) {
 			return new OnKilledCriterion.Conditions(
-				Criteria.ENTITY_KILLED_PLAYER.id,
-				LootContextPredicate.EMPTY,
-				EntityPredicate.asLootContextPredicate(killerEntityPredicateBuilder.build()),
-				DamageSourcePredicate.EMPTY
+				Criteria.ENTITY_KILLED_PLAYER.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(killerEntityPredicateBuilder), Optional.empty()
 			);
 		}
 
 		public static OnKilledCriterion.Conditions createEntityKilledPlayer() {
-			return new OnKilledCriterion.Conditions(
-				Criteria.ENTITY_KILLED_PLAYER.id, LootContextPredicate.EMPTY, LootContextPredicate.EMPTY, DamageSourcePredicate.EMPTY
-			);
+			return new OnKilledCriterion.Conditions(Criteria.ENTITY_KILLED_PLAYER.id, Optional.empty(), Optional.empty(), Optional.empty());
 		}
 
-		public static OnKilledCriterion.Conditions createEntityKilledPlayer(EntityPredicate killerEntityPredicate, DamageSourcePredicate damageSourcePredicate) {
+		public static OnKilledCriterion.Conditions createEntityKilledPlayer(Optional<EntityPredicate> entity, Optional<DamageSourcePredicate> killingBlow) {
 			return new OnKilledCriterion.Conditions(
-				Criteria.ENTITY_KILLED_PLAYER.id, LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(killerEntityPredicate), damageSourcePredicate
-			);
-		}
-
-		public static OnKilledCriterion.Conditions createEntityKilledPlayer(
-			EntityPredicate.Builder killerEntityPredicateBuilder, DamageSourcePredicate damageSourcePredicate
-		) {
-			return new OnKilledCriterion.Conditions(
-				Criteria.ENTITY_KILLED_PLAYER.id,
-				LootContextPredicate.EMPTY,
-				EntityPredicate.asLootContextPredicate(killerEntityPredicateBuilder.build()),
-				damageSourcePredicate
+				Criteria.ENTITY_KILLED_PLAYER.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity), killingBlow
 			);
 		}
 
 		public static OnKilledCriterion.Conditions createEntityKilledPlayer(
-			EntityPredicate killerEntityPredicate, DamageSourcePredicate.Builder damageSourcePredicateBuilder
+			EntityPredicate.Builder killerEntityPredicateBuilder, Optional<DamageSourcePredicate> killingBlow
 		) {
 			return new OnKilledCriterion.Conditions(
-				Criteria.ENTITY_KILLED_PLAYER.id,
-				LootContextPredicate.EMPTY,
-				EntityPredicate.asLootContextPredicate(killerEntityPredicate),
-				damageSourcePredicateBuilder.build()
+				Criteria.ENTITY_KILLED_PLAYER.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(killerEntityPredicateBuilder), killingBlow
+			);
+		}
+
+		public static OnKilledCriterion.Conditions createEntityKilledPlayer(
+			Optional<EntityPredicate> entity, DamageSourcePredicate.Builder damageSourcePredicateBuilder
+		) {
+			return new OnKilledCriterion.Conditions(
+				Criteria.ENTITY_KILLED_PLAYER.id, Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity), damageSourcePredicateBuilder.build()
 			);
 		}
 
@@ -170,21 +148,23 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		) {
 			return new OnKilledCriterion.Conditions(
 				Criteria.ENTITY_KILLED_PLAYER.id,
-				LootContextPredicate.EMPTY,
-				EntityPredicate.asLootContextPredicate(killerEntityPredicateBuilder.build()),
+				Optional.empty(),
+				EntityPredicate.contextPredicateFromEntityPredicate(killerEntityPredicateBuilder),
 				damageSourcePredicateBuilder.build()
 			);
 		}
 
-		public boolean test(ServerPlayerEntity player, LootContext killedEntityContext, DamageSource killingBlow) {
-			return !this.killingBlow.test(player, killingBlow) ? false : this.entity.test(killedEntityContext);
+		public boolean test(ServerPlayerEntity player, LootContext entity, DamageSource killingBlow) {
+			return this.killingBlow.isPresent() && !((DamageSourcePredicate)this.killingBlow.get()).test(player, killingBlow)
+				? false
+				: this.entity.isEmpty() || ((LootContextPredicate)this.entity.get()).test(entity);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("entity", this.entity.toJson(predicateSerializer));
-			jsonObject.add("killing_blow", this.killingBlow.toJson());
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
+			this.killingBlow.ifPresent(damageSourcePredicate -> jsonObject.add("killing_blow", damageSourcePredicate.toJson()));
 			return jsonObject;
 		}
 	}

@@ -353,7 +353,7 @@ public final class SpawnHelper {
 
 			while (random.nextFloat() < spawnSettings.getCreatureSpawnProbability()) {
 				Optional<SpawnSettings.SpawnEntry> optional = pool.getOrEmpty(random);
-				if (optional.isPresent()) {
+				if (!optional.isEmpty()) {
 					SpawnSettings.SpawnEntry spawnEntry = (SpawnSettings.SpawnEntry)optional.get();
 					int k = spawnEntry.minGroupSize + random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 					EntityData entityData = null;

@@ -108,7 +108,7 @@ public class SocialInteractionsScreen extends Screen {
 			ButtonWidget.builder(BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED)).dimensions(k - i + 1, 45, i, 20).build()
 		);
 		String string = this.searchBox != null ? this.searchBox.getText() : "";
-		this.searchBox = new TextFieldWidget(this.textRenderer, this.getSearchBoxX() + 29, 75, 198, 13, SEARCH_TEXT) {
+		this.searchBox = new TextFieldWidget(this.textRenderer, this.getSearchBoxX() + 28, 74, 200, 15, SEARCH_TEXT) {
 			@Override
 			protected MutableText getNarrationMessage() {
 				return !SocialInteractionsScreen.this.searchBox.getText().isEmpty() && SocialInteractionsScreen.this.playerList.isEmpty()

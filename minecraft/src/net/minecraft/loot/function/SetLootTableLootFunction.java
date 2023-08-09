@@ -1,9 +1,8 @@
 package net.minecraft.loot.function;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -15,19 +14,31 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class SetLootTableLootFunction extends ConditionalLootFunction {
-	final Identifier id;
-	final long seed;
-	final BlockEntityType<?> type;
+	public static final Codec<SetLootTableLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<Identifier, long, RegistryEntry<BlockEntityType<?>>>and(
+					instance.group(
+						Identifier.CODEC.fieldOf("name").forGetter(setLootTableLootFunction -> setLootTableLootFunction.id),
+						Codecs.createStrictOptionalFieldCodec(Codec.LONG, "seed", 0L).forGetter(setLootTableLootFunction -> setLootTableLootFunction.seed),
+						Registries.BLOCK_ENTITY_TYPE.createEntryCodec().fieldOf("type").forGetter(setLootTableLootFunction -> setLootTableLootFunction.type)
+					)
+				)
+				.apply(instance, SetLootTableLootFunction::new)
+	);
+	private final Identifier id;
+	private final long seed;
+	private final RegistryEntry<BlockEntityType<?>> type;
 
-	SetLootTableLootFunction(LootCondition[] conditions, Identifier id, long seed, BlockEntityType<?> type) {
+	private SetLootTableLootFunction(List<LootCondition> conditions, Identifier id, long seed, RegistryEntry<BlockEntityType<?>> blockEntityType) {
 		super(conditions);
 		this.id = id;
 		this.seed = seed;
-		this.type = type;
+		this.type = blockEntityType;
 	}
 
 	@Override
@@ -50,7 +61,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 				nbtCompound.putLong("LootTableSeed", this.seed);
 			}
 
-			BlockItem.setBlockEntityNbt(stack, this.type, nbtCompound);
+			BlockItem.setBlockEntityNbt(stack, this.type.value(), nbtCompound);
 			return stack;
 		}
 	}
@@ -65,31 +76,10 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, Identifier id) {
-		return builder(conditions -> new SetLootTableLootFunction(conditions, id, 0L, type));
+		return builder(conditions -> new SetLootTableLootFunction(conditions, id, 0L, type.getRegistryEntry()));
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, Identifier id, long seed) {
-		return builder(conditions -> new SetLootTableLootFunction(conditions, id, seed, type));
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<SetLootTableLootFunction> {
-		public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("name", setLootTableLootFunction.id.toString());
-			jsonObject.addProperty("type", Registries.BLOCK_ENTITY_TYPE.getId(setLootTableLootFunction.type).toString());
-			if (setLootTableLootFunction.seed != 0L) {
-				jsonObject.addProperty("seed", setLootTableLootFunction.seed);
-			}
-		}
-
-		public SetLootTableLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			long l = JsonHelper.getLong(jsonObject, "seed", 0L);
-			Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "type"));
-			BlockEntityType<?> blockEntityType = (BlockEntityType<?>)Registries.BLOCK_ENTITY_TYPE
-				.getOrEmpty(identifier2)
-				.orElseThrow(() -> new JsonSyntaxException("Unknown block entity type id '" + identifier2 + "'"));
-			return new SetLootTableLootFunction(lootConditions, identifier, l, blockEntityType);
-		}
+		return builder(conditions -> new SetLootTableLootFunction(conditions, id, seed, type.getRegistryEntry()));
 	}
 }

@@ -65,10 +65,11 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
-		} else if (object instanceof EnumProperty && super.equals(object)) {
-			EnumProperty<?> enumProperty = (EnumProperty<?>)object;
-			return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
 		} else {
+			if (object instanceof EnumProperty<?> enumProperty && super.equals(object)) {
+				return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
+			}
+
 			return false;
 		}
 	}

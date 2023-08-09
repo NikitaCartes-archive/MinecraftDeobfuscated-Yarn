@@ -127,6 +127,7 @@ import org.slf4j.Logger;
  */
 public abstract class LivingEntity extends Entity implements Attackable {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final String field_45740 = "active_effects";
 	private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
 	private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
 	private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(
@@ -700,13 +701,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		boolean bl = newStack.isEmpty() && oldStack.isEmpty();
 		if (!bl && !ItemStack.canCombine(oldStack, newStack) && !this.firstUpdate) {
 			Equipment equipment = Equipment.fromStack(newStack);
-			if (equipment != null && !this.isSpectator() && equipment.getSlotType() == slot) {
-				if (!this.getWorld().isClient() && !this.isSilent()) {
+			if (!this.getWorld().isClient() && !this.isSpectator()) {
+				if (!this.isSilent() && equipment != null && equipment.getSlotType() == slot) {
 					this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), equipment.getEquipSound(), this.getSoundCategory(), 1.0F, 1.0F);
 				}
 
 				if (this.isArmorSlot(slot)) {
-					this.emitGameEvent(GameEvent.EQUIP);
+					this.emitGameEvent(equipment != null ? GameEvent.EQUIP : GameEvent.UNEQUIP);
 				}
 			}
 		}
@@ -733,7 +734,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
 			}
 
-			nbt.put("ActiveEffects", nbtList);
+			nbt.put("active_effects", nbtList);
 		}
 
 		nbt.putBoolean("FallFlying", this.isFallFlying());
@@ -753,8 +754,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.getAttributes().readNbt(nbt.getList("Attributes", NbtElement.COMPOUND_TYPE));
 		}
 
-		if (nbt.contains("ActiveEffects", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("ActiveEffects", NbtElement.COMPOUND_TYPE);
+		if (nbt.contains("active_effects", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("active_effects", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
@@ -2817,8 +2818,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
 					int j = 0;
 
-					for (int k = 0; k < list.size(); k++) {
-						if (!((Entity)list.get(k)).hasVehicle()) {
+					for (Entity entity : list) {
+						if (!entity.hasVehicle()) {
 							j++;
 						}
 					}
@@ -2828,9 +2829,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					}
 				}
 
-				for (int j = 0; j < list.size(); j++) {
-					Entity entity = (Entity)list.get(j);
-					this.pushAway(entity);
+				for (Entity entity2 : list) {
+					this.pushAway(entity2);
 				}
 			}
 		}
@@ -2840,8 +2840,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		Box box = a.union(b);
 		List<Entity> list = this.getWorld().getOtherEntities(this, box);
 		if (!list.isEmpty()) {
-			for (int i = 0; i < list.size(); i++) {
-				Entity entity = (Entity)list.get(i);
+			for (Entity entity : list) {
 				if (entity instanceof LivingEntity) {
 					this.attackLivingEntity((LivingEntity)entity);
 					this.riptideTicks = 0;

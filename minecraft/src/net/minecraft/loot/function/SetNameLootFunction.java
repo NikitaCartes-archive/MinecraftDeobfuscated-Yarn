@@ -1,11 +1,11 @@
 package net.minecraft.loot.function;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
@@ -17,16 +17,25 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import org.slf4j.Logger;
 
 public class SetNameLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	final Text name;
-	@Nullable
-	final LootContext.EntityTarget entity;
+	public static final Codec<SetNameLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.<Optional<Text>, Optional<LootContext.EntityTarget>>and(
+					instance.group(
+						Codecs.createStrictOptionalFieldCodec(Codecs.TEXT, "name").forGetter(setNameLootFunction -> setNameLootFunction.name),
+						Codecs.createStrictOptionalFieldCodec(LootContext.EntityTarget.CODEC, "entity").forGetter(setNameLootFunction -> setNameLootFunction.entity)
+					)
+				)
+				.apply(instance, SetNameLootFunction::new)
+	);
+	private final Optional<Text> name;
+	private final Optional<LootContext.EntityTarget> entity;
 
-	SetNameLootFunction(LootCondition[] conditions, @Nullable Text name, @Nullable LootContext.EntityTarget entity) {
+	private SetNameLootFunction(List<LootCondition> conditions, Optional<Text> name, Optional<LootContext.EntityTarget> entity) {
 		super(conditions);
 		this.name = name;
 		this.entity = entity;
@@ -39,7 +48,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.entity != null ? ImmutableSet.of(this.entity.getParameter()) : ImmutableSet.of();
+		return (Set<LootContextParameter<?>>)this.entity.map(entityTarget -> Set.of(entityTarget.getParameter())).orElse(Set.of());
 	}
 
 	public static UnaryOperator<Text> applySourceEntity(LootContext context, @Nullable LootContext.EntityTarget sourceEntity) {
@@ -63,37 +72,15 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		if (this.name != null) {
-			stack.setCustomName((Text)applySourceEntity(context, this.entity).apply(this.name));
-		}
-
+		this.name.ifPresent(text -> stack.setCustomName((Text)applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null)).apply(text)));
 		return stack;
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(Text name) {
-		return builder(conditions -> new SetNameLootFunction(conditions, name, null));
+		return builder(conditions -> new SetNameLootFunction(conditions, Optional.of(name), Optional.empty()));
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(Text name, LootContext.EntityTarget target) {
-		return builder(conditions -> new SetNameLootFunction(conditions, name, target));
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<SetNameLootFunction> {
-		public void toJson(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setNameLootFunction, jsonSerializationContext);
-			if (setNameLootFunction.name != null) {
-				jsonObject.add("name", Text.Serializer.toJsonTree(setNameLootFunction.name));
-			}
-
-			if (setNameLootFunction.entity != null) {
-				jsonObject.add("entity", jsonSerializationContext.serialize(setNameLootFunction.entity));
-			}
-		}
-
-		public SetNameLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			Text text = Text.Serializer.fromJson(jsonObject.get("name"));
-			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
-			return new SetNameLootFunction(lootConditions, text, entityTarget);
-		}
+		return builder(conditions -> new SetNameLootFunction(conditions, Optional.of(name), Optional.of(target)));
 	}
 }

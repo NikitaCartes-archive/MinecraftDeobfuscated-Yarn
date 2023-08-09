@@ -1,132 +1,90 @@
 package net.minecraft.predicate.entity;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import javax.annotation.Nullable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
-public class EntityFlagsPredicate {
-	public static final EntityFlagsPredicate ANY = new EntityFlagsPredicate.Builder().build();
-	@Nullable
-	private final Boolean isOnFire;
-	@Nullable
-	private final Boolean isSneaking;
-	@Nullable
-	private final Boolean isSprinting;
-	@Nullable
-	private final Boolean isSwimming;
-	@Nullable
-	private final Boolean isBaby;
+public record EntityFlagsPredicate(
+	Optional<Boolean> isOnFire, Optional<Boolean> isSneaking, Optional<Boolean> isSprinting, Optional<Boolean> isSwimming, Optional<Boolean> isBaby
+) {
+	public static final Codec<EntityFlagsPredicate> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_on_fire").forGetter(EntityFlagsPredicate::isOnFire),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_sneaking").forGetter(EntityFlagsPredicate::isSneaking),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_sprinting").forGetter(EntityFlagsPredicate::isSprinting),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_swimming").forGetter(EntityFlagsPredicate::isSwimming),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_baby").forGetter(EntityFlagsPredicate::isBaby)
+				)
+				.apply(instance, EntityFlagsPredicate::new)
+	);
 
-	public EntityFlagsPredicate(
-		@Nullable Boolean isOnFire, @Nullable Boolean isSneaking, @Nullable Boolean isSprinting, @Nullable Boolean isSwimming, @Nullable Boolean isBaby
+	static Optional<EntityFlagsPredicate> create(
+		Optional<Boolean> isOnFire, Optional<Boolean> isSneaking, Optional<Boolean> isSprinting, Optional<Boolean> isSwimming, Optional<Boolean> isBaby
 	) {
-		this.isOnFire = isOnFire;
-		this.isSneaking = isSneaking;
-		this.isSprinting = isSprinting;
-		this.isSwimming = isSwimming;
-		this.isBaby = isBaby;
+		return isOnFire.isEmpty() && isSneaking.isEmpty() && isSprinting.isEmpty() && isSwimming.isEmpty() && isBaby.isEmpty()
+			? Optional.empty()
+			: Optional.of(new EntityFlagsPredicate(isOnFire, isSneaking, isSprinting, isSwimming, isBaby));
 	}
 
 	public boolean test(Entity entity) {
-		if (this.isOnFire != null && entity.isOnFire() != this.isOnFire) {
+		if (this.isOnFire.isPresent() && entity.isOnFire() != (Boolean)this.isOnFire.get()) {
 			return false;
-		} else if (this.isSneaking != null && entity.isInSneakingPose() != this.isSneaking) {
+		} else if (this.isSneaking.isPresent() && entity.isInSneakingPose() != (Boolean)this.isSneaking.get()) {
 			return false;
-		} else if (this.isSprinting != null && entity.isSprinting() != this.isSprinting) {
+		} else if (this.isSprinting.isPresent() && entity.isSprinting() != (Boolean)this.isSprinting.get()) {
+			return false;
+		} else if (this.isSwimming.isPresent() && entity.isSwimming() != (Boolean)this.isSwimming.get()) {
 			return false;
 		} else {
-			return this.isSwimming != null && entity.isSwimming() != this.isSwimming
-				? false
-				: this.isBaby == null || !(entity instanceof LivingEntity) || ((LivingEntity)entity).isBaby() == this.isBaby;
-		}
-	}
+			if (this.isBaby.isPresent() && entity instanceof LivingEntity livingEntity && livingEntity.isBaby() != (Boolean)this.isBaby.get()) {
+				return false;
+			}
 
-	@Nullable
-	private static Boolean nullableBooleanFromJson(JsonObject json, String key) {
-		return json.has(key) ? JsonHelper.getBoolean(json, key) : null;
-	}
-
-	public static EntityFlagsPredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "entity flags");
-			Boolean boolean_ = nullableBooleanFromJson(jsonObject, "is_on_fire");
-			Boolean boolean2 = nullableBooleanFromJson(jsonObject, "is_sneaking");
-			Boolean boolean3 = nullableBooleanFromJson(jsonObject, "is_sprinting");
-			Boolean boolean4 = nullableBooleanFromJson(jsonObject, "is_swimming");
-			Boolean boolean5 = nullableBooleanFromJson(jsonObject, "is_baby");
-			return new EntityFlagsPredicate(boolean_, boolean2, boolean3, boolean4, boolean5);
-		} else {
-			return ANY;
-		}
-	}
-
-	private void nullableBooleanToJson(JsonObject json, String key, @Nullable Boolean value) {
-		if (value != null) {
-			json.addProperty(key, value);
-		}
-	}
-
-	public JsonElement toJson() {
-		if (this == ANY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			this.nullableBooleanToJson(jsonObject, "is_on_fire", this.isOnFire);
-			this.nullableBooleanToJson(jsonObject, "is_sneaking", this.isSneaking);
-			this.nullableBooleanToJson(jsonObject, "is_sprinting", this.isSprinting);
-			this.nullableBooleanToJson(jsonObject, "is_swimming", this.isSwimming);
-			this.nullableBooleanToJson(jsonObject, "is_baby", this.isBaby);
-			return jsonObject;
+			return true;
 		}
 	}
 
 	public static class Builder {
-		@Nullable
-		private Boolean isOnFire;
-		@Nullable
-		private Boolean isSneaking;
-		@Nullable
-		private Boolean isSprinting;
-		@Nullable
-		private Boolean isSwimming;
-		@Nullable
-		private Boolean isBaby;
+		private Optional<Boolean> isOnFire = Optional.empty();
+		private Optional<Boolean> isSneaking = Optional.empty();
+		private Optional<Boolean> isSprinting = Optional.empty();
+		private Optional<Boolean> isSwimming = Optional.empty();
+		private Optional<Boolean> isBaby = Optional.empty();
 
 		public static EntityFlagsPredicate.Builder create() {
 			return new EntityFlagsPredicate.Builder();
 		}
 
-		public EntityFlagsPredicate.Builder onFire(@Nullable Boolean onFire) {
-			this.isOnFire = onFire;
+		public EntityFlagsPredicate.Builder onFire(Boolean onFire) {
+			this.isOnFire = Optional.of(onFire);
 			return this;
 		}
 
-		public EntityFlagsPredicate.Builder sneaking(@Nullable Boolean sneaking) {
-			this.isSneaking = sneaking;
+		public EntityFlagsPredicate.Builder sneaking(Boolean sneaking) {
+			this.isSneaking = Optional.of(sneaking);
 			return this;
 		}
 
-		public EntityFlagsPredicate.Builder sprinting(@Nullable Boolean sprinting) {
-			this.isSprinting = sprinting;
+		public EntityFlagsPredicate.Builder sprinting(Boolean sprinting) {
+			this.isSprinting = Optional.of(sprinting);
 			return this;
 		}
 
-		public EntityFlagsPredicate.Builder swimming(@Nullable Boolean swimming) {
-			this.isSwimming = swimming;
+		public EntityFlagsPredicate.Builder swimming(Boolean swimming) {
+			this.isSwimming = Optional.of(swimming);
 			return this;
 		}
 
-		public EntityFlagsPredicate.Builder isBaby(@Nullable Boolean isBaby) {
-			this.isBaby = isBaby;
+		public EntityFlagsPredicate.Builder isBaby(Boolean isBaby) {
+			this.isBaby = Optional.of(isBaby);
 			return this;
 		}
 
-		public EntityFlagsPredicate build() {
-			return new EntityFlagsPredicate(this.isOnFire, this.isSneaking, this.isSprinting, this.isSwimming, this.isBaby);
+		public Optional<EntityFlagsPredicate> build() {
+			return EntityFlagsPredicate.create(this.isOnFire, this.isSneaking, this.isSprinting, this.isSwimming, this.isBaby);
 		}
 	}
 }

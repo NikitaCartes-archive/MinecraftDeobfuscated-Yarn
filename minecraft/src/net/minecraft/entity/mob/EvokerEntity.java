@@ -31,9 +31,11 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class EvokerEntity extends SpellcastingIllagerEntity {
 	@Nullable
@@ -207,6 +209,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			if (bl) {
 				EvokerEntity.this.getWorld()
 					.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.getWorld(), x, (double)blockPos.getY() + d, z, yaw, warmup, EvokerEntity.this));
+				EvokerEntity.this.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, (double)blockPos.getY() + d, z), GameEvent.Emitter.of(EvokerEntity.this));
 			}
 		}
 
@@ -276,6 +279,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 					vexEntity.setBounds(blockPos);
 					vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
 					serverWorld.spawnEntityAndPassengers(vexEntity);
+					serverWorld.emitGameEvent(GameEvent.ENTITY_PLACE, blockPos, GameEvent.Emitter.of(EvokerEntity.this));
 				}
 			}
 		}

@@ -2,10 +2,8 @@ package net.minecraft.predicate.entity;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -28,64 +26,18 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerType;
 
 public interface TypeSpecificPredicate {
-	TypeSpecificPredicate ANY = new TypeSpecificPredicate() {
-		@Override
-		public boolean test(Entity entity, ServerWorld world, @Nullable Vec3d pos) {
-			return true;
-		}
-
-		@Override
-		public JsonObject typeSpecificToJson() {
-			return new JsonObject();
-		}
-
-		@Override
-		public TypeSpecificPredicate.Deserializer getDeserializer() {
-			return TypeSpecificPredicate.Deserializers.ANY;
-		}
-	};
-
-	static TypeSpecificPredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "type_specific");
-			String string = JsonHelper.getString(jsonObject, "type", null);
-			if (string == null) {
-				return ANY;
-			} else {
-				TypeSpecificPredicate.Deserializer deserializer = (TypeSpecificPredicate.Deserializer)TypeSpecificPredicate.Deserializers.TYPES.get(string);
-				if (deserializer == null) {
-					throw new JsonSyntaxException("Unknown sub-predicate type: " + string);
-				} else {
-					return deserializer.deserialize(jsonObject);
-				}
-			}
-		} else {
-			return ANY;
-		}
-	}
+	Codec<TypeSpecificPredicate> CODEC = TypeSpecificPredicate.Deserializers.TYPE_CODEC
+		.dispatch(TypeSpecificPredicate::getDeserializer, type -> type.codec().codec());
 
 	boolean test(Entity entity, ServerWorld world, @Nullable Vec3d pos);
 
-	JsonObject typeSpecificToJson();
-
-	default JsonElement toJson() {
-		if (this.getDeserializer() == TypeSpecificPredicate.Deserializers.ANY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = this.typeSpecificToJson();
-			String string = (String)TypeSpecificPredicate.Deserializers.TYPES.inverse().get(this.getDeserializer());
-			jsonObject.addProperty("type", string);
-			return jsonObject;
-		}
-	}
-
-	TypeSpecificPredicate.Deserializer getDeserializer();
+	TypeSpecificPredicate.Type getDeserializer();
 
 	static TypeSpecificPredicate cat(CatVariant variant) {
 		return TypeSpecificPredicate.Deserializers.CAT.createPredicate(variant);
@@ -95,16 +47,22 @@ public interface TypeSpecificPredicate {
 		return TypeSpecificPredicate.Deserializers.FROG.createPredicate(variant);
 	}
 
-	public interface Deserializer {
-		TypeSpecificPredicate deserialize(JsonObject json);
-	}
-
 	public static final class Deserializers {
-		public static final TypeSpecificPredicate.Deserializer ANY = json -> TypeSpecificPredicate.ANY;
-		public static final TypeSpecificPredicate.Deserializer LIGHTNING = LightningBoltPredicate::fromJson;
-		public static final TypeSpecificPredicate.Deserializer FISHING_HOOK = FishingHookPredicate::fromJson;
-		public static final TypeSpecificPredicate.Deserializer PLAYER = PlayerPredicate::fromJson;
-		public static final TypeSpecificPredicate.Deserializer SLIME = SlimePredicate::fromJson;
+		public static final TypeSpecificPredicate.Type ANY = new TypeSpecificPredicate.Type(MapCodec.unit(new TypeSpecificPredicate() {
+			@Override
+			public boolean test(Entity entity, ServerWorld world, @Nullable Vec3d pos) {
+				return true;
+			}
+
+			@Override
+			public TypeSpecificPredicate.Type getDeserializer() {
+				return TypeSpecificPredicate.Deserializers.ANY;
+			}
+		}));
+		public static final TypeSpecificPredicate.Type LIGHTNING = new TypeSpecificPredicate.Type(LightningBoltPredicate.CODEC);
+		public static final TypeSpecificPredicate.Type FISHING_HOOK = new TypeSpecificPredicate.Type(FishingHookPredicate.CODEC);
+		public static final TypeSpecificPredicate.Type PLAYER = new TypeSpecificPredicate.Type(PlayerPredicate.CODEC);
+		public static final TypeSpecificPredicate.Type SLIME = new TypeSpecificPredicate.Type(SlimePredicate.CODEC);
 		public static final VariantPredicates<CatVariant> CAT = VariantPredicates.create(
 			Registries.CAT_VARIANT, entity -> entity instanceof CatEntity catEntity ? Optional.of(catEntity.getVariant()) : Optional.empty()
 		);
@@ -147,7 +105,7 @@ public interface TypeSpecificPredicate {
 			TropicalFishEntity.Variety.CODEC,
 			entity -> entity instanceof TropicalFishEntity tropicalFishEntity ? Optional.of(tropicalFishEntity.getVariant()) : Optional.empty()
 		);
-		public static final BiMap<String, TypeSpecificPredicate.Deserializer> TYPES = ImmutableBiMap.<String, TypeSpecificPredicate.Deserializer>builder()
+		public static final BiMap<String, TypeSpecificPredicate.Type> TYPES = ImmutableBiMap.<String, TypeSpecificPredicate.Type>builder()
 			.put("any", ANY)
 			.put("lightning", LIGHTNING)
 			.put("fishing_hook", FISHING_HOOK)
@@ -167,5 +125,9 @@ public interface TypeSpecificPredicate {
 			.put("parrot", PARROT.getDeserializer())
 			.put("tropical_fish", TROPICAL_FISH.getDeserializer())
 			.buildOrThrow();
+		public static final Codec<TypeSpecificPredicate.Type> TYPE_CODEC = Codecs.idChecked(TYPES.inverse()::get, TYPES::get);
+	}
+
+	public static record Type(MapCodec<? extends TypeSpecificPredicate> codec) {
 	}
 }

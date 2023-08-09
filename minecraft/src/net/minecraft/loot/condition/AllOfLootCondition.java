@@ -1,8 +1,18 @@
 package net.minecraft.loot.condition;
 
+import com.mojang.serialization.Codec;
+import java.util.List;
+
 public class AllOfLootCondition extends AlternativeLootCondition {
-	AllOfLootCondition(LootCondition[] terms) {
+	public static final Codec<AllOfLootCondition> CODEC = createCodec(AllOfLootCondition::new);
+	public static final Codec<AllOfLootCondition> field_45858 = method_53410(AllOfLootCondition::new);
+
+	AllOfLootCondition(List<LootCondition> terms) {
 		super(terms, LootConditionTypes.matchingAll(terms));
+	}
+
+	public static AllOfLootCondition create(List<LootCondition> terms) {
+		return new AllOfLootCondition(List.copyOf(terms));
 	}
 
 	@Override
@@ -26,14 +36,8 @@ public class AllOfLootCondition extends AlternativeLootCondition {
 		}
 
 		@Override
-		protected LootCondition build(LootCondition[] terms) {
+		protected LootCondition build(List<LootCondition> terms) {
 			return new AllOfLootCondition(terms);
-		}
-	}
-
-	public static class Serializer extends AlternativeLootCondition.Serializer<AllOfLootCondition> {
-		protected AllOfLootCondition fromTerms(LootCondition[] lootConditions) {
-			return new AllOfLootCondition(lootConditions);
 		}
 	}
 }

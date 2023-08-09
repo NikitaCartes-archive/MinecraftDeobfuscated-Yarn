@@ -1,50 +1,34 @@
 package net.minecraft.predicate;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 
-public class StatePredicate {
-	public static final StatePredicate ANY = new StatePredicate(ImmutableList.of());
-	private final List<StatePredicate.Condition> conditions;
-
-	private static StatePredicate.Condition createPredicate(String key, JsonElement json) {
-		if (json.isJsonPrimitive()) {
-			String string = json.getAsString();
-			return new StatePredicate.ExactValueCondition(key, string);
-		} else {
-			JsonObject jsonObject = JsonHelper.asObject(json, "value");
-			String string2 = jsonObject.has("min") ? asNullableString(jsonObject.get("min")) : null;
-			String string3 = jsonObject.has("max") ? asNullableString(jsonObject.get("max")) : null;
-			return (StatePredicate.Condition)(string2 != null && string2.equals(string3)
-				? new StatePredicate.ExactValueCondition(key, string2)
-				: new StatePredicate.RangedValueCondition(key, string2, string3));
-		}
-	}
-
-	@Nullable
-	private static String asNullableString(JsonElement json) {
-		return json.isJsonNull() ? null : json.getAsString();
-	}
-
-	StatePredicate(List<StatePredicate.Condition> conditions) {
-		this.conditions = ImmutableList.copyOf(conditions);
-	}
+public record StatePredicate(List<StatePredicate.Condition> conditions) {
+	private static final Codec<List<StatePredicate.Condition>> CONDITION_LIST_CODEC = Codec.unboundedMap(Codec.STRING, StatePredicate.ValueMatcher.CODEC)
+		.xmap(
+			map -> map.entrySet().stream().map(entry -> new StatePredicate.Condition((String)entry.getKey(), (StatePredicate.ValueMatcher)entry.getValue())).toList(),
+			list -> (Map)list.stream().collect(Collectors.toMap(StatePredicate.Condition::key, StatePredicate.Condition::valueMatcher))
+		);
+	public static final Codec<StatePredicate> CODEC = CONDITION_LIST_CODEC.xmap(StatePredicate::new, StatePredicate::conditions);
 
 	public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S container) {
 		for (StatePredicate.Condition condition : this.conditions) {
@@ -64,40 +48,31 @@ public class StatePredicate {
 		return this.test(state.getFluid().getStateManager(), state);
 	}
 
-	public void check(StateManager<?, ?> factory, Consumer<String> reporter) {
-		this.conditions.forEach(condition -> condition.reportMissing(factory, reporter));
+	public Optional<String> findMissing(StateManager<?, ?> stateManager) {
+		for (StatePredicate.Condition condition : this.conditions) {
+			Optional<String> optional = condition.reportMissing(stateManager);
+			if (optional.isPresent()) {
+				return optional;
+			}
+		}
+
+		return Optional.empty();
 	}
 
-	public static StatePredicate fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "properties");
-			List<StatePredicate.Condition> list = Lists.<StatePredicate.Condition>newArrayList();
+	public void check(StateManager<?, ?> factory, Consumer<String> reporter) {
+		this.conditions.forEach(condition -> condition.reportMissing(factory).ifPresent(reporter));
+	}
 
-			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-				list.add(createPredicate((String)entry.getKey(), (JsonElement)entry.getValue()));
-			}
-
-			return new StatePredicate(list);
-		} else {
-			return ANY;
-		}
+	public static Optional<StatePredicate> fromJson(@Nullable JsonElement json) {
+		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
 	}
 
 	public JsonElement toJson() {
-		if (this == ANY) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			if (!this.conditions.isEmpty()) {
-				this.conditions.forEach(condition -> jsonObject.add(condition.getKey(), condition.toJson()));
-			}
-
-			return jsonObject;
-		}
+		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 
 	public static class Builder {
-		private final List<StatePredicate.Condition> conditions = Lists.<StatePredicate.Condition>newArrayList();
+		private final ImmutableList.Builder<StatePredicate.Condition> conditions = ImmutableList.builder();
 
 		private Builder() {
 		}
@@ -107,7 +82,7 @@ public class StatePredicate {
 		}
 
 		public StatePredicate.Builder exactMatch(Property<?> property, String valueName) {
-			this.conditions.add(new StatePredicate.ExactValueCondition(property.getName(), valueName));
+			this.conditions.add(new StatePredicate.Condition(property.getName(), new StatePredicate.ExactValueMatcher(valueName)));
 			return this;
 		}
 
@@ -123,104 +98,78 @@ public class StatePredicate {
 			return this.exactMatch(property, value.asString());
 		}
 
-		public StatePredicate build() {
-			return new StatePredicate(this.conditions);
+		public Optional<StatePredicate> build() {
+			ImmutableList<StatePredicate.Condition> immutableList = this.conditions.build();
+			return immutableList.isEmpty() ? Optional.empty() : Optional.of(new StatePredicate(immutableList));
 		}
 	}
 
-	abstract static class Condition {
-		private final String key;
-
-		public Condition(String key) {
-			this.key = key;
-		}
-
+	static record Condition(String key, StatePredicate.ValueMatcher valueMatcher) {
 		public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S state) {
 			Property<?> property = stateManager.getProperty(this.key);
-			return property == null ? false : this.test(state, property);
+			return property != null && this.valueMatcher.test(state, property);
 		}
 
-		protected abstract <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property);
-
-		public abstract JsonElement toJson();
-
-		public String getKey() {
-			return this.key;
-		}
-
-		public void reportMissing(StateManager<?, ?> factory, Consumer<String> reporter) {
+		public Optional<String> reportMissing(StateManager<?, ?> factory) {
 			Property<?> property = factory.getProperty(this.key);
-			if (property == null) {
-				reporter.accept(this.key);
-			}
+			return property != null ? Optional.empty() : Optional.of(this.key);
 		}
 	}
 
-	static class ExactValueCondition extends StatePredicate.Condition {
-		private final String value;
-
-		public ExactValueCondition(String key, String value) {
-			super(key);
-			this.value = value;
-		}
+	static record ExactValueMatcher(String value) implements StatePredicate.ValueMatcher {
+		public static final Codec<StatePredicate.ExactValueMatcher> CODEC = Codec.STRING
+			.xmap(StatePredicate.ExactValueMatcher::new, StatePredicate.ExactValueMatcher::value);
 
 		@Override
-		protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
+		public <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
 			T comparable = state.get(property);
 			Optional<T> optional = property.parse(this.value);
 			return optional.isPresent() && comparable.compareTo((Comparable)optional.get()) == 0;
 		}
-
-		@Override
-		public JsonElement toJson() {
-			return new JsonPrimitive(this.value);
-		}
 	}
 
-	static class RangedValueCondition extends StatePredicate.Condition {
-		@Nullable
-		private final String min;
-		@Nullable
-		private final String max;
-
-		public RangedValueCondition(String key, @Nullable String min, @Nullable String max) {
-			super(key);
-			this.min = min;
-			this.max = max;
-		}
+	static record RangedValueMatcher(Optional<String> min, Optional<String> max) implements StatePredicate.ValueMatcher {
+		public static final Codec<StatePredicate.RangedValueMatcher> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "min").forGetter(StatePredicate.RangedValueMatcher::min),
+						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "max").forGetter(StatePredicate.RangedValueMatcher::max)
+					)
+					.apply(instance, StatePredicate.RangedValueMatcher::new)
+		);
 
 		@Override
-		protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
+		public <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
 			T comparable = state.get(property);
-			if (this.min != null) {
-				Optional<T> optional = property.parse(this.min);
-				if (!optional.isPresent() || comparable.compareTo((Comparable)optional.get()) < 0) {
+			if (this.min.isPresent()) {
+				Optional<T> optional = property.parse((String)this.min.get());
+				if (optional.isEmpty() || comparable.compareTo((Comparable)optional.get()) < 0) {
 					return false;
 				}
 			}
 
-			if (this.max != null) {
-				Optional<T> optional = property.parse(this.max);
-				if (!optional.isPresent() || comparable.compareTo((Comparable)optional.get()) > 0) {
+			if (this.max.isPresent()) {
+				Optional<T> optional = property.parse((String)this.max.get());
+				if (optional.isEmpty() || comparable.compareTo((Comparable)optional.get()) > 0) {
 					return false;
 				}
 			}
 
 			return true;
 		}
+	}
 
-		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
-			if (this.min != null) {
-				jsonObject.addProperty("min", this.min);
-			}
+	interface ValueMatcher {
+		Codec<StatePredicate.ValueMatcher> CODEC = Codec.either(StatePredicate.ExactValueMatcher.CODEC, StatePredicate.RangedValueMatcher.CODEC)
+			.xmap(either -> either.map(exactValueMatcher -> exactValueMatcher, rangedValueMatcher -> rangedValueMatcher), valueMatcher -> {
+				if (valueMatcher instanceof StatePredicate.ExactValueMatcher exactValueMatcher) {
+					return Either.left(exactValueMatcher);
+				} else if (valueMatcher instanceof StatePredicate.RangedValueMatcher rangedValueMatcher) {
+					return Either.right(rangedValueMatcher);
+				} else {
+					throw new UnsupportedOperationException();
+				}
+			});
 
-			if (this.max != null) {
-				jsonObject.addProperty("max", this.max);
-			}
-
-			return jsonObject;
-		}
+		<T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property);
 	}
 }

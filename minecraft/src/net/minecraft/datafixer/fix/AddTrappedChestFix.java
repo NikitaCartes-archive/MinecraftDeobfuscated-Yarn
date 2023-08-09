@@ -50,7 +50,7 @@ public class AddTrappedChestFix extends DataFix {
 					new ChoiceTypesFix(this.getOutputSchema(), "AddTrappedChestFix", TypeReferences.BLOCK_ENTITY).makeRule(),
 					this.fixTypeEverywhereTyped("Trapped Chest fix", type4, typed -> typed.updateTyped(opticFinder2, typedx -> {
 							Optional<? extends Typed<?>> optional = typedx.getOptionalTyped(opticFinder3);
-							if (!optional.isPresent()) {
+							if (optional.isEmpty()) {
 								return typedx;
 							} else {
 								List<? extends Typed<?>> list = ((Typed)optional.get()).getAllTyped(opticFinder4);

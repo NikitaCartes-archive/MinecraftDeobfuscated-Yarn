@@ -24,7 +24,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.Vibration;
 import net.minecraft.world.event.listener.VibrationSelector;
@@ -60,6 +59,7 @@ public interface Vibrations {
 		frequencies.put(GameEvent.INSTRUMENT_PLAY, 3);
 		frequencies.put(GameEvent.ENTITY_ACTION, 4);
 		frequencies.put(GameEvent.ELYTRA_GLIDE, 4);
+		frequencies.put(GameEvent.UNEQUIP, 4);
 		frequencies.put(GameEvent.ENTITY_DISMOUNT, 5);
 		frequencies.put(GameEvent.EQUIP, 5);
 		frequencies.put(GameEvent.ENTITY_INTERACT, 6);
@@ -311,10 +311,9 @@ public interface Vibrations {
 		private static boolean areChunksTickingAround(World world, BlockPos pos) {
 			ChunkPos chunkPos = new ChunkPos(pos);
 
-			for (int i = chunkPos.x - 1; i < chunkPos.x + 1; i++) {
-				for (int j = chunkPos.z - 1; j < chunkPos.z + 1; j++) {
-					Chunk chunk = world.getChunkManager().getWorldChunk(i, j);
-					if (chunk == null || !world.shouldTickBlocksInChunk(chunk.getPos().toLong())) {
+			for (int i = chunkPos.x - 1; i <= chunkPos.x + 1; i++) {
+				for (int j = chunkPos.z - 1; j <= chunkPos.z + 1; j++) {
+					if (!world.shouldTickBlocksInChunk(ChunkPos.toLong(i, j)) || world.getChunkManager().getWorldChunk(i, j) == null) {
 						return false;
 					}
 				}

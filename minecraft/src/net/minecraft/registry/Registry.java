@@ -339,11 +339,6 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 		return registerReference(registry, RegistryKey.of(registry.getKey(), id), entry);
 	}
 
-	static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {
-		((MutableRegistry)registry).set(rawId, RegistryKey.of(registry.getKey(), new Identifier(id)), (V)entry, Lifecycle.stable());
-		return entry;
-	}
-
 	Registry<T> freeze();
 
 	RegistryEntry.Reference<T> createEntry(T value);

@@ -1,22 +1,25 @@
 package net.minecraft.loot.function;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class SetPotionLootFunction extends ConditionalLootFunction {
-	final Potion potion;
+	public static final Codec<SetPotionLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> method_53344(instance)
+				.and(Registries.POTION.createEntryCodec().fieldOf("id").forGetter(setPotionLootFunction -> setPotionLootFunction.potion))
+				.apply(instance, SetPotionLootFunction::new)
+	);
+	private final RegistryEntry<Potion> potion;
 
-	SetPotionLootFunction(LootCondition[] conditions, Potion potion) {
+	private SetPotionLootFunction(List<LootCondition> conditions, RegistryEntry<Potion> potion) {
 		super(conditions);
 		this.potion = potion;
 	}
@@ -28,26 +31,11 @@ public class SetPotionLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		PotionUtil.setPotion(stack, this.potion);
+		PotionUtil.setPotion(stack, this.potion.value());
 		return stack;
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(Potion potion) {
-		return builder(conditions -> new SetPotionLootFunction(conditions, potion));
-	}
-
-	public static class Serializer extends ConditionalLootFunction.Serializer<SetPotionLootFunction> {
-		public void toJson(JsonObject jsonObject, SetPotionLootFunction setPotionLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setPotionLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("id", Registries.POTION.getId(setPotionLootFunction.potion).toString());
-		}
-
-		public SetPotionLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			String string = JsonHelper.getString(jsonObject, "id");
-			Potion potion = (Potion)Registries.POTION
-				.getOrEmpty(Identifier.tryParse(string))
-				.orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + string + "'"));
-			return new SetPotionLootFunction(lootConditions, potion);
-		}
+		return builder(conditions -> new SetPotionLootFunction(conditions, potion.getRegistryEntry()));
 	}
 }

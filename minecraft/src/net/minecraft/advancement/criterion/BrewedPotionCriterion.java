@@ -2,10 +2,10 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.potion.Potion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,7 +21,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 	}
 
 	public BrewedPotionCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Potion potion = null;
 		if (jsonObject.has("potion")) {
@@ -29,7 +29,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 			potion = (Potion)Registries.POTION.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
 		}
 
-		return new BrewedPotionCriterion.Conditions(lootContextPredicate, potion);
+		return new BrewedPotionCriterion.Conditions(optional, potion);
 	}
 
 	public void trigger(ServerPlayerEntity player, Potion potion) {
@@ -40,13 +40,13 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		@Nullable
 		private final Potion potion;
 
-		public Conditions(LootContextPredicate player, @Nullable Potion potion) {
-			super(BrewedPotionCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable Potion potion) {
+			super(BrewedPotionCriterion.ID, playerPredicate);
 			this.potion = potion;
 		}
 
 		public static BrewedPotionCriterion.Conditions any() {
-			return new BrewedPotionCriterion.Conditions(LootContextPredicate.EMPTY, null);
+			return new BrewedPotionCriterion.Conditions(Optional.empty(), null);
 		}
 
 		public boolean matches(Potion potion) {
@@ -54,8 +54,8 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
 			if (this.potion != null) {
 				jsonObject.addProperty("potion", Registries.POTION.getId(this.potion).toString());
 			}

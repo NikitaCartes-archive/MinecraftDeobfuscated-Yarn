@@ -1,5 +1,6 @@
 package net.minecraft.data.server.advancement.vanilla;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
@@ -54,29 +55,25 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 	private static final LootContextPredicate PIGLIN_DISTRACTION_PREDICATE = LootContextPredicate.create(
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
-				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().items(Items.GOLDEN_HELMET).build()).build())
+				EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().items(Items.GOLDEN_HELMET)))
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
-				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().items(Items.GOLDEN_CHESTPLATE).build()).build())
+				EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().items(Items.GOLDEN_CHESTPLATE)))
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
-				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().items(Items.GOLDEN_LEGGINGS).build()).build())
+				EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().items(Items.GOLDEN_LEGGINGS)))
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
-				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(Items.GOLDEN_BOOTS).build()).build())
+				EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(Items.GOLDEN_BOOTS)))
 			)
 			.invert()
 			.build()
@@ -132,7 +129,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				true,
 				false
 			)
-			.criterion("fortress", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.FORTRESS)))
+			.criterion("fortress", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.FORTRESS)))
 			.build(exporter, "nether/find_fortress");
 		Advancement.Builder.create()
 			.parent(advancement)
@@ -165,7 +162,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.dimension(World.OVERWORLD))
+					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.Builder.createDimension(World.OVERWORLD))
 				)
 			)
 			.build(exporter, "nether/uneasy_alliance");
@@ -269,20 +266,20 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"all_effects",
 				EffectsChangedCriterion.Conditions.create(
-					EntityEffectPredicate.create()
-						.withEffect(StatusEffects.SPEED)
-						.withEffect(StatusEffects.SLOWNESS)
-						.withEffect(StatusEffects.STRENGTH)
-						.withEffect(StatusEffects.JUMP_BOOST)
-						.withEffect(StatusEffects.REGENERATION)
-						.withEffect(StatusEffects.FIRE_RESISTANCE)
-						.withEffect(StatusEffects.WATER_BREATHING)
-						.withEffect(StatusEffects.INVISIBILITY)
-						.withEffect(StatusEffects.NIGHT_VISION)
-						.withEffect(StatusEffects.WEAKNESS)
-						.withEffect(StatusEffects.POISON)
-						.withEffect(StatusEffects.SLOW_FALLING)
-						.withEffect(StatusEffects.RESISTANCE)
+					EntityEffectPredicate.Builder.create()
+						.addEffect(StatusEffects.SPEED)
+						.addEffect(StatusEffects.SLOWNESS)
+						.addEffect(StatusEffects.STRENGTH)
+						.addEffect(StatusEffects.JUMP_BOOST)
+						.addEffect(StatusEffects.REGENERATION)
+						.addEffect(StatusEffects.FIRE_RESISTANCE)
+						.addEffect(StatusEffects.WATER_BREATHING)
+						.addEffect(StatusEffects.INVISIBILITY)
+						.addEffect(StatusEffects.NIGHT_VISION)
+						.addEffect(StatusEffects.WEAKNESS)
+						.addEffect(StatusEffects.POISON)
+						.addEffect(StatusEffects.SLOW_FALLING)
+						.addEffect(StatusEffects.RESISTANCE)
 				)
 			)
 			.build(exporter, "nether/all_potions");
@@ -302,34 +299,34 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"all_effects",
 				EffectsChangedCriterion.Conditions.create(
-					EntityEffectPredicate.create()
-						.withEffect(StatusEffects.SPEED)
-						.withEffect(StatusEffects.SLOWNESS)
-						.withEffect(StatusEffects.STRENGTH)
-						.withEffect(StatusEffects.JUMP_BOOST)
-						.withEffect(StatusEffects.REGENERATION)
-						.withEffect(StatusEffects.FIRE_RESISTANCE)
-						.withEffect(StatusEffects.WATER_BREATHING)
-						.withEffect(StatusEffects.INVISIBILITY)
-						.withEffect(StatusEffects.NIGHT_VISION)
-						.withEffect(StatusEffects.WEAKNESS)
-						.withEffect(StatusEffects.POISON)
-						.withEffect(StatusEffects.WITHER)
-						.withEffect(StatusEffects.HASTE)
-						.withEffect(StatusEffects.MINING_FATIGUE)
-						.withEffect(StatusEffects.LEVITATION)
-						.withEffect(StatusEffects.GLOWING)
-						.withEffect(StatusEffects.ABSORPTION)
-						.withEffect(StatusEffects.HUNGER)
-						.withEffect(StatusEffects.NAUSEA)
-						.withEffect(StatusEffects.RESISTANCE)
-						.withEffect(StatusEffects.SLOW_FALLING)
-						.withEffect(StatusEffects.CONDUIT_POWER)
-						.withEffect(StatusEffects.DOLPHINS_GRACE)
-						.withEffect(StatusEffects.BLINDNESS)
-						.withEffect(StatusEffects.BAD_OMEN)
-						.withEffect(StatusEffects.HERO_OF_THE_VILLAGE)
-						.withEffect(StatusEffects.DARKNESS)
+					EntityEffectPredicate.Builder.create()
+						.addEffect(StatusEffects.SPEED)
+						.addEffect(StatusEffects.SLOWNESS)
+						.addEffect(StatusEffects.STRENGTH)
+						.addEffect(StatusEffects.JUMP_BOOST)
+						.addEffect(StatusEffects.REGENERATION)
+						.addEffect(StatusEffects.FIRE_RESISTANCE)
+						.addEffect(StatusEffects.WATER_BREATHING)
+						.addEffect(StatusEffects.INVISIBILITY)
+						.addEffect(StatusEffects.NIGHT_VISION)
+						.addEffect(StatusEffects.WEAKNESS)
+						.addEffect(StatusEffects.POISON)
+						.addEffect(StatusEffects.WITHER)
+						.addEffect(StatusEffects.HASTE)
+						.addEffect(StatusEffects.MINING_FATIGUE)
+						.addEffect(StatusEffects.LEVITATION)
+						.addEffect(StatusEffects.GLOWING)
+						.addEffect(StatusEffects.ABSORPTION)
+						.addEffect(StatusEffects.HUNGER)
+						.addEffect(StatusEffects.NAUSEA)
+						.addEffect(StatusEffects.RESISTANCE)
+						.addEffect(StatusEffects.SLOW_FALLING)
+						.addEffect(StatusEffects.CONDUIT_POWER)
+						.addEffect(StatusEffects.DOLPHINS_GRACE)
+						.addEffect(StatusEffects.BLINDNESS)
+						.addEffect(StatusEffects.BAD_OMEN)
+						.addEffect(StatusEffects.HERO_OF_THE_VILLAGE)
+						.addEffect(StatusEffects.DARKNESS)
 				)
 			)
 			.build(exporter, "nether/all_effects");
@@ -380,8 +377,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"use_lodestone",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Blocks.LODESTONE).build()),
-					ItemPredicate.Builder.create().items(Items.COMPASS)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Blocks.LODESTONE)), ItemPredicate.Builder.create().items(Items.COMPASS)
 				)
 			)
 			.build(exporter, "nether/use_lodestone");
@@ -415,12 +411,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				"charge_respawn_anchor",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create()
-						.block(
-							BlockPredicate.Builder.create()
-								.blocks(Blocks.RESPAWN_ANCHOR)
-								.state(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4).build())
-								.build()
-						),
+						.block(BlockPredicate.Builder.create().blocks(Blocks.RESPAWN_ANCHOR).state(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4))),
 					ItemPredicate.Builder.create().items(Blocks.GLOWSTONE)
 				)
 			)
@@ -440,7 +431,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"used_warped_fungus_on_a_stick",
 				ItemDurabilityChangedCriterion.Conditions.create(
-					EntityPredicate.asLootContextPredicate(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()).build()),
+					EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER))),
 					ItemPredicate.Builder.create().items(Items.WARPED_FUNGUS_ON_A_STICK).build(),
 					NumberRange.IntRange.ANY
 				)
@@ -462,8 +453,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				"ride_entity_distance",
 				TravelCriterion.Conditions.rideEntityInLava(
 					EntityPredicate.Builder.create()
-						.location(LocationPredicate.dimension(World.OVERWORLD))
-						.vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()),
+						.location(LocationPredicate.Builder.createDimension(World.OVERWORLD))
+						.vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER)),
 					DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0))
 				)
 			)
@@ -496,7 +487,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				true,
 				false
 			)
-			.criterion("bastion", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.BASTION_REMNANT)))
+			.criterion("bastion", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.BASTION_REMNANT)))
 			.build(exporter, "nether/find_bastion");
 		Advancement.Builder.create()
 			.parent(advancement13)
@@ -534,18 +525,18 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				ThrownItemPickedUpByEntityCriterion.Conditions.createThrownItemPickedUpByEntity(
 					PIGLIN_DISTRACTION_PREDICATE,
 					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED).build(),
-					EntityPredicate.asLootContextPredicate(
-						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
+					EntityPredicate.contextPredicateFromEntityPredicate(
+						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
 					)
 				)
 			)
 			.criterion(
 				"distract_piglin_directly",
 				PlayerInteractedWithEntityCriterion.Conditions.create(
-					PIGLIN_DISTRACTION_PREDICATE,
+					Optional.of(PIGLIN_DISTRACTION_PREDICATE),
 					ItemPredicate.Builder.create().items(PiglinBrain.BARTERING_ITEM),
-					EntityPredicate.asLootContextPredicate(
-						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
+					EntityPredicate.contextPredicateFromEntityPredicate(
+						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
 					)
 				)
 			)
