@@ -62,7 +62,7 @@ public class VindicatorEntity extends IllagerEntity {
 		this.goalSelector.add(1, new VindicatorEntity.BreakDoorGoal(this));
 		this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this));
 		this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, 10.0F));
-		this.goalSelector.add(4, new VindicatorEntity.AttackGoal(this));
+		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
 		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, MerchantEntity.class, true));
@@ -192,22 +192,6 @@ public class VindicatorEntity extends IllagerEntity {
 		}
 
 		this.equipStack(EquipmentSlot.MAINHAND, itemStack);
-	}
-
-	class AttackGoal extends MeleeAttackGoal {
-		public AttackGoal(VindicatorEntity vindicator) {
-			super(vindicator, 1.0, false);
-		}
-
-		@Override
-		protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-			if (this.mob.getVehicle() instanceof RavagerEntity) {
-				float f = this.mob.getVehicle().getWidth() - 0.1F;
-				return (double)(f * 2.0F * f * 2.0F + entity.getWidth());
-			} else {
-				return super.getSquaredMaxAttackDistance(entity);
-			}
-		}
 	}
 
 	static class BreakDoorGoal extends net.minecraft.entity.ai.goal.BreakDoorGoal {

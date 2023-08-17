@@ -24,9 +24,6 @@ public abstract class RealmsObjectSelectionList<E extends AlwaysSelectedEntryLis
 		this.setSelectedItem(index);
 	}
 
-	public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth, int i) {
-	}
-
 	@Override
 	public int getMaxPosition() {
 		return 0;

@@ -66,7 +66,7 @@ public class RavagerEntity extends RaiderEntity {
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(4, new RavagerEntity.AttackGoal());
+		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.4));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
@@ -317,15 +317,9 @@ public class RavagerEntity extends RaiderEntity {
 		return false;
 	}
 
-	class AttackGoal extends MeleeAttackGoal {
-		public AttackGoal() {
-			super(RavagerEntity.this, 1.0, true);
-		}
-
-		@Override
-		protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-			float f = RavagerEntity.this.getWidth() - 0.1F;
-			return (double)(f * 2.0F * f * 2.0F + entity.getWidth());
-		}
+	@Override
+	protected Box getAttackBox() {
+		Box box = super.getAttackBox();
+		return box.contract(0.05, 0.0, 0.05);
 	}
 }

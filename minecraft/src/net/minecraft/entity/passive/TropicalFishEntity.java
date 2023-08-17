@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
@@ -246,7 +247,7 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 		BETTY("betty", TropicalFishEntity.Size.LARGE, 4),
 		CLAYFISH("clayfish", TropicalFishEntity.Size.LARGE, 5);
 
-		public static final com.mojang.serialization.Codec<TropicalFishEntity.Variety> CODEC = StringIdentifiable.createCodec(TropicalFishEntity.Variety::values);
+		public static final Codec<TropicalFishEntity.Variety> CODEC = StringIdentifiable.createCodec(TropicalFishEntity.Variety::values);
 		private static final IntFunction<TropicalFishEntity.Variety> BY_ID = ValueLists.createIdToValueFunction(TropicalFishEntity.Variety::getId, values(), KOB);
 		private final String name;
 		private final Text text;

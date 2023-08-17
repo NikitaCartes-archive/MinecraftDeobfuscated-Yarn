@@ -1,12 +1,13 @@
 package net.minecraft.util.math;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 public enum VerticalSurfaceType implements StringIdentifiable {
 	CEILING(Direction.UP, 1, "ceiling"),
 	FLOOR(Direction.DOWN, -1, "floor");
 
-	public static final com.mojang.serialization.Codec<VerticalSurfaceType> CODEC = StringIdentifiable.createCodec(VerticalSurfaceType::values);
+	public static final Codec<VerticalSurfaceType> CODEC = StringIdentifiable.createCodec(VerticalSurfaceType::values);
 	private final Direction direction;
 	private final int offset;
 	private final String name;

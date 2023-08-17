@@ -70,6 +70,10 @@ public class ScrollableTextWidget extends ScrollableWidget {
 		}
 	}
 
+	public boolean textOverflows() {
+		return super.overflows();
+	}
+
 	@Override
 	protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
 		context.getMatrices().push();

@@ -14,7 +14,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ButtonTextures;
-import net.minecraft.client.gui.screen.report.ChatReportScreen;
+import net.minecraft.client.gui.screen.report.AbuseReportTypeScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -49,12 +49,12 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private final List<ClickableWidget> buttons;
 	private final UUID uuid;
 	private final String name;
-	private final Supplier<SkinTextures> skinTexture;
+	private final Supplier<SkinTextures> skinSupplier;
 	private boolean offline;
 	private boolean sentMessage;
 	private final boolean canSendReports;
-	private final boolean reportable;
 	private final boolean hasDraftReport;
+	private final boolean reportable;
 	@Nullable
 	private ButtonWidget hideButton;
 	@Nullable
@@ -68,7 +68,6 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private static final Text HIDDEN_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
 	private static final Text BLOCKED_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
 	private static final Text REPORT_DISABLED_TEXT = Text.translatable("gui.socialInteractions.tooltip.report.disabled");
-	private static final Text NOT_REPORTABLE_TEXT = Text.translatable("gui.socialInteractions.tooltip.report.not_reportable");
 	private static final Text hideText = Text.translatable("gui.socialInteractions.tooltip.hide");
 	private static final Text showText = Text.translatable("gui.socialInteractions.tooltip.show");
 	private static final Text reportText = Text.translatable("gui.socialInteractions.tooltip.report");
@@ -87,7 +86,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.client = client;
 		this.uuid = uuid;
 		this.name = name;
-		this.skinTexture = skinTexture;
+		this.skinSupplier = skinTexture;
 		AbuseReportContext abuseReportContext = client.getAbuseReportContext();
 		this.canSendReports = abuseReportContext.getSender().canSendReports();
 		this.reportable = reportable;
@@ -104,7 +103,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 				20,
 				20,
 				REPORT_BUTTON_TEXTURES,
-				button -> abuseReportContext.tryShowDraftScreen(client, parent, () -> client.setScreen(new ChatReportScreen(parent, abuseReportContext, uuid)), false),
+				button -> abuseReportContext.tryShowDraftScreen(client, parent, () -> client.setScreen(new AbuseReportTypeScreen(parent, abuseReportContext, this)), false),
 				Text.translatable("gui.socialInteractions.report")
 			) {
 				@Override
@@ -112,6 +111,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 					return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
 				}
 			};
+			this.reportButton.active = this.canSendReports;
 			this.reportButton.setTooltip(this.getReportButtonTooltip());
 			this.reportButton.setTooltipDelay(10);
 			this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, MUTE_BUTTON_TEXTURES, button -> {
@@ -136,7 +136,6 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			};
 			this.showButton.setTooltip(Tooltip.of(showText, text2));
 			this.showButton.setTooltipDelay(10);
-			this.reportButton.active = false;
 			this.buttons = new ArrayList();
 			this.buttons.add(this.hideButton);
 			this.buttons.add(this.reportButton);
@@ -147,15 +146,9 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	}
 
 	private Tooltip getReportButtonTooltip() {
-		if (!this.reportable) {
-			return Tooltip.of(NOT_REPORTABLE_TEXT);
-		} else if (!this.canSendReports) {
-			return Tooltip.of(REPORT_DISABLED_TEXT);
-		} else {
-			return !this.sentMessage
-				? Tooltip.of(Text.translatable("gui.socialInteractions.tooltip.report.no_messages", this.name))
-				: Tooltip.of(reportText, Text.translatable("gui.socialInteractions.narration.report", this.name));
-		}
+		return !this.canSendReports
+			? Tooltip.of(REPORT_DISABLED_TEXT)
+			: Tooltip.of(reportText, Text.translatable("gui.socialInteractions.narration.report", this.name));
 	}
 
 	@Override
@@ -174,7 +167,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			context.drawText(this.client.textRenderer, text, k, l + 12, LIGHT_GRAY_COLOR, false);
 		}
 
-		PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexture.get(), i, j, 24);
+		PlayerSkinDrawer.draw(context, (SkinTextures)this.skinSupplier.get(), i, j, 24);
 		context.drawText(this.client.textRenderer, this.name, k, l, WHITE_COLOR, false);
 		if (this.offline) {
 			context.fill(i, j, i + 24, j + 24, BLACK_COLOR);
@@ -219,6 +212,10 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		return this.uuid;
 	}
 
+	public Supplier<SkinTextures> getSkinSupplier() {
+		return this.skinSupplier;
+	}
+
 	public void setOffline(boolean offline) {
 		this.offline = offline;
 	}
@@ -229,14 +226,14 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 
 	public void setSentMessage(boolean sentMessage) {
 		this.sentMessage = sentMessage;
-		if (this.reportButton != null) {
-			this.reportButton.active = this.canSendReports && this.reportable && sentMessage;
-			this.reportButton.setTooltip(this.getReportButtonTooltip());
-		}
 	}
 
 	public boolean hasSentMessage() {
 		return this.sentMessage;
+	}
+
+	public boolean isReportable() {
+		return this.reportable;
 	}
 
 	private void onButtonClick(boolean showButtonVisible, Text chatMessage) {

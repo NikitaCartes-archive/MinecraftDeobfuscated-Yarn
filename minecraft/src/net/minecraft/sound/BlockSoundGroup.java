@@ -868,6 +868,24 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_DECORATED_POT_HIT,
 		SoundEvents.BLOCK_DECORATED_POT_FALL
 	);
+	public static final BlockSoundGroup SPONGE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SPONGE_BREAK,
+		SoundEvents.BLOCK_SPONGE_STEP,
+		SoundEvents.BLOCK_SPONGE_PLACE,
+		SoundEvents.BLOCK_SPONGE_HIT,
+		SoundEvents.BLOCK_SPONGE_FALL
+	);
+	public static final BlockSoundGroup WET_SPONGE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_WET_SPONGE_BREAK,
+		SoundEvents.BLOCK_WET_SPONGE_STEP,
+		SoundEvents.BLOCK_WET_SPONGE_PLACE,
+		SoundEvents.BLOCK_WET_SPONGE_HIT,
+		SoundEvents.BLOCK_WET_SPONGE_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

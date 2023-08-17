@@ -35,7 +35,7 @@ public enum DyeColor implements StringIdentifiable {
 	private static final Int2ObjectOpenHashMap<DyeColor> BY_FIREWORK_COLOR = new Int2ObjectOpenHashMap<>(
 		(Map<? extends Integer, ? extends DyeColor>)Arrays.stream(values()).collect(Collectors.toMap(color -> color.fireworkColor, color -> color))
 	);
-	public static final StringIdentifiable.Codec<DyeColor> CODEC = StringIdentifiable.createCodec(DyeColor::values);
+	public static final StringIdentifiable.EnumCodec<DyeColor> CODEC = StringIdentifiable.createCodec(DyeColor::values);
 	private final int id;
 	private final String name;
 	private final MapColor mapColor;

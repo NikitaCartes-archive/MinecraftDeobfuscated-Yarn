@@ -729,9 +729,8 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		@Override
-		protected void attack(LivingEntity target, double squaredDistance) {
-			double d = this.getSquaredMaxAttackDistance(target);
-			if (squaredDistance <= d && this.isCooledDown()) {
+		protected void attack(LivingEntity target) {
+			if (this.isCooledDown() && this.mob.isInAttackRange(target)) {
 				this.resetCooldown();
 				this.mob.tryAttack(target);
 				FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_BITE, 1.0F, 1.0F);
@@ -1475,7 +1474,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		RED(0, "red"),
 		SNOW(1, "snow");
 
-		public static final StringIdentifiable.Codec<FoxEntity.Type> CODEC = StringIdentifiable.createCodec(FoxEntity.Type::values);
+		public static final StringIdentifiable.EnumCodec<FoxEntity.Type> CODEC = StringIdentifiable.createCodec(FoxEntity.Type::values);
 		private static final IntFunction<FoxEntity.Type> BY_ID = ValueLists.createIdToValueFunction(
 			FoxEntity.Type::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
 		);

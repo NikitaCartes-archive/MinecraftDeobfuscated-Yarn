@@ -24,25 +24,25 @@ public interface NumberRange<T extends Number> {
 	SimpleCommandExceptionType EXCEPTION_EMPTY = new SimpleCommandExceptionType(Text.translatable("argument.range.empty"));
 	SimpleCommandExceptionType EXCEPTION_SWAPPED = new SimpleCommandExceptionType(Text.translatable("argument.range.swapped"));
 
-	Optional<T> getMin();
+	Optional<T> min();
 
-	Optional<T> getMax();
+	Optional<T> max();
 
 	default boolean isDummy() {
-		return this.getMin().isEmpty() && this.getMax().isEmpty();
+		return this.min().isEmpty() && this.max().isEmpty();
 	}
 
 	default Optional<T> getConstantValue() {
-		Optional<T> optional = this.getMin();
-		Optional<T> optional2 = this.getMax();
+		Optional<T> optional = this.min();
+		Optional<T> optional2 = this.max();
 		return optional.equals(optional2) ? optional : Optional.empty();
 	}
 
 	static <T extends Number, R extends NumberRange<T>> Codec<R> method_53191(Codec<T> codec, NumberRange.Factory<T, R> factory) {
 		Codec<R> codec2 = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(codec, "min").forGetter(NumberRange::getMin),
-						Codecs.createStrictOptionalFieldCodec(codec, "max").forGetter(NumberRange::getMax)
+						Codecs.createStrictOptionalFieldCodec(codec, "min").forGetter(NumberRange::min),
+						Codecs.createStrictOptionalFieldCodec(codec, "max").forGetter(NumberRange::max)
 					)
 					.apply(instance, factory::create)
 		);
@@ -130,25 +130,20 @@ public interface NumberRange<T extends Number> {
 		R create(StringReader reader, Optional<T> optional, Optional<T> optional2) throws CommandSyntaxException;
 	}
 
-	@FunctionalInterface
-	public interface Factory<T extends Number, R extends NumberRange<T>> {
-		R create(Optional<T> optional, Optional<T> optional2);
-	}
-
-	public static record FloatRange(Optional<Double> getMin, Optional<Double> getMax, Optional<Double> squaredMin, Optional<Double> squaredMax)
+	public static record DoubleRange(Optional<Double> min, Optional<Double> max, Optional<Double> squaredMin, Optional<Double> squaredMax)
 		implements NumberRange<Double> {
-		public static final NumberRange.FloatRange ANY = new NumberRange.FloatRange(Optional.empty(), Optional.empty());
-		public static final Codec<NumberRange.FloatRange> CODEC = NumberRange.method_53191(Codec.DOUBLE, NumberRange.FloatRange::new);
+		public static final NumberRange.DoubleRange ANY = new NumberRange.DoubleRange(Optional.empty(), Optional.empty());
+		public static final Codec<NumberRange.DoubleRange> CODEC = NumberRange.method_53191(Codec.DOUBLE, NumberRange.DoubleRange::new);
 
-		private FloatRange(Optional<Double> optional, Optional<Double> optional2) {
+		private DoubleRange(Optional<Double> optional, Optional<Double> optional2) {
 			this(optional, optional2, square(optional), square(optional2));
 		}
 
-		private static NumberRange.FloatRange create(StringReader reader, Optional<Double> optional, Optional<Double> optional2) throws CommandSyntaxException {
+		private static NumberRange.DoubleRange create(StringReader reader, Optional<Double> optional, Optional<Double> optional2) throws CommandSyntaxException {
 			if (optional.isPresent() && optional2.isPresent() && optional.get() > optional2.get()) {
 				throw EXCEPTION_SWAPPED.createWithContext(reader);
 			} else {
-				return new NumberRange.FloatRange(optional, optional2);
+				return new NumberRange.DoubleRange(optional, optional2);
 			}
 		}
 
@@ -156,27 +151,27 @@ public interface NumberRange<T extends Number> {
 			return optional.map(double_ -> double_ * double_);
 		}
 
-		public static NumberRange.FloatRange exactly(double value) {
-			return new NumberRange.FloatRange(Optional.of(value), Optional.of(value));
+		public static NumberRange.DoubleRange exactly(double value) {
+			return new NumberRange.DoubleRange(Optional.of(value), Optional.of(value));
 		}
 
-		public static NumberRange.FloatRange between(double min, double max) {
-			return new NumberRange.FloatRange(Optional.of(min), Optional.of(max));
+		public static NumberRange.DoubleRange between(double min, double max) {
+			return new NumberRange.DoubleRange(Optional.of(min), Optional.of(max));
 		}
 
-		public static NumberRange.FloatRange atLeast(double value) {
-			return new NumberRange.FloatRange(Optional.of(value), Optional.empty());
+		public static NumberRange.DoubleRange atLeast(double value) {
+			return new NumberRange.DoubleRange(Optional.of(value), Optional.empty());
 		}
 
-		public static NumberRange.FloatRange atMost(double value) {
-			return new NumberRange.FloatRange(Optional.empty(), Optional.of(value));
+		public static NumberRange.DoubleRange atMost(double value) {
+			return new NumberRange.DoubleRange(Optional.empty(), Optional.of(value));
 		}
 
 		public boolean test(double value) {
-			if (this.getMin.isPresent() && this.getMin.get() > value) {
+			if (this.min.isPresent() && this.min.get() > value) {
 				return false;
 			} else {
-				return this.getMax.isEmpty() || !(this.getMax.get() < value);
+				return this.max.isEmpty() || !(this.max.get() < value);
 			}
 		}
 
@@ -188,7 +183,7 @@ public interface NumberRange<T extends Number> {
 			}
 		}
 
-		public static NumberRange.FloatRange fromJson(@Nullable JsonElement element) {
+		public static NumberRange.DoubleRange fromJson(@Nullable JsonElement element) {
 			return element != null && !element.isJsonNull() ? Util.getResult(CODEC.parse(JsonOps.INSTANCE, element), JsonParseException::new) : ANY;
 		}
 
@@ -196,18 +191,23 @@ public interface NumberRange<T extends Number> {
 			return (JsonElement)(this.isDummy() ? JsonNull.INSTANCE : Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new));
 		}
 
-		public static NumberRange.FloatRange parse(StringReader reader) throws CommandSyntaxException {
+		public static NumberRange.DoubleRange parse(StringReader reader) throws CommandSyntaxException {
 			return parse(reader, value -> value);
 		}
 
-		public static NumberRange.FloatRange parse(StringReader reader, Function<Double, Double> mapper) throws CommandSyntaxException {
+		public static NumberRange.DoubleRange parse(StringReader reader, Function<Double, Double> mapper) throws CommandSyntaxException {
 			return NumberRange.parse(
-				reader, NumberRange.FloatRange::create, Double::parseDouble, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidDouble, mapper
+				reader, NumberRange.DoubleRange::create, Double::parseDouble, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidDouble, mapper
 			);
 		}
 	}
 
-	public static record IntRange(Optional<Integer> getMin, Optional<Integer> getMax, Optional<Long> minSquared, Optional<Long> maxSquared)
+	@FunctionalInterface
+	public interface Factory<T extends Number, R extends NumberRange<T>> {
+		R create(Optional<T> optional, Optional<T> optional2);
+	}
+
+	public static record IntRange(Optional<Integer> min, Optional<Integer> max, Optional<Long> minSquared, Optional<Long> maxSquared)
 		implements NumberRange<Integer> {
 		public static final NumberRange.IntRange ANY = new NumberRange.IntRange(Optional.empty(), Optional.empty());
 		public static final Codec<NumberRange.IntRange> CODEC = NumberRange.method_53191(Codec.INT, NumberRange.IntRange::new);
@@ -245,10 +245,10 @@ public interface NumberRange<T extends Number> {
 		}
 
 		public boolean test(int value) {
-			if (this.getMin.isPresent() && this.getMin.get() > value) {
+			if (this.min.isPresent() && this.min.get() > value) {
 				return false;
 			} else {
-				return this.getMax.isEmpty() || this.getMax.get() >= value;
+				return this.max.isEmpty() || this.max.get() >= value;
 			}
 		}
 

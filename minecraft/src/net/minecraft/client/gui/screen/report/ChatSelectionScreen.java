@@ -39,8 +39,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class ChatSelectionScreen extends Screen {
 	static final Identifier CHECKMARK_ICON_TEXTURE = new Identifier("icon/checkmark");
-	private static final Text TITLE = Text.translatable("gui.chatSelection.title");
-	private static final Text CONTEXT_MESSAGE = Text.translatable("gui.chatSelection.context").formatted(Formatting.GRAY);
+	private static final Text TITLE_TEXT = Text.translatable("gui.chatSelection.title");
+	private static final Text CONTEXT_TEXT = Text.translatable("gui.chatSelection.context").formatted(Formatting.GRAY);
 	@Nullable
 	private final Screen parent;
 	private final AbuseReportContext reporter;
@@ -48,12 +48,14 @@ public class ChatSelectionScreen extends Screen {
 	private MultilineText contextMessage;
 	@Nullable
 	private ChatSelectionScreen.SelectionListWidget selectionList;
-	final ChatAbuseReport report;
-	private final Consumer<ChatAbuseReport> newReportConsumer;
+	final ChatAbuseReport.Builder report;
+	private final Consumer<ChatAbuseReport.Builder> newReportConsumer;
 	private MessagesListAdder listAdder;
 
-	public ChatSelectionScreen(@Nullable Screen parent, AbuseReportContext reporter, ChatAbuseReport report, Consumer<ChatAbuseReport> newReportConsumer) {
-		super(TITLE);
+	public ChatSelectionScreen(
+		@Nullable Screen parent, AbuseReportContext reporter, ChatAbuseReport.Builder report, Consumer<ChatAbuseReport.Builder> newReportConsumer
+	) {
+		super(TITLE_TEXT);
 		this.parent = parent;
 		this.reporter = reporter;
 		this.report = report.copy();
@@ -63,7 +65,7 @@ public class ChatSelectionScreen extends Screen {
 	@Override
 	protected void init() {
 		this.listAdder = new MessagesListAdder(this.reporter, this::isSentByReportedPlayer);
-		this.contextMessage = MultilineText.create(this.textRenderer, CONTEXT_MESSAGE, this.width - 16);
+		this.contextMessage = MultilineText.create(this.textRenderer, CONTEXT_TEXT, this.width - 16);
 		this.selectionList = new ChatSelectionScreen.SelectionListWidget(this.client, (this.contextMessage.count() + 1) * 9);
 		this.addSelectableChild(this.selectionList);
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 - 155, this.height - 32, 150, 20).build());
@@ -90,7 +92,7 @@ public class ChatSelectionScreen extends Screen {
 	}
 
 	void setDoneButtonActivation() {
-		this.doneButton.active = !this.report.getSelections().isEmpty();
+		this.doneButton.active = !this.report.getSelectedMessages().isEmpty();
 	}
 
 	@Override
@@ -99,7 +101,7 @@ public class ChatSelectionScreen extends Screen {
 		this.selectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		AbuseReportLimits abuseReportLimits = this.reporter.getSender().getLimits();
-		int i = this.report.getSelections().size();
+		int i = this.report.getSelectedMessages().size();
 		int j = abuseReportLimits.maxReportedMessageCount();
 		Text text = Text.translatable("gui.chatSelection.selected", i, j);
 		context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, 16 + 9 * 3 / 2, 10526880);
@@ -118,7 +120,7 @@ public class ChatSelectionScreen extends Screen {
 
 	@Override
 	public Text getNarratedTitle() {
-		return ScreenTexts.joinSentences(super.getNarratedTitle(), CONTEXT_MESSAGE);
+		return ScreenTexts.joinSentences(super.getNarratedTitle(), CONTEXT_TEXT);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -362,7 +364,7 @@ public class ChatSelectionScreen extends Screen {
 
 			@Override
 			public boolean isSelected() {
-				return ChatSelectionScreen.this.report.hasSelectedMessage(this.index);
+				return ChatSelectionScreen.this.report.isMessageSelected(this.index);
 			}
 
 			@Override

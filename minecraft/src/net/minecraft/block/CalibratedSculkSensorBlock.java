@@ -35,7 +35,7 @@ public class CalibratedSculkSensorBlock extends SculkSensorBlock {
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 		return !world.isClient
-			? checkType(
+			? validateTicker(
 				type,
 				BlockEntityType.CALIBRATED_SCULK_SENSOR,
 				(worldx, pos, statex, blockEntity) -> Vibrations.Ticker.tick(worldx, blockEntity.getVibrationListenerData(), blockEntity.getVibrationCallback())

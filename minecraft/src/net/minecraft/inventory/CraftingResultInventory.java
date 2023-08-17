@@ -7,6 +7,9 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.util.collection.DefaultedList;
 
+/**
+ * Represents an inventory for the crafting output slot.
+ */
 public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	private final DefaultedList<ItemStack> stacks = DefaultedList.ofSize(1, ItemStack.EMPTY);
 	@Nullable

@@ -523,7 +523,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					.map(resourcePack -> Text.literal(resourcePack.getName()))
 					.orElse(null);
 				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
-				this.client.onResourceReloadFailure(programInitException, text);
+				this.client.onResourceReloadFailure(programInitException, text, null);
 			} else {
 				CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, programInitException));
 				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);

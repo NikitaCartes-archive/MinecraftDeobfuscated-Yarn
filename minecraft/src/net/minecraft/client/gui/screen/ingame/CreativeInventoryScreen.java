@@ -941,8 +941,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		@Override
-		public void setStack(ItemStack stack) {
-			this.slot.setStack(stack);
+		public void setStack(ItemStack stack, ItemStack previousStack) {
+			this.slot.setStack(stack, previousStack);
 		}
 
 		@Override

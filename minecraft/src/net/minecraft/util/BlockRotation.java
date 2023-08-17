@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
@@ -11,7 +12,7 @@ public enum BlockRotation implements StringIdentifiable {
 	CLOCKWISE_180("180", DirectionTransformation.ROT_180_FACE_XZ),
 	COUNTERCLOCKWISE_90("counterclockwise_90", DirectionTransformation.ROT_90_Y_POS);
 
-	public static final com.mojang.serialization.Codec<BlockRotation> CODEC = StringIdentifiable.createCodec(BlockRotation::values);
+	public static final Codec<BlockRotation> CODEC = StringIdentifiable.createCodec(BlockRotation::values);
 	private final String id;
 	private final DirectionTransformation directionTransformation;
 

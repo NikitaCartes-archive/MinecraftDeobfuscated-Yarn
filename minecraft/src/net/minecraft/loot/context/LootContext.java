@@ -122,7 +122,7 @@ public class LootContext {
 		DIRECT_KILLER("direct_killer", LootContextParameters.DIRECT_KILLER_ENTITY),
 		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER);
 
-		public static final StringIdentifiable.Codec<LootContext.EntityTarget> CODEC = StringIdentifiable.createCodec(LootContext.EntityTarget::values);
+		public static final StringIdentifiable.EnumCodec<LootContext.EntityTarget> CODEC = StringIdentifiable.createCodec(LootContext.EntityTarget::values);
 		private final String type;
 		private final LootContextParameter<? extends Entity> parameter;
 

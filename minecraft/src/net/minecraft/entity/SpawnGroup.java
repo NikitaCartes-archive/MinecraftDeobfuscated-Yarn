@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 /**
@@ -25,7 +26,7 @@ public enum SpawnGroup implements StringIdentifiable {
 	 * A codec that encodes and decodes a spawn group from and to its
 	 * {@linkplain #getName() name} string.
 	 */
-	public static final com.mojang.serialization.Codec<SpawnGroup> CODEC = StringIdentifiable.createCodec(SpawnGroup::values);
+	public static final Codec<SpawnGroup> CODEC = StringIdentifiable.createCodec(SpawnGroup::values);
 	private final int capacity;
 	private final boolean peaceful;
 	private final boolean rare;

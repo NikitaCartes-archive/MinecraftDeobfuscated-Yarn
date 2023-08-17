@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
@@ -9,7 +10,7 @@ public enum BlockMirror implements StringIdentifiable {
 	LEFT_RIGHT("left_right", DirectionTransformation.INVERT_Z),
 	FRONT_BACK("front_back", DirectionTransformation.INVERT_X);
 
-	public static final com.mojang.serialization.Codec<BlockMirror> CODEC = StringIdentifiable.createCodec(BlockMirror::values);
+	public static final Codec<BlockMirror> CODEC = StringIdentifiable.createCodec(BlockMirror::values);
 	private final String id;
 	private final Text name;
 	private final DirectionTransformation directionTransformation;

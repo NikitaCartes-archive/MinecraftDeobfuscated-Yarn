@@ -1,6 +1,7 @@
 package net.minecraft.util;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +43,7 @@ public enum Formatting implements StringIdentifiable {
 	ITALIC("ITALIC", 'o', true),
 	RESET("RESET", 'r', -1, null);
 
-	public static final com.mojang.serialization.Codec<Formatting> CODEC = StringIdentifiable.createCodec(Formatting::values);
+	public static final Codec<Formatting> CODEC = StringIdentifiable.createCodec(Formatting::values);
 	public static final char FORMATTING_CODE_PREFIX = '§';
 	private static final Map<String, Formatting> BY_NAME = (Map<String, Formatting>)Arrays.stream(values())
 		.collect(Collectors.toMap(f -> sanitize(f.name), f -> f));

@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.enums.ComparatorMode;
@@ -19,7 +20,6 @@ import net.minecraft.block.enums.StairShape;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.enums.Tilt;
-import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.util.math.Direction;
@@ -155,9 +155,21 @@ public class Properties {
 	 * A property that specifies if a block is waterlogged.
 	 */
 	public static final BooleanProperty WATERLOGGED = BooleanProperty.of("waterlogged");
+	/**
+	 * A property that specifies the amount of berries in a cave vines block.
+	 */
 	public static final BooleanProperty BERRIES = BooleanProperty.of("berries");
+	/**
+	 * A property that specifies if a sculk catalyst is blooming.
+	 */
 	public static final BooleanProperty BLOOM = BooleanProperty.of("bloom");
+	/**
+	 * A property that specifies if a sculk shrieker is shrieking.
+	 */
 	public static final BooleanProperty SHRIEKING = BooleanProperty.of("shrieking");
+	/**
+	 * A property that specifies if a sculk shrieker can summon a warden.
+	 */
 	public static final BooleanProperty CAN_SUMMON = BooleanProperty.of("can_summon");
 	/**
 	 *  A property that specifies the axis a block is oriented to.
@@ -211,15 +223,18 @@ public class Properties {
 	 * <p>This property only allows a block to face in one of the cardinal directions (north, south, east and west).
 	 */
 	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
+	/**
+	 * A property that specifies the amount of flowers in a pink petals block.
+	 */
 	public static final IntProperty FLOWER_AMOUNT = IntProperty.of("flower_amount", 1, 4);
 	/**
 	 * A property that specifies the orientation of a jigsaw.
 	 */
 	public static final EnumProperty<JigsawOrientation> ORIENTATION = EnumProperty.of("orientation", JigsawOrientation.class);
 	/**
-	 * A property that specifies the type of wall a block is attached to.
+	 * A property that specifies the block face a block is attached to.
 	 */
-	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCATION = EnumProperty.of("face", WallMountLocation.class);
+	public static final EnumProperty<BlockFace> BLOCK_FACE = EnumProperty.of("face", BlockFace.class);
 	/**
 	 * A property that specifies how a bell is attached to a block.
 	 */
@@ -298,6 +313,9 @@ public class Properties {
 	 * A property that specifies the age of a block on a scale of 0 to 3.
 	 */
 	public static final IntProperty AGE_3 = IntProperty.of("age", 0, 3);
+	/**
+	 * A property that specifies the age of a block on a scale of 0 to 4.
+	 */
 	public static final IntProperty AGE_4 = IntProperty.of("age", 0, 4);
 	/**
 	 * A property that specifies the age of a block on a scale of 0 to 5.
@@ -365,6 +383,9 @@ public class Properties {
 	 */
 	public static final IntProperty HONEY_LEVEL = IntProperty.of("honey_level", 0, 5);
 	public static final int LEVEL_15_MAX = 15;
+	/**
+	 * A property that specifies the level of a light block or a fluid block on a scale of 0 to 15.
+	 */
 	public static final IntProperty LEVEL_15 = IntProperty.of("level", 0, 15);
 	/**
 	 * A property that specifies the moisture of farmland.
@@ -443,16 +464,54 @@ public class Properties {
 	 * A property that specifies the size of bamboo leaves.
 	 */
 	public static final EnumProperty<BambooLeaves> BAMBOO_LEAVES = EnumProperty.of("leaves", BambooLeaves.class);
+	/**
+	 * A property that specifies how a big dripleaf is tilted down.
+	 */
 	public static final EnumProperty<Tilt> TILT = EnumProperty.of("tilt", Tilt.class);
+	/**
+	 * A property that specifies the direction a pointed dripstone is facing.
+	 * 
+	 * <p>This property allows a block to face either down or up.
+	 */
 	public static final DirectionProperty VERTICAL_DIRECTION = DirectionProperty.of("vertical_direction", Direction.UP, Direction.DOWN);
+	/**
+	 * A property that specifies the thickness of a pointed dripstone.
+	 */
 	public static final EnumProperty<Thickness> THICKNESS = EnumProperty.of("thickness", Thickness.class);
+	/**
+	 * A property that specifies the current phase of a sculk sensor.
+	 */
 	public static final EnumProperty<SculkSensorPhase> SCULK_SENSOR_PHASE = EnumProperty.of("sculk_sensor_phase", SculkSensorPhase.class);
+	/**
+	 * A property that specifies if a chiseled bookshelf has a book in slot 0.
+	 */
 	public static final BooleanProperty SLOT_0_OCCUPIED = BooleanProperty.of("slot_0_occupied");
+	/**
+	 * A property that specifies if a chiseled bookshelf has a book in slot 1.
+	 */
 	public static final BooleanProperty SLOT_1_OCCUPIED = BooleanProperty.of("slot_1_occupied");
+	/**
+	 * A property that specifies if a chiseled bookshelf has a book in slot 2.
+	 */
 	public static final BooleanProperty SLOT_2_OCCUPIED = BooleanProperty.of("slot_2_occupied");
+	/**
+	 * A property that specifies if a chiseled bookshelf has a book in slot 3.
+	 */
 	public static final BooleanProperty SLOT_3_OCCUPIED = BooleanProperty.of("slot_3_occupied");
+	/**
+	 * A property that specifies if a chiseled bookshelf has a book in slot 4.
+	 */
 	public static final BooleanProperty SLOT_4_OCCUPIED = BooleanProperty.of("slot_4_occupied");
+	/**
+	 * A property that specifies if a chiseled bookshelf has a book in slot 5.
+	 */
 	public static final BooleanProperty SLOT_5_OCCUPIED = BooleanProperty.of("slot_5_occupied");
+	/**
+	 * A property that specifies how much a brushable block is dusted on a scale of 0 to 3.
+	 */
 	public static final IntProperty DUSTED = IntProperty.of("dusted", 0, 3);
+	/**
+	 * A property that specifies if a decorated pot is cracked.
+	 */
 	public static final BooleanProperty CRACKED = BooleanProperty.of("cracked");
 }

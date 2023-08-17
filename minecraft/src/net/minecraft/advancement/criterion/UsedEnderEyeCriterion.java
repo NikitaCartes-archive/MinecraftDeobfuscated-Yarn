@@ -20,8 +20,8 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 	public UsedEnderEyeCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("distance"));
-		return new UsedEnderEyeCriterion.Conditions(optional, floatRange);
+		NumberRange.DoubleRange doubleRange = NumberRange.DoubleRange.fromJson(jsonObject.get("distance"));
+		return new UsedEnderEyeCriterion.Conditions(optional, doubleRange);
 	}
 
 	public void trigger(ServerPlayerEntity player, BlockPos strongholdPos) {
@@ -32,9 +32,9 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.FloatRange distance;
+		private final NumberRange.DoubleRange distance;
 
-		public Conditions(Optional<LootContextPredicate> playerPredicate, NumberRange.FloatRange distance) {
+		public Conditions(Optional<LootContextPredicate> playerPredicate, NumberRange.DoubleRange distance) {
 			super(UsedEnderEyeCriterion.ID, playerPredicate);
 			this.distance = distance;
 		}

@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import com.mojang.serialization.Codec;
 import java.util.function.IntFunction;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
@@ -13,7 +14,7 @@ public enum HorseColor implements StringIdentifiable {
 	GRAY(5, "gray"),
 	DARK_BROWN(6, "dark_brown");
 
-	public static final com.mojang.serialization.Codec<HorseColor> CODEC = StringIdentifiable.createCodec(HorseColor::values);
+	public static final Codec<HorseColor> CODEC = StringIdentifiable.createCodec(HorseColor::values);
 	private static final IntFunction<HorseColor> BY_ID = ValueLists.createIdToValueFunction(HorseColor::getId, values(), ValueLists.OutOfBoundsHandling.WRAP);
 	private final int id;
 	private final String name;

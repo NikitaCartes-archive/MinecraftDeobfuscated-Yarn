@@ -151,9 +151,9 @@ public class FilterMask {
 		PARTIALLY_FILTERED("partially_filtered", () -> FilterMask.PARTIALLY_FILTERED_CODEC);
 
 		private final String id;
-		private final Supplier<com.mojang.serialization.Codec<FilterMask>> codecSupplier;
+		private final Supplier<Codec<FilterMask>> codecSupplier;
 
-		private FilterStatus(String id, Supplier<com.mojang.serialization.Codec<FilterMask>> codecSupplier) {
+		private FilterStatus(String id, Supplier<Codec<FilterMask>> codecSupplier) {
 			this.id = id;
 			this.codecSupplier = codecSupplier;
 		}
@@ -163,8 +163,8 @@ public class FilterMask {
 			return this.id;
 		}
 
-		private com.mojang.serialization.Codec<FilterMask> getCodec() {
-			return (com.mojang.serialization.Codec<FilterMask>)this.codecSupplier.get();
+		private Codec<FilterMask> getCodec() {
+			return (Codec<FilterMask>)this.codecSupplier.get();
 		}
 	}
 }

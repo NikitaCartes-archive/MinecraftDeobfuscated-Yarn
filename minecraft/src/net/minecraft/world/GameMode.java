@@ -15,7 +15,7 @@ public enum GameMode implements StringIdentifiable {
 	SPECTATOR(3, "spectator");
 
 	public static final GameMode DEFAULT = SURVIVAL;
-	public static final StringIdentifiable.Codec<GameMode> CODEC = StringIdentifiable.createCodec(GameMode::values);
+	public static final StringIdentifiable.EnumCodec<GameMode> CODEC = StringIdentifiable.createCodec(GameMode::values);
 	private static final IntFunction<GameMode> BY_ID = ValueLists.createIdToValueFunction(GameMode::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
 	private static final int UNKNOWN = -1;
 	private final int id;

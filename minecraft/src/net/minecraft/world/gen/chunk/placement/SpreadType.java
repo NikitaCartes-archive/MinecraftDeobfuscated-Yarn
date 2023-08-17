@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.chunk.placement;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.random.Random;
 
@@ -7,7 +8,7 @@ public enum SpreadType implements StringIdentifiable {
 	LINEAR("linear"),
 	TRIANGULAR("triangular");
 
-	public static final com.mojang.serialization.Codec<SpreadType> CODEC = StringIdentifiable.createCodec(SpreadType::values);
+	public static final Codec<SpreadType> CODEC = StringIdentifiable.createCodec(SpreadType::values);
 	private final String name;
 
 	private SpreadType(String name) {

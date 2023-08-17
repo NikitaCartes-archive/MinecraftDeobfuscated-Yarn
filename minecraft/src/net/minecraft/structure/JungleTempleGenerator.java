@@ -10,7 +10,7 @@ import net.minecraft.block.StairsBlock;
 import net.minecraft.block.TripwireBlock;
 import net.minecraft.block.TripwireHookBlock;
 import net.minecraft.block.VineBlock;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
@@ -354,7 +354,7 @@ public class JungleTempleGenerator extends ShiftableStructurePiece {
 			this.addBlock(world, Blocks.CHISELED_STONE_BRICKS.getDefaultState(), 8, -2, 11, chunkBox);
 			this.addBlock(world, Blocks.CHISELED_STONE_BRICKS.getDefaultState(), 9, -2, 11, chunkBox);
 			this.addBlock(world, Blocks.CHISELED_STONE_BRICKS.getDefaultState(), 10, -2, 11, chunkBox);
-			BlockState blockState6 = Blocks.LEVER.getDefaultState().with(LeverBlock.FACING, Direction.NORTH).with(LeverBlock.FACE, WallMountLocation.WALL);
+			BlockState blockState6 = Blocks.LEVER.getDefaultState().with(LeverBlock.FACING, Direction.NORTH).with(LeverBlock.FACE, BlockFace.WALL);
 			this.addBlock(world, blockState6, 8, -2, 12, chunkBox);
 			this.addBlock(world, blockState6, 9, -2, 12, chunkBox);
 			this.addBlock(world, blockState6, 10, -2, 12, chunkBox);

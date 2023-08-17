@@ -1,5 +1,6 @@
 package net.minecraft.client.render.model.json;
 
+import com.mojang.serialization.Codec;
 import java.util.function.IntFunction;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
@@ -15,7 +16,7 @@ public enum ModelTransformationMode implements StringIdentifiable {
 	GROUND(7, "ground"),
 	FIXED(8, "fixed");
 
-	public static final com.mojang.serialization.Codec<ModelTransformationMode> CODEC = StringIdentifiable.createCodec(ModelTransformationMode::values);
+	public static final Codec<ModelTransformationMode> CODEC = StringIdentifiable.createCodec(ModelTransformationMode::values);
 	public static final IntFunction<ModelTransformationMode> FROM_INDEX = ValueLists.createIdToValueFunction(
 		ModelTransformationMode::getIndex, values(), ValueLists.OutOfBoundsHandling.ZERO
 	);

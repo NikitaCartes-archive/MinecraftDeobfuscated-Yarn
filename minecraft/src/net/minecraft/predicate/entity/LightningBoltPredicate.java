@@ -27,7 +27,7 @@ public record LightningBoltPredicate(NumberRange.IntRange blocksSetOnFire, Optio
 	}
 
 	@Override
-	public TypeSpecificPredicate.Type getDeserializer() {
+	public TypeSpecificPredicate.Type type() {
 		return TypeSpecificPredicate.Deserializers.LIGHTNING;
 	}
 

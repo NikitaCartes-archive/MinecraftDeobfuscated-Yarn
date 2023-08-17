@@ -50,7 +50,7 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 	 * {@return the ticker if the given type and expected type are the same, or {@code null} if they are different}
 	 */
 	@Nullable
-	protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(
+	protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> validateTicker(
 		BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker
 	) {
 		return expectedType == givenType ? ticker : null;

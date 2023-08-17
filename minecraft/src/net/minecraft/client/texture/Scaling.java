@@ -121,11 +121,11 @@ public interface Scaling {
 		TILE("tile", Scaling.Tile.CODEC),
 		NINE_SLICE("nine_slice", Scaling.NineSlice.CODEC);
 
-		public static final com.mojang.serialization.Codec<Scaling.Type> CODEC = StringIdentifiable.createCodec(Scaling.Type::values);
+		public static final Codec<Scaling.Type> CODEC = StringIdentifiable.createCodec(Scaling.Type::values);
 		private final String name;
-		private final com.mojang.serialization.Codec<? extends Scaling> codec;
+		private final Codec<? extends Scaling> codec;
 
-		private Type(String name, com.mojang.serialization.Codec<? extends Scaling> codec) {
+		private Type(String name, Codec<? extends Scaling> codec) {
 			this.name = name;
 			this.codec = codec;
 		}
@@ -135,7 +135,7 @@ public interface Scaling {
 			return this.name;
 		}
 
-		public com.mojang.serialization.Codec<? extends Scaling> getCodec() {
+		public Codec<? extends Scaling> getCodec() {
 			return this.codec;
 		}
 	}

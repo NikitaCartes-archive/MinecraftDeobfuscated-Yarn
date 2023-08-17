@@ -19,7 +19,7 @@ public class DirectionalLayoutWidget implements LayoutWidget {
 	private final DirectionalLayoutWidget.DisplayAxis axis;
 	private int currentIndex = 0;
 
-	public DirectionalLayoutWidget(DirectionalLayoutWidget.DisplayAxis axis) {
+	private DirectionalLayoutWidget(DirectionalLayoutWidget.DisplayAxis axis) {
 		this(0, 0, axis);
 	}
 

@@ -27,7 +27,7 @@ public class PacketSizeChart extends DebugChart {
 		this.drawSizeBar(context, x, width, height, 64);
 		this.drawSizeBar(context, x, width, height, 1024);
 		this.drawSizeBar(context, x, width, height, 16384);
-		this.drawBorderedText(context, this.format(1048576.0), x + 1, height - this.getHeight(1048576.0) + 1);
+		this.drawBorderedText(context, formatBytesPerSecond(1048576.0), x + 1, height - calculateHeight(1048576.0) + 1);
 	}
 
 	private void drawSizeBar(DrawContext context, int x, int width, int height, int bytes) {

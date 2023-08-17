@@ -25,7 +25,7 @@ public enum EquipmentSlot implements StringIdentifiable {
 	CHEST(EquipmentSlot.Type.ARMOR, 2, 3, "chest"),
 	HEAD(EquipmentSlot.Type.ARMOR, 3, 4, "head");
 
-	public static final StringIdentifiable.Codec<EquipmentSlot> CODEC = StringIdentifiable.createCodec(EquipmentSlot::values);
+	public static final StringIdentifiable.EnumCodec<EquipmentSlot> CODEC = StringIdentifiable.createCodec(EquipmentSlot::values);
 	private final EquipmentSlot.Type type;
 	private final int entityId;
 	private final int armorStandId;

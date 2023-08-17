@@ -2,7 +2,7 @@ package net.minecraft.block.entity;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import java.util.Objects;
+import com.mojang.authlib.yggdrasil.ProfileResult;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -192,8 +192,8 @@ public class SkullBlockEntity extends BlockEntity {
 		return hasTextures(profile) ? CompletableFuture.completedFuture(Optional.of(profile)) : CompletableFuture.supplyAsync(() -> {
 			MinecraftSessionService minecraftSessionService = sessionService;
 			if (minecraftSessionService != null) {
-				GameProfile gameProfile2 = minecraftSessionService.fetchProfile(profile.getId(), true);
-				return Optional.of((GameProfile)Objects.requireNonNullElse(gameProfile2, profile));
+				ProfileResult profileResult = minecraftSessionService.fetchProfile(profile.getId(), true);
+				return profileResult == null ? Optional.of(profile) : Optional.of(profileResult.profile());
 			} else {
 				return Optional.empty();
 			}

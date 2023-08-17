@@ -117,7 +117,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	private static LightningStrikeCriterion.Conditions createLightningStrike(NumberRange.IntRange range, Optional<EntityPredicate> entity) {
 		return LightningStrikeCriterion.Conditions.create(
 			EntityPredicate.Builder.create()
-				.distance(DistancePredicate.absolute(NumberRange.FloatRange.atMost(30.0)))
+				.distance(DistancePredicate.absolute(NumberRange.DoubleRange.atMost(30.0)))
 				.typeSpecific(LightningBoltPredicate.of(range))
 				.build(),
 			entity
@@ -192,7 +192,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"trade_at_world_height",
 				VillagerTradeCriterion.Conditions.create(
-					EntityPredicate.Builder.create().location(LocationPredicate.Builder.createY(NumberRange.FloatRange.atLeast(319.0)))
+					EntityPredicate.Builder.create().location(LocationPredicate.Builder.createY(NumberRange.DoubleRange.atLeast(319.0)))
 				)
 			)
 			.build(exporter, "adventure/trade_at_world_height");
@@ -316,7 +316,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"killed_skeleton",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0))),
+					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.horizontal(NumberRange.DoubleRange.atLeast(50.0))),
 					DamageSourcePredicate.Builder.create().tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))
 				)
 			)
@@ -464,7 +464,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				TargetHitCriterion.Conditions.create(
 					NumberRange.IntRange.exactly(15),
 					EntityPredicate.contextPredicateFromEntityPredicate(
-						EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(30.0)))
+						EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.DoubleRange.atLeast(30.0)))
 					)
 				)
 			)
@@ -577,9 +577,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"fall_from_world_height",
 				TravelCriterion.Conditions.fallFromHeight(
-					EntityPredicate.Builder.create().location(LocationPredicate.Builder.createY(NumberRange.FloatRange.atMost(-59.0))),
-					DistancePredicate.y(NumberRange.FloatRange.atLeast(379.0)),
-					LocationPredicate.Builder.createY(NumberRange.FloatRange.atLeast(319.0))
+					EntityPredicate.Builder.create().location(LocationPredicate.Builder.createY(NumberRange.DoubleRange.atMost(-59.0))),
+					DistancePredicate.y(NumberRange.DoubleRange.atLeast(379.0)),
+					LocationPredicate.Builder.createY(NumberRange.DoubleRange.atLeast(319.0))
 				)
 			)
 			.build(exporter, "adventure/fall_from_world_height");

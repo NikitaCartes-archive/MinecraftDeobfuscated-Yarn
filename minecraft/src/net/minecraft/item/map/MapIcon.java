@@ -1,5 +1,6 @@
 package net.minecraft.item.map;
 
+import com.mojang.serialization.Codec;
 import javax.annotation.Nullable;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringIdentifiable;
@@ -43,7 +44,7 @@ public record MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, @Nullabl
 		BANNER_BLACK("banner_black", true, true),
 		RED_X("red_x", true, false);
 
-		public static final com.mojang.serialization.Codec<MapIcon.Type> CODEC = StringIdentifiable.createCodec(MapIcon.Type::values);
+		public static final Codec<MapIcon.Type> CODEC = StringIdentifiable.createCodec(MapIcon.Type::values);
 		private final String name;
 		private final byte id;
 		private final boolean alwaysRender;

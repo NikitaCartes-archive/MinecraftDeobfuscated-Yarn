@@ -249,6 +249,10 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		this.width = width;
 	}
 
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
 	public void setAlpha(float alpha) {
 		this.alpha = alpha;
 	}

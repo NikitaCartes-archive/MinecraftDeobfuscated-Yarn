@@ -127,7 +127,7 @@ public record PlayerPredicate(
 	}
 
 	@Override
-	public TypeSpecificPredicate.Type getDeserializer() {
+	public TypeSpecificPredicate.Type type() {
 		return TypeSpecificPredicate.Deserializers.PLAYER;
 	}
 

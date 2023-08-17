@@ -124,7 +124,7 @@ public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerato
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
-			.criterion("levitated", LevitationCriterion.Conditions.create(DistancePredicate.y(NumberRange.FloatRange.atLeast(50.0))))
+			.criterion("levitated", LevitationCriterion.Conditions.create(DistancePredicate.y(NumberRange.DoubleRange.atLeast(50.0))))
 			.build(exporter, "end/levitate");
 		Advancement.Builder.create()
 			.parent(advancement4)

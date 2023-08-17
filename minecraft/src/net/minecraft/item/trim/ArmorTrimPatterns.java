@@ -60,7 +60,7 @@ public class ArmorTrimPatterns {
 
 	private static void register(Registerable<ArmorTrimPattern> registry, Item template, RegistryKey<ArmorTrimPattern> key) {
 		ArmorTrimPattern armorTrimPattern = new ArmorTrimPattern(
-			key.getValue(), Registries.ITEM.getEntry(template), Text.translatable(Util.createTranslationKey("trim_pattern", key.getValue()))
+			key.getValue(), Registries.ITEM.getEntry(template), Text.translatable(Util.createTranslationKey("trim_pattern", key.getValue())), false
 		);
 		registry.register(key, armorTrimPattern);
 	}

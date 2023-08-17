@@ -107,7 +107,7 @@ public class ConnectScreen extends Screen {
 						}
 
 						clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
-						clientConnection.resetPacketSizeLog(client.receivedPacketSizeLog);
+						clientConnection.resetPacketSizeLog(client.getDebugHud().getPacketSizeLog());
 						ConnectScreen.this.future = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport(), clientConnection);
 					}
 

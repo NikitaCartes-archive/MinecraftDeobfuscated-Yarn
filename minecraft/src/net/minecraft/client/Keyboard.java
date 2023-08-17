@@ -13,6 +13,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
+import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.KeybindsScreen;
@@ -125,6 +126,15 @@ public class Keyboard {
 			return true;
 		} else {
 			switch(key) {
+				case 49:
+					this.client.getDebugHud().toggleRenderingChart();
+					return true;
+				case 50:
+					this.client.getDebugHud().toggleRenderingAndTickCharts();
+					return true;
+				case 51:
+					this.client.getDebugHud().togglePacketSizeAndPingCharts();
+					return true;
 				case 65:
 					this.client.worldRenderer.reload();
 					this.debugLog("debug.reload_chunks.message");
@@ -322,13 +332,12 @@ public class Keyboard {
 
 	public void onKey(long window, int key, int scancode, int action, int modifiers) {
 		if (window == this.client.getWindow().getHandle()) {
+			boolean bl = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
 			if (this.debugCrashStartTime > 0L) {
-				if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C)
-					|| !InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3)) {
+				if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C) || !bl) {
 					this.debugCrashStartTime = -1L;
 				}
-			} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C)
-				&& InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3)) {
+			} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C) && bl) {
 				this.switchF3State = true;
 				this.debugCrashStartTime = Util.getMeasuringTimeMs();
 				this.debugCrashLastLogTime = Util.getMeasuringTimeMs();
@@ -372,16 +381,16 @@ public class Keyboard {
 				}
 			}
 
-			if (this.client.getNarratorManager().isActive()) {
-				boolean bl = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
-				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl) {
-					boolean bl2 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
+			if (this.client.getNarratorManager().isActive() && this.client.options.getNarratorHotkey().getValue()) {
+				boolean bl2 = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
+				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl2) {
+					boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
 					this.client.options.getNarrator().setValue(NarratorMode.byId(((NarratorMode)this.client.options.getNarrator().getValue()).getId() + 1));
 					if (screen instanceof SimpleOptionsScreen) {
 						((SimpleOptionsScreen)screen).updateNarratorButtonText();
 					}
 
-					if (bl2 && screen != null) {
+					if (bl3 && screen != null) {
 						screen.applyNarratorModeChangeDelay();
 					}
 				}
@@ -402,47 +411,54 @@ public class Keyboard {
 				}
 			}
 
-			if (this.client.currentScreen == null) {
-				InputUtil.Key key2 = InputUtil.fromKeyCode(key, scancode);
-				if (action == 0) {
-					KeyBinding.setKeyPressed(key2, false);
-					if (key == GLFW.GLFW_KEY_F3) {
-						if (this.switchF3State) {
-							this.switchF3State = false;
-						} else {
-							this.client.options.debugEnabled = !this.client.options.debugEnabled;
-							this.client.options.debugProfilerEnabled = this.client.options.debugEnabled && Screen.hasShiftDown();
-							this.client.options.debugTpsEnabled = this.client.options.debugEnabled && Screen.hasAltDown();
-							this.client.options.debugPacketSizeEnabled = this.client.options.debugEnabled && Screen.hasControlDown() && !Screen.hasAltDown();
-						}
-					}
-				} else {
-					if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
-						this.client.gameRenderer.togglePostProcessorEnabled();
-					}
+			if (this.client.currentScreen != null) {
+				Screen var14 = this.client.currentScreen;
+				if (!(var14 instanceof GameMenuScreen)) {
+					return;
+				}
 
-					boolean bl2 = false;
-					if (key == GLFW.GLFW_KEY_ESCAPE) {
-						boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
-						this.client.openPauseMenu(bl3);
-					}
+				GameMenuScreen gameMenuScreen = (GameMenuScreen)var14;
+				if (gameMenuScreen.shouldShowMenu()) {
+					return;
+				}
+			}
 
-					bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3) && this.processF3(key);
-					this.switchF3State |= bl2;
-					if (key == GLFW.GLFW_KEY_F1) {
-						this.client.options.hudHidden = !this.client.options.hudHidden;
-					}
-
-					if (bl2) {
-						KeyBinding.setKeyPressed(key2, false);
+			InputUtil.Key key2 = InputUtil.fromKeyCode(key, scancode);
+			if (action == 0) {
+				KeyBinding.setKeyPressed(key2, false);
+				if (key == GLFW.GLFW_KEY_F3) {
+					if (this.switchF3State) {
+						this.switchF3State = false;
 					} else {
-						KeyBinding.setKeyPressed(key2, true);
-						KeyBinding.onKeyPressed(key2);
+						this.client.getDebugHud().toggleDebugHud();
 					}
+				}
+			} else {
+				if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
+					this.client.gameRenderer.togglePostProcessorEnabled();
+				}
 
-					if (this.client.options.debugProfilerEnabled && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
-						this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
-					}
+				boolean bl4 = false;
+				if (key == GLFW.GLFW_KEY_ESCAPE) {
+					this.client.openGameMenu(bl);
+					bl4 |= bl;
+				}
+
+				bl4 |= bl && this.processF3(key);
+				this.switchF3State |= bl4;
+				if (key == GLFW.GLFW_KEY_F1) {
+					this.client.options.hudHidden = !this.client.options.hudHidden;
+				}
+
+				if (bl4) {
+					KeyBinding.setKeyPressed(key2, false);
+				} else {
+					KeyBinding.setKeyPressed(key2, true);
+					KeyBinding.onKeyPressed(key2);
+				}
+
+				if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
+					this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
 				}
 			}
 		}

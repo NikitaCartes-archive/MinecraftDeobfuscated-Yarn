@@ -1,6 +1,7 @@
 package net.minecraft.world;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
@@ -151,7 +152,7 @@ public class Heightmap {
 			state -> (state.blocksMovement() || !state.getFluidState().isEmpty()) && !(state.getBlock() instanceof LeavesBlock)
 		);
 
-		public static final com.mojang.serialization.Codec<Heightmap.Type> CODEC = StringIdentifiable.createCodec(Heightmap.Type::values);
+		public static final Codec<Heightmap.Type> CODEC = StringIdentifiable.createCodec(Heightmap.Type::values);
 		private final String name;
 		private final Heightmap.Purpose purpose;
 		private final Predicate<BlockState> blockPredicate;

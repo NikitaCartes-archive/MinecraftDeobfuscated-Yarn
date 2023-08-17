@@ -37,7 +37,8 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 			gameOptions.getGlintStrength(),
 			gameOptions.getHideLightningFlashes(),
 			gameOptions.getMonochromeLogo(),
-			gameOptions.getPanoramaSpeed()
+			gameOptions.getPanoramaSpeed(),
+			gameOptions.getNarratorHotkey()
 		};
 	}
 

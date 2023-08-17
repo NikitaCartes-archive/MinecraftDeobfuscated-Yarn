@@ -56,7 +56,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, BlockEntityType.BREWING_STAND, BrewingStandBlockEntity::tick);
+		return world.isClient ? null : validateTicker(type, BlockEntityType.BREWING_STAND, BrewingStandBlockEntity::tick);
 	}
 
 	@Override

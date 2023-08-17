@@ -46,7 +46,7 @@ public class SculkCatalystBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, BlockEntityType.SCULK_CATALYST, SculkCatalystBlockEntity::tick);
+		return world.isClient ? null : validateTicker(type, BlockEntityType.SCULK_CATALYST, SculkCatalystBlockEntity::tick);
 	}
 
 	@Override

@@ -100,9 +100,9 @@ public class EntitySelectorOptions {
 			}, reader -> !reader.selectsName(), Text.translatable("argument.entity.options.name.description"));
 			putOption("distance", reader -> {
 				int i = reader.getReader().getCursor();
-				NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(reader.getReader());
-				if ((!floatRange.getMin().isPresent() || !(floatRange.getMin().get() < 0.0)) && (!floatRange.getMax().isPresent() || !(floatRange.getMax().get() < 0.0))) {
-					reader.setDistance(floatRange);
+				NumberRange.DoubleRange doubleRange = NumberRange.DoubleRange.parse(reader.getReader());
+				if ((!doubleRange.min().isPresent() || !(doubleRange.min().get() < 0.0)) && (!doubleRange.max().isPresent() || !(doubleRange.max().get() < 0.0))) {
+					reader.setDistance(doubleRange);
 					reader.setLocalWorldOnly();
 				} else {
 					reader.getReader().setCursor(i);
@@ -112,7 +112,7 @@ public class EntitySelectorOptions {
 			putOption("level", reader -> {
 				int i = reader.getReader().getCursor();
 				NumberRange.IntRange intRange = NumberRange.IntRange.parse(reader.getReader());
-				if ((!intRange.getMin().isPresent() || intRange.getMin().get() >= 0) && (!intRange.getMax().isPresent() || intRange.getMax().get() >= 0)) {
+				if ((!intRange.min().isPresent() || intRange.min().get() >= 0) && (!intRange.max().isPresent() || intRange.max().get() >= 0)) {
 					reader.setLevelRange(intRange);
 					reader.setIncludesNonPlayers(false);
 				} else {

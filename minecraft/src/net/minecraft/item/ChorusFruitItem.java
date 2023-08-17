@@ -43,6 +43,7 @@ public class ChorusFruitItem extends Item {
 					SoundEvent soundEvent = user instanceof FoxEntity ? SoundEvents.ENTITY_FOX_TELEPORT : SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT;
 					world.playSound(null, d, e, f, soundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
 					user.playSound(soundEvent, 1.0F, 1.0F);
+					user.onLanding();
 					break;
 				}
 			}

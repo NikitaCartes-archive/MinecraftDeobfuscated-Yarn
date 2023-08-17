@@ -20,7 +20,7 @@ import net.minecraft.util.Util;
 public class AbuseReportReasonScreen extends Screen {
 	private static final Text TITLE_TEXT = Text.translatable("gui.abuseReport.reason.title");
 	private static final Text DESCRIPTION_TEXT = Text.translatable("gui.abuseReport.reason.description");
-	private static final Text READ_INFO_TEXT = Text.translatable("gui.chatReport.read_info");
+	private static final Text READ_INFO_TEXT = Text.translatable("gui.abuseReport.read_info");
 	private static final int REASON_LIST_BOTTOM_MARGIN = 95;
 	private static final int DONE_BUTTON_WIDTH = 150;
 	private static final int DONE_BUTTON_HEIGHT = 20;

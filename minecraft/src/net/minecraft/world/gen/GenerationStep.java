@@ -1,5 +1,6 @@
 package net.minecraft.world.gen;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 public class GenerationStep {
@@ -7,7 +8,7 @@ public class GenerationStep {
 		AIR("air"),
 		LIQUID("liquid");
 
-		public static final com.mojang.serialization.Codec<GenerationStep.Carver> CODEC = StringIdentifiable.createCodec(GenerationStep.Carver::values);
+		public static final Codec<GenerationStep.Carver> CODEC = StringIdentifiable.createCodec(GenerationStep.Carver::values);
 		private final String name;
 
 		private Carver(String name) {
@@ -37,7 +38,7 @@ public class GenerationStep {
 		VEGETAL_DECORATION("vegetal_decoration"),
 		TOP_LAYER_MODIFICATION("top_layer_modification");
 
-		public static final com.mojang.serialization.Codec<GenerationStep.Feature> CODEC = StringIdentifiable.createCodec(GenerationStep.Feature::values);
+		public static final Codec<GenerationStep.Feature> CODEC = StringIdentifiable.createCodec(GenerationStep.Feature::values);
 		private final String name;
 
 		private Feature(String name) {

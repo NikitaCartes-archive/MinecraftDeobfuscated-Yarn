@@ -1,6 +1,7 @@
 package net.minecraft.entity.attribute;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -111,9 +112,7 @@ public class EntityAttributeModifier {
 		MULTIPLY_TOTAL("multiply_total", 2);
 
 		private static final EntityAttributeModifier.Operation[] VALUES = new EntityAttributeModifier.Operation[]{ADDITION, MULTIPLY_BASE, MULTIPLY_TOTAL};
-		public static final com.mojang.serialization.Codec<EntityAttributeModifier.Operation> CODEC = StringIdentifiable.createCodec(
-			EntityAttributeModifier.Operation::values
-		);
+		public static final Codec<EntityAttributeModifier.Operation> CODEC = StringIdentifiable.createCodec(EntityAttributeModifier.Operation::values);
 		private final String name;
 		private final int id;
 

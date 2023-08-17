@@ -50,6 +50,10 @@ public class GameMenuScreen extends Screen {
 		this.showMenu = showMenu;
 	}
 
+	public boolean shouldShowMenu() {
+		return this.showMenu;
+	}
+
 	@Override
 	protected void init() {
 		if (this.showMenu) {

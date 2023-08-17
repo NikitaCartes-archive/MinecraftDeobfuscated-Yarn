@@ -40,7 +40,7 @@ public class EntitySelector {
 	private final boolean includesNonPlayers;
 	private final boolean localWorldOnly;
 	private final Predicate<Entity> basePredicate;
-	private final NumberRange.FloatRange distance;
+	private final NumberRange.DoubleRange distance;
 	private final Function<Vec3d, Vec3d> positionOffset;
 	@Nullable
 	private final Box box;
@@ -58,7 +58,7 @@ public class EntitySelector {
 		boolean includesNonPlayers,
 		boolean localWorldOnly,
 		Predicate<Entity> basePredicate,
-		NumberRange.FloatRange distance,
+		NumberRange.DoubleRange distance,
 		Function<Vec3d, Vec3d> positionOffset,
 		@Nullable Box box,
 		BiConsumer<Vec3d, List<? extends Entity>> sorter,

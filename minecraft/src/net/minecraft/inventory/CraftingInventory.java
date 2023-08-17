@@ -7,6 +7,9 @@ import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.collection.DefaultedList;
 
+/**
+ * Represents an inventory for crafting inputs.
+ */
 public class CraftingInventory implements RecipeInputInventory {
 	private final DefaultedList<ItemStack> stacks;
 	private final int width;

@@ -21,7 +21,6 @@ import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.resource.ResourceReload;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
@@ -35,19 +34,17 @@ public class QuickPlay {
 	private static final Text TO_WORLD = Text.translatable("gui.toWorld");
 	private static final Text TO_REALMS = Text.translatable("gui.toRealms");
 
-	public static void startQuickPlay(MinecraftClient client, RunArgs.QuickPlay quickPlay, ResourceReload resourceReload, RealmsClient realmsClient) {
+	public static void startQuickPlay(MinecraftClient client, RunArgs.QuickPlay quickPlay, RealmsClient realmsClient) {
 		String string = quickPlay.singleplayer();
 		String string2 = quickPlay.multiplayer();
 		String string3 = quickPlay.realms();
-		resourceReload.whenComplete().thenRunAsync(() -> {
-			if (!Util.isBlank(string)) {
-				startSingleplayer(client, string);
-			} else if (!Util.isBlank(string2)) {
-				startMultiplayer(client, string2);
-			} else if (!Util.isBlank(string3)) {
-				startRealms(client, realmsClient, string3);
-			}
-		}, client);
+		if (!Util.isBlank(string)) {
+			startSingleplayer(client, string);
+		} else if (!Util.isBlank(string2)) {
+			startMultiplayer(client, string2);
+		} else if (!Util.isBlank(string3)) {
+			startRealms(client, realmsClient, string3);
+		}
 	}
 
 	private static void startSingleplayer(MinecraftClient client, String levelName) {

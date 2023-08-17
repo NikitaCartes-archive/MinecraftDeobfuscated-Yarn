@@ -42,7 +42,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected int left;
 	protected boolean centerListVertically = true;
 	private double scrollAmount;
-	private boolean renderSelection = true;
 	private boolean renderHeader;
 	protected int headerHeight;
 	private boolean scrolling;
@@ -61,10 +60,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.itemHeight = itemHeight;
 		this.left = 0;
 		this.right = width;
-	}
-
-	public void setRenderSelection(boolean renderSelection) {
-		this.renderSelection = renderSelection;
 	}
 
 	protected void setRenderHeader(boolean renderHeader, int headerHeight) {
@@ -427,7 +422,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected void renderEntry(DrawContext context, int mouseX, int mouseY, float delta, int index, int x, int y, int entryWidth, int entryHeight) {
 		E entry = this.getEntry(index);
 		entry.drawBorder(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
-		if (this.renderSelection && this.isSelectedEntry(index)) {
+		if (this.isSelectedEntry(index)) {
 			int i = this.isFocused() ? -1 : -8355712;
 			this.drawSelectionHighlight(context, y, entryWidth, entryHeight, i, -16777216);
 		}

@@ -1,5 +1,6 @@
 package net.minecraft.client.font;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,7 +14,7 @@ public enum FontType implements StringIdentifiable {
 	UNIHEX("unihex", UnihexFont.Loader.CODEC),
 	REFERENCE("reference", ReferenceFont.CODEC);
 
-	public static final com.mojang.serialization.Codec<FontType> CODEC = StringIdentifiable.createCodec(FontType::values);
+	public static final Codec<FontType> CODEC = StringIdentifiable.createCodec(FontType::values);
 	private final String id;
 	private final MapCodec<? extends FontLoader> loaderCodec;
 

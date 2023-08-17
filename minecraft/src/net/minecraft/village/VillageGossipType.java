@@ -1,5 +1,6 @@
 package net.minecraft.village;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 public enum VillageGossipType implements StringIdentifiable {
@@ -17,7 +18,7 @@ public enum VillageGossipType implements StringIdentifiable {
 	public final int maxValue;
 	public final int decay;
 	public final int shareDecrement;
-	public static final com.mojang.serialization.Codec<VillageGossipType> CODEC = StringIdentifiable.createCodec(VillageGossipType::values);
+	public static final Codec<VillageGossipType> CODEC = StringIdentifiable.createCodec(VillageGossipType::values);
 
 	private VillageGossipType(String key, int multiplier, int maxReputation, int decay, int shareDecrement) {
 		this.key = key;

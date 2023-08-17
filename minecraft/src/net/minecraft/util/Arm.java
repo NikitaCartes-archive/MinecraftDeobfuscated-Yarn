@@ -1,5 +1,7 @@
 package net.minecraft.util;
 
+import com.mojang.serialization.Codec;
+
 /**
  * An enum representing an entity's arm.
  * 
@@ -9,7 +11,7 @@ public enum Arm implements TranslatableOption, StringIdentifiable {
 	LEFT(0, "left", "options.mainHand.left"),
 	RIGHT(1, "right", "options.mainHand.right");
 
-	public static final com.mojang.serialization.Codec<Arm> CODEC = StringIdentifiable.createCodec(Arm::values);
+	public static final Codec<Arm> CODEC = StringIdentifiable.createCodec(Arm::values);
 	private final int id;
 	private final String name;
 	private final String translationKey;

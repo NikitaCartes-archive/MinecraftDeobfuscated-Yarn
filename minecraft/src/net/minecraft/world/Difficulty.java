@@ -12,7 +12,7 @@ public enum Difficulty implements StringIdentifiable {
 	NORMAL(2, "normal"),
 	HARD(3, "hard");
 
-	public static final StringIdentifiable.Codec<Difficulty> CODEC = StringIdentifiable.createCodec(Difficulty::values);
+	public static final StringIdentifiable.EnumCodec<Difficulty> CODEC = StringIdentifiable.createCodec(Difficulty::values);
 	private static final IntFunction<Difficulty> BY_ID = ValueLists.createIdToValueFunction(Difficulty::getId, values(), ValueLists.OutOfBoundsHandling.WRAP);
 	private final int id;
 	private final String name;

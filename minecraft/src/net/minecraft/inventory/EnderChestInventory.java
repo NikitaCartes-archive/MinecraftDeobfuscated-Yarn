@@ -7,6 +7,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 
+/**
+ * Represents an inventory used for ender chests.
+ * A new instance is created for each player.
+ */
 public class EnderChestInventory extends SimpleInventory {
 	@Nullable
 	private EnderChestBlockEntity activeBlockEntity;
@@ -15,10 +19,18 @@ public class EnderChestInventory extends SimpleInventory {
 		super(27);
 	}
 
+	/**
+	 * Sets the block entity the player is using to access the inventory to {@code
+	 * blockEntity}. The block entity is used to delegate {@link #canPlayerUse},
+	 * {@link #onOpen}, and {@link #onClose}.
+	 */
 	public void setActiveBlockEntity(EnderChestBlockEntity blockEntity) {
 		this.activeBlockEntity = blockEntity;
 	}
 
+	/**
+	 * {@return whether this inventory is being accessed from {@code blockEntity}}
+	 */
 	public boolean isActiveBlockEntity(EnderChestBlockEntity blockEntity) {
 		return this.activeBlockEntity == blockEntity;
 	}

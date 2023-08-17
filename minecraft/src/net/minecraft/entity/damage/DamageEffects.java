@@ -1,5 +1,6 @@
 package net.minecraft.entity.damage;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.StringIdentifiable;
@@ -12,7 +13,7 @@ public enum DamageEffects implements StringIdentifiable {
 	POKING("poking", SoundEvents.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH),
 	FREEZING("freezing", SoundEvents.ENTITY_PLAYER_HURT_FREEZE);
 
-	public static final com.mojang.serialization.Codec<DamageEffects> CODEC = StringIdentifiable.createCodec(DamageEffects::values);
+	public static final Codec<DamageEffects> CODEC = StringIdentifiable.createCodec(DamageEffects::values);
 	private final String id;
 	private final SoundEvent sound;
 

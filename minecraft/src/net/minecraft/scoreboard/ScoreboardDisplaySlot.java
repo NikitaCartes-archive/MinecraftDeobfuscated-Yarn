@@ -27,7 +27,7 @@ public enum ScoreboardDisplaySlot implements StringIdentifiable {
 	TEAM_YELLOW(17, "sidebar.team.yellow"),
 	TEAM_WHITE(18, "sidebar.team.white");
 
-	public static final StringIdentifiable.Codec<ScoreboardDisplaySlot> CODEC = StringIdentifiable.createCodec(ScoreboardDisplaySlot::values);
+	public static final StringIdentifiable.EnumCodec<ScoreboardDisplaySlot> CODEC = StringIdentifiable.createCodec(ScoreboardDisplaySlot::values);
 	public static final IntFunction<ScoreboardDisplaySlot> FROM_ID = ValueLists.createIdToValueFunction(
 		ScoreboardDisplaySlot::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
 	);

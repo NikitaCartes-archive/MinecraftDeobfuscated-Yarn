@@ -139,7 +139,7 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 		return !world.isClient
-			? BlockWithEntity.checkType(
+			? BlockWithEntity.validateTicker(
 				type,
 				BlockEntityType.SCULK_SHRIEKER,
 				(worldx, pos, statex, sculkShriekerBlockEntity) -> Vibrations.Ticker.tick(
