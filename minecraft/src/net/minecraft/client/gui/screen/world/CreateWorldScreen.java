@@ -40,11 +40,11 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TabNavigationWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.CombinedDynamicRegistries;
@@ -92,7 +92,6 @@ public class CreateWorldScreen extends Screen {
 	private static final int field_42165 = 1;
 	private static final int field_42166 = 210;
 	private static final int field_42167 = 36;
-	private static final int field_42168 = 1;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String TEMP_DIR_PREFIX = "mcworld-";
 	static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
@@ -619,11 +618,7 @@ public class CreateWorldScreen extends Screen {
 			super(GAME_TAB_TITLE_TEXT);
 			GridWidget.Adder adder = this.grid.setRowSpacing(8).createAdder(1);
 			Positioner positioner = adder.copyPositioner();
-			GridWidget.Adder adder2 = new GridWidget().setRowSpacing(4).createAdder(1);
-			adder2.add(new TextWidget(CreateWorldScreen.ENTER_NAME_TEXT, CreateWorldScreen.this.client.textRenderer), adder2.copyPositioner().marginLeft(1));
-			this.worldNameField = adder2.add(
-				new TextFieldWidget(CreateWorldScreen.this.textRenderer, 210, 20, Text.translatable("selectWorld.enterName")), adder2.copyPositioner()
-			);
+			this.worldNameField = new TextFieldWidget(CreateWorldScreen.this.textRenderer, 208, 20, Text.translatable("selectWorld.enterName"));
 			this.worldNameField.setText(CreateWorldScreen.this.worldCreator.getWorldName());
 			this.worldNameField.setChangedListener(CreateWorldScreen.this.worldCreator::setWorldName);
 			CreateWorldScreen.this.worldCreator
@@ -632,7 +627,10 @@ public class CreateWorldScreen extends Screen {
 							.setTooltip(Tooltip.of(Text.translatable("selectWorld.targetFolder", Text.literal(creator.getWorldDirectoryName()).formatted(Formatting.ITALIC))))
 				);
 			CreateWorldScreen.this.setInitialFocus(this.worldNameField);
-			adder.add(adder2.getGridWidget(), adder.copyPositioner().alignHorizontalCenter());
+			adder.add(
+				LayoutWidgets.createLabeledWidget(CreateWorldScreen.this.textRenderer, this.worldNameField, CreateWorldScreen.ENTER_NAME_TEXT),
+				adder.copyPositioner().alignHorizontalCenter()
+			);
 			CyclingButtonWidget<WorldCreator.Mode> cyclingButtonWidget = adder.add(
 				CyclingButtonWidget.<WorldCreator.Mode>builder(value -> value.name)
 					.values(WorldCreator.Mode.SURVIVAL, WorldCreator.Mode.HARDCORE, WorldCreator.Mode.CREATIVE)
@@ -752,19 +750,17 @@ public class CreateWorldScreen extends Screen {
 			});
 			this.customizeButton = adder.add(ButtonWidget.builder(Text.translatable("selectWorld.customizeType"), button -> this.openCustomizeScreen()).build());
 			CreateWorldScreen.this.worldCreator.addListener(creator -> this.customizeButton.active = !creator.isDebug() && creator.getLevelScreenProvider() != null);
-			GridWidget.Adder adder2 = new GridWidget().setRowSpacing(4).createAdder(1);
-			adder2.add(new TextWidget(ENTER_SEED_TEXT, CreateWorldScreen.this.textRenderer).alignLeft());
-			this.seedField = adder2.add(new TextFieldWidget(CreateWorldScreen.this.textRenderer, 310, 20, Text.translatable("selectWorld.enterSeed")) {
+			this.seedField = new TextFieldWidget(CreateWorldScreen.this.textRenderer, 308, 20, Text.translatable("selectWorld.enterSeed")) {
 				@Override
 				protected MutableText getNarrationMessage() {
 					return super.getNarrationMessage().append(ScreenTexts.SENTENCE_SEPARATOR).append(CreateWorldScreen.WorldTab.SEED_INFO_TEXT);
 				}
-			});
+			};
 			this.seedField.setPlaceholder(SEED_INFO_TEXT);
 			this.seedField.setText(CreateWorldScreen.this.worldCreator.getSeed());
 			this.seedField.setChangedListener(seed -> CreateWorldScreen.this.worldCreator.setSeed(this.seedField.getText()));
-			adder.add(adder2.getGridWidget(), 2);
-			WorldScreenOptionGrid.Builder builder = WorldScreenOptionGrid.builder(310).marginLeft(1);
+			adder.add(LayoutWidgets.createLabeledWidget(CreateWorldScreen.this.textRenderer, this.seedField, ENTER_SEED_TEXT), 2);
+			WorldScreenOptionGrid.Builder builder = WorldScreenOptionGrid.builder(310);
 			builder.add(MAP_FEATURES_TEXT, CreateWorldScreen.this.worldCreator::shouldGenerateStructures, CreateWorldScreen.this.worldCreator::setGenerateStructures)
 				.toggleable(() -> !CreateWorldScreen.this.worldCreator.isDebug())
 				.tooltip(MAP_FEATURES_INFO_TEXT);

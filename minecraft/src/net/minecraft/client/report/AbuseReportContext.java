@@ -9,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.report.ChatReportScreen;
 import net.minecraft.client.report.log.ChatLog;
 import net.minecraft.text.Text;
 
@@ -20,7 +19,7 @@ public final class AbuseReportContext {
 	private final ReporterEnvironment environment;
 	private final ChatLog chatLog;
 	@Nullable
-	private ChatAbuseReport.Draft draft;
+	private AbuseReport draft;
 
 	public AbuseReportContext(AbuseReportSender sender, ReporterEnvironment environment, ChatLog chatLog) {
 		this.sender = sender;
@@ -34,23 +33,23 @@ public final class AbuseReportContext {
 		return new AbuseReportContext(abuseReportSender, environment, chatLog);
 	}
 
-	public void tryShowDraftScreen(MinecraftClient client, @Nullable Screen parent, Runnable callback, boolean quit) {
+	public void tryShowDraftScreen(MinecraftClient client, Screen parent, Runnable callback, boolean quit) {
 		if (this.draft != null) {
-			ChatAbuseReport.Draft draft = this.draft.copy();
+			AbuseReport abuseReport = this.draft.copy();
 			client.setScreen(
 				new ConfirmScreen(
 					confirmed -> {
 						this.setDraft(null);
 						if (confirmed) {
-							client.setScreen(new ChatReportScreen(parent, this, draft));
+							client.setScreen(abuseReport.createReportScreen(parent, this));
 						} else {
 							callback.run();
 						}
 					},
-					Text.translatable(quit ? "gui.chatReport.draft.quittotitle.title" : "gui.chatReport.draft.title"),
-					Text.translatable(quit ? "gui.chatReport.draft.quittotitle.content" : "gui.chatReport.draft.content"),
-					Text.translatable("gui.chatReport.draft.edit"),
-					Text.translatable("gui.chatReport.draft.discard")
+					Text.translatable(quit ? "gui.abuseReport.draft.quittotitle.title" : "gui.abuseReport.draft.title"),
+					Text.translatable(quit ? "gui.abuseReport.draft.quittotitle.content" : "gui.abuseReport.draft.content"),
+					Text.translatable("gui.abuseReport.draft.edit"),
+					Text.translatable("gui.abuseReport.draft.discard")
 				)
 			);
 		} else {
@@ -70,7 +69,7 @@ public final class AbuseReportContext {
 		return Objects.equals(this.environment, environment);
 	}
 
-	public void setDraft(@Nullable ChatAbuseReport.Draft draft) {
+	public void setDraft(@Nullable AbuseReport draft) {
 		this.draft = draft;
 	}
 

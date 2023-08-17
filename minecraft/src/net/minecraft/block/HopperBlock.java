@@ -105,7 +105,7 @@ public class HopperBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, BlockEntityType.HOPPER, HopperBlockEntity::serverTick);
+		return world.isClient ? null : validateTicker(type, BlockEntityType.HOPPER, HopperBlockEntity::serverTick);
 	}
 
 	@Override

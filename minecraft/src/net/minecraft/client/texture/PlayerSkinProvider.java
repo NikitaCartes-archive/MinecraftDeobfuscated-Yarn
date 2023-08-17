@@ -25,6 +25,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -87,6 +88,7 @@ public class PlayerSkinProvider {
 			model = skinTextures.model();
 		}
 
+		String string = Nullables.map(minecraftProfileTexture, MinecraftProfileTexture::getUrl);
 		MinecraftProfileTexture minecraftProfileTexture2 = textures.cape();
 		CompletableFuture<Identifier> completableFuture2 = minecraftProfileTexture2 != null
 			? this.capeCache.get(minecraftProfileTexture2)
@@ -98,7 +100,7 @@ public class PlayerSkinProvider {
 		return CompletableFuture.allOf(completableFuture, completableFuture2, completableFuture3)
 			.thenApply(
 				void_ -> new SkinTextures(
-						(Identifier)completableFuture.join(), (Identifier)completableFuture2.join(), (Identifier)completableFuture3.join(), model, textures.secure()
+						(Identifier)completableFuture.join(), string, (Identifier)completableFuture2.join(), (Identifier)completableFuture3.join(), model, textures.secure()
 					)
 			);
 	}

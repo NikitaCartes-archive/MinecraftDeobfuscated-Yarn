@@ -51,9 +51,7 @@ public class OceanRuinStructure extends Structure {
 		WARM("warm"),
 		COLD("cold");
 
-		public static final com.mojang.serialization.Codec<OceanRuinStructure.BiomeTemperature> CODEC = StringIdentifiable.createCodec(
-			OceanRuinStructure.BiomeTemperature::values
-		);
+		public static final Codec<OceanRuinStructure.BiomeTemperature> CODEC = StringIdentifiable.createCodec(OceanRuinStructure.BiomeTemperature::values);
 		private final String name;
 
 		private BiomeTemperature(String name) {

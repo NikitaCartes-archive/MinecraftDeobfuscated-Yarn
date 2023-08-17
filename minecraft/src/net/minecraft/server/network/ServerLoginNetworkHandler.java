@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import com.google.common.primitives.Ints;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
+import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.logging.LogUtils;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -200,8 +201,9 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 				String string = (String)Objects.requireNonNull(ServerLoginNetworkHandler.this.profileName, "Player name not initialized");
 
 				try {
-					GameProfile gameProfile = ServerLoginNetworkHandler.this.server.getSessionService().hasJoinedServer(string, string, this.getClientAddress());
-					if (gameProfile != null) {
+					ProfileResult profileResult = ServerLoginNetworkHandler.this.server.getSessionService().hasJoinedServer(string, string, this.getClientAddress());
+					if (profileResult != null) {
+						GameProfile gameProfile = profileResult.profile();
 						ServerLoginNetworkHandler.LOGGER.info("UUID of player {} is {}", gameProfile.getName(), gameProfile.getId());
 						ServerLoginNetworkHandler.this.startVerify(gameProfile);
 					} else if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
@@ -211,7 +213,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 						ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.unverified_username"));
 						ServerLoginNetworkHandler.LOGGER.error("Username '{}' tried to join with an invalid session", string);
 					}
-				} catch (AuthenticationUnavailableException var3) {
+				} catch (AuthenticationUnavailableException var4) {
 					if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
 						ServerLoginNetworkHandler.LOGGER.warn("Authentication servers are down but will let them in anyway!");
 						ServerLoginNetworkHandler.this.startVerify(ServerLoginNetworkHandler.createOfflineProfile(string));

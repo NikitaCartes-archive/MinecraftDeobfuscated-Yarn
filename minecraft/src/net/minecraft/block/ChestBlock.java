@@ -323,7 +323,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? checkType(type, this.getExpectedEntityType(), ChestBlockEntity::clientTick) : null;
+		return world.isClient ? validateTicker(type, this.getExpectedEntityType(), ChestBlockEntity::clientTick) : null;
 	}
 
 	public static boolean isChestBlocked(WorldAccess world, BlockPos pos) {

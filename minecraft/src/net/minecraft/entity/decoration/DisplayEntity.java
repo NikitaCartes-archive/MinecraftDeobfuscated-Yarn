@@ -2,6 +2,7 @@ package net.minecraft.entity.decoration;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.List;
 import java.util.Optional;
@@ -509,7 +510,7 @@ public abstract class DisplayEntity extends Entity {
 		HORIZONTAL((byte)2, "horizontal"),
 		CENTER((byte)3, "center");
 
-		public static final com.mojang.serialization.Codec<DisplayEntity.BillboardMode> CODEC = StringIdentifiable.createCodec(DisplayEntity.BillboardMode::values);
+		public static final Codec<DisplayEntity.BillboardMode> CODEC = StringIdentifiable.createCodec(DisplayEntity.BillboardMode::values);
 		public static final IntFunction<DisplayEntity.BillboardMode> FROM_INDEX = ValueLists.createIdToValueFunction(
 			DisplayEntity.BillboardMode::getIndex, values(), ValueLists.OutOfBoundsHandling.ZERO
 		);
@@ -989,7 +990,7 @@ public abstract class DisplayEntity extends Entity {
 			LEFT("left"),
 			RIGHT("right");
 
-			public static final com.mojang.serialization.Codec<DisplayEntity.TextDisplayEntity.TextAlignment> CODEC = StringIdentifiable.createCodec(
+			public static final Codec<DisplayEntity.TextDisplayEntity.TextAlignment> CODEC = StringIdentifiable.createCodec(
 				DisplayEntity.TextDisplayEntity.TextAlignment::values
 			);
 			private final String name;

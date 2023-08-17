@@ -533,7 +533,7 @@ public class ServerCommandSource implements CommandSource {
 			if (serverPlayerEntity != null) {
 				serverPlayerEntity.sendChatMessage(message, filterMaskEnabled, params);
 			} else {
-				this.output.sendMessage(params.applyChatDecoration(message.getContent()));
+				this.output.sendMessage(params.applyChatDecoration(message.content()));
 			}
 		}
 	}

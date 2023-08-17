@@ -894,7 +894,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 		private final String name;
 		private final Block baseBlock;
-		public static final StringIdentifiable.Codec<BoatEntity.Type> CODEC = StringIdentifiable.createCodec(BoatEntity.Type::values);
+		public static final StringIdentifiable.EnumCodec<BoatEntity.Type> CODEC = StringIdentifiable.createCodec(BoatEntity.Type::values);
 		private static final IntFunction<BoatEntity.Type> BY_ID = ValueLists.createIdToValueFunction(Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO);
 
 		private Type(Block baseBlock, String name) {

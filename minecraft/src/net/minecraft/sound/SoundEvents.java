@@ -1262,6 +1262,11 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_SPIDER_STEP = register("entity.spider.step");
 	public static final SoundEvent ENTITY_SPLASH_POTION_BREAK = register("entity.splash_potion.break");
 	public static final SoundEvent ENTITY_SPLASH_POTION_THROW = register("entity.splash_potion.throw");
+	public static final SoundEvent BLOCK_SPONGE_BREAK = register("block.sponge.break");
+	public static final SoundEvent BLOCK_SPONGE_FALL = register("block.sponge.fall");
+	public static final SoundEvent BLOCK_SPONGE_HIT = register("block.sponge.hit");
+	public static final SoundEvent BLOCK_SPONGE_PLACE = register("block.sponge.place");
+	public static final SoundEvent BLOCK_SPONGE_STEP = register("block.sponge.step");
 	public static final SoundEvent BLOCK_SPONGE_ABSORB = register("block.sponge.absorb");
 	public static final SoundEvent ITEM_SPYGLASS_USE = register("item.spyglass.use");
 	public static final SoundEvent ITEM_SPYGLASS_STOP_USING = register("item.spyglass.stop_using");
@@ -1407,6 +1412,11 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_WET_GRASS_HIT = register("block.wet_grass.hit");
 	public static final SoundEvent BLOCK_WET_GRASS_PLACE = register("block.wet_grass.place");
 	public static final SoundEvent BLOCK_WET_GRASS_STEP = register("block.wet_grass.step");
+	public static final SoundEvent BLOCK_WET_SPONGE_BREAK = register("block.wet_sponge.break");
+	public static final SoundEvent BLOCK_WET_SPONGE_FALL = register("block.wet_sponge.fall");
+	public static final SoundEvent BLOCK_WET_SPONGE_HIT = register("block.wet_sponge.hit");
+	public static final SoundEvent BLOCK_WET_SPONGE_PLACE = register("block.wet_sponge.place");
+	public static final SoundEvent BLOCK_WET_SPONGE_STEP = register("block.wet_sponge.step");
 	public static final SoundEvent ENTITY_WITCH_AMBIENT = register("entity.witch.ambient");
 	public static final SoundEvent ENTITY_WITCH_CELEBRATE = register("entity.witch.celebrate");
 	public static final SoundEvent ENTITY_WITCH_DEATH = register("entity.witch.death");

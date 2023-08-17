@@ -157,7 +157,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			}
 		};
 
-		public static final com.mojang.serialization.Codec<CopyNbtLootFunction.Operator> CODEC = StringIdentifiable.createCodec(CopyNbtLootFunction.Operator::values);
+		public static final Codec<CopyNbtLootFunction.Operator> CODEC = StringIdentifiable.createCodec(CopyNbtLootFunction.Operator::values);
 		private final String name;
 
 		public abstract void merge(NbtElement itemNbt, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceNbts) throws CommandSyntaxException;

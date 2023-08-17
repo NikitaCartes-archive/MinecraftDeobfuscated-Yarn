@@ -134,7 +134,9 @@ public class ScoreboardCriterion {
 		HEARTS("hearts");
 
 		private final String name;
-		public static final StringIdentifiable.Codec<ScoreboardCriterion.RenderType> CODEC = StringIdentifiable.createCodec(ScoreboardCriterion.RenderType::values);
+		public static final StringIdentifiable.EnumCodec<ScoreboardCriterion.RenderType> CODEC = StringIdentifiable.createCodec(
+			ScoreboardCriterion.RenderType::values
+		);
 
 		private RenderType(String name) {
 			this.name = name;

@@ -13,6 +13,25 @@ import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.util.collection.DefaultedList;
 
+/**
+ * A generic implementation of {@link Inventory}. This is used in a number of
+ * places, mostly:
+ * 
+ * <ul>
+ * <li>To store the input of a {@link net.minecraft.screen.ScreenHandler} while
+ * it is open. The inventory is stored as a field, and the screen handler will have
+ * a slot backed by that inventory.</li>
+ * <li>When defining the clientside constructor for a {@link
+ * net.minecraft.screen.ScreenHandler} subclass. The contents of the inventory will
+ * then be automatically synced from the serverside screen handler, which queries
+ * the original inventory.</li>
+ * <li>For entities and block entities which do not interact with hoppers and therefore
+ * do not need to implement {@link Inventory} themselves.
+ * </ul>
+ * 
+ * <p>Changes to the inventory can be listened to either by subclassing this and
+ * overriding {@link #markDirty}, or by using {@link #addListener}.
+ */
 public class SimpleInventory implements Inventory, RecipeInputProvider {
 	private final int size;
 	private final DefaultedList<ItemStack> stacks;
@@ -29,6 +48,10 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		this.stacks = DefaultedList.copyOf(ItemStack.EMPTY, items);
 	}
 
+	/**
+	 * Adds a {@code listener} for inventory modifications. If a listener is
+	 * added multiple times, it will also be triggered multiple times.
+	 */
 	public void addListener(InventoryChangedListener listener) {
 		if (this.listeners == null) {
 			this.listeners = Lists.<InventoryChangedListener>newArrayList();
@@ -37,6 +60,10 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		this.listeners.add(listener);
 	}
 
+	/**
+	 * Removes a {@code listener} previously added by {@code #addListener}.
+	 * Does nothing when the listener was not found.
+	 */
 	public void removeListener(InventoryChangedListener listener) {
 		if (this.listeners != null) {
 			this.listeners.remove(listener);
@@ -49,7 +76,9 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	}
 
 	/**
-	 * Clears this inventory and return all the non-empty stacks in a list.
+	 * Clears this inventory and returns all the non-empty stacks in a list.
+	 * 
+	 * @return the non-empty stacks previously in the inventory
 	 */
 	public List<ItemStack> clearToList() {
 		List<ItemStack> list = (List<ItemStack>)this.stacks.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toList());
@@ -94,6 +123,14 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		return itemStack;
 	}
 
+	/**
+	 * Adds {@code stack} to this inventory as much as possible. It is possible
+	 * that the item stack gets inserted into a non-empty slot or spread across
+	 * several slots, if it can combine with other stack(s) in this inventory.
+	 * 
+	 * @return the leftover part of the stack, or {@code ItemStack#EMPTY} if the entire
+	 * stack fit inside the inventory
+	 */
 	public ItemStack addStack(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return ItemStack.EMPTY;
@@ -109,6 +146,9 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
+	/**
+	 * {@return whether {@code stack} can be inserted into this inventory}
+	 */
 	public boolean canInsert(ItemStack stack) {
 		boolean bl = false;
 
@@ -222,6 +262,11 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
+	/**
+	 * Reads the item stacks from {@code nbtList}.
+	 * 
+	 * @see #toNbtList
+	 */
 	public void readNbtList(NbtList nbtList) {
 		this.clear();
 
@@ -233,6 +278,14 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
+	/**
+	 * {@return an NBT list of non-empty {@linkplain ItemStack#writeNbt item stacks}}
+	 * 
+	 * <p>Unlike {@link Inventories#writeNbt(NbtCompound, DefaultedList, boolean)},
+	 * this does not serialize the slots.
+	 * 
+	 * @see #readNbtList
+	 */
 	public NbtList toNbtList() {
 		NbtList nbtList = new NbtList();
 

@@ -22,10 +22,13 @@ public class TestRunner {
 	private final int sizeZ;
 	private final List<GameTestState> tests;
 	private final List<Pair<GameTestBatch, Collection<GameTestState>>> batches;
+	private int testCount;
+	private Box rowBoundingBox;
 	private final BlockPos.Mutable reusablePos;
 
 	public TestRunner(Collection<GameTestBatch> batches, BlockPos pos, BlockRotation rotation, ServerWorld world, TestManager testManager, int sizeZ) {
 		this.reusablePos = pos.mutableCopy();
+		this.rowBoundingBox = new Box(this.reusablePos);
 		this.pos = pos;
 		this.world = world;
 		this.testManager = testManager;
@@ -94,23 +97,21 @@ public class TestRunner {
 
 	private Map<GameTestState, BlockPos> alignTestStructures(Collection<GameTestState> gameTests) {
 		Map<GameTestState, BlockPos> map = Maps.<GameTestState, BlockPos>newHashMap();
-		int i = 0;
-		Box box = new Box(this.reusablePos);
 
 		for (GameTestState gameTestState : gameTests) {
 			BlockPos blockPos = new BlockPos(this.reusablePos);
 			StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.createStructureTemplate(
 				gameTestState.getTemplateName(), blockPos, gameTestState.getRotation(), 2, this.world, true
 			);
-			Box box2 = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
+			Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
 			gameTestState.setPos(structureBlockBlockEntity.getPos());
 			map.put(gameTestState, new BlockPos(this.reusablePos));
-			box = box.union(box2);
-			this.reusablePos.move((int)box2.getXLength() + 5, 0, 0);
-			if (i++ % this.sizeZ == this.sizeZ - 1) {
-				this.reusablePos.move(0, 0, (int)box.getZLength() + 6);
+			this.rowBoundingBox = this.rowBoundingBox.union(box);
+			this.reusablePos.move((int)box.getXLength() + 5, 0, 0);
+			if (this.testCount++ % this.sizeZ == this.sizeZ - 1) {
+				this.reusablePos.move(0, 0, (int)this.rowBoundingBox.getZLength() + 6);
 				this.reusablePos.setX(this.pos.getX());
-				box = new Box(this.reusablePos);
+				this.rowBoundingBox = new Box(this.reusablePos);
 			}
 		}
 

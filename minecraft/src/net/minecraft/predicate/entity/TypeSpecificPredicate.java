@@ -32,12 +32,11 @@ import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerType;
 
 public interface TypeSpecificPredicate {
-	Codec<TypeSpecificPredicate> CODEC = TypeSpecificPredicate.Deserializers.TYPE_CODEC
-		.dispatch(TypeSpecificPredicate::getDeserializer, type -> type.codec().codec());
+	Codec<TypeSpecificPredicate> CODEC = TypeSpecificPredicate.Deserializers.TYPE_CODEC.dispatch(TypeSpecificPredicate::type, type -> type.codec().codec());
 
 	boolean test(Entity entity, ServerWorld world, @Nullable Vec3d pos);
 
-	TypeSpecificPredicate.Type getDeserializer();
+	TypeSpecificPredicate.Type type();
 
 	static TypeSpecificPredicate cat(CatVariant variant) {
 		return TypeSpecificPredicate.Deserializers.CAT.createPredicate(variant);
@@ -55,7 +54,7 @@ public interface TypeSpecificPredicate {
 			}
 
 			@Override
-			public TypeSpecificPredicate.Type getDeserializer() {
+			public TypeSpecificPredicate.Type type() {
 				return TypeSpecificPredicate.Deserializers.ANY;
 			}
 		}));

@@ -21,15 +21,15 @@ public interface ChatLogEntry {
 		SYSTEM("system", () -> ReceivedMessage.GameMessage.GAME_MESSAGE_CODEC);
 
 		private final String id;
-		private final Supplier<com.mojang.serialization.Codec<? extends ChatLogEntry>> codecSupplier;
+		private final Supplier<Codec<? extends ChatLogEntry>> codecSupplier;
 
-		private Type(String id, Supplier<com.mojang.serialization.Codec<? extends ChatLogEntry>> codecSupplier) {
+		private Type(String id, Supplier<Codec<? extends ChatLogEntry>> codecSupplier) {
 			this.id = id;
 			this.codecSupplier = codecSupplier;
 		}
 
-		private com.mojang.serialization.Codec<? extends ChatLogEntry> getCodec() {
-			return (com.mojang.serialization.Codec<? extends ChatLogEntry>)this.codecSupplier.get();
+		private Codec<? extends ChatLogEntry> getCodec() {
+			return (Codec<? extends ChatLogEntry>)this.codecSupplier.get();
 		}
 
 		@Override

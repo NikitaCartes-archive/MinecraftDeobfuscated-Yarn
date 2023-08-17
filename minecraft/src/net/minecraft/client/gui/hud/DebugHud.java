@@ -54,6 +54,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
@@ -92,19 +93,27 @@ public class DebugHud {
 	private WorldChunk chunk;
 	@Nullable
 	private CompletableFuture<WorldChunk> chunkFuture;
+	private boolean showDebugHud;
+	private boolean renderingChartVisible;
+	private boolean renderingAndTickChartsVisible;
+	private boolean packetSizeAndPingChartsVisible;
+	private final PerformanceLog frameNanosLog = new PerformanceLog();
+	private final PerformanceLog tickNanosLog = new PerformanceLog();
+	private final PerformanceLog pingLog = new PerformanceLog();
+	private final PerformanceLog packetSizeLog = new PerformanceLog();
 	private final RenderingChart renderingChart;
+	private final TickChart tickChart;
 	private final PingChart pingChart;
 	private final PacketSizeChart packetSizeChart;
-	@Nullable
-	private TickChart tickChart;
 
 	public DebugHud(MinecraftClient client) {
 		this.client = client;
 		this.allocationRateCalculator = new DebugHud.AllocationRateCalculator();
 		this.textRenderer = client.textRenderer;
-		this.renderingChart = new RenderingChart(this.textRenderer, client.frameNanosLog);
-		this.pingChart = new PingChart(this.textRenderer, client.pingPerformanceLog);
-		this.packetSizeChart = new PacketSizeChart(this.textRenderer, client.receivedPacketSizeLog);
+		this.renderingChart = new RenderingChart(this.textRenderer, this.frameNanosLog);
+		this.tickChart = new TickChart(this.textRenderer, this.tickNanosLog);
+		this.pingChart = new PingChart(this.textRenderer, this.pingLog);
+		this.packetSizeChart = new PacketSizeChart(this.textRenderer, this.packetSizeLog);
 	}
 
 	public void resetChunk() {
@@ -120,43 +129,28 @@ public class DebugHud {
 		context.draw(() -> {
 			this.drawLeftText(context);
 			this.drawRightText(context);
-			if (this.client.options.debugTpsEnabled) {
+			if (this.renderingAndTickChartsVisible) {
 				int i = context.getScaledWindowWidth();
 				int j = i / 2;
 				this.renderingChart.render(context, 0, this.renderingChart.getWidth(j));
-				TickChart tickChart = this.getTickChart();
-				if (tickChart != null) {
-					int k = tickChart.getWidth(j);
-					tickChart.render(context, i - k, k);
+				if (this.client.getServer() != null) {
+					int k = this.tickChart.getWidth(j);
+					this.tickChart.render(context, i - k, k);
 				}
 			}
 
-			if (this.client.options.debugPacketSizeEnabled) {
+			if (this.packetSizeAndPingChartsVisible) {
 				int i = context.getScaledWindowWidth();
 				int j = i / 2;
 				if (!this.client.isInSingleplayer()) {
 					this.packetSizeChart.render(context, 0, this.packetSizeChart.getWidth(j));
 				}
 
-				int l = this.pingChart.getWidth(j);
-				this.pingChart.render(context, i - l, l);
+				int k = this.pingChart.getWidth(j);
+				this.pingChart.render(context, i - k, k);
 			}
 		});
 		this.client.getProfiler().pop();
-	}
-
-	@Nullable
-	private TickChart getTickChart() {
-		if (this.tickChart != null) {
-			return this.tickChart;
-		} else {
-			IntegratedServer integratedServer = this.client.getServer();
-			if (integratedServer != null) {
-				this.tickChart = new TickChart(this.textRenderer, integratedServer.getTickNanosLog());
-			}
-
-			return this.tickChart;
-		}
 	}
 
 	protected void drawLeftText(DrawContext context) {
@@ -164,11 +158,14 @@ public class DebugHud {
 		list.add("");
 		boolean bl = this.client.getServer() != null;
 		list.add(
-			"Debug: Pie [shift]: "
-				+ (this.client.options.debugProfilerEnabled ? "visible" : "hidden")
-				+ (bl ? " FPS + TPS" : " FPS")
-				+ " [alt]: "
-				+ (this.client.options.debugTpsEnabled ? "visible" : "hidden")
+			"Debug charts: [F3+1] Profiler "
+				+ (this.renderingChartVisible ? "visible" : "hidden")
+				+ "; [F3+2] "
+				+ (bl ? "FPS + TPS " : "FPS ")
+				+ (this.renderingAndTickChartsVisible ? "visible" : "hidden")
+				+ "; [F3+3] "
+				+ (!this.client.isInSingleplayer() ? "Bandwidth + Ping" : "Ping")
+				+ (this.packetSizeAndPingChartsVisible ? " visible" : " hidden")
 		);
 		list.add("For help: press F3 + Q");
 		this.drawText(context, list, true);
@@ -531,6 +528,68 @@ public class DebugHud {
 
 	private static long toMiB(long bytes) {
 		return bytes / 1024L / 1024L;
+	}
+
+	public boolean shouldShowDebugHud() {
+		return this.showDebugHud && !this.client.options.hudHidden;
+	}
+
+	public boolean shouldShowRenderingChart() {
+		return this.shouldShowDebugHud() && this.renderingChartVisible;
+	}
+
+	public boolean showShowPacketSizeAndPingCharts() {
+		return this.shouldShowDebugHud() && this.packetSizeAndPingChartsVisible;
+	}
+
+	public void toggleDebugHud() {
+		this.showDebugHud = !this.showDebugHud;
+	}
+
+	public void togglePacketSizeAndPingCharts() {
+		this.packetSizeAndPingChartsVisible = !this.showDebugHud || !this.packetSizeAndPingChartsVisible;
+		if (this.packetSizeAndPingChartsVisible) {
+			this.showDebugHud = true;
+			this.renderingAndTickChartsVisible = false;
+		}
+	}
+
+	public void toggleRenderingAndTickCharts() {
+		this.renderingAndTickChartsVisible = !this.showDebugHud || !this.renderingAndTickChartsVisible;
+		if (this.renderingAndTickChartsVisible) {
+			this.showDebugHud = true;
+			this.packetSizeAndPingChartsVisible = false;
+		}
+	}
+
+	public void toggleRenderingChart() {
+		this.renderingChartVisible = !this.showDebugHud || !this.renderingChartVisible;
+		if (this.renderingChartVisible) {
+			this.showDebugHud = true;
+		}
+	}
+
+	public void pushToFrameLog(long value) {
+		this.frameNanosLog.push(value);
+	}
+
+	public void pushToTickLog(long value) {
+		this.tickNanosLog.push(value);
+	}
+
+	public PerformanceLog getPingLog() {
+		return this.pingLog;
+	}
+
+	public PerformanceLog getPacketSizeLog() {
+		return this.packetSizeLog;
+	}
+
+	public void clear() {
+		this.showDebugHud = false;
+		this.tickNanosLog.reset();
+		this.pingLog.reset();
+		this.packetSizeLog.reset();
 	}
 
 	@Environment(EnvType.CLIENT)

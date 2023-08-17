@@ -29,11 +29,11 @@ public class ConnectingBlock extends Block {
 		directions.put(Direction.UP, UP);
 		directions.put(Direction.DOWN, DOWN);
 	}));
-	protected final VoxelShape[] connectionsToShape;
+	protected final VoxelShape[] facingsToShape;
 
 	protected ConnectingBlock(float radius, AbstractBlock.Settings settings) {
 		super(settings);
-		this.connectionsToShape = this.generateFacingsToShapeMap(radius);
+		this.facingsToShape = this.generateFacingsToShapeMap(radius);
 	}
 
 	private VoxelShape[] generateFacingsToShapeMap(float radius) {
@@ -80,7 +80,7 @@ public class ConnectingBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return this.connectionsToShape[this.getConnectionMask(state)];
+		return this.facingsToShape[this.getConnectionMask(state)];
 	}
 
 	protected int getConnectionMask(BlockState state) {

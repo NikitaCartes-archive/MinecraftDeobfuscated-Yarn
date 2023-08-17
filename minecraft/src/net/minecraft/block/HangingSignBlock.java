@@ -161,6 +161,6 @@ public class HangingSignBlock extends AbstractSignBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return checkType(type, BlockEntityType.HANGING_SIGN, SignBlockEntity::tick);
+		return validateTicker(type, BlockEntityType.HANGING_SIGN, SignBlockEntity::tick);
 	}
 }

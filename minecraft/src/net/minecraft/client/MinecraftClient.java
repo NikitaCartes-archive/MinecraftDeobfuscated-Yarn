@@ -2,6 +2,7 @@ package net.minecraft.client;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationException;
@@ -9,6 +10,7 @@ import com.mojang.authlib.minecraft.BanDetails;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.minecraft.UserApiService.UserFlag;
+import com.mojang.authlib.yggdrasil.ProfileActionType;
 import com.mojang.authlib.yggdrasil.ServicesKeyType;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlConst;
@@ -29,11 +31,13 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Queue;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -62,6 +66,7 @@ import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
+import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.AccessibilityOnboardingScreen;
@@ -241,7 +246,6 @@ import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.EmptyProfileResult;
-import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
@@ -318,7 +322,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 */
 	public static final String GL_ERROR_DIALOGUE = "Please make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).";
 	private final Path resourcePackDir;
-	private final CompletableFuture<GameProfile> gameProfileFuture;
+	private final CompletableFuture<com.mojang.authlib.yggdrasil.ProfileResult> gameProfileFuture;
 	private final TextureManager textureManager;
 	private final DataFixer dataFixer;
 	private final WindowProvider windowProvider;
@@ -350,9 +354,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final String versionType;
 	private final Proxy networkProxy;
 	private final LevelStorage levelStorage;
-	public final PerformanceLog frameNanosLog = new PerformanceLog();
-	public final PerformanceLog pingPerformanceLog = new PerformanceLog();
-	public final PerformanceLog receivedPacketSizeLog = new PerformanceLog();
 	private final boolean is64Bit;
 	private final boolean isDemo;
 	private final boolean multiplayerEnabled;
@@ -544,8 +545,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		try {
 			this.window.setIcon(this.defaultResourcePack, SharedConstants.getGameVersion().isStable() ? Icons.RELEASE : Icons.SNAPSHOT);
-		} catch (IOException var11) {
-			LOGGER.error("Couldn't set icon", (Throwable)var11);
+		} catch (IOException var12) {
+			LOGGER.error("Couldn't set icon", (Throwable)var12);
 		}
 
 		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
@@ -663,52 +664,87 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
 		ResourceReload resourceReload = this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list);
 		GameLoadTimeEvent.INSTANCE.startTimer(TelemetryEventProperty.LOAD_TIME_LOADING_OVERLAY_MS);
-		this.setOverlay(new SplashOverlay(this, resourceReload, throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
-				if (SharedConstants.isDevelopment) {
-					this.checkGameData();
-				}
+		MinecraftClient.LoadingContext loadingContext = new MinecraftClient.LoadingContext(realmsClient, args.quickPlay);
+		this.setOverlay(
+			new SplashOverlay(
+				this, resourceReload, error -> Util.ifPresentOrElse(error, throwable -> this.handleResourceReloadException(throwable, loadingContext), () -> {
+						if (SharedConstants.isDevelopment) {
+							this.checkGameData();
+						}
 
-				this.resourceReloadLogger.finish();
-				this.onFinishedLoading();
-			}), false));
+						this.resourceReloadLogger.finish();
+						this.onFinishedLoading(loadingContext);
+					}), false
+			)
+		);
 		this.quickPlayLogger = QuickPlayLogger.create(args.quickPlay.path());
-		if (this.isMultiplayerBanned()) {
-			this.setScreen(Bans.createBanScreen(confirmed -> {
-				if (confirmed) {
-					Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
-				}
-
-				this.onInitFinished(realmsClient, resourceReload, args.quickPlay);
-			}, this.getMultiplayerBanDetails()));
-		} else {
-			this.onInitFinished(realmsClient, resourceReload, args.quickPlay);
-		}
 	}
 
-	private void onFinishedLoading() {
+	private void onFinishedLoading(@Nullable MinecraftClient.LoadingContext loadingContext) {
 		if (!this.finishedLoading) {
 			this.finishedLoading = true;
-			this.collectLoadTimes();
+			this.collectLoadTimes(loadingContext);
 		}
 	}
 
-	private void collectLoadTimes() {
+	private void collectLoadTimes(@Nullable MinecraftClient.LoadingContext loadingContext) {
+		Runnable runnable = this.onInitFinished(loadingContext);
 		GameLoadTimeEvent.INSTANCE.stopTimer(TelemetryEventProperty.LOAD_TIME_LOADING_OVERLAY_MS);
 		GameLoadTimeEvent.INSTANCE.stopTimer(TelemetryEventProperty.LOAD_TIME_TOTAL_TIME_MS);
 		GameLoadTimeEvent.INSTANCE.send(this.telemetryManager.getSender());
+		runnable.run();
 	}
 
 	public boolean isFinishedLoading() {
 		return this.finishedLoading;
 	}
 
-	private void onInitFinished(RealmsClient realms, ResourceReload reload, RunArgs.QuickPlay quickPlay) {
-		if (quickPlay.isEnabled()) {
-			QuickPlay.startQuickPlay(this, quickPlay, reload, realms);
-		} else if (this.options.onboardAccessibility) {
-			this.setScreen(new AccessibilityOnboardingScreen(this.options));
-		} else {
-			this.setScreen(new TitleScreen(true));
+	private Runnable onInitFinished(@Nullable MinecraftClient.LoadingContext loadingContext) {
+		List<Function<Runnable, Screen>> list = new ArrayList();
+		this.createInitScreens(list);
+		Runnable runnable = () -> {
+			if (loadingContext != null && loadingContext.quickPlayData().isEnabled()) {
+				QuickPlay.startQuickPlay(this, loadingContext.quickPlayData(), loadingContext.realmsClient());
+			} else {
+				this.setScreen(new TitleScreen(true));
+			}
+		};
+
+		for (Function<Runnable, Screen> function : Lists.reverse(list)) {
+			Screen screen = (Screen)function.apply(runnable);
+			runnable = () -> this.setScreen(screen);
+		}
+
+		return runnable;
+	}
+
+	private void createInitScreens(List<Function<Runnable, Screen>> list) {
+		if (this.options.onboardAccessibility) {
+			list.add((Function)onClose -> new AccessibilityOnboardingScreen(this.options, onClose));
+		}
+
+		BanDetails banDetails = this.getMultiplayerBanDetails();
+		if (banDetails != null) {
+			list.add((Function)onClose -> Bans.createBanScreen(confirmed -> {
+					if (confirmed) {
+						Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
+					}
+
+					onClose.run();
+				}, banDetails));
+		}
+
+		com.mojang.authlib.yggdrasil.ProfileResult profileResult = (com.mojang.authlib.yggdrasil.ProfileResult)this.gameProfileFuture.join();
+		if (profileResult != null) {
+			GameProfile gameProfile = profileResult.profile();
+			Set<ProfileActionType> set = profileResult.actions();
+			if (set.contains(ProfileActionType.FORCED_NAME_CHANGE)) {
+				list.add((Function)onClose -> Bans.createUsernameBanScreen(gameProfile.getName(), onClose));
+			}
+
+			if (set.contains(ProfileActionType.USING_BANNED_SKIN)) {
+				list.add(Bans::createSkinBanScreen);
+			}
 		}
 	}
 
@@ -763,22 +799,22 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return ModStatus.check("vanilla", ClientBrandRetriever::getClientModName, "Client", MinecraftClient.class);
 	}
 
-	private void handleResourceReloadException(Throwable throwable) {
+	private void handleResourceReloadException(Throwable throwable, @Nullable MinecraftClient.LoadingContext loadingContext) {
 		if (this.resourcePackManager.getEnabledNames().size() > 1) {
-			this.onResourceReloadFailure(throwable, null);
+			this.onResourceReloadFailure(throwable, null, loadingContext);
 		} else {
 			Util.throwUnchecked(throwable);
 		}
 	}
 
-	public void onResourceReloadFailure(Throwable exception, @Nullable Text resourceName) {
+	public void onResourceReloadFailure(Throwable exception, @Nullable Text resourceName, @Nullable MinecraftClient.LoadingContext loadingContext) {
 		LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", exception);
 		this.resourceReloadLogger.recover(exception);
 		this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
 		this.options.resourcePacks.clear();
 		this.options.incompatibleResourcePacks.clear();
 		this.options.write();
-		this.reloadResources(true).thenRun(() -> this.showResourceReloadFailureToast(resourceName));
+		this.reloadResources(true, loadingContext).thenRun(() -> this.showResourceReloadFailureToast(resourceName));
 	}
 
 	private void onForcedResourceReloadFailure() {
@@ -814,7 +850,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 				try {
 					TickDurationMonitor tickDurationMonitor = TickDurationMonitor.create("Renderer");
-					boolean bl2 = this.shouldMonitorTickDuration();
+					boolean bl2 = this.getDebugHud().shouldShowRenderingChart();
 					this.profiler = this.startMonitor(bl2, tickDurationMonitor);
 					this.profiler.startTick();
 					this.recorder.startTick();
@@ -945,10 +981,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public CompletableFuture<Void> reloadResources() {
-		return this.reloadResources(false);
+		return this.reloadResources(false, null);
 	}
 
-	private CompletableFuture<Void> reloadResources(boolean force) {
+	private CompletableFuture<Void> reloadResources(boolean force, @Nullable MinecraftClient.LoadingContext loadingContext) {
 		if (this.resourceReloadFuture != null) {
 			return this.resourceReloadFuture;
 		} else {
@@ -969,13 +1005,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 								if (force) {
 									this.onForcedResourceReloadFailure();
 								} else {
-									this.handleResourceReloadException(throwable);
+									this.handleResourceReloadException(throwable, loadingContext);
 								}
 							}, () -> {
 								this.worldRenderer.reload();
 								this.resourceReloadLogger.finish();
 								completableFuture.complete(null);
-								this.onFinishedLoading();
+								this.onFinishedLoading(loadingContext);
 							}), true
 					)
 				);
@@ -1213,7 +1249,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.push("render");
 		long m = Util.getMeasuringTimeNano();
 		boolean bl;
-		if (!this.options.debugEnabled && !this.recorder.isActive()) {
+		if (!this.getDebugHud().shouldShowDebugHud() && !this.recorder.isActive()) {
 			bl = false;
 			this.gpuUtilizationPercentage = 0.0;
 		} else {
@@ -1282,7 +1318,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.metricsSampleDuration = o;
 		}
 
-		this.frameNanosLog.push(o);
+		this.getDebugHud().pushToFrameLog(o);
 		this.lastMetricsSampleTime = n;
 		this.profiler.push("fpsUpdate");
 		if (this.currentGlTimerQuery != null && this.currentGlTimerQuery.isResultAvailable()) {
@@ -1316,10 +1352,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.profiler.pop();
-	}
-
-	private boolean shouldMonitorTickDuration() {
-		return this.options.debugEnabled && this.options.debugProfilerEnabled && !this.options.hudHidden;
 	}
 
 	private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
@@ -1670,11 +1702,22 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.running;
 	}
 
-	public void openPauseMenu(boolean pause) {
+	/**
+	 * Opens the "game menu", also called "pause menu".
+	 * 
+	 * <p>This is also used for menu-less pausing, which can be triggered by
+	 * pressing Esc and F3 keys at the same time.
+	 * 
+	 * @implNote Calling this does not immediately pause the game. Instead,
+	 * the game is paused during {@linkplain #render the next rendering}.
+	 * 
+	 * @param pauseOnly whether to trigger menu-less pausing instead of opening the game menu
+	 */
+	public void openGameMenu(boolean pauseOnly) {
 		if (this.currentScreen == null) {
 			boolean bl = this.isIntegratedServerRunning() && !this.server.isRemote();
 			if (bl) {
-				this.setScreen(new GameMenuScreen(!pause));
+				this.setScreen(new GameMenuScreen(!pauseOnly));
 				this.soundManager.pauseAll();
 			} else {
 				this.setScreen(new GameMenuScreen(true));
@@ -1863,7 +1906,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			Screen.wrapScreenError(() -> this.currentScreen.tick(), "Ticking screen", this.currentScreen.getClass().getCanonicalName());
 		}
 
-		if (!this.options.debugEnabled) {
+		if (!this.getDebugHud().shouldShowDebugHud()) {
 			this.inGameHud.resetDebugHudChunk();
 		}
 
@@ -2195,8 +2238,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setWorld(null);
 		this.player = null;
 		SkullBlockEntity.clearServices();
-		this.pingPerformanceLog.reset();
-		this.receivedPacketSizeLog.reset();
 	}
 
 	public void enterReconfiguration(Screen screen) {
@@ -2214,8 +2255,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setWorld(null);
 		this.player = null;
 		SkullBlockEntity.clearServices();
-		this.pingPerformanceLog.reset();
-		this.receivedPacketSizeLog.reset();
 	}
 
 	private void reset(Screen screen) {
@@ -2255,20 +2294,24 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean isMultiplayerEnabled() {
-		return this.multiplayerEnabled && this.userApiService.properties().flag(UserFlag.SERVERS_ALLOWED) && this.getMultiplayerBanDetails() == null;
+		return this.multiplayerEnabled
+			&& this.userApiService.properties().flag(UserFlag.SERVERS_ALLOWED)
+			&& this.getMultiplayerBanDetails() == null
+			&& !this.isUsernameBanned();
 	}
 
 	public boolean isRealmsEnabled() {
 		return this.userApiService.properties().flag(UserFlag.REALMS_ALLOWED) && this.getMultiplayerBanDetails() == null;
 	}
 
-	public boolean isMultiplayerBanned() {
-		return this.getMultiplayerBanDetails() != null;
-	}
-
 	@Nullable
 	public BanDetails getMultiplayerBanDetails() {
 		return (BanDetails)this.userApiService.properties().bannedScopes().get("MULTIPLAYER");
+	}
+
+	public boolean isUsernameBanned() {
+		com.mojang.authlib.yggdrasil.ProfileResult profileResult = (com.mojang.authlib.yggdrasil.ProfileResult)this.gameProfileFuture.getNow(null);
+		return profileResult != null && profileResult.actions().contains(ProfileActionType.FORCED_NAME_CHANGE);
 	}
 
 	/**
@@ -2534,8 +2577,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public GameProfile getGameProfile() {
-		GameProfile gameProfile = (GameProfile)this.gameProfileFuture.join();
-		return gameProfile != null ? gameProfile : new GameProfile(this.session.getUuidOrNull(), this.session.getUsername());
+		com.mojang.authlib.yggdrasil.ProfileResult profileResult = (com.mojang.authlib.yggdrasil.ProfileResult)this.gameProfileFuture.join();
+		return profileResult != null ? profileResult.profile() : new GameProfile(this.session.getUuidOrNull(), this.session.getUsername());
 	}
 
 	public Proxy getNetworkProxy() {
@@ -2675,10 +2718,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public <T> void reloadSearchProvider(SearchManager.Key<T> key, List<T> values) {
 		this.searchManager.reload(key, values);
-	}
-
-	public PerformanceLog getFrameNanosLog() {
-		return this.frameNanosLog;
 	}
 
 	public DataFixer getDataFixer() {
@@ -2904,6 +2943,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.window;
 	}
 
+	public DebugHud getDebugHud() {
+		return this.inGameHud.getDebugHud();
+	}
+
 	public BufferBuilderStorage getBufferBuilders() {
 		return this.bufferBuilders;
 	}
@@ -3016,5 +3059,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		public abstract boolean allowsChat(boolean singlePlayer);
+	}
+
+	@Environment(EnvType.CLIENT)
+	static record LoadingContext(RealmsClient realmsClient, RunArgs.QuickPlay quickPlayData) {
 	}
 }

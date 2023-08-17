@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
  * sending messages.
  */
 public interface SentMessage {
-	Text getContent();
+	Text content();
 
 	void send(ServerPlayerEntity sender, boolean filterMaskEnabled, MessageType.Parameters params);
 
@@ -26,7 +26,7 @@ public interface SentMessage {
 	 */
 	public static record Chat(SignedMessage message) implements SentMessage {
 		@Override
-		public Text getContent() {
+		public Text content() {
 			return this.message.getContent();
 		}
 
@@ -42,10 +42,10 @@ public interface SentMessage {
 	/**
 	 * The wrapper used for messages without associated source profile.
 	 */
-	public static record Profileless(Text getContent) implements SentMessage {
+	public static record Profileless(Text content) implements SentMessage {
 		@Override
 		public void send(ServerPlayerEntity sender, boolean filterMaskEnabled, MessageType.Parameters params) {
-			sender.networkHandler.sendProfilelessChatMessage(this.getContent, params);
+			sender.networkHandler.sendProfilelessChatMessage(this.content, params);
 		}
 	}
 }

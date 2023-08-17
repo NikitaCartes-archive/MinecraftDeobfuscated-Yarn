@@ -30,12 +30,14 @@ public class AccessibilityOnboardingScreen extends Screen {
 	private final boolean isNarratorUsable;
 	private boolean narratorPrompted;
 	private float narratorPromptTimer;
+	private final Runnable onClose;
 	@Nullable
 	private NarratedMultilineTextWidget textWidget;
 
-	public AccessibilityOnboardingScreen(GameOptions gameOptions) {
+	public AccessibilityOnboardingScreen(GameOptions gameOptions, Runnable onClose) {
 		super(Text.translatable("accessibility.onboarding.screen.title"));
 		this.gameOptions = gameOptions;
+		this.onClose = onClose;
 		this.logoDrawer = new LogoDrawer(true);
 		this.isNarratorUsable = MinecraftClient.getInstance().getNarratorManager().isActive();
 	}
@@ -78,14 +80,18 @@ public class AccessibilityOnboardingScreen extends Screen {
 
 	@Override
 	public void close() {
-		this.setScreen(new TitleScreen(true, this.logoDrawer));
+		this.saveAndRun(this.onClose);
 	}
 
 	private void setScreen(Screen screen) {
+		this.saveAndRun(() -> this.client.setScreen(screen));
+	}
+
+	private void saveAndRun(Runnable callback) {
 		this.gameOptions.onboardAccessibility = false;
 		this.gameOptions.write();
 		Narrator.getNarrator().clear();
-		this.client.setScreen(screen);
+		callback.run();
 	}
 
 	@Override

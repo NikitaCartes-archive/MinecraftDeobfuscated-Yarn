@@ -3,7 +3,6 @@ package net.minecraft.client.report;
 import com.mojang.authlib.exceptions.MinecraftClientException;
 import com.mojang.authlib.exceptions.MinecraftClientHttpException;
 import com.mojang.authlib.minecraft.UserApiService;
-import com.mojang.authlib.minecraft.report.AbuseReport;
 import com.mojang.authlib.minecraft.report.AbuseReportLimits;
 import com.mojang.authlib.yggdrasil.request.AbuseReportRequest;
 import com.mojang.datafixers.util.Unit;
@@ -22,7 +21,7 @@ public interface AbuseReportSender {
 		return new AbuseReportSender.Impl(environment, userApiService);
 	}
 
-	CompletableFuture<Unit> send(UUID id, AbuseReport report);
+	CompletableFuture<Unit> send(UUID id, AbuseReportType type, com.mojang.authlib.minecraft.report.AbuseReport report);
 
 	boolean canSendReports();
 
@@ -44,22 +43,22 @@ public interface AbuseReportSender {
 		private static final Text JSON_ERROR_TEXT = Text.translatable("gui.abuseReport.send.json_error");
 
 		@Override
-		public CompletableFuture<Unit> send(UUID id, AbuseReport report) {
+		public CompletableFuture<Unit> send(UUID id, AbuseReportType type, com.mojang.authlib.minecraft.report.AbuseReport report) {
 			return CompletableFuture.supplyAsync(
 				() -> {
 					AbuseReportRequest abuseReportRequest = new AbuseReportRequest(
-						1, id, report, this.environment.toClientInfo(), this.environment.toThirdPartyServerInfo(), this.environment.toRealmInfo()
+						1, id, report, this.environment.toClientInfo(), this.environment.toThirdPartyServerInfo(), this.environment.toRealmInfo(), type.getName()
 					);
 
 					try {
 						this.userApiService.reportAbuse(abuseReportRequest);
 						return Unit.INSTANCE;
-					} catch (MinecraftClientHttpException var6) {
-						Text text = this.getErrorText(var6);
-						throw new CompletionException(new AbuseReportSender.AbuseReportException(text, var6));
-					} catch (MinecraftClientException var7) {
-						Text textx = this.getErrorText(var7);
-						throw new CompletionException(new AbuseReportSender.AbuseReportException(textx, var7));
+					} catch (MinecraftClientHttpException var7) {
+						Text text = this.getErrorText(var7);
+						throw new CompletionException(new AbuseReportSender.AbuseReportException(text, var7));
+					} catch (MinecraftClientException var8) {
+						Text textx = this.getErrorText(var8);
+						throw new CompletionException(new AbuseReportSender.AbuseReportException(textx, var8));
 					}
 				},
 				Util.getIoWorkerExecutor()

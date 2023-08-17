@@ -1,5 +1,6 @@
 package net.minecraft.client.option;
 
+import com.mojang.serialization.Codec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.StringIdentifiable;
@@ -11,7 +12,7 @@ public enum CloudRenderMode implements TranslatableOption, StringIdentifiable {
 	FAST(1, "fast", "options.clouds.fast"),
 	FANCY(2, "true", "options.clouds.fancy");
 
-	public static final com.mojang.serialization.Codec<CloudRenderMode> CODEC = StringIdentifiable.createCodec(CloudRenderMode::values);
+	public static final Codec<CloudRenderMode> CODEC = StringIdentifiable.createCodec(CloudRenderMode::values);
 	private final int id;
 	private final String serializedId;
 	private final String translationKey;

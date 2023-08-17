@@ -1,6 +1,6 @@
 package net.minecraft.block;
 
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.GrindstoneScreenHandler;
@@ -92,7 +92,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	protected GrindstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.WALL));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(FACE, BlockFace.WALL));
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	private VoxelShape getShape(BlockState state) {
 		Direction direction = state.get(FACING);
-		switch ((WallMountLocation)state.get(FACE)) {
+		switch ((BlockFace)state.get(FACE)) {
 			case FLOOR:
 				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
 					return X_FLOOR_SHAPE;

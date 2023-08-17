@@ -3,6 +3,13 @@ package net.minecraft.inventory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
+/**
+ * Represents a combined inventory that is backed by two inventories.
+ * This is used by double chests.
+ * 
+ * <p>It is possible to nest this inventory to create triple or quadruple
+ * inventories.
+ */
 public class DoubleInventory implements Inventory {
 	private final Inventory first;
 	private final Inventory second;
@@ -22,6 +29,9 @@ public class DoubleInventory implements Inventory {
 		return this.first.isEmpty() && this.second.isEmpty();
 	}
 
+	/**
+	 * {@return whether {@code inventory} is part of the combined inventory}
+	 */
 	public boolean isPart(Inventory inventory) {
 		return this.first == inventory || this.second == inventory;
 	}

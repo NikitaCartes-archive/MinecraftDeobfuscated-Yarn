@@ -260,7 +260,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		RED("red", Blocks.RED_MUSHROOM.getDefaultState()),
 		BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState());
 
-		public static final StringIdentifiable.Codec<MooshroomEntity.Type> CODEC = StringIdentifiable.createCodec(MooshroomEntity.Type::values);
+		public static final StringIdentifiable.EnumCodec<MooshroomEntity.Type> CODEC = StringIdentifiable.createCodec(MooshroomEntity.Type::values);
 		final String name;
 		final BlockState mushroom;
 

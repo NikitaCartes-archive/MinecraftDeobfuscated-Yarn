@@ -1,6 +1,6 @@
 package net.minecraft.block;
 
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.sound.SoundCategory;
@@ -36,14 +36,12 @@ public class LeverBlock extends WallMountedBlock {
 
 	protected LeverBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.WALL)
-		);
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, BlockFace.WALL));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		switch ((WallMountLocation)state.get(FACE)) {
+		switch ((BlockFace)state.get(FACE)) {
 			case FLOOR:
 				switch (((Direction)state.get(FACING)).getAxis()) {
 					case X:

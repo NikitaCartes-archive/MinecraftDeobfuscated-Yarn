@@ -99,10 +99,10 @@ public class EntitySelectorOptions {
 				"distance",
 				reader -> {
 					int i = reader.getReader().getCursor();
-					NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(reader.getReader());
-					if ((!floatRange.getMin().isPresent() || !((Double)floatRange.getMin().get() < 0.0))
-						&& (!floatRange.getMax().isPresent() || !((Double)floatRange.getMax().get() < 0.0))) {
-						reader.setDistance(floatRange);
+					NumberRange.DoubleRange doubleRange = NumberRange.DoubleRange.parse(reader.getReader());
+					if ((!doubleRange.min().isPresent() || !((Double)doubleRange.min().get() < 0.0))
+						&& (!doubleRange.max().isPresent() || !((Double)doubleRange.max().get() < 0.0))) {
+						reader.setDistance(doubleRange);
 						reader.setLocalWorldOnly();
 					} else {
 						reader.getReader().setCursor(i);
@@ -112,24 +112,17 @@ public class EntitySelectorOptions {
 				reader -> reader.getDistance().isDummy(),
 				Text.translatable("argument.entity.options.distance.description")
 			);
-			putOption(
-				"level",
-				reader -> {
-					int i = reader.getReader().getCursor();
-					NumberRange.IntRange intRange = NumberRange.IntRange.parse(reader.getReader());
-					if ((!intRange.getMin().isPresent() || (Integer)intRange.getMin().get() >= 0) && (!intRange.getMax().isPresent() || (Integer)intRange.getMax().get() >= 0)
-						)
-					 {
-						reader.setLevelRange(intRange);
-						reader.setIncludesNonPlayers(false);
-					} else {
-						reader.getReader().setCursor(i);
-						throw NEGATIVE_LEVEL_EXCEPTION.createWithContext(reader.getReader());
-					}
-				},
-				reader -> reader.getLevelRange().isDummy(),
-				Text.translatable("argument.entity.options.level.description")
-			);
+			putOption("level", reader -> {
+				int i = reader.getReader().getCursor();
+				NumberRange.IntRange intRange = NumberRange.IntRange.parse(reader.getReader());
+				if ((!intRange.min().isPresent() || (Integer)intRange.min().get() >= 0) && (!intRange.max().isPresent() || (Integer)intRange.max().get() >= 0)) {
+					reader.setLevelRange(intRange);
+					reader.setIncludesNonPlayers(false);
+				} else {
+					reader.getReader().setCursor(i);
+					throw NEGATIVE_LEVEL_EXCEPTION.createWithContext(reader.getReader());
+				}
+			}, reader -> reader.getLevelRange().isDummy(), Text.translatable("argument.entity.options.level.description"));
 			putOption("x", reader -> {
 				reader.setLocalWorldOnly();
 				reader.setX(reader.getReader().readDouble());

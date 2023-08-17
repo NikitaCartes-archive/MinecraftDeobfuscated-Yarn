@@ -21,7 +21,7 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	);
 	private static final Identifier SCROLLER_TEXTURE = new Identifier("widget/scroller");
 	private static final int PADDING = 4;
-	private static final int field_45907 = 8;
+	private static final int SCROLLER_WIDTH = 8;
 	private double scrollY;
 	private boolean scrollbarDragged;
 
@@ -192,6 +192,10 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	 */
 	protected boolean overflows() {
 		return this.getContentsHeight() > this.getHeight();
+	}
+
+	public int getScrollerWidth() {
+		return 8;
 	}
 
 	/**

@@ -113,7 +113,7 @@ public class StructurePool {
 		TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.WORLD_SURFACE_WG, -1))),
 		RIGID("rigid", ImmutableList.of());
 
-		public static final StringIdentifiable.Codec<StructurePool.Projection> CODEC = StringIdentifiable.createCodec(StructurePool.Projection::values);
+		public static final StringIdentifiable.EnumCodec<StructurePool.Projection> CODEC = StringIdentifiable.createCodec(StructurePool.Projection::values);
 		private final String id;
 		private final ImmutableList<StructureProcessor> processors;
 

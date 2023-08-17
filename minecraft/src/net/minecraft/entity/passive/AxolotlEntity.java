@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import java.util.Arrays;
 import java.util.List;
@@ -309,11 +310,6 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	@Override
-	public double squaredAttackRange(LivingEntity target) {
-		return 1.5 + (double)target.getWidth() * 2.0;
-	}
-
-	@Override
 	public boolean isBreedingItem(ItemStack stack) {
 		return stack.isIn(ItemTags.AXOLOTL_TEMPT_ITEMS);
 	}
@@ -599,7 +595,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		private static final IntFunction<AxolotlEntity.Variant> BY_ID = ValueLists.createIdToValueFunction(
 			AxolotlEntity.Variant::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
 		);
-		public static final com.mojang.serialization.Codec<AxolotlEntity.Variant> CODEC = StringIdentifiable.createCodec(AxolotlEntity.Variant::values);
+		public static final Codec<AxolotlEntity.Variant> CODEC = StringIdentifiable.createCodec(AxolotlEntity.Variant::values);
 		private final int id;
 		private final String name;
 		private final boolean natural;

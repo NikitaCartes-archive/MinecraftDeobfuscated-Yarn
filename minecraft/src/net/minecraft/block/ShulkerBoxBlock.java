@@ -83,7 +83,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return checkType(type, BlockEntityType.SHULKER_BOX, ShulkerBoxBlockEntity::tick);
+		return validateTicker(type, BlockEntityType.SHULKER_BOX, ShulkerBoxBlockEntity::tick);
 	}
 
 	@Override

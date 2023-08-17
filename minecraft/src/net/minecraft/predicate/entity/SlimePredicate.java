@@ -28,7 +28,7 @@ public record SlimePredicate(NumberRange.IntRange size) implements TypeSpecificP
 	}
 
 	@Override
-	public TypeSpecificPredicate.Type getDeserializer() {
+	public TypeSpecificPredicate.Type type() {
 		return TypeSpecificPredicate.Deserializers.SLIME;
 	}
 }

@@ -244,7 +244,7 @@ public class BeehiveBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, BlockEntityType.BEEHIVE, BeehiveBlockEntity::serverTick);
+		return world.isClient ? null : validateTicker(type, BlockEntityType.BEEHIVE, BeehiveBlockEntity::serverTick);
 	}
 
 	@Override

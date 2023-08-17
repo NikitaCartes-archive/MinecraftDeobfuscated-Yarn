@@ -11,15 +11,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.JsonHelper;
 
 public record DamagePredicate(
-	NumberRange.FloatRange dealt,
-	NumberRange.FloatRange taken,
+	NumberRange.DoubleRange dealt,
+	NumberRange.DoubleRange taken,
 	Optional<EntityPredicate> sourceEntity,
 	Optional<Boolean> blocked,
 	Optional<DamageSourcePredicate> source
 ) {
 	static Optional<DamagePredicate> create(
-		NumberRange.FloatRange dealt,
-		NumberRange.FloatRange taken,
+		NumberRange.DoubleRange dealt,
+		NumberRange.DoubleRange taken,
 		Optional<EntityPredicate> sourceEntity,
 		Optional<Boolean> blocked,
 		Optional<DamageSourcePredicate> type
@@ -46,12 +46,12 @@ public record DamagePredicate(
 	public static Optional<DamagePredicate> fromJson(@Nullable JsonElement json) {
 		if (json != null && !json.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(json, "damage");
-			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("dealt"));
-			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("taken"));
+			NumberRange.DoubleRange doubleRange = NumberRange.DoubleRange.fromJson(jsonObject.get("dealt"));
+			NumberRange.DoubleRange doubleRange2 = NumberRange.DoubleRange.fromJson(jsonObject.get("taken"));
 			Optional<Boolean> optional = jsonObject.has("blocked") ? Optional.of(JsonHelper.getBoolean(jsonObject, "blocked")) : Optional.empty();
 			Optional<EntityPredicate> optional2 = EntityPredicate.fromJson(jsonObject.get("source_entity"));
 			Optional<DamageSourcePredicate> optional3 = DamageSourcePredicate.fromJson(jsonObject.get("type"));
-			return create(floatRange, floatRange2, optional2, optional, optional3);
+			return create(doubleRange, doubleRange2, optional2, optional, optional3);
 		} else {
 			return Optional.empty();
 		}
@@ -68,8 +68,8 @@ public record DamagePredicate(
 	}
 
 	public static class Builder {
-		private NumberRange.FloatRange dealt = NumberRange.FloatRange.ANY;
-		private NumberRange.FloatRange taken = NumberRange.FloatRange.ANY;
+		private NumberRange.DoubleRange dealt = NumberRange.DoubleRange.ANY;
+		private NumberRange.DoubleRange taken = NumberRange.DoubleRange.ANY;
 		private Optional<EntityPredicate> sourceEntity = Optional.empty();
 		private Optional<Boolean> blocked = Optional.empty();
 		private Optional<DamageSourcePredicate> type = Optional.empty();
@@ -78,12 +78,12 @@ public record DamagePredicate(
 			return new DamagePredicate.Builder();
 		}
 
-		public DamagePredicate.Builder dealt(NumberRange.FloatRange dealt) {
+		public DamagePredicate.Builder dealt(NumberRange.DoubleRange dealt) {
 			this.dealt = dealt;
 			return this;
 		}
 
-		public DamagePredicate.Builder taken(NumberRange.FloatRange taken) {
+		public DamagePredicate.Builder taken(NumberRange.DoubleRange taken) {
 			this.taken = taken;
 			return this;
 		}

@@ -342,7 +342,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.enabledFeatures = clientConnectionState.enabledFeatures();
 		this.advancementHandler = new ClientAdvancementManager(client, this.worldSession);
 		this.commandSource = new ClientCommandSource(this, client);
-		this.pingMeasurer = new PingMeasurer(this, client.pingPerformanceLog);
+		this.pingMeasurer = new PingMeasurer(this, client.getDebugHud().getPingLog());
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -2319,7 +2319,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		this.sendQueuedPackets();
-		if (this.client.options.debugPacketSizeEnabled) {
+		if (this.client.getDebugHud().showShowPacketSizeAndPingCharts()) {
 			this.pingMeasurer.ping();
 		}
 

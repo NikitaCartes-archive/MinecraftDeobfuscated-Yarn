@@ -62,11 +62,15 @@ public class Slot {
 		return !this.getStack().isEmpty();
 	}
 
+	public void setStack(ItemStack stack) {
+		this.setStack(stack, this.getStack());
+	}
+
 	/**
 	 * Sets the slot's stack to {@code stack} and marks the slot as dirty. Subclasses
 	 * may override this method to perform additional operations.
 	 */
-	public void setStack(ItemStack stack) {
+	public void setStack(ItemStack stack, ItemStack previousStack) {
 		this.setStackNoCallbacks(stack);
 	}
 
@@ -116,7 +120,7 @@ public class Slot {
 				return Optional.empty();
 			} else {
 				if (this.getStack().isEmpty()) {
-					this.setStack(ItemStack.EMPTY);
+					this.setStack(ItemStack.EMPTY, itemStack);
 				}
 
 				return Optional.of(itemStack);

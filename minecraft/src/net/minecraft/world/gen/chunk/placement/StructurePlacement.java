@@ -144,7 +144,7 @@ public abstract class StructurePlacement {
 		LEGACY_TYPE_2("legacy_type_2", StructurePlacement::legacyType2ShouldGenerate),
 		LEGACY_TYPE_3("legacy_type_3", StructurePlacement::legacyType3ShouldGenerate);
 
-		public static final com.mojang.serialization.Codec<StructurePlacement.FrequencyReductionMethod> CODEC = StringIdentifiable.createCodec(
+		public static final Codec<StructurePlacement.FrequencyReductionMethod> CODEC = StringIdentifiable.createCodec(
 			StructurePlacement.FrequencyReductionMethod::values
 		);
 		private final String name;

@@ -63,9 +63,9 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 			final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
 			this.addSlot(new Slot(inventory, 39 - i, 8, 8 + i * 18) {
 				@Override
-				public void setStack(ItemStack stack) {
-					PlayerScreenHandler.onEquipStack(owner, equipmentSlot, stack, this.getStack());
-					super.setStack(stack);
+				public void setStack(ItemStack stack, ItemStack previousStack) {
+					PlayerScreenHandler.onEquipStack(owner, equipmentSlot, stack, previousStack);
+					super.setStack(stack, previousStack);
 				}
 
 				@Override
@@ -103,9 +103,9 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 
 		this.addSlot(new Slot(inventory, 40, 77, 62) {
 			@Override
-			public void setStack(ItemStack stack) {
-				PlayerScreenHandler.onEquipStack(owner, EquipmentSlot.OFFHAND, stack, this.getStack());
-				super.setStack(stack);
+			public void setStack(ItemStack stack, ItemStack previousStack) {
+				PlayerScreenHandler.onEquipStack(owner, EquipmentSlot.OFFHAND, stack, previousStack);
+				super.setStack(stack, previousStack);
 			}
 
 			@Override

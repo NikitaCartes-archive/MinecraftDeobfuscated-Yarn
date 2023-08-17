@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import com.mojang.serialization.Codec;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -527,7 +528,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		BROWN(2, "brown"),
 		GRAY(3, "gray");
 
-		public static final com.mojang.serialization.Codec<LlamaEntity.Variant> CODEC = StringIdentifiable.createCodec(LlamaEntity.Variant::values);
+		public static final Codec<LlamaEntity.Variant> CODEC = StringIdentifiable.createCodec(LlamaEntity.Variant::values);
 		private static final IntFunction<LlamaEntity.Variant> BY_ID = ValueLists.createIdToValueFunction(
 			LlamaEntity.Variant::getIndex, values(), ValueLists.OutOfBoundsHandling.CLAMP
 		);

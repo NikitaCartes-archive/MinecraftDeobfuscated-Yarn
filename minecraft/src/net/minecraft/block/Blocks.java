@@ -530,10 +530,10 @@ public class Blocks {
 	public static final Block AZALEA_LEAVES = register("azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
 	public static final Block FLOWERING_AZALEA_LEAVES = register("flowering_azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
 	public static final Block SPONGE = register(
-		"sponge", new SpongeBlock(AbstractBlock.Settings.create().mapColor(MapColor.YELLOW).strength(0.6F).sounds(BlockSoundGroup.GRASS))
+		"sponge", new SpongeBlock(AbstractBlock.Settings.create().mapColor(MapColor.YELLOW).strength(0.6F).sounds(BlockSoundGroup.SPONGE))
 	);
 	public static final Block WET_SPONGE = register(
-		"wet_sponge", new WetSpongeBlock(AbstractBlock.Settings.create().mapColor(MapColor.YELLOW).strength(0.6F).sounds(BlockSoundGroup.GRASS))
+		"wet_sponge", new WetSpongeBlock(AbstractBlock.Settings.create().mapColor(MapColor.YELLOW).strength(0.6F).sounds(BlockSoundGroup.WET_SPONGE))
 	);
 	public static final Block GLASS = register(
 		"glass",
@@ -1568,7 +1568,7 @@ public class Blocks {
 		)
 	);
 	public static final Block LEVER = register(
-		"lever", new LeverBlock(AbstractBlock.Settings.create().noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY))
+		"lever", new LeverBlock(AbstractBlock.Settings.create().noCollision().strength(0.5F).sounds(BlockSoundGroup.STONE).pistonBehavior(PistonBehavior.DESTROY))
 	);
 	public static final Block STONE_PRESSURE_PLATE = register(
 		"stone_pressure_plate",
@@ -1827,7 +1827,10 @@ public class Blocks {
 		)
 	);
 	public static final Block JUKEBOX = register(
-		"jukebox", new JukeboxBlock(AbstractBlock.Settings.create().mapColor(MapColor.DIRT_BROWN).instrument(Instrument.BASS).strength(2.0F, 6.0F).burnable())
+		"jukebox",
+		new JukeboxBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.DIRT_BROWN).instrument(Instrument.BASS).strength(2.0F, 6.0F).sounds(BlockSoundGroup.WOOD).burnable()
+		)
 	);
 	public static final Block OAK_FENCE = register(
 		"oak_fence",
@@ -1959,7 +1962,7 @@ public class Blocks {
 		"cake", new CakeBlock(AbstractBlock.Settings.create().solid().strength(0.5F).sounds(BlockSoundGroup.WOOL).pistonBehavior(PistonBehavior.DESTROY))
 	);
 	public static final Block REPEATER = register(
-		"repeater", new RepeaterBlock(AbstractBlock.Settings.create().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY))
+		"repeater", new RepeaterBlock(AbstractBlock.Settings.create().breakInstantly().sounds(BlockSoundGroup.STONE).pistonBehavior(PistonBehavior.DESTROY))
 	);
 	public static final Block WHITE_STAINED_GLASS = register("white_stained_glass", createStainedGlassBlock(DyeColor.WHITE));
 	public static final Block ORANGE_STAINED_GLASS = register("orange_stained_glass", createStainedGlassBlock(DyeColor.ORANGE));
@@ -2380,7 +2383,7 @@ public class Blocks {
 		)
 	);
 	public static final Block TRIPWIRE_HOOK = register(
-		"tripwire_hook", new TripwireHookBlock(AbstractBlock.Settings.create().noCollision().pistonBehavior(PistonBehavior.DESTROY))
+		"tripwire_hook", new TripwireHookBlock(AbstractBlock.Settings.create().noCollision().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY))
 	);
 	public static final Block TRIPWIRE = register(
 		"tripwire", new TripwireBlock((TripwireHookBlock)TRIPWIRE_HOOK, AbstractBlock.Settings.create().noCollision().pistonBehavior(PistonBehavior.DESTROY))
@@ -2592,7 +2595,7 @@ public class Blocks {
 		)
 	);
 	public static final Block COMPARATOR = register(
-		"comparator", new ComparatorBlock(AbstractBlock.Settings.create().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY))
+		"comparator", new ComparatorBlock(AbstractBlock.Settings.create().breakInstantly().sounds(BlockSoundGroup.STONE).pistonBehavior(PistonBehavior.DESTROY))
 	);
 	public static final Block DAYLIGHT_DETECTOR = register(
 		"daylight_detector",

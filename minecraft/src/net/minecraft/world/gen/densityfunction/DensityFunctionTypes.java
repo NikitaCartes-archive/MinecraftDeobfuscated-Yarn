@@ -1248,7 +1248,7 @@ public final class DensityFunctionTypes {
 			TYPE1("type_1", DensityFunctions.CaveScaler::scaleTunnels, 2.0),
 			TYPE2("type_2", DensityFunctions.CaveScaler::scaleCaves, 3.0);
 
-			public static final com.mojang.serialization.Codec<DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper> CODEC = StringIdentifiable.createCodec(
+			public static final Codec<DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper> CODEC = StringIdentifiable.createCodec(
 				DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper::values
 			);
 			private final String name;

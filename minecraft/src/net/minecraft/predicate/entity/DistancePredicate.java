@@ -13,29 +13,29 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
 public record DistancePredicate(
-	NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, NumberRange.FloatRange horizontal, NumberRange.FloatRange absolute
+	NumberRange.DoubleRange x, NumberRange.DoubleRange y, NumberRange.DoubleRange z, NumberRange.DoubleRange horizontal, NumberRange.DoubleRange absolute
 ) {
 	public static final Codec<DistancePredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "x", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::x),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "y", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::y),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "z", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::z),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "horizontal", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::horizontal),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "absolute", NumberRange.FloatRange.ANY).forGetter(DistancePredicate::absolute)
+					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "x", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::x),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "y", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::y),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "z", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::z),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "horizontal", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::horizontal),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "absolute", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::absolute)
 				)
 				.apply(instance, DistancePredicate::new)
 	);
 
-	public static DistancePredicate horizontal(NumberRange.FloatRange horizontal) {
-		return new DistancePredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, horizontal, NumberRange.FloatRange.ANY);
+	public static DistancePredicate horizontal(NumberRange.DoubleRange horizontal) {
+		return new DistancePredicate(NumberRange.DoubleRange.ANY, NumberRange.DoubleRange.ANY, NumberRange.DoubleRange.ANY, horizontal, NumberRange.DoubleRange.ANY);
 	}
 
-	public static DistancePredicate y(NumberRange.FloatRange y) {
-		return new DistancePredicate(NumberRange.FloatRange.ANY, y, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY);
+	public static DistancePredicate y(NumberRange.DoubleRange y) {
+		return new DistancePredicate(NumberRange.DoubleRange.ANY, y, NumberRange.DoubleRange.ANY, NumberRange.DoubleRange.ANY, NumberRange.DoubleRange.ANY);
 	}
 
-	public static DistancePredicate absolute(NumberRange.FloatRange absolute) {
-		return new DistancePredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, absolute);
+	public static DistancePredicate absolute(NumberRange.DoubleRange absolute) {
+		return new DistancePredicate(NumberRange.DoubleRange.ANY, NumberRange.DoubleRange.ANY, NumberRange.DoubleRange.ANY, NumberRange.DoubleRange.ANY, absolute);
 	}
 
 	public boolean test(double x0, double y0, double z0, double x1, double y1, double z1) {

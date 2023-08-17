@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.Positioner;
+import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
@@ -37,21 +37,16 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	public void init() {
 		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(10);
-		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
 		ButtonWidget buttonWidget = ButtonWidget.builder(Text.translatable("mco.create.world"), button -> this.createWorld()).build();
 		buttonWidget.active = false;
 		this.nameBox = new TextFieldWidget(this.textRenderer, 210, 20, Text.translatable("mco.configure.world.name"));
 		this.nameBox.setChangedListener(name -> buttonWidget.active = !Util.isBlank(name));
 		this.descriptionBox = new TextFieldWidget(this.textRenderer, 210, 20, Text.translatable("mco.configure.world.description"));
-		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.vertical().spacing(4));
-		directionalLayoutWidget2.add(new TextWidget(WORLD_NAME_TEXT, this.textRenderer), Positioner::alignLeft);
-		directionalLayoutWidget2.add(this.nameBox);
-		DirectionalLayoutWidget directionalLayoutWidget3 = directionalLayoutWidget.add(DirectionalLayoutWidget.vertical().spacing(4));
-		directionalLayoutWidget3.add(new TextWidget(WORLD_DESCRIPTION_TEXT, this.textRenderer), Positioner::alignLeft);
-		directionalLayoutWidget3.add(this.descriptionBox);
-		DirectionalLayoutWidget directionalLayoutWidget4 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(10));
-		directionalLayoutWidget4.add(buttonWidget);
-		directionalLayoutWidget4.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
+		directionalLayoutWidget.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.nameBox, WORLD_NAME_TEXT));
+		directionalLayoutWidget.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.descriptionBox, WORLD_DESCRIPTION_TEXT));
+		DirectionalLayoutWidget directionalLayoutWidget2 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(10));
+		directionalLayoutWidget2.add(buttonWidget);
+		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});

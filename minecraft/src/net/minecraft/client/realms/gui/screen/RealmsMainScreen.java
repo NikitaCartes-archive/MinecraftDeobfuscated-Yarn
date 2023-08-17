@@ -265,7 +265,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		directionalLayoutWidget.add(IconWidget.create(130, 64, NO_REALMS_TEXTURE, 130, 64));
 		NarratedMultilineTextWidget narratedMultilineTextWidget = new NarratedMultilineTextWidget(308, NO_REALMS_TEXT, this.textRenderer, false);
 		directionalLayoutWidget.add(narratedMultilineTextWidget);
-		this.setFocused(narratedMultilineTextWidget);
 		return directionalLayoutWidget;
 	}
 
@@ -519,9 +518,11 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	@Override
 	public Text getNarratedTitle() {
-		return (Text)(this.loadStatus == RealmsMainScreen.LoadStatus.LOADING
-			? ScreenTexts.joinSentences(super.getNarratedTitle(), LOADING_TEXT)
-			: super.getNarratedTitle());
+		return (Text)(switch (this.loadStatus) {
+			case LOADING -> ScreenTexts.joinSentences(super.getNarratedTitle(), LOADING_TEXT);
+			case NO_REALMS -> ScreenTexts.joinSentences(super.getNarratedTitle(), NO_REALMS_TEXT);
+			case LIST -> super.getNarratedTitle();
+		});
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.Iterators;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,8 +36,8 @@ public enum Direction implements StringIdentifiable {
 	WEST(4, 5, 1, "west", Direction.AxisDirection.NEGATIVE, Direction.Axis.X, new Vec3i(-1, 0, 0)),
 	EAST(5, 4, 3, "east", Direction.AxisDirection.POSITIVE, Direction.Axis.X, new Vec3i(1, 0, 0));
 
-	public static final StringIdentifiable.Codec<Direction> CODEC = StringIdentifiable.createCodec(Direction::values);
-	public static final com.mojang.serialization.Codec<Direction> VERTICAL_CODEC = Codecs.validate(CODEC, Direction::validateVertical);
+	public static final StringIdentifiable.EnumCodec<Direction> CODEC = StringIdentifiable.createCodec(Direction::values);
+	public static final Codec<Direction> VERTICAL_CODEC = Codecs.validate(CODEC, Direction::validateVertical);
 	private final int id;
 	private final int idOpposite;
 	private final int idHorizontal;
@@ -413,7 +414,7 @@ public enum Direction implements StringIdentifiable {
 		};
 
 		public static final Direction.Axis[] VALUES = values();
-		public static final StringIdentifiable.Codec<Direction.Axis> CODEC = StringIdentifiable.createCodec(Direction.Axis::values);
+		public static final StringIdentifiable.EnumCodec<Direction.Axis> CODEC = StringIdentifiable.createCodec(Direction.Axis::values);
 		private final String name;
 
 		Axis(String name) {

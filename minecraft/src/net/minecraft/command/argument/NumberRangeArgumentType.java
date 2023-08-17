@@ -18,15 +18,15 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 		return new NumberRangeArgumentType.FloatRangeArgumentType();
 	}
 
-	public static class FloatRangeArgumentType implements NumberRangeArgumentType<NumberRange.FloatRange> {
+	public static class FloatRangeArgumentType implements NumberRangeArgumentType<NumberRange.DoubleRange> {
 		private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
 
-		public static NumberRange.FloatRange getRangeArgument(CommandContext<ServerCommandSource> context, String name) {
-			return context.getArgument(name, NumberRange.FloatRange.class);
+		public static NumberRange.DoubleRange getRangeArgument(CommandContext<ServerCommandSource> context, String name) {
+			return context.getArgument(name, NumberRange.DoubleRange.class);
 		}
 
-		public NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
-			return NumberRange.FloatRange.parse(stringReader);
+		public NumberRange.DoubleRange parse(StringReader stringReader) throws CommandSyntaxException {
+			return NumberRange.DoubleRange.parse(stringReader);
 		}
 
 		@Override

@@ -144,7 +144,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion("travelled", TravelCriterion.Conditions.netherTravel(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(7000.0))))
+			.criterion("travelled", TravelCriterion.Conditions.netherTravel(DistancePredicate.horizontal(NumberRange.DoubleRange.atLeast(7000.0))))
 			.build(exporter, "nether/fast_travel");
 		Advancement.Builder.create()
 			.parent(advancement2)
@@ -455,7 +455,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 					EntityPredicate.Builder.create()
 						.location(LocationPredicate.Builder.createDimension(World.OVERWORLD))
 						.vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER)),
-					DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0))
+					DistancePredicate.horizontal(NumberRange.DoubleRange.atLeast(50.0))
 				)
 			)
 			.build(exporter, "nether/ride_strider_in_overworld_lava");

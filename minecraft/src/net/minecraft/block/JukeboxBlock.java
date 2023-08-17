@@ -107,6 +107,6 @@ public class JukeboxBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return state.get(HAS_RECORD) ? checkType(type, BlockEntityType.JUKEBOX, JukeboxBlockEntity::tick) : null;
+		return state.get(HAS_RECORD) ? validateTicker(type, BlockEntityType.JUKEBOX, JukeboxBlockEntity::tick) : null;
 	}
 }

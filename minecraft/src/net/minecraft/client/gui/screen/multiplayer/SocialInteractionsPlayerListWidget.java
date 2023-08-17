@@ -108,10 +108,10 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 		this.players.sort(Comparator.comparing(player -> {
 			if (this.client.uuidEquals(player.getUuid())) {
 				return 0;
-			} else if (player.getUuid().version() == 2) {
-				return 4;
 			} else if (this.client.getAbuseReportContext().draftPlayerUuidEquals(player.getUuid())) {
 				return 1;
+			} else if (player.getUuid().version() == 2) {
+				return 4;
 			} else {
 				return player.hasSentMessage() ? 2 : 3;
 			}

@@ -133,9 +133,7 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 		SPECTATOR("spectator", 6),
 		HARDCORE("hardcore", 99);
 
-		public static final com.mojang.serialization.Codec<TelemetryEventProperty.GameMode> CODEC = StringIdentifiable.createCodec(
-			TelemetryEventProperty.GameMode::values
-		);
+		public static final Codec<TelemetryEventProperty.GameMode> CODEC = StringIdentifiable.createCodec(TelemetryEventProperty.GameMode::values);
 		private final String id;
 		private final int rawId;
 
@@ -165,9 +163,7 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 		LOCAL("local"),
 		OTHER("server");
 
-		public static final com.mojang.serialization.Codec<TelemetryEventProperty.ServerType> CODEC = StringIdentifiable.createCodec(
-			TelemetryEventProperty.ServerType::values
-		);
+		public static final Codec<TelemetryEventProperty.ServerType> CODEC = StringIdentifiable.createCodec(TelemetryEventProperty.ServerType::values);
 		private final String id;
 
 		private ServerType(String id) {

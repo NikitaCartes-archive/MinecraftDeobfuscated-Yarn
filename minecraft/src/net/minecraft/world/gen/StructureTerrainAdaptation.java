@@ -1,5 +1,6 @@
 package net.minecraft.world.gen;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 public enum StructureTerrainAdaptation implements StringIdentifiable {
@@ -8,7 +9,7 @@ public enum StructureTerrainAdaptation implements StringIdentifiable {
 	BEARD_THIN("beard_thin"),
 	BEARD_BOX("beard_box");
 
-	public static final com.mojang.serialization.Codec<StructureTerrainAdaptation> CODEC = StringIdentifiable.createCodec(StructureTerrainAdaptation::values);
+	public static final Codec<StructureTerrainAdaptation> CODEC = StringIdentifiable.createCodec(StructureTerrainAdaptation::values);
 	private final String name;
 
 	private StructureTerrainAdaptation(String name) {

@@ -9,17 +9,19 @@ import net.minecraft.util.math.Direction;
  */
 public interface SidedInventory extends Inventory {
 	/**
-	 * Gets the available slot positions that are reachable from a given side.
+	 * {@return the available slot positions that are reachable from a given side}
 	 */
 	int[] getAvailableSlots(Direction side);
 
 	/**
-	 * Determines whether the given stack can be inserted into this inventory at the specified slot position from the given direction.
+	 * {@return whether the given stack can be inserted into this inventory
+	 * at the specified slot position from the given direction}
 	 */
 	boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir);
 
 	/**
-	 * Determines whether the given stack can be removed from this inventory at the specified slot position from the given direction.
+	 * {@return whether the given stack can be removed from this inventory at the
+	 * specified slot position from the given direction}
 	 */
 	boolean canExtract(int slot, ItemStack stack, Direction dir);
 }

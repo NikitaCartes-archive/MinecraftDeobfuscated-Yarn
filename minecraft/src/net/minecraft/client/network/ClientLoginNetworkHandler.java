@@ -3,6 +3,7 @@ package net.minecraft.client.network;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
+import com.mojang.authlib.exceptions.ForcedUsernameChangeException;
 import com.mojang.authlib.exceptions.InsufficientPrivilegesException;
 import com.mojang.authlib.exceptions.InvalidCredentialsException;
 import com.mojang.authlib.exceptions.UserBannedException;
@@ -122,7 +123,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.invalidSession"));
 		} catch (InsufficientPrivilegesException var5) {
 			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.insufficientPrivileges"));
-		} catch (UserBannedException var6) {
+		} catch (ForcedUsernameChangeException | UserBannedException var6) {
 			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.userBanned"));
 		} catch (AuthenticationException var7) {
 			return Text.translatable("disconnect.loginFailedInfo", var7.getMessage());

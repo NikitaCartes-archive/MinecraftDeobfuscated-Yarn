@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screen.Screen;
 
 @Environment(EnvType.CLIENT)
 public class ThreePartsLayoutWidget implements LayoutWidget {
-	private static final int DEFAULT_HEADER_FOOTER_HEIGHT = 36;
+	public static final int DEFAULT_HEADER_FOOTER_HEIGHT = 36;
 	private static final int FOOTER_MARGIN_TOP = 30;
 	private final SimplePositioningWidget header = new SimplePositioningWidget();
 	private final SimplePositioningWidget footer = new SimplePositioningWidget();

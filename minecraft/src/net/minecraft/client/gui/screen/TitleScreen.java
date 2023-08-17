@@ -193,6 +193,8 @@ public class TitleScreen extends Screen {
 	private Text getMultiplayerDisabledText() {
 		if (this.client.isMultiplayerEnabled()) {
 			return null;
+		} else if (this.client.isUsernameBanned()) {
+			return Text.translatable("title.multiplayer.disabled.banned.name");
 		} else {
 			BanDetails banDetails = this.client.getMultiplayerBanDetails();
 			if (banDetails != null) {

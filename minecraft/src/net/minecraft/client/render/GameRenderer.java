@@ -990,7 +990,7 @@ public class GameRenderer implements AutoCloseable {
 			&& this.client.options.pauseOnLostFocus
 			&& (!this.client.options.getTouchscreen().getValue() || !this.client.mouse.wasRightButtonClicked())) {
 			if (Util.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
-				this.client.openPauseMenu(false);
+				this.client.openGameMenu(false);
 			}
 		} else {
 			this.lastWindowFocusedTime = Util.getMeasuringTimeMs();

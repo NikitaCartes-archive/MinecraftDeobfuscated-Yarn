@@ -257,9 +257,7 @@ public class BiomeEffects {
 		};
 
 		private final String name;
-		public static final com.mojang.serialization.Codec<BiomeEffects.GrassColorModifier> CODEC = StringIdentifiable.createCodec(
-			BiomeEffects.GrassColorModifier::values
-		);
+		public static final Codec<BiomeEffects.GrassColorModifier> CODEC = StringIdentifiable.createCodec(BiomeEffects.GrassColorModifier::values);
 
 		public abstract int getModifiedGrassColor(double x, double z, int color);
 

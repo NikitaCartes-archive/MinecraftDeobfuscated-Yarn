@@ -74,7 +74,7 @@ public class MineshaftStructure extends Structure {
 		NORMAL("normal", Blocks.OAK_LOG, Blocks.OAK_PLANKS, Blocks.OAK_FENCE),
 		MESA("mesa", Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_FENCE);
 
-		public static final com.mojang.serialization.Codec<MineshaftStructure.Type> CODEC = StringIdentifiable.createCodec(MineshaftStructure.Type::values);
+		public static final Codec<MineshaftStructure.Type> CODEC = StringIdentifiable.createCodec(MineshaftStructure.Type::values);
 		private static final IntFunction<MineshaftStructure.Type> BY_ID = ValueLists.createIdToValueFunction(
 			Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO
 		);

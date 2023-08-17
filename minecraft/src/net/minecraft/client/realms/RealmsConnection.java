@@ -48,7 +48,7 @@ public class RealmsConnection {
 						}
 
 						RealmsConnection.this.connection = ClientConnection.connect(
-							inetSocketAddress, minecraftClient.options.shouldUseNativeTransport(), minecraftClient.receivedPacketSizeLog
+							inetSocketAddress, minecraftClient.options.shouldUseNativeTransport(), minecraftClient.getDebugHud().getPacketSizeLog()
 						);
 						if (RealmsConnection.this.aborted) {
 							return;

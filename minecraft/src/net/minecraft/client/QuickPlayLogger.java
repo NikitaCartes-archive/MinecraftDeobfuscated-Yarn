@@ -110,7 +110,7 @@ public class QuickPlayLogger {
 		MULTIPLAYER("multiplayer"),
 		REALMS("realms");
 
-		static final com.mojang.serialization.Codec<QuickPlayLogger.WorldType> CODEC = StringIdentifiable.createCodec(QuickPlayLogger.WorldType::values);
+		static final Codec<QuickPlayLogger.WorldType> CODEC = StringIdentifiable.createCodec(QuickPlayLogger.WorldType::values);
 		private final String id;
 
 		private WorldType(String id) {

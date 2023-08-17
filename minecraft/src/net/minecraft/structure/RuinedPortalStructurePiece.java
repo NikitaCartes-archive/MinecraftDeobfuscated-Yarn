@@ -326,7 +326,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		UNDERGROUND("underground"),
 		IN_NETHER("in_nether");
 
-		public static final StringIdentifiable.Codec<RuinedPortalStructurePiece.VerticalPlacement> CODEC = StringIdentifiable.createCodec(
+		public static final StringIdentifiable.EnumCodec<RuinedPortalStructurePiece.VerticalPlacement> CODEC = StringIdentifiable.createCodec(
 			RuinedPortalStructurePiece.VerticalPlacement::values
 		);
 		private final String id;

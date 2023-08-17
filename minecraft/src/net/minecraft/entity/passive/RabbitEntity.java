@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import com.mojang.serialization.Codec;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -353,7 +354,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	public void setVariant(RabbitEntity.RabbitType rabbitType) {
 		if (rabbitType == RabbitEntity.RabbitType.EVIL) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(8.0);
-			this.goalSelector.add(4, new RabbitEntity.RabbitAttackGoal(this));
+			this.goalSelector.add(4, new MeleeAttackGoal(this, 1.4, true));
 			this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 			this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new ActiveTargetGoal(this, WolfEntity.class, true));
@@ -526,17 +527,6 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 		}
 	}
 
-	static class RabbitAttackGoal extends MeleeAttackGoal {
-		public RabbitAttackGoal(RabbitEntity rabbit) {
-			super(rabbit, 1.4, true);
-		}
-
-		@Override
-		protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-			return (double)(4.0F + entity.getWidth());
-		}
-	}
-
 	public static class RabbitData extends PassiveEntity.PassiveData {
 		public final RabbitEntity.RabbitType type;
 
@@ -619,7 +609,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 		EVIL(99, "evil");
 
 		private static final IntFunction<RabbitEntity.RabbitType> BY_ID = ValueLists.createIdToValueFunction(RabbitEntity.RabbitType::getId, values(), BROWN);
-		public static final com.mojang.serialization.Codec<RabbitEntity.RabbitType> CODEC = StringIdentifiable.createCodec(RabbitEntity.RabbitType::values);
+		public static final Codec<RabbitEntity.RabbitType> CODEC = StringIdentifiable.createCodec(RabbitEntity.RabbitType::values);
 		final int id;
 		private final String name;
 

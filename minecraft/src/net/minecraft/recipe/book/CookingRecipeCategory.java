@@ -7,7 +7,7 @@ public enum CookingRecipeCategory implements StringIdentifiable {
 	BLOCKS("blocks"),
 	MISC("misc");
 
-	public static final StringIdentifiable.Codec<CookingRecipeCategory> CODEC = StringIdentifiable.createCodec(CookingRecipeCategory::values);
+	public static final StringIdentifiable.EnumCodec<CookingRecipeCategory> CODEC = StringIdentifiable.createCodec(CookingRecipeCategory::values);
 	private final String id;
 
 	private CookingRecipeCategory(String id) {

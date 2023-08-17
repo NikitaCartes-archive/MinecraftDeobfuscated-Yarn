@@ -39,7 +39,7 @@ public class BuyRealmsScreen extends RealmsScreen {
 	private static final int field_45261 = 10;
 	private static final int field_45262 = 320;
 	private static final int field_45263 = 172;
-	private static final int field_45264 = 99;
+	private static final int field_45264 = 100;
 	private static final int field_45265 = 99;
 	private static final int field_45266 = 100;
 	private static List<Identifier> realmsImages = List.of();
@@ -76,18 +76,26 @@ public class BuyRealmsScreen extends RealmsScreen {
 			);
 		}
 
-		this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.selectServer.buy"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-				if (confirmed) {
-					Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms");
-				}
+		this.setFocused(
+			this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.selectServer.buy"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+					if (confirmed) {
+						Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms");
+					}
 
-				this.client.setScreen(this);
-			}, "https://aka.ms/BuyJavaRealms", true))).dimensions(this.getRight() - 10 - 99, this.getBottom() - 10 - 20, 99, 20).build());
+					this.client.setScreen(this);
+				}, "https://aka.ms/BuyJavaRealms", true))).dimensions(this.getRight() - 10 - 99, this.getBottom() - 10 - 20, 99, 20).build())
+		);
 		TexturedButtonWidget texturedButtonWidget = this.addDrawableChild(
 			new TexturedButtonWidget(this.getLeft() + 4, this.getTop() + 4, 14, 14, CROSS_BUTTON_TEXTURES, button -> this.close(), CLOSE_TEXT)
 		);
 		texturedButtonWidget.setTooltip(Tooltip.of(CLOSE_TEXT));
-		this.addDrawableChild(new ScrollableTextWidget(this.getRight() - 10 - 99, this.getTop() + 10, 99, 127, POPUP_TEXT, this.textRenderer));
+		int i = 142 - (this.trialAvailable ? 40 : 20);
+		ScrollableTextWidget scrollableTextWidget = new ScrollableTextWidget(this.getRight() - 10 - 100, this.getTop() + 10, 100, i, POPUP_TEXT, this.textRenderer);
+		if (scrollableTextWidget.textOverflows()) {
+			scrollableTextWidget.setWidth(100 - scrollableTextWidget.getScrollerWidth());
+		}
+
+		this.addDrawableChild(scrollableTextWidget);
 	}
 
 	@Override

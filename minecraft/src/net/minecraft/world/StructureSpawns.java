@@ -19,7 +19,7 @@ public record StructureSpawns(StructureSpawns.BoundingBox boundingBox, Pool<Spaw
 		PIECE("piece"),
 		STRUCTURE("full");
 
-		public static final com.mojang.serialization.Codec<StructureSpawns.BoundingBox> CODEC = StringIdentifiable.createCodec(StructureSpawns.BoundingBox::values);
+		public static final Codec<StructureSpawns.BoundingBox> CODEC = StringIdentifiable.createCodec(StructureSpawns.BoundingBox::values);
 		private final String name;
 
 		private BoundingBox(String name) {

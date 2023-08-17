@@ -23,7 +23,7 @@ public record FishingHookPredicate(Optional<Boolean> inOpenWater) implements Typ
 	}
 
 	@Override
-	public TypeSpecificPredicate.Type getDeserializer() {
+	public TypeSpecificPredicate.Type type() {
 		return TypeSpecificPredicate.Deserializers.FISHING_HOOK;
 	}
 

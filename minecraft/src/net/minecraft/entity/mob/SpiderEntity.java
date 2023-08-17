@@ -217,11 +217,6 @@ public class SpiderEntity extends HostileEntity {
 				return super.shouldContinue();
 			}
 		}
-
-		@Override
-		protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-			return (double)(4.0F + entity.getWidth());
-		}
 	}
 
 	public static class SpiderData implements EntityData {

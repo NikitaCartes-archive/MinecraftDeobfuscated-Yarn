@@ -6,7 +6,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public record SkinTextures(Identifier texture, @Nullable Identifier capeTexture, @Nullable Identifier elytraTexture, SkinTextures.Model model, boolean secure) {
+public record SkinTextures(
+	Identifier texture,
+	@Nullable String textureUrl,
+	@Nullable Identifier capeTexture,
+	@Nullable Identifier elytraTexture,
+	SkinTextures.Model model,
+	boolean secure
+) {
 	@Environment(EnvType.CLIENT)
 	public static enum Model {
 		SLIM("slim"),

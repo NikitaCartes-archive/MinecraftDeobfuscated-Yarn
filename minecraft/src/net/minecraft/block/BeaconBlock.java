@@ -34,7 +34,7 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return checkType(type, BlockEntityType.BEACON, BeaconBlockEntity::tick);
+		return validateTicker(type, BlockEntityType.BEACON, BeaconBlockEntity::tick);
 	}
 
 	@Override

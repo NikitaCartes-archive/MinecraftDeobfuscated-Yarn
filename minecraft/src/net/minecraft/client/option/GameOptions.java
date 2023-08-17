@@ -260,6 +260,9 @@ public class GameOptions {
 			}
 		}
 	);
+	private final SimpleOption<Boolean> narratorHotkey = SimpleOption.ofBoolean(
+		"options.accessibility.narrator_hotkey", SimpleOption.constantTooltip(Text.translatable("options.accessibility.narrator_hotkey.tooltip")), true
+	);
 	@Nullable
 	public String fullscreenResolution;
 	public boolean hideServerAddress;
@@ -649,10 +652,6 @@ public class GameOptions {
 	private final File optionsFile;
 	public boolean hudHidden;
 	private Perspective perspective = Perspective.FIRST_PERSON;
-	public boolean debugEnabled;
-	public boolean debugProfilerEnabled;
-	public boolean debugTpsEnabled;
-	public boolean debugPacketSizeEnabled;
 	public String lastServer = "";
 	public boolean smoothCameraEnabled;
 	private final SimpleOption<Integer> fov = new SimpleOption<>(
@@ -907,6 +906,10 @@ public class GameOptions {
 
 	public SimpleOption<Boolean> getHighContrast() {
 		return this.highContrast;
+	}
+
+	public SimpleOption<Boolean> getNarratorHotkey() {
+		return this.narratorHotkey;
 	}
 
 	public SimpleOption<Arm> getMainArm() {
@@ -1211,6 +1214,7 @@ public class GameOptions {
 		visitor.accept("glintStrength", this.glintStrength);
 		visitor.accept("damageTiltStrength", this.damageTiltStrength);
 		visitor.accept("highContrast", this.highContrast);
+		visitor.accept("narratorHotkey", this.narratorHotkey);
 		visitor.accept("gamma", this.gamma);
 		visitor.accept("renderDistance", this.viewDistance);
 		visitor.accept("simulationDistance", this.simulationDistance);

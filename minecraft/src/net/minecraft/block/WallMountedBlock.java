@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -11,7 +11,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallMountedBlock extends HorizontalFacingBlock {
-	public static final EnumProperty<WallMountLocation> FACE = Properties.WALL_MOUNT_LOCATION;
+	public static final EnumProperty<BlockFace> FACE = Properties.BLOCK_FACE;
 
 	protected WallMountedBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -34,10 +34,10 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 			BlockState blockState;
 			if (direction.getAxis() == Direction.Axis.Y) {
 				blockState = this.getDefaultState()
-					.with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
+					.with(FACE, direction == Direction.UP ? BlockFace.CEILING : BlockFace.FLOOR)
 					.with(FACING, ctx.getHorizontalPlayerFacing());
 			} else {
-				blockState = this.getDefaultState().with(FACE, WallMountLocation.WALL).with(FACING, direction.getOpposite());
+				blockState = this.getDefaultState().with(FACE, BlockFace.WALL).with(FACING, direction.getOpposite());
 			}
 
 			if (blockState.canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) {
@@ -58,7 +58,7 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 	}
 
 	protected static Direction getDirection(BlockState state) {
-		switch ((WallMountLocation)state.get(FACE)) {
+		switch ((BlockFace)state.get(FACE)) {
 			case CEILING:
 				return Direction.DOWN;
 			case FLOOR:

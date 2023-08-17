@@ -101,7 +101,7 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 			float t = allayEntity.method_44368(m);
 			float u = MathHelper.cos(r) * 14.0F * (float) (Math.PI / 180.0);
 			float v = MathHelper.cos(r) * 30.0F * (float) (Math.PI / 180.0);
-			this.root.yaw = allayEntity.method_44360() ? (float) (Math.PI * 4) * t : this.root.yaw;
+			this.root.yaw = allayEntity.isSpinning() ? (float) (Math.PI * 4) * t : this.root.yaw;
 			this.root.roll = s * (1.0F - t);
 			this.head.yaw = v * (1.0F - t);
 			this.head.roll = u * (1.0F - t);

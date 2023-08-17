@@ -43,9 +43,7 @@ public class MeleeAttackGoal extends Goal {
 				return false;
 			} else {
 				this.path = this.mob.getNavigation().findPathTo(livingEntity, 0);
-				return this.path != null
-					? true
-					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
+				return this.path != null ? true : this.mob.isInAttackRange(livingEntity);
 			}
 		}
 	}
@@ -95,9 +93,9 @@ public class MeleeAttackGoal extends Goal {
 		LivingEntity livingEntity = this.mob.getTarget();
 		if (livingEntity != null) {
 			this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
-			double d = this.mob.getSquaredDistanceToAttackPosOf(livingEntity);
 			this.updateCountdownTicks = Math.max(this.updateCountdownTicks - 1, 0);
-			if ((this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity))
+			boolean bl = this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity);
+			if (bl
 				&& this.updateCountdownTicks <= 0
 				&& (
 					this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0
@@ -108,6 +106,7 @@ public class MeleeAttackGoal extends Goal {
 				this.targetY = livingEntity.getY();
 				this.targetZ = livingEntity.getZ();
 				this.updateCountdownTicks = 4 + this.mob.getRandom().nextInt(7);
+				double d = this.mob.squaredDistanceTo(livingEntity);
 				if (d > 1024.0) {
 					this.updateCountdownTicks += 10;
 				} else if (d > 256.0) {
@@ -122,13 +121,14 @@ public class MeleeAttackGoal extends Goal {
 			}
 
 			this.cooldown = Math.max(this.cooldown - 1, 0);
-			this.attack(livingEntity, d);
+			if (bl) {
+				this.attack(livingEntity);
+			}
 		}
 	}
 
-	protected void attack(LivingEntity target, double squaredDistance) {
-		double d = this.getSquaredMaxAttackDistance(target);
-		if (squaredDistance <= d && this.cooldown <= 0) {
+	protected void attack(LivingEntity target) {
+		if (this.cooldown <= 0 && this.mob.isInAttackRange(target)) {
 			this.resetCooldown();
 			this.mob.swingHand(Hand.MAIN_HAND);
 			this.mob.tryAttack(target);
@@ -149,9 +149,5 @@ public class MeleeAttackGoal extends Goal {
 
 	protected int getMaxCooldown() {
 		return this.getTickCount(20);
-	}
-
-	protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-		return (double)(this.mob.getWidth() * 2.0F * this.mob.getWidth() * 2.0F + entity.getWidth());
 	}
 }

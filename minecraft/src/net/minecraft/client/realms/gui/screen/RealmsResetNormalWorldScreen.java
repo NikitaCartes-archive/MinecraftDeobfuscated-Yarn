@@ -7,7 +7,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.Positioner;
+import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
@@ -39,10 +39,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 		this.setInitialFocus(this.seedEdit);
 		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(10);
-		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
-		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.vertical().spacing(4));
-		directionalLayoutWidget2.add(new TextWidget(RESET_SEED_TEXT, this.textRenderer), Positioner::alignLeft);
-		directionalLayoutWidget2.add(this.seedEdit);
+		directionalLayoutWidget.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.seedEdit, RESET_SEED_TEXT));
 		directionalLayoutWidget.add(
 			CyclingButtonWidget.<RealmsWorldGeneratorType>builder(RealmsWorldGeneratorType::getText)
 				.values(RealmsWorldGeneratorType.values())
@@ -53,9 +50,9 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 			CyclingButtonWidget.onOffBuilder(this.mapFeatures)
 				.build(0, 0, 210, 20, Text.translatable("selectWorld.mapFeatures"), (button, mapFeatures) -> this.mapFeatures = mapFeatures)
 		);
-		DirectionalLayoutWidget directionalLayoutWidget3 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(10));
-		directionalLayoutWidget3.add(ButtonWidget.builder(this.parentTitle, button -> this.callback.accept(this.createResetWorldInfo())).build());
-		directionalLayoutWidget3.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
+		DirectionalLayoutWidget directionalLayoutWidget2 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(10));
+		directionalLayoutWidget2.add(ButtonWidget.builder(this.parentTitle, button -> this.callback.accept(this.createResetWorldInfo())).build());
+		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});

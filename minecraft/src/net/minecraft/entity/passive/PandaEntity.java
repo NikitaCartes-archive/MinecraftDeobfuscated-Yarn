@@ -716,7 +716,7 @@ public class PandaEntity extends AnimalEntity {
 		WEAK(5, "weak", true),
 		AGGRESSIVE(6, "aggressive", false);
 
-		public static final StringIdentifiable.Codec<PandaEntity.Gene> CODEC = StringIdentifiable.createCodec(PandaEntity.Gene::values);
+		public static final StringIdentifiable.EnumCodec<PandaEntity.Gene> CODEC = StringIdentifiable.createCodec(PandaEntity.Gene::values);
 		private static final IntFunction<PandaEntity.Gene> BY_ID = ValueLists.createIdToValueFunction(
 			PandaEntity.Gene::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
 		);

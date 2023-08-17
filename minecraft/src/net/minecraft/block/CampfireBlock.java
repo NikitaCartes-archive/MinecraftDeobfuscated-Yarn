@@ -306,11 +306,11 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 		if (world.isClient) {
-			return state.get(LIT) ? checkType(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::clientTick) : null;
+			return state.get(LIT) ? validateTicker(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::clientTick) : null;
 		} else {
 			return state.get(LIT)
-				? checkType(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::litServerTick)
-				: checkType(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::unlitServerTick);
+				? validateTicker(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::litServerTick)
+				: validateTicker(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::unlitServerTick);
 		}
 	}
 

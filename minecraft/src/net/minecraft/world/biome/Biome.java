@@ -360,7 +360,7 @@ public final class Biome {
 		};
 
 		private final String name;
-		public static final com.mojang.serialization.Codec<Biome.TemperatureModifier> CODEC = StringIdentifiable.createCodec(Biome.TemperatureModifier::values);
+		public static final Codec<Biome.TemperatureModifier> CODEC = StringIdentifiable.createCodec(Biome.TemperatureModifier::values);
 
 		public abstract float getModifiedTemperature(BlockPos pos, float temperature);
 

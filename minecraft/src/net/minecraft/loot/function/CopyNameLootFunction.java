@@ -55,7 +55,7 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER),
 		BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY);
 
-		public static final com.mojang.serialization.Codec<CopyNameLootFunction.Source> CODEC = StringIdentifiable.createCodec(CopyNameLootFunction.Source::values);
+		public static final Codec<CopyNameLootFunction.Source> CODEC = StringIdentifiable.createCodec(CopyNameLootFunction.Source::values);
 		private final String name;
 		final LootContextParameter<?> parameter;
 

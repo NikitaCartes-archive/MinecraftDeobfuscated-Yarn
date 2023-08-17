@@ -1305,7 +1305,11 @@ public final class ItemStack {
 	 * <p>This is the the value of the {@value #REPAIR_COST_KEY} key in NBT.
 	 */
 	public void setRepairCost(int repairCost) {
-		this.getOrCreateNbt().putInt("RepairCost", repairCost);
+		if (repairCost > 0) {
+			this.getOrCreateNbt().putInt("RepairCost", repairCost);
+		} else {
+			this.removeSubNbt("RepairCost");
+		}
 	}
 
 	/**

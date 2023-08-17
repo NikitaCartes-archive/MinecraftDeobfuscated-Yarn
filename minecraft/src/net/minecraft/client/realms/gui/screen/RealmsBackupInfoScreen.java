@@ -8,57 +8,51 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.dto.Backup;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
-import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupInfoScreen extends RealmsScreen {
+	private static final Text TITLE = Text.translatable("mco.backup.info.title");
 	private static final Text UNKNOWN = Text.translatable("mco.backup.unknown");
 	private final Screen parent;
 	final Backup backup;
+	final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private RealmsBackupInfoScreen.BackupInfoList backupInfoList;
 
 	public RealmsBackupInfoScreen(Screen parent, Backup backup) {
-		super(Text.translatable("mco.backup.info.title"));
+		super(TITLE);
 		this.parent = parent;
 		this.backup = backup;
 	}
 
 	@Override
-	public void tick() {
-	}
-
-	@Override
 	public void init() {
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent))
-				.dimensions(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20)
-				.build()
-		);
+		this.layout.addHeader(new TextWidget(TITLE, this.textRenderer));
 		this.backupInfoList = new RealmsBackupInfoScreen.BackupInfoList(this.client);
-		this.addSelectableChild(this.backupInfoList);
-		this.focusOn(this.backupInfoList);
+		this.addDrawableChild(this.backupInfoList);
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
+		this.layout.refreshPositions();
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.setScreen(this.parent);
-			return true;
-		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		this.backupInfoList.updateSize(this.width, this.height, this.layout.getHeaderHeight(), this.height - this.layout.getFooterHeight());
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		this.backupInfoList.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 16777215);
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	Text checkForSpecificMetadata(String key, String value) {
@@ -89,8 +83,14 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class BackupInfoList extends AlwaysSelectedEntryListWidget<RealmsBackupInfoScreen.BackupInfoListEntry> {
 		public BackupInfoList(MinecraftClient client) {
-			super(client, RealmsBackupInfoScreen.this.width, RealmsBackupInfoScreen.this.height, 32, RealmsBackupInfoScreen.this.height - 64, 36);
-			this.setRenderSelection(false);
+			super(
+				client,
+				RealmsBackupInfoScreen.this.width,
+				RealmsBackupInfoScreen.this.height,
+				RealmsBackupInfoScreen.this.layout.getHeaderHeight(),
+				RealmsBackupInfoScreen.this.height - RealmsBackupInfoScreen.this.layout.getFooterHeight(),
+				36
+			);
 			if (RealmsBackupInfoScreen.this.backup.changeList != null) {
 				RealmsBackupInfoScreen.this.backup.changeList.forEach((key, value) -> this.addEntry(RealmsBackupInfoScreen.this.new BackupInfoListEntry(key, value)));
 			}

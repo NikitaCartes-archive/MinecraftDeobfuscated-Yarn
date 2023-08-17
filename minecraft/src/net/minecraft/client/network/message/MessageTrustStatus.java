@@ -1,5 +1,6 @@
 package net.minecraft.client.network.message;
 
+import com.mojang.serialization.Codec;
 import java.time.Instant;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -17,7 +18,7 @@ public enum MessageTrustStatus implements StringIdentifiable {
 	MODIFIED("modified"),
 	NOT_SECURE("not_secure");
 
-	public static final com.mojang.serialization.Codec<MessageTrustStatus> CODEC = StringIdentifiable.createCodec(MessageTrustStatus::values);
+	public static final Codec<MessageTrustStatus> CODEC = StringIdentifiable.createCodec(MessageTrustStatus::values);
 	private final String id;
 
 	private MessageTrustStatus(String id) {

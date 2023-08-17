@@ -25,6 +25,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -66,6 +67,11 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.targetSelector
 			.add(1, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, IronGolemEntity.class, true));
+	}
+
+	@Override
+	public SoundCategory getSoundCategory() {
+		return SoundCategory.HOSTILE;
 	}
 
 	@Override

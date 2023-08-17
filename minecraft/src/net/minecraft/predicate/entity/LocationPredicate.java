@@ -108,9 +108,9 @@ public record LocationPredicate(
 	}
 
 	public static class Builder {
-		private NumberRange.FloatRange x = NumberRange.FloatRange.ANY;
-		private NumberRange.FloatRange y = NumberRange.FloatRange.ANY;
-		private NumberRange.FloatRange z = NumberRange.FloatRange.ANY;
+		private NumberRange.DoubleRange x = NumberRange.DoubleRange.ANY;
+		private NumberRange.DoubleRange y = NumberRange.DoubleRange.ANY;
+		private NumberRange.DoubleRange z = NumberRange.DoubleRange.ANY;
 		private Optional<RegistryKey<Biome>> biome = Optional.empty();
 		private Optional<RegistryKey<Structure>> feature = Optional.empty();
 		private Optional<RegistryKey<World>> dimension = Optional.empty();
@@ -135,21 +135,21 @@ public record LocationPredicate(
 			return create().structure(structure);
 		}
 
-		public static LocationPredicate.Builder createY(NumberRange.FloatRange y) {
+		public static LocationPredicate.Builder createY(NumberRange.DoubleRange y) {
 			return create().y(y);
 		}
 
-		public LocationPredicate.Builder x(NumberRange.FloatRange x) {
+		public LocationPredicate.Builder x(NumberRange.DoubleRange x) {
 			this.x = x;
 			return this;
 		}
 
-		public LocationPredicate.Builder y(NumberRange.FloatRange y) {
+		public LocationPredicate.Builder y(NumberRange.DoubleRange y) {
 			this.y = y;
 			return this;
 		}
 
-		public LocationPredicate.Builder z(NumberRange.FloatRange z) {
+		public LocationPredicate.Builder z(NumberRange.DoubleRange z) {
 			this.z = z;
 			return this;
 		}
@@ -196,17 +196,17 @@ public record LocationPredicate(
 		}
 	}
 
-	static record PositionRange(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z) {
+	static record PositionRange(NumberRange.DoubleRange x, NumberRange.DoubleRange y, NumberRange.DoubleRange z) {
 		public static final Codec<LocationPredicate.PositionRange> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "x", NumberRange.FloatRange.ANY).forGetter(LocationPredicate.PositionRange::x),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "y", NumberRange.FloatRange.ANY).forGetter(LocationPredicate.PositionRange::y),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.FloatRange.CODEC, "z", NumberRange.FloatRange.ANY).forGetter(LocationPredicate.PositionRange::z)
+						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "x", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::x),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "y", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::y),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "z", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::z)
 					)
 					.apply(instance, LocationPredicate.PositionRange::new)
 		);
 
-		static Optional<LocationPredicate.PositionRange> create(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z) {
+		static Optional<LocationPredicate.PositionRange> create(NumberRange.DoubleRange x, NumberRange.DoubleRange y, NumberRange.DoubleRange z) {
 			return x.isDummy() && y.isDummy() && z.isDummy() ? Optional.empty() : Optional.of(new LocationPredicate.PositionRange(x, y, z));
 		}
 

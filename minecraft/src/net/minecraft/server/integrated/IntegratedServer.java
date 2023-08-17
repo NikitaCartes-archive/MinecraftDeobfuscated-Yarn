@@ -114,6 +114,11 @@ public class IntegratedServer extends MinecraftServer {
 		}
 	}
 
+	@Override
+	public void tickTickLog(long nanos) {
+		this.client.getDebugHud().pushToTickLog(nanos);
+	}
+
 	private void incrementTotalWorldTimeStat() {
 		for (ServerPlayerEntity serverPlayerEntity : this.getPlayerManager().getPlayerList()) {
 			serverPlayerEntity.incrementStat(Stats.TOTAL_WORLD_TIME);

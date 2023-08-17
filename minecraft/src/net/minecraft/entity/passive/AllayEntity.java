@@ -110,7 +110,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	private long duplicationCooldown;
 	private float field_38935;
 	private float field_38936;
-	private float field_39472;
+	private float danceTicks;
 	private float field_39473;
 	private float field_39474;
 
@@ -270,9 +270,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 			}
 
 			if (this.isDancing()) {
-				this.field_39472++;
+				this.danceTicks++;
 				this.field_39474 = this.field_39473;
-				if (this.method_44360()) {
+				if (this.isSpinning()) {
 					this.field_39473++;
 				} else {
 					this.field_39473--;
@@ -280,7 +280,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 				this.field_39473 = MathHelper.clamp(this.field_39473, 0.0F, 15.0F);
 			} else {
-				this.field_39472 = 0.0F;
+				this.danceTicks = 0.0F;
 				this.field_39473 = 0.0F;
 				this.field_39474 = 0.0F;
 			}
@@ -441,8 +441,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		return MathHelper.lerp(f, this.field_38936, this.field_38935) / 5.0F;
 	}
 
-	public boolean method_44360() {
-		float f = this.field_39472 % 55.0F;
+	public boolean isSpinning() {
+		float f = this.danceTicks % 55.0F;
 		return f < 15.0F;
 	}
 

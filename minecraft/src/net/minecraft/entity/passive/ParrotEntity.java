@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -512,7 +513,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 		YELLOW_BLUE(3, "yellow_blue"),
 		GRAY(4, "gray");
 
-		public static final com.mojang.serialization.Codec<ParrotEntity.Variant> CODEC = StringIdentifiable.createCodec(ParrotEntity.Variant::values);
+		public static final Codec<ParrotEntity.Variant> CODEC = StringIdentifiable.createCodec(ParrotEntity.Variant::values);
 		private static final IntFunction<ParrotEntity.Variant> BY_ID = ValueLists.createIdToValueFunction(
 			ParrotEntity.Variant::getId, values(), ValueLists.OutOfBoundsHandling.CLAMP
 		);

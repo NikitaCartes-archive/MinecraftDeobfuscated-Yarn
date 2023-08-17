@@ -104,7 +104,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		TARGET("target", (content, params) -> params.targetName()),
 		CONTENT("content", (content, params) -> content);
 
-		public static final com.mojang.serialization.Codec<Decoration.Parameter> CODEC = StringIdentifiable.createCodec(Decoration.Parameter::values);
+		public static final Codec<Decoration.Parameter> CODEC = StringIdentifiable.createCodec(Decoration.Parameter::values);
 		private final String name;
 		private final Decoration.Parameter.Selector selector;
 

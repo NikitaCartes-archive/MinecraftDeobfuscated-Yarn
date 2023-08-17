@@ -67,7 +67,7 @@ public class EntitySelectorReader {
 	private int limit;
 	private boolean includesNonPlayers;
 	private boolean localWorldOnly;
-	private NumberRange.FloatRange distance = NumberRange.FloatRange.ANY;
+	private NumberRange.DoubleRange distance = NumberRange.DoubleRange.ANY;
 	private NumberRange.IntRange levelRange = NumberRange.IntRange.ANY;
 	@Nullable
 	private Double x;
@@ -119,8 +119,8 @@ public class EntitySelectorReader {
 	public EntitySelector build() {
 		Box box;
 		if (this.dx == null && this.dy == null && this.dz == null) {
-			if (this.distance.getMax().isPresent()) {
-				double d = (Double)this.distance.getMax().get();
+			if (this.distance.max().isPresent()) {
+				double d = (Double)this.distance.max().get();
 				box = new Box(-d, -d, -d, d + 1.0, d + 1.0, d + 1.0);
 			} else {
 				box = null;
@@ -338,11 +338,11 @@ public class EntitySelectorReader {
 		this.localWorldOnly = true;
 	}
 
-	public NumberRange.FloatRange getDistance() {
+	public NumberRange.DoubleRange getDistance() {
 		return this.distance;
 	}
 
-	public void setDistance(NumberRange.FloatRange distance) {
+	public void setDistance(NumberRange.DoubleRange distance) {
 		this.distance = distance;
 	}
 

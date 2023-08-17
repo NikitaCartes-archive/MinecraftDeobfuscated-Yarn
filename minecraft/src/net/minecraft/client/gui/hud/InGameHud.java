@@ -258,7 +258,7 @@ public class InGameHud {
 		}
 
 		this.renderStatusEffectOverlay(context);
-		if (this.client.options.debugEnabled) {
+		if (this.debugHud.shouldShowDebugHud()) {
 			this.debugHud.render(context);
 		}
 
@@ -377,7 +377,7 @@ public class InGameHud {
 		GameOptions gameOptions = this.client.options;
 		if (gameOptions.getPerspective().isFirstPerson()) {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
-				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.getReducedDebugInfo().getValue()) {
+				if (this.debugHud.shouldShowDebugHud() && !this.client.player.hasReducedDebugInfo() && !gameOptions.getReducedDebugInfo().getValue()) {
 					Camera camera = this.client.gameRenderer.getCamera();
 					MatrixStack matrixStack = RenderSystem.getModelViewStack();
 					matrixStack.push();
@@ -1178,12 +1178,16 @@ public class InGameHud {
 		this.playerListHud.clear();
 		this.bossBarHud.clear();
 		this.client.getToastManager().clear();
-		this.client.options.debugEnabled = false;
+		this.debugHud.clear();
 		this.chatHud.clear(true);
 	}
 
 	public BossBarHud getBossBarHud() {
 		return this.bossBarHud;
+	}
+
+	public DebugHud getDebugHud() {
+		return this.debugHud;
 	}
 
 	public void resetDebugHudChunk() {

@@ -127,7 +127,7 @@ import org.slf4j.Logger;
  */
 public abstract class LivingEntity extends Entity implements Attackable {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final String field_45740 = "active_effects";
+	private static final String ACTIVE_EFFECTS_NBT_KEY = "active_effects";
 	private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
 	private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
 	private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(
@@ -1574,18 +1574,24 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.experienceDroppingDisabled;
 	}
 
-	/**
-	 * {@return this entity's attack position} Used to determine if a mob can perform a melee attack on this entity. May be offset by a mount.
-	 * @see net.minecraft.entity.AttackPosOffsettingMount#getPassengerAttackYOffset
-	 */
-	protected Vec3d getAttackPos() {
-		return this.getVehicle() instanceof AttackPosOffsettingMount attackPosOffsettingMount
-			? this.getPos().add(0.0, attackPosOffsettingMount.getPassengerAttackYOffset(), 0.0)
-			: this.getPos();
-	}
-
 	public float getDamageTiltYaw() {
 		return 0.0F;
+	}
+
+	/**
+	 * Gets the area in which this entity can be attacked by mobs whose attack box overlaps it.
+	 * 
+	 * @see net.minecraft.entity.mob.MobEntity#getAttackBox
+	 */
+	protected Box getHitbox() {
+		Box box = this.getBoundingBox();
+		Entity entity = this.getVehicle();
+		if (entity != null) {
+			Vec3d vec3d = entity.getPassengerRidingPos(this);
+			return box.withMinY(Math.max(vec3d.y, box.minY));
+		} else {
+			return box;
+		}
 	}
 
 	public LivingEntity.FallSounds getFallSounds() {

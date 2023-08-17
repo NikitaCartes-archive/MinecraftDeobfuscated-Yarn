@@ -31,7 +31,7 @@ public abstract class AbstractSkullBlock extends BlockWithEntity implements Equi
 		if (world.isClient) {
 			boolean bl = state.isOf(Blocks.DRAGON_HEAD) || state.isOf(Blocks.DRAGON_WALL_HEAD) || state.isOf(Blocks.PIGLIN_HEAD) || state.isOf(Blocks.PIGLIN_WALL_HEAD);
 			if (bl) {
-				return checkType(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
+				return validateTicker(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
 			}
 		}
 

@@ -67,6 +67,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
@@ -119,6 +120,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	public static final float DEFAULT_DROP_CHANCE = 0.085F;
 	public static final int field_38932 = 2;
 	public static final int field_35039 = 2;
+	private static final double ATTACK_RANGE = Math.sqrt(2.04F) - 0.6F;
 	public int ambientSoundChance;
 	protected int experiencePoints;
 	protected LookControl lookControl;
@@ -1417,17 +1419,29 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		return this.isLeftHanded() ? Arm.LEFT : Arm.RIGHT;
 	}
 
-	public double squaredAttackRange(LivingEntity target) {
-		return (double)(this.getWidth() * 2.0F * this.getWidth() * 2.0F + target.getWidth());
-	}
-
-	public double getSquaredDistanceToAttackPosOf(LivingEntity target) {
-		return Math.max(this.squaredDistanceTo(target.getAttackPos()), this.squaredDistanceTo(target.getPos()));
-	}
-
 	public boolean isInAttackRange(LivingEntity entity) {
-		double d = this.getSquaredDistanceToAttackPosOf(entity);
-		return d <= this.squaredAttackRange(entity);
+		return this.getAttackBox().intersects(entity.getHitbox());
+	}
+
+	/**
+	 * Gets the area in which this mob can attack entities whose hitbox intersects it.
+	 * 
+	 * @see LivingEntity#getHitbox
+	 */
+	protected Box getAttackBox() {
+		Entity entity = this.getVehicle();
+		Box box3;
+		if (entity != null) {
+			Box box = entity.getBoundingBox();
+			Box box2 = this.getBoundingBox();
+			box3 = new Box(
+				Math.min(box2.minX, box.minX), box2.minY, Math.min(box2.minZ, box.minZ), Math.max(box2.maxX, box.maxX), box2.maxY, Math.max(box2.maxZ, box.maxZ)
+			);
+		} else {
+			box3 = this.getBoundingBox();
+		}
+
+		return box3.expand(ATTACK_RANGE, 0.0, ATTACK_RANGE);
 	}
 
 	@Override

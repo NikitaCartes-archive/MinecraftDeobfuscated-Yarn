@@ -12,15 +12,48 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class Bans {
 	private static final Text TEMPORARY_TITLE = Text.translatable("gui.banned.title.temporary").formatted(Formatting.BOLD);
 	private static final Text PERMANENT_TITLE = Text.translatable("gui.banned.title.permanent").formatted(Formatting.BOLD);
+	public static final Text NAME_TITLE = Text.translatable("gui.banned.name.title").formatted(Formatting.BOLD);
+	private static final Text SKIN_TITLE = Text.translatable("gui.banned.skin.title").formatted(Formatting.BOLD);
+	private static final Text SKIN_DESCRIPTION = Text.translatable("gui.banned.skin.description", Text.literal("https://aka.ms/mcjavamoderation"));
 
 	public static ConfirmLinkScreen createBanScreen(BooleanConsumer callback, BanDetails banDetails) {
 		return new ConfirmLinkScreen(callback, getTitle(banDetails), getDescriptionText(banDetails), "https://aka.ms/mcjavamoderation", ScreenTexts.ACKNOWLEDGE, true);
+	}
+
+	public static ConfirmLinkScreen createSkinBanScreen(Runnable onClose) {
+		String string = "https://aka.ms/mcjavamoderation";
+		return new ConfirmLinkScreen(confirmed -> {
+			if (confirmed) {
+				Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
+			}
+
+			onClose.run();
+		}, SKIN_TITLE, SKIN_DESCRIPTION, "https://aka.ms/mcjavamoderation", ScreenTexts.ACKNOWLEDGE, true);
+	}
+
+	public static ConfirmLinkScreen createUsernameBanScreen(String username, Runnable onClose) {
+		String string = "https://aka.ms/mcjavamoderation";
+		return new ConfirmLinkScreen(
+			confirmed -> {
+				if (confirmed) {
+					Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
+				}
+
+				onClose.run();
+			},
+			NAME_TITLE,
+			Text.translatable("gui.banned.name.description", Text.literal(username).formatted(Formatting.YELLOW), "https://aka.ms/mcjavamoderation"),
+			"https://aka.ms/mcjavamoderation",
+			ScreenTexts.ACKNOWLEDGE,
+			true
+		);
 	}
 
 	private static Text getTitle(BanDetails banDetails) {

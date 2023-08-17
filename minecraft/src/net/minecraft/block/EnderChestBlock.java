@@ -107,7 +107,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? checkType(type, BlockEntityType.ENDER_CHEST, EnderChestBlockEntity::clientTick) : null;
+		return world.isClient ? validateTicker(type, BlockEntityType.ENDER_CHEST, EnderChestBlockEntity::clientTick) : null;
 	}
 
 	@Override

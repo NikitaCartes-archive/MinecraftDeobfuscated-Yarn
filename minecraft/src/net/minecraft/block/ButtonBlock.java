@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -52,9 +52,7 @@ public class ButtonBlock extends WallMountedBlock {
 	protected ButtonBlock(AbstractBlock.Settings settings, BlockSetType blockSetType, int pressTicks, boolean wooden) {
 		super(settings.sounds(blockSetType.soundType()));
 		this.blockSetType = blockSetType;
-		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.WALL)
-		);
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, BlockFace.WALL));
 		this.pressTicks = pressTicks;
 		this.wooden = wooden;
 	}
@@ -63,7 +61,7 @@ public class ButtonBlock extends WallMountedBlock {
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
 		boolean bl = (Boolean)state.get(POWERED);
-		switch ((WallMountLocation)state.get(FACE)) {
+		switch ((BlockFace)state.get(FACE)) {
 			case FLOOR:
 				if (direction.getAxis() == Direction.Axis.X) {
 					return bl ? FLOOR_X_PRESSED_SHAPE : FLOOR_X_SHAPE;

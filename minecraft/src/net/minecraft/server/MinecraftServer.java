@@ -120,7 +120,6 @@ import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.EmptyProfileResult;
-import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
@@ -253,7 +252,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private DataCommandStorage dataCommandStorage;
 	private final BossBarManager bossBarManager = new BossBarManager();
 	private final CommandFunctionManager commandFunctionManager;
-	private final PerformanceLog tickNanosLog = new PerformanceLog();
 	private boolean enforceWhitelist;
 	private float tickTime;
 	private final Executor workerExecutor;
@@ -877,8 +875,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		long m = this.lastTickLengths[this.ticks % 100] = Util.getMeasuringTimeNano() - l;
 		this.tickTime = this.tickTime * 0.8F + (float)m / 1000000.0F * 0.19999999F;
 		long n = Util.getMeasuringTimeNano();
-		this.tickNanosLog.push(n - l);
+		this.tickTickLog(n - l);
 		this.profiler.pop();
+	}
+
+	protected void tickTickLog(long nanos) {
 	}
 
 	private ServerMetadata createMetadata() {
@@ -1649,10 +1650,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		} else {
 			return 0;
 		}
-	}
-
-	public PerformanceLog getTickNanosLog() {
-		return this.tickNanosLog;
 	}
 
 	public Profiler getProfiler() {
