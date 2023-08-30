@@ -25,26 +25,25 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final Text TITLE = Text.translatable("mco.upload.select.world.title");
 	private static final Text LOADING_ERROR_TEXT = Text.translatable("selectWorld.unable_to_load");
 	static final Text WORLD_LANG = Text.translatable("selectWorld.world");
 	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").styled(style -> style.withColor(-65536));
 	static final Text CHEATS_TEXT = Text.translatable("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
-	private final RealmsResetWorldScreen parent;
+	private final RealmsCreateWorldScreen parent;
 	private final long worldId;
 	private final int slotId;
 	ButtonWidget uploadButton;
 	List<LevelSummary> levelList = Lists.<LevelSummary>newArrayList();
 	int selectedWorld = -1;
 	RealmsSelectFileToUploadScreen.WorldSelectionList worldSelectionList;
-	private final Runnable onBack;
 
-	public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, Runnable onBack) {
-		super(Text.translatable("mco.upload.select.world.title"));
+	public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsCreateWorldScreen parent) {
+		super(TITLE);
 		this.parent = parent;
 		this.worldId = worldId;
 		this.slotId = slotId;
-		this.onBack = onBack;
 	}
 
 	private void loadLevelList() throws Exception {
@@ -95,7 +94,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private void upload() {
 		if (this.selectedWorld != -1 && !((LevelSummary)this.levelList.get(this.selectedWorld)).isHardcore()) {
 			LevelSummary levelSummary = (LevelSummary)this.levelList.get(this.selectedWorld);
-			this.client.setScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.parent, levelSummary, this.onBack));
+			this.client.setScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.parent, levelSummary));
 		}
 	}
 

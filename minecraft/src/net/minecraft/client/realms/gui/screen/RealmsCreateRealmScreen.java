@@ -60,21 +60,14 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	}
 
 	private void createWorld() {
-		RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
-			this.parent,
-			this.server,
-			Text.translatable("mco.selectServer.create"),
-			Text.translatable("mco.create.world.subtitle"),
-			-6250336,
-			Text.translatable("mco.create.world.skip"),
-			() -> this.client.execute(() -> this.client.setScreen(this.parent.newScreen())),
-			() -> this.client.setScreen(this.parent.newScreen())
-		);
-		realmsResetWorldScreen.setResetTitle(Text.translatable("mco.create.world.reset.title"));
+		RealmsCreateWorldScreen realmsCreateWorldScreen = RealmsCreateWorldScreen.newRealm(this.parent, this.server, () -> this.client.execute(() -> {
+				this.parent.resetServerList();
+				this.client.setScreen(this.parent.newScreen());
+			}));
 		this.client
 			.setScreen(
 				new RealmsLongRunningMcoTaskScreen(
-					this.parent, new WorldCreationTask(this.server.id, this.nameBox.getText(), this.descriptionBox.getText(), realmsResetWorldScreen)
+					this.parent, new WorldCreationTask(this.server.id, this.nameBox.getText(), this.descriptionBox.getText(), realmsCreateWorldScreen)
 				)
 			);
 	}

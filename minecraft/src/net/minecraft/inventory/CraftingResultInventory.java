@@ -3,7 +3,7 @@ package net.minecraft.inventory;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -13,7 +13,7 @@ import net.minecraft.util.collection.DefaultedList;
 public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	private final DefaultedList<ItemStack> stacks = DefaultedList.ofSize(1, ItemStack.EMPTY);
 	@Nullable
-	private Recipe<?> lastRecipe;
+	private RecipeEntry<?> lastRecipe;
 
 	@Override
 	public int size() {
@@ -66,13 +66,13 @@ public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	}
 
 	@Override
-	public void setLastRecipe(@Nullable Recipe<?> recipe) {
+	public void setLastRecipe(@Nullable RecipeEntry<?> recipe) {
 		this.lastRecipe = recipe;
 	}
 
 	@Nullable
 	@Override
-	public Recipe<?> getLastRecipe() {
+	public RecipeEntry<?> getLastRecipe() {
 		return this.lastRecipe;
 	}
 }

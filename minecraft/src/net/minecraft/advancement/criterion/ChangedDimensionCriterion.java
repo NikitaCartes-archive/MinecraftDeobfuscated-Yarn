@@ -3,6 +3,7 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.RegistryKey;
@@ -13,13 +14,6 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
 public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensionCriterion.Conditions> {
-	static final Identifier ID = new Identifier("changed_dimension");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public ChangedDimensionCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -39,25 +33,25 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		private final RegistryKey<World> to;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable RegistryKey<World> from, @Nullable RegistryKey<World> to) {
-			super(ChangedDimensionCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.from = from;
 			this.to = to;
 		}
 
-		public static ChangedDimensionCriterion.Conditions create() {
-			return new ChangedDimensionCriterion.Conditions(Optional.empty(), null, null);
+		public static AdvancementCriterion<ChangedDimensionCriterion.Conditions> create() {
+			return Criteria.CHANGED_DIMENSION.create(new ChangedDimensionCriterion.Conditions(Optional.empty(), null, null));
 		}
 
-		public static ChangedDimensionCriterion.Conditions create(RegistryKey<World> from, RegistryKey<World> to) {
-			return new ChangedDimensionCriterion.Conditions(Optional.empty(), from, to);
+		public static AdvancementCriterion<ChangedDimensionCriterion.Conditions> create(RegistryKey<World> from, RegistryKey<World> to) {
+			return Criteria.CHANGED_DIMENSION.create(new ChangedDimensionCriterion.Conditions(Optional.empty(), from, to));
 		}
 
-		public static ChangedDimensionCriterion.Conditions to(RegistryKey<World> to) {
-			return new ChangedDimensionCriterion.Conditions(Optional.empty(), null, to);
+		public static AdvancementCriterion<ChangedDimensionCriterion.Conditions> to(RegistryKey<World> to) {
+			return Criteria.CHANGED_DIMENSION.create(new ChangedDimensionCriterion.Conditions(Optional.empty(), null, to));
 		}
 
-		public static ChangedDimensionCriterion.Conditions from(RegistryKey<World> from) {
-			return new ChangedDimensionCriterion.Conditions(Optional.empty(), from, null);
+		public static AdvancementCriterion<ChangedDimensionCriterion.Conditions> from(RegistryKey<World> from) {
+			return Criteria.CHANGED_DIMENSION.create(new ChangedDimensionCriterion.Conditions(Optional.empty(), from, null));
 		}
 
 		public boolean matches(RegistryKey<World> from, RegistryKey<World> to) {

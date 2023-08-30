@@ -2,22 +2,15 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabilityChangedCriterion.Conditions> {
-	static final Identifier ID = new Identifier("item_durability_changed");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public ItemDurabilityChangedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -37,20 +30,20 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		private final NumberRange.IntRange delta;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, NumberRange.IntRange durability, NumberRange.IntRange delta) {
-			super(ItemDurabilityChangedCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.item = item;
 			this.durability = durability;
 			this.delta = delta;
 		}
 
-		public static ItemDurabilityChangedCriterion.Conditions create(Optional<ItemPredicate> item, NumberRange.IntRange durability) {
+		public static AdvancementCriterion<ItemDurabilityChangedCriterion.Conditions> create(Optional<ItemPredicate> item, NumberRange.IntRange durability) {
 			return create(Optional.empty(), item, durability);
 		}
 
-		public static ItemDurabilityChangedCriterion.Conditions create(
+		public static AdvancementCriterion<ItemDurabilityChangedCriterion.Conditions> create(
 			Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, NumberRange.IntRange durability
 		) {
-			return new ItemDurabilityChangedCriterion.Conditions(playerPredicate, item, durability, NumberRange.IntRange.ANY);
+			return Criteria.ITEM_DURABILITY_CHANGED.create(new ItemDurabilityChangedCriterion.Conditions(playerPredicate, item, durability, NumberRange.IntRange.ANY));
 		}
 
 		public boolean matches(ItemStack stack, int durability) {

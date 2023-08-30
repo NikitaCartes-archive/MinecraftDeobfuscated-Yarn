@@ -150,12 +150,8 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				if (button == 0) {
-					BuffetBiomesListWidget.this.setSelected(this);
-					return true;
-				} else {
-					return false;
-				}
+				BuffetBiomesListWidget.this.setSelected(this);
+				return true;
 			}
 		}
 	}

@@ -42,7 +42,7 @@ public class AnimalMateGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.mate.isAlive() && this.mate.isInLove() && this.timer < 60;
+		return this.mate.isAlive() && this.mate.isInLove() && this.timer < 60 && !this.mate.isPanicking();
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class AnimalMateGoal extends Goal {
 		AnimalEntity animalEntity = null;
 
 		for (AnimalEntity animalEntity2 : list) {
-			if (this.animal.canBreedWith(animalEntity2) && this.animal.squaredDistanceTo(animalEntity2) < d) {
+			if (this.animal.canBreedWith(animalEntity2) && !animalEntity2.isPanicking() && this.animal.squaredDistanceTo(animalEntity2) < d) {
 				animalEntity = animalEntity2;
 				d = this.animal.squaredDistanceTo(animalEntity2);
 			}

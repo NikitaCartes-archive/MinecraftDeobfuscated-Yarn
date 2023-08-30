@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
@@ -66,10 +67,11 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<RecipeInp
 		if (!world.isClient) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
 			ItemStack itemStack = ItemStack.EMPTY;
-			Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, world);
+			Optional<RecipeEntry<CraftingRecipe>> optional = world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, world);
 			if (optional.isPresent()) {
-				CraftingRecipe craftingRecipe = (CraftingRecipe)optional.get();
-				if (resultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe)) {
+				RecipeEntry<CraftingRecipe> recipeEntry = (RecipeEntry<CraftingRecipe>)optional.get();
+				CraftingRecipe craftingRecipe = recipeEntry.value();
+				if (resultInventory.shouldCraftRecipe(world, serverPlayerEntity, recipeEntry)) {
 					ItemStack itemStack2 = craftingRecipe.craft(craftingInventory, world.getRegistryManager());
 					if (itemStack2.isItemEnabled(world.getEnabledFeatures())) {
 						itemStack = itemStack2;
@@ -100,8 +102,8 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<RecipeInp
 	}
 
 	@Override
-	public boolean matches(Recipe<? super RecipeInputInventory> recipe) {
-		return recipe.matches(this.input, this.player.getWorld());
+	public boolean matches(RecipeEntry<? extends Recipe<RecipeInputInventory>> recipe) {
+		return recipe.value().matches(this.input, this.player.getWorld());
 	}
 
 	@Override

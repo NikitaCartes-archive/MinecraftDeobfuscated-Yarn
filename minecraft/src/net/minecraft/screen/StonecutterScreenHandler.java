@@ -10,6 +10,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.screen.slot.Slot;
@@ -27,7 +28,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	private final ScreenHandlerContext context;
 	private final Property selectedRecipe = Property.create();
 	private final World world;
-	private List<StonecuttingRecipe> availableRecipes = Lists.<StonecuttingRecipe>newArrayList();
+	private List<RecipeEntry<StonecuttingRecipe>> availableRecipes = Lists.<RecipeEntry<StonecuttingRecipe>>newArrayList();
 	private ItemStack inputStack = ItemStack.EMPTY;
 	long lastTakeTime;
 	final Slot inputSlot;
@@ -100,7 +101,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 		return this.selectedRecipe.get();
 	}
 
-	public List<StonecuttingRecipe> getAvailableRecipes() {
+	public List<RecipeEntry<StonecuttingRecipe>> getAvailableRecipes() {
 		return this.availableRecipes;
 	}
 
@@ -151,10 +152,10 @@ public class StonecutterScreenHandler extends ScreenHandler {
 
 	void populateResult() {
 		if (!this.availableRecipes.isEmpty() && this.isInBounds(this.selectedRecipe.get())) {
-			StonecuttingRecipe stonecuttingRecipe = (StonecuttingRecipe)this.availableRecipes.get(this.selectedRecipe.get());
-			ItemStack itemStack = stonecuttingRecipe.craft(this.input, this.world.getRegistryManager());
+			RecipeEntry<StonecuttingRecipe> recipeEntry = (RecipeEntry<StonecuttingRecipe>)this.availableRecipes.get(this.selectedRecipe.get());
+			ItemStack itemStack = recipeEntry.value().craft(this.input, this.world.getRegistryManager());
 			if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
-				this.output.setLastRecipe(stonecuttingRecipe);
+				this.output.setLastRecipe(recipeEntry);
 				this.outputSlot.setStackNoCallbacks(itemStack);
 			} else {
 				this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);

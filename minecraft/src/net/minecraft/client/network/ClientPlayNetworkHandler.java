@@ -23,7 +23,7 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -53,6 +53,7 @@ import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.VillageSectionsDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
 import net.minecraft.client.search.SearchManager;
+import net.minecraft.client.session.ProfileKeys;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.GuardianAttackSoundInstance;
@@ -61,7 +62,6 @@ import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.sound.SnifferDigSoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -307,7 +307,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private static final Text UNSECURE_SERVER_TOAST_TEXT = Text.translatable("multiplayer.unsecureserver.toast");
 	private static final Text INVALID_PACKET_TEXT = Text.translatable("multiplayer.disconnect.invalid_packet");
 	private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
-	private static final Text RECONFIGURING_TEXT = Text.translatable("connect.reconfiging");
+	private static final Text RECONFIGURING_TEXT = Text.translatable("connect.reconfiguring");
 	private static final int ACKNOWLEDGMENT_BATCH_SIZE = 64;
 	private final GameProfile profile;
 	private ClientWorld world;
@@ -1369,8 +1369,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		if (identifier == null) {
 			this.advancementHandler.selectTab(null, false);
 		} else {
-			Advancement advancement = this.advancementHandler.getManager().get(identifier);
-			this.advancementHandler.selectTab(advancement, false);
+			AdvancementEntry advancementEntry = this.advancementHandler.get(identifier);
+			this.advancementHandler.selectTab(advancementEntry, false);
 		}
 	}
 
@@ -1461,7 +1461,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 					this.recipeManager.get(identifier).ifPresent(recipe -> {
 						clientRecipeBook.add(recipe);
 						clientRecipeBook.display(recipe);
-						if (recipe.showNotification()) {
+						if (recipe.value().showNotification()) {
 							RecipeToast.show(this.client.getToastManager(), recipe);
 						}
 					});

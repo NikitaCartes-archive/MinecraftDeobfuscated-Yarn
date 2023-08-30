@@ -47,7 +47,7 @@ public record EntityPredicate(
 	Optional<String> team
 ) {
 	public static final Codec<EntityPredicate> CODEC = Codecs.createRecursive(
-		codec -> RecordCodecBuilder.create(
+		entityPredicateCodec -> RecordCodecBuilder.create(
 				instance -> instance.group(
 							Codecs.createStrictOptionalFieldCodec(EntityTypePredicate.CODEC, "type").forGetter(EntityPredicate::type),
 							Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(EntityPredicate::distance),
@@ -58,48 +58,14 @@ public record EntityPredicate(
 							Codecs.createStrictOptionalFieldCodec(EntityFlagsPredicate.CODEC, "flags").forGetter(EntityPredicate::flags),
 							Codecs.createStrictOptionalFieldCodec(EntityEquipmentPredicate.CODEC, "equipment").forGetter(EntityPredicate::equipment),
 							Codecs.createStrictOptionalFieldCodec(TypeSpecificPredicate.CODEC, "type_specific").forGetter(EntityPredicate::typeSpecific),
-							Codecs.createStrictOptionalFieldCodec(codec, "vehicle").forGetter(EntityPredicate::vehicle),
-							Codecs.createStrictOptionalFieldCodec(codec, "passenger").forGetter(EntityPredicate::passenger),
-							Codecs.createStrictOptionalFieldCodec(codec, "targeted_entity").forGetter(EntityPredicate::targetedEntity),
+							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "vehicle").forGetter(EntityPredicate::vehicle),
+							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "passenger").forGetter(EntityPredicate::passenger),
+							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "targeted_entity").forGetter(EntityPredicate::targetedEntity),
 							Codecs.createStrictOptionalFieldCodec(Codec.STRING, "team").forGetter(EntityPredicate::team)
 						)
 						.apply(instance, EntityPredicate::new)
 			)
 	);
-
-	public static Optional<EntityPredicate> create(
-		Optional<EntityTypePredicate> type,
-		Optional<DistancePredicate> distance,
-		Optional<LocationPredicate> location,
-		Optional<LocationPredicate> steppingOn,
-		Optional<EntityEffectPredicate> effects,
-		Optional<NbtPredicate> nbt,
-		Optional<EntityFlagsPredicate> flags,
-		Optional<EntityEquipmentPredicate> equipment,
-		Optional<TypeSpecificPredicate> typeSpecific,
-		Optional<EntityPredicate> vehicle,
-		Optional<EntityPredicate> passenger,
-		Optional<EntityPredicate> targetedEntity,
-		Optional<String> team
-	) {
-		return type.isEmpty()
-				&& distance.isEmpty()
-				&& location.isEmpty()
-				&& steppingOn.isEmpty()
-				&& effects.isEmpty()
-				&& nbt.isEmpty()
-				&& flags.isEmpty()
-				&& equipment.isEmpty()
-				&& typeSpecific.isEmpty()
-				&& vehicle.isEmpty()
-				&& passenger.isEmpty()
-				&& targetedEntity.isEmpty()
-				&& team.isEmpty()
-			? Optional.empty()
-			: Optional.of(
-				new EntityPredicate(type, distance, location, steppingOn, effects, nbt, flags, equipment, typeSpecific, vehicle, passenger, targetedEntity, team)
-			);
-	}
 
 	public static Optional<LootContextPredicate> contextPredicateFromJson(
 		JsonObject json, String key, AdvancementEntityPredicateDeserializer predicateDeserializer
@@ -138,8 +104,8 @@ public record EntityPredicate(
 		}
 	}
 
-	public static Optional<LootContextPredicate> contextPredicateFromEntityPredicate(EntityPredicate.Builder builder) {
-		return contextPredicateFromEntityPredicate(builder.build());
+	public static LootContextPredicate contextPredicateFromEntityPredicate(EntityPredicate.Builder builder) {
+		return asLootContextPredicate(builder.build());
 	}
 
 	public static Optional<LootContextPredicate> contextPredicateFromEntityPredicate(Optional<EntityPredicate> entityPredicate) {
@@ -147,7 +113,7 @@ public record EntityPredicate(
 	}
 
 	public static List<LootContextPredicate> contextPredicateFromEntityPredicates(EntityPredicate.Builder... builders) {
-		return Stream.of(builders).flatMap(builder -> contextPredicateFromEntityPredicate(builder).stream()).toList();
+		return Stream.of(builders).map(EntityPredicate::contextPredicateFromEntityPredicate).toList();
 	}
 
 	public static LootContextPredicate asLootContextPredicate(EntityPredicate predicate) {
@@ -271,12 +237,12 @@ public record EntityPredicate(
 		}
 
 		public EntityPredicate.Builder location(LocationPredicate.Builder location) {
-			this.location = location.build();
+			this.location = Optional.of(location.build());
 			return this;
 		}
 
 		public EntityPredicate.Builder steppingOn(LocationPredicate.Builder steppingOn) {
-			this.steppingOn = steppingOn.build();
+			this.steppingOn = Optional.of(steppingOn.build());
 			return this;
 		}
 
@@ -291,12 +257,12 @@ public record EntityPredicate(
 		}
 
 		public EntityPredicate.Builder flags(EntityFlagsPredicate.Builder flags) {
-			this.flags = flags.build();
+			this.flags = Optional.of(flags.build());
 			return this;
 		}
 
 		public EntityPredicate.Builder equipment(EntityEquipmentPredicate.Builder equipment) {
-			this.equipment = equipment.build();
+			this.equipment = Optional.of(equipment.build());
 			return this;
 		}
 
@@ -311,17 +277,17 @@ public record EntityPredicate(
 		}
 
 		public EntityPredicate.Builder vehicle(EntityPredicate.Builder vehicle) {
-			this.vehicle = vehicle.build();
+			this.vehicle = Optional.of(vehicle.build());
 			return this;
 		}
 
 		public EntityPredicate.Builder passenger(EntityPredicate.Builder passenger) {
-			this.passenger = passenger.build();
+			this.passenger = Optional.of(passenger.build());
 			return this;
 		}
 
 		public EntityPredicate.Builder targetedEntity(EntityPredicate.Builder targetedEntity) {
-			this.targetedEntity = targetedEntity.build();
+			this.targetedEntity = Optional.of(targetedEntity.build());
 			return this;
 		}
 
@@ -330,8 +296,8 @@ public record EntityPredicate(
 			return this;
 		}
 
-		public Optional<EntityPredicate> build() {
-			return EntityPredicate.create(
+		public EntityPredicate build() {
+			return new EntityPredicate(
 				this.type,
 				this.distance,
 				this.location,

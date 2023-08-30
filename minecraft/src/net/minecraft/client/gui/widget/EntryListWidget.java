@@ -202,32 +202,35 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				32
 			);
 			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			int j = 4;
-			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.top, this.right, this.top + 4, -16777216, 0, 0);
-			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216, 0);
 		}
 
-		int i = this.getRowLeft();
-		int j = this.top + 4 - (int)this.getScrollAmount();
 		this.enableScissor(context);
 		if (this.renderHeader) {
+			int i = this.getRowLeft();
+			int j = this.top + 4 - (int)this.getScrollAmount();
 			this.renderHeader(context, i, j);
 		}
 
 		this.renderList(context, mouseX, mouseY, delta);
 		context.disableScissor();
-		int k = this.getMaxScroll();
-		if (k > 0) {
-			int l = this.getScrollbarPositionX();
-			int m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
-			m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
-			int n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / k + this.top;
-			if (n < this.top) {
-				n = this.top;
+		if (this.renderBackground) {
+			int i = 4;
+			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.top, this.right, this.top + 4, -16777216, 0, 0);
+			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216, 0);
+		}
+
+		int i = this.getMaxScroll();
+		if (i > 0) {
+			int j = this.getScrollbarPositionX();
+			int k = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
+			k = MathHelper.clamp(k, 32, this.bottom - this.top - 8);
+			int l = (int)this.getScrollAmount() * (this.bottom - this.top - k) / i + this.top;
+			if (l < this.top) {
+				l = this.top;
 			}
 
-			context.fill(l, this.top, l + 6, this.bottom, -16777216);
-			context.drawGuiTexture(SCROLLER_TEXTURE, l, n, 6, m);
+			context.fill(j, this.top, j + 6, this.bottom, -16777216);
+			context.drawGuiTexture(SCROLLER_TEXTURE, j, l, 6, k);
 		}
 
 		this.renderDecorations(context, mouseX, mouseY);
@@ -283,32 +286,40 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.width / 2 + 124;
 	}
 
+	protected boolean isSelectButton(int button) {
+		return button == 0;
+	}
+
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		this.updateScrollingState(mouseX, mouseY, button);
-		if (!this.isMouseOver(mouseX, mouseY)) {
+		if (!this.isSelectButton(button)) {
 			return false;
 		} else {
-			E entry = this.getEntryAtPosition(mouseX, mouseY);
-			if (entry != null) {
-				if (entry.mouseClicked(mouseX, mouseY, button)) {
-					E entry2 = this.getFocused();
-					if (entry2 != entry && entry2 instanceof ParentElement parentElement) {
-						parentElement.setFocused(null);
-					}
+			this.updateScrollingState(mouseX, mouseY, button);
+			if (!this.isMouseOver(mouseX, mouseY)) {
+				return false;
+			} else {
+				E entry = this.getEntryAtPosition(mouseX, mouseY);
+				if (entry != null) {
+					if (entry.mouseClicked(mouseX, mouseY, button)) {
+						E entry2 = this.getFocused();
+						if (entry2 != entry && entry2 instanceof ParentElement parentElement) {
+							parentElement.setFocused(null);
+						}
 
-					this.setFocused(entry);
-					this.setDragging(true);
+						this.setFocused(entry);
+						this.setDragging(true);
+						return true;
+					} else {
+						return this.scrolling;
+					}
+				} else {
+					this.clickedHeader(
+						(int)(mouseX - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.top) + (int)this.getScrollAmount() - 4
+					);
 					return true;
 				}
-			} else if (button == 0) {
-				this.clickedHeader(
-					(int)(mouseX - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.top) + (int)this.getScrollAmount() - 4
-				);
-				return true;
 			}
-
-			return this.scrolling;
 		}
 	}
 

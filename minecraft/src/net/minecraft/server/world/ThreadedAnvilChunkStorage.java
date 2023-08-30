@@ -739,7 +739,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			.thenApplyAsync(either -> either.ifLeft(chunk -> {
 					chunk.runPostProcessing();
 					this.world.disableTickSchedulers(chunk);
-					this.sendToPlayers(chunk);
+					CompletableFuture<?> completableFuturex = holder.getPostProcessingFuture();
+					if (completableFuturex.isDone()) {
+						this.sendToPlayers(chunk);
+					} else {
+						completableFuturex.thenAcceptAsync(v -> this.sendToPlayers(chunk), this.mainThreadExecutor);
+					}
 				}), this.mainThreadExecutor);
 		completableFuture2.handle((chunk, throwable) -> {
 			this.totalChunksLoadedCount.getAndIncrement();
@@ -868,7 +873,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private void track(ServerPlayerEntity player, ChunkPos pos) {
-		WorldChunk worldChunk = this.getWorldChunk(pos.toLong());
+		WorldChunk worldChunk = this.getPostProcessedChunk(pos.toLong());
 		if (worldChunk != null) {
 			track(player, worldChunk);
 		}
@@ -883,9 +888,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	@Nullable
-	public WorldChunk getWorldChunk(long pos) {
+	public WorldChunk getPostProcessedChunk(long pos) {
 		ChunkHolder chunkHolder = this.getChunkHolder(pos);
-		return chunkHolder == null ? null : chunkHolder.getWorldChunk();
+		return chunkHolder == null ? null : chunkHolder.getPostProcessedChunk();
 	}
 
 	public int getLoadedChunkCount() {
@@ -1258,6 +1263,16 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	void onChunkStatusChange(ChunkPos chunkPos, ChunkLevelType levelType) {
 		this.chunkStatusChangeListener.onChunkStatusChange(chunkPos, levelType);
+	}
+
+	public void forceLighting(ChunkPos centerPos, int radius) {
+		int i = radius + 1;
+		ChunkPos.stream(centerPos, i).forEach(pos -> {
+			ChunkHolder chunkHolder = this.getChunkHolder(pos.toLong());
+			if (chunkHolder != null) {
+				chunkHolder.combinePostProcessingFuture(this.lightingProvider.enqueue(pos.x, pos.z));
+			}
+		});
 	}
 
 	/**

@@ -47,10 +47,10 @@ public record LocationCheckLootCondition(Optional<LocationPredicate> predicate, 
 	}
 
 	public static LootCondition.Builder builder(LocationPredicate.Builder predicateBuilder) {
-		return () -> new LocationCheckLootCondition(predicateBuilder.build(), BlockPos.ORIGIN);
+		return () -> new LocationCheckLootCondition(Optional.of(predicateBuilder.build()), BlockPos.ORIGIN);
 	}
 
 	public static LootCondition.Builder builder(LocationPredicate.Builder predicateBuilder, BlockPos pos) {
-		return () -> new LocationCheckLootCondition(predicateBuilder.build(), pos);
+		return () -> new LocationCheckLootCondition(Optional.of(predicateBuilder.build()), pos);
 	}
 }

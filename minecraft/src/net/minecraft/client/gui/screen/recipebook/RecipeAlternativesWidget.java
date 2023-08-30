@@ -16,7 +16,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeGridAligner;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -46,7 +46,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	private MinecraftClient client;
 	private RecipeResultCollection resultCollection;
 	@Nullable
-	private Recipe<?> lastClickedRecipe;
+	private RecipeEntry<?> lastClickedRecipe;
 	float time;
 	boolean furnace;
 
@@ -60,8 +60,8 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		}
 
 		boolean bl = client.player.getRecipeBook().isFilteringCraftable((AbstractRecipeScreenHandler<?>)client.player.currentScreenHandler);
-		List<Recipe<?>> list = results.getRecipes(true);
-		List<Recipe<?>> list2 = bl ? Collections.emptyList() : results.getRecipes(false);
+		List<RecipeEntry<?>> list = results.getRecipes(true);
+		List<RecipeEntry<?>> list2 = bl ? Collections.emptyList() : results.getRecipes(false);
 		int i = list.size();
 		int j = i + list2.size();
 		int k = j <= 16 ? 4 : 5;
@@ -91,13 +91,13 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 		for (int p = 0; p < j; p++) {
 			boolean bl2 = p < i;
-			Recipe<?> recipe = bl2 ? (Recipe)list.get(p) : (Recipe)list2.get(p - i);
+			RecipeEntry<?> recipeEntry = bl2 ? (RecipeEntry)list.get(p) : (RecipeEntry)list2.get(p - i);
 			int q = this.buttonX + 4 + 25 * (p % k);
 			int r = this.buttonY + 5 + 25 * (p / k);
 			if (this.furnace) {
-				this.alternativeButtons.add(new RecipeAlternativesWidget.FurnaceAlternativeButtonWidget(q, r, recipe, bl2));
+				this.alternativeButtons.add(new RecipeAlternativesWidget.FurnaceAlternativeButtonWidget(q, r, recipeEntry, bl2));
 			} else {
-				this.alternativeButtons.add(new RecipeAlternativesWidget.AlternativeButtonWidget(q, r, recipe, bl2));
+				this.alternativeButtons.add(new RecipeAlternativesWidget.AlternativeButtonWidget(q, r, recipeEntry, bl2));
 			}
 		}
 
@@ -109,7 +109,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	}
 
 	@Nullable
-	public Recipe<?> getLastClickedRecipe() {
+	public RecipeEntry<?> getLastClickedRecipe() {
 		return this.lastClickedRecipe;
 	}
 
@@ -175,11 +175,11 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 	@Environment(EnvType.CLIENT)
 	class AlternativeButtonWidget extends ClickableWidget implements RecipeGridAligner<Ingredient> {
-		final Recipe<?> recipe;
+		final RecipeEntry<?> recipe;
 		private final boolean craftable;
 		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList();
 
-		public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean craftable) {
+		public AlternativeButtonWidget(int x, int y, RecipeEntry<?> recipe, boolean craftable) {
 			super(x, y, 200, 20, ScreenTexts.EMPTY);
 			this.width = 24;
 			this.height = 24;
@@ -188,8 +188,8 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			this.alignRecipe(recipe);
 		}
 
-		protected void alignRecipe(Recipe<?> recipe) {
-			this.alignRecipeToGrid(3, 3, -1, recipe, recipe.getIngredients().iterator(), 0);
+		protected void alignRecipe(RecipeEntry<?> recipe) {
+			this.alignRecipeToGrid(3, 3, -1, recipe, recipe.value().getIngredients().iterator(), 0);
 		}
 
 		@Override
@@ -259,13 +259,14 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 	@Environment(EnvType.CLIENT)
 	class FurnaceAlternativeButtonWidget extends RecipeAlternativesWidget.AlternativeButtonWidget {
-		public FurnaceAlternativeButtonWidget(int i, int j, Recipe<?> recipe, boolean bl) {
-			super(i, j, recipe, bl);
+		public FurnaceAlternativeButtonWidget(int i, int j, RecipeEntry<?> recipeEntry, boolean bl) {
+			super(i, j, recipeEntry, bl);
 		}
 
 		@Override
-		protected void alignRecipe(Recipe<?> recipe) {
-			ItemStack[] itemStacks = recipe.getIngredients().get(0).getMatchingStacks();
+		protected void alignRecipe(RecipeEntry<?> recipe) {
+			Ingredient ingredient = recipe.value().getIngredients().get(0);
+			ItemStack[] itemStacks = ingredient.getMatchingStacks();
 			this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(10, 10, itemStacks));
 		}
 	}

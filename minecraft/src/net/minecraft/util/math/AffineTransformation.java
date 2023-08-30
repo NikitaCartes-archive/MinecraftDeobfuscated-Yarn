@@ -32,7 +32,7 @@ public final class AffineTransformation {
 				)
 				.apply(instance, AffineTransformation::new)
 	);
-	public static final Codec<AffineTransformation> ANY_CODEC = Codecs.either(
+	public static final Codec<AffineTransformation> ANY_CODEC = Codecs.alternatively(
 		CODEC, Codecs.MATRIX4F.xmap(AffineTransformation::new, AffineTransformation::getMatrix)
 	);
 	private boolean initialized;

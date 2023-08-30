@@ -17,6 +17,7 @@ import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.RecipeBook;
@@ -30,8 +31,8 @@ public class ClientRecipeBook extends RecipeBook {
 	private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
 	private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
-	public void reload(Iterable<Recipe<?>> recipes, DynamicRegistryManager registryManager) {
-		Map<RecipeBookGroup, List<List<Recipe<?>>>> map = toGroupedMap(recipes);
+	public void reload(Iterable<RecipeEntry<?>> recipes, DynamicRegistryManager registryManager) {
+		Map<RecipeBookGroup, List<List<RecipeEntry<?>>>> map = toGroupedMap(recipes);
 		Map<RecipeBookGroup, List<RecipeResultCollection>> map2 = Maps.<RecipeBookGroup, List<RecipeResultCollection>>newHashMap();
 		Builder<RecipeResultCollection> builder = ImmutableList.builder();
 		map.forEach(
@@ -53,25 +54,26 @@ public class ClientRecipeBook extends RecipeBook {
 		this.orderedResults = builder.build();
 	}
 
-	private static Map<RecipeBookGroup, List<List<Recipe<?>>>> toGroupedMap(Iterable<Recipe<?>> recipes) {
-		Map<RecipeBookGroup, List<List<Recipe<?>>>> map = Maps.<RecipeBookGroup, List<List<Recipe<?>>>>newHashMap();
-		Table<RecipeBookGroup, String, List<Recipe<?>>> table = HashBasedTable.create();
+	private static Map<RecipeBookGroup, List<List<RecipeEntry<?>>>> toGroupedMap(Iterable<RecipeEntry<?>> recipes) {
+		Map<RecipeBookGroup, List<List<RecipeEntry<?>>>> map = Maps.<RecipeBookGroup, List<List<RecipeEntry<?>>>>newHashMap();
+		Table<RecipeBookGroup, String, List<RecipeEntry<?>>> table = HashBasedTable.create();
 
-		for (Recipe<?> recipe : recipes) {
+		for (RecipeEntry<?> recipeEntry : recipes) {
+			Recipe<?> recipe = recipeEntry.value();
 			if (!recipe.isIgnoredInRecipeBook() && !recipe.isEmpty()) {
-				RecipeBookGroup recipeBookGroup = getGroupForRecipe(recipe);
+				RecipeBookGroup recipeBookGroup = getGroupForRecipe(recipeEntry);
 				String string = recipe.getGroup();
 				if (string.isEmpty()) {
-					((List)map.computeIfAbsent(recipeBookGroup, group -> Lists.newArrayList())).add(ImmutableList.of(recipe));
+					((List)map.computeIfAbsent(recipeBookGroup, group -> Lists.newArrayList())).add(ImmutableList.of(recipeEntry));
 				} else {
-					List<Recipe<?>> list = table.get(recipeBookGroup, string);
+					List<RecipeEntry<?>> list = table.get(recipeBookGroup, string);
 					if (list == null) {
-						list = Lists.<Recipe<?>>newArrayList();
+						list = Lists.<RecipeEntry<?>>newArrayList();
 						table.put(recipeBookGroup, string, list);
 						((List)map.computeIfAbsent(recipeBookGroup, group -> Lists.newArrayList())).add(list);
 					}
 
-					list.add(recipe);
+					list.add(recipeEntry);
 				}
 			}
 		}
@@ -79,8 +81,9 @@ public class ClientRecipeBook extends RecipeBook {
 		return map;
 	}
 
-	private static RecipeBookGroup getGroupForRecipe(Recipe<?> recipe) {
-		if (recipe instanceof CraftingRecipe craftingRecipe) {
+	private static RecipeBookGroup getGroupForRecipe(RecipeEntry<?> recipe) {
+		Recipe<?> recipe2 = recipe.value();
+		if (recipe2 instanceof CraftingRecipe craftingRecipe) {
 			return switch (craftingRecipe.getCategory()) {
 				case BUILDING -> RecipeBookGroup.CRAFTING_BUILDING_BLOCKS;
 				case EQUIPMENT -> RecipeBookGroup.CRAFTING_EQUIPMENT;
@@ -88,8 +91,8 @@ public class ClientRecipeBook extends RecipeBook {
 				case MISC -> RecipeBookGroup.CRAFTING_MISC;
 			};
 		} else {
-			RecipeType<?> recipeType = recipe.getType();
-			if (recipe instanceof AbstractCookingRecipe abstractCookingRecipe) {
+			RecipeType<?> recipeType = recipe2.getType();
+			if (recipe2 instanceof AbstractCookingRecipe abstractCookingRecipe) {
 				CookingRecipeCategory cookingRecipeCategory = abstractCookingRecipe.getCategory();
 				if (recipeType == RecipeType.SMELTING) {
 					return switch (cookingRecipeCategory) {
@@ -117,7 +120,7 @@ public class ClientRecipeBook extends RecipeBook {
 			} else if (recipeType == RecipeType.SMITHING) {
 				return RecipeBookGroup.SMITHING;
 			} else {
-				LOGGER.warn("Unknown recipe category: {}/{}", LogUtils.defer(() -> Registries.RECIPE_TYPE.getId(recipe.getType())), LogUtils.defer(recipe::getId));
+				LOGGER.warn("Unknown recipe category: {}/{}", LogUtils.defer(() -> Registries.RECIPE_TYPE.getId(recipe2.getType())), LogUtils.defer(recipe::id));
 				return RecipeBookGroup.UNKNOWN;
 			}
 		}

@@ -721,7 +721,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 
 		@Override
 		protected void attack(LivingEntity target) {
-			if (this.isCooledDown() && this.mob.isInAttackRange(target)) {
+			if (this.canAttack(target)) {
 				this.resetCooldown();
 				this.mob.tryAttack(target);
 				FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_BITE, 1.0F, 1.0F);

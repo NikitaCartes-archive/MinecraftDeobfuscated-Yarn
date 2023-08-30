@@ -63,7 +63,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.slf4j.Logger;
 
@@ -82,7 +81,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static final Identifier NO_REALMS_TEXTURE = new Identifier("textures/gui/realms/no_realms.png");
 	private static final Text MENU_TEXT = Text.translatable("menu.online");
 	private static final Text LOADING_TEXT = Text.translatable("mco.selectServer.loading");
-	static final Text UNINITIALIZED_TEXT = Text.translatable("mco.selectServer.uninitialized");
+	static final Text UNINITIALIZED_TEXT = Text.translatable("mco.selectServer.uninitialized").formatted(Formatting.GREEN);
 	static final Text EXPIRED_LIST_TEXT = Text.translatable("mco.selectServer.expiredList");
 	private static final Text EXPIRED_RENEW_TEXT = Text.translatable("mco.selectServer.expiredRenew");
 	static final Text EXPIRED_TRIAL_TEXT = Text.translatable("mco.selectServer.expiredTrial");
@@ -123,12 +122,8 @@ public class RealmsMainScreen extends RealmsScreen {
 	private ButtonWidget configureButton;
 	private ButtonWidget leaveButton;
 	private RealmsMainScreen.RealmSelectionList realmSelectionList;
-	private boolean hasFetchedServers;
 	private RealmsServerFilterer serverFilterer;
-	private volatile int pendingInvitesCount;
-	int animTick;
 	private volatile boolean trialAvailable;
-	private volatile boolean hasUnreadNews;
 	@Nullable
 	private volatile String newsLink;
 	long lastPlayButtonClickTime;
@@ -160,12 +155,11 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.newsButton = new RealmsMainScreen.NotificationButtonWidget(text2, NEWS_ICON_TEXTURE, button -> {
 			if (this.newsLink != null) {
 				ConfirmLinkScreen.open(this.newsLink, this, true);
-				if (this.hasUnreadNews) {
+				if (this.newsButton.getNotificationCount() != 0) {
 					RealmsPersistence.RealmsPersistenceData realmsPersistenceData = RealmsPersistence.readFile();
 					realmsPersistenceData.hasUnreadNews = false;
-					this.hasUnreadNews = false;
 					RealmsPersistence.writeFile(realmsPersistenceData);
-					this.refreshButtons();
+					this.newsButton.setNotificationCount(0);
 				}
 			}
 		});
@@ -270,14 +264,11 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	void refreshButtons() {
 		RealmsServer realmsServer = this.findServer();
-		this.purchaseButton.active = this.hasFetchedServers;
+		this.purchaseButton.active = this.loadStatus != RealmsMainScreen.LoadStatus.LOADING;
 		this.playButton.active = this.shouldPlayButtonBeActive(realmsServer);
 		this.renewButton.active = this.shouldRenewButtonBeActive(realmsServer);
 		this.leaveButton.active = this.shouldLeaveButtonBeActive(realmsServer);
 		this.configureButton.active = this.shouldConfigureButtonBeActive(realmsServer);
-		this.inviteButton.setNotificationCount(this.pendingInvitesCount);
-		this.inviteButton.setTooltip(this.pendingInvitesCount == 0 ? NO_PENDING_TOOLTIP : PENDING_TOOLTIP);
-		this.newsButton.setNotificationCount(this.hasUnreadNews ? Integer.MAX_VALUE : 0);
 	}
 
 	boolean shouldPlayButtonBeActive(@Nullable RealmsServer server) {
@@ -299,10 +290,17 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Override
 	public void tick() {
 		super.tick();
-		this.animTick++;
 		if (this.periodicRunnersManager != null) {
 			this.periodicRunnersManager.runAll();
 		}
+	}
+
+	public static void resetPendingInvitesCount() {
+		MinecraftClient.getInstance().getRealmsPeriodicCheckers().pendingInvitesCount.reset();
+	}
+
+	public void resetServerList() {
+		MinecraftClient.getInstance().getRealmsPeriodicCheckers().serverList.reset();
 	}
 
 	private PeriodicRunnerFactory.RunnersManager createPeriodicRunnersManager(RealmsPeriodicCheckers periodicCheckers) {
@@ -317,7 +315,6 @@ public class RealmsMainScreen extends RealmsScreen {
 				}
 			}
 
-			this.hasFetchedServers = true;
 			this.onLoadStatusChange(this.serverFilterer.isEmpty() ? RealmsMainScreen.LoadStatus.NO_REALMS : RealmsMainScreen.LoadStatus.LIST);
 			this.refresh();
 			if (!regionsPinged && bl) {
@@ -331,10 +328,10 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.refresh();
 		});
 		runnersManager.add(periodicCheckers.pendingInvitesCount, pendingInvitesCount -> {
-			this.pendingInvitesCount = pendingInvitesCount;
-			this.refreshButtons();
-			if (this.pendingInvitesCount > 0 && this.rateLimiter.tryAcquire(1)) {
-				this.client.getNarratorManager().narrate(Text.translatable("mco.configure.world.invite.narration", this.pendingInvitesCount));
+			this.inviteButton.setNotificationCount(pendingInvitesCount);
+			this.inviteButton.setTooltip(pendingInvitesCount == 0 ? NO_PENDING_TOOLTIP : PENDING_TOOLTIP);
+			if (pendingInvitesCount > 0 && this.rateLimiter.tryAcquire(1)) {
+				this.client.getNarratorManager().narrate(Text.translatable("mco.configure.world.invite.narration", pendingInvitesCount));
 			}
 		});
 		runnersManager.add(periodicCheckers.trialAvailability, trialAvailable -> this.trialAvailable = trialAvailable);
@@ -350,9 +347,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		});
 		runnersManager.add(periodicCheckers.news, news -> {
 			periodicCheckers.newsUpdater.updateNews(news);
-			this.hasUnreadNews = periodicCheckers.newsUpdater.hasUnreadNews();
 			this.newsLink = periodicCheckers.newsUpdater.getNewsLink();
-			this.refreshButtons();
+			this.newsButton.setNotificationCount(periodicCheckers.newsUpdater.hasUnreadNews() ? Integer.MAX_VALUE : 0);
 		});
 		return runnersManager;
 	}
@@ -463,12 +459,8 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	@Nullable
 	private RealmsServer findServer() {
-		if (this.realmSelectionList == null) {
-			return null;
-		} else {
-			RealmsMainScreen.Entry entry = this.realmSelectionList.getSelectedOrNull();
-			return entry != null ? entry.getRealmsServer() : null;
-		}
+		RealmsMainScreen.Entry entry = this.realmSelectionList.getSelectedOrNull();
+		return entry != null ? entry.getRealmsServer() : null;
 	}
 
 	private void leaveServer(boolean confirmed, RealmsServer realmsServer) {
@@ -511,9 +503,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	public void removeSelection() {
-		if (this.realmSelectionList != null) {
-			this.realmSelectionList.setSelected(null);
-		}
+		this.realmSelectionList.setSelected(null);
 	}
 
 	@Override
@@ -630,6 +620,10 @@ public class RealmsMainScreen extends RealmsScreen {
 			super(20, 20, message, 14, 14, texture, onPress);
 		}
 
+		int getNotificationCount() {
+			return this.notificationCount;
+		}
+
 		public void setNotificationCount(int notificationCount) {
 			this.notificationCount = notificationCount;
 		}
@@ -680,7 +674,49 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.render(this.server, context, x, y, mouseX, mouseY);
+			if (this.server.state == RealmsServer.State.UNINITIALIZED) {
+				context.drawGuiTexture(RealmsMainScreen.NEW_REALM_ICON_TEXTURE, x + 36 + 10, y + 6, 40, 20);
+				int i = x + 36 + 10 + 40 + 10;
+				context.drawTextWithShadow(RealmsMainScreen.this.textRenderer, RealmsMainScreen.UNINITIALIZED_TEXT, i, y + 12, -1);
+			} else {
+				int i = 225;
+				int j = 2;
+				this.drawServerState(this.server, context, x + 36, y, mouseX, mouseY, 225, 2);
+				if (!"0".equals(this.server.serverPing.nrOfPlayers)) {
+					String string = Formatting.GRAY + this.server.serverPing.nrOfPlayers;
+					context.drawText(RealmsMainScreen.this.textRenderer, string, x + 36 + 207 - RealmsMainScreen.this.textRenderer.getWidth(string), y + 3, -8355712, false);
+					if (mouseX >= x + 36 + 207 - RealmsMainScreen.this.textRenderer.getWidth(string)
+						&& mouseX <= x + 36 + 207
+						&& mouseY >= y + 1
+						&& mouseY <= y + 10
+						&& mouseY < RealmsMainScreen.this.height - 40
+						&& mouseY > 32) {
+						RealmsMainScreen.this.setTooltip(Text.literal(this.server.serverPing.playerList));
+					}
+				}
+
+				if (RealmsMainScreen.this.isSelfOwnedServer(this.server) && this.server.expired) {
+					Text text = this.server.expiredTrial ? RealmsMainScreen.EXPIRED_TRIAL_TEXT : RealmsMainScreen.EXPIRED_LIST_TEXT;
+					int k = y + 11 + 5;
+					context.drawText(RealmsMainScreen.this.textRenderer, text, x + 36 + 2, k + 1, 15553363, false);
+				} else {
+					if (this.server.worldType == RealmsServer.WorldType.MINIGAME) {
+						int l = 13413468;
+						int k = RealmsMainScreen.this.textRenderer.getWidth(RealmsMainScreen.MINIGAME_TEXT);
+						context.drawText(RealmsMainScreen.this.textRenderer, RealmsMainScreen.MINIGAME_TEXT, x + 36 + 2, y + 12, 13413468, false);
+						context.drawText(RealmsMainScreen.this.textRenderer, this.server.getMinigameName(), x + 36 + 2 + k, y + 12, 7105644, false);
+					} else {
+						context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), x + 36 + 2, y + 12, 7105644, false);
+					}
+
+					if (!RealmsMainScreen.this.isSelfOwnedServer(this.server)) {
+						context.drawText(RealmsMainScreen.this.textRenderer, this.server.owner, x + 36 + 2, y + 12 + 11, 5000268, false);
+					}
+				}
+
+				context.drawText(RealmsMainScreen.this.textRenderer, this.server.getName(), x + 36 + 2, y + 1, -1, false);
+				RealmsUtil.drawPlayerHead(context, x + 36 - 36, y, 32, this.server.ownerUUID);
+			}
 		}
 
 		private void play() {
@@ -724,57 +760,6 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 
 			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
-
-		private void render(RealmsServer server, DrawContext context, int x, int y, int mouseX, int mouseY) {
-			this.renderRealmsServerItem(server, context, x + 36, y, mouseX, mouseY);
-		}
-
-		private void renderRealmsServerItem(RealmsServer server, DrawContext context, int x, int y, int mouseX, int mouseY) {
-			if (server.state == RealmsServer.State.UNINITIALIZED) {
-				context.drawGuiTexture(RealmsMainScreen.NEW_REALM_ICON_TEXTURE, x + 10, y + 6, 40, 20);
-				float f = 0.5F + (1.0F + MathHelper.sin((float)RealmsMainScreen.this.animTick * 0.25F)) * 0.25F;
-				int i = 0xFF000000 | (int)(127.0F * f) << 16 | (int)(255.0F * f) << 8 | (int)(127.0F * f);
-				context.drawCenteredTextWithShadow(RealmsMainScreen.this.textRenderer, RealmsMainScreen.UNINITIALIZED_TEXT, x + 10 + 40 + 75, y + 12, i);
-			} else {
-				int j = 225;
-				int i = 2;
-				this.drawServerState(server, context, x, y, mouseX, mouseY, 225, 2);
-				if (!"0".equals(server.serverPing.nrOfPlayers)) {
-					String string = Formatting.GRAY + server.serverPing.nrOfPlayers;
-					context.drawText(RealmsMainScreen.this.textRenderer, string, x + 207 - RealmsMainScreen.this.textRenderer.getWidth(string), y + 3, -8355712, false);
-					if (mouseX >= x + 207 - RealmsMainScreen.this.textRenderer.getWidth(string)
-						&& mouseX <= x + 207
-						&& mouseY >= y + 1
-						&& mouseY <= y + 10
-						&& mouseY < RealmsMainScreen.this.height - 40
-						&& mouseY > 32) {
-						RealmsMainScreen.this.setTooltip(Text.literal(server.serverPing.playerList));
-					}
-				}
-
-				if (RealmsMainScreen.this.isSelfOwnedServer(server) && server.expired) {
-					Text text = server.expiredTrial ? RealmsMainScreen.EXPIRED_TRIAL_TEXT : RealmsMainScreen.EXPIRED_LIST_TEXT;
-					int k = y + 11 + 5;
-					context.drawText(RealmsMainScreen.this.textRenderer, text, x + 2, k + 1, 15553363, false);
-				} else {
-					if (server.worldType == RealmsServer.WorldType.MINIGAME) {
-						int l = 13413468;
-						int k = RealmsMainScreen.this.textRenderer.getWidth(RealmsMainScreen.MINIGAME_TEXT);
-						context.drawText(RealmsMainScreen.this.textRenderer, RealmsMainScreen.MINIGAME_TEXT, x + 2, y + 12, 13413468, false);
-						context.drawText(RealmsMainScreen.this.textRenderer, server.getMinigameName(), x + 2 + k, y + 12, 7105644, false);
-					} else {
-						context.drawText(RealmsMainScreen.this.textRenderer, server.getDescription(), x + 2, y + 12, 7105644, false);
-					}
-
-					if (!RealmsMainScreen.this.isSelfOwnedServer(server)) {
-						context.drawText(RealmsMainScreen.this.textRenderer, server.owner, x + 2, y + 12 + 11, 5000268, false);
-					}
-				}
-
-				context.drawText(RealmsMainScreen.this.textRenderer, server.getName(), x + 2, y + 1, -1, false);
-				RealmsUtil.drawPlayerHead(context, x - 36, y, 32, server.ownerUUID);
-			}
 		}
 
 		private void drawServerState(RealmsServer server, DrawContext context, int x, int y, int mouseX, int mouseY, int xOffset, int yOffset) {

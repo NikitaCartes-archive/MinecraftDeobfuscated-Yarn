@@ -5,16 +5,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
-import net.minecraft.client.realms.util.Errable;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.realms.exception.RealmsServiceException;
+import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public abstract class LongRunningTask implements Errable, Runnable {
+public abstract class LongRunningTask implements Runnable {
 	protected static final int MAX_RETRIES = 25;
 	private static final Logger LOGGER = LogUtils.getLogger();
-	protected RealmsLongRunningMcoTaskScreen screen;
+	private boolean aborted = false;
 
 	/**
 	 * Moved from RealmsTasks in 20w10a.
@@ -36,21 +38,28 @@ public abstract class LongRunningTask implements Errable, Runnable {
 		minecraftClient.execute(() -> minecraftClient.setScreen(screen));
 	}
 
-	public void setScreen(RealmsLongRunningMcoTaskScreen screen) {
-		this.screen = screen;
+	protected void error(Text message) {
+		this.abortTask();
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		minecraftClient.execute(() -> minecraftClient.setScreen(new RealmsGenericErrorScreen(message, new RealmsMainScreen(new TitleScreen()))));
 	}
 
-	@Override
-	public void error(Text errorMessage) {
-		this.screen.error(errorMessage);
+	protected void error(Exception exception) {
+		if (exception instanceof RealmsServiceException realmsServiceException) {
+			this.error(realmsServiceException.error.getText());
+		} else {
+			this.error(Text.literal(exception.getMessage()));
+		}
 	}
 
-	public void setTitle(Text title) {
-		this.screen.setTitle(title);
+	protected void error(RealmsServiceException exception) {
+		this.error(exception.error.getText());
 	}
+
+	public abstract Text getTitle();
 
 	public boolean aborted() {
-		return this.screen.aborted();
+		return this.aborted;
 	}
 
 	public void tick() {
@@ -60,5 +69,6 @@ public abstract class LongRunningTask implements Errable, Runnable {
 	}
 
 	public void abortTask() {
+		this.aborted = true;
 	}
 }

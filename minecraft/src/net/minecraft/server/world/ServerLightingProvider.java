@@ -217,6 +217,11 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		}
 	}
 
+	public CompletableFuture<?> enqueue(int x, int z) {
+		return CompletableFuture.runAsync(() -> {
+		}, callback -> this.enqueue(x, z, ServerLightingProvider.Stage.POST_UPDATE, callback));
+	}
+
 	static enum Stage {
 		PRE_UPDATE,
 		POST_UPDATE;

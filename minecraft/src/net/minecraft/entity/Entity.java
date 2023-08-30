@@ -1317,6 +1317,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			for (int i = blockPos.getX(); i <= blockPos2.getX(); i++) {
 				for (int j = blockPos.getY(); j <= blockPos2.getY(); j++) {
 					for (int k = blockPos.getZ(); k <= blockPos2.getZ(); k++) {
+						if (!this.isAlive()) {
+							return;
+						}
+
 						mutable.set(i, j, k);
 						BlockState blockState = this.getWorld().getBlockState(mutable);
 

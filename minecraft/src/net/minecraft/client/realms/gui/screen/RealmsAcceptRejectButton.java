@@ -58,22 +58,20 @@ public abstract class RealmsAcceptRejectButton {
 		double mouseX,
 		double mouseY
 	) {
-		if (button == 0) {
-			int i = selectionList.children().indexOf(entry);
-			if (i > -1) {
-				selectionList.setSelected(i);
-				int j = selectionList.getRowLeft();
-				int k = selectionList.getRowTop(i);
-				int l = (int)(mouseX - (double)j);
-				int m = (int)(mouseY - (double)k);
+		int i = selectionList.children().indexOf(entry);
+		if (i > -1) {
+			selectionList.setSelected(i);
+			int j = selectionList.getRowLeft();
+			int k = selectionList.getRowTop(i);
+			int l = (int)(mouseX - (double)j);
+			int m = (int)(mouseY - (double)k);
 
-				for (RealmsAcceptRejectButton realmsAcceptRejectButton : buttons) {
-					if (l >= realmsAcceptRejectButton.x
-						&& l <= realmsAcceptRejectButton.getRight()
-						&& m >= realmsAcceptRejectButton.y
-						&& m <= realmsAcceptRejectButton.getBottom()) {
-						realmsAcceptRejectButton.handleClick(i);
-					}
+			for (RealmsAcceptRejectButton realmsAcceptRejectButton : buttons) {
+				if (l >= realmsAcceptRejectButton.x
+					&& l <= realmsAcceptRejectButton.getRight()
+					&& m >= realmsAcceptRejectButton.y
+					&& m <= realmsAcceptRejectButton.getBottom()) {
+					realmsAcceptRejectButton.handleClick(i);
 				}
 			}
 		}

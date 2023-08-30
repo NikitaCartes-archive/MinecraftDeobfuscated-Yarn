@@ -6,8 +6,9 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientAdvancementManager;
@@ -37,7 +38,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private static final Text EMPTY_TEXT = Text.translatable("advancements.empty");
 	private static final Text ADVANCEMENTS_TEXT = Text.translatable("gui.advancements");
 	private final ClientAdvancementManager advancementHandler;
-	private final Map<Advancement, AdvancementTab> tabs = Maps.<Advancement, AdvancementTab>newLinkedHashMap();
+	private final Map<AdvancementEntry, AdvancementTab> tabs = Maps.<AdvancementEntry, AdvancementTab>newLinkedHashMap();
 	@Nullable
 	private AdvancementTab selectedTab;
 	private boolean movingTab;
@@ -53,9 +54,10 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		this.selectedTab = null;
 		this.advancementHandler.setListener(this);
 		if (this.selectedTab == null && !this.tabs.isEmpty()) {
-			this.advancementHandler.selectTab(((AdvancementTab)this.tabs.values().iterator().next()).getRoot(), true);
+			AdvancementTab advancementTab = (AdvancementTab)this.tabs.values().iterator().next();
+			this.advancementHandler.selectTab(advancementTab.getRoot().getAdvancementEntry(), true);
 		} else {
-			this.advancementHandler.selectTab(this.selectedTab == null ? null : this.selectedTab.getRoot(), true);
+			this.advancementHandler.selectTab(this.selectedTab == null ? null : this.selectedTab.getRoot().getAdvancementEntry(), true);
 		}
 	}
 
@@ -76,7 +78,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
 				if (advancementTab.isClickOnTab(i, j, mouseX, mouseY)) {
-					this.advancementHandler.selectTab(advancementTab.getRoot(), true);
+					this.advancementHandler.selectTab(advancementTab.getRoot().getAdvancementEntry(), true);
 					break;
 				}
 			}
@@ -180,19 +182,19 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public void onRootAdded(Advancement root) {
+	public void onRootAdded(PlacedAdvancement root) {
 		AdvancementTab advancementTab = AdvancementTab.create(this.client, this, this.tabs.size(), root);
 		if (advancementTab != null) {
-			this.tabs.put(root, advancementTab);
+			this.tabs.put(root.getAdvancementEntry(), advancementTab);
 		}
 	}
 
 	@Override
-	public void onRootRemoved(Advancement root) {
+	public void onRootRemoved(PlacedAdvancement root) {
 	}
 
 	@Override
-	public void onDependentAdded(Advancement dependent) {
+	public void onDependentAdded(PlacedAdvancement dependent) {
 		AdvancementTab advancementTab = this.getTab(dependent);
 		if (advancementTab != null) {
 			advancementTab.addAdvancement(dependent);
@@ -200,11 +202,11 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public void onDependentRemoved(Advancement dependent) {
+	public void onDependentRemoved(PlacedAdvancement dependent) {
 	}
 
 	@Override
-	public void setProgress(Advancement advancement, AdvancementProgress progress) {
+	public void setProgress(PlacedAdvancement advancement, AdvancementProgress progress) {
 		AdvancementWidget advancementWidget = this.getAdvancementWidget(advancement);
 		if (advancementWidget != null) {
 			advancementWidget.setProgress(progress);
@@ -212,7 +214,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public void selectTab(@Nullable Advancement advancement) {
+	public void selectTab(@Nullable AdvancementEntry advancement) {
 		this.selectedTab = (AdvancementTab)this.tabs.get(advancement);
 	}
 
@@ -223,17 +225,14 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Nullable
-	public AdvancementWidget getAdvancementWidget(Advancement advancement) {
+	public AdvancementWidget getAdvancementWidget(PlacedAdvancement advancement) {
 		AdvancementTab advancementTab = this.getTab(advancement);
-		return advancementTab == null ? null : advancementTab.getWidget(advancement);
+		return advancementTab == null ? null : advancementTab.getWidget(advancement.getAdvancementEntry());
 	}
 
 	@Nullable
-	private AdvancementTab getTab(Advancement advancement) {
-		while (advancement.getParent() != null) {
-			advancement = advancement.getParent();
-		}
-
-		return (AdvancementTab)this.tabs.get(advancement);
+	private AdvancementTab getTab(PlacedAdvancement advancement) {
+		PlacedAdvancement placedAdvancement = advancement.getRoot();
+		return (AdvancementTab)this.tabs.get(placedAdvancement.getAdvancementEntry());
 	}
 }

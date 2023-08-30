@@ -1,10 +1,9 @@
 package net.minecraft.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
 /**
  * A serializer for hardcoded recipes. The recipes with this serializer don't
@@ -17,20 +16,24 @@ import net.minecraft.util.JsonHelper;
  */
 public class SpecialRecipeSerializer<T extends CraftingRecipe> implements RecipeSerializer<T> {
 	private final SpecialRecipeSerializer.Factory<T> factory;
+	private final Codec<T> codec;
 
 	public SpecialRecipeSerializer(SpecialRecipeSerializer.Factory<T> factory) {
 		this.factory = factory;
+		this.codec = RecordCodecBuilder.create(
+			instance -> instance.group(CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(CraftingRecipe::getCategory))
+					.apply(instance, factory::create)
+		);
 	}
 
-	public T read(Identifier identifier, JsonObject jsonObject) {
-		CraftingRecipeCategory craftingRecipeCategory = (CraftingRecipeCategory)CraftingRecipeCategory.CODEC
-			.byId(JsonHelper.getString(jsonObject, "category", null), CraftingRecipeCategory.MISC);
-		return this.factory.create(identifier, craftingRecipeCategory);
+	@Override
+	public Codec<T> codec() {
+		return this.codec;
 	}
 
-	public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
+	public T read(PacketByteBuf packetByteBuf) {
 		CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
-		return this.factory.create(identifier, craftingRecipeCategory);
+		return this.factory.create(craftingRecipeCategory);
 	}
 
 	public void write(PacketByteBuf packetByteBuf, T craftingRecipe) {
@@ -39,6 +42,6 @@ public class SpecialRecipeSerializer<T extends CraftingRecipe> implements Recipe
 
 	@FunctionalInterface
 	public interface Factory<T extends CraftingRecipe> {
-		T create(Identifier id, CraftingRecipeCategory category);
+		T create(CraftingRecipeCategory category);
 	}
 }

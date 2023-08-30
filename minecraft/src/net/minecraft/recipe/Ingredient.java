@@ -1,11 +1,12 @@
 package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -15,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -25,8 +25,8 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 
 public final class Ingredient implements Predicate<ItemStack> {
 	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
@@ -35,9 +35,15 @@ public final class Ingredient implements Predicate<ItemStack> {
 	private ItemStack[] matchingStacks;
 	@Nullable
 	private IntList ids;
+	public static final Codec<Ingredient> ALLOW_EMPTY_CODEC = createCodec(true);
+	public static final Codec<Ingredient> DISALLOW_EMPTY_CODEC = createCodec(false);
 
 	private Ingredient(Stream<? extends Ingredient.Entry> entries) {
 		this.entries = (Ingredient.Entry[])entries.toArray(Ingredient.Entry[]::new);
+	}
+
+	private Ingredient(Ingredient.Entry[] entries) {
+		this.entries = entries;
 	}
 
 	public ItemStack[] getMatchingStacks() {
@@ -83,22 +89,17 @@ public final class Ingredient implements Predicate<ItemStack> {
 		buf.writeCollection(Arrays.asList(this.getMatchingStacks()), PacketByteBuf::writeItemStack);
 	}
 
-	public JsonElement toJson() {
-		if (this.entries.length == 1) {
-			return this.entries[0].toJson();
-		} else {
-			JsonArray jsonArray = new JsonArray();
-
-			for (Ingredient.Entry entry : this.entries) {
-				jsonArray.add(entry.toJson());
-			}
-
-			return jsonArray;
-		}
+	public JsonElement toJson(boolean allowEmpty) {
+		Codec<Ingredient> codec = allowEmpty ? ALLOW_EMPTY_CODEC : DISALLOW_EMPTY_CODEC;
+		return Util.getResult(codec.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 
 	public boolean isEmpty() {
 		return this.entries.length == 0;
+	}
+
+	public boolean equals(Object o) {
+		return o instanceof Ingredient ingredient ? Arrays.equals(this.entries, ingredient.entries) : false;
 	}
 
 	private static Ingredient ofEntries(Stream<? extends Ingredient.Entry> entries) {
@@ -130,73 +131,68 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return ofEntries(buf.readList(PacketByteBuf::readItemStack).stream().map(Ingredient.StackEntry::new));
 	}
 
-	public static Ingredient fromJson(@Nullable JsonElement json) {
-		return fromJson(json, true);
-	}
-
-	public static Ingredient fromJson(@Nullable JsonElement json, boolean allowAir) {
-		if (json == null || json.isJsonNull()) {
-			throw new JsonSyntaxException("Item cannot be null");
-		} else if (json.isJsonObject()) {
-			return ofEntries(Stream.of(entryFromJson(json.getAsJsonObject())));
-		} else if (json.isJsonArray()) {
-			JsonArray jsonArray = json.getAsJsonArray();
-			if (jsonArray.size() == 0 && !allowAir) {
-				throw new JsonSyntaxException("Item array cannot be empty, at least one item must be defined");
-			} else {
-				return ofEntries(StreamSupport.stream(jsonArray.spliterator(), false).map(jsonElement -> entryFromJson(JsonHelper.asObject(jsonElement, "item"))));
-			}
-		} else {
-			throw new JsonSyntaxException("Expected item to be object or array of objects");
-		}
-	}
-
-	private static Ingredient.Entry entryFromJson(JsonObject json) {
-		if (json.has("item") && json.has("tag")) {
-			throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
-		} else if (json.has("item")) {
-			Item item = ShapedRecipe.getItem(json);
-			return new Ingredient.StackEntry(new ItemStack(item));
-		} else if (json.has("tag")) {
-			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-			TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, identifier);
-			return new Ingredient.TagEntry(tagKey);
-		} else {
-			throw new JsonParseException("An ingredient entry needs either a tag or an item");
-		}
+	private static Codec<Ingredient> createCodec(boolean allowEmpty) {
+		Codec<Ingredient.Entry[]> codec = Codec.list(Ingredient.Entry.CODEC)
+			.comapFlatMap(
+				entries -> !allowEmpty && entries.size() < 1
+						? DataResult.error(() -> "Item array cannot be empty, at least one item must be defined")
+						: DataResult.success((Ingredient.Entry[])entries.toArray(new Ingredient.Entry[0])),
+				List::of
+			);
+		return Codecs.either(codec, Ingredient.Entry.CODEC)
+			.flatComapMap(
+				either -> either.map(Ingredient::new, entry -> new Ingredient(new Ingredient.Entry[]{entry})),
+				ingredient -> {
+					if (ingredient.entries.length == 1) {
+						return DataResult.success(Either.right(ingredient.entries[0]));
+					} else {
+						return ingredient.entries.length == 0 && !allowEmpty
+							? DataResult.error(() -> "Item array cannot be empty, at least one item must be defined")
+							: DataResult.success(Either.left(ingredient.entries));
+					}
+				}
+			);
 	}
 
 	interface Entry {
-		Collection<ItemStack> getStacks();
+		Codec<Ingredient.Entry> CODEC = Codecs.xor(Ingredient.StackEntry.CODEC, Ingredient.TagEntry.CODEC)
+			.xmap(either -> either.map(stackEntry -> stackEntry, tagEntry -> tagEntry), entry -> {
+				if (entry instanceof Ingredient.TagEntry tagEntry) {
+					return Either.right(tagEntry);
+				} else if (entry instanceof Ingredient.StackEntry stackEntry) {
+					return Either.left(stackEntry);
+				} else {
+					throw new UnsupportedOperationException("This is neither an item value nor a tag value.");
+				}
+			});
 
-		JsonObject toJson();
+		Collection<ItemStack> getStacks();
 	}
 
-	static class StackEntry implements Ingredient.Entry {
-		private final ItemStack stack;
+	static record StackEntry(ItemStack stack) implements Ingredient.Entry {
+		static final Codec<Ingredient.StackEntry> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(RecipeCodecs.INGREDIENT.fieldOf("item").forGetter(entry -> entry.stack)).apply(instance, Ingredient.StackEntry::new)
+		);
 
-		StackEntry(ItemStack stack) {
-			this.stack = stack;
+		public boolean equals(Object o) {
+			return !(o instanceof Ingredient.StackEntry stackEntry)
+				? false
+				: stackEntry.stack.getItem().equals(this.stack.getItem()) && stackEntry.stack.getCount() == this.stack.getCount();
 		}
 
 		@Override
 		public Collection<ItemStack> getStacks() {
 			return Collections.singleton(this.stack);
 		}
-
-		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("item", Registries.ITEM.getId(this.stack.getItem()).toString());
-			return jsonObject;
-		}
 	}
 
-	static class TagEntry implements Ingredient.Entry {
-		private final TagKey<Item> tag;
+	static record TagEntry(TagKey<Item> tag) implements Ingredient.Entry {
+		static final Codec<Ingredient.TagEntry> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("tag").forGetter(entry -> entry.tag)).apply(instance, Ingredient.TagEntry::new)
+		);
 
-		TagEntry(TagKey<Item> tag) {
-			this.tag = tag;
+		public boolean equals(Object o) {
+			return o instanceof Ingredient.TagEntry tagEntry ? tagEntry.tag.id().equals(this.tag.id()) : false;
 		}
 
 		@Override
@@ -208,13 +204,6 @@ public final class Ingredient implements Predicate<ItemStack> {
 			}
 
 			return list;
-		}
-
-		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("tag", this.tag.id().toString());
-			return jsonObject;
 		}
 	}
 }

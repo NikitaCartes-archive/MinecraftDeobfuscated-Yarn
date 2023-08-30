@@ -3,13 +3,15 @@ package net.minecraft.data.server.recipe;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementCriterion;
+import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriterionMerger;
-import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -26,7 +28,7 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 	private final Item output;
 	private final int count;
 	private final List<Ingredient> inputs = Lists.<Ingredient>newArrayList();
-	private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
+	private final Map<String, AdvancementCriterion<?>> advancementBuilder = new LinkedHashMap();
 	@Nullable
 	private String group;
 
@@ -72,8 +74,8 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 		return this;
 	}
 
-	public ShapelessRecipeJsonBuilder criterion(String string, CriterionConditions criterionConditions) {
-		this.advancementBuilder.criterion(string, criterionConditions);
+	public ShapelessRecipeJsonBuilder criterion(String string, AdvancementCriterion<?> advancementCriterion) {
+		this.advancementBuilder.put(string, advancementCriterion);
 		return this;
 	}
 
@@ -88,13 +90,13 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 	}
 
 	@Override
-	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
+	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
 		this.validate(recipeId);
-		this.advancementBuilder
-			.parent(ROOT)
+		Advancement.Builder builder = exporter.getAdvancementBuilder()
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
-			.criteriaMerger(CriterionMerger.OR);
+			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+		this.advancementBuilder.forEach(builder::criterion);
 		exporter.accept(
 			new ShapelessRecipeJsonBuilder.ShapelessRecipeJsonProvider(
 				recipeId,
@@ -103,14 +105,13 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 				this.group == null ? "" : this.group,
 				getCraftingCategory(this.category),
 				this.inputs,
-				this.advancementBuilder,
-				recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")
+				builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/"))
 			)
 		);
 	}
 
 	private void validate(Identifier recipeId) {
-		if (this.advancementBuilder.getCriteria().isEmpty()) {
+		if (this.advancementBuilder.isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + recipeId);
 		}
 	}
@@ -121,8 +122,7 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 		private final int count;
 		private final String group;
 		private final List<Ingredient> inputs;
-		private final Advancement.Builder advancementBuilder;
-		private final Identifier advancementId;
+		private final AdvancementEntry advancementBuilder;
 
 		public ShapelessRecipeJsonProvider(
 			Identifier recipeId,
@@ -131,8 +131,7 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 			String group,
 			CraftingRecipeCategory craftingCategory,
 			List<Ingredient> inputs,
-			Advancement.Builder advancementBuilder,
-			Identifier advancementId
+			AdvancementEntry advancementBuilder
 		) {
 			super(craftingCategory);
 			this.recipeId = recipeId;
@@ -141,7 +140,6 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 			this.group = group;
 			this.inputs = inputs;
 			this.advancementBuilder = advancementBuilder;
-			this.advancementId = advancementId;
 		}
 
 		@Override
@@ -154,7 +152,7 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 			JsonArray jsonArray = new JsonArray();
 
 			for (Ingredient ingredient : this.inputs) {
-				jsonArray.add(ingredient.toJson());
+				jsonArray.add(ingredient.toJson(false));
 			}
 
 			json.add("ingredients", jsonArray);
@@ -168,25 +166,18 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 		}
 
 		@Override
-		public RecipeSerializer<?> getSerializer() {
+		public RecipeSerializer<?> serializer() {
 			return RecipeSerializer.SHAPELESS;
 		}
 
 		@Override
-		public Identifier getRecipeId() {
+		public Identifier id() {
 			return this.recipeId;
 		}
 
-		@Nullable
 		@Override
-		public JsonObject toAdvancementJson() {
-			return this.advancementBuilder.toJson();
-		}
-
-		@Nullable
-		@Override
-		public Identifier getAdvancementId() {
-			return this.advancementId;
+		public AdvancementEntry advancement() {
+			return this.advancementBuilder;
 		}
 	}
 }

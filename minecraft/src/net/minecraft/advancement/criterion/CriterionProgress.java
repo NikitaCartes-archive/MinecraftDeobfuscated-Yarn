@@ -1,27 +1,26 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.time.Instant;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 
 public class CriterionProgress {
-	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.ROOT);
 	@Nullable
-	private Date obtainedDate;
+	private Instant obtainedDate;
+
+	public CriterionProgress() {
+	}
+
+	public CriterionProgress(Instant instant) {
+		this.obtainedDate = instant;
+	}
 
 	public boolean isObtained() {
 		return this.obtainedDate != null;
 	}
 
 	public void obtain() {
-		this.obtainedDate = new Date();
+		this.obtainedDate = Instant.now();
 	}
 
 	public void reset() {
@@ -29,7 +28,7 @@ public class CriterionProgress {
 	}
 
 	@Nullable
-	public Date getObtainedDate() {
+	public Instant getObtainedDate() {
 		return this.obtainedDate;
 	}
 
@@ -38,27 +37,12 @@ public class CriterionProgress {
 	}
 
 	public void toPacket(PacketByteBuf buf) {
-		buf.writeNullable(this.obtainedDate, PacketByteBuf::writeDate);
-	}
-
-	public JsonElement toJson() {
-		return (JsonElement)(this.obtainedDate != null ? new JsonPrimitive(FORMAT.format(this.obtainedDate)) : JsonNull.INSTANCE);
+		buf.writeNullable(this.obtainedDate, PacketByteBuf::writeInstant);
 	}
 
 	public static CriterionProgress fromPacket(PacketByteBuf buf) {
 		CriterionProgress criterionProgress = new CriterionProgress();
-		criterionProgress.obtainedDate = buf.readNullable(PacketByteBuf::readDate);
+		criterionProgress.obtainedDate = buf.readNullable(PacketByteBuf::readInstant);
 		return criterionProgress;
-	}
-
-	public static CriterionProgress obtainedAt(String datetime) {
-		CriterionProgress criterionProgress = new CriterionProgress();
-
-		try {
-			criterionProgress.obtainedDate = FORMAT.parse(datetime);
-			return criterionProgress;
-		} catch (ParseException var3) {
-			throw new JsonSyntaxException("Invalid datetime: " + datetime, var3);
-		}
 	}
 }

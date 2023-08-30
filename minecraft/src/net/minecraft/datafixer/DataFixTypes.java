@@ -2,7 +2,11 @@ package net.minecraft.datafixer;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DSL.TypeReference;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import java.util.Set;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
@@ -36,8 +40,26 @@ public enum DataFixTypes {
 		this.typeReference = typeReference;
 	}
 
-	private static int getSaveVersionId() {
+	static int getSaveVersionId() {
 		return SharedConstants.getGameVersion().getSaveVersion().getId();
+	}
+
+	public <A> Codec<A> createDataFixingCodec(Codec<A> baseCodec, DataFixer dataFixer, int currentDataVersion) {
+		return new Codec<A>() {
+			@Override
+			public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
+				return baseCodec.encode(input, ops, prefix)
+					.flatMap(encoded -> ops.mergeToMap((T)encoded, ops.createString("DataVersion"), ops.createInt(DataFixTypes.getSaveVersionId())));
+			}
+
+			@Override
+			public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
+				int i = (Integer)ops.get(input, "DataVersion").flatMap(ops::getNumberValue).map(Number::intValue).result().orElse(currentDataVersion);
+				Dynamic<T> dynamic = new Dynamic<>(ops, ops.remove(input, "DataVersion"));
+				Dynamic<T> dynamic2 = DataFixTypes.this.update(dataFixer, dynamic, i);
+				return baseCodec.decode(dynamic2);
+			}
+		};
 	}
 
 	/**

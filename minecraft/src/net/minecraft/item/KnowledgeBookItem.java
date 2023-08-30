@@ -8,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
@@ -36,18 +36,18 @@ public class KnowledgeBookItem extends Item {
 		if (nbtCompound != null && nbtCompound.contains("Recipes", NbtElement.LIST_TYPE)) {
 			if (!world.isClient) {
 				NbtList nbtList = nbtCompound.getList("Recipes", NbtElement.STRING_TYPE);
-				List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
+				List<RecipeEntry<?>> list = Lists.<RecipeEntry<?>>newArrayList();
 				RecipeManager recipeManager = world.getServer().getRecipeManager();
 
 				for (int i = 0; i < nbtList.size(); i++) {
 					String string = nbtList.getString(i);
-					Optional<? extends Recipe<?>> optional = recipeManager.get(new Identifier(string));
+					Optional<RecipeEntry<?>> optional = recipeManager.get(new Identifier(string));
 					if (!optional.isPresent()) {
 						LOGGER.error("Invalid recipe: {}", string);
 						return TypedActionResult.fail(itemStack);
 					}
 
-					list.add((Recipe)optional.get());
+					list.add((RecipeEntry)optional.get());
 				}
 
 				user.unlockRecipes(list);

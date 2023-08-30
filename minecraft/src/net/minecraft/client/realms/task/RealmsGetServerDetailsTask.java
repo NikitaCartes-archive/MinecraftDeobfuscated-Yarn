@@ -21,6 +21,7 @@ import net.minecraft.client.realms.gui.screen.RealmsBrokenWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
+import net.minecraft.client.realms.gui.screen.RealmsLongRunningTickableTaskScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsTermsScreen;
 import net.minecraft.text.Text;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsGetServerDetailsTask extends LongRunningTask {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Text TITLE = Text.translatable("mco.connect.connecting");
 	private final RealmsServer server;
 	private final Screen lastScreen;
 	private final RealmsMainScreen mainScreen;
@@ -42,8 +44,6 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(Text.translatable("mco.connect.connecting"));
-
 		RealmsServerAddress realmsServerAddress;
 		try {
 			realmsServerAddress = this.join();
@@ -84,6 +84,11 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		setScreen(screen);
 	}
 
+	@Override
+	public Text getTitle() {
+		return TITLE;
+	}
+
 	private RealmsServerAddress join() throws RealmsServiceException, TimeoutException, CancellationException {
 		RealmsClient realmsClient = RealmsClient.create();
 
@@ -103,7 +108,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 	}
 
 	public RealmsLongRunningMcoTaskScreen createConnectingScreen(RealmsServerAddress address) {
-		return new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, address));
+		return new RealmsLongRunningTickableTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, address));
 	}
 
 	private RealmsLongConfirmationScreen createResourcePackConfirmationScreen(

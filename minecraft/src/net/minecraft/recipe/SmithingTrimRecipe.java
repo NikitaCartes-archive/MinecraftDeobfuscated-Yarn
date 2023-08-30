@@ -1,6 +1,7 @@
 package net.minecraft.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.inventory.Inventory;
@@ -15,18 +16,14 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
 public class SmithingTrimRecipe implements SmithingRecipe {
-	private final Identifier id;
 	final Ingredient template;
 	final Ingredient base;
 	final Ingredient addition;
 
-	public SmithingTrimRecipe(Identifier id, Ingredient template, Ingredient base, Ingredient addition) {
-		this.id = id;
+	SmithingTrimRecipe(Ingredient template, Ingredient base, Ingredient addition) {
 		this.template = template;
 		this.base = base;
 		this.addition = addition;
@@ -63,7 +60,7 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public ItemStack getOutput(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(DynamicRegistryManager registryManager) {
 		ItemStack itemStack = new ItemStack(Items.IRON_CHESTPLATE);
 		Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional = registryManager.get(RegistryKeys.TRIM_PATTERN).streamEntries().findFirst();
 		if (optional.isPresent()) {
@@ -93,11 +90,6 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public Identifier getId() {
-		return this.id;
-	}
-
-	@Override
 	public RecipeSerializer<?> getSerializer() {
 		return RecipeSerializer.SMITHING_TRIM;
 	}
@@ -108,18 +100,25 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingTrimRecipe> {
-		public SmithingTrimRecipe read(Identifier identifier, JsonObject jsonObject) {
-			Ingredient ingredient = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "template"));
-			Ingredient ingredient2 = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "base"));
-			Ingredient ingredient3 = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "addition"));
-			return new SmithingTrimRecipe(identifier, ingredient, ingredient2, ingredient3);
+		private static final Codec<SmithingTrimRecipe> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("template").forGetter(recipe -> recipe.template),
+						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("base").forGetter(recipe -> recipe.base),
+						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("addition").forGetter(recipe -> recipe.addition)
+					)
+					.apply(instance, SmithingTrimRecipe::new)
+		);
+
+		@Override
+		public Codec<SmithingTrimRecipe> codec() {
+			return CODEC;
 		}
 
-		public SmithingTrimRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
+		public SmithingTrimRecipe read(PacketByteBuf packetByteBuf) {
 			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 			Ingredient ingredient2 = Ingredient.fromPacket(packetByteBuf);
 			Ingredient ingredient3 = Ingredient.fromPacket(packetByteBuf);
-			return new SmithingTrimRecipe(identifier, ingredient, ingredient2, ingredient3);
+			return new SmithingTrimRecipe(ingredient, ingredient2, ingredient3);
 		}
 
 		public void write(PacketByteBuf packetByteBuf, SmithingTrimRecipe smithingTrimRecipe) {

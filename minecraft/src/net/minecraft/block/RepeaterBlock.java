@@ -58,9 +58,13 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		return !world.isClient() && direction.getAxis() != ((Direction)state.get(FACING)).getAxis()
-			? state.with(LOCKED, Boolean.valueOf(this.isLocked(world, pos, state)))
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		if (direction == Direction.DOWN && !this.canPlaceAbove(world, neighborPos, neighborState)) {
+			return Blocks.AIR.getDefaultState();
+		} else {
+			return !world.isClient() && direction.getAxis() != ((Direction)state.get(FACING)).getAxis()
+				? state.with(LOCKED, Boolean.valueOf(this.isLocked(world, pos, state)))
+				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		}
 	}
 
 	@Override

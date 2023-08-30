@@ -6,6 +6,9 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Lazy;
 
+/**
+ * Provides the default {@link ToolMaterial}s used by vanilla tools.
+ */
 public enum ToolMaterials implements ToolMaterial {
 	WOOD(MiningLevels.WOOD, 59, 2.0F, 0.0F, 15, () -> Ingredient.fromTag(ItemTags.PLANKS)),
 	STONE(MiningLevels.STONE, 131, 4.0F, 1.0F, 5, () -> Ingredient.fromTag(ItemTags.STONE_TOOL_MATERIALS)),

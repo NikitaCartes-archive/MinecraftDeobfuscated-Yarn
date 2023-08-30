@@ -5,13 +5,15 @@ import java.time.Duration;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.realms.RepeatedNarrator;
 import net.minecraft.client.realms.exception.RealmsDefaultUncaughtExceptionHandler;
+import net.minecraft.client.realms.gui.RealmsLoadingWidget;
 import net.minecraft.client.realms.task.LongRunningTask;
-import net.minecraft.client.realms.util.Errable;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -19,46 +21,21 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Errable {
-	private static final RepeatedNarrator NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
+public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final RepeatedNarrator NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
+	private LongRunningTask task;
 	private final Screen parent;
 	private volatile Text title = ScreenTexts.EMPTY;
+	private final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical();
 	@Nullable
-	private volatile Text errorMessage;
-	private volatile boolean aborted;
-	private int animTicks;
-	private final LongRunningTask task;
-	private final int buttonLength = 212;
-	private ButtonWidget cancelButton;
-	public static final String[] SYMBOLS = new String[]{
-		"▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃",
-		"_ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄",
-		"_ _ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅",
-		"_ _ _ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆",
-		"_ _ _ _ ▃ ▄ ▅ ▆ ▇ █ ▇",
-		"_ _ _ _ _ ▃ ▄ ▅ ▆ ▇ █",
-		"_ _ _ _ ▃ ▄ ▅ ▆ ▇ █ ▇",
-		"_ _ _ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆",
-		"_ _ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅",
-		"_ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄",
-		"▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃",
-		"▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _",
-		"▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _ _",
-		"▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _ _ _",
-		"▇ █ ▇ ▆ ▅ ▄ ▃ _ _ _ _",
-		"█ ▇ ▆ ▅ ▄ ▃ _ _ _ _ _",
-		"▇ █ ▇ ▆ ▅ ▄ ▃ _ _ _ _",
-		"▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _ _ _",
-		"▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _ _",
-		"▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _"
-	};
+	private RealmsLoadingWidget loading;
 
 	public RealmsLongRunningMcoTaskScreen(Screen parent, LongRunningTask task) {
 		super(NarratorManager.EMPTY);
 		this.parent = parent;
 		this.task = task;
-		task.setScreen(this);
+		this.setTitle(task.getTitle());
 		Thread thread = new Thread(task, "Realms-long-running-task");
 		thread.setUncaughtExceptionHandler(new RealmsDefaultUncaughtExceptionHandler(LOGGER));
 		thread.start();
@@ -67,15 +44,13 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	@Override
 	public void tick() {
 		super.tick();
-		NARRATOR.narrate(this.client.getNarratorManager(), this.title);
-		this.animTicks++;
-		this.task.tick();
+		NARRATOR.narrate(this.client.getNarratorManager(), this.loading.getMessage());
 	}
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.cancelOrBackButtonClicked();
+			this.onCancel();
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -84,52 +59,32 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 
 	@Override
 	public void init() {
-		this.task.init();
-		this.cancelButton = this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked()).dimensions(this.width / 2 - 106, row(12), 212, 20).build()
-		);
+		this.layout.getMainPositioner().alignHorizontalCenter();
+		this.loading = new RealmsLoadingWidget(this.textRenderer, this.title);
+		this.layout.add(this.loading, positioner -> positioner.marginBottom(30));
+		this.layout.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel()).build());
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
+		this.initTabNavigation();
 	}
 
-	private void cancelOrBackButtonClicked() {
-		this.aborted = true;
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		SimplePositioningWidget.setPos(this.layout, this.getNavigationFocus());
+	}
+
+	protected void onCancel() {
 		this.task.abortTask();
 		this.client.setScreen(this.parent);
 	}
 
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, row(3), 16777215);
-		Text text = this.errorMessage;
-		if (text == null) {
-			context.drawCenteredTextWithShadow(this.textRenderer, SYMBOLS[this.animTicks % SYMBOLS.length], this.width / 2, row(8), -8355712);
-		} else {
-			context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, row(8), 16711680);
-		}
-	}
-
-	@Override
-	public void error(Text errorMessage) {
-		this.errorMessage = errorMessage;
-		this.client.getNarratorManager().narrate(errorMessage);
-		this.client
-			.execute(
-				() -> {
-					this.remove(this.cancelButton);
-					this.cancelButton = this.addDrawableChild(
-						ButtonWidget.builder(ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked())
-							.dimensions(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20)
-							.build()
-					);
-				}
-			);
-	}
-
 	public void setTitle(Text title) {
-		this.title = title;
-	}
+		if (this.loading != null) {
+			this.loading.setMessage(title);
+		}
 
-	public boolean aborted() {
-		return this.aborted;
+		this.title = title;
 	}
 }

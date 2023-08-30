@@ -187,7 +187,7 @@ public class RedstoneWireBlock extends Block {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (direction == Direction.DOWN) {
-			return state;
+			return !this.canRunOnTop(world, neighborPos, neighborState) ? Blocks.AIR.getDefaultState() : state;
 		} else if (direction == Direction.UP) {
 			return this.getPlacementState(world, state, pos);
 		} else {

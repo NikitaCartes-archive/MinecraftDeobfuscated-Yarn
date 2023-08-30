@@ -41,7 +41,7 @@ public class ChunkHolder {
 	public static final Either<Chunk, ChunkHolder.Unloaded> UNLOADED_CHUNK = Either.right(ChunkHolder.Unloaded.INSTANCE);
 	public static final CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> UNLOADED_CHUNK_FUTURE = CompletableFuture.completedFuture(UNLOADED_CHUNK);
 	public static final Either<WorldChunk, ChunkHolder.Unloaded> UNLOADED_WORLD_CHUNK = Either.right(ChunkHolder.Unloaded.INSTANCE);
-	private static final Either<Chunk, ChunkHolder.Unloaded> field_36388 = Either.right(ChunkHolder.Unloaded.INSTANCE);
+	private static final Either<Chunk, ChunkHolder.Unloaded> CHUNK_LOADING_NOT_FINISHED = Either.right(ChunkHolder.Unloaded.INSTANCE);
 	private static final CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> UNLOADED_WORLD_CHUNK_FUTURE = CompletableFuture.completedFuture(
 		UNLOADED_WORLD_CHUNK
 	);
@@ -76,6 +76,7 @@ public class ChunkHolder {
 	private final ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider;
 	private boolean accessible;
 	private CompletableFuture<Void> field_26930 = CompletableFuture.completedFuture(null);
+	private CompletableFuture<?> postProcessingFuture = CompletableFuture.completedFuture(null);
 
 	public ChunkHolder(
 		ChunkPos pos,
@@ -126,8 +127,17 @@ public class ChunkHolder {
 		return either == null ? null : (WorldChunk)either.left().orElse(null);
 	}
 
+	public CompletableFuture<?> getPostProcessingFuture() {
+		return this.postProcessingFuture;
+	}
+
 	@Nullable
-	public WorldChunk method_41205() {
+	public WorldChunk getPostProcessedChunk() {
+		return !this.postProcessingFuture.isDone() ? null : this.getWorldChunk();
+	}
+
+	@Nullable
+	public WorldChunk getAccessibleChunk() {
 		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = this.getAccessibleFuture();
 		Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)completableFuture.getNow(null);
 		return either == null ? null : (WorldChunk)either.left().orElse(null);
@@ -276,13 +286,13 @@ public class ChunkHolder {
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)this.futuresByStatus
 			.get(i);
 		if (completableFuture != null) {
-			Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)completableFuture.getNow(field_36388);
+			Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)completableFuture.getNow(CHUNK_LOADING_NOT_FINISHED);
 			if (either == null) {
 				String string = "value in future for status: " + targetStatus + " was incorrectly set to null at chunk: " + this.pos;
 				throw chunkStorage.crash(new IllegalStateException("null value previously set for chunk status"), string);
 			}
 
-			if (either == field_36388 || either.right().isEmpty()) {
+			if (either == CHUNK_LOADING_NOT_FINISHED || either.right().isEmpty()) {
 				return completableFuture;
 			}
 		}
@@ -302,7 +312,7 @@ public class ChunkHolder {
 			this.actionStack.push(new ChunkHolder.MultithreadAction(Thread.currentThread(), then, thenDesc));
 		}
 
-		this.savingFuture = this.savingFuture.thenCombine(then, (chunk, object) -> chunk);
+		this.savingFuture = this.savingFuture.thenCombine(then, (result, thenResult) -> result);
 	}
 
 	private void combineSavingFuture(CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> then, String thenDesc) {
@@ -310,7 +320,15 @@ public class ChunkHolder {
 			this.actionStack.push(new ChunkHolder.MultithreadAction(Thread.currentThread(), then, thenDesc));
 		}
 
-		this.savingFuture = this.savingFuture.thenCombine(then, (chunk, either) -> either.map(chunkx -> chunkx, unloaded -> chunk));
+		this.savingFuture = this.savingFuture.thenCombine(then, (result, thenResult) -> thenResult.map(chunk -> chunk, unloaded -> result));
+	}
+
+	public void combinePostProcessingFuture(CompletableFuture<?> postProcessingFuture) {
+		if (this.postProcessingFuture.isDone()) {
+			this.postProcessingFuture = postProcessingFuture;
+		} else {
+			this.postProcessingFuture = this.postProcessingFuture.thenCombine(postProcessingFuture, (object, object2) -> null);
+		}
 	}
 
 	public ChunkLevelType getLevelType() {

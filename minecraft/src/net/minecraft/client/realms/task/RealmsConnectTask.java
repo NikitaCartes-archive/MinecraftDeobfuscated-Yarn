@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class RealmsConnectTask extends LongRunningTask {
+	private static final Text TITLE = Text.translatable("mco.connect.connecting");
 	private final RealmsConnection realmsConnect;
 	private final RealmsServer server;
 	private final RealmsServerAddress address;
@@ -23,12 +24,12 @@ public class RealmsConnectTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(Text.translatable("mco.connect.connecting"));
 		this.realmsConnect.connect(this.server, ServerAddress.parse(this.address.address));
 	}
 
 	@Override
 	public void abortTask() {
+		super.abortTask();
 		this.realmsConnect.abort();
 		MinecraftClient.getInstance().getServerResourcePackProvider().clear();
 	}
@@ -36,5 +37,10 @@ public class RealmsConnectTask extends LongRunningTask {
 	@Override
 	public void tick() {
 		this.realmsConnect.tick();
+	}
+
+	@Override
+	public Text getTitle() {
+		return TITLE;
 	}
 }

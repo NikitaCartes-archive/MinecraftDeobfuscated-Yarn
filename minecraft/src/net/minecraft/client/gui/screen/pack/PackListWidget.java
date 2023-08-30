@@ -128,7 +128,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			ResourcePackCompatibility resourcePackCompatibility = this.pack.getCompatibility();
 			if (!resourcePackCompatibility.isCompatible()) {
-				context.fill(x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
+				context.fill(x - 1, y - 1, x + entryWidth - 3, y + entryHeight + 1, -8978432);
 			}
 
 			context.drawTexture(this.pack.getIconId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
@@ -228,36 +228,32 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (button != 0) {
-				return false;
-			} else {
-				double d = mouseX - (double)this.widget.getRowLeft();
-				double e = mouseY - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
-				if (this.isSelectable() && d <= 32.0) {
-					this.widget.screen.clearSelection();
-					if (this.pack.canBeEnabled()) {
-						this.enable();
-						return true;
-					}
-
-					if (d < 16.0 && this.pack.canBeDisabled()) {
-						this.pack.disable();
-						return true;
-					}
-
-					if (d > 16.0 && e < 16.0 && this.pack.canMoveTowardStart()) {
-						this.pack.moveTowardStart();
-						return true;
-					}
-
-					if (d > 16.0 && e > 16.0 && this.pack.canMoveTowardEnd()) {
-						this.pack.moveTowardEnd();
-						return true;
-					}
+			double d = mouseX - (double)this.widget.getRowLeft();
+			double e = mouseY - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
+			if (this.isSelectable() && d <= 32.0) {
+				this.widget.screen.clearSelection();
+				if (this.pack.canBeEnabled()) {
+					this.enable();
+					return true;
 				}
 
-				return false;
+				if (d < 16.0 && this.pack.canBeDisabled()) {
+					this.pack.disable();
+					return true;
+				}
+
+				if (d > 16.0 && e < 16.0 && this.pack.canMoveTowardStart()) {
+					this.pack.moveTowardStart();
+					return true;
+				}
+
+				if (d > 16.0 && e > 16.0 && this.pack.canMoveTowardEnd()) {
+					this.pack.moveTowardEnd();
+					return true;
+				}
 			}
+
+			return false;
 		}
 	}
 }

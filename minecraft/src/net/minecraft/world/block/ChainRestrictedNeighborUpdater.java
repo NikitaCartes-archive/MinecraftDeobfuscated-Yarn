@@ -123,7 +123,7 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 		public boolean update(World world) {
 			BlockPos blockPos = this.pos.offset(NeighborUpdater.UPDATE_ORDER[this.currentDirectionIndex++]);
 			BlockState blockState = world.getBlockState(blockPos);
-			blockState.neighborUpdate(world, blockPos, this.sourceBlock, this.pos, false);
+			NeighborUpdater.tryNeighborUpdate(world, blockState, blockPos, this.sourceBlock, this.pos, false);
 			if (this.currentDirectionIndex < NeighborUpdater.UPDATE_ORDER.length && NeighborUpdater.UPDATE_ORDER[this.currentDirectionIndex] == this.except) {
 				this.currentDirectionIndex++;
 			}

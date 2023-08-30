@@ -12,7 +12,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.util.Identifier;
 
@@ -38,7 +38,7 @@ public class RecipeBookResults {
 	private int currentPage;
 	private RecipeBook recipeBook;
 	@Nullable
-	private Recipe<?> lastClickedRecipe;
+	private RecipeEntry<?> lastClickedRecipe;
 	@Nullable
 	private RecipeResultCollection resultCollection;
 
@@ -127,7 +127,7 @@ public class RecipeBookResults {
 	}
 
 	@Nullable
-	public Recipe<?> getLastClickedRecipe() {
+	public RecipeEntry<?> getLastClickedRecipe() {
 		return this.lastClickedRecipe;
 	}
 
@@ -187,7 +187,7 @@ public class RecipeBookResults {
 		}
 	}
 
-	public void onRecipesDisplayed(List<Recipe<?>> recipes) {
+	public void onRecipesDisplayed(List<RecipeEntry<?>> recipes) {
 		for (RecipeDisplayListener recipeDisplayListener : this.recipeDisplayListeners) {
 			recipeDisplayListener.onRecipesDisplayed(recipes);
 		}

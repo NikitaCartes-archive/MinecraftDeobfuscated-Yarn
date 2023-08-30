@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
@@ -14,13 +15,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCriterion.Conditions> {
-	static final Identifier ID = new Identifier("recipe_crafted");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	protected RecipeCraftedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -38,17 +32,18 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 		private final List<ItemPredicate> ingredients;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Identifier recipeId, List<ItemPredicate> ingredients) {
-			super(RecipeCraftedCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.recipeId = recipeId;
 			this.ingredients = ingredients;
 		}
 
-		public static RecipeCraftedCriterion.Conditions create(Identifier recipeId, List<ItemPredicate.Builder> ingredients) {
-			return new RecipeCraftedCriterion.Conditions(Optional.empty(), recipeId, ingredients.stream().flatMap(builder -> builder.build().stream()).toList());
+		public static AdvancementCriterion<RecipeCraftedCriterion.Conditions> create(Identifier recipeId, List<ItemPredicate.Builder> ingredients) {
+			return Criteria.RECIPE_CRAFTED
+				.create(new RecipeCraftedCriterion.Conditions(Optional.empty(), recipeId, ingredients.stream().map(ItemPredicate.Builder::build).toList()));
 		}
 
-		public static RecipeCraftedCriterion.Conditions create(Identifier recipeId) {
-			return new RecipeCraftedCriterion.Conditions(Optional.empty(), recipeId, List.of());
+		public static AdvancementCriterion<RecipeCraftedCriterion.Conditions> create(Identifier recipeId) {
+			return Criteria.RECIPE_CRAFTED.create(new RecipeCraftedCriterion.Conditions(Optional.empty(), recipeId, List.of()));
 		}
 
 		boolean matches(Identifier recipeId, List<ItemStack> ingredients) {

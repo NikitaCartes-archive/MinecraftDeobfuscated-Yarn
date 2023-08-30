@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.loot.context.LootContext;
@@ -11,16 +12,8 @@ import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeCriterion.Conditions> {
-	static final Identifier ID = new Identifier("lightning_strike");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public LightningStrikeCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -42,15 +35,18 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 		private final Optional<LootContextPredicate> bystander;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> lightning, Optional<LootContextPredicate> bystander) {
-			super(LightningStrikeCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.lightning = lightning;
 			this.bystander = bystander;
 		}
 
-		public static LightningStrikeCriterion.Conditions create(Optional<EntityPredicate> lightning, Optional<EntityPredicate> bystander) {
-			return new LightningStrikeCriterion.Conditions(
-				Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(lightning), EntityPredicate.contextPredicateFromEntityPredicate(bystander)
-			);
+		public static AdvancementCriterion<LightningStrikeCriterion.Conditions> create(Optional<EntityPredicate> lightning, Optional<EntityPredicate> bystander) {
+			return Criteria.LIGHTNING_STRIKE
+				.create(
+					new LightningStrikeCriterion.Conditions(
+						Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(lightning), EntityPredicate.contextPredicateFromEntityPredicate(bystander)
+					)
+				);
 		}
 
 		public boolean test(LootContext lightning, List<LootContext> bystanders) {

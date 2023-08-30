@@ -2,22 +2,15 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.Conditions> {
-	static final Identifier ID = new Identifier("levitation");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public LevitationCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -35,13 +28,13 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		private final NumberRange.IntRange duration;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<DistancePredicate> distance, NumberRange.IntRange duration) {
-			super(LevitationCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.distance = distance;
 			this.duration = duration;
 		}
 
-		public static LevitationCriterion.Conditions create(DistancePredicate distance) {
-			return new LevitationCriterion.Conditions(Optional.empty(), Optional.of(distance), NumberRange.IntRange.ANY);
+		public static AdvancementCriterion<LevitationCriterion.Conditions> create(DistancePredicate distance) {
+			return Criteria.LEVITATION.create(new LevitationCriterion.Conditions(Optional.empty(), Optional.of(distance), NumberRange.IntRange.ANY));
 		}
 
 		public boolean matches(ServerPlayerEntity player, Vec3d distance, int duration) {

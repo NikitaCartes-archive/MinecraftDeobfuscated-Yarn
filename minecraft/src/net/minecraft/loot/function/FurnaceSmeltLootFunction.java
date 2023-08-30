@@ -9,6 +9,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmeltingRecipe;
 import org.slf4j.Logger;
@@ -33,9 +34,11 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 		if (stack.isEmpty()) {
 			return stack;
 		} else {
-			Optional<SmeltingRecipe> optional = context.getWorld().getRecipeManager().getFirstMatch(RecipeType.SMELTING, new SimpleInventory(stack), context.getWorld());
+			Optional<RecipeEntry<SmeltingRecipe>> optional = context.getWorld()
+				.getRecipeManager()
+				.getFirstMatch(RecipeType.SMELTING, new SimpleInventory(stack), context.getWorld());
 			if (optional.isPresent()) {
-				ItemStack itemStack = ((SmeltingRecipe)optional.get()).getOutput(context.getWorld().getRegistryManager());
+				ItemStack itemStack = ((SmeltingRecipe)((RecipeEntry)optional.get()).value()).getResult(context.getWorld().getRegistryManager());
 				if (!itemStack.isEmpty()) {
 					return itemStack.copyWithCount(stack.getCount());
 				}

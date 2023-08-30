@@ -23,10 +23,6 @@ public record FluidPredicate(Optional<TagKey<Fluid>> tag, Optional<RegistryEntry
 				.apply(instance, FluidPredicate::new)
 	);
 
-	static Optional<FluidPredicate> create(Optional<TagKey<Fluid>> tag, Optional<RegistryEntry<Fluid>> fluid, Optional<StatePredicate> state) {
-		return tag.isEmpty() && fluid.isEmpty() && state.isEmpty() ? Optional.empty() : Optional.of(new FluidPredicate(tag, fluid, state));
-	}
-
 	public boolean test(ServerWorld world, BlockPos pos) {
 		if (!world.canSetBlock(pos)) {
 			return false;
@@ -69,8 +65,8 @@ public record FluidPredicate(Optional<TagKey<Fluid>> tag, Optional<RegistryEntry
 			return this;
 		}
 
-		public Optional<FluidPredicate> build() {
-			return FluidPredicate.create(this.tag, this.fluid, this.state);
+		public FluidPredicate build() {
+			return new FluidPredicate(this.tag, this.fluid, this.state);
 		}
 	}
 }

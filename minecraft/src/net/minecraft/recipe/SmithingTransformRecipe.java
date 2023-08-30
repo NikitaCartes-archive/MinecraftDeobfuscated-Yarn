@@ -1,25 +1,22 @@
 package net.minecraft.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
 public class SmithingTransformRecipe implements SmithingRecipe {
-	private final Identifier id;
 	final Ingredient template;
 	final Ingredient base;
 	final Ingredient addition;
 	final ItemStack result;
 
-	public SmithingTransformRecipe(Identifier id, Ingredient template, Ingredient base, Ingredient addition, ItemStack result) {
-		this.id = id;
+	public SmithingTransformRecipe(Ingredient template, Ingredient base, Ingredient addition, ItemStack result) {
 		this.template = template;
 		this.base = base;
 		this.addition = addition;
@@ -43,7 +40,7 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public ItemStack getOutput(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(DynamicRegistryManager registryManager) {
 		return this.result;
 	}
 
@@ -63,11 +60,6 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public Identifier getId() {
-		return this.id;
-	}
-
-	@Override
 	public RecipeSerializer<?> getSerializer() {
 		return RecipeSerializer.SMITHING_TRANSFORM;
 	}
@@ -78,20 +70,27 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingTransformRecipe> {
-		public SmithingTransformRecipe read(Identifier identifier, JsonObject jsonObject) {
-			Ingredient ingredient = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "template"));
-			Ingredient ingredient2 = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "base"));
-			Ingredient ingredient3 = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "addition"));
-			ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
-			return new SmithingTransformRecipe(identifier, ingredient, ingredient2, ingredient3, itemStack);
+		private static final Codec<SmithingTransformRecipe> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("template").forGetter(recipe -> recipe.template),
+						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("base").forGetter(recipe -> recipe.base),
+						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("addition").forGetter(recipe -> recipe.addition),
+						RecipeCodecs.CRAFTING_RESULT.fieldOf("result").forGetter(recipe -> recipe.result)
+					)
+					.apply(instance, SmithingTransformRecipe::new)
+		);
+
+		@Override
+		public Codec<SmithingTransformRecipe> codec() {
+			return CODEC;
 		}
 
-		public SmithingTransformRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
+		public SmithingTransformRecipe read(PacketByteBuf packetByteBuf) {
 			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 			Ingredient ingredient2 = Ingredient.fromPacket(packetByteBuf);
 			Ingredient ingredient3 = Ingredient.fromPacket(packetByteBuf);
 			ItemStack itemStack = packetByteBuf.readItemStack();
-			return new SmithingTransformRecipe(identifier, ingredient, ingredient2, ingredient3, itemStack);
+			return new SmithingTransformRecipe(ingredient, ingredient2, ingredient3, itemStack);
 		}
 
 		public void write(PacketByteBuf packetByteBuf, SmithingTransformRecipe smithingTransformRecipe) {

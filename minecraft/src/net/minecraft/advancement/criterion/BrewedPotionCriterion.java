@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.potion.Potion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
@@ -13,13 +14,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriterion.Conditions> {
-	static final Identifier ID = new Identifier("brewed_potion");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public BrewedPotionCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -41,12 +35,12 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		private final Potion potion;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable Potion potion) {
-			super(BrewedPotionCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.potion = potion;
 		}
 
-		public static BrewedPotionCriterion.Conditions any() {
-			return new BrewedPotionCriterion.Conditions(Optional.empty(), null);
+		public static AdvancementCriterion<BrewedPotionCriterion.Conditions> any() {
+			return Criteria.BREWED_POTION.create(new BrewedPotionCriterion.Conditions(Optional.empty(), null));
 		}
 
 		public boolean matches(Potion potion) {

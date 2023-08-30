@@ -12,7 +12,7 @@ import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.util.Identifier;
 
@@ -34,10 +34,10 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
 		if (client.player.currentScreenHandler instanceof AbstractRecipeScreenHandler) {
 			for (RecipeResultCollection recipeResultCollection : list) {
-				for (Recipe<?> recipe : recipeResultCollection.getResults(
+				for (RecipeEntry<?> recipeEntry : recipeResultCollection.getResults(
 					clientRecipeBook.isFilteringCraftable((AbstractRecipeScreenHandler<?>)client.player.currentScreenHandler)
 				)) {
-					if (clientRecipeBook.shouldDisplay(recipe)) {
+					if (clientRecipeBook.shouldDisplay(recipeEntry)) {
 						this.bounce = 15.0F;
 						return;
 					}

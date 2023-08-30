@@ -2,9 +2,10 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -14,17 +15,9 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class InventoryChangedCriterion extends AbstractCriterion<InventoryChangedCriterion.Conditions> {
-	static final Identifier ID = new Identifier("inventory_changed");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public InventoryChangedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -73,24 +66,25 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 			NumberRange.IntRange empty,
 			List<ItemPredicate> items
 		) {
-			super(InventoryChangedCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.occupied = occupied;
 			this.full = full;
 			this.empty = empty;
 			this.items = items;
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemPredicate.Builder... items) {
-			return items((ItemPredicate[])Arrays.stream(items).flatMap(builder -> builder.build().stream()).toArray(ItemPredicate[]::new));
+		public static AdvancementCriterion<InventoryChangedCriterion.Conditions> items(ItemPredicate.Builder... items) {
+			return items((ItemPredicate[])Stream.of(items).map(ItemPredicate.Builder::build).toArray(ItemPredicate[]::new));
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemPredicate... items) {
-			return new InventoryChangedCriterion.Conditions(
-				Optional.empty(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, List.of(items)
-			);
+		public static AdvancementCriterion<InventoryChangedCriterion.Conditions> items(ItemPredicate... items) {
+			return Criteria.INVENTORY_CHANGED
+				.create(
+					new InventoryChangedCriterion.Conditions(Optional.empty(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, List.of(items))
+				);
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemConvertible... items) {
+		public static AdvancementCriterion<InventoryChangedCriterion.Conditions> items(ItemConvertible... items) {
 			ItemPredicate[] itemPredicates = new ItemPredicate[items.length];
 
 			for (int i = 0; i < items.length; i++) {

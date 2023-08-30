@@ -13,7 +13,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 		.getCodec()
 		.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
 	Codec<StructureProcessorList> LIST_CODEC = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
-	Codec<StructureProcessorList> PROCESSORS_CODEC = Codecs.either(LIST_CODEC.fieldOf("processors").codec(), LIST_CODEC);
+	Codec<StructureProcessorList> PROCESSORS_CODEC = Codecs.alternatively(LIST_CODEC.fieldOf("processors").codec(), LIST_CODEC);
 	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PROCESSOR_LIST, PROCESSORS_CODEC);
 	StructureProcessorType<BlockIgnoreStructureProcessor> BLOCK_IGNORE = register("block_ignore", BlockIgnoreStructureProcessor.CODEC);
 	StructureProcessorType<BlockRotStructureProcessor> BLOCK_ROT = register("block_rot", BlockRotStructureProcessor.CODEC);

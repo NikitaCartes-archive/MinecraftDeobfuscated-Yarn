@@ -96,7 +96,6 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.network.message.MessageHandler;
-import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
@@ -129,8 +128,6 @@ import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.report.AbuseReportContext;
-import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.client.resource.DefaultClientResourcePackProvider;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
@@ -145,6 +142,14 @@ import net.minecraft.client.search.IdentifierSearchProvider;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.search.TextSearchProvider;
+import net.minecraft.client.session.Bans;
+import net.minecraft.client.session.ProfileKeys;
+import net.minecraft.client.session.Session;
+import net.minecraft.client.session.report.AbuseReportContext;
+import net.minecraft.client.session.report.ReporterEnvironment;
+import net.minecraft.client.session.telemetry.GameLoadTimeEvent;
+import net.minecraft.client.session.telemetry.TelemetryEventProperty;
+import net.minecraft.client.session.telemetry.TelemetryManager;
 import net.minecraft.client.sound.MusicTracker;
 import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.sound.SoundManager;
@@ -159,20 +164,14 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
-import net.minecraft.client.util.Bans;
 import net.minecraft.client.util.ClientSamplerSource;
 import net.minecraft.client.util.CommandHistoryManager;
 import net.minecraft.client.util.Icons;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.ScreenshotRecorder;
-import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.telemetry.GameLoadTimeEvent;
-import net.minecraft.client.util.telemetry.TelemetryEventProperty;
-import net.minecraft.client.util.telemetry.TelemetryManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
@@ -188,6 +187,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.registry.Registries;
@@ -907,12 +907,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				resultCollections -> new TextSearchProvider(
 						resultCollection -> resultCollection.getAllRecipes()
 								.stream()
-								.flatMap(recipe -> recipe.getOutput(resultCollection.getRegistryManager()).getTooltip(null, TooltipContext.Default.BASIC).stream())
+								.flatMap(recipeEntry -> recipeEntry.value().getResult(resultCollection.getRegistryManager()).getTooltip(null, TooltipContext.Default.BASIC).stream())
 								.map(text -> Formatting.strip(text.getString()).trim())
 								.filter(text -> !text.isEmpty()),
 						resultCollection -> resultCollection.getAllRecipes()
 								.stream()
-								.map(recipe -> Registries.ITEM.getId(recipe.getOutput(resultCollection.getRegistryManager()).getItem())),
+								.map(recipeEntry -> Registries.ITEM.getId(recipeEntry.value().getResult(resultCollection.getRegistryManager()).getItem())),
 						resultCollections
 					)
 			);

@@ -6,7 +6,7 @@ import net.minecraft.util.math.random.Random;
 
 public class ConstantFloatProvider extends FloatProvider {
 	public static final ConstantFloatProvider ZERO = new ConstantFloatProvider(0.0F);
-	public static final Codec<ConstantFloatProvider> CODEC = Codecs.either(Codec.FLOAT, Codec.FLOAT.fieldOf("value").codec())
+	public static final Codec<ConstantFloatProvider> CODEC = Codecs.alternatively(Codec.FLOAT, Codec.FLOAT.fieldOf("value").codec())
 		.xmap(ConstantFloatProvider::new, ConstantFloatProvider::getValue);
 	private final float value;
 

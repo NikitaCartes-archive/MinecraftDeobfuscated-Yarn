@@ -13,7 +13,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.recipe.book.RecipeBookOptions;
@@ -25,17 +25,17 @@ public class ServerRecipeBook extends RecipeBook {
 	public static final String RECIPE_BOOK_KEY = "recipeBook";
 	private static final Logger LOGGER = LogUtils.getLogger();
 
-	public int unlockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {
+	public int unlockRecipes(Collection<RecipeEntry<?>> recipes, ServerPlayerEntity player) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 		int i = 0;
 
-		for (Recipe<?> recipe : recipes) {
-			Identifier identifier = recipe.getId();
-			if (!this.recipes.contains(identifier) && !recipe.isIgnoredInRecipeBook()) {
+		for (RecipeEntry<?> recipeEntry : recipes) {
+			Identifier identifier = recipeEntry.id();
+			if (!this.recipes.contains(identifier) && !recipeEntry.value().isIgnoredInRecipeBook()) {
 				this.add(identifier);
 				this.display(identifier);
 				list.add(identifier);
-				Criteria.RECIPE_UNLOCKED.trigger(player, recipe);
+				Criteria.RECIPE_UNLOCKED.trigger(player, recipeEntry);
 				i++;
 			}
 		}
@@ -47,12 +47,12 @@ public class ServerRecipeBook extends RecipeBook {
 		return i;
 	}
 
-	public int lockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {
+	public int lockRecipes(Collection<RecipeEntry<?>> recipes, ServerPlayerEntity player) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 		int i = 0;
 
-		for (Recipe<?> recipe : recipes) {
-			Identifier identifier = recipe.getId();
+		for (RecipeEntry<?> recipeEntry : recipes) {
+			Identifier identifier = recipeEntry.id();
 			if (this.recipes.contains(identifier)) {
 				this.remove(identifier);
 				list.add(identifier);
@@ -96,17 +96,17 @@ public class ServerRecipeBook extends RecipeBook {
 		this.handleList(nbtList2, this::display, recipeManager);
 	}
 
-	private void handleList(NbtList list, Consumer<Recipe<?>> handler, RecipeManager recipeManager) {
+	private void handleList(NbtList list, Consumer<RecipeEntry<?>> handler, RecipeManager recipeManager) {
 		for (int i = 0; i < list.size(); i++) {
 			String string = list.getString(i);
 
 			try {
 				Identifier identifier = new Identifier(string);
-				Optional<? extends Recipe<?>> optional = recipeManager.get(identifier);
+				Optional<RecipeEntry<?>> optional = recipeManager.get(identifier);
 				if (optional.isEmpty()) {
 					LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier);
 				} else {
-					handler.accept((Recipe)optional.get());
+					handler.accept((RecipeEntry)optional.get());
 				}
 			} catch (InvalidIdentifierException var8) {
 				LOGGER.error("Tried to load improperly formatted recipe: {} removed now.", string);

@@ -40,6 +40,6 @@ public record DamageSourcePropertiesLootCondition(Optional<DamageSourcePredicate
 	}
 
 	public static LootCondition.Builder builder(DamageSourcePredicate.Builder builder) {
-		return () -> new DamageSourcePropertiesLootCondition(builder.build());
+		return () -> new DamageSourcePropertiesLootCondition(Optional.of(builder.build()));
 	}
 }

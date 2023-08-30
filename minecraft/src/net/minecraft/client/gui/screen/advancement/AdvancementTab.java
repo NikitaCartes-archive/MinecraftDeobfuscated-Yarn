@@ -3,11 +3,13 @@ package net.minecraft.client.gui.screen.advancement;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
+import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.TextureManager;
@@ -22,12 +24,12 @@ public class AdvancementTab {
 	private final AdvancementsScreen screen;
 	private final AdvancementTabType type;
 	private final int index;
-	private final Advancement root;
+	private final PlacedAdvancement root;
 	private final AdvancementDisplay display;
 	private final ItemStack icon;
 	private final Text title;
 	private final AdvancementWidget rootWidget;
-	private final Map<Advancement, AdvancementWidget> widgets = Maps.<Advancement, AdvancementWidget>newLinkedHashMap();
+	private final Map<AdvancementEntry, AdvancementWidget> widgets = Maps.<AdvancementEntry, AdvancementWidget>newLinkedHashMap();
 	private double originX;
 	private double originY;
 	private int minPanX = Integer.MAX_VALUE;
@@ -37,7 +39,9 @@ public class AdvancementTab {
 	private float alpha;
 	private boolean initialized;
 
-	public AdvancementTab(MinecraftClient client, AdvancementsScreen screen, AdvancementTabType type, int index, Advancement root, AdvancementDisplay display) {
+	public AdvancementTab(
+		MinecraftClient client, AdvancementsScreen screen, AdvancementTabType type, int index, PlacedAdvancement root, AdvancementDisplay display
+	) {
 		this.client = client;
 		this.screen = screen;
 		this.type = type;
@@ -47,7 +51,7 @@ public class AdvancementTab {
 		this.icon = display.getIcon();
 		this.title = display.getTitle();
 		this.rootWidget = new AdvancementWidget(this, client, root, display);
-		this.addWidget(this.rootWidget, root);
+		this.addWidget(this.rootWidget, root.getAdvancementEntry());
 	}
 
 	public AdvancementTabType getType() {
@@ -58,7 +62,7 @@ public class AdvancementTab {
 		return this.index;
 	}
 
-	public Advancement getRoot() {
+	public PlacedAdvancement getRoot() {
 		return this.root;
 	}
 
@@ -137,13 +141,14 @@ public class AdvancementTab {
 	}
 
 	@Nullable
-	public static AdvancementTab create(MinecraftClient client, AdvancementsScreen screen, int index, Advancement root) {
-		if (root.getDisplay() == null) {
+	public static AdvancementTab create(MinecraftClient client, AdvancementsScreen screen, int index, PlacedAdvancement root) {
+		Optional<AdvancementDisplay> optional = root.getAdvancement().display();
+		if (optional.isEmpty()) {
 			return null;
 		} else {
 			for (AdvancementTabType advancementTabType : AdvancementTabType.values()) {
 				if (index < advancementTabType.getTabCount()) {
-					return new AdvancementTab(client, screen, advancementTabType, index, root, root.getDisplay());
+					return new AdvancementTab(client, screen, advancementTabType, index, root, (AdvancementDisplay)optional.get());
 				}
 
 				index -= advancementTabType.getTabCount();
@@ -163,14 +168,15 @@ public class AdvancementTab {
 		}
 	}
 
-	public void addAdvancement(Advancement advancement) {
-		if (advancement.getDisplay() != null) {
-			AdvancementWidget advancementWidget = new AdvancementWidget(this, this.client, advancement, advancement.getDisplay());
-			this.addWidget(advancementWidget, advancement);
+	public void addAdvancement(PlacedAdvancement advancement) {
+		Optional<AdvancementDisplay> optional = advancement.getAdvancement().display();
+		if (!optional.isEmpty()) {
+			AdvancementWidget advancementWidget = new AdvancementWidget(this, this.client, advancement, (AdvancementDisplay)optional.get());
+			this.addWidget(advancementWidget, advancement.getAdvancementEntry());
 		}
 	}
 
-	private void addWidget(AdvancementWidget widget, Advancement advancement) {
+	private void addWidget(AdvancementWidget widget, AdvancementEntry advancement) {
 		this.widgets.put(advancement, widget);
 		int i = widget.getX();
 		int j = i + 28;
@@ -187,7 +193,7 @@ public class AdvancementTab {
 	}
 
 	@Nullable
-	public AdvancementWidget getWidget(Advancement advancement) {
+	public AdvancementWidget getWidget(AdvancementEntry advancement) {
 		return (AdvancementWidget)this.widgets.get(advancement);
 	}
 

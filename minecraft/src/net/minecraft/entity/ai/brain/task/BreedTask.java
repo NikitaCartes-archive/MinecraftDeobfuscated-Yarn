@@ -29,7 +29,9 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 				MemoryModuleType.WALK_TARGET,
 				MemoryModuleState.REGISTERED,
 				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleState.REGISTERED
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.IS_PANICKING,
+				MemoryModuleState.VALUE_ABSENT
 			),
 			110
 		);
@@ -58,7 +60,9 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 			return animalEntity2.isAlive()
 				&& animalEntity.canBreedWith(animalEntity2)
 				&& LookTargetUtil.canSee(animalEntity.getBrain(), animalEntity2)
-				&& l <= this.breedTime;
+				&& l <= this.breedTime
+				&& !animalEntity.isPanicking()
+				&& !animalEntity2.isPanicking();
 		}
 	}
 
@@ -92,12 +96,19 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 	}
 
 	private Optional<? extends AnimalEntity> findBreedTarget(AnimalEntity animal) {
-		return ((LivingTargetCache)animal.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).get()).findFirst(entity -> {
-			if (entity.getType() == this.targetType && entity instanceof AnimalEntity animalEntity2 && animal.canBreedWith(animalEntity2)) {
-				return true;
-			}
+		return ((LivingTargetCache)animal.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).get())
+			.findFirst(
+				entity -> {
+					if (entity.getType() == this.targetType
+						&& entity instanceof AnimalEntity animalEntity2
+						&& animal.canBreedWith(animalEntity2)
+						&& !animalEntity2.isPanicking()) {
+						return true;
+					}
 
-			return false;
-		}).map(AnimalEntity.class::cast);
+					return false;
+				}
+			)
+			.map(AnimalEntity.class::cast);
 	}
 }

@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
+import net.minecraft.network.message.MessageDecorator;
 import net.minecraft.network.message.SignedCommandArguments;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.MinecraftServer;
@@ -49,26 +50,17 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 	private static void chain(Consumer<SignedMessage> callback, ServerCommandSource source, SignedMessage message) {
 		MinecraftServer minecraftServer = source.getServer();
 		CompletableFuture<FilteredMessage> completableFuture = filterText(source, message);
-		CompletableFuture<Text> completableFuture2 = minecraftServer.getMessageDecorator().decorate(source.getPlayer(), message.getContent());
-		source.getMessageChainTaskQueue()
-			.append(
-				executor -> CompletableFuture.allOf(completableFuture, completableFuture2)
-						.thenAcceptAsync(
-							void_ -> {
-								SignedMessage signedMessage2 = message.withUnsignedContent((Text)completableFuture2.join())
-									.withFilterMask(((FilteredMessage)completableFuture.join()).mask());
-								callback.accept(signedMessage2);
-							},
-							executor
-						)
-			);
+		Text text = minecraftServer.getMessageDecorator().decorate(source.getPlayer(), message.getContent());
+		source.getMessageChainTaskQueue().append(executor -> completableFuture.thenAcceptAsync(filtered -> {
+				SignedMessage signedMessage2 = message.withUnsignedContent(text).withFilterMask(filtered.mask());
+				callback.accept(signedMessage2);
+			}, executor));
 	}
 
 	private static void chainUnsigned(Consumer<SignedMessage> callback, ServerCommandSource source, SignedMessage message) {
-		MinecraftServer minecraftServer = source.getServer();
-		minecraftServer.getMessageDecorator()
-			.decorate(source.getPlayer(), message.getContent())
-			.thenAcceptAsync(content -> callback.accept(message.withUnsignedContent(content)), minecraftServer);
+		MessageDecorator messageDecorator = source.getServer().getMessageDecorator();
+		Text text = messageDecorator.decorate(source.getPlayer(), message.getContent());
+		callback.accept(message.withUnsignedContent(text));
 	}
 
 	private static CompletableFuture<FilteredMessage> filterText(ServerCommandSource source, SignedMessage message) {

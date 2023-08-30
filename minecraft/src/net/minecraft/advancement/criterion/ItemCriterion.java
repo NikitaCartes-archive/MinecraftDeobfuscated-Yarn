@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.util.Arrays;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -21,21 +22,9 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
-	final Identifier id;
-
-	public ItemCriterion(Identifier id) {
-		this.id = id;
-	}
-
-	@Override
-	public Identifier getId() {
-		return this.id;
-	}
-
 	public ItemCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -45,7 +34,7 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 		if (optional2.isEmpty()) {
 			throw new JsonParseException("Failed to parse 'location' field");
 		} else {
-			return new ItemCriterion.Conditions(this.id, optional, (Optional<LootContextPredicate>)optional2.get());
+			return new ItemCriterion.Conditions(optional, (Optional<LootContextPredicate>)optional2.get());
 		}
 	}
 
@@ -65,36 +54,36 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Optional<LootContextPredicate> location;
 
-		public Conditions(Identifier id, Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> location) {
-			super(id, playerPredicate);
-			this.location = location;
+		public Conditions(Optional<LootContextPredicate> optional, Optional<LootContextPredicate> playerPredicate) {
+			super(optional);
+			this.location = playerPredicate;
 		}
 
-		public static ItemCriterion.Conditions createPlacedBlock(Block block) {
+		public static AdvancementCriterion<ItemCriterion.Conditions> createPlacedBlock(Block block) {
 			LootContextPredicate lootContextPredicate = LootContextPredicate.create(BlockStatePropertyLootCondition.builder(block).build());
-			return new ItemCriterion.Conditions(Criteria.PLACED_BLOCK.id, Optional.empty(), Optional.of(lootContextPredicate));
+			return Criteria.PLACED_BLOCK.create(new ItemCriterion.Conditions(Optional.empty(), Optional.of(lootContextPredicate)));
 		}
 
-		public static ItemCriterion.Conditions createPlacedBlock(LootCondition.Builder... locationConditions) {
+		public static AdvancementCriterion<ItemCriterion.Conditions> createPlacedBlock(LootCondition.Builder... locationConditions) {
 			LootContextPredicate lootContextPredicate = LootContextPredicate.create(
 				(LootCondition[])Arrays.stream(locationConditions).map(LootCondition.Builder::build).toArray(LootCondition[]::new)
 			);
-			return new ItemCriterion.Conditions(Criteria.PLACED_BLOCK.id, Optional.empty(), Optional.of(lootContextPredicate));
+			return Criteria.PLACED_BLOCK.create(new ItemCriterion.Conditions(Optional.empty(), Optional.of(lootContextPredicate)));
 		}
 
-		private static ItemCriterion.Conditions create(LocationPredicate.Builder location, ItemPredicate.Builder item, Identifier id) {
+		private static ItemCriterion.Conditions create(LocationPredicate.Builder location, ItemPredicate.Builder item) {
 			LootContextPredicate lootContextPredicate = LootContextPredicate.create(
 				LocationCheckLootCondition.builder(location).build(), MatchToolLootCondition.builder(item).build()
 			);
-			return new ItemCriterion.Conditions(id, Optional.empty(), Optional.of(lootContextPredicate));
+			return new ItemCriterion.Conditions(Optional.empty(), Optional.of(lootContextPredicate));
 		}
 
-		public static ItemCriterion.Conditions createItemUsedOnBlock(LocationPredicate.Builder location, ItemPredicate.Builder item) {
-			return create(location, item, Criteria.ITEM_USED_ON_BLOCK.id);
+		public static AdvancementCriterion<ItemCriterion.Conditions> createItemUsedOnBlock(LocationPredicate.Builder location, ItemPredicate.Builder item) {
+			return Criteria.ITEM_USED_ON_BLOCK.create(create(location, item));
 		}
 
-		public static ItemCriterion.Conditions createAllayDropItemOnBlock(LocationPredicate.Builder location, ItemPredicate.Builder item) {
-			return create(location, item, Criteria.ALLAY_DROP_ITEM_ON_BLOCK.id);
+		public static AdvancementCriterion<ItemCriterion.Conditions> createAllayDropItemOnBlock(LocationPredicate.Builder location, ItemPredicate.Builder item) {
+			return Criteria.ALLAY_DROP_ITEM_ON_BLOCK.create(create(location, item));
 		}
 
 		public boolean test(LootContext location) {

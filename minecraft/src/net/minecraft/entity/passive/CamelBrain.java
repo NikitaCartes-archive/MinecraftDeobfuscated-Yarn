@@ -98,11 +98,18 @@ public class CamelBrain {
 			ImmutableList.of(
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(1, new BreedTask(EntityType.CAMEL, 1.0F)),
-				Pair.of(2, new TemptTask(entity -> 2.5F, entity -> entity.isBaby() ? 2.5 : 3.5)),
-				Pair.of(3, TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, 2.5F))),
-				Pair.of(4, new RandomLookAroundTask(UniformIntProvider.create(150, 250), 30.0F, 0.0F, 0.0F)),
 				Pair.of(
-					5,
+					2,
+					new RandomTask<>(
+						ImmutableList.of(
+							Pair.of(new TemptTask(entity -> 2.5F, entity -> entity.isBaby() ? 2.5 : 3.5), 1),
+							Pair.of(TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, 2.5F)), 1)
+						)
+					)
+				),
+				Pair.of(3, new RandomLookAroundTask(UniformIntProvider.create(150, 250), 30.0F, 0.0F, 0.0F)),
+				Pair.of(
+					4,
 					new RandomTask<>(
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT),
 						ImmutableList.of(

@@ -84,18 +84,20 @@ public class ChunkDataSender {
 			list = ((List)this.chunks.stream().collect(Comparators.least(i, Comparator.comparingInt(playerPos::getSquaredDistance))))
 				.stream()
 				.mapToLong(Long::longValue)
-				.peek(this.chunks::remove)
-				.mapToObj(chunkStorage::getWorldChunk)
+				.mapToObj(chunkStorage::getPostProcessedChunk)
 				.filter(Objects::nonNull)
 				.toList();
 		} else {
 			list = this.chunks
 				.longStream()
-				.mapToObj(chunkStorage::getWorldChunk)
+				.mapToObj(chunkStorage::getPostProcessedChunk)
 				.filter(Objects::nonNull)
 				.sorted(Comparator.comparingInt(chunk -> playerPos.getSquaredDistance(chunk.getPos())))
 				.toList();
-			this.chunks.clear();
+		}
+
+		for (WorldChunk worldChunk : list) {
+			this.chunks.remove(worldChunk.getPos().toLong());
 		}
 
 		return list;

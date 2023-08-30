@@ -3,16 +3,16 @@ package net.minecraft.network.packet.s2c.play;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 public class CraftFailedResponseS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int syncId;
 	private final Identifier recipeId;
 
-	public CraftFailedResponseS2CPacket(int syncId, Recipe<?> recipe) {
+	public CraftFailedResponseS2CPacket(int syncId, RecipeEntry<?> recipe) {
 		this.syncId = syncId;
-		this.recipeId = recipe.getId();
+		this.recipeId = recipe.id();
 	}
 
 	public CraftFailedResponseS2CPacket(PacketByteBuf buf) {

@@ -1,36 +1,28 @@
 package net.minecraft.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
 public class ShapelessRecipe implements CraftingRecipe {
-	private final Identifier id;
 	final String group;
 	final CraftingRecipeCategory category;
-	final ItemStack output;
-	final DefaultedList<Ingredient> input;
+	final ItemStack result;
+	final DefaultedList<Ingredient> ingredients;
 
-	public ShapelessRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
-		this.id = id;
+	public ShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack result, DefaultedList<Ingredient> ingredients) {
 		this.group = group;
 		this.category = category;
-		this.output = output;
-		this.input = input;
-	}
-
-	@Override
-	public Identifier getId() {
-		return this.id;
+		this.result = result;
+		this.ingredients = ingredients;
 	}
 
 	@Override
@@ -49,13 +41,13 @@ public class ShapelessRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getOutput(DynamicRegistryManager registryManager) {
-		return this.output;
+	public ItemStack getResult(DynamicRegistryManager registryManager) {
+		return this.result;
 	}
 
 	@Override
 	public DefaultedList<Ingredient> getIngredients() {
-		return this.input;
+		return this.ingredients;
 	}
 
 	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
@@ -70,48 +62,51 @@ public class ShapelessRecipe implements CraftingRecipe {
 			}
 		}
 
-		return i == this.input.size() && recipeMatcher.match(this, null);
+		return i == this.ingredients.size() && recipeMatcher.match(this, null);
 	}
 
 	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
-		return this.output.copy();
+		return this.result.copy();
 	}
 
 	@Override
 	public boolean fits(int width, int height) {
-		return width * height >= this.input.size();
+		return width * height >= this.ingredients.size();
 	}
 
 	public static class Serializer implements RecipeSerializer<ShapelessRecipe> {
-		public ShapelessRecipe read(Identifier identifier, JsonObject jsonObject) {
-			String string = JsonHelper.getString(jsonObject, "group", "");
-			CraftingRecipeCategory craftingRecipeCategory = (CraftingRecipeCategory)CraftingRecipeCategory.CODEC
-				.byId(JsonHelper.getString(jsonObject, "category", null), CraftingRecipeCategory.MISC);
-			DefaultedList<Ingredient> defaultedList = getIngredients(JsonHelper.getArray(jsonObject, "ingredients"));
-			if (defaultedList.isEmpty()) {
-				throw new JsonParseException("No ingredients for shapeless recipe");
-			} else if (defaultedList.size() > 9) {
-				throw new JsonParseException("Too many ingredients for shapeless recipe");
-			} else {
-				ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
-				return new ShapelessRecipe(identifier, string, craftingRecipeCategory, itemStack, defaultedList);
-			}
+		private static final Codec<ShapelessRecipe> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
+						CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(recipe -> recipe.category),
+						RecipeCodecs.CRAFTING_RESULT.fieldOf("result").forGetter(recipe -> recipe.result),
+						Ingredient.DISALLOW_EMPTY_CODEC
+							.listOf()
+							.fieldOf("ingredients")
+							.flatXmap(
+								ingredients -> {
+									Ingredient[] ingredients2 = (Ingredient[])ingredients.stream().filter(ingredient -> !ingredient.isEmpty()).toArray(Ingredient[]::new);
+									if (ingredients2.length == 0) {
+										return DataResult.error(() -> "No ingredients for shapeless recipe");
+									} else {
+										return ingredients2.length > 9
+											? DataResult.error(() -> "Too many ingredients for shapeless recipe")
+											: DataResult.success(DefaultedList.copyOf(Ingredient.EMPTY, ingredients2));
+									}
+								},
+								DataResult::success
+							)
+							.forGetter(recipe -> recipe.ingredients)
+					)
+					.apply(instance, ShapelessRecipe::new)
+		);
+
+		@Override
+		public Codec<ShapelessRecipe> codec() {
+			return CODEC;
 		}
 
-		private static DefaultedList<Ingredient> getIngredients(JsonArray json) {
-			DefaultedList<Ingredient> defaultedList = DefaultedList.of();
-
-			for (int i = 0; i < json.size(); i++) {
-				Ingredient ingredient = Ingredient.fromJson(json.get(i), false);
-				if (!ingredient.isEmpty()) {
-					defaultedList.add(ingredient);
-				}
-			}
-
-			return defaultedList;
-		}
-
-		public ShapelessRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
+		public ShapelessRecipe read(PacketByteBuf packetByteBuf) {
 			String string = packetByteBuf.readString();
 			CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
 			int i = packetByteBuf.readVarInt();
@@ -122,19 +117,19 @@ public class ShapelessRecipe implements CraftingRecipe {
 			}
 
 			ItemStack itemStack = packetByteBuf.readItemStack();
-			return new ShapelessRecipe(identifier, string, craftingRecipeCategory, itemStack, defaultedList);
+			return new ShapelessRecipe(string, craftingRecipeCategory, itemStack, defaultedList);
 		}
 
 		public void write(PacketByteBuf packetByteBuf, ShapelessRecipe shapelessRecipe) {
 			packetByteBuf.writeString(shapelessRecipe.group);
 			packetByteBuf.writeEnumConstant(shapelessRecipe.category);
-			packetByteBuf.writeVarInt(shapelessRecipe.input.size());
+			packetByteBuf.writeVarInt(shapelessRecipe.ingredients.size());
 
-			for (Ingredient ingredient : shapelessRecipe.input) {
+			for (Ingredient ingredient : shapelessRecipe.ingredients) {
 				ingredient.write(packetByteBuf);
 			}
 
-			packetByteBuf.writeItemStack(shapelessRecipe.output);
+			packetByteBuf.writeItemStack(shapelessRecipe.result);
 		}
 	}
 }

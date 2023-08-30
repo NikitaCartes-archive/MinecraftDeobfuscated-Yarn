@@ -2,6 +2,7 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -10,16 +11,8 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<PlayerInteractedWithEntityCriterion.Conditions> {
-	static final Identifier ID = new Identifier("player_interacted_with_entity");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	protected PlayerInteractedWithEntityCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -38,18 +31,18 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		private final Optional<LootContextPredicate> entity;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, Optional<LootContextPredicate> entity) {
-			super(PlayerInteractedWithEntityCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.item = item;
 			this.entity = entity;
 		}
 
-		public static PlayerInteractedWithEntityCriterion.Conditions create(
+		public static AdvancementCriterion<PlayerInteractedWithEntityCriterion.Conditions> create(
 			Optional<LootContextPredicate> playerPredicate, ItemPredicate.Builder item, Optional<LootContextPredicate> entity
 		) {
-			return new PlayerInteractedWithEntityCriterion.Conditions(playerPredicate, item.build(), entity);
+			return Criteria.PLAYER_INTERACTED_WITH_ENTITY.create(new PlayerInteractedWithEntityCriterion.Conditions(playerPredicate, Optional.of(item.build()), entity));
 		}
 
-		public static PlayerInteractedWithEntityCriterion.Conditions create(ItemPredicate.Builder item, Optional<LootContextPredicate> entity) {
+		public static AdvancementCriterion<PlayerInteractedWithEntityCriterion.Conditions> create(ItemPredicate.Builder item, Optional<LootContextPredicate> entity) {
 			return create(Optional.empty(), item, entity);
 		}
 

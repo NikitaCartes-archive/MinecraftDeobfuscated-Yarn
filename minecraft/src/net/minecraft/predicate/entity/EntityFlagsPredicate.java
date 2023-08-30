@@ -21,14 +21,6 @@ public record EntityFlagsPredicate(
 				.apply(instance, EntityFlagsPredicate::new)
 	);
 
-	static Optional<EntityFlagsPredicate> create(
-		Optional<Boolean> isOnFire, Optional<Boolean> isSneaking, Optional<Boolean> isSprinting, Optional<Boolean> isSwimming, Optional<Boolean> isBaby
-	) {
-		return isOnFire.isEmpty() && isSneaking.isEmpty() && isSprinting.isEmpty() && isSwimming.isEmpty() && isBaby.isEmpty()
-			? Optional.empty()
-			: Optional.of(new EntityFlagsPredicate(isOnFire, isSneaking, isSprinting, isSwimming, isBaby));
-	}
-
 	public boolean test(Entity entity) {
 		if (this.isOnFire.isPresent() && entity.isOnFire() != (Boolean)this.isOnFire.get()) {
 			return false;
@@ -83,8 +75,8 @@ public record EntityFlagsPredicate(
 			return this;
 		}
 
-		public Optional<EntityFlagsPredicate> build() {
-			return EntityFlagsPredicate.create(this.isOnFire, this.isSneaking, this.isSprinting, this.isSwimming, this.isBaby);
+		public EntityFlagsPredicate build() {
+			return new EntityFlagsPredicate(this.isOnFire, this.isSneaking, this.isSprinting, this.isSwimming, this.isBaby);
 		}
 	}
 }

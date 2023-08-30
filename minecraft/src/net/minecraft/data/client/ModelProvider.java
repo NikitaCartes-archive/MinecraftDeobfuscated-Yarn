@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -50,7 +51,7 @@ public class ModelProvider implements DataProvider {
 		Consumer<Item> consumer2 = set::add;
 		new BlockStateModelGenerator(consumer, biConsumer, consumer2).register();
 		new ItemModelGenerator(biConsumer).register();
-		List<Block> list = Registries.BLOCK.stream().filter(block -> !map.containsKey(block)).toList();
+		List<Block> list = Registries.BLOCK.getEntrySet().stream().filter(entry -> true).map(Entry::getValue).filter(block -> !map.containsKey(block)).toList();
 		if (!list.isEmpty()) {
 			throw new IllegalStateException("Missing blockstate definitions for: " + list);
 		} else {

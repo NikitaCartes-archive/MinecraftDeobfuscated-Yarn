@@ -31,12 +31,6 @@ public record BlockPredicate(Optional<TagKey<Block>> tag, Optional<RegistryEntry
 				.apply(instance, BlockPredicate::new)
 	);
 
-	static Optional<BlockPredicate> create(
-		Optional<TagKey<Block>> tag, Optional<RegistryEntryList<Block>> blocks, Optional<StatePredicate> state, Optional<NbtPredicate> nbt
-	) {
-		return tag.isEmpty() && blocks.isEmpty() && state.isEmpty() && nbt.isEmpty() ? Optional.empty() : Optional.of(new BlockPredicate(tag, blocks, state, nbt));
-	}
-
 	public boolean test(ServerWorld world, BlockPos pos) {
 		if (!world.canSetBlock(pos)) {
 			return false;
@@ -99,8 +93,8 @@ public record BlockPredicate(Optional<TagKey<Block>> tag, Optional<RegistryEntry
 			return this;
 		}
 
-		public Optional<BlockPredicate> build() {
-			return BlockPredicate.create(this.tag, this.blocks, this.state, this.nbt);
+		public BlockPredicate build() {
+			return new BlockPredicate(this.tag, this.blocks, this.state, this.nbt);
 		}
 	}
 }

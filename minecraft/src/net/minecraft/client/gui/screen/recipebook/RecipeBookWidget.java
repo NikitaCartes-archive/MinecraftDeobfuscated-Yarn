@@ -28,7 +28,7 @@ import net.minecraft.client.search.SearchManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeGridAligner;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
@@ -308,15 +308,15 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.isOpen() && !this.client.player.isSpectator()) {
 			if (this.recipesArea.mouseClicked(mouseX, mouseY, button, (this.parentWidth - 147) / 2 - this.leftOffset, (this.parentHeight - 166) / 2, 147, 166)) {
-				Recipe<?> recipe = this.recipesArea.getLastClickedRecipe();
+				RecipeEntry<?> recipeEntry = this.recipesArea.getLastClickedRecipe();
 				RecipeResultCollection recipeResultCollection = this.recipesArea.getLastClickedResults();
-				if (recipe != null && recipeResultCollection != null) {
-					if (!recipeResultCollection.isCraftable(recipe) && this.ghostSlots.getRecipe() == recipe) {
+				if (recipeEntry != null && recipeResultCollection != null) {
+					if (!recipeResultCollection.isCraftable(recipeEntry) && this.ghostSlots.getRecipe() == recipeEntry) {
 						return false;
 					}
 
 					this.ghostSlots.reset();
-					this.client.interactionManager.clickRecipe(this.client.player.currentScreenHandler.syncId, recipe, Screen.hasShiftDown());
+					this.client.interactionManager.clickRecipe(this.client.player.currentScreenHandler.syncId, recipeEntry, Screen.hasShiftDown());
 					if (!this.isWide()) {
 						this.setOpen(false);
 					}
@@ -470,14 +470,14 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 	}
 
 	@Override
-	public void onRecipesDisplayed(List<Recipe<?>> recipes) {
-		for (Recipe<?> recipe : recipes) {
-			this.client.player.onRecipeDisplayed(recipe);
+	public void onRecipesDisplayed(List<RecipeEntry<?>> recipes) {
+		for (RecipeEntry<?> recipeEntry : recipes) {
+			this.client.player.onRecipeDisplayed(recipeEntry);
 		}
 	}
 
-	public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
-		ItemStack itemStack = recipe.getOutput(this.client.world.getRegistryManager());
+	public void showGhostRecipe(RecipeEntry<?> recipe, List<Slot> slots) {
+		ItemStack itemStack = recipe.value().getResult(this.client.world.getRegistryManager());
 		this.ghostSlots.setRecipe(recipe);
 		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(0)).x, ((Slot)slots.get(0)).y);
 		this.alignRecipeToGrid(
@@ -485,7 +485,7 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 			this.craftingScreenHandler.getCraftingHeight(),
 			this.craftingScreenHandler.getCraftingResultSlotIndex(),
 			recipe,
-			recipe.getIngredients().iterator(),
+			recipe.value().getIngredients().iterator(),
 			0
 		);
 	}

@@ -72,7 +72,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -571,7 +571,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			EntityType.get(string)
 				.filter(entityType -> entityType == EntityType.PARROT)
 				.ifPresent(
-					entityType -> {
+					parrotType -> {
 						if (!ParrotEntity.imitateNearbyMob(this.getWorld(), this)) {
 							this.getWorld()
 								.playSound(
@@ -823,8 +823,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.getLastDeathPos()
-			.flatMap(globalPos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, globalPos).resultOrPartial(LOGGER::error))
-			.ifPresent(nbtElement -> nbt.put("LastDeathLocation", nbtElement));
+			.flatMap(pos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).resultOrPartial(LOGGER::error))
+			.ifPresent(pos -> nbt.put("LastDeathLocation", pos));
 	}
 
 	@Override
@@ -1501,17 +1501,17 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void resetStat(Stat<?> stat) {
 	}
 
-	public int unlockRecipes(Collection<Recipe<?>> recipes) {
+	public int unlockRecipes(Collection<RecipeEntry<?>> recipes) {
 		return 0;
 	}
 
-	public void onRecipeCrafted(Recipe<?> recipe, List<ItemStack> ingredients) {
+	public void onRecipeCrafted(RecipeEntry<?> recipe, List<ItemStack> ingredients) {
 	}
 
 	public void unlockRecipes(Identifier[] ids) {
 	}
 
-	public int lockRecipes(Collection<Recipe<?>> recipes) {
+	public int lockRecipes(Collection<RecipeEntry<?>> recipes) {
 		return 0;
 	}
 

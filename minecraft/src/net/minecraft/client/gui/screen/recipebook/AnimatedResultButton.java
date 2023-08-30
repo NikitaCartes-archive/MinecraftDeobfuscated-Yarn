@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.ScreenTexts;
@@ -44,10 +44,10 @@ public class AnimatedResultButton extends ClickableWidget {
 		this.resultCollection = resultCollection;
 		this.craftingScreenHandler = (AbstractRecipeScreenHandler<?>)results.getClient().player.currentScreenHandler;
 		this.recipeBook = results.getRecipeBook();
-		List<Recipe<?>> list = resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
+		List<RecipeEntry<?>> list = resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
 
-		for (Recipe<?> recipe : list) {
-			if (this.recipeBook.shouldDisplay(recipe)) {
+		for (RecipeEntry<?> recipeEntry : list) {
+			if (this.recipeBook.shouldDisplay(recipeEntry)) {
 				results.onRecipesDisplayed(list);
 				this.bounce = 15.0F;
 				break;
@@ -89,9 +89,9 @@ public class AnimatedResultButton extends ClickableWidget {
 		}
 
 		context.drawGuiTexture(identifier, this.getX(), this.getY(), this.width, this.height);
-		List<Recipe<?>> list = this.getResults();
+		List<RecipeEntry<?>> list = this.getResults();
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
-		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput(this.resultCollection.getRegistryManager());
+		ItemStack itemStack = ((RecipeEntry)list.get(this.currentResultIndex)).value().getResult(this.resultCollection.getRegistryManager());
 		int i = 4;
 		if (this.resultCollection.hasSingleOutput() && this.getResults().size() > 1) {
 			context.drawItem(itemStack, this.getX() + i + 1, this.getY() + i + 1, 0, 10);
@@ -104,8 +104,8 @@ public class AnimatedResultButton extends ClickableWidget {
 		}
 	}
 
-	private List<Recipe<?>> getResults() {
-		List<Recipe<?>> list = this.resultCollection.getRecipes(true);
+	private List<RecipeEntry<?>> getResults() {
+		List<RecipeEntry<?>> list = this.resultCollection.getRecipes(true);
 		if (!this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {
 			list.addAll(this.resultCollection.getRecipes(false));
 		}
@@ -117,13 +117,13 @@ public class AnimatedResultButton extends ClickableWidget {
 		return this.getResults().size() == 1;
 	}
 
-	public Recipe<?> currentRecipe() {
-		List<Recipe<?>> list = this.getResults();
-		return (Recipe<?>)list.get(this.currentResultIndex);
+	public RecipeEntry<?> currentRecipe() {
+		List<RecipeEntry<?>> list = this.getResults();
+		return (RecipeEntry<?>)list.get(this.currentResultIndex);
 	}
 
 	public List<Text> getTooltip() {
-		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput(this.resultCollection.getRegistryManager());
+		ItemStack itemStack = ((RecipeEntry)this.getResults().get(this.currentResultIndex)).value().getResult(this.resultCollection.getRegistryManager());
 		List<Text> list = Lists.<Text>newArrayList(Screen.getTooltipFromItem(MinecraftClient.getInstance(), itemStack));
 		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
 			list.add(MORE_RECIPES_TEXT);
@@ -134,7 +134,7 @@ public class AnimatedResultButton extends ClickableWidget {
 
 	@Override
 	public void appendClickableNarrations(NarrationMessageBuilder builder) {
-		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput(this.resultCollection.getRegistryManager());
+		ItemStack itemStack = ((RecipeEntry)this.getResults().get(this.currentResultIndex)).value().getResult(this.resultCollection.getRegistryManager());
 		builder.put(NarrationPart.TITLE, Text.translatable("narration.recipe", itemStack.getName()));
 		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
 			builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"), Text.translatable("narration.recipe.usage.more"));

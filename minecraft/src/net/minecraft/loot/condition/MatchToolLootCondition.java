@@ -34,6 +34,6 @@ public record MatchToolLootCondition(Optional<ItemPredicate> predicate) implemen
 	}
 
 	public static LootCondition.Builder builder(ItemPredicate.Builder predicate) {
-		return () -> new MatchToolLootCondition(predicate.build());
+		return () -> new MatchToolLootCondition(Optional.of(predicate.build()));
 	}
 }

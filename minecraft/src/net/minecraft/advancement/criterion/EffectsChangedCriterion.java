@@ -3,6 +3,7 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.loot.context.LootContext;
@@ -11,16 +12,8 @@ import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCriterion.Conditions> {
-	static final Identifier ID = new Identifier("effects_changed");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public EffectsChangedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -39,17 +32,18 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		private final Optional<LootContextPredicate> source;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<EntityEffectPredicate> effects, Optional<LootContextPredicate> source) {
-			super(EffectsChangedCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.effects = effects;
 			this.source = source;
 		}
 
-		public static EffectsChangedCriterion.Conditions create(EntityEffectPredicate.Builder effects) {
-			return new EffectsChangedCriterion.Conditions(Optional.empty(), effects.build(), Optional.empty());
+		public static AdvancementCriterion<EffectsChangedCriterion.Conditions> create(EntityEffectPredicate.Builder effects) {
+			return Criteria.EFFECTS_CHANGED.create(new EffectsChangedCriterion.Conditions(Optional.empty(), effects.build(), Optional.empty()));
 		}
 
-		public static EffectsChangedCriterion.Conditions create(Optional<EntityPredicate> source) {
-			return new EffectsChangedCriterion.Conditions(Optional.empty(), Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(source));
+		public static AdvancementCriterion<EffectsChangedCriterion.Conditions> create(EntityPredicate.Builder builder) {
+			return Criteria.EFFECTS_CHANGED
+				.create(new EffectsChangedCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.of(EntityPredicate.asLootContextPredicate(builder.build()))));
 		}
 
 		public boolean matches(ServerPlayerEntity player, @Nullable LootContext context) {

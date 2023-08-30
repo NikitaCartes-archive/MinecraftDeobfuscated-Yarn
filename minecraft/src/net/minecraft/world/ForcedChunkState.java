@@ -11,7 +11,7 @@ public class ForcedChunkState extends PersistentState {
 	private final LongSet chunks;
 
 	public static PersistentState.Type<ForcedChunkState> getPersistentStateType() {
-		return new PersistentState.Type<>(ForcedChunkState::new, ForcedChunkState::fromNbt, DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
+		return new PersistentState.Type<>(ForcedChunkState::new, ForcedChunkState::fromNbt, DataFixTypes.SAVED_DATA_FORCED_CHUNKS);
 	}
 
 	private ForcedChunkState(LongSet chunks) {

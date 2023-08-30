@@ -1,7 +1,7 @@
 package net.minecraft.network.packet.c2s.play;
 
 import javax.annotation.Nullable;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -17,8 +17,8 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 		this.tabToOpen = tab;
 	}
 
-	public static AdvancementTabC2SPacket open(Advancement advancement) {
-		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.OPENED_TAB, advancement.getId());
+	public static AdvancementTabC2SPacket open(AdvancementEntry advancement) {
+		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.OPENED_TAB, advancement.id());
 	}
 
 	public static AdvancementTabC2SPacket close() {

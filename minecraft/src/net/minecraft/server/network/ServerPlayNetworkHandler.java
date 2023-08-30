@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -41,7 +41,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.SignedArgumentList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -71,6 +70,7 @@ import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.message.AcknowledgmentValidator;
+import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageBody;
 import net.minecraft.network.message.MessageChain;
@@ -487,10 +487,10 @@ public class ServerPlayNetworkHandler
 	public void onAdvancementTab(AdvancementTabC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (packet.getAction() == AdvancementTabC2SPacket.Action.OPENED_TAB) {
-			Identifier identifier = packet.getTabToOpen();
-			Advancement advancement = this.server.getAdvancementLoader().get(identifier);
-			if (advancement != null) {
-				this.player.getAdvancementTracker().setDisplayTab(advancement);
+			Identifier identifier = (Identifier)Objects.requireNonNull(packet.getTabToOpen());
+			AdvancementEntry advancementEntry = this.server.getAdvancementLoader().get(identifier);
+			if (advancementEntry != null) {
+				this.player.getAdvancementTracker().setDisplayTab(advancementEntry);
 			}
 		}
 	}
@@ -1156,33 +1156,22 @@ public class ServerPlayNetworkHandler
 		} else {
 			Optional<LastSeenMessageList> optional = this.validateMessage(packet.chatMessage(), packet.timestamp(), packet.acknowledgment());
 			if (optional.isPresent()) {
-				this.server
-					.submit(
-						() -> {
-							SignedMessage signedMessage;
-							try {
-								signedMessage = this.getSignedMessage(packet, (LastSeenMessageList)optional.get());
-							} catch (MessageChain.MessageChainException var6) {
-								this.handleMessageChainException(var6);
-								return;
-							}
+				this.server.submit(() -> {
+					SignedMessage signedMessage;
+					try {
+						signedMessage = this.getSignedMessage(packet, (LastSeenMessageList)optional.get());
+					} catch (MessageChain.MessageChainException var6) {
+						this.handleMessageChainException(var6);
+						return;
+					}
 
-							CompletableFuture<FilteredMessage> completableFuture = this.filterText(signedMessage.getSignedContent());
-							CompletableFuture<Text> completableFuture2 = this.server.getMessageDecorator().decorate(this.player, signedMessage.getContent());
-							this.messageChainTaskQueue
-								.append(
-									executor -> CompletableFuture.allOf(completableFuture, completableFuture2)
-											.thenAcceptAsync(
-												void_ -> {
-													SignedMessage signedMessage2 = signedMessage.withUnsignedContent((Text)completableFuture2.join())
-														.withFilterMask(((FilteredMessage)completableFuture.join()).mask());
-													this.handleDecoratedMessage(signedMessage2);
-												},
-												executor
-											)
-								);
-						}
-					);
+					CompletableFuture<FilteredMessage> completableFuture = this.filterText(signedMessage.getSignedContent());
+					Text text = this.server.getMessageDecorator().decorate(this.player, signedMessage.getContent());
+					this.messageChainTaskQueue.append(executor -> completableFuture.thenAcceptAsync(filteredMessage -> {
+							SignedMessage signedMessage2 = signedMessage.withUnsignedContent(text).withFilterMask(filteredMessage.mask());
+							this.handleDecoratedMessage(signedMessage2);
+						}, executor));
+				});
 			}
 		}
 	}

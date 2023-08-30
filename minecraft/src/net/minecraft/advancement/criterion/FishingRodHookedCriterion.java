@@ -3,6 +3,7 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import java.util.Collection;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
@@ -14,16 +15,8 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHookedCriterion.Conditions> {
-	static final Identifier ID = new Identifier("fishing_rod_hooked");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public FishingRodHookedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -48,16 +41,17 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		public Conditions(
 			Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> rod, Optional<LootContextPredicate> hookedEntity, Optional<ItemPredicate> caughtItem
 		) {
-			super(FishingRodHookedCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.rod = rod;
 			this.hookedEntity = hookedEntity;
 			this.caughtItem = caughtItem;
 		}
 
-		public static FishingRodHookedCriterion.Conditions create(
+		public static AdvancementCriterion<FishingRodHookedCriterion.Conditions> create(
 			Optional<ItemPredicate> rod, Optional<EntityPredicate> hookedEntity, Optional<ItemPredicate> caughtItem
 		) {
-			return new FishingRodHookedCriterion.Conditions(Optional.empty(), rod, EntityPredicate.contextPredicateFromEntityPredicate(hookedEntity), caughtItem);
+			return Criteria.FISHING_ROD_HOOKED
+				.create(new FishingRodHookedCriterion.Conditions(Optional.empty(), rod, EntityPredicate.contextPredicateFromEntityPredicate(hookedEntity), caughtItem));
 		}
 
 		public boolean matches(ItemStack rodStack, LootContext hookedEntity, Collection<ItemStack> fishingLoots) {

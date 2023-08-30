@@ -16,7 +16,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public abstract class AbstractCriterion<T extends AbstractCriterionConditions> implements Criterion<T> {
+public abstract class AbstractCriterion<T extends AbstractCriterion.Conditions> implements Criterion<T> {
 	private final Map<PlayerAdvancementTracker, Set<Criterion.ConditionsContainer<T>>> progressions = Maps.<PlayerAdvancementTracker, Set<Criterion.ConditionsContainer<T>>>newIdentityHashMap();
 
 	@Override
@@ -55,9 +55,9 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 			List<Criterion.ConditionsContainer<T>> list = null;
 
 			for (Criterion.ConditionsContainer<T> conditionsContainer : set) {
-				T abstractCriterionConditions = conditionsContainer.getConditions();
-				if (predicate.test(abstractCriterionConditions)) {
-					Optional<LootContextPredicate> optional = abstractCriterionConditions.getPlayerPredicate();
+				T conditions = conditionsContainer.conditions();
+				if (predicate.test(conditions)) {
+					Optional<LootContextPredicate> optional = conditions.getPlayerPredicate();
 					if (optional.isEmpty() || ((LootContextPredicate)optional.get()).test(lootContext)) {
 						if (list == null) {
 							list = Lists.<Criterion.ConditionsContainer<T>>newArrayList();
@@ -74,5 +74,9 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 				}
 			}
 		}
+	}
+
+	public interface Conditions extends CriterionConditions {
+		Optional<LootContextPredicate> getPlayerPredicate();
 	}
 }

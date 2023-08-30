@@ -67,7 +67,7 @@ import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -392,10 +392,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.recipeBook;
 	}
 
-	public void onRecipeDisplayed(Recipe<?> recipe) {
-		if (this.recipeBook.shouldDisplay(recipe)) {
-			this.recipeBook.onRecipeDisplayed(recipe);
-			this.networkHandler.sendPacket(new RecipeBookDataC2SPacket(recipe));
+	public void onRecipeDisplayed(RecipeEntry<?> recipeEntry) {
+		if (this.recipeBook.shouldDisplay(recipeEntry)) {
+			this.recipeBook.onRecipeDisplayed(recipeEntry);
+			this.networkHandler.sendPacket(new RecipeBookDataC2SPacket(recipeEntry));
 		}
 	}
 

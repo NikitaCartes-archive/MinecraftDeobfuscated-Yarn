@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class AdvancementPositioner {
-	private final Advancement advancement;
+	private final PlacedAdvancement advancement;
 	@Nullable
 	private final AdvancementPositioner parent;
 	@Nullable
@@ -22,9 +22,9 @@ public class AdvancementPositioner {
 	private float field_1265;
 
 	public AdvancementPositioner(
-		Advancement advancement, @Nullable AdvancementPositioner parent, @Nullable AdvancementPositioner previousSibling, int childrenSize, int depth
+		PlacedAdvancement advancement, @Nullable AdvancementPositioner parent, @Nullable AdvancementPositioner previousSibling, int childrenSize, int depth
 	) {
-		if (advancement.getDisplay() == null) {
+		if (advancement.getAdvancement().display().isEmpty()) {
 			throw new IllegalArgumentException("Can't position an invisible advancement!");
 		} else {
 			this.advancement = advancement;
@@ -36,20 +36,20 @@ public class AdvancementPositioner {
 			this.row = -1.0F;
 			AdvancementPositioner advancementPositioner = null;
 
-			for (Advancement advancement2 : advancement.getChildren()) {
-				advancementPositioner = this.findChildrenRecursively(advancement2, advancementPositioner);
+			for (PlacedAdvancement placedAdvancement : advancement.getChildren()) {
+				advancementPositioner = this.findChildrenRecursively(placedAdvancement, advancementPositioner);
 			}
 		}
 	}
 
 	@Nullable
-	private AdvancementPositioner findChildrenRecursively(Advancement advancement, @Nullable AdvancementPositioner lastChild) {
-		if (advancement.getDisplay() != null) {
+	private AdvancementPositioner findChildrenRecursively(PlacedAdvancement advancement, @Nullable AdvancementPositioner lastChild) {
+		if (advancement.getAdvancement().display().isPresent()) {
 			lastChild = new AdvancementPositioner(advancement, this, lastChild, this.children.size() + 1, this.depth + 1);
 			this.children.add(lastChild);
 		} else {
-			for (Advancement advancement2 : advancement.getChildren()) {
-				lastChild = this.findChildrenRecursively(advancement2, lastChild);
+			for (PlacedAdvancement placedAdvancement : advancement.getChildren()) {
+				lastChild = this.findChildrenRecursively(placedAdvancement, lastChild);
 			}
 		}
 
@@ -202,10 +202,7 @@ public class AdvancementPositioner {
 	}
 
 	private void apply() {
-		if (this.advancement.getDisplay() != null) {
-			this.advancement.getDisplay().setPos((float)this.depth, this.row);
-		}
-
+		this.advancement.getAdvancement().display().ifPresent(advancementDisplay -> advancementDisplay.setPos((float)this.depth, this.row));
 		if (!this.children.isEmpty()) {
 			for (AdvancementPositioner advancementPositioner : this.children) {
 				advancementPositioner.apply();
@@ -213,8 +210,8 @@ public class AdvancementPositioner {
 		}
 	}
 
-	public static void arrangeForTree(Advancement root) {
-		if (root.getDisplay() == null) {
+	public static void arrangeForTree(PlacedAdvancement root) {
+		if (root.getAdvancement().display().isEmpty()) {
 			throw new IllegalArgumentException("Can't position children of an invisible root!");
 		} else {
 			AdvancementPositioner advancementPositioner = new AdvancementPositioner(root, null, null, 1, 0);

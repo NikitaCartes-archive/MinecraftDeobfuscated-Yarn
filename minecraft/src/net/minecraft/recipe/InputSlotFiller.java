@@ -26,14 +26,14 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		this.handler = handler;
 	}
 
-	public void fillInputSlots(ServerPlayerEntity entity, @Nullable Recipe<C> recipe, boolean craftAll) {
+	public void fillInputSlots(ServerPlayerEntity entity, @Nullable RecipeEntry<? extends Recipe<C>> recipe, boolean craftAll) {
 		if (recipe != null && entity.getRecipeBook().contains(recipe)) {
 			this.inventory = entity.getInventory();
 			if (this.canReturnInputs() || entity.isCreative()) {
 				this.matcher.clear();
 				entity.getInventory().populateRecipeFinder(this.matcher);
 				this.handler.populateRecipeFinder(this.matcher);
-				if (this.matcher.match(recipe, null)) {
+				if (this.matcher.match((Recipe<?>)recipe.value(), null)) {
 					this.fillInputSlots(recipe, craftAll);
 				} else {
 					this.returnInputs();
@@ -57,7 +57,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		this.handler.clearCraftingSlots();
 	}
 
-	protected void fillInputSlots(Recipe<C> recipe, boolean craftAll) {
+	protected void fillInputSlots(RecipeEntry<? extends Recipe<C>> recipe, boolean craftAll) {
 		boolean bl = this.handler.matches(recipe);
 		int i = this.matcher.countCrafts(recipe, null);
 		if (bl) {
@@ -73,7 +73,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 
 		int jx = this.getAmountToFill(craftAll, i, bl);
 		IntList intList = new IntArrayList();
-		if (this.matcher.match(recipe, intList, jx)) {
+		if (this.matcher.match((Recipe<?>)recipe.value(), intList, jx)) {
 			int k = jx;
 
 			for (int l : intList) {
@@ -83,7 +83,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 				}
 			}
 
-			if (this.matcher.match(recipe, intList, k)) {
+			if (this.matcher.match((Recipe<?>)recipe.value(), intList, k)) {
 				this.returnInputs();
 				this.alignRecipeToGrid(
 					this.handler.getCraftingWidth(), this.handler.getCraftingHeight(), this.handler.getCraftingResultSlotIndex(), recipe, intList.iterator(), k

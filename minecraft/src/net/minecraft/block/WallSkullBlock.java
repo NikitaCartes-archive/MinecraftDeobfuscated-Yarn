@@ -30,7 +30,7 @@ public class WallSkullBlock extends AbstractSkullBlock {
 
 	protected WallSkullBlock(SkullBlock.SkullType skullType, AbstractBlock.Settings settings) {
 		super(skullType, settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class WallSkullBlock extends AbstractSkullBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		BlockState blockState = this.getDefaultState();
+		BlockState blockState = super.getPlacementState(ctx);
 		BlockView blockView = ctx.getWorld();
 		BlockPos blockPos = ctx.getBlockPos();
 		Direction[] directions = ctx.getPlacementDirections();
@@ -75,6 +75,7 @@ public class WallSkullBlock extends AbstractSkullBlock {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+		super.appendProperties(builder);
 		builder.add(FACING);
 	}
 }

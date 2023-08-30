@@ -57,28 +57,6 @@ public record ItemPredicate(
 				.apply(instance, ItemPredicate::new)
 	);
 
-	static Optional<ItemPredicate> create(
-		Optional<TagKey<Item>> tag,
-		Optional<RegistryEntryList<Item>> items,
-		NumberRange.IntRange count,
-		NumberRange.IntRange durability,
-		List<EnchantmentPredicate> enchantments,
-		List<EnchantmentPredicate> storedEnchantments,
-		Optional<RegistryEntry<Potion>> potion,
-		Optional<NbtPredicate> nbt
-	) {
-		return tag.isEmpty()
-				&& items.isEmpty()
-				&& count.isDummy()
-				&& durability.isDummy()
-				&& enchantments.isEmpty()
-				&& storedEnchantments.isEmpty()
-				&& potion.isEmpty()
-				&& nbt.isEmpty()
-			? Optional.empty()
-			: Optional.of(new ItemPredicate(tag, items, count, durability, enchantments, storedEnchantments, potion, nbt));
-	}
-
 	public boolean test(ItemStack stack) {
 		if (this.tag.isPresent() && !stack.isIn((TagKey<Item>)this.tag.get())) {
 			return false;
@@ -190,10 +168,10 @@ public record ItemPredicate(
 			return this;
 		}
 
-		public Optional<ItemPredicate> build() {
-			return ItemPredicate.create(
-				this.tag, this.item, this.count, this.durability, this.enchantments.build(), this.storedEnchantments.build(), this.potion, this.nbt
-			);
+		public ItemPredicate build() {
+			List<EnchantmentPredicate> list = this.enchantments.build();
+			List<EnchantmentPredicate> list2 = this.storedEnchantments.build();
+			return new ItemPredicate(this.tag, this.item, this.count, this.durability, list, list2, this.potion, this.nbt);
 		}
 	}
 }

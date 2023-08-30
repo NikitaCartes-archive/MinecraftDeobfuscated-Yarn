@@ -75,8 +75,7 @@ public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffec
 		}
 
 		public Optional<EntityEffectPredicate> build() {
-			ImmutableMap<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> immutableMap = this.EFFECTS.build();
-			return immutableMap.isEmpty() ? Optional.empty() : Optional.of(new EntityEffectPredicate(immutableMap));
+			return Optional.of(new EntityEffectPredicate(this.EFFECTS.build()));
 		}
 	}
 

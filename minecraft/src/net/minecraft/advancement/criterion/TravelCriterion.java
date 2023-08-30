@@ -2,6 +2,7 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -9,27 +10,15 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class TravelCriterion extends AbstractCriterion<TravelCriterion.Conditions> {
-	final Identifier id;
-
-	public TravelCriterion(Identifier id) {
-		this.id = id;
-	}
-
-	@Override
-	public Identifier getId() {
-		return this.id;
-	}
-
 	public TravelCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Optional<LocationPredicate> optional2 = LocationPredicate.fromJson(jsonObject.get("start_position"));
 		Optional<DistancePredicate> optional3 = DistancePredicate.fromJson(jsonObject.get("distance"));
-		return new TravelCriterion.Conditions(this.id, optional, optional2, optional3);
+		return new TravelCriterion.Conditions(optional, optional2, optional3);
 	}
 
 	public void trigger(ServerPlayerEntity player, Vec3d startPos) {
@@ -41,26 +30,30 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 		private final Optional<LocationPredicate> startPos;
 		private final Optional<DistancePredicate> distance;
 
-		public Conditions(Identifier id, Optional<LootContextPredicate> playerPredicate, Optional<LocationPredicate> startPos, Optional<DistancePredicate> distance) {
-			super(id, playerPredicate);
-			this.startPos = startPos;
-			this.distance = distance;
+		public Conditions(Optional<LootContextPredicate> optional, Optional<LocationPredicate> playerPredicate, Optional<DistancePredicate> startPos) {
+			super(optional);
+			this.startPos = playerPredicate;
+			this.distance = startPos;
 		}
 
-		public static TravelCriterion.Conditions fallFromHeight(EntityPredicate.Builder entity, DistancePredicate distance, LocationPredicate.Builder builder) {
-			return new TravelCriterion.Conditions(
-				Criteria.FALL_FROM_HEIGHT.id, EntityPredicate.contextPredicateFromEntityPredicate(entity), builder.build(), Optional.of(distance)
-			);
+		public static AdvancementCriterion<TravelCriterion.Conditions> fallFromHeight(
+			EntityPredicate.Builder entity, DistancePredicate distance, LocationPredicate.Builder builder
+		) {
+			return Criteria.FALL_FROM_HEIGHT
+				.create(
+					new TravelCriterion.Conditions(
+						Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(entity)), Optional.of(builder.build()), Optional.of(distance)
+					)
+				);
 		}
 
-		public static TravelCriterion.Conditions rideEntityInLava(EntityPredicate.Builder entity, DistancePredicate distance) {
-			return new TravelCriterion.Conditions(
-				Criteria.RIDE_ENTITY_IN_LAVA.id, EntityPredicate.contextPredicateFromEntityPredicate(entity), Optional.empty(), Optional.of(distance)
-			);
+		public static AdvancementCriterion<TravelCriterion.Conditions> rideEntityInLava(EntityPredicate.Builder entity, DistancePredicate distance) {
+			return Criteria.RIDE_ENTITY_IN_LAVA
+				.create(new TravelCriterion.Conditions(Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(entity)), Optional.empty(), Optional.of(distance)));
 		}
 
-		public static TravelCriterion.Conditions netherTravel(DistancePredicate distance) {
-			return new TravelCriterion.Conditions(Criteria.NETHER_TRAVEL.id, Optional.empty(), Optional.empty(), Optional.of(distance));
+		public static AdvancementCriterion<TravelCriterion.Conditions> netherTravel(DistancePredicate distance) {
+			return Criteria.NETHER_TRAVEL.create(new TravelCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.of(distance)));
 		}
 
 		@Override

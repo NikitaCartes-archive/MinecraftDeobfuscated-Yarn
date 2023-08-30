@@ -8,7 +8,7 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -16,13 +16,13 @@ import net.minecraft.registry.DynamicRegistryManager;
 @Environment(EnvType.CLIENT)
 public class RecipeResultCollection {
 	private final DynamicRegistryManager registryManager;
-	private final List<Recipe<?>> recipes;
+	private final List<RecipeEntry<?>> recipes;
 	private final boolean singleOutput;
-	private final Set<Recipe<?>> craftableRecipes = Sets.<Recipe<?>>newHashSet();
-	private final Set<Recipe<?>> fittingRecipes = Sets.<Recipe<?>>newHashSet();
-	private final Set<Recipe<?>> unlockedRecipes = Sets.<Recipe<?>>newHashSet();
+	private final Set<RecipeEntry<?>> craftableRecipes = Sets.<RecipeEntry<?>>newHashSet();
+	private final Set<RecipeEntry<?>> fittingRecipes = Sets.<RecipeEntry<?>>newHashSet();
+	private final Set<RecipeEntry<?>> unlockedRecipes = Sets.<RecipeEntry<?>>newHashSet();
 
-	public RecipeResultCollection(DynamicRegistryManager registryManager, List<Recipe<?>> recipes) {
+	public RecipeResultCollection(DynamicRegistryManager registryManager, List<RecipeEntry<?>> recipes) {
 		this.registryManager = registryManager;
 		this.recipes = ImmutableList.copyOf(recipes);
 		if (recipes.size() <= 1) {
@@ -32,12 +32,12 @@ public class RecipeResultCollection {
 		}
 	}
 
-	private static boolean shouldHaveSingleOutput(DynamicRegistryManager registryManager, List<Recipe<?>> recipes) {
+	private static boolean shouldHaveSingleOutput(DynamicRegistryManager registryManager, List<RecipeEntry<?>> recipes) {
 		int i = recipes.size();
-		ItemStack itemStack = ((Recipe)recipes.get(0)).getOutput(registryManager);
+		ItemStack itemStack = ((RecipeEntry)recipes.get(0)).value().getResult(registryManager);
 
 		for (int j = 1; j < i; j++) {
-			ItemStack itemStack2 = ((Recipe)recipes.get(j)).getOutput(registryManager);
+			ItemStack itemStack2 = ((RecipeEntry)recipes.get(j)).value().getResult(registryManager);
 			if (!ItemStack.canCombine(itemStack, itemStack2)) {
 				return false;
 			}
@@ -55,31 +55,31 @@ public class RecipeResultCollection {
 	}
 
 	public void initialize(RecipeBook recipeBook) {
-		for (Recipe<?> recipe : this.recipes) {
-			if (recipeBook.contains(recipe)) {
-				this.unlockedRecipes.add(recipe);
+		for (RecipeEntry<?> recipeEntry : this.recipes) {
+			if (recipeBook.contains(recipeEntry)) {
+				this.unlockedRecipes.add(recipeEntry);
 			}
 		}
 	}
 
 	public void computeCraftables(RecipeMatcher recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
-		for (Recipe<?> recipe : this.recipes) {
-			boolean bl = recipe.fits(gridWidth, gridHeight) && recipeBook.contains(recipe);
+		for (RecipeEntry<?> recipeEntry : this.recipes) {
+			boolean bl = recipeEntry.value().fits(gridWidth, gridHeight) && recipeBook.contains(recipeEntry);
 			if (bl) {
-				this.fittingRecipes.add(recipe);
+				this.fittingRecipes.add(recipeEntry);
 			} else {
-				this.fittingRecipes.remove(recipe);
+				this.fittingRecipes.remove(recipeEntry);
 			}
 
-			if (bl && recipeFinder.match(recipe, null)) {
-				this.craftableRecipes.add(recipe);
+			if (bl && recipeFinder.match(recipeEntry.value(), null)) {
+				this.craftableRecipes.add(recipeEntry);
 			} else {
-				this.craftableRecipes.remove(recipe);
+				this.craftableRecipes.remove(recipeEntry);
 			}
 		}
 	}
 
-	public boolean isCraftable(Recipe<?> recipe) {
+	public boolean isCraftable(RecipeEntry<?> recipe) {
 		return this.craftableRecipes.contains(recipe);
 	}
 
@@ -91,29 +91,29 @@ public class RecipeResultCollection {
 		return !this.fittingRecipes.isEmpty();
 	}
 
-	public List<Recipe<?>> getAllRecipes() {
+	public List<RecipeEntry<?>> getAllRecipes() {
 		return this.recipes;
 	}
 
-	public List<Recipe<?>> getResults(boolean craftableOnly) {
-		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
-		Set<Recipe<?>> set = craftableOnly ? this.craftableRecipes : this.fittingRecipes;
+	public List<RecipeEntry<?>> getResults(boolean craftableOnly) {
+		List<RecipeEntry<?>> list = Lists.<RecipeEntry<?>>newArrayList();
+		Set<RecipeEntry<?>> set = craftableOnly ? this.craftableRecipes : this.fittingRecipes;
 
-		for (Recipe<?> recipe : this.recipes) {
-			if (set.contains(recipe)) {
-				list.add(recipe);
+		for (RecipeEntry<?> recipeEntry : this.recipes) {
+			if (set.contains(recipeEntry)) {
+				list.add(recipeEntry);
 			}
 		}
 
 		return list;
 	}
 
-	public List<Recipe<?>> getRecipes(boolean craftable) {
-		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
+	public List<RecipeEntry<?>> getRecipes(boolean craftable) {
+		List<RecipeEntry<?>> list = Lists.<RecipeEntry<?>>newArrayList();
 
-		for (Recipe<?> recipe : this.recipes) {
-			if (this.fittingRecipes.contains(recipe) && this.craftableRecipes.contains(recipe) == craftable) {
-				list.add(recipe);
+		for (RecipeEntry<?> recipeEntry : this.recipes) {
+			if (this.fittingRecipes.contains(recipeEntry) && this.craftableRecipes.contains(recipeEntry) == craftable) {
+				list.add(recipeEntry);
 			}
 		}
 

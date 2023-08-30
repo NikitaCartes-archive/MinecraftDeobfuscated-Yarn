@@ -213,6 +213,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		ItemStack itemStack2 = transfer(null, inventory, itemStack, null);
 		if (itemStack2.isEmpty()) {
 			bl = true;
+			itemEntity.setStack(ItemStack.EMPTY);
 			itemEntity.discard();
 		} else {
 			itemEntity.setStack(itemStack2);
@@ -398,13 +399,14 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	public static void onEntityCollided(World world, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
-		if (entity instanceof ItemEntity
+		if (entity instanceof ItemEntity itemEntity
+			&& !itemEntity.getStack().isEmpty()
 			&& VoxelShapes.matchesAnywhere(
 				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-pos.getX()), (double)(-pos.getY()), (double)(-pos.getZ()))),
 				blockEntity.getInputAreaShape(),
 				BooleanBiFunction.AND
 			)) {
-			insertAndExtract(world, pos, state, blockEntity, () -> extract(blockEntity, (ItemEntity)entity));
+			insertAndExtract(world, pos, state, blockEntity, () -> extract(blockEntity, itemEntity));
 		}
 	}
 

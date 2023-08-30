@@ -378,7 +378,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 		 * @see #writePacket(PacketByteBuf)
 		 */
 		public int getPacketSize() {
-			return 1 + this.palette.getPacketSize() + VarInts.getSizeInBytes(this.storage.getSize()) + this.storage.getData().length * 8;
+			return 1 + this.palette.getPacketSize() + VarInts.getSizeInBytes(this.storage.getData().length) + this.storage.getData().length * 8;
 		}
 
 		public void writePacket(PacketByteBuf buf) {

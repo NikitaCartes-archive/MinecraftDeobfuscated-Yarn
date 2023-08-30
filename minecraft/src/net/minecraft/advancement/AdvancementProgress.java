@@ -2,28 +2,45 @@ package net.minecraft.advancement;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Date;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class AdvancementProgress implements Comparable<AdvancementProgress> {
-	final Map<String, CriterionProgress> criteriaProgresses;
-	private String[][] requirements = new String[0][];
+	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z", Locale.ROOT);
+	private static final Codec<Instant> TIME_CODEC = Codecs.formattedTime(TIME_FORMATTER).xmap(Instant::from, instant -> instant.atZone(ZoneId.systemDefault()));
+	private static final Codec<Map<String, CriterionProgress>> MAP_CODEC = Codec.unboundedMap(Codec.STRING, TIME_CODEC)
+		.xmap(
+			map -> (Map)map.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new CriterionProgress((Instant)entry.getValue()))),
+			map -> (Map)map.entrySet()
+					.stream()
+					.filter(entry -> ((CriterionProgress)entry.getValue()).isObtained())
+					.collect(Collectors.toMap(Entry::getKey, entry -> (Instant)Objects.requireNonNull(((CriterionProgress)entry.getValue()).getObtainedDate())))
+		);
+	public static final Codec<AdvancementProgress> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(MAP_CODEC, "criteria", Map.of()).forGetter(advancementProgress -> advancementProgress.criteriaProgresses),
+					Codec.BOOL.fieldOf("done").orElse(true).forGetter(AdvancementProgress::isDone)
+				)
+				.apply(instance, (criteriaProgresses, done) -> new AdvancementProgress(new HashMap(criteriaProgresses)))
+	);
+	private final Map<String, CriterionProgress> criteriaProgresses;
+	private AdvancementRequirements requirements = AdvancementRequirements.EMPTY;
 
 	private AdvancementProgress(Map<String, CriterionProgress> criteriaProgresses) {
 		this.criteriaProgresses = criteriaProgresses;
@@ -33,41 +50,19 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		this.criteriaProgresses = Maps.<String, CriterionProgress>newHashMap();
 	}
 
-	public void init(Map<String, AdvancementCriterion> criteria, String[][] requirements) {
-		Set<String> set = criteria.keySet();
+	public void init(AdvancementRequirements requirements) {
+		Set<String> set = requirements.getNames();
 		this.criteriaProgresses.entrySet().removeIf(progress -> !set.contains(progress.getKey()));
 
 		for (String string : set) {
-			if (!this.criteriaProgresses.containsKey(string)) {
-				this.criteriaProgresses.put(string, new CriterionProgress());
-			}
+			this.criteriaProgresses.putIfAbsent(string, new CriterionProgress());
 		}
 
 		this.requirements = requirements;
 	}
 
 	public boolean isDone() {
-		if (this.requirements.length == 0) {
-			return false;
-		} else {
-			for (String[] strings : this.requirements) {
-				boolean bl = false;
-
-				for (String string : strings) {
-					CriterionProgress criterionProgress = this.getCriterionProgress(string);
-					if (criterionProgress != null && criterionProgress.isObtained()) {
-						bl = true;
-						break;
-					}
-				}
-
-				if (!bl) {
-					return false;
-				}
-			}
-
-			return true;
-		}
+		return this.requirements.matches(this::isCriterionObtained);
 	}
 
 	public boolean isAnyObtained() {
@@ -101,7 +96,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	public String toString() {
-		return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString(this.requirements) + "}";
+		return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + this.requirements + "}";
 	}
 
 	public void toPacket(PacketByteBuf buf) {
@@ -118,11 +113,16 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return (CriterionProgress)this.criteriaProgresses.get(name);
 	}
 
+	private boolean isCriterionObtained(String name) {
+		CriterionProgress criterionProgress = this.getCriterionProgress(name);
+		return criterionProgress != null && criterionProgress.isObtained();
+	}
+
 	public float getProgressBarPercentage() {
 		if (this.criteriaProgresses.isEmpty()) {
 			return 0.0F;
 		} else {
-			float f = (float)this.requirements.length;
+			float f = (float)this.requirements.getLength();
 			float g = (float)this.countObtainedRequirements();
 			return g / f;
 		}
@@ -133,7 +133,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		if (this.criteriaProgresses.isEmpty()) {
 			return null;
 		} else {
-			int i = this.requirements.length;
+			int i = this.requirements.getLength();
 			if (i <= 1) {
 				return null;
 			} else {
@@ -144,25 +144,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	private int countObtainedRequirements() {
-		int i = 0;
-
-		for (String[] strings : this.requirements) {
-			boolean bl = false;
-
-			for (String string : strings) {
-				CriterionProgress criterionProgress = this.getCriterionProgress(string);
-				if (criterionProgress != null && criterionProgress.isObtained()) {
-					bl = true;
-					break;
-				}
-			}
-
-			if (bl) {
-				i++;
-			}
-		}
-
-		return i;
+		return this.requirements.countMatches(this::isCriterionObtained);
 	}
 
 	public Iterable<String> getUnobtainedCriteria() {
@@ -190,61 +172,25 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	@Nullable
-	public Date getEarliestProgressObtainDate() {
-		Date date = null;
-
-		for (CriterionProgress criterionProgress : this.criteriaProgresses.values()) {
-			if (criterionProgress.isObtained() && (date == null || criterionProgress.getObtainedDate().before(date))) {
-				date = criterionProgress.getObtainedDate();
-			}
-		}
-
-		return date;
+	public Instant getEarliestProgressObtainDate() {
+		return (Instant)this.criteriaProgresses
+			.values()
+			.stream()
+			.map(CriterionProgress::getObtainedDate)
+			.filter(Objects::nonNull)
+			.min(Comparator.naturalOrder())
+			.orElse(null);
 	}
 
 	public int compareTo(AdvancementProgress advancementProgress) {
-		Date date = this.getEarliestProgressObtainDate();
-		Date date2 = advancementProgress.getEarliestProgressObtainDate();
-		if (date == null && date2 != null) {
+		Instant instant = this.getEarliestProgressObtainDate();
+		Instant instant2 = advancementProgress.getEarliestProgressObtainDate();
+		if (instant == null && instant2 != null) {
 			return 1;
-		} else if (date != null && date2 == null) {
+		} else if (instant != null && instant2 == null) {
 			return -1;
 		} else {
-			return date == null && date2 == null ? 0 : date.compareTo(date2);
-		}
-	}
-
-	public static class Serializer implements JsonDeserializer<AdvancementProgress>, JsonSerializer<AdvancementProgress> {
-		public JsonElement serialize(AdvancementProgress advancementProgress, Type type, JsonSerializationContext jsonSerializationContext) {
-			JsonObject jsonObject = new JsonObject();
-			JsonObject jsonObject2 = new JsonObject();
-
-			for (Entry<String, CriterionProgress> entry : advancementProgress.criteriaProgresses.entrySet()) {
-				CriterionProgress criterionProgress = (CriterionProgress)entry.getValue();
-				if (criterionProgress.isObtained()) {
-					jsonObject2.add((String)entry.getKey(), criterionProgress.toJson());
-				}
-			}
-
-			if (!jsonObject2.entrySet().isEmpty()) {
-				jsonObject.add("criteria", jsonObject2);
-			}
-
-			jsonObject.addProperty("done", advancementProgress.isDone());
-			return jsonObject;
-		}
-
-		public AdvancementProgress deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "advancement");
-			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "criteria", new JsonObject());
-			AdvancementProgress advancementProgress = new AdvancementProgress();
-
-			for (Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
-				String string = (String)entry.getKey();
-				advancementProgress.criteriaProgresses.put(string, CriterionProgress.obtainedAt(JsonHelper.asString((JsonElement)entry.getValue(), string)));
-			}
-
-			return advancementProgress;
+			return instant == null && instant2 == null ? 0 : instant.compareTo(instant2);
 		}
 	}
 }

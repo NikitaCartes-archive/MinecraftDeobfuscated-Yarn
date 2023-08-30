@@ -6,9 +6,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.DrawContext;
@@ -38,7 +38,7 @@ public class AdvancementWidget {
 	private static final int TITLE_MAX_WIDTH = 163;
 	private static final int[] SPLIT_OFFSET_CANDIDATES = new int[]{0, 10, -10, 25, -25};
 	private final AdvancementTab tab;
-	private final Advancement advancement;
+	private final PlacedAdvancement advancement;
 	private final AdvancementDisplay display;
 	private final OrderedText title;
 	private final int width;
@@ -52,7 +52,7 @@ public class AdvancementWidget {
 	private final int x;
 	private final int y;
 
-	public AdvancementWidget(AdvancementTab tab, MinecraftClient client, Advancement advancement, AdvancementDisplay display) {
+	public AdvancementWidget(AdvancementTab tab, MinecraftClient client, PlacedAdvancement advancement, AdvancementDisplay display) {
 		this.tab = tab;
 		this.advancement = advancement;
 		this.display = display;
@@ -60,7 +60,7 @@ public class AdvancementWidget {
 		this.title = Language.getInstance().reorder(client.textRenderer.trimToWidth(display.getTitle(), 163));
 		this.x = MathHelper.floor(display.getX() * 28.0F);
 		this.y = MathHelper.floor(display.getY() * 27.0F);
-		int i = advancement.getRequirementCount();
+		int i = advancement.getAdvancement().requirements().getLength();
 		int j = String.valueOf(i).length();
 		int k = i > 1 ? client.textRenderer.getWidth("  ") + client.textRenderer.getWidth("0") * j * 2 + client.textRenderer.getWidth("/") : 0;
 		int l = 29 + client.textRenderer.getWidth(this.title) + k;
@@ -100,12 +100,12 @@ public class AdvancementWidget {
 	}
 
 	@Nullable
-	private AdvancementWidget getParent(Advancement advancement) {
+	private AdvancementWidget getParent(PlacedAdvancement advancement) {
 		do {
 			advancement = advancement.getParent();
-		} while (advancement != null && advancement.getDisplay() == null);
+		} while (advancement != null && advancement.getAdvancement().display().isEmpty());
 
-		return advancement != null && advancement.getDisplay() != null ? this.tab.getWidget(advancement) : null;
+		return advancement != null && !advancement.getAdvancement().display().isEmpty() ? this.tab.getWidget(advancement.getAdvancementEntry()) : null;
 	}
 
 	public void renderLines(DrawContext context, int x, int y, boolean border) {

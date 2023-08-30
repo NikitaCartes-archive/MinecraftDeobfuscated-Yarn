@@ -23,7 +23,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -51,6 +50,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.packet.Packet;
@@ -90,7 +90,7 @@ import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -1075,18 +1075,18 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public int unlockRecipes(Collection<Recipe<?>> recipes) {
+	public int unlockRecipes(Collection<RecipeEntry<?>> recipes) {
 		return this.recipeBook.unlockRecipes(recipes, this);
 	}
 
 	@Override
-	public void onRecipeCrafted(Recipe<?> recipe, List<ItemStack> ingredients) {
-		Criteria.RECIPE_CRAFTED.trigger(this, recipe.getId(), ingredients);
+	public void onRecipeCrafted(RecipeEntry<?> recipe, List<ItemStack> ingredients) {
+		Criteria.RECIPE_CRAFTED.trigger(this, recipe.id(), ingredients);
 	}
 
 	@Override
 	public void unlockRecipes(Identifier[] ids) {
-		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
+		List<RecipeEntry<?>> list = Lists.<RecipeEntry<?>>newArrayList();
 
 		for (Identifier identifier : ids) {
 			this.server.getRecipeManager().get(identifier).ifPresent(list::add);
@@ -1096,7 +1096,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public int lockRecipes(Collection<Recipe<?>> recipes) {
+	public int lockRecipes(Collection<RecipeEntry<?>> recipes) {
 		return this.recipeBook.lockRecipes(recipes, this);
 	}
 

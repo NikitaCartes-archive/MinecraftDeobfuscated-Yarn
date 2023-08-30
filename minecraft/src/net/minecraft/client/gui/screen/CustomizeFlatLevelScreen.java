@@ -215,12 +215,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				if (button == 0) {
-					SuperflatLayersListWidget.this.setSelected(this);
-					return true;
-				} else {
-					return false;
-				}
+				SuperflatLayersListWidget.this.setSelected(this);
+				return true;
 			}
 
 			private void renderIcon(DrawContext context, int x, int y, ItemStack iconItem) {

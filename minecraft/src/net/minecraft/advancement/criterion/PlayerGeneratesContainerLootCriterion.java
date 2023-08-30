@@ -2,6 +2,7 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -9,13 +10,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<PlayerGeneratesContainerLootCriterion.Conditions> {
-	static final Identifier ID = new Identifier("player_generates_container_loot");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	protected PlayerGeneratesContainerLootCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -31,12 +25,12 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 		private final Identifier lootTable;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Identifier lootTable) {
-			super(PlayerGeneratesContainerLootCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.lootTable = lootTable;
 		}
 
-		public static PlayerGeneratesContainerLootCriterion.Conditions create(Identifier lootTable) {
-			return new PlayerGeneratesContainerLootCriterion.Conditions(Optional.empty(), lootTable);
+		public static AdvancementCriterion<PlayerGeneratesContainerLootCriterion.Conditions> create(Identifier lootTable) {
+			return Criteria.PLAYER_GENERATES_CONTAINER_LOOT.create(new PlayerGeneratesContainerLootCriterion.Conditions(Optional.empty(), lootTable));
 		}
 
 		public boolean test(Identifier lootTable) {

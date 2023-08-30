@@ -21,7 +21,7 @@ public class SkullBlock extends AbstractSkullBlock {
 
 	protected SkullBlock(SkullBlock.SkullType skullType, AbstractBlock.Settings settings) {
 		super(skullType, settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(ROTATION, Integer.valueOf(0)));
+		this.setDefaultState(this.getDefaultState().with(ROTATION, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class SkullBlock extends AbstractSkullBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(ROTATION, Integer.valueOf(RotationPropertyHelper.fromYaw(ctx.getPlayerYaw())));
+		return super.getPlacementState(ctx).with(ROTATION, Integer.valueOf(RotationPropertyHelper.fromYaw(ctx.getPlayerYaw())));
 	}
 
 	@Override
@@ -51,6 +51,7 @@ public class SkullBlock extends AbstractSkullBlock {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+		super.appendProperties(builder);
 		builder.add(ROTATION);
 	}
 

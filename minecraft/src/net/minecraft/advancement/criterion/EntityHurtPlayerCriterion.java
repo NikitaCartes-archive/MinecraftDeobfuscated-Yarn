@@ -2,21 +2,14 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlayerCriterion.Conditions> {
-	static final Identifier ID = new Identifier("entity_hurt_player");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public EntityHurtPlayerCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -32,20 +25,20 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 		private final Optional<DamagePredicate> damage;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<DamagePredicate> damage) {
-			super(EntityHurtPlayerCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.damage = damage;
 		}
 
-		public static EntityHurtPlayerCriterion.Conditions create() {
-			return new EntityHurtPlayerCriterion.Conditions(Optional.empty(), Optional.empty());
+		public static AdvancementCriterion<EntityHurtPlayerCriterion.Conditions> create() {
+			return Criteria.ENTITY_HURT_PLAYER.create(new EntityHurtPlayerCriterion.Conditions(Optional.empty(), Optional.empty()));
 		}
 
-		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate predicate) {
-			return new EntityHurtPlayerCriterion.Conditions(Optional.empty(), Optional.of(predicate));
+		public static AdvancementCriterion<EntityHurtPlayerCriterion.Conditions> create(DamagePredicate predicate) {
+			return Criteria.ENTITY_HURT_PLAYER.create(new EntityHurtPlayerCriterion.Conditions(Optional.empty(), Optional.of(predicate)));
 		}
 
-		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate.Builder damageBuilder) {
-			return new EntityHurtPlayerCriterion.Conditions(Optional.empty(), damageBuilder.build());
+		public static AdvancementCriterion<EntityHurtPlayerCriterion.Conditions> create(DamagePredicate.Builder damageBuilder) {
+			return Criteria.ENTITY_HURT_PLAYER.create(new EntityHurtPlayerCriterion.Conditions(Optional.empty(), Optional.of(damageBuilder.build())));
 		}
 
 		public boolean matches(ServerPlayerEntity player, DamageSource damageSource, float dealt, float taken, boolean blocked) {

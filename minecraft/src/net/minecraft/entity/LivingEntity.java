@@ -749,7 +749,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
-		this.setAbsorptionAmount(nbt.getFloat("AbsorptionAmount"));
+		this.setAbsorptionAmountUnclamped(nbt.getFloat("AbsorptionAmount"));
 		if (nbt.contains("Attributes", NbtElement.LIST_TYPE) && this.getWorld() != null && !this.getWorld().isClient) {
 			this.getAttributes().readNbt(nbt.getList("Attributes", NbtElement.COMPOUND_TYPE));
 		}

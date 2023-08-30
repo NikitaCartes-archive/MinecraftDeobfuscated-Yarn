@@ -5,7 +5,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -64,7 +63,7 @@ public interface Recipe<C extends Inventory> {
 	 * <p>The returned stack should not be modified. To obtain the actual output,
 	 * call {@link #craft(Inventory, DynamicRegistryManager)}.
 	 */
-	ItemStack getOutput(DynamicRegistryManager registryManager);
+	ItemStack getResult(DynamicRegistryManager registryManager);
 
 	/**
 	 * {@return the remaining stacks to be left in the {@code inventory} after the recipe is used}
@@ -128,18 +127,13 @@ public interface Recipe<C extends Inventory> {
 	}
 
 	/**
-	 * {@return an item rendered on the top left of the {@linkplain #getOutput(DynamicRegistryManager)
+	 * {@return an item rendered on the top left of the {@linkplain #getResult(DynamicRegistryManager)
 	 * output preview} on the recipe toast when a new recipe is unlocked} This
 	 * can be interpreted as a catalyst for the recipe.
 	 */
 	default ItemStack createIcon() {
 		return new ItemStack(Blocks.CRAFTING_TABLE);
 	}
-
-	/**
-	 * {@return the ID of this recipe}
-	 */
-	Identifier getId();
 
 	/**
 	 * {@return the serializer associated with this recipe}

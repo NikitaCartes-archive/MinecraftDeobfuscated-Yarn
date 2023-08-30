@@ -1,8 +1,7 @@
 package net.minecraft.data.server.recipe;
 
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
@@ -11,19 +10,19 @@ import net.minecraft.util.Identifier;
 public interface CraftingRecipeJsonBuilder {
 	Identifier ROOT = new Identifier("recipes/root");
 
-	CraftingRecipeJsonBuilder criterion(String name, CriterionConditions conditions);
+	CraftingRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion);
 
 	CraftingRecipeJsonBuilder group(@Nullable String group);
 
 	Item getOutputItem();
 
-	void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId);
+	void offerTo(RecipeExporter exporter, Identifier recipeId);
 
-	default void offerTo(Consumer<RecipeJsonProvider> exporter) {
+	default void offerTo(RecipeExporter exporter) {
 		this.offerTo(exporter, getItemId(this.getOutputItem()));
 	}
 
-	default void offerTo(Consumer<RecipeJsonProvider> exporter, String recipePath) {
+	default void offerTo(RecipeExporter exporter, String recipePath) {
 		Identifier identifier = getItemId(this.getOutputItem());
 		Identifier identifier2 = new Identifier(recipePath);
 		if (identifier2.equals(identifier)) {

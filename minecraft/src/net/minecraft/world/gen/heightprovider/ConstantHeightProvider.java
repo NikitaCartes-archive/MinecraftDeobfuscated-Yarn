@@ -8,7 +8,7 @@ import net.minecraft.world.gen.YOffset;
 
 public class ConstantHeightProvider extends HeightProvider {
 	public static final ConstantHeightProvider ZERO = new ConstantHeightProvider(YOffset.fixed(0));
-	public static final Codec<ConstantHeightProvider> CONSTANT_CODEC = Codecs.either(YOffset.OFFSET_CODEC, YOffset.OFFSET_CODEC.fieldOf("value").codec())
+	public static final Codec<ConstantHeightProvider> CONSTANT_CODEC = Codecs.alternatively(YOffset.OFFSET_CODEC, YOffset.OFFSET_CODEC.fieldOf("value").codec())
 		.xmap(ConstantHeightProvider::new, ConstantHeightProvider::getOffset);
 	private final YOffset offset;
 

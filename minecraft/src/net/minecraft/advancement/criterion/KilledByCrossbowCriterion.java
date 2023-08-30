@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.context.LootContext;
@@ -16,16 +17,8 @@ import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbowCriterion.Conditions> {
-	static final Identifier ID = new Identifier("killed_by_crossbow");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public KilledByCrossbowCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -51,19 +44,22 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		private final NumberRange.IntRange uniqueEntityTypes;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, List<LootContextPredicate> victims, NumberRange.IntRange uniqueEntityTypes) {
-			super(KilledByCrossbowCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.victims = victims;
 			this.uniqueEntityTypes = uniqueEntityTypes;
 		}
 
-		public static KilledByCrossbowCriterion.Conditions create(EntityPredicate.Builder... victimPredicates) {
-			return new KilledByCrossbowCriterion.Conditions(
-				Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicates(victimPredicates), NumberRange.IntRange.ANY
-			);
+		public static AdvancementCriterion<KilledByCrossbowCriterion.Conditions> create(EntityPredicate.Builder... victimPredicates) {
+			return Criteria.KILLED_BY_CROSSBOW
+				.create(
+					new KilledByCrossbowCriterion.Conditions(
+						Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicates(victimPredicates), NumberRange.IntRange.ANY
+					)
+				);
 		}
 
-		public static KilledByCrossbowCriterion.Conditions create(NumberRange.IntRange uniqueEntityTypes) {
-			return new KilledByCrossbowCriterion.Conditions(Optional.empty(), List.of(), uniqueEntityTypes);
+		public static AdvancementCriterion<KilledByCrossbowCriterion.Conditions> create(NumberRange.IntRange uniqueEntityTypes) {
+			return Criteria.KILLED_BY_CROSSBOW.create(new KilledByCrossbowCriterion.Conditions(Optional.empty(), List.of(), uniqueEntityTypes));
 		}
 
 		public boolean matches(Collection<LootContext> victimContexts, int uniqueEntityTypeCount) {

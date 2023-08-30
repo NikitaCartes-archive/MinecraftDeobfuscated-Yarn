@@ -102,11 +102,17 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 				return;
 			}
 
+			Text text = playerManager.checkCanJoin(this.connection.getAddress(), this.profile);
+			if (text != null) {
+				this.disconnect(text);
+				return;
+			}
+
 			ServerPlayerEntity serverPlayerEntity = playerManager.createPlayer(this.profile);
 			playerManager.onPlayerConnect(this.connection, serverPlayerEntity, this.getLatency());
 			this.connection.enableAutoRead();
-		} catch (Exception var4) {
-			LOGGER.error("Couldn't place player in world", (Throwable)var4);
+		} catch (Exception var5) {
+			LOGGER.error("Couldn't place player in world", (Throwable)var5);
 			this.connection.send(new DisconnectS2CPacket(INVALID_PLAYER_DATA_TEXT));
 			this.connection.disconnect(INVALID_PLAYER_DATA_TEXT);
 		}

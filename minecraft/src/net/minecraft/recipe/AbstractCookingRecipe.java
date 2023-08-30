@@ -4,41 +4,38 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	protected final RecipeType<?> type;
-	protected final Identifier id;
-	private final CookingRecipeCategory category;
+	protected final CookingRecipeCategory category;
 	protected final String group;
-	protected final Ingredient input;
-	protected final ItemStack output;
+	protected final Ingredient ingredient;
+	protected final ItemStack result;
 	protected final float experience;
-	protected final int cookTime;
+	protected final int cookingTime;
 
 	public AbstractCookingRecipe(
-		RecipeType<?> type, Identifier id, String group, CookingRecipeCategory category, Ingredient input, ItemStack output, float experience, int cookTime
+		RecipeType<?> type, String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime
 	) {
 		this.type = type;
 		this.category = category;
-		this.id = id;
 		this.group = group;
-		this.input = input;
-		this.output = output;
+		this.ingredient = ingredient;
+		this.result = result;
 		this.experience = experience;
-		this.cookTime = cookTime;
+		this.cookingTime = cookingTime;
 	}
 
 	@Override
 	public boolean matches(Inventory inventory, World world) {
-		return this.input.test(inventory.getStack(0));
+		return this.ingredient.test(inventory.getStack(0));
 	}
 
 	@Override
 	public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
-		return this.output.copy();
+		return this.result.copy();
 	}
 
 	@Override
@@ -49,7 +46,7 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	@Override
 	public DefaultedList<Ingredient> getIngredients() {
 		DefaultedList<Ingredient> defaultedList = DefaultedList.of();
-		defaultedList.add(this.input);
+		defaultedList.add(this.ingredient);
 		return defaultedList;
 	}
 
@@ -58,8 +55,8 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public ItemStack getOutput(DynamicRegistryManager registryManager) {
-		return this.output;
+	public ItemStack getResult(DynamicRegistryManager registryManager) {
+		return this.result;
 	}
 
 	@Override
@@ -67,13 +64,8 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 		return this.group;
 	}
 
-	public int getCookTime() {
-		return this.cookTime;
-	}
-
-	@Override
-	public Identifier getId() {
-		return this.id;
+	public int getCookingTime() {
+		return this.cookingTime;
 	}
 
 	@Override

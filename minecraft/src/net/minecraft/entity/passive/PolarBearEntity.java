@@ -258,7 +258,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 		@Override
 		protected void attack(LivingEntity target) {
-			if (this.isCooledDown() && this.mob.isInAttackRange(target)) {
+			if (this.canAttack(target)) {
 				this.resetCooldown();
 				this.mob.tryAttack(target);
 				PolarBearEntity.this.setWarning(false);

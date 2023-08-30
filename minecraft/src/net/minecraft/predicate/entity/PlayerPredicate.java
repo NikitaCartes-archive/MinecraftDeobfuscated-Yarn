@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
@@ -55,7 +55,8 @@ public record PlayerPredicate(
 					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "level", NumberRange.IntRange.ANY).forGetter(PlayerPredicate::experienceLevel),
 					GameMode.CODEC.optionalFieldOf("gamemode").forGetter(PlayerPredicate::gameMode),
 					Codecs.createStrictOptionalFieldCodec(PlayerPredicate.StatMatcher.CODEC.listOf(), "stats", List.of()).forGetter(PlayerPredicate::stats),
-					Codecs.createStrictOptionalFieldCodec(Codecs.method_53058(Identifier.CODEC), "recipes", Object2BooleanMaps.emptyMap()).forGetter(PlayerPredicate::recipes),
+					Codecs.createStrictOptionalFieldCodec(Codecs.object2BooleanMap(Identifier.CODEC), "recipes", Object2BooleanMaps.emptyMap())
+						.forGetter(PlayerPredicate::recipes),
 					Codecs.createStrictOptionalFieldCodec(Codec.unboundedMap(Identifier.CODEC, PlayerPredicate.AdvancementPredicate.CODEC), "advancements", Map.of())
 						.forGetter(PlayerPredicate::advancements),
 					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "looking_at").forGetter(PlayerPredicate::lookingAt)
@@ -93,8 +94,8 @@ public record PlayerPredicate(
 				ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementLoader();
 
 				for (java.util.Map.Entry<Identifier, PlayerPredicate.AdvancementPredicate> entry2 : this.advancements.entrySet()) {
-					Advancement advancement = serverAdvancementLoader.get((Identifier)entry2.getKey());
-					if (advancement == null || !((PlayerPredicate.AdvancementPredicate)entry2.getValue()).test(playerAdvancementTracker.getProgress(advancement))) {
+					AdvancementEntry advancementEntry = serverAdvancementLoader.get((Identifier)entry2.getKey());
+					if (advancementEntry == null || !((PlayerPredicate.AdvancementPredicate)entry2.getValue()).test(playerAdvancementTracker.getProgress(advancementEntry))) {
 						return false;
 					}
 				}
@@ -127,7 +128,7 @@ public record PlayerPredicate(
 	}
 
 	static record AdvancementCriteriaPredicate(Object2BooleanMap<String> criteria) implements PlayerPredicate.AdvancementPredicate {
-		public static final Codec<PlayerPredicate.AdvancementCriteriaPredicate> CODEC = Codecs.method_53058(Codec.STRING)
+		public static final Codec<PlayerPredicate.AdvancementCriteriaPredicate> CODEC = Codecs.object2BooleanMap(Codec.STRING)
 			.xmap(PlayerPredicate.AdvancementCriteriaPredicate::new, PlayerPredicate.AdvancementCriteriaPredicate::criteria);
 
 		public boolean test(AdvancementProgress advancementProgress) {
@@ -146,18 +147,15 @@ public record PlayerPredicate(
 		Codec<PlayerPredicate.AdvancementPredicate> CODEC = Codec.either(
 				PlayerPredicate.CompletedAdvancementPredicate.CODEC, PlayerPredicate.AdvancementCriteriaPredicate.CODEC
 			)
-			.xmap(
-				either -> either.map(completedAdvancementPredicate -> completedAdvancementPredicate, advancementCriteriaPredicate -> advancementCriteriaPredicate),
-				advancementPredicate -> {
-					if (advancementPredicate instanceof PlayerPredicate.CompletedAdvancementPredicate completedAdvancementPredicate) {
-						return Either.left(completedAdvancementPredicate);
-					} else if (advancementPredicate instanceof PlayerPredicate.AdvancementCriteriaPredicate advancementCriteriaPredicate) {
-						return Either.right(advancementCriteriaPredicate);
-					} else {
-						throw new UnsupportedOperationException();
-					}
+			.xmap(either -> either.map(completed -> completed, criteria -> criteria), predicate -> {
+				if (predicate instanceof PlayerPredicate.CompletedAdvancementPredicate completedAdvancementPredicate) {
+					return Either.left(completedAdvancementPredicate);
+				} else if (predicate instanceof PlayerPredicate.AdvancementCriteriaPredicate advancementCriteriaPredicate) {
+					return Either.right(advancementCriteriaPredicate);
+				} else {
+					throw new UnsupportedOperationException();
 				}
-			);
+			});
 	}
 
 	public static class Builder {
@@ -192,8 +190,8 @@ public record PlayerPredicate(
 			return this;
 		}
 
-		public PlayerPredicate.Builder lookingAt(Optional<EntityPredicate> lookingAt) {
-			this.lookingAt = lookingAt;
+		public PlayerPredicate.Builder lookingAt(EntityPredicate.Builder lookingAt) {
+			this.lookingAt = Optional.of(lookingAt.build());
 			return this;
 		}
 

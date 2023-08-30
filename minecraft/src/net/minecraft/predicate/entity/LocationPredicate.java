@@ -46,7 +46,7 @@ public record LocationPredicate(
 				.apply(instance, LocationPredicate::new)
 	);
 
-	static Optional<LocationPredicate> create(
+	private static Optional<LocationPredicate> create(
 		Optional<LocationPredicate.PositionRange> position,
 		Optional<RegistryKey<Biome>> biome,
 		Optional<RegistryKey<Structure>> structure,
@@ -170,17 +170,17 @@ public record LocationPredicate(
 		}
 
 		public LocationPredicate.Builder light(LightPredicate.Builder light) {
-			this.light = light.build();
+			this.light = Optional.of(light.build());
 			return this;
 		}
 
 		public LocationPredicate.Builder block(BlockPredicate.Builder block) {
-			this.block = block.build();
+			this.block = Optional.of(block.build());
 			return this;
 		}
 
 		public LocationPredicate.Builder fluid(FluidPredicate.Builder fluid) {
-			this.fluid = fluid.build();
+			this.fluid = Optional.of(fluid.build());
 			return this;
 		}
 
@@ -189,10 +189,9 @@ public record LocationPredicate(
 			return this;
 		}
 
-		public Optional<LocationPredicate> build() {
-			return LocationPredicate.create(
-				LocationPredicate.PositionRange.create(this.x, this.y, this.z), this.biome, this.feature, this.dimension, this.smokey, this.light, this.block, this.fluid
-			);
+		public LocationPredicate build() {
+			Optional<LocationPredicate.PositionRange> optional = LocationPredicate.PositionRange.create(this.x, this.y, this.z);
+			return new LocationPredicate(optional, this.biome, this.feature, this.dimension, this.smokey, this.light, this.block, this.fluid);
 		}
 	}
 

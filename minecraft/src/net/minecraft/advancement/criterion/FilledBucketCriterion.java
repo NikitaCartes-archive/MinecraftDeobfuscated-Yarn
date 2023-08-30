@@ -2,21 +2,14 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriterion.Conditions> {
-	static final Identifier ID = new Identifier("filled_bucket");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public FilledBucketCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -32,12 +25,12 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 		private final Optional<ItemPredicate> item;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item) {
-			super(FilledBucketCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.item = item;
 		}
 
-		public static FilledBucketCriterion.Conditions create(Optional<ItemPredicate> item) {
-			return new FilledBucketCriterion.Conditions(Optional.empty(), item);
+		public static AdvancementCriterion<FilledBucketCriterion.Conditions> create(ItemPredicate.Builder builder) {
+			return Criteria.FILLED_BUCKET.create(new FilledBucketCriterion.Conditions(Optional.empty(), Optional.of(builder.build())));
 		}
 
 		public boolean matches(ItemStack stack) {

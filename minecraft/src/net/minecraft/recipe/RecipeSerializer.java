@@ -1,10 +1,9 @@
 package net.minecraft.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 
 /**
  * The recipe serializer controls the serialization and deserialization of
@@ -54,20 +53,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 		"crafting_decorated_pot", new SpecialRecipeSerializer<>(CraftingDecoratedPotRecipe::new)
 	);
 
-	/**
-	 * Reads a recipe from a JSON object.
-	 * 
-	 * @implNote If this throws any exception besides {@link com.google.gson.JsonParseException}
-	 * and {@link IllegalArgumentException}, it will terminate and affect loading
-	 * of all recipes from data packs beyond the current recipe.
-	 * 
-	 * @throws com.google.gson.JsonParseException if the recipe JSON is incorrect
-	 * @return the read recipe
-	 * 
-	 * @param json the recipe JSON
-	 * @param id the recipe's ID
-	 */
-	T read(Identifier id, JsonObject json);
+	Codec<T> codec();
 
 	/**
 	 * Reads a recipe from a packet byte buf, usually on the client.
@@ -76,11 +62,8 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	 * called in the netty event loop than the client game engine thread.
 	 * 
 	 * @return the read recipe
-	 * 
-	 * @param buf the recipe buf
-	 * @param id the recipe's ID
 	 */
-	T read(Identifier id, PacketByteBuf buf);
+	T read(PacketByteBuf buf);
 
 	/**
 	 * Writes a recipe to a packet byte buf, usually on the server.

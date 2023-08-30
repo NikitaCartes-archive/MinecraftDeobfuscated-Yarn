@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -10,8 +11,10 @@ import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementPositioner;
+import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.loot.LootManager;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.resource.JsonDataLoader;
@@ -24,6 +27,7 @@ import org.slf4j.Logger;
 public class ServerAdvancementLoader extends JsonDataLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Gson GSON = new GsonBuilder().create();
+	private Map<Identifier, AdvancementEntry> advancements = Map.of();
 	private AdvancementManager manager = new AdvancementManager();
 	private final LootManager conditionManager;
 
@@ -33,22 +37,23 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	}
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
-		Map<Identifier, Advancement.Builder> map2 = Maps.<Identifier, Advancement.Builder>newHashMap();
+		Builder<Identifier, AdvancementEntry> builder = ImmutableMap.builder();
 		map.forEach((id, json) -> {
 			try {
 				JsonObject jsonObject = JsonHelper.asObject(json, "advancement");
-				Advancement.Builder builder = Advancement.Builder.fromJson(jsonObject, new AdvancementEntityPredicateDeserializer(id, this.conditionManager));
-				map2.put(id, builder);
+				Advancement advancement = Advancement.fromJson(jsonObject, new AdvancementEntityPredicateDeserializer(id, this.conditionManager));
+				builder.put(id, new AdvancementEntry(id, advancement));
 			} catch (Exception var6) {
 				LOGGER.error("Parsing error loading custom advancement {}: {}", id, var6.getMessage());
 			}
 		});
+		this.advancements = builder.buildOrThrow();
 		AdvancementManager advancementManager = new AdvancementManager();
-		advancementManager.load(map2);
+		advancementManager.addAll(this.advancements.values());
 
-		for (Advancement advancement : advancementManager.getRoots()) {
-			if (advancement.getDisplay() != null) {
-				AdvancementPositioner.arrangeForTree(advancement);
+		for (PlacedAdvancement placedAdvancement : advancementManager.getRoots()) {
+			if (placedAdvancement.getAdvancementEntry().value().display().isPresent()) {
+				AdvancementPositioner.arrangeForTree(placedAdvancement);
 			}
 		}
 
@@ -56,11 +61,15 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	}
 
 	@Nullable
-	public Advancement get(Identifier id) {
-		return this.manager.get(id);
+	public AdvancementEntry get(Identifier id) {
+		return (AdvancementEntry)this.advancements.get(id);
 	}
 
-	public Collection<Advancement> getAdvancements() {
-		return this.manager.getAdvancements();
+	public AdvancementManager getManager() {
+		return this.manager;
+	}
+
+	public Collection<AdvancementEntry> getAdvancements() {
+		return this.advancements.values();
 	}
 }

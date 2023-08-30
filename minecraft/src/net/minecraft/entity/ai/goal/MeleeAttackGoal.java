@@ -94,8 +94,7 @@ public class MeleeAttackGoal extends Goal {
 		if (livingEntity != null) {
 			this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			this.updateCountdownTicks = Math.max(this.updateCountdownTicks - 1, 0);
-			boolean bl = this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity);
-			if (bl
+			if ((this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity))
 				&& this.updateCountdownTicks <= 0
 				&& (
 					this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0
@@ -121,14 +120,12 @@ public class MeleeAttackGoal extends Goal {
 			}
 
 			this.cooldown = Math.max(this.cooldown - 1, 0);
-			if (bl) {
-				this.attack(livingEntity);
-			}
+			this.attack(livingEntity);
 		}
 	}
 
 	protected void attack(LivingEntity target) {
-		if (this.cooldown <= 0 && this.mob.isInAttackRange(target)) {
+		if (this.canAttack(target)) {
 			this.resetCooldown();
 			this.mob.swingHand(Hand.MAIN_HAND);
 			this.mob.tryAttack(target);
@@ -141,6 +138,10 @@ public class MeleeAttackGoal extends Goal {
 
 	protected boolean isCooledDown() {
 		return this.cooldown <= 0;
+	}
+
+	protected boolean canAttack(LivingEntity target) {
+		return this.isCooledDown() && this.mob.isInAttackRange(target) && this.mob.getVisibilityCache().canSee(target);
 	}
 
 	protected int getCooldown() {

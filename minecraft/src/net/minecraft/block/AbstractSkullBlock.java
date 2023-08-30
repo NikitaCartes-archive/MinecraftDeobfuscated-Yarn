@@ -8,16 +8,22 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.Equipment;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public abstract class AbstractSkullBlock extends BlockWithEntity implements Equipment {
+	public static final BooleanProperty POWERED = Properties.POWERED;
 	private final SkullBlock.SkullType type;
 
 	public AbstractSkullBlock(SkullBlock.SkullType type, AbstractBlock.Settings settings) {
 		super(settings);
 		this.type = type;
+		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -50,5 +56,25 @@ public abstract class AbstractSkullBlock extends BlockWithEntity implements Equi
 	@Override
 	public EquipmentSlot getSlotType() {
 		return EquipmentSlot.HEAD;
+	}
+
+	@Override
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+		builder.add(POWERED);
+	}
+
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return this.getDefaultState().with(POWERED, Boolean.valueOf(ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())));
+	}
+
+	@Override
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+		if (!world.isClient) {
+			boolean bl = world.isReceivingRedstonePower(pos);
+			if (bl != (Boolean)state.get(POWERED)) {
+				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
+			}
+		}
 	}
 }

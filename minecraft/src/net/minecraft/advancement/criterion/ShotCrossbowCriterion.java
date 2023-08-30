@@ -2,22 +2,15 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriterion.Conditions> {
-	static final Identifier ID = new Identifier("shot_crossbow");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public ShotCrossbowCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -33,16 +26,17 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 		private final Optional<ItemPredicate> item;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item) {
-			super(ShotCrossbowCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.item = item;
 		}
 
-		public static ShotCrossbowCriterion.Conditions create(Optional<ItemPredicate> item) {
-			return new ShotCrossbowCriterion.Conditions(Optional.empty(), item);
+		public static AdvancementCriterion<ShotCrossbowCriterion.Conditions> create(Optional<ItemPredicate> item) {
+			return Criteria.SHOT_CROSSBOW.create(new ShotCrossbowCriterion.Conditions(Optional.empty(), item));
 		}
 
-		public static ShotCrossbowCriterion.Conditions create(ItemConvertible item) {
-			return new ShotCrossbowCriterion.Conditions(Optional.empty(), ItemPredicate.Builder.create().items(item).build());
+		public static AdvancementCriterion<ShotCrossbowCriterion.Conditions> create(ItemConvertible item) {
+			return Criteria.SHOT_CROSSBOW
+				.create(new ShotCrossbowCriterion.Conditions(Optional.empty(), Optional.of(ItemPredicate.Builder.create().items(item).build())));
 		}
 
 		public boolean matches(ItemStack stack) {

@@ -318,11 +318,8 @@ public class PresetsScreen extends Screen {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				if (button == 0) {
-					this.setPreset();
-				}
-
-				return false;
+				this.setPreset();
+				return true;
 			}
 
 			void setPreset() {

@@ -43,7 +43,7 @@ public record EntityPropertiesLootCondition(Optional<EntityPredicate> predicate,
 	}
 
 	public static LootCondition.Builder builder(LootContext.EntityTarget entity, EntityPredicate.Builder predicateBuilder) {
-		return () -> new EntityPropertiesLootCondition(predicateBuilder.build(), entity);
+		return () -> new EntityPropertiesLootCondition(Optional.of(predicateBuilder.build()), entity);
 	}
 
 	public static LootCondition.Builder builder(LootContext.EntityTarget entity, EntityPredicate predicate) {

@@ -109,7 +109,7 @@ public interface Inventory extends Clearable {
 	 * implemented in a block entity, then it should <strong>always</strong> call
 	 * {@code super.markDirty();} to ensure the block entity gets saved.
 	 * 
-	 * @see net.minecraft.block.entiy.BlockEntity#markDirty
+	 * @see net.minecraft.block.entity.BlockEntity#markDirty
 	 */
 	void markDirty();
 
