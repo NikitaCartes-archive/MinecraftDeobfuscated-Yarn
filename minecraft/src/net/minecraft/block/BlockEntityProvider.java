@@ -52,7 +52,7 @@ public interface BlockEntityProvider {
 	 * <p>Tickers should validate that the passed {@code type} is the one this block expects,
 	 * and return {@code null} if it isn't. This is to prevent crashes in rare cases where a
 	 * mismatch occurs between the position's block and block entity. {@link
-	 * BlockWithEntity#checkType} can be used to implement the check.
+	 * BlockWithEntity#validateTicker} can be used to implement the check.
 	 * 
 	 * <p>Example:
 	 * 

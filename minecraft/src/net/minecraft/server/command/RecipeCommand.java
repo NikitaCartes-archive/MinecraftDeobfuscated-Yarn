@@ -9,7 +9,7 @@ import java.util.Collections;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -74,7 +74,7 @@ public class RecipeCommand {
 		);
 	}
 
-	private static int executeGive(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Collection<Recipe<?>> recipes) throws CommandSyntaxException {
+	private static int executeGive(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Collection<RecipeEntry<?>> recipes) throws CommandSyntaxException {
 		int i = 0;
 
 		for(ServerPlayerEntity serverPlayerEntity : targets) {
@@ -96,7 +96,7 @@ public class RecipeCommand {
 		}
 	}
 
-	private static int executeTake(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Collection<Recipe<?>> recipes) throws CommandSyntaxException {
+	private static int executeTake(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Collection<RecipeEntry<?>> recipes) throws CommandSyntaxException {
 		int i = 0;
 
 		for(ServerPlayerEntity serverPlayerEntity : targets) {

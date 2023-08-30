@@ -14,7 +14,7 @@ public class LootNumberProviderTypes {
 		.dispatch(LootNumberProvider::getType, LootNumberProviderType::codec);
 	public static final Codec<LootNumberProvider> CODEC = Codecs.createLazy(
 		() -> {
-			Codec<LootNumberProvider> codec = Codecs.either(BASE_CODEC, UniformLootNumberProvider.CODEC);
+			Codec<LootNumberProvider> codec = Codecs.alternatively(BASE_CODEC, UniformLootNumberProvider.CODEC);
 			return Codec.either(ConstantLootNumberProvider.field_45887, codec)
 				.xmap(
 					either -> either.map(Function.identity(), Function.identity()),

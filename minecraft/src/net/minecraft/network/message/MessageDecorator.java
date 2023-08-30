@@ -1,6 +1,5 @@
 package net.minecraft.network.message;
 
-import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -21,7 +20,7 @@ public interface MessageDecorator {
 	/**
 	 * An empty message decorator that returns the original message.
 	 */
-	MessageDecorator NOOP = (sender, message) -> CompletableFuture.completedFuture(message);
+	MessageDecorator NOOP = (sender, message) -> message;
 
-	CompletableFuture<Text> decorate(@Nullable ServerPlayerEntity sender, Text message);
+	Text decorate(@Nullable ServerPlayerEntity sender, Text message);
 }

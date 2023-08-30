@@ -3,7 +3,7 @@ package net.minecraft.recipe.book;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.util.Identifier;
 
@@ -20,9 +20,9 @@ public class RecipeBook {
 		this.toBeDisplayed.addAll(book.toBeDisplayed);
 	}
 
-	public void add(Recipe<?> recipe) {
-		if (!recipe.isIgnoredInRecipeBook()) {
-			this.add(recipe.getId());
+	public void add(RecipeEntry<?> recipe) {
+		if (!recipe.value().isIgnoredInRecipeBook()) {
+			this.add(recipe.id());
 		}
 	}
 
@@ -30,16 +30,16 @@ public class RecipeBook {
 		this.recipes.add(id);
 	}
 
-	public boolean contains(@Nullable Recipe<?> recipe) {
-		return recipe == null ? false : this.recipes.contains(recipe.getId());
+	public boolean contains(@Nullable RecipeEntry<?> recipe) {
+		return recipe == null ? false : this.recipes.contains(recipe.id());
 	}
 
 	public boolean contains(Identifier id) {
 		return this.recipes.contains(id);
 	}
 
-	public void remove(Recipe<?> recipe) {
-		this.remove(recipe.getId());
+	public void remove(RecipeEntry<?> recipe) {
+		this.remove(recipe.id());
 	}
 
 	protected void remove(Identifier id) {
@@ -47,16 +47,16 @@ public class RecipeBook {
 		this.toBeDisplayed.remove(id);
 	}
 
-	public boolean shouldDisplay(Recipe<?> recipe) {
-		return this.toBeDisplayed.contains(recipe.getId());
+	public boolean shouldDisplay(RecipeEntry<?> recipe) {
+		return this.toBeDisplayed.contains(recipe.id());
 	}
 
-	public void onRecipeDisplayed(Recipe<?> recipe) {
-		this.toBeDisplayed.remove(recipe.getId());
+	public void onRecipeDisplayed(RecipeEntry<?> recipe) {
+		this.toBeDisplayed.remove(recipe.id());
 	}
 
-	public void display(Recipe<?> recipe) {
-		this.display(recipe.getId());
+	public void display(RecipeEntry<?> recipe) {
+		this.display(recipe.id());
 	}
 
 	protected void display(Identifier id) {

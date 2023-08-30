@@ -32,7 +32,12 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return hasTopRim(world, pos.down());
+		BlockPos blockPos = pos.down();
+		return this.canPlaceAbove(world, blockPos, world.getBlockState(blockPos));
+	}
+
+	protected boolean canPlaceAbove(WorldView world, BlockPos pos, BlockState state) {
+		return state.isSideSolid(world, pos, Direction.UP, SideShapeType.RIGID);
 	}
 
 	@Override

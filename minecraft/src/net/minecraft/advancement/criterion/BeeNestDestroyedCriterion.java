@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -17,13 +18,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroyedCriterion.Conditions> {
-	static final Identifier ID = new Identifier("bee_nest_destroyed");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public BeeNestDestroyedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -54,14 +48,17 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		private final NumberRange.IntRange beeCount;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable Block block, Optional<ItemPredicate> item, NumberRange.IntRange beeCount) {
-			super(BeeNestDestroyedCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.block = block;
 			this.item = item;
 			this.beeCount = beeCount;
 		}
 
-		public static BeeNestDestroyedCriterion.Conditions create(Block block, ItemPredicate.Builder itemPredicateBuilder, NumberRange.IntRange beeCountRange) {
-			return new BeeNestDestroyedCriterion.Conditions(Optional.empty(), block, itemPredicateBuilder.build(), beeCountRange);
+		public static AdvancementCriterion<BeeNestDestroyedCriterion.Conditions> create(
+			Block block, ItemPredicate.Builder itemPredicateBuilder, NumberRange.IntRange beeCountRange
+		) {
+			return Criteria.BEE_NEST_DESTROYED
+				.create(new BeeNestDestroyedCriterion.Conditions(Optional.empty(), block, Optional.of(itemPredicateBuilder.build()), beeCountRange));
 		}
 
 		public boolean test(BlockState state, ItemStack stack, int count) {

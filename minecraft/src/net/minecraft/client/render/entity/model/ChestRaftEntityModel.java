@@ -36,17 +36,17 @@ public class ChestRaftEntityModel extends RaftEntityModel {
 		modelPartData.addChild(
 			"chest_bottom",
 			ModelPartBuilder.create().uv(0, 76).cuboid(0.0F, 0.0F, 0.0F, 12.0F, 8.0F, 12.0F),
-			ModelTransform.of(-2.0F, -10.0F, -6.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
+			ModelTransform.of(-2.0F, -10.1F, -6.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
 		);
 		modelPartData.addChild(
 			"chest_lid",
 			ModelPartBuilder.create().uv(0, 59).cuboid(0.0F, 0.0F, 0.0F, 12.0F, 4.0F, 12.0F),
-			ModelTransform.of(-2.0F, -14.0F, -6.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
+			ModelTransform.of(-2.0F, -14.1F, -6.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
 		);
 		modelPartData.addChild(
 			"chest_lock",
 			ModelPartBuilder.create().uv(0, 59).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 4.0F, 1.0F),
-			ModelTransform.of(-1.0F, -11.0F, -1.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
+			ModelTransform.of(-1.0F, -11.1F, -1.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
 		);
 		return TexturedModelData.of(modelData, 128, 128);
 	}

@@ -35,7 +35,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -422,7 +422,7 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public void clickRecipe(int syncId, Recipe<?> recipe, boolean craftAll) {
+	public void clickRecipe(int syncId, RecipeEntry<?> recipe, boolean craftAll) {
 		this.networkHandler.sendPacket(new CraftRequestC2SPacket(syncId, recipe, craftAll));
 	}
 

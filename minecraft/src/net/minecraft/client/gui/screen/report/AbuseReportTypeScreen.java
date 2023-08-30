@@ -12,7 +12,7 @@ import net.minecraft.client.gui.widget.EmptyWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.report.AbuseReportContext;
+import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 

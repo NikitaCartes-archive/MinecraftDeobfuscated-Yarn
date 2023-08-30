@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
@@ -451,8 +451,8 @@ public class EntitySelectorOptions {
 							ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementLoader();
 
 							for(Entry<Identifier, Predicate<AdvancementProgress>> entry : map.entrySet()) {
-								Advancement advancement = serverAdvancementLoader.get((Identifier)entry.getKey());
-								if (advancement == null || !((Predicate)entry.getValue()).test(playerAdvancementTracker.getProgress(advancement))) {
+								AdvancementEntry advancementEntry = serverAdvancementLoader.get((Identifier)entry.getKey());
+								if (advancementEntry == null || !((Predicate)entry.getValue()).test(playerAdvancementTracker.getProgress(advancementEntry))) {
 									return false;
 								}
 							}

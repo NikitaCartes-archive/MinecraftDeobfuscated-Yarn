@@ -3,9 +3,10 @@ package net.minecraft.data.server.advancement.vanilla;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
+import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.BrewedPotionCriterion;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.ConstructBeaconCriterion;
@@ -80,8 +81,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 	);
 
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
-		Advancement advancement = Advancement.Builder.create()
+	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
+		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.RED_NETHER_BRICKS,
 				Text.translatable("advancements.nether.root.title"),
@@ -94,8 +95,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(World.NETHER))
 			.build(exporter, "nether/root");
-		Advancement advancement2 = Advancement.Builder.create()
-			.parent(advancement)
+		AdvancementEntry advancementEntry2 = Advancement.Builder.create()
+			.parent(advancementEntry)
 			.display(
 				Items.FIRE_CHARGE,
 				Text.translatable("advancements.nether.return_to_sender.title"),
@@ -117,8 +118,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				)
 			)
 			.build(exporter, "nether/return_to_sender");
-		Advancement advancement3 = Advancement.Builder.create()
-			.parent(advancement)
+		AdvancementEntry advancementEntry3 = Advancement.Builder.create()
+			.parent(advancementEntry)
 			.display(
 				Blocks.NETHER_BRICKS,
 				Text.translatable("advancements.nether.find_fortress.title"),
@@ -132,7 +133,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion("fortress", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.FORTRESS)))
 			.build(exporter, "nether/find_fortress");
 		Advancement.Builder.create()
-			.parent(advancement)
+			.parent(advancementEntry)
 			.display(
 				Items.MAP,
 				Text.translatable("advancements.nether.fast_travel.title"),
@@ -147,7 +148,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion("travelled", TravelCriterion.Conditions.netherTravel(DistancePredicate.horizontal(NumberRange.DoubleRange.atLeast(7000.0))))
 			.build(exporter, "nether/fast_travel");
 		Advancement.Builder.create()
-			.parent(advancement2)
+			.parent(advancementEntry2)
 			.display(
 				Items.GHAST_TEAR,
 				Text.translatable("advancements.nether.uneasy_alliance.title"),
@@ -166,8 +167,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				)
 			)
 			.build(exporter, "nether/uneasy_alliance");
-		Advancement advancement4 = Advancement.Builder.create()
-			.parent(advancement3)
+		AdvancementEntry advancementEntry4 = Advancement.Builder.create()
+			.parent(advancementEntry3)
 			.display(
 				Blocks.WITHER_SKELETON_SKULL,
 				Text.translatable("advancements.nether.get_wither_skull.title"),
@@ -180,8 +181,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.criterion("wither_skull", InventoryChangedCriterion.Conditions.items(Blocks.WITHER_SKELETON_SKULL))
 			.build(exporter, "nether/get_wither_skull");
-		Advancement advancement5 = Advancement.Builder.create()
-			.parent(advancement4)
+		AdvancementEntry advancementEntry5 = Advancement.Builder.create()
+			.parent(advancementEntry4)
 			.display(
 				Items.NETHER_STAR,
 				Text.translatable("advancements.nether.summon_wither.title"),
@@ -194,8 +195,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.WITHER)))
 			.build(exporter, "nether/summon_wither");
-		Advancement advancement6 = Advancement.Builder.create()
-			.parent(advancement3)
+		AdvancementEntry advancementEntry6 = Advancement.Builder.create()
+			.parent(advancementEntry3)
 			.display(
 				Items.BLAZE_ROD,
 				Text.translatable("advancements.nether.obtain_blaze_rod.title"),
@@ -208,8 +209,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.criterion("blaze_rod", InventoryChangedCriterion.Conditions.items(Items.BLAZE_ROD))
 			.build(exporter, "nether/obtain_blaze_rod");
-		Advancement advancement7 = Advancement.Builder.create()
-			.parent(advancement5)
+		AdvancementEntry advancementEntry7 = Advancement.Builder.create()
+			.parent(advancementEntry5)
 			.display(
 				Blocks.BEACON,
 				Text.translatable("advancements.nether.create_beacon.title"),
@@ -223,7 +224,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.IntRange.atLeast(1)))
 			.build(exporter, "nether/create_beacon");
 		Advancement.Builder.create()
-			.parent(advancement7)
+			.parent(advancementEntry7)
 			.display(
 				Blocks.BEACON,
 				Text.translatable("advancements.nether.create_full_beacon.title"),
@@ -236,8 +237,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.IntRange.exactly(4)))
 			.build(exporter, "nether/create_full_beacon");
-		Advancement advancement8 = Advancement.Builder.create()
-			.parent(advancement6)
+		AdvancementEntry advancementEntry8 = Advancement.Builder.create()
+			.parent(advancementEntry6)
 			.display(
 				Items.POTION,
 				Text.translatable("advancements.nether.brew_potion.title"),
@@ -250,8 +251,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.criterion("potion", BrewedPotionCriterion.Conditions.any())
 			.build(exporter, "nether/brew_potion");
-		Advancement advancement9 = Advancement.Builder.create()
-			.parent(advancement8)
+		AdvancementEntry advancementEntry9 = Advancement.Builder.create()
+			.parent(advancementEntry8)
 			.display(
 				Items.MILK_BUCKET,
 				Text.translatable("advancements.nether.all_potions.title"),
@@ -284,7 +285,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.build(exporter, "nether/all_potions");
 		Advancement.Builder.create()
-			.parent(advancement9)
+			.parent(advancementEntry9)
 			.display(
 				Items.BUCKET,
 				Text.translatable("advancements.nether.all_effects.title"),
@@ -330,8 +331,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				)
 			)
 			.build(exporter, "nether/all_effects");
-		Advancement advancement10 = Advancement.Builder.create()
-			.parent(advancement)
+		AdvancementEntry advancementEntry10 = Advancement.Builder.create()
+			.parent(advancementEntry)
 			.display(
 				Items.ANCIENT_DEBRIS,
 				Text.translatable("advancements.nether.obtain_ancient_debris.title"),
@@ -345,7 +346,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion("ancient_debris", InventoryChangedCriterion.Conditions.items(Items.ANCIENT_DEBRIS))
 			.build(exporter, "nether/obtain_ancient_debris");
 		Advancement.Builder.create()
-			.parent(advancement10)
+			.parent(advancementEntry10)
 			.display(
 				Items.NETHERITE_CHESTPLATE,
 				Text.translatable("advancements.nether.netherite_armor.title"),
@@ -363,7 +364,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.build(exporter, "nether/netherite_armor");
 		Advancement.Builder.create()
-			.parent(advancement10)
+			.parent(advancementEntry10)
 			.display(
 				Items.LODESTONE,
 				Text.translatable("advancements.nether.use_lodestone.title"),
@@ -381,8 +382,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				)
 			)
 			.build(exporter, "nether/use_lodestone");
-		Advancement advancement11 = Advancement.Builder.create()
-			.parent(advancement)
+		AdvancementEntry advancementEntry11 = Advancement.Builder.create()
+			.parent(advancementEntry)
 			.display(
 				Items.CRYING_OBSIDIAN,
 				Text.translatable("advancements.nether.obtain_crying_obsidian.title"),
@@ -396,7 +397,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion("crying_obsidian", InventoryChangedCriterion.Conditions.items(Items.CRYING_OBSIDIAN))
 			.build(exporter, "nether/obtain_crying_obsidian");
 		Advancement.Builder.create()
-			.parent(advancement11)
+			.parent(advancementEntry11)
 			.display(
 				Items.RESPAWN_ANCHOR,
 				Text.translatable("advancements.nether.charge_respawn_anchor.title"),
@@ -416,8 +417,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				)
 			)
 			.build(exporter, "nether/charge_respawn_anchor");
-		Advancement advancement12 = Advancement.Builder.create()
-			.parent(advancement)
+		AdvancementEntry advancementEntry12 = Advancement.Builder.create()
+			.parent(advancementEntry)
 			.display(
 				Items.WARPED_FUNGUS_ON_A_STICK,
 				Text.translatable("advancements.nether.ride_strider.title"),
@@ -431,14 +432,16 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"used_warped_fungus_on_a_stick",
 				ItemDurabilityChangedCriterion.Conditions.create(
-					EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER))),
-					ItemPredicate.Builder.create().items(Items.WARPED_FUNGUS_ON_A_STICK).build(),
+					Optional.of(
+						EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER)))
+					),
+					Optional.of(ItemPredicate.Builder.create().items(Items.WARPED_FUNGUS_ON_A_STICK).build()),
 					NumberRange.IntRange.ANY
 				)
 			)
 			.build(exporter, "nether/ride_strider");
 		Advancement.Builder.create()
-			.parent(advancement12)
+			.parent(advancementEntry12)
 			.display(
 				Items.WARPED_FUNGUS_ON_A_STICK,
 				Text.translatable("advancements.nether.ride_strider_in_overworld_lava.title"),
@@ -462,7 +465,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 		VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(
 				Advancement.Builder.create(), MultiNoiseBiomeSourceParameterList.Preset.NETHER.biomeStream().toList()
 			)
-			.parent(advancement12)
+			.parent(advancementEntry12)
 			.display(
 				Items.NETHERITE_BOOTS,
 				Text.translatable("advancements.nether.explore_nether.title"),
@@ -475,8 +478,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.rewards(AdvancementRewards.Builder.experience(500))
 			.build(exporter, "nether/explore_nether");
-		Advancement advancement13 = Advancement.Builder.create()
-			.parent(advancement)
+		AdvancementEntry advancementEntry13 = Advancement.Builder.create()
+			.parent(advancementEntry)
 			.display(
 				Items.POLISHED_BLACKSTONE_BRICKS,
 				Text.translatable("advancements.nether.find_bastion.title"),
@@ -490,7 +493,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion("bastion", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.BASTION_REMNANT)))
 			.build(exporter, "nether/find_bastion");
 		Advancement.Builder.create()
-			.parent(advancement13)
+			.parent(advancementEntry13)
 			.display(
 				Blocks.CHEST,
 				Text.translatable("advancements.nether.loot_bastion.title"),
@@ -501,15 +504,15 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				true,
 				false
 			)
-			.criteriaMerger(CriterionMerger.OR)
+			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.criterion("loot_bastion_other", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_other")))
 			.criterion("loot_bastion_treasure", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_treasure")))
 			.criterion("loot_bastion_hoglin_stable", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_hoglin_stable")))
 			.criterion("loot_bastion_bridge", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_bridge")))
 			.build(exporter, "nether/loot_bastion");
 		Advancement.Builder.create()
-			.parent(advancement)
-			.criteriaMerger(CriterionMerger.OR)
+			.parent(advancementEntry)
+			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.display(
 				Items.GOLD_INGOT,
 				Text.translatable("advancements.nether.distract_piglin.title"),
@@ -524,9 +527,11 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				"distract_piglin",
 				ThrownItemPickedUpByEntityCriterion.Conditions.createThrownItemPickedUpByEntity(
 					PIGLIN_DISTRACTION_PREDICATE,
-					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED).build(),
-					EntityPredicate.contextPredicateFromEntityPredicate(
-						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
+					Optional.of(ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED).build()),
+					Optional.of(
+						EntityPredicate.contextPredicateFromEntityPredicate(
+							EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
+						)
 					)
 				)
 			)
@@ -535,8 +540,10 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				PlayerInteractedWithEntityCriterion.Conditions.create(
 					Optional.of(PIGLIN_DISTRACTION_PREDICATE),
 					ItemPredicate.Builder.create().items(PiglinBrain.BARTERING_ITEM),
-					EntityPredicate.contextPredicateFromEntityPredicate(
-						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
+					Optional.of(
+						EntityPredicate.contextPredicateFromEntityPredicate(
+							EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
+						)
 					)
 				)
 			)

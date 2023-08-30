@@ -2,20 +2,13 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class StartedRidingCriterion extends AbstractCriterion<StartedRidingCriterion.Conditions> {
-	static final Identifier ID = new Identifier("started_riding");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public StartedRidingCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -27,12 +20,12 @@ public class StartedRidingCriterion extends AbstractCriterion<StartedRidingCrite
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		public Conditions(Optional<LootContextPredicate> playerPredicate) {
-			super(StartedRidingCriterion.ID, playerPredicate);
+		public Conditions(Optional<LootContextPredicate> optional) {
+			super(optional);
 		}
 
-		public static StartedRidingCriterion.Conditions create(EntityPredicate.Builder player) {
-			return new StartedRidingCriterion.Conditions(EntityPredicate.contextPredicateFromEntityPredicate(player));
+		public static AdvancementCriterion<StartedRidingCriterion.Conditions> create(EntityPredicate.Builder player) {
+			return Criteria.STARTED_RIDING.create(new StartedRidingCriterion.Conditions(Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(player))));
 		}
 	}
 }

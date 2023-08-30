@@ -6,7 +6,7 @@ import net.minecraft.util.math.random.Random;
 
 public class ConstantIntProvider extends IntProvider {
 	public static final ConstantIntProvider ZERO = new ConstantIntProvider(0);
-	public static final Codec<ConstantIntProvider> CODEC = Codecs.either(Codec.INT, Codec.INT.fieldOf("value").codec())
+	public static final Codec<ConstantIntProvider> CODEC = Codecs.alternatively(Codec.INT, Codec.INT.fieldOf("value").codec())
 		.xmap(ConstantIntProvider::new, ConstantIntProvider::getValue);
 	private final int value;
 

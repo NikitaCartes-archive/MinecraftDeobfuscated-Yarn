@@ -8,9 +8,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.Locale.Category;
 import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -101,10 +99,7 @@ public final class Window implements AutoCloseable {
 		}
 
 		GLFW.glfwMakeContextCurrent(this.handle);
-		Locale locale = Locale.getDefault(Category.FORMAT);
-		Locale.setDefault(Category.FORMAT, Locale.ROOT);
 		GL.createCapabilities();
-		Locale.setDefault(Category.FORMAT, locale);
 		this.updateWindowRegion();
 		this.updateFramebufferSize();
 		GLFW.glfwSetFramebufferSizeCallback(this.handle, this::onFramebufferSizeChanged);

@@ -17,18 +17,6 @@ public record DamagePredicate(
 	Optional<Boolean> blocked,
 	Optional<DamageSourcePredicate> source
 ) {
-	static Optional<DamagePredicate> create(
-		NumberRange.DoubleRange dealt,
-		NumberRange.DoubleRange taken,
-		Optional<EntityPredicate> sourceEntity,
-		Optional<Boolean> blocked,
-		Optional<DamageSourcePredicate> type
-	) {
-		return dealt.isDummy() && taken.isDummy() && sourceEntity.isEmpty() && blocked.isEmpty() && type.isEmpty()
-			? Optional.empty()
-			: Optional.of(new DamagePredicate(dealt, taken, sourceEntity, blocked, type));
-	}
-
 	public boolean test(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
 		if (!this.dealt.test((double)dealt)) {
 			return false;
@@ -51,7 +39,9 @@ public record DamagePredicate(
 			Optional<Boolean> optional = jsonObject.has("blocked") ? Optional.of(JsonHelper.getBoolean(jsonObject, "blocked")) : Optional.empty();
 			Optional<EntityPredicate> optional2 = EntityPredicate.fromJson(jsonObject.get("source_entity"));
 			Optional<DamageSourcePredicate> optional3 = DamageSourcePredicate.fromJson(jsonObject.get("type"));
-			return create(doubleRange, doubleRange2, optional2, optional, optional3);
+			return doubleRange.isDummy() && doubleRange2.isDummy() && optional2.isEmpty() && optional.isEmpty() && optional3.isEmpty()
+				? Optional.empty()
+				: Optional.of(new DamagePredicate(doubleRange, doubleRange2, optional2, optional, optional3));
 		} else {
 			return Optional.empty();
 		}
@@ -104,12 +94,12 @@ public record DamagePredicate(
 		}
 
 		public DamagePredicate.Builder type(DamageSourcePredicate.Builder builder) {
-			this.type = builder.build();
+			this.type = Optional.of(builder.build());
 			return this;
 		}
 
-		public Optional<DamagePredicate> build() {
-			return DamagePredicate.create(this.dealt, this.taken, this.sourceEntity, this.blocked, this.type);
+		public DamagePredicate build() {
+			return new DamagePredicate(this.dealt, this.taken, this.sourceEntity, this.blocked, this.type);
 		}
 	}
 }

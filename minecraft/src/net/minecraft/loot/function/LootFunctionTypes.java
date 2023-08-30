@@ -16,7 +16,7 @@ public class LootFunctionTypes {
 	private static final Codec<LootFunction> BASE_CODEC = Registries.LOOT_FUNCTION_TYPE
 		.getCodec()
 		.dispatch("function", LootFunction::getType, LootFunctionType::codec);
-	public static final Codec<LootFunction> CODEC = Codecs.createLazy(() -> Codecs.either(BASE_CODEC, AndFunction.field_45835));
+	public static final Codec<LootFunction> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AndFunction.field_45835));
 	public static final LootFunctionType SET_COUNT = register("set_count", SetCountLootFunction.CODEC);
 	public static final LootFunctionType ENCHANT_WITH_LEVELS = register("enchant_with_levels", EnchantWithLevelsLootFunction.CODEC);
 	public static final LootFunctionType ENCHANT_RANDOMLY = register("enchant_randomly", EnchantRandomlyLootFunction.CODEC);

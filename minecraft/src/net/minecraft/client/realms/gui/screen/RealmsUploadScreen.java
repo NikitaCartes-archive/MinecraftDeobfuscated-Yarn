@@ -48,7 +48,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private static final int field_41775 = 1;
 	private static final String[] DOTS = new String[]{"", ".", ". .", ". . ."};
 	private static final Text VERIFYING_TEXT = Text.translatable("mco.upload.verifying");
-	private final RealmsResetWorldScreen parent;
+	private final RealmsCreateWorldScreen parent;
 	private final LevelSummary selectedLevel;
 	private final long worldId;
 	private final int slotId;
@@ -70,9 +70,8 @@ public class RealmsUploadScreen extends RealmsScreen {
 	@Nullable
 	private Long previousTimeSnapshot;
 	private long bytesPerSecond;
-	private final Runnable onBack;
 
-	public RealmsUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, LevelSummary selectedLevel, Runnable onBack) {
+	public RealmsUploadScreen(long worldId, int slotId, RealmsCreateWorldScreen parent, LevelSummary selectedLevel) {
 		super(NarratorManager.EMPTY);
 		this.worldId = worldId;
 		this.slotId = slotId;
@@ -80,7 +79,6 @@ public class RealmsUploadScreen extends RealmsScreen {
 		this.selectedLevel = selectedLevel;
 		this.uploadStatus = new UploadStatus();
 		this.narrationRateLimiter = RateLimiter.create(0.1F);
-		this.onBack = onBack;
 	}
 
 	@Override
@@ -108,7 +106,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	}
 
 	private void onBack() {
-		this.onBack.run();
+		this.client.setScreen(this.parent);
 	}
 
 	private void onCancel() {

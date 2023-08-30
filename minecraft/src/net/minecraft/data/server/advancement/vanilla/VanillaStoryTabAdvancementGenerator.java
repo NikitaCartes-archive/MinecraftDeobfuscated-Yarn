@@ -2,8 +2,9 @@ package net.minecraft.data.server.advancement.vanilla;
 
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.CriterionMerger;
+import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.CuredZombieVillagerCriterion;
 import net.minecraft.advancement.criterion.EnchantedItemCriterion;
@@ -28,8 +29,8 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
-		Advancement advancement = Advancement.Builder.create()
+	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
+		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.GRASS_BLOCK,
 				Text.translatable("advancements.story.root.title"),
@@ -42,8 +43,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("crafting_table", InventoryChangedCriterion.Conditions.items(Blocks.CRAFTING_TABLE))
 			.build(exporter, "story/root");
-		Advancement advancement2 = Advancement.Builder.create()
-			.parent(advancement)
+		AdvancementEntry advancementEntry2 = Advancement.Builder.create()
+			.parent(advancementEntry)
 			.display(
 				Items.WOODEN_PICKAXE,
 				Text.translatable("advancements.story.mine_stone.title"),
@@ -56,8 +57,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.STONE_TOOL_MATERIALS)))
 			.build(exporter, "story/mine_stone");
-		Advancement advancement3 = Advancement.Builder.create()
-			.parent(advancement2)
+		AdvancementEntry advancementEntry3 = Advancement.Builder.create()
+			.parent(advancementEntry2)
 			.display(
 				Items.STONE_PICKAXE,
 				Text.translatable("advancements.story.upgrade_tools.title"),
@@ -70,8 +71,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("stone_pickaxe", InventoryChangedCriterion.Conditions.items(Items.STONE_PICKAXE))
 			.build(exporter, "story/upgrade_tools");
-		Advancement advancement4 = Advancement.Builder.create()
-			.parent(advancement3)
+		AdvancementEntry advancementEntry4 = Advancement.Builder.create()
+			.parent(advancementEntry3)
 			.display(
 				Items.IRON_INGOT,
 				Text.translatable("advancements.story.smelt_iron.title"),
@@ -84,8 +85,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("iron", InventoryChangedCriterion.Conditions.items(Items.IRON_INGOT))
 			.build(exporter, "story/smelt_iron");
-		Advancement advancement5 = Advancement.Builder.create()
-			.parent(advancement4)
+		AdvancementEntry advancementEntry5 = Advancement.Builder.create()
+			.parent(advancementEntry4)
 			.display(
 				Items.IRON_PICKAXE,
 				Text.translatable("advancements.story.iron_tools.title"),
@@ -98,8 +99,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("iron_pickaxe", InventoryChangedCriterion.Conditions.items(Items.IRON_PICKAXE))
 			.build(exporter, "story/iron_tools");
-		Advancement advancement6 = Advancement.Builder.create()
-			.parent(advancement5)
+		AdvancementEntry advancementEntry6 = Advancement.Builder.create()
+			.parent(advancementEntry5)
 			.display(
 				Items.DIAMOND,
 				Text.translatable("advancements.story.mine_diamond.title"),
@@ -112,8 +113,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("diamond", InventoryChangedCriterion.Conditions.items(Items.DIAMOND))
 			.build(exporter, "story/mine_diamond");
-		Advancement advancement7 = Advancement.Builder.create()
-			.parent(advancement4)
+		AdvancementEntry advancementEntry7 = Advancement.Builder.create()
+			.parent(advancementEntry4)
 			.display(
 				Items.LAVA_BUCKET,
 				Text.translatable("advancements.story.lava_bucket.title"),
@@ -126,8 +127,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("lava_bucket", InventoryChangedCriterion.Conditions.items(Items.LAVA_BUCKET))
 			.build(exporter, "story/lava_bucket");
-		Advancement advancement8 = Advancement.Builder.create()
-			.parent(advancement4)
+		AdvancementEntry advancementEntry8 = Advancement.Builder.create()
+			.parent(advancementEntry4)
 			.display(
 				Items.IRON_CHESTPLATE,
 				Text.translatable("advancements.story.obtain_armor.title"),
@@ -138,14 +139,14 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 				true,
 				false
 			)
-			.criteriaMerger(CriterionMerger.OR)
+			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.criterion("iron_helmet", InventoryChangedCriterion.Conditions.items(Items.IRON_HELMET))
 			.criterion("iron_chestplate", InventoryChangedCriterion.Conditions.items(Items.IRON_CHESTPLATE))
 			.criterion("iron_leggings", InventoryChangedCriterion.Conditions.items(Items.IRON_LEGGINGS))
 			.criterion("iron_boots", InventoryChangedCriterion.Conditions.items(Items.IRON_BOOTS))
 			.build(exporter, "story/obtain_armor");
 		Advancement.Builder.create()
-			.parent(advancement6)
+			.parent(advancementEntry6)
 			.display(
 				Items.ENCHANTED_BOOK,
 				Text.translatable("advancements.story.enchant_item.title"),
@@ -158,8 +159,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("enchanted_item", EnchantedItemCriterion.Conditions.any())
 			.build(exporter, "story/enchant_item");
-		Advancement advancement9 = Advancement.Builder.create()
-			.parent(advancement7)
+		AdvancementEntry advancementEntry9 = Advancement.Builder.create()
+			.parent(advancementEntry7)
 			.display(
 				Blocks.OBSIDIAN,
 				Text.translatable("advancements.story.form_obsidian.title"),
@@ -173,7 +174,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			.criterion("obsidian", InventoryChangedCriterion.Conditions.items(Blocks.OBSIDIAN))
 			.build(exporter, "story/form_obsidian");
 		Advancement.Builder.create()
-			.parent(advancement8)
+			.parent(advancementEntry8)
 			.display(
 				Items.SHIELD,
 				Text.translatable("advancements.story.deflect_arrow.title"),
@@ -192,7 +193,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.build(exporter, "story/deflect_arrow");
 		Advancement.Builder.create()
-			.parent(advancement6)
+			.parent(advancementEntry6)
 			.display(
 				Items.DIAMOND_CHESTPLATE,
 				Text.translatable("advancements.story.shiny_gear.title"),
@@ -203,14 +204,14 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 				true,
 				false
 			)
-			.criteriaMerger(CriterionMerger.OR)
+			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.criterion("diamond_helmet", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_HELMET))
 			.criterion("diamond_chestplate", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_CHESTPLATE))
 			.criterion("diamond_leggings", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_LEGGINGS))
 			.criterion("diamond_boots", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_BOOTS))
 			.build(exporter, "story/shiny_gear");
-		Advancement advancement10 = Advancement.Builder.create()
-			.parent(advancement9)
+		AdvancementEntry advancementEntry10 = Advancement.Builder.create()
+			.parent(advancementEntry9)
 			.display(
 				Items.FLINT_AND_STEEL,
 				Text.translatable("advancements.story.enter_the_nether.title"),
@@ -224,7 +225,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(World.NETHER))
 			.build(exporter, "story/enter_the_nether");
 		Advancement.Builder.create()
-			.parent(advancement10)
+			.parent(advancementEntry10)
 			.display(
 				Items.GOLDEN_APPLE,
 				Text.translatable("advancements.story.cure_zombie_villager.title"),
@@ -237,8 +238,8 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion("cured_zombie", CuredZombieVillagerCriterion.Conditions.any())
 			.build(exporter, "story/cure_zombie_villager");
-		Advancement advancement11 = Advancement.Builder.create()
-			.parent(advancement10)
+		AdvancementEntry advancementEntry11 = Advancement.Builder.create()
+			.parent(advancementEntry10)
 			.display(
 				Items.ENDER_EYE,
 				Text.translatable("advancements.story.follow_ender_eye.title"),
@@ -252,7 +253,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			.criterion("in_stronghold", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.STRONGHOLD)))
 			.build(exporter, "story/follow_ender_eye");
 		Advancement.Builder.create()
-			.parent(advancement11)
+			.parent(advancementEntry11)
 			.display(
 				Blocks.END_STONE,
 				Text.translatable("advancements.story.enter_the_end.title"),

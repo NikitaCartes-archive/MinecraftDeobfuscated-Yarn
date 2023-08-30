@@ -2,22 +2,15 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCriterion.Conditions> {
-	static final Identifier ID = new Identifier("enchanted_item");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public EnchantedItemCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -35,13 +28,13 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		private final NumberRange.IntRange levels;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, NumberRange.IntRange levels) {
-			super(EnchantedItemCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.item = item;
 			this.levels = levels;
 		}
 
-		public static EnchantedItemCriterion.Conditions any() {
-			return new EnchantedItemCriterion.Conditions(Optional.empty(), Optional.empty(), NumberRange.IntRange.ANY);
+		public static AdvancementCriterion<EnchantedItemCriterion.Conditions> any() {
+			return Criteria.ENCHANTED_ITEM.create(new EnchantedItemCriterion.Conditions(Optional.empty(), Optional.empty(), NumberRange.IntRange.ANY));
 		}
 
 		public boolean matches(ItemStack stack, int levels) {

@@ -12,6 +12,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.CraftingResultSlot;
@@ -135,8 +136,8 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 	}
 
 	@Override
-	public boolean matches(Recipe<? super RecipeInputInventory> recipe) {
-		return recipe.matches(this.craftingInput, this.owner.getWorld());
+	public boolean matches(RecipeEntry<? extends Recipe<RecipeInputInventory>> recipe) {
+		return recipe.value().matches(this.craftingInput, this.owner.getWorld());
 	}
 
 	@Override
@@ -202,7 +203,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot2.setStack(ItemStack.EMPTY);
+				slot2.setStack(ItemStack.EMPTY, itemStack);
 			} else {
 				slot2.markDirty();
 			}

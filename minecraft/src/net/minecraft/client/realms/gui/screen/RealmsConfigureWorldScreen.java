@@ -136,14 +136,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			ButtonWidget.builder(
 					Text.translatable("mco.configure.world.buttons.resetworld"),
 					button -> this.client
-							.setScreen(
-								new RealmsResetWorldScreen(
-									this,
-									this.server.clone(),
-									() -> this.client.execute(() -> this.client.setScreen(this.getNewScreen())),
-									() -> this.client.setScreen(this.getNewScreen())
-								)
-							)
+							.setScreen(RealmsCreateWorldScreen.resetWorld(this, this.server.clone(), () -> this.client.execute(() -> this.client.setScreen(this.getNewScreen()))))
 				)
 				.dimensions(this.buttonLeft(2), row(13) - 5, 90, 20)
 				.build()
@@ -351,19 +344,10 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 				new RealmsLongConfirmationScreen(
 					confirmed -> {
 						if (confirmed) {
-							RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
-								this,
-								serverData,
-								Text.translatable("mco.configure.world.switch.slot"),
-								Text.translatable("mco.configure.world.switch.slot.subtitle"),
-								-6250336,
-								ScreenTexts.CANCEL,
-								() -> this.client.execute(() -> this.client.setScreen(this.getNewScreen())),
-								() -> this.client.setScreen(this.getNewScreen())
+							RealmsCreateWorldScreen realmsCreateWorldScreen = RealmsCreateWorldScreen.newWorld(
+								this, selectedSlot, serverData, () -> this.client.execute(() -> this.client.setScreen(this.getNewScreen()))
 							);
-							realmsResetWorldScreen.setSlot(selectedSlot);
-							realmsResetWorldScreen.setResetTitle(Text.translatable("mco.create.world.reset.title"));
-							this.client.setScreen(realmsResetWorldScreen);
+							this.client.setScreen(realmsCreateWorldScreen);
 						} else {
 							this.client.setScreen(this);
 						}

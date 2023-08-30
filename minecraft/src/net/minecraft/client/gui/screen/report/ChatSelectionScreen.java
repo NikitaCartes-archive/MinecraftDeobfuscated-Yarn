@@ -21,10 +21,10 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.network.message.MessageTrustStatus;
-import net.minecraft.client.report.AbuseReportContext;
-import net.minecraft.client.report.ChatAbuseReport;
-import net.minecraft.client.report.MessagesListAdder;
-import net.minecraft.client.report.log.ReceivedMessage;
+import net.minecraft.client.session.report.AbuseReportContext;
+import net.minecraft.client.session.report.ChatAbuseReport;
+import net.minecraft.client.session.report.MessagesListAdder;
+import net.minecraft.client.session.report.log.ReceivedMessage;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
@@ -349,12 +349,8 @@ public class ChatSelectionScreen extends Screen {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				if (button == 0) {
-					SelectionListWidget.this.setSelected(null);
-					return this.toggle();
-				} else {
-					return false;
-				}
+				SelectionListWidget.this.setSelected(null);
+				return this.toggle();
 			}
 
 			@Override

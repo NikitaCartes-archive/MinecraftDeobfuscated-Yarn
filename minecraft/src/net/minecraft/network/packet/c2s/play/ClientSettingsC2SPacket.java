@@ -1,8 +1,8 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.util.Arm;
 

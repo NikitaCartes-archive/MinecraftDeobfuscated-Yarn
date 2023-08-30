@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -77,11 +78,13 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof CampfireBlockEntity campfireBlockEntity) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			Optional<CampfireCookingRecipe> optional = campfireBlockEntity.getRecipeFor(itemStack);
+			Optional<RecipeEntry<CampfireCookingRecipe>> optional = campfireBlockEntity.getRecipeFor(itemStack);
 			if (optional.isPresent()) {
 				if (!world.isClient
 					&& campfireBlockEntity.addItem(
-						player, player.getAbilities().creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime()
+						player,
+						player.getAbilities().creativeMode ? itemStack.copy() : itemStack,
+						((CampfireCookingRecipe)((RecipeEntry)optional.get()).value()).getCookingTime()
 					)) {
 					player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
 					return ActionResult.SUCCESS;

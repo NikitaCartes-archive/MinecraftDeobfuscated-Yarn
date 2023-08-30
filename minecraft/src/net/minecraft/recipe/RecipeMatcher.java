@@ -118,10 +118,9 @@ public class RecipeMatcher {
 	 * Determines the number of crafts that can be produced for a recipe using the
 	 * collected resources available to this crafter.
 	 * 
-	 * @param recipe the recipe to match against
 	 * @param output optional output list of item ids that were matched whilst evaluating the recipe conditions
 	 */
-	public int countCrafts(Recipe<?> recipe, @Nullable IntList output) {
+	public int countCrafts(RecipeEntry<?> recipe, @Nullable IntList output) {
 		return this.countCrafts(recipe, Integer.MAX_VALUE, output);
 	}
 
@@ -129,11 +128,10 @@ public class RecipeMatcher {
 	 * Determines the number of crafts that can be produced for a recipe using the
 	 * collected resources available to this crafter.
 	 * 
-	 * @param recipe the recipe to match against
 	 * @param output optional output list of item ids that were matched whilst evaluating the recipe conditions
 	 */
-	public int countCrafts(Recipe<?> recipe, int limit, @Nullable IntList output) {
-		return new RecipeMatcher.Matcher(recipe).countCrafts(limit, output);
+	public int countCrafts(RecipeEntry<?> recipe, int limit, @Nullable IntList output) {
+		return new RecipeMatcher.Matcher(recipe.value()).countCrafts(limit, output);
 	}
 
 	public static ItemStack getStackFromId(int itemId) {

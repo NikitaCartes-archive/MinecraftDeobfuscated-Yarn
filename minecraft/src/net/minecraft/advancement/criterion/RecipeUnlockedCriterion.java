@@ -2,21 +2,15 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCriterion.Conditions> {
-	static final Identifier ID = new Identifier("recipe_unlocked");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public RecipeUnlockedCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -24,19 +18,19 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 		return new RecipeUnlockedCriterion.Conditions(optional, identifier);
 	}
 
-	public void trigger(ServerPlayerEntity player, Recipe<?> recipe) {
-		this.trigger(player, conditions -> conditions.matches(recipe));
+	public void trigger(ServerPlayerEntity player, RecipeEntry<?> recipeEntry) {
+		this.trigger(player, conditions -> conditions.matches(recipeEntry));
 	}
 
-	public static RecipeUnlockedCriterion.Conditions create(Identifier id) {
-		return new RecipeUnlockedCriterion.Conditions(Optional.empty(), id);
+	public static AdvancementCriterion<RecipeUnlockedCriterion.Conditions> create(Identifier id) {
+		return Criteria.RECIPE_UNLOCKED.create(new RecipeUnlockedCriterion.Conditions(Optional.empty(), id));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Identifier recipe;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Identifier recipe) {
-			super(RecipeUnlockedCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.recipe = recipe;
 		}
 
@@ -47,8 +41,8 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 			return jsonObject;
 		}
 
-		public boolean matches(Recipe<?> recipe) {
-			return this.recipe.equals(recipe.getId());
+		public boolean matches(RecipeEntry<?> recipeEntry) {
+			return this.recipe.equals(recipeEntry.id());
 		}
 	}
 }

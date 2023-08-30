@@ -17,7 +17,6 @@ import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -251,7 +250,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return ScreenHandler.calculateComparatorOutput((Inventory)world.getBlockEntity(pos));
+		return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 
 	@Override

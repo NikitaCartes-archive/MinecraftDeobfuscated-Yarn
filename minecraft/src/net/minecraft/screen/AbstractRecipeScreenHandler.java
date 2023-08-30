@@ -3,6 +3,7 @@ package net.minecraft.screen;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.recipe.InputSlotFiller;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -12,7 +13,7 @@ public abstract class AbstractRecipeScreenHandler<C extends Inventory> extends S
 		super(screenHandlerType, i);
 	}
 
-	public void fillInputSlots(boolean craftAll, Recipe<?> recipe, ServerPlayerEntity player) {
+	public void fillInputSlots(boolean craftAll, RecipeEntry<?> recipe, ServerPlayerEntity player) {
 		new InputSlotFiller<>(this).fillInputSlots(player, recipe, craftAll);
 	}
 
@@ -20,7 +21,7 @@ public abstract class AbstractRecipeScreenHandler<C extends Inventory> extends S
 
 	public abstract void clearCraftingSlots();
 
-	public abstract boolean matches(Recipe<? super C> recipe);
+	public abstract boolean matches(RecipeEntry<? extends Recipe<C>> recipe);
 
 	public abstract int getCraftingResultSlotIndex();
 

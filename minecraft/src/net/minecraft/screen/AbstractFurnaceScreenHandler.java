@@ -8,6 +8,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
@@ -88,8 +89,8 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	}
 
 	@Override
-	public boolean matches(Recipe<? super Inventory> recipe) {
-		return recipe.matches(this.inventory, this.world);
+	public boolean matches(RecipeEntry<? extends Recipe<Inventory>> recipe) {
+		return recipe.value().matches(this.inventory, this.world);
 	}
 
 	@Override

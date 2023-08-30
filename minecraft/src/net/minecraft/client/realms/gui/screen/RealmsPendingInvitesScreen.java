@@ -56,6 +56,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
+		RealmsMainScreen.resetPendingInvitesCount();
 		this.pendingInvitationSelectionList = new RealmsPendingInvitesScreen.PendingInvitationSelectionList();
 		this.pendingInvites
 			.thenAcceptAsync(
@@ -67,14 +68,14 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 				},
 				this.executor
 			);
-		this.addSelectableChild(this.pendingInvitationSelectionList);
-		this.acceptButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.invites.button.accept"), button -> {
+		this.addDrawableChild(this.pendingInvitationSelectionList);
+		this.acceptButton = this.addDrawableChild(ButtonWidget.builder(ACCEPT_TEXT, button -> {
 			this.handle(this.selectedInvite, true);
 			this.selectedInvite = -1;
 			this.updateButtonStates();
 		}).dimensions(this.width / 2 - 174, this.height - 32, 100, 20).build());
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).dimensions(this.width / 2 - 50, this.height - 32, 100, 20).build());
-		this.rejectButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.invites.button.reject"), button -> {
+		this.rejectButton = this.addDrawableChild(ButtonWidget.builder(REJECT_TEXT, button -> {
 			this.handle(this.selectedInvite, false);
 			this.selectedInvite = -1;
 			this.updateButtonStates();
@@ -122,7 +123,6 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		this.tooltip = null;
-		this.pendingInvitationSelectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, -1);
 		if (this.tooltip != null) {
 			context.drawTooltip(this.textRenderer, this.tooltip, mouseX, mouseY);

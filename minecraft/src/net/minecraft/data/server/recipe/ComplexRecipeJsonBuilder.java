@@ -1,8 +1,7 @@
 package net.minecraft.data.server.recipe;
 
-import com.google.gson.JsonObject;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -19,27 +18,26 @@ public class ComplexRecipeJsonBuilder extends RecipeJsonBuilder {
 		return new ComplexRecipeJsonBuilder(serializer);
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeId) {
+	public void offerTo(RecipeExporter exporter, String id) {
+		this.offerTo(exporter, new Identifier(id));
+	}
+
+	public void offerTo(RecipeExporter exporter, Identifier id) {
 		exporter.accept(new RecipeJsonBuilder.CraftingRecipeJsonProvider(CraftingRecipeCategory.MISC) {
 			@Override
-			public RecipeSerializer<?> getSerializer() {
+			public RecipeSerializer<?> serializer() {
 				return ComplexRecipeJsonBuilder.this.serializer;
 			}
 
 			@Override
-			public Identifier getRecipeId() {
-				return new Identifier(recipeId);
+			public Identifier id() {
+				return id;
 			}
 
 			@Nullable
 			@Override
-			public JsonObject toAdvancementJson() {
+			public AdvancementEntry advancement() {
 				return null;
-			}
-
-			@Override
-			public Identifier getAdvancementId() {
-				return new Identifier("");
 			}
 		});
 	}

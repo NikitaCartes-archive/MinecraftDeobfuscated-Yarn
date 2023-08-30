@@ -12,7 +12,7 @@ public class LootConditionTypes {
 	private static final Codec<LootCondition> BASE_CODEC = Registries.LOOT_CONDITION_TYPE
 		.getCodec()
 		.dispatch("condition", LootCondition::getType, LootConditionType::codec);
-	public static final Codec<LootCondition> CODEC = Codecs.createLazy(() -> Codecs.either(BASE_CODEC, AllOfLootCondition.field_45858));
+	public static final Codec<LootCondition> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AllOfLootCondition.field_45858));
 	public static final LootConditionType INVERTED = register("inverted", InvertedLootCondition.CODEC);
 	public static final LootConditionType ANY_OF = register("any_of", AnyOfLootCondition.CODEC);
 	public static final LootConditionType ALL_OF = register("all_of", AllOfLootCondition.CODEC);

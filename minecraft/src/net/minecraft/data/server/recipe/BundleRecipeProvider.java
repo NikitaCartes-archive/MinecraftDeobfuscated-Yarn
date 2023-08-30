@@ -1,6 +1,5 @@
 package net.minecraft.data.server.recipe;
 
-import java.util.function.Consumer;
 import net.minecraft.data.DataOutput;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
@@ -11,7 +10,7 @@ public class BundleRecipeProvider extends RecipeProvider {
 	}
 
 	@Override
-	protected void generate(Consumer<RecipeJsonProvider> exporter) {
+	protected void generate(RecipeExporter exporter) {
 		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.BUNDLE)
 			.input('#', Items.RABBIT_HIDE)
 			.input('-', Items.STRING)

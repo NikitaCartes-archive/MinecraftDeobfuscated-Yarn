@@ -16,7 +16,7 @@ public class RealmsLoadingWidget extends ClickableWidget {
 	private final TextRenderer textRenderer;
 
 	public RealmsLoadingWidget(TextRenderer textRenderer, Text message) {
-		super(0, 0, textRenderer.getWidth(message), 9 * 2, message);
+		super(0, 0, textRenderer.getWidth(message), 9 * 3, message);
 		this.textRenderer = textRenderer;
 	}
 
@@ -27,7 +27,7 @@ public class RealmsLoadingWidget extends ClickableWidget {
 		Text text = this.getMessage();
 		context.drawText(this.textRenderer, text, i - this.textRenderer.getWidth(text) / 2, j - 9, -1, false);
 		String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
-		context.drawText(this.textRenderer, string, i - this.textRenderer.getWidth(string) / 2, j, -8355712, false);
+		context.drawText(this.textRenderer, string, i - this.textRenderer.getWidth(string) / 2, j + 9, -8355712, false);
 	}
 
 	@Override

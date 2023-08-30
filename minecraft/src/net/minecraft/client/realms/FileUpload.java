@@ -20,7 +20,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.dto.UploadInfo;
 import net.minecraft.client.realms.gui.screen.UploadResult;
-import net.minecraft.client.util.Session;
+import net.minecraft.client.session.Session;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;

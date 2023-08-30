@@ -17,6 +17,7 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	private static final Text RESET_SEED_TEXT = Text.translatable("mco.reset.world.seed");
+	public static final Text TITLE = Text.translatable("mco.reset.world.generate");
 	private static final int field_45278 = 10;
 	private static final int field_45279 = 210;
 	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
@@ -27,7 +28,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	private final Text parentTitle;
 
 	public RealmsResetNormalWorldScreen(Consumer<ResetWorldInfo> callback, Text parentTitle) {
-		super(Text.translatable("mco.reset.world.generate"));
+		super(TITLE);
 		this.callback = callback;
 		this.parentTitle = parentTitle;
 	}

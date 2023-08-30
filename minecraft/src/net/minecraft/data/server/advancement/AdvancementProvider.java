@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
@@ -32,12 +32,12 @@ public class AdvancementProvider implements DataProvider {
 		return this.registryLookupFuture.thenCompose(lookup -> {
 			Set<Identifier> set = new HashSet();
 			List<CompletableFuture<?>> list = new ArrayList();
-			Consumer<Advancement> consumer = advancement -> {
-				if (!set.add(advancement.getId())) {
-					throw new IllegalStateException("Duplicate advancement " + advancement.getId());
+			Consumer<AdvancementEntry> consumer = advancement -> {
+				if (!set.add(advancement.id())) {
+					throw new IllegalStateException("Duplicate advancement " + advancement.id());
 				} else {
-					Path path = this.pathResolver.resolveJson(advancement.getId());
-					list.add(DataProvider.writeToPath(writer, advancement.createTask().toJson(), path));
+					Path path = this.pathResolver.resolveJson(advancement.id());
+					list.add(DataProvider.writeToPath(writer, advancement.value().toJson(), path));
 				}
 			};
 

@@ -103,8 +103,7 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 		}
 
 		public Optional<StatePredicate> build() {
-			ImmutableList<StatePredicate.Condition> immutableList = this.conditions.build();
-			return immutableList.isEmpty() ? Optional.empty() : Optional.of(new StatePredicate(immutableList));
+			return Optional.of(new StatePredicate(this.conditions.build()));
 		}
 	}
 

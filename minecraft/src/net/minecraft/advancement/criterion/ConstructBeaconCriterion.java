@@ -2,20 +2,13 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconCriterion.Conditions> {
-	static final Identifier ID = new Identifier("construct_beacon");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public ConstructBeaconCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -31,16 +24,16 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 		private final NumberRange.IntRange level;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, NumberRange.IntRange level) {
-			super(ConstructBeaconCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.level = level;
 		}
 
-		public static ConstructBeaconCriterion.Conditions create() {
-			return new ConstructBeaconCriterion.Conditions(Optional.empty(), NumberRange.IntRange.ANY);
+		public static AdvancementCriterion<ConstructBeaconCriterion.Conditions> create() {
+			return Criteria.CONSTRUCT_BEACON.create(new ConstructBeaconCriterion.Conditions(Optional.empty(), NumberRange.IntRange.ANY));
 		}
 
-		public static ConstructBeaconCriterion.Conditions level(NumberRange.IntRange level) {
-			return new ConstructBeaconCriterion.Conditions(Optional.empty(), level);
+		public static AdvancementCriterion<ConstructBeaconCriterion.Conditions> level(NumberRange.IntRange level) {
+			return Criteria.CONSTRUCT_BEACON.create(new ConstructBeaconCriterion.Conditions(Optional.empty(), level));
 		}
 
 		public boolean matches(int level) {

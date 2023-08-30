@@ -3,6 +3,7 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.loot.context.LootContext;
@@ -10,16 +11,8 @@ import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion.Conditions> {
-	static final Identifier ID = new Identifier("bred_animals");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public BredAnimalsCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -47,27 +40,37 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 			Optional<LootContextPredicate> partnerPredicate,
 			Optional<LootContextPredicate> childPredicate
 		) {
-			super(BredAnimalsCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.parent = parentPredicate;
 			this.partner = partnerPredicate;
 			this.child = childPredicate;
 		}
 
-		public static BredAnimalsCriterion.Conditions any() {
-			return new BredAnimalsCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+		public static AdvancementCriterion<BredAnimalsCriterion.Conditions> any() {
+			return Criteria.BRED_ANIMALS.create(new BredAnimalsCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 		}
 
-		public static BredAnimalsCriterion.Conditions create(EntityPredicate.Builder child) {
-			return new BredAnimalsCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(child));
+		public static AdvancementCriterion<BredAnimalsCriterion.Conditions> create(EntityPredicate.Builder child) {
+			return Criteria.BRED_ANIMALS
+				.create(
+					new BredAnimalsCriterion.Conditions(
+						Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(child))
+					)
+				);
 		}
 
-		public static BredAnimalsCriterion.Conditions create(Optional<EntityPredicate> parent, Optional<EntityPredicate> partner, Optional<EntityPredicate> child) {
-			return new BredAnimalsCriterion.Conditions(
-				Optional.empty(),
-				EntityPredicate.contextPredicateFromEntityPredicate(parent),
-				EntityPredicate.contextPredicateFromEntityPredicate(partner),
-				EntityPredicate.contextPredicateFromEntityPredicate(child)
-			);
+		public static AdvancementCriterion<BredAnimalsCriterion.Conditions> create(
+			Optional<EntityPredicate> parent, Optional<EntityPredicate> partner, Optional<EntityPredicate> child
+		) {
+			return Criteria.BRED_ANIMALS
+				.create(
+					new BredAnimalsCriterion.Conditions(
+						Optional.empty(),
+						EntityPredicate.contextPredicateFromEntityPredicate(parent),
+						EntityPredicate.contextPredicateFromEntityPredicate(partner),
+						EntityPredicate.contextPredicateFromEntityPredicate(child)
+					)
+				);
 		}
 
 		public boolean matches(LootContext parentContext, LootContext partnerContext, @Nullable LootContext childContext) {

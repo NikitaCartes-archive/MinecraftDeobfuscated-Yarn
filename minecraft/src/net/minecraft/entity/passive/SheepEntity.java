@@ -44,6 +44,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -352,7 +353,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		return (DyeColor)this.getWorld()
 			.getRecipeManager()
 			.getFirstMatch(RecipeType.CRAFTING, recipeInputInventory, this.getWorld())
-			.map(recipe -> recipe.craft(recipeInputInventory, this.getWorld().getRegistryManager()))
+			.map(recipeEntry -> ((CraftingRecipe)recipeEntry.value()).craft(recipeInputInventory, this.getWorld().getRegistryManager()))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)

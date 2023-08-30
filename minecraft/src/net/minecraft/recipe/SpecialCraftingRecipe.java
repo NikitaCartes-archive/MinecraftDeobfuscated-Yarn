@@ -3,20 +3,12 @@ package net.minecraft.recipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 
 public abstract class SpecialCraftingRecipe implements CraftingRecipe {
-	private final Identifier id;
 	private final CraftingRecipeCategory category;
 
-	public SpecialCraftingRecipe(Identifier id, CraftingRecipeCategory category) {
-		this.id = id;
+	public SpecialCraftingRecipe(CraftingRecipeCategory category) {
 		this.category = category;
-	}
-
-	@Override
-	public Identifier getId() {
-		return this.id;
 	}
 
 	@Override
@@ -25,7 +17,7 @@ public abstract class SpecialCraftingRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getOutput(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(DynamicRegistryManager registryManager) {
 		return ItemStack.EMPTY;
 	}
 

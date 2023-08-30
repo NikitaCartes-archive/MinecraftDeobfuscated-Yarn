@@ -16,6 +16,7 @@ import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.control.BodyControl;
+import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -76,6 +77,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		super(entityType, world);
 		this.setStepHeight(1.5F);
 		this.moveControl = new CamelEntity.CamelMoveControl();
+		this.lookControl = new CamelEntity.CamelLookControl();
 		MobNavigation mobNavigation = (MobNavigation)this.getNavigation();
 		mobNavigation.setCanSwim(true);
 		mobNavigation.setCanWalkOverFences(true);
@@ -460,12 +462,6 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	@Override
-	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
-		super.updatePassengerPosition(passenger, positionUpdater);
-		this.clampPassengerYaw(passenger);
-	}
-
-	@Override
 	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
 		int i = Math.max(this.getPassengerList().indexOf(passenger), 0);
 		boolean bl = i == 0;
@@ -527,24 +523,6 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		EntityDimensions entityDimensions = this.getDimensions(this.getPose());
 		float f = this.getScaleFactor();
 		return new Vec3d(0.0, this.method_45346(true, tickDelta, entityDimensions, f) - (double)(0.2F * f), (double)(entityDimensions.width * 0.56F));
-	}
-
-	@Override
-	public void onPassengerLookAround(Entity passenger) {
-		if (this.getControllingPassenger() != passenger) {
-			this.clampPassengerYaw(passenger);
-		}
-	}
-
-	private void clampPassengerYaw(Entity passenger) {
-		passenger.setBodyYaw(this.getYaw());
-		float f = passenger.getYaw();
-		float g = MathHelper.wrapDegrees(f - this.getYaw());
-		float h = MathHelper.clamp(g, -160.0F, 160.0F);
-		passenger.prevYaw += h - g;
-		float i = f + h - g;
-		passenger.setYaw(i);
-		passenger.setHeadYaw(i);
 	}
 
 	private void clampHeadYaw(Entity entity, float range) {
@@ -640,11 +618,6 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	@Override
-	protected BodyControl createBodyControl() {
-		return new CamelEntity.CamelBodyControl(this);
-	}
-
-	@Override
 	public boolean isTame() {
 		return true;
 	}
@@ -656,6 +629,11 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		}
 	}
 
+	@Override
+	protected BodyControl createBodyControl() {
+		return new CamelEntity.CamelBodyControl(this);
+	}
+
 	class CamelBodyControl extends BodyControl {
 		public CamelBodyControl(CamelEntity camel) {
 			super(camel);
@@ -664,6 +642,19 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		@Override
 		public void tick() {
 			if (!CamelEntity.this.isStationary()) {
+				super.tick();
+			}
+		}
+	}
+
+	class CamelLookControl extends LookControl {
+		CamelLookControl() {
+			super(CamelEntity.this);
+		}
+
+		@Override
+		public void tick() {
+			if (!CamelEntity.this.hasControllingPassenger()) {
 				super.tick();
 			}
 		}

@@ -3,7 +3,7 @@ package net.minecraft.network.packet.c2s.play;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -11,9 +11,9 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final Identifier recipe;
 	private final boolean craftAll;
 
-	public CraftRequestC2SPacket(int syncId, Recipe<?> recipe, boolean craftAll) {
+	public CraftRequestC2SPacket(int syncId, RecipeEntry<?> recipe, boolean craftAll) {
 		this.syncId = syncId;
-		this.recipe = recipe.getId();
+		this.recipe = recipe.id();
 		this.craftAll = craftAll;
 	}
 

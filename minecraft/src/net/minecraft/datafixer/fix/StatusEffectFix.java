@@ -167,6 +167,11 @@ public class StatusEffectFix extends DataFix {
 		});
 	}
 
+	private TypeRewriteRule makePlayersRule() {
+		Type<?> type = this.getInputSchema().getType(TypeReferences.PLAYER);
+		return this.fixTypeEverywhereTyped("PlayerMobEffectIdFix", type, typed -> typed.update(DSL.remainderFinder(), StatusEffectFix::fixActiveEffectsKey));
+	}
+
 	private static <T> Dynamic<T> method_53106(Dynamic<T> dynamic) {
 		Optional<Dynamic<T>> optional = dynamic.get("Effects").asStreamOpt().result().map(stream -> dynamic.createList(stream.map(StatusEffectFix::method_53095)));
 		return renameKey(dynamic, "Effects", "effects", optional);
@@ -203,6 +208,6 @@ public class StatusEffectFix extends DataFix {
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		return TypeRewriteRule.seq(this.makeBlockEntitiesRule(), this.makeEntitiesRule(), this.makeItemStacksRule());
+		return TypeRewriteRule.seq(this.makeBlockEntitiesRule(), this.makeEntitiesRule(), this.makePlayersRule(), this.makeItemStacksRule());
 	}
 }

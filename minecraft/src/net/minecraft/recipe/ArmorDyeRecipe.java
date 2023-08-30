@@ -9,12 +9,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class ArmorDyeRecipe extends SpecialCraftingRecipe {
-	public ArmorDyeRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
-		super(identifier, craftingRecipeCategory);
+	public ArmorDyeRecipe(CraftingRecipeCategory craftingRecipeCategory) {
+		super(craftingRecipeCategory);
 	}
 
 	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {

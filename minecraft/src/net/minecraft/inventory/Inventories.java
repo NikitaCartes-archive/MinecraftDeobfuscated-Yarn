@@ -38,7 +38,7 @@ public class Inventories {
 	 * @apiNote This is used to implement {@link Inventory#removeStack(int)}.
 	 * This should not otherwise be used directly.
 	 * 
-	 * @returns the stack previously at {@code slot}
+	 * @return the stack previously at {@code slot}
 	 */
 	public static ItemStack removeStack(List<ItemStack> stacks, int slot) {
 		return slot >= 0 && slot < stacks.size() ? (ItemStack)stacks.set(slot, ItemStack.EMPTY) : ItemStack.EMPTY;

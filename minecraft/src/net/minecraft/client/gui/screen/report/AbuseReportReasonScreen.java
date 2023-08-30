@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.report.AbuseReportReason;
+import net.minecraft.client.session.report.AbuseReportReason;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nullables;
@@ -169,12 +169,8 @@ public class AbuseReportReasonScreen extends Screen {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				if (button == 0) {
-					ReasonListWidget.this.setSelected(this);
-					return true;
-				} else {
-					return false;
-				}
+				ReasonListWidget.this.setSelected(this);
+				return true;
 			}
 
 			public AbuseReportReason getReason() {

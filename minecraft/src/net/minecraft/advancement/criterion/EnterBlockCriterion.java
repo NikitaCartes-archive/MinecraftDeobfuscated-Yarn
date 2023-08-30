@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.predicate.StatePredicate;
@@ -15,13 +16,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.Conditions> {
-	static final Identifier ID = new Identifier("enter_block");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public EnterBlockCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -56,13 +50,13 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		private final Optional<StatePredicate> state;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable Block block, Optional<StatePredicate> state) {
-			super(EnterBlockCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.block = block;
 			this.state = state;
 		}
 
-		public static EnterBlockCriterion.Conditions block(Block block) {
-			return new EnterBlockCriterion.Conditions(Optional.empty(), block, Optional.empty());
+		public static AdvancementCriterion<EnterBlockCriterion.Conditions> block(Block block) {
+			return Criteria.ENTER_BLOCK.create(new EnterBlockCriterion.Conditions(Optional.empty(), block, Optional.empty()));
 		}
 
 		@Override

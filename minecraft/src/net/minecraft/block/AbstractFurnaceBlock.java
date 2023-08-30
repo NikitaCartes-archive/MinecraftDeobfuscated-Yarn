@@ -72,10 +72,11 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 					((AbstractFurnaceBlockEntity)blockEntity).getRecipesUsedAndDropExperience((ServerWorld)world, Vec3d.ofCenter(pos));
 				}
 
+				super.onStateReplaced(state, world, pos, newState, moved);
 				world.updateComparators(pos, this);
+			} else {
+				super.onStateReplaced(state, world, pos, newState, moved);
 			}
-
-			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 

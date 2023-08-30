@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
@@ -49,13 +49,16 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		return CompletableFuture.allOf(
 			super.run(writer),
 			this.saveRecipeAdvancement(
-				writer, CraftingRecipeJsonBuilder.ROOT, Advancement.Builder.createUntelemetered().criterion("impossible", new ImpossibleCriterion.Conditions())
+				writer,
+				Advancement.Builder.createUntelemetered()
+					.criterion("impossible", Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
+					.build(CraftingRecipeJsonBuilder.ROOT)
 			)
 		);
 	}
 
 	@Override
-	protected void generate(Consumer<RecipeJsonProvider> exporter) {
+	protected void generate(RecipeExporter exporter) {
 		generateFamilies(exporter, FeatureSet.of(FeatureFlags.VANILLA));
 		offerPlanksRecipe2(exporter, Blocks.ACACIA_PLANKS, ItemTags.ACACIA_LOGS, 4);
 		offerPlanksRecipe(exporter, Blocks.BIRCH_PLANKS, ItemTags.BIRCH_LOGS, 4);
@@ -544,7 +547,12 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("###")
 			.criterion(
 				"has_lots_of_items",
-				new InventoryChangedCriterion.Conditions(Optional.empty(), NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, List.of())
+				Criteria.INVENTORY_CHANGED
+					.create(
+						new InventoryChangedCriterion.Conditions(
+							Optional.empty(), NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, List.of()
+						)
+					)
 			)
 			.offerTo(exporter);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.TRANSPORTATION, Items.CHEST_MINECART)

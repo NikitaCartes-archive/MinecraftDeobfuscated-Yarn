@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.predicate.StatePredicate;
@@ -15,13 +16,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCriterion.Conditions> {
-	static final Identifier ID = new Identifier("slide_down_block");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public SlideDownBlockCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -56,13 +50,13 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 		private final Optional<StatePredicate> state;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable Block block, Optional<StatePredicate> state) {
-			super(SlideDownBlockCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.block = block;
 			this.state = state;
 		}
 
-		public static SlideDownBlockCriterion.Conditions create(Block block) {
-			return new SlideDownBlockCriterion.Conditions(Optional.empty(), block, Optional.empty());
+		public static AdvancementCriterion<SlideDownBlockCriterion.Conditions> create(Block block) {
+			return Criteria.SLIDE_DOWN_BLOCK.create(new SlideDownBlockCriterion.Conditions(Optional.empty(), block, Optional.empty()));
 		}
 
 		@Override

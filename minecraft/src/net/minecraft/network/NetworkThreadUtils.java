@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.thread.ThreadExecutor;
 import org.slf4j.Logger;
 
@@ -20,12 +21,12 @@ public class NetworkThreadUtils {
 				if (listener.accepts(packet)) {
 					try {
 						packet.apply(listener);
-					} catch (Exception var3) {
-						if (listener.shouldCrashOnException()) {
-							throw var3;
+					} catch (Exception var4) {
+						if (var4 instanceof CrashException crashException && crashException.getCause() instanceof OutOfMemoryError || listener.shouldCrashOnException()) {
+							throw var4;
 						}
 
-						LOGGER.error("Failed to handle packet {}, suppressing error", packet, var3);
+						LOGGER.error("Failed to handle packet {}, suppressing error", packet, var4);
 					}
 				} else {
 					LOGGER.debug("Ignoring packet due to disconnection: {}", packet);

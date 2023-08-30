@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.ResourceIndex;
-import net.minecraft.client.util.Session;
+import net.minecraft.client.session.Session;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)

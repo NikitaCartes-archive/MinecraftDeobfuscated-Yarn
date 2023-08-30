@@ -2,22 +2,15 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.Conditions> {
-	static final Identifier ID = new Identifier("tame_animal");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public TameAnimalCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -34,16 +27,17 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		private final Optional<LootContextPredicate> entity;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> entity) {
-			super(TameAnimalCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.entity = entity;
 		}
 
-		public static TameAnimalCriterion.Conditions any() {
-			return new TameAnimalCriterion.Conditions(Optional.empty(), Optional.empty());
+		public static AdvancementCriterion<TameAnimalCriterion.Conditions> any() {
+			return Criteria.TAME_ANIMAL.create(new TameAnimalCriterion.Conditions(Optional.empty(), Optional.empty()));
 		}
 
-		public static TameAnimalCriterion.Conditions create(Optional<EntityPredicate> entity) {
-			return new TameAnimalCriterion.Conditions(Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity));
+		public static AdvancementCriterion<TameAnimalCriterion.Conditions> create(EntityPredicate.Builder builder) {
+			return Criteria.TAME_ANIMAL
+				.create(new TameAnimalCriterion.Conditions(Optional.empty(), Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(builder))));
 		}
 
 		public boolean matches(LootContext entity) {

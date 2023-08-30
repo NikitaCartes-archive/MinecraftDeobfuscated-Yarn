@@ -9,12 +9,11 @@ import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
-	public SuspiciousStewRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
-		super(identifier, craftingRecipeCategory);
+	public SuspiciousStewRecipe(CraftingRecipeCategory craftingRecipeCategory) {
+		super(craftingRecipeCategory);
 	}
 
 	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {

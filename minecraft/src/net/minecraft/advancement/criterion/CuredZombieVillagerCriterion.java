@@ -2,6 +2,7 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.loot.context.LootContext;
@@ -9,16 +10,8 @@ import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieVillagerCriterion.Conditions> {
-	static final Identifier ID = new Identifier("cured_zombie_villager");
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
 	public CuredZombieVillagerCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
@@ -38,13 +31,13 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 		private final Optional<LootContextPredicate> villager;
 
 		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> zombie, Optional<LootContextPredicate> villager) {
-			super(CuredZombieVillagerCriterion.ID, playerPredicate);
+			super(playerPredicate);
 			this.zombie = zombie;
 			this.villager = villager;
 		}
 
-		public static CuredZombieVillagerCriterion.Conditions any() {
-			return new CuredZombieVillagerCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.empty());
+		public static AdvancementCriterion<CuredZombieVillagerCriterion.Conditions> any() {
+			return Criteria.CURED_ZOMBIE_VILLAGER.create(new CuredZombieVillagerCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.empty()));
 		}
 
 		public boolean matches(LootContext zombie, LootContext villager) {

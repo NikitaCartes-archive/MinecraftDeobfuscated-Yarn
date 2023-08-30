@@ -20,9 +20,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.report.log.ChatLog;
-import net.minecraft.client.report.log.ChatLogEntry;
-import net.minecraft.client.report.log.ReceivedMessage;
+import net.minecraft.client.session.report.log.ChatLog;
+import net.minecraft.client.session.report.log.ChatLogEntry;
+import net.minecraft.client.session.report.log.ReceivedMessage;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsPlayerListWidget extends ElementListWidget<SocialInteractionsPlayerListEntry> {

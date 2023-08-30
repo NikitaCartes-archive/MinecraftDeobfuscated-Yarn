@@ -11,13 +11,13 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookGhostSlots {
 	@Nullable
-	private Recipe<?> recipe;
+	private RecipeEntry<?> recipe;
 	private final List<RecipeBookGhostSlots.GhostInputSlot> slots = Lists.<RecipeBookGhostSlots.GhostInputSlot>newArrayList();
 	float time;
 
@@ -40,11 +40,11 @@ public class RecipeBookGhostSlots {
 	}
 
 	@Nullable
-	public Recipe<?> getRecipe() {
+	public RecipeEntry<?> getRecipe() {
 		return this.recipe;
 	}
 
-	public void setRecipe(Recipe<?> recipe) {
+	public void setRecipe(RecipeEntry<?> recipe) {
 		this.recipe = recipe;
 	}
 

@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -40,11 +40,11 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	}
 
 	@Override
-	public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
-		ItemStack itemStack = recipe.getOutput(this.client.world.getRegistryManager());
+	public void showGhostRecipe(RecipeEntry<?> recipe, List<Slot> slots) {
+		ItemStack itemStack = recipe.value().getResult(this.client.world.getRegistryManager());
 		this.ghostSlots.setRecipe(recipe);
 		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(2)).x, ((Slot)slots.get(2)).y);
-		DefaultedList<Ingredient> defaultedList = recipe.getIngredients();
+		DefaultedList<Ingredient> defaultedList = recipe.value().getIngredients();
 		Slot slot = (Slot)slots.get(1);
 		if (slot.getStack().isEmpty()) {
 			if (this.fuels == null) {

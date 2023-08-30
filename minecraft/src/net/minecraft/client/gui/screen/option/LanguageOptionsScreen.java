@@ -133,18 +133,13 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				if (button == 0) {
-					this.onPressed();
-					if (Util.getMeasuringTimeMs() - this.clickTime < 250L) {
-						LanguageOptionsScreen.this.onDone();
-					}
-
-					this.clickTime = Util.getMeasuringTimeMs();
-					return true;
-				} else {
-					this.clickTime = Util.getMeasuringTimeMs();
-					return false;
+				this.onPressed();
+				if (Util.getMeasuringTimeMs() - this.clickTime < 250L) {
+					LanguageOptionsScreen.this.onDone();
 				}
+
+				this.clickTime = Util.getMeasuringTimeMs();
+				return true;
 			}
 
 			void onPressed() {

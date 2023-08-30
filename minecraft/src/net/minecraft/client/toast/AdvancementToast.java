@@ -3,8 +3,8 @@ package net.minecraft.client.toast;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -17,16 +17,16 @@ import net.minecraft.util.math.MathHelper;
 public class AdvancementToast implements Toast {
 	private static final Identifier TEXTURE = new Identifier("toast/advancement");
 	public static final int DEFAULT_DURATION_MS = 5000;
-	private final Advancement advancement;
+	private final AdvancementEntry advancement;
 	private boolean soundPlayed;
 
-	public AdvancementToast(Advancement advancement) {
+	public AdvancementToast(AdvancementEntry advancement) {
 		this.advancement = advancement;
 	}
 
 	@Override
 	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
-		AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
+		AdvancementDisplay advancementDisplay = (AdvancementDisplay)this.advancement.value().display().orElse(null);
 		context.drawGuiTexture(TEXTURE, 0, 0, this.getWidth(), this.getHeight());
 		if (advancementDisplay != null) {
 			List<OrderedText> list = manager.getClient().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
