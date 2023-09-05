@@ -118,6 +118,8 @@ import org.slf4j.Logger;
 public abstract class PlayerEntity extends LivingEntity {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int field_30643 = 16;
+	public static final Arm DEFAULT_MAIN_ARM = Arm.RIGHT;
+	public static final int field_46175 = 0;
 	public static final int field_30644 = 20;
 	public static final int field_30645 = 100;
 	public static final int field_30646 = 10;
@@ -214,7 +216,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.dataTracker.startTracking(ABSORPTION_AMOUNT, 0.0F);
 		this.dataTracker.startTracking(SCORE, 0);
 		this.dataTracker.startTracking(PLAYER_MODEL_PARTS, (byte)0);
-		this.dataTracker.startTracking(MAIN_ARM, (byte)1);
+		this.dataTracker.startTracking(MAIN_ARM, (byte)DEFAULT_MAIN_ARM.getId());
 		this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new NbtCompound());
 		this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new NbtCompound());
 	}

@@ -15,7 +15,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NbtByte;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtLong;
+import net.minecraft.nbt.NbtShort;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -329,7 +335,7 @@ public class CommandFunction {
 						throw new MacroException(Text.translatable("commands.function.error.missing_argument", this.getId(), string));
 					}
 
-					list.add(arguments.get(string).asString());
+					list.add(toString(arguments.get(string)));
 				}
 
 				CommandFunction commandFunction = this.cache.getAndMoveToLast(list);
@@ -347,6 +353,20 @@ public class CommandFunction {
 
 					return commandFunction2;
 				}
+			}
+		}
+
+		private static String toString(NbtElement nbt) {
+			if (nbt instanceof NbtFloat nbtFloat) {
+				return String.valueOf(nbtFloat.floatValue());
+			} else if (nbt instanceof NbtDouble nbtDouble) {
+				return String.valueOf(nbtDouble.doubleValue());
+			} else if (nbt instanceof NbtByte nbtByte) {
+				return String.valueOf(nbtByte.byteValue());
+			} else if (nbt instanceof NbtShort nbtShort) {
+				return String.valueOf(nbtShort.shortValue());
+			} else {
+				return nbt instanceof NbtLong nbtLong ? String.valueOf(nbtLong.longValue()) : nbt.asString();
 			}
 		}
 

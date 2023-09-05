@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
@@ -15,7 +14,6 @@ import net.minecraft.resource.SynchronousResourceReloader;
 public class SearchManager implements SynchronousResourceReloader {
 	public static final SearchManager.Key<ItemStack> ITEM_TOOLTIP = new SearchManager.Key<>();
 	public static final SearchManager.Key<ItemStack> ITEM_TAG = new SearchManager.Key<>();
-	public static final SearchManager.Key<RecipeResultCollection> RECIPE_OUTPUT = new SearchManager.Key<>();
 	private final Map<SearchManager.Key<?>, SearchManager.Instance<?>> instances = new HashMap();
 
 	@Override

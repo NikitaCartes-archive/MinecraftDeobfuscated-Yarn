@@ -1,6 +1,8 @@
 package net.minecraft.util;
 
 import com.mojang.serialization.Codec;
+import java.util.function.IntFunction;
+import net.minecraft.util.function.ValueLists;
 
 /**
  * An enum representing an entity's arm.
@@ -12,6 +14,7 @@ public enum Arm implements TranslatableOption, StringIdentifiable {
 	RIGHT(1, "right", "options.mainHand.right");
 
 	public static final Codec<Arm> CODEC = StringIdentifiable.createCodec(Arm::values);
+	public static final IntFunction<Arm> BY_ID = ValueLists.createIdToValueFunction(Arm::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
 	private final int id;
 	private final String name;
 	private final String translationKey;

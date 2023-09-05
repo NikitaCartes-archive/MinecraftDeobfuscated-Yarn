@@ -1000,18 +1000,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			return false;
 		} else {
 			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)this.activeStatusEffects.get(effect.getEffectType());
+			boolean bl = false;
 			if (statusEffectInstance == null) {
 				this.activeStatusEffects.put(effect.getEffectType(), effect);
 				this.onStatusEffectApplied(effect, source);
-				effect.onApplied(this);
-				return true;
+				bl = true;
 			} else if (statusEffectInstance.upgrade(effect)) {
 				this.onStatusEffectUpgraded(statusEffectInstance, true, source);
-				effect.onApplied(this);
-				return true;
-			} else {
-				return false;
+				bl = true;
 			}
+
+			effect.onApplied(this);
+			return bl;
 		}
 	}
 
@@ -2899,6 +2899,31 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.serverYaw = (double)yaw;
 		this.serverPitch = (double)pitch;
 		this.bodyTrackingIncrements = interpolationSteps;
+	}
+
+	@Override
+	public double getLerpTargetX() {
+		return this.serverX;
+	}
+
+	@Override
+	public double getLerpTargetY() {
+		return this.serverY;
+	}
+
+	@Override
+	public double getLerpTargetZ() {
+		return this.serverZ;
+	}
+
+	@Override
+	public float getLerpTargetPitch() {
+		return (float)this.serverPitch;
+	}
+
+	@Override
+	public float getLerpTargetYaw() {
+		return (float)this.serverYaw;
 	}
 
 	@Override

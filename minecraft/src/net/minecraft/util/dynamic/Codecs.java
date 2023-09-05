@@ -57,6 +57,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
@@ -143,6 +144,8 @@ public class Codecs {
 			return DataResult.error(() -> "Malformed base64 string");
 		}
 	}, data -> Base64.getEncoder().encodeToString(data));
+	public static final Codec<String> ESCAPED_STRING = Codec.STRING
+		.comapFlatMap(string -> DataResult.success(StringEscapeUtils.unescapeJava(string)), StringEscapeUtils::escapeJava);
 	public static final Codec<Codecs.TagEntryId> TAG_ENTRY_ID = Codec.STRING
 		.comapFlatMap(
 			tagEntry -> tagEntry.startsWith("#")
@@ -358,8 +361,8 @@ public class Codecs {
 		return new Codecs.Either<>(first, second);
 	}
 
-	public static <K, V> Codecs.StrictUnboundedMap<K, V> strictUnboundedMap(Codec<K> keyCodec, Codec<V> elementCodec) {
-		return new Codecs.StrictUnboundedMap<>(keyCodec, elementCodec);
+	public static <K, V> Codecs.StrictUnboundedMapCodec<K, V> strictUnboundedMap(Codec<K> keyCodec, Codec<V> elementCodec) {
+		return new Codecs.StrictUnboundedMapCodec<>(keyCodec, elementCodec);
 	}
 
 	public static <T> Codec<T> validate(Codec<T> codec, Function<T, DataResult<T>> validator) {
@@ -630,7 +633,7 @@ public class Codecs {
 		}
 	}
 
-	public static record StrictUnboundedMap<K, V>(Codec<K> keyCodec, Codec<V> elementCodec) implements Codec<Map<K, V>>, BaseMapCodec<K, V> {
+	public static record StrictUnboundedMapCodec<K, V>(Codec<K> keyCodec, Codec<V> elementCodec) implements Codec<Map<K, V>>, BaseMapCodec<K, V> {
 		@Override
 		public <T> DataResult<Map<K, V>> decode(DynamicOps<T> ops, MapLike<T> input) {
 			Builder<K, V> builder = ImmutableMap.builder();
@@ -667,7 +670,7 @@ public class Codecs {
 
 		@Override
 		public <T> DataResult<Pair<Map<K, V>, T>> decode(DynamicOps<T> ops, T input) {
-			return ops.getMap(input).setLifecycle(Lifecycle.stable()).flatMap(mapLike -> this.decode(ops, mapLike)).map(map -> Pair.of(map, input));
+			return ops.getMap(input).setLifecycle(Lifecycle.stable()).flatMap(map -> this.decode(ops, map)).map(map -> Pair.of(map, input));
 		}
 
 		public <T> DataResult<T> encode(Map<K, V> map, DynamicOps<T> dynamicOps, T object) {

@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 public class TitleScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String DEMO_WORLD_NAME = "Demo_World";
-	public static final Text COPYRIGHT = Text.literal("Copyright Mojang AB. Do not distribute!");
+	public static final Text COPYRIGHT = Text.translatable("title.credits");
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	@Nullable

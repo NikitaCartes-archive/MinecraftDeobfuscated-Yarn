@@ -759,6 +759,31 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
+	public double getLerpTargetX() {
+		return this.clientX;
+	}
+
+	@Override
+	public double getLerpTargetY() {
+		return this.clientY;
+	}
+
+	@Override
+	public double getLerpTargetZ() {
+		return this.clientZ;
+	}
+
+	@Override
+	public float getLerpTargetPitch() {
+		return (float)this.clientPitch;
+	}
+
+	@Override
+	public float getLerpTargetYaw() {
+		return (float)this.clientYaw;
+	}
+
+	@Override
 	public void setVelocityClient(double x, double y, double z) {
 		this.clientVelocity = new Vec3d(x, y, z);
 		this.setVelocity(this.clientVelocity);

@@ -1,7 +1,7 @@
 package net.minecraft.entity.passive;
 
-import com.google.common.collect.Sets;
-import java.util.Set;
+import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
@@ -226,22 +226,14 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	protected abstract void fillRecipes();
 
 	protected void fillRecipesFromPool(TradeOfferList recipeList, TradeOffers.Factory[] pool, int count) {
-		Set<Integer> set = Sets.<Integer>newHashSet();
-		if (pool.length > count) {
-			while (set.size() < count) {
-				set.add(this.random.nextInt(pool.length));
-			}
-		} else {
-			for (int i = 0; i < pool.length; i++) {
-				set.add(i);
-			}
-		}
+		ArrayList<TradeOffers.Factory> arrayList = Lists.newArrayList(pool);
+		int i = 0;
 
-		for (Integer integer : set) {
-			TradeOffers.Factory factory = pool[integer];
-			TradeOffer tradeOffer = factory.create(this, this.random);
+		while (i < count && !arrayList.isEmpty()) {
+			TradeOffer tradeOffer = ((TradeOffers.Factory)arrayList.remove(this.random.nextInt(arrayList.size()))).create(this, this.random);
 			if (tradeOffer != null) {
 				recipeList.add(tradeOffer);
+				i++;
 			}
 		}
 	}

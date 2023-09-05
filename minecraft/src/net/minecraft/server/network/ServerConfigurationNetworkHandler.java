@@ -10,7 +10,9 @@ import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ServerConfigurationPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.BrandCustomPayload;
+import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
@@ -35,10 +37,12 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 	private final Queue<ServerPlayerConfigurationTask> tasks = new ConcurrentLinkedQueue();
 	@Nullable
 	private ServerPlayerConfigurationTask currentTask;
+	private SyncedClientOptions syncedOptions;
 
-	public ServerConfigurationNetworkHandler(MinecraftServer server, ClientConnection connection, GameProfile profile) {
-		super(server, connection, 0);
-		this.profile = profile;
+	public ServerConfigurationNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection, ConnectedClientData connectedClientData) {
+		super(minecraftServer, clientConnection, connectedClientData);
+		this.profile = connectedClientData.gameProfile();
+		this.syncedOptions = connectedClientData.syncedOptions();
 	}
 
 	@Override
@@ -82,6 +86,11 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 	}
 
 	@Override
+	public void onClientOptions(ClientOptionsC2SPacket packet) {
+		this.syncedOptions = packet.options();
+	}
+
+	@Override
 	public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
 		super.onResourcePackStatus(packet);
 		if (packet.getStatus() != ResourcePackStatusC2SPacket.Status.ACCEPTED) {
@@ -108,8 +117,8 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 				return;
 			}
 
-			ServerPlayerEntity serverPlayerEntity = playerManager.createPlayer(this.profile);
-			playerManager.onPlayerConnect(this.connection, serverPlayerEntity, this.getLatency());
+			ServerPlayerEntity serverPlayerEntity = playerManager.createPlayer(this.profile, this.syncedOptions);
+			playerManager.onPlayerConnect(this.connection, serverPlayerEntity, this.createClientData(this.syncedOptions));
 			this.connection.enableAutoRead();
 		} catch (Exception var5) {
 			LOGGER.error("Couldn't place player in world", (Throwable)var5);

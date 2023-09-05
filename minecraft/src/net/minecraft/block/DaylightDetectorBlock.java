@@ -72,7 +72,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 				return ActionResult.SUCCESS;
 			} else {
 				BlockState blockState = state.cycle(INVERTED);
-				world.setBlockState(pos, blockState, Block.NO_REDRAW);
+				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 				world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, blockState));
 				updateState(blockState, world, pos);
 				return ActionResult.CONSUME;

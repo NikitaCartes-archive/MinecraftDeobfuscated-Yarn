@@ -20,7 +20,7 @@ import net.minecraft.util.dynamic.Codecs;
  * <p>Users cannot generate the keys themselves; this must be provided from Mojang's
  * authentication server.
  * 
- * @see net.minecraft.client.util.ProfileKeys
+ * @see net.minecraft.client.session.ProfileKeys
  * @see PlayerKeyPair
  */
 public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {

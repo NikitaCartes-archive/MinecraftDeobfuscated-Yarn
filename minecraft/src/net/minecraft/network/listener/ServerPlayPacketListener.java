@@ -10,7 +10,6 @@ import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
@@ -66,8 +65,6 @@ public interface ServerPlayPacketListener extends ServerQueryPingPacketListener,
 	void onMessageAcknowledgment(MessageAcknowledgmentC2SPacket packet);
 
 	void onClientStatus(ClientStatusC2SPacket packet);
-
-	void onClientSettings(ClientSettingsC2SPacket packet);
 
 	void onButtonClick(ButtonClickC2SPacket packet);
 

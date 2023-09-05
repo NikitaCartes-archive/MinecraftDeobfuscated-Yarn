@@ -81,6 +81,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedCommandArguments;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
 import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
@@ -90,7 +91,6 @@ import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
@@ -227,8 +227,8 @@ public class ServerPlayNetworkHandler
 	private final MessageChainTaskQueue messageChainTaskQueue;
 	private boolean requestedReconfiguration;
 
-	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, int latency) {
-		super(server, connection, latency);
+	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData) {
+		super(server, connection, clientData);
 		this.chunkDataSender = new ChunkDataSender(connection.isLocal());
 		connection.setPacketListener(this);
 		this.player = player;
@@ -1203,7 +1203,7 @@ public class ServerPlayNetworkHandler
 		}
 
 		SignedCommandArguments signedCommandArguments = new SignedCommandArguments.Impl(map);
-		parseResults = CommandManager.withCommandSource(parseResults, source -> source.withSignedArguments(signedCommandArguments));
+		parseResults = CommandManager.withCommandSource(parseResults, source -> source.withSignedArguments(signedCommandArguments, this.messageChainTaskQueue));
 		this.server.getCommandManager().execute(parseResults, packet.command());
 	}
 
@@ -1667,9 +1667,9 @@ public class ServerPlayNetworkHandler
 	}
 
 	@Override
-	public void onClientSettings(ClientSettingsC2SPacket packet) {
+	public void onClientOptions(ClientOptionsC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		this.player.setClientSettings(packet);
+		this.player.setClientOptions(packet.options());
 	}
 
 	@Override
@@ -1719,7 +1719,8 @@ public class ServerPlayNetworkHandler
 		if (!this.requestedReconfiguration) {
 			throw new IllegalStateException("Client acknowledged config, but none was requested");
 		} else {
-			this.connection.setPacketListener(new ServerConfigurationNetworkHandler(this.server, this.connection, this.getProfile()));
+			this.connection
+				.setPacketListener(new ServerConfigurationNetworkHandler(this.server, this.connection, this.createClientData(this.player.getClientOptions())));
 		}
 	}
 

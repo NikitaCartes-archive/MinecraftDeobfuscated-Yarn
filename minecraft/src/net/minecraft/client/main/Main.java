@@ -47,6 +47,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -144,9 +145,9 @@ public class Main {
 		String string7 = optionSet.valueOf(optionSpec15);
 		String string8 = optionSet.valueOf(optionSpec16);
 		String string9 = getOption(optionSet, optionSpec2);
-		String string10 = getOption(optionSet, optionSpec3);
-		String string11 = getOption(optionSet, optionSpec4);
-		String string12 = getOption(optionSet, optionSpec5);
+		String string10 = unescape(getOption(optionSet, optionSpec3));
+		String string11 = unescape(getOption(optionSet, optionSpec4));
+		String string12 = unescape(getOption(optionSet, optionSpec5));
 		if (optionSet.has(optionSpec)) {
 			FlightProfiler.INSTANCE.start(InstanceType.CLIENT);
 		}
@@ -242,6 +243,11 @@ public class Main {
 		} finally {
 			minecraftClient.stop();
 		}
+	}
+
+	@Nullable
+	private static String unescape(@Nullable String string) {
+		return string == null ? null : StringEscapeUtils.unescapeJava(string);
 	}
 
 	private static Optional<String> toOptional(String string) {

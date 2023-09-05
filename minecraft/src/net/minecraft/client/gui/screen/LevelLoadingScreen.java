@@ -62,13 +62,12 @@ public class LevelLoadingScreen extends Screen {
 		if (this.done) {
 			builder.put(NarrationPart.TITLE, Text.translatable("narrator.loading.done"));
 		} else {
-			String string = this.getPercentage();
-			builder.put(NarrationPart.TITLE, string);
+			builder.put(NarrationPart.TITLE, this.getPercentage());
 		}
 	}
 
-	private String getPercentage() {
-		return MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%";
+	private Text getPercentage() {
+		return Text.translatable("loading.progress", MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100));
 	}
 
 	@Override

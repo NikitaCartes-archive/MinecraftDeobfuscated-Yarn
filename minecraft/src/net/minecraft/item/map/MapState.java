@@ -490,7 +490,7 @@ public class MapState extends PersistentState {
 
 	public boolean hasMonumentIcon() {
 		for (MapIcon mapIcon : this.icons.values()) {
-			if (mapIcon.type() == MapIcon.Type.MANSION || mapIcon.type() == MapIcon.Type.MONUMENT) {
+			if (mapIcon.type().isStructure()) {
 				return true;
 			}
 		}

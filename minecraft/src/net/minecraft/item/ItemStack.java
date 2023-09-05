@@ -976,7 +976,7 @@ public final class ItemStack {
 		if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP)) {
 			Integer integer = FilledMapItem.getMapId(this);
 			if (integer != null) {
-				list.add(Text.literal("#" + integer).formatted(Formatting.GRAY));
+				list.add(FilledMapItem.getIdText(this));
 			}
 		}
 

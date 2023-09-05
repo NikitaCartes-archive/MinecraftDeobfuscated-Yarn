@@ -267,7 +267,6 @@ public class RenderLayers {
 		map.put(Blocks.SCULK_VEIN, renderLayer3);
 		map.put(Blocks.SCULK_SHRIEKER, renderLayer3);
 		map.put(Blocks.MANGROVE_PROPAGULE, renderLayer3);
-		map.put(Blocks.MANGROVE_LOG, renderLayer3);
 		map.put(Blocks.FROGSPAWN, renderLayer3);
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		map.put(Blocks.ICE, renderLayer4);

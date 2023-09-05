@@ -108,7 +108,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private static final int field_29674 = 200;
 	private static final int field_36291 = 20;
 	private static final int field_36384 = 10000;
-	private static final int field_29675 = 2;
+	public static final int DEFAULT_VIEW_DISTANCE = 2;
 	public static final int field_29669 = 32;
 	public static final int field_29670 = ChunkLevels.getLevelFromType(ChunkLevelType.ENTITY_TICKING);
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> currentChunkHolders = new Long2ObjectLinkedOpenHashMap<>();
@@ -869,7 +869,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	int getViewDistance(ServerPlayerEntity player) {
-		return MathHelper.clamp(player.getViewDistance().orElse(2), 2, this.watchDistance);
+		return MathHelper.clamp(player.getViewDistance(), 2, this.watchDistance);
 	}
 
 	private void track(ServerPlayerEntity player, ChunkPos pos) {

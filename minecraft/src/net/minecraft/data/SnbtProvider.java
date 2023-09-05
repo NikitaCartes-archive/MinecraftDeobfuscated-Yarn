@@ -13,8 +13,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
-import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
@@ -23,8 +21,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 public class SnbtProvider implements DataProvider {
-	@Nullable
-	private static final Path DEBUG_OUTPUT_DIRECTORY = null;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final DataOutput output;
 	private final Iterable<Path> paths;
@@ -114,7 +110,7 @@ public class SnbtProvider implements DataProvider {
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
 
-			SnbtProvider.CompressedData var11;
+			SnbtProvider.CompressedData var10;
 			try {
 				String string = IOUtils.toString(bufferedReader);
 				NbtCompound nbtCompound = this.write(name, NbtHelper.fromNbtProviderString(string));
@@ -123,47 +119,30 @@ public class SnbtProvider implements DataProvider {
 				NbtIo.writeCompressed(nbtCompound, hashingOutputStream);
 				byte[] bs = byteArrayOutputStream.toByteArray();
 				HashCode hashCode = hashingOutputStream.hash();
-				String string2;
-				if (DEBUG_OUTPUT_DIRECTORY != null) {
-					string2 = NbtHelper.toNbtProviderString(nbtCompound);
-				} else {
-					string2 = null;
-				}
-
-				var11 = new SnbtProvider.CompressedData(name, bs, string2, hashCode);
-			} catch (Throwable var13) {
+				var10 = new SnbtProvider.CompressedData(name, bs, hashCode);
+			} catch (Throwable var12) {
 				if (bufferedReader != null) {
 					try {
 						bufferedReader.close();
-					} catch (Throwable var12) {
-						var13.addSuppressed(var12);
+					} catch (Throwable var11) {
+						var12.addSuppressed(var11);
 					}
 				}
 
-				throw var13;
+				throw var12;
 			}
 
 			if (bufferedReader != null) {
 				bufferedReader.close();
 			}
 
-			return var11;
-		} catch (Throwable var14) {
-			throw new SnbtProvider.CompressionException(path, var14);
+			return var10;
+		} catch (Throwable var13) {
+			throw new SnbtProvider.CompressionException(path, var13);
 		}
 	}
 
 	private void write(DataWriter cache, SnbtProvider.CompressedData data, Path root) {
-		if (data.snbtContent != null) {
-			Path path = DEBUG_OUTPUT_DIRECTORY.resolve(data.name + ".snbt");
-
-			try {
-				NbtProvider.writeTo(DataWriter.UNCACHED, path, data.snbtContent);
-			} catch (IOException var7) {
-				LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, var7);
-			}
-		}
-
 		Path path = root.resolve(data.name + ".nbt");
 
 		try {
@@ -173,7 +152,7 @@ public class SnbtProvider implements DataProvider {
 		}
 	}
 
-	static record CompressedData(String name, byte[] bytes, @Nullable String snbtContent, HashCode sha1) {
+	static record CompressedData(String name, byte[] bytes, HashCode sha1) {
 	}
 
 	static class CompressionException extends RuntimeException {

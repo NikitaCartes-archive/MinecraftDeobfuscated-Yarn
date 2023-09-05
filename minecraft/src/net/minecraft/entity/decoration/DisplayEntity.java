@@ -298,6 +298,31 @@ public abstract class DisplayEntity extends Entity {
 	}
 
 	@Override
+	public double getLerpTargetX() {
+		return this.interpolationTarget != null ? this.interpolationTarget.x : this.getX();
+	}
+
+	@Override
+	public double getLerpTargetY() {
+		return this.interpolationTarget != null ? this.interpolationTarget.y : this.getY();
+	}
+
+	@Override
+	public double getLerpTargetZ() {
+		return this.interpolationTarget != null ? this.interpolationTarget.z : this.getZ();
+	}
+
+	@Override
+	public float getLerpTargetPitch() {
+		return this.interpolationTarget != null ? (float)this.interpolationTarget.pitch : this.getPitch();
+	}
+
+	@Override
+	public float getLerpTargetYaw() {
+		return this.interpolationTarget != null ? (float)this.interpolationTarget.yaw : this.getYaw();
+	}
+
+	@Override
 	public Box getVisibilityBoundingBox() {
 		return this.visibilityBoundingBox;
 	}
@@ -626,11 +651,11 @@ public abstract class DisplayEntity extends Entity {
 
 	static class InterpolationTarget {
 		int step;
-		private final double x;
-		private final double y;
-		private final double z;
-		private final double yaw;
-		private final double pitch;
+		final double x;
+		final double y;
+		final double z;
+		final double yaw;
+		final double pitch;
 
 		InterpolationTarget(int step, double x, double y, double z, double yaw, double pitch) {
 			this.step = step;

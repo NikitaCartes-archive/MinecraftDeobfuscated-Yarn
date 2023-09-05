@@ -161,10 +161,9 @@ public class MultiplayerServerListPinger {
 	}
 
 	public static Text createPlayerCountText(int current, int max) {
-		return Text.literal(Integer.toString(current))
-			.append(Text.literal("/").formatted(Formatting.DARK_GRAY))
-			.append(Integer.toString(max))
-			.formatted(Formatting.GRAY);
+		Text text = Text.literal(Integer.toString(current)).formatted(Formatting.GRAY);
+		Text text2 = Text.literal(Integer.toString(max)).formatted(Formatting.GRAY);
+		return Text.translatable("multiplayer.status.player_count", text, text2).formatted(Formatting.DARK_GRAY);
 	}
 
 	public void tick() {

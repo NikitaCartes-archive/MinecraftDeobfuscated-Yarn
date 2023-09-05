@@ -409,6 +409,31 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	@Override
+	public double getLerpTargetX() {
+		return this.getX();
+	}
+
+	@Override
+	public double getLerpTargetY() {
+		return this.getY();
+	}
+
+	@Override
+	public double getLerpTargetZ() {
+		return this.getZ();
+	}
+
+	@Override
+	public float getLerpTargetPitch() {
+		return this.getPitch();
+	}
+
+	@Override
+	public float getLerpTargetYaw() {
+		return this.getYaw();
+	}
+
+	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isClosed()) {
 			Entity entity = source.getSource();

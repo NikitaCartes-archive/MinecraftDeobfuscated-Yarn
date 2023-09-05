@@ -901,21 +901,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					)
 			);
 		this.searchManager.put(SearchManager.ITEM_TAG, stacks -> new IdentifierSearchProvider(stack -> stack.streamTags().map(TagKey::id), stacks));
-		this.searchManager
-			.put(
-				SearchManager.RECIPE_OUTPUT,
-				resultCollections -> new TextSearchProvider(
-						resultCollection -> resultCollection.getAllRecipes()
-								.stream()
-								.flatMap(recipeEntry -> recipeEntry.value().getResult(resultCollection.getRegistryManager()).getTooltip(null, TooltipContext.Default.BASIC).stream())
-								.map(text -> Formatting.strip(text.getString()).trim())
-								.filter(text -> !text.isEmpty()),
-						resultCollection -> resultCollection.getAllRecipes()
-								.stream()
-								.map(recipeEntry -> Registries.ITEM.getId(recipeEntry.value().getResult(resultCollection.getRegistryManager()).getItem())),
-						resultCollections
-					)
-			);
 		ItemGroups.getSearchGroup().setSearchProviderReloader(stacks -> {
 			this.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, stacks);
 			this.reloadSearchProvider(SearchManager.ITEM_TAG, stacks);

@@ -127,10 +127,10 @@ public class OptimizeWorldScreen extends Screen {
 			}
 
 			int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-			context.drawCenteredTextWithShadow(this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * 9 + 2, 10526880);
-			context.drawCenteredTextWithShadow(
-				this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880
-			);
+			Text text = Text.translatable("optimizeWorld.progress.counter", o, this.updater.getTotalChunkCount());
+			Text text2 = Text.translatable("optimizeWorld.progress.percentage", MathHelper.floor(this.updater.getProgress() * 100.0F));
+			context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, k + 2 * 9 + 2, 10526880);
+			context.drawCenteredTextWithShadow(this.textRenderer, text2, this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880);
 		}
 	}
 }

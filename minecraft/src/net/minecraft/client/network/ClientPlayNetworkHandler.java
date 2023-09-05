@@ -52,7 +52,6 @@ import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.VillageSectionsDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
-import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.session.ProfileKeys;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
@@ -334,6 +333,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
 	private final PingMeasurer pingMeasurer;
 	private boolean displayedUnsecureChatWarning = false;
+	private volatile boolean worldCleared;
 
 	public ClientPlayNetworkHandler(MinecraftClient client, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
 		super(client, clientConnection, clientConnectionState);
@@ -350,6 +350,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	public void clearWorld() {
+		this.worldCleared = true;
 		this.world = null;
 		this.worldSession.onUnload();
 	}
@@ -407,11 +408,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.client.setScreen(new DownloadingTerrainScreen());
 		this.client.player.setReducedDebugInfo(packet.reducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showDeathScreen());
+		this.client.player.setLimitedCraftingEnabled(packet.doLimitedCrafting());
 		this.client.player.setLastDeathPos(commonPlayerSpawnInfo.lastDeathLocation());
 		this.client.player.setPortalCooldown(commonPlayerSpawnInfo.portalCooldown());
 		this.client.interactionManager.setGameModes(commonPlayerSpawnInfo.gameMode(), commonPlayerSpawnInfo.prevGameMode());
 		this.client.options.setServerViewDistance(packet.viewDistance());
-		this.client.options.sendClientSettings();
 		this.session = null;
 		this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 		this.signatureStorage = MessageSignatureStorage.create();
@@ -544,13 +545,13 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 					TrackedPosition trackedPosition = entity.getTrackedPosition();
 					Vec3d vec3d = trackedPosition.withDelta((long)packet.getDeltaX(), (long)packet.getDeltaY(), (long)packet.getDeltaZ());
 					trackedPosition.setPos(vec3d);
-					float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0F : entity.getYaw();
-					float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0F : entity.getPitch();
+					float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0F : entity.getLerpTargetYaw();
+					float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0F : entity.getLerpTargetPitch();
 					entity.updateTrackedPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), f, g, 3);
 				} else if (packet.hasRotation()) {
 					float h = (float)(packet.getYaw() * 360) / 256.0F;
 					float i = (float)(packet.getPitch() * 360) / 256.0F;
-					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, i, 3);
+					entity.updateTrackedPositionAndAngles(entity.getLerpTargetX(), entity.getLerpTargetY(), entity.getLerpTargetZ(), h, i, 3);
 				}
 
 				entity.setOnGround(packet.isOnGround());
@@ -1327,6 +1328,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			}
 		} else if (reason == GameStateChangeS2CPacket.IMMEDIATE_RESPAWN) {
 			this.client.player.setShowsDeathScreen(f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN);
+		} else if (reason == GameStateChangeS2CPacket.LIMITED_CRAFTING_TOGGLED) {
+			this.client.player.setLimitedCraftingEnabled(f == 1.0F);
 		}
 	}
 
@@ -1400,7 +1403,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.recipeManager.setRecipes(packet.getRecipes());
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
 		clientRecipeBook.reload(this.recipeManager.values(), this.client.world.getRegistryManager());
-		this.client.reloadSearchProvider(SearchManager.RECIPE_OUTPUT, clientRecipeBook.getOrderedResults());
 	}
 
 	@Override
@@ -2196,7 +2198,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	@Override
 	public boolean isConnectionOpen() {
-		return this.connection.isOpen();
+		return this.connection.isOpen() && !this.worldCleared;
 	}
 
 	public Collection<PlayerListEntry> getListedPlayerListEntries() {

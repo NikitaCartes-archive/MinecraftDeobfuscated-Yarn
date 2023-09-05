@@ -32,7 +32,7 @@ public class BannedPlayerEntry extends BanEntry<GameProfile> {
 	@Override
 	public Text toText() {
 		GameProfile gameProfile = this.getKey();
-		return Text.literal(gameProfile != null ? gameProfile.getName() : "(Unknown)");
+		return gameProfile != null ? Text.literal(gameProfile.getName()) : Text.translatable("commands.banlist.entry.unknown");
 	}
 
 	@Nullable

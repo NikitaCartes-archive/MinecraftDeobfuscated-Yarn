@@ -10,7 +10,7 @@ class AbsorptionStatusEffect extends StatusEffect {
 	@Override
 	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
 		super.applyUpdateEffect(entity, amplifier);
-		if (entity.getAbsorptionAmount() <= 0.0F) {
+		if (entity.getAbsorptionAmount() <= 0.0F && !entity.getWorld().isClient) {
 			entity.removeStatusEffect(this);
 		}
 	}
@@ -23,6 +23,6 @@ class AbsorptionStatusEffect extends StatusEffect {
 	@Override
 	public void onApplied(LivingEntity entity, int amplifier) {
 		super.onApplied(entity, amplifier);
-		entity.setAbsorptionAmount(entity.getAbsorptionAmount() + (float)(4 * (1 + amplifier)));
+		entity.setAbsorptionAmount(Math.max(entity.getAbsorptionAmount(), (float)(4 * (1 + amplifier))));
 	}
 }

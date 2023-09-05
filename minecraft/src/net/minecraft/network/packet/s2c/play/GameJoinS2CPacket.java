@@ -18,6 +18,7 @@ public record GameJoinS2CPacket(
 	int simulationDistance,
 	boolean reducedDebugInfo,
 	boolean showDeathScreen,
+	boolean doLimitedCrafting,
 	CommonPlayerSpawnInfo commonPlayerSpawnInfo
 ) implements Packet<ClientPlayPacketListener> {
 	public GameJoinS2CPacket(PacketByteBuf buf) {
@@ -28,6 +29,7 @@ public record GameJoinS2CPacket(
 			buf.readVarInt(),
 			buf.readVarInt(),
 			buf.readVarInt(),
+			buf.readBoolean(),
 			buf.readBoolean(),
 			buf.readBoolean(),
 			new CommonPlayerSpawnInfo(buf)
@@ -44,6 +46,7 @@ public record GameJoinS2CPacket(
 		buf.writeVarInt(this.simulationDistance);
 		buf.writeBoolean(this.reducedDebugInfo);
 		buf.writeBoolean(this.showDeathScreen);
+		buf.writeBoolean(this.doLimitedCrafting);
 		this.commonPlayerSpawnInfo.write(buf);
 	}
 

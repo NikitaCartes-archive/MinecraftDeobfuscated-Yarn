@@ -39,6 +39,13 @@ public class VanillaStructureTagProvider extends TagProvider<Structure> {
 		this.getOrCreateTagBuilder(StructureTags.DOLPHIN_LOCATED).addTag(StructureTags.OCEAN_RUIN).addTag(StructureTags.SHIPWRECK);
 		this.getOrCreateTagBuilder(StructureTags.ON_WOODLAND_EXPLORER_MAPS).add(StructureKeys.MANSION);
 		this.getOrCreateTagBuilder(StructureTags.ON_OCEAN_EXPLORER_MAPS).add(StructureKeys.MONUMENT);
+		this.getOrCreateTagBuilder(StructureTags.ON_SAVANNA_VILLAGE_MAPS).add(StructureKeys.VILLAGE_SAVANNA);
+		this.getOrCreateTagBuilder(StructureTags.ON_DESERT_VILLAGE_MAPS).add(StructureKeys.VILLAGE_DESERT);
+		this.getOrCreateTagBuilder(StructureTags.ON_PLAINS_VILLAGE_MAPS).add(StructureKeys.VILLAGE_PLAINS);
+		this.getOrCreateTagBuilder(StructureTags.ON_TAIGA_VILLAGE_MAPS).add(StructureKeys.VILLAGE_TAIGA);
+		this.getOrCreateTagBuilder(StructureTags.ON_SNOWY_VILLAGE_MAPS).add(StructureKeys.VILLAGE_SNOWY);
+		this.getOrCreateTagBuilder(StructureTags.ON_SWAMP_EXPLORER_MAPS).add(StructureKeys.SWAMP_HUT);
+		this.getOrCreateTagBuilder(StructureTags.ON_JUNGLE_EXPLORER_MAPS).add(StructureKeys.JUNGLE_PYRAMID);
 		this.getOrCreateTagBuilder(StructureTags.ON_TREASURE_MAPS).add(StructureKeys.BURIED_TREASURE);
 	}
 }

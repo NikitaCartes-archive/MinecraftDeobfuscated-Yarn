@@ -116,7 +116,19 @@ public class GameRules {
 		"doWeatherCycle", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true)
 	);
 	public static final GameRules.Key<GameRules.BooleanRule> DO_LIMITED_CRAFTING = register(
-		"doLimitedCrafting", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
+		"doLimitedCrafting",
+		GameRules.Category.PLAYER,
+		GameRules.BooleanRule.create(
+			false,
+			(server, rule) -> {
+				for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
+					serverPlayerEntity.networkHandler
+						.sendPacket(
+							new GameStateChangeS2CPacket(GameStateChangeS2CPacket.LIMITED_CRAFTING_TOGGLED, rule.get() ? 1.0F : GameStateChangeS2CPacket.DEMO_OPEN_SCREEN)
+						);
+				}
+			}
+		)
 	);
 	public static final GameRules.Key<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register(
 		"maxCommandChainLength", GameRules.Category.MISC, GameRules.IntRule.create(65536)
@@ -145,10 +157,12 @@ public class GameRules {
 		GameRules.Category.PLAYER,
 		GameRules.BooleanRule.create(
 			false,
-			(server, rule) -> {
-				for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
+			(minecraftServer, booleanRule) -> {
+				for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
 					serverPlayerEntity.networkHandler
-						.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, rule.get() ? 1.0F : GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
+						.sendPacket(
+							new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, booleanRule.get() ? 1.0F : GameStateChangeS2CPacket.DEMO_OPEN_SCREEN)
+						);
 				}
 			}
 		)
@@ -202,6 +216,9 @@ public class GameRules {
 	);
 	public static final GameRules.Key<GameRules.BooleanRule> DO_VINES_SPREAD = register(
 		"doVinesSpread", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true)
+	);
+	public static final GameRules.Key<GameRules.BooleanRule> ENDER_PEARLS_VANISH_ON_DEATH = register(
+		"enderPearlsVanishOnDeath", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
 	private final Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
 

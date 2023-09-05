@@ -100,9 +100,9 @@ public class DispenserBlock extends BlockWithEntity {
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		if (bl && !bl2) {
 			world.scheduleBlockTick(pos, this, 4);
-			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), Block.NO_REDRAW);
+			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 		} else if (!bl && bl2) {
-			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(false)), Block.NO_REDRAW);
+			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(false)), Block.NOTIFY_LISTENERS);
 		}
 	}
 

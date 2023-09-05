@@ -37,6 +37,7 @@ import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
@@ -232,8 +233,9 @@ public class TestContext {
 		forRemoval = true
 	)
 	public ServerPlayerEntity createMockCreativeServerPlayerInWorld() {
+		ConnectedClientData connectedClientData = ConnectedClientData.createDefault(new GameProfile(UUID.randomUUID(), "test-mock-player"));
 		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(
-			this.getWorld().getServer(), this.getWorld(), new GameProfile(UUID.randomUUID(), "test-mock-player")
+			this.getWorld().getServer(), this.getWorld(), connectedClientData.gameProfile(), connectedClientData.syncedOptions()
 		) {
 			@Override
 			public boolean isSpectator() {
@@ -248,7 +250,7 @@ public class TestContext {
 		ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
 		EmbeddedChannel embeddedChannel = new EmbeddedChannel(clientConnection);
 		embeddedChannel.attr(ClientConnection.SERVERBOUND_PROTOCOL_KEY).set(NetworkState.PLAY.getHandler(NetworkSide.SERVERBOUND));
-		this.getWorld().getServer().getPlayerManager().onPlayerConnect(clientConnection, serverPlayerEntity, 0);
+		this.getWorld().getServer().getPlayerManager().onPlayerConnect(clientConnection, serverPlayerEntity, connectedClientData);
 		return serverPlayerEntity;
 	}
 

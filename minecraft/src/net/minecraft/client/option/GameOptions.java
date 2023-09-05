@@ -59,7 +59,8 @@ import net.minecraft.client.util.Window;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.message.ChatVisibility;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.screen.ScreenTexts;
@@ -1517,6 +1518,25 @@ public class GameOptions {
 		this.sendClientSettings();
 	}
 
+	public SyncedClientOptions getSyncedOptions() {
+		int i = 0;
+
+		for (PlayerModelPart playerModelPart : this.enabledPlayerModelParts) {
+			i |= playerModelPart.getBitFlag();
+		}
+
+		return new SyncedClientOptions(
+			this.language,
+			this.viewDistance.getValue(),
+			this.chatVisibility.getValue(),
+			this.chatColors.getValue(),
+			i,
+			this.mainArm.getValue(),
+			this.client.shouldFilterText(),
+			this.allowServerListing.getValue()
+		);
+	}
+
 	/**
 	 * Sends the current client settings to the server if the client is
 	 * connected to a server.
@@ -1526,27 +1546,7 @@ public class GameOptions {
 	 */
 	public void sendClientSettings() {
 		if (this.client.player != null) {
-			int i = 0;
-
-			for (PlayerModelPart playerModelPart : this.enabledPlayerModelParts) {
-				i |= playerModelPart.getBitFlag();
-			}
-
-			this.client
-				.player
-				.networkHandler
-				.sendPacket(
-					new ClientSettingsC2SPacket(
-						this.language,
-						this.viewDistance.getValue(),
-						this.chatVisibility.getValue(),
-						this.chatColors.getValue(),
-						i,
-						this.mainArm.getValue(),
-						this.client.shouldFilterText(),
-						this.allowServerListing.getValue()
-					)
-				);
+			this.client.player.networkHandler.sendPacket(new ClientOptionsC2SPacket(this.getSyncedOptions()));
 		}
 	}
 

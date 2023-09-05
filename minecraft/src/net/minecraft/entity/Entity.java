@@ -2779,6 +2779,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setRotation(yaw, pitch);
 	}
 
+	public double getLerpTargetX() {
+		return this.getX();
+	}
+
+	public double getLerpTargetY() {
+		return this.getY();
+	}
+
+	public double getLerpTargetZ() {
+		return this.getZ();
+	}
+
+	public float getLerpTargetPitch() {
+		return this.getPitch();
+	}
+
+	public float getLerpTargetYaw() {
+		return this.getYaw();
+	}
+
 	public void updateTrackedHeadRotation(float yaw, int interpolationSteps) {
 		this.setHeadYaw(yaw);
 	}

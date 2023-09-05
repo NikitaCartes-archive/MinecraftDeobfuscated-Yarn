@@ -76,7 +76,7 @@ public class SmithingTransformRecipeJsonBuilder {
 	}
 
 	public static record SmithingTransformRecipeJsonProvider(
-		Identifier id, RecipeSerializer<?> type, Ingredient template, Ingredient base, Ingredient addition, Item result, AdvancementEntry advancement
+		Identifier id, RecipeSerializer<?> serializer, Ingredient template, Ingredient base, Ingredient addition, Item result, AdvancementEntry advancement
 	) implements RecipeJsonProvider {
 		@Override
 		public void serialize(JsonObject json) {
@@ -86,11 +86,6 @@ public class SmithingTransformRecipeJsonBuilder {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("item", Registries.ITEM.getId(this.result).toString());
 			json.add("result", jsonObject);
-		}
-
-		@Override
-		public RecipeSerializer<?> serializer() {
-			return this.type;
 		}
 	}
 }

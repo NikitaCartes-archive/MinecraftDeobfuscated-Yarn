@@ -97,7 +97,7 @@ public class QuickPlayLogger {
 		public static final MapCodec<QuickPlayLogger.QuickPlayWorld> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						QuickPlayLogger.WorldType.CODEC.fieldOf("type").forGetter(QuickPlayLogger.QuickPlayWorld::type),
-						Codec.STRING.fieldOf("id").forGetter(QuickPlayLogger.QuickPlayWorld::id),
+						Codecs.ESCAPED_STRING.fieldOf("id").forGetter(QuickPlayLogger.QuickPlayWorld::id),
 						Codec.STRING.fieldOf("name").forGetter(QuickPlayLogger.QuickPlayWorld::name)
 					)
 					.apply(instance, QuickPlayLogger.QuickPlayWorld::new)

@@ -24,6 +24,7 @@ import io.netty.channel.local.LocalServerChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.flow.FlowControlHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.TimeoutException;
 import io.netty.util.AttributeKey;
@@ -476,7 +477,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 				ChannelPipeline channelPipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
 				ClientConnection.addHandlers(channelPipeline, NetworkSide.CLIENTBOUND, connection.packetSizeLogger);
-				channelPipeline.addLast("packet_handler", connection);
+				connection.addFlowControlHandler(channelPipeline);
 			}
 		}).channel(class_).connect(address.getAddress(), address.getPort());
 	}
@@ -491,6 +492,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			.addLast("encoder", new PacketEncoder(attributeKey2))
 			.addLast("unbundler", new PacketUnbundler(attributeKey2))
 			.addLast("bundler", new PacketBundler(attributeKey));
+	}
+
+	public void addFlowControlHandler(ChannelPipeline pipeline) {
+		pipeline.addLast(new FlowControlHandler()).addLast("packet_handler", this);
 	}
 
 	private static void addValidatorInternal(ChannelPipeline pipeline, NetworkSide side) {
@@ -512,7 +517,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				ClientConnection.setHandlers(channel);
 				ChannelPipeline channelPipeline = channel.pipeline();
 				ClientConnection.addValidator(channelPipeline, NetworkSide.CLIENTBOUND);
-				channelPipeline.addLast("packet_handler", clientConnection);
+				clientConnection.addFlowControlHandler(channelPipeline);
 			}
 		}).channel(LocalChannel.class).connect(address).syncUninterruptibly();
 		return clientConnection;

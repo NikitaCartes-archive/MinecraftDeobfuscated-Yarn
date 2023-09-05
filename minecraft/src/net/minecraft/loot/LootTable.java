@@ -34,10 +34,10 @@ public class LootTable {
 	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
 	public static final Codec<LootTable> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					LootContextTypes.CODEC.optionalFieldOf("type", GENERIC).forGetter(lootTable -> lootTable.type),
-					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "random_sequence").forGetter(lootTable -> lootTable.randomSequenceId),
-					Codecs.createStrictOptionalFieldCodec(LootPool.CODEC.listOf(), "pools", List.of()).forGetter(lootTable -> lootTable.pools),
-					Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(lootTable -> lootTable.functions)
+					LootContextTypes.CODEC.optionalFieldOf("type", GENERIC).forGetter(table -> table.type),
+					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "random_sequence").forGetter(table -> table.randomSequenceId),
+					Codecs.createStrictOptionalFieldCodec(LootPool.CODEC.listOf(), "pools", List.of()).forGetter(table -> table.pools),
+					Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(table -> table.functions)
 				)
 				.apply(instance, LootTable::new)
 	);
@@ -218,8 +218,8 @@ public class LootTable {
 			return this;
 		}
 
-		public LootTable.Builder type(LootContextType context) {
-			this.type = context;
+		public LootTable.Builder type(LootContextType type) {
+			this.type = type;
 			return this;
 		}
 

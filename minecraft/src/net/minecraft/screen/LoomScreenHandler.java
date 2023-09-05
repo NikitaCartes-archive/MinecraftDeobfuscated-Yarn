@@ -82,7 +82,7 @@ public class LoomScreenHandler extends ScreenHandler {
 				return stack.getItem() instanceof BannerPatternItem;
 			}
 		});
-		this.outputSlot = this.addSlot(new Slot(this.output, 0, 143, 58) {
+		this.outputSlot = this.addSlot(new Slot(this.output, 0, 143, 57) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return false;

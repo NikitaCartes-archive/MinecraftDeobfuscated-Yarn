@@ -271,6 +271,31 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	}
 
 	@Override
+	public double getLerpTargetX() {
+		return this.x;
+	}
+
+	@Override
+	public double getLerpTargetY() {
+		return this.y;
+	}
+
+	@Override
+	public double getLerpTargetZ() {
+		return this.z;
+	}
+
+	@Override
+	public float getLerpTargetPitch() {
+		return (float)this.boatPitch;
+	}
+
+	@Override
+	public float getLerpTargetYaw() {
+		return (float)this.boatYaw;
+	}
+
+	@Override
 	public Direction getMovementDirection() {
 		return this.getHorizontalFacing().rotateYClockwise();
 	}

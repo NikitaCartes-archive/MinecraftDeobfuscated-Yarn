@@ -170,8 +170,8 @@ public class AdvancementWidget {
 
 	public void drawTooltip(DrawContext context, int originX, int originY, float alpha, int x, int y) {
 		boolean bl = x + originX + this.x + this.width + 26 >= this.tab.getScreen().width;
-		String string = this.progress == null ? null : this.progress.getProgressBarFraction();
-		int i = string == null ? 0 : this.client.textRenderer.getWidth(string);
+		Text text = this.progress == null ? null : this.progress.getProgressBarFraction();
+		int i = text == null ? 0 : this.client.textRenderer.getWidth(text);
 		boolean bl2 = 113 - originY - this.y - 26 <= 6 + this.description.size() * 9;
 		float f = this.progress == null ? 0.0F : this.progress.getProgressBarPercentage();
 		int j = MathHelper.floor(f * (float)this.width);
@@ -223,13 +223,13 @@ public class AdvancementWidget {
 		context.drawGuiTexture(advancementObtainedStatus3.getFrameTexture(this.display.getFrame()), originX + this.x + 3, originY + this.y, 26, 26);
 		if (bl) {
 			context.drawTextWithShadow(this.client.textRenderer, this.title, m + 5, originY + this.y + 9, -1);
-			if (string != null) {
-				context.drawTextWithShadow(this.client.textRenderer, string, originX + this.x - i, originY + this.y + 9, -1);
+			if (text != null) {
+				context.drawTextWithShadow(this.client.textRenderer, text, originX + this.x - i, originY + this.y + 9, -1);
 			}
 		} else {
 			context.drawTextWithShadow(this.client.textRenderer, this.title, originX + this.x + 32, originY + this.y + 9, -1);
-			if (string != null) {
-				context.drawTextWithShadow(this.client.textRenderer, string, originX + this.x + this.width - i - 5, originY + this.y + 9, -1);
+			if (text != null) {
+				context.drawTextWithShadow(this.client.textRenderer, text, originX + this.x + this.width - i - 5, originY + this.y + 9, -1);
 			}
 		}
 

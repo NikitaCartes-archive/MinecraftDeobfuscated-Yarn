@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.Bootstrap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,9 +21,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockStateArgument;
-import net.minecraft.data.DataWriter;
-import net.minecraft.data.dev.NbtProvider;
-import net.minecraft.data.validate.StructureValidatorProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -81,20 +77,6 @@ public class StructureTestUtil {
 			default:
 				throw new IllegalArgumentException("Unknown rotation value, don't know how many steps it represents: " + rotation);
 		}
-	}
-
-	public static void main(String[] args) throws IOException {
-		Bootstrap.initialize();
-		Files.walk(Paths.get(testStructuresDirectoryName)).filter(path -> path.toString().endsWith(".snbt")).forEach(path -> {
-			try {
-				String string = Files.readString(path);
-				NbtCompound nbtCompound = NbtHelper.fromNbtProviderString(string);
-				NbtCompound nbtCompound2 = StructureValidatorProvider.update(path.toString(), nbtCompound);
-				NbtProvider.writeTo(DataWriter.UNCACHED, path, NbtHelper.toNbtProviderString(nbtCompound2));
-			} catch (IOException | CommandSyntaxException var4) {
-				LOGGER.error("Something went wrong upgrading: {}", path, var4);
-			}
-		});
 	}
 
 	public static Box getStructureBoundingBox(StructureBlockBlockEntity structureBlockEntity) {
