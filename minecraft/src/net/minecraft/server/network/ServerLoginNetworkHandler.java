@@ -244,8 +244,9 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	@Override
 	public void onEnterConfiguration(EnterConfigurationC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");
+		ConnectedClientData connectedClientData = ConnectedClientData.createDefault((GameProfile)Objects.requireNonNull(this.profile));
 		ServerConfigurationNetworkHandler serverConfigurationNetworkHandler = new ServerConfigurationNetworkHandler(
-			this.server, this.connection, (GameProfile)Objects.requireNonNull(this.profile)
+			this.server, this.connection, connectedClientData
 		);
 		this.connection.setPacketListener(serverConfigurationNetworkHandler);
 		serverConfigurationNetworkHandler.sendConfigurations();

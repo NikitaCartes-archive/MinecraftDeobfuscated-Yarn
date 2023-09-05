@@ -78,10 +78,8 @@ public class Raid {
 	public static final int field_30673 = 5;
 	private static final int field_30688 = 2;
 	private static final Text EVENT_TEXT = Text.translatable("event.minecraft.raid");
-	private static final Text VICTORY_SUFFIX_TEXT = Text.translatable("event.minecraft.raid.victory");
-	private static final Text DEFEAT_SUFFIX_TEXT = Text.translatable("event.minecraft.raid.defeat");
-	private static final Text VICTORY_TITLE = EVENT_TEXT.copy().append(" - ").append(VICTORY_SUFFIX_TEXT);
-	private static final Text DEFEAT_TITLE = EVENT_TEXT.copy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
+	private static final Text VICTORY_TITLE = Text.translatable("event.minecraft.raid.victory.full");
+	private static final Text DEFEAT_TITLE = Text.translatable("event.minecraft.raid.defeat.full");
 	private static final int MAX_ACTIVE_TICKS = 48000;
 	public static final int field_30674 = 9216;
 	public static final int SQUARED_MAX_RAIDER_DISTANCE = 12544;

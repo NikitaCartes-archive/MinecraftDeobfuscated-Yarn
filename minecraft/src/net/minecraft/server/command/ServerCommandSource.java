@@ -355,8 +355,8 @@ public class ServerCommandSource implements CommandSource {
 		return this.withRotation(new Vec2f(h, i));
 	}
 
-	public ServerCommandSource withSignedArguments(SignedCommandArguments signedArguments) {
-		return signedArguments == this.signedArguments
+	public ServerCommandSource withSignedArguments(SignedCommandArguments signedArguments, FutureQueue messageChainTaskQueue) {
+		return signedArguments == this.signedArguments && messageChainTaskQueue == this.messageChainTaskQueue
 			? this
 			: new ServerCommandSource(
 				this.output,
@@ -372,28 +372,6 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
-			);
-	}
-
-	public ServerCommandSource withMessageChainTaskQueue(FutureQueue messageChainTaskQueue) {
-		return messageChainTaskQueue == this.messageChainTaskQueue
-			? this
-			: new ServerCommandSource(
-				this.output,
-				this.position,
-				this.rotation,
-				this.world,
-				this.level,
-				this.name,
-				this.displayName,
-				this.server,
-				this.entity,
-				this.silent,
-				this.resultConsumer,
-				this.entityAnchor,
-				this.signedArguments,
 				messageChainTaskQueue,
 				this.returnValueConsumer
 			);

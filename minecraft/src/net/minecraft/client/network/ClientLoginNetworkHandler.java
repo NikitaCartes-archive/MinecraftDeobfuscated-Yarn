@@ -29,6 +29,7 @@ import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.BrandCustomPayload;
+import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.login.EnterConfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
@@ -156,6 +157,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 				)
 			);
 		this.connection.send(new CustomPayloadC2SPacket(new BrandCustomPayload(ClientBrandRetriever.getClientModName())));
+		this.connection.send(new ClientOptionsC2SPacket(this.client.options.getSyncedOptions()));
 	}
 
 	@Override

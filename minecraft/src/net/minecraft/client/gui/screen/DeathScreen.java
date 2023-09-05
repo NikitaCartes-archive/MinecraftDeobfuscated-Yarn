@@ -51,9 +51,7 @@ public class DeathScreen extends Screen {
 		);
 		this.buttons.add(this.titleScreenButton);
 		this.setButtonsActive(false);
-		this.scoreText = Text.translatable("deathScreen.score")
-			.append(": ")
-			.append(Text.literal(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
+		this.scoreText = Text.translatable("deathScreen.score.value", Text.literal(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
 	}
 
 	@Override

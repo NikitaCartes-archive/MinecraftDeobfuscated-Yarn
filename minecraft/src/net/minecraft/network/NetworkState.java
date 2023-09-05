@@ -19,6 +19,7 @@ import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.BundlePacket;
 import net.minecraft.network.packet.BundleSplitterPacket;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
@@ -38,7 +39,6 @@ import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
@@ -342,7 +342,7 @@ public enum NetworkState {
 					.register(PlayerSessionC2SPacket.class, PlayerSessionC2SPacket::new)
 					.register(AcknowledgeChunksC2SPacket.class, AcknowledgeChunksC2SPacket::new)
 					.register(ClientStatusC2SPacket.class, ClientStatusC2SPacket::new)
-					.register(ClientSettingsC2SPacket.class, ClientSettingsC2SPacket::new)
+					.register(ClientOptionsC2SPacket.class, ClientOptionsC2SPacket::new)
 					.register(RequestCommandCompletionsC2SPacket.class, RequestCommandCompletionsC2SPacket::new)
 					.register(AcknowledgeReconfigurationC2SPacket.class, AcknowledgeReconfigurationC2SPacket::new)
 					.register(ButtonClickC2SPacket.class, ButtonClickC2SPacket::new)
@@ -445,6 +445,7 @@ public enum NetworkState {
 			.setup(
 				NetworkSide.SERVERBOUND,
 				new NetworkState.InternalPacketHandler()
+					.register(ClientOptionsC2SPacket.class, ClientOptionsC2SPacket::new)
 					.register(CustomPayloadC2SPacket.class, CustomPayloadC2SPacket::new)
 					.register(ReadyC2SPacket.class, ReadyC2SPacket::new)
 					.register(KeepAliveC2SPacket.class, KeepAliveC2SPacket::new)

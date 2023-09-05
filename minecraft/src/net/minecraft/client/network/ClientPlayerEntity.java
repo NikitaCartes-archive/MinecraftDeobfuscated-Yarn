@@ -137,6 +137,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean falling;
 	private int underwaterVisibilityTicks;
 	private boolean showsDeathScreen = true;
+	private boolean limitedCraftingEnabled = false;
 
 	public ClientPlayerEntity(
 		MinecraftClient client,
@@ -474,6 +475,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	public boolean showsDeathScreen() {
 		return this.showsDeathScreen;
+	}
+
+	public void setLimitedCraftingEnabled(boolean limitedCraftingEnabled) {
+		this.limitedCraftingEnabled = limitedCraftingEnabled;
+	}
+
+	public boolean isLimitedCraftingEnabled() {
+		return this.limitedCraftingEnabled;
 	}
 
 	@Override

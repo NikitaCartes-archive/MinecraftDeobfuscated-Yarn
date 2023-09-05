@@ -29,7 +29,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -197,7 +196,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		if (nbtCompound != null) {
 			if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
-				tooltip.add(Text.literal("???????"));
+				tooltip.add(Text.translatable("container.shulkerBox.unknownContents"));
 			}
 
 			if (nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
@@ -211,9 +210,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 						++j;
 						if (i <= 4) {
 							++i;
-							MutableText mutableText = itemStack.getName().copy();
-							mutableText.append(" x").append(String.valueOf(itemStack.getCount()));
-							tooltip.add(mutableText);
+							tooltip.add(Text.translatable("container.shulkerBox.itemCount", itemStack.getName(), String.valueOf(itemStack.getCount())));
 						}
 					}
 				}

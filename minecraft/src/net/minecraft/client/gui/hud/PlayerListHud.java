@@ -271,12 +271,16 @@ public class PlayerListHud {
 			if (k <= 3) {
 				float f = MathHelper.clamp((float)score / 20.0F, 0.0F, 1.0F);
 				int l = (int)((1.0F - f) * 255.0F) << 16 | (int)(f * 255.0F) << 8;
-				String string = (float)score / 2.0F + "";
-				if (right - this.client.textRenderer.getWidth(string + "hp") >= left) {
-					string = string + "hp";
+				float g = (float)score / 2.0F;
+				Text text = Text.translatable("multiplayer.player.list.hp", g);
+				Text text2;
+				if (right - this.client.textRenderer.getWidth(text) >= left) {
+					text2 = text;
+				} else {
+					text2 = Text.literal(g + "");
 				}
 
-				context.drawTextWithShadow(this.client.textRenderer, string, (right + left - this.client.textRenderer.getWidth(string)) / 2, y, l);
+				context.drawTextWithShadow(this.client.textRenderer, text2, (right + left - this.client.textRenderer.getWidth(text2)) / 2, y, l);
 			} else {
 				Identifier identifier = bl ? CONTAINER_HEART_BLINKING_TEXTURE : CONTAINER_HEART_TEXTURE;
 

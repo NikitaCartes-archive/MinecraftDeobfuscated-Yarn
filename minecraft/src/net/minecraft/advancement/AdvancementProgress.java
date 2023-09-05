@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import net.minecraft.util.dynamic.Codecs;
 
 public class AdvancementProgress implements Comparable<AdvancementProgress> {
@@ -130,7 +131,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	@Nullable
-	public String getProgressBarFraction() {
+	public Text getProgressBarFraction() {
 		if (this.criteriaProgresses.isEmpty()) {
 			return null;
 		} else {
@@ -139,7 +140,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 				return null;
 			} else {
 				int j = this.countObtainedRequirements();
-				return j + "/" + i;
+				return Text.translatable("advancements.progress", j, i);
 			}
 		}
 	}

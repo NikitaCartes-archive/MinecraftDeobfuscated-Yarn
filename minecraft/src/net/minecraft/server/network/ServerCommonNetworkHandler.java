@@ -12,6 +12,7 @@ import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -36,11 +37,11 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	private int latency;
 	private volatile boolean flushDisabled = false;
 
-	public ServerCommonNetworkHandler(MinecraftServer server, ClientConnection connection, int keepAliveId) {
+	public ServerCommonNetworkHandler(MinecraftServer server, ClientConnection connection, ConnectedClientData clientData) {
 		this.server = server;
 		this.connection = connection;
 		this.lastKeepAliveTime = Util.getMeasuringTimeMs();
-		this.latency = keepAliveId;
+		this.latency = clientData.latency();
 	}
 
 	@Override
@@ -141,5 +142,9 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 
 	public int getLatency() {
 		return this.latency;
+	}
+
+	protected ConnectedClientData createClientData(SyncedClientOptions syncedOptions) {
+		return new ConnectedClientData(this.getProfile(), this.latency, syncedOptions);
 	}
 }

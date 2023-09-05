@@ -46,6 +46,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private static final Identifier PATTERN_SELECTED_TEXTURE = new Identifier("container/loom/pattern_selected");
 	private static final Identifier PATTERN_HIGHLIGHTED_TEXTURE = new Identifier("container/loom/pattern_highlighted");
 	private static final Identifier PATTERN_TEXTURE = new Identifier("container/loom/pattern");
+	private static final Identifier ERROR_TEXTURE = new Identifier("container/loom/error");
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
 	private static final int PATTERN_LIST_COLUMNS = 4;
 	private static final int PATTERN_LIST_ROWS = 4;
@@ -97,6 +98,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		Slot slot = this.handler.getBannerSlot();
 		Slot slot2 = this.handler.getDyeSlot();
 		Slot slot3 = this.handler.getPatternSlot();
+		Slot slot4 = this.handler.getOutputSlot();
 		if (!slot.hasStack()) {
 			context.drawGuiTexture(BANNER_SLOT_TEXTURE, i + slot.x, j + slot.y, 16, 16);
 		}
@@ -134,6 +136,8 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			);
 			context.getMatrices().pop();
 			context.draw();
+		} else if (this.hasTooManyPatterns) {
+			context.drawGuiTexture(ERROR_TEXTURE, i + slot4.x - 5, j + slot4.y - 5, 26, 26);
 		}
 
 		if (this.canApplyDyePattern) {

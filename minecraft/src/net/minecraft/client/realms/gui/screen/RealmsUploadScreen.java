@@ -166,7 +166,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 		int j = i + (int)Math.round(200.0 * d);
 		context.fill(i - 1, 79, j + 1, 96, -2501934);
 		context.fill(i, 80, j, 95, -8355712);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, Text.translatable("mco.upload.percent", this.progress), this.width / 2, 84, 16777215);
 	}
 
 	private void drawUploadSpeed(DrawContext context) {
@@ -210,7 +210,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 		List<Text> list = Lists.<Text>newArrayList();
 		list.add(this.status);
 		if (this.progress != null) {
-			list.add(Text.literal(this.progress + "%"));
+			list.add(Text.translatable("mco.upload.percent", this.progress));
 		}
 
 		if (this.statusTexts != null) {

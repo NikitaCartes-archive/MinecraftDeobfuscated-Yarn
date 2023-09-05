@@ -36,6 +36,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -72,6 +73,7 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -135,7 +137,7 @@ public abstract class PlayerManager {
 		this.saveHandler = saveHandler;
 	}
 
-	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, int latency) {
+	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData) {
 		GameProfile gameProfile = player.getGameProfile();
 		UserCache userCache = this.server.getUserCache();
 		String string;
@@ -169,10 +171,11 @@ public abstract class PlayerManager {
 		);
 		WorldProperties worldProperties = serverWorld2.getLevelProperties();
 		player.setGameMode(nbtCompound);
-		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player, latency);
+		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player, clientData);
 		GameRules gameRules = serverWorld2.getGameRules();
 		boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
 		boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
+		boolean bl3 = gameRules.getBoolean(GameRules.DO_LIMITED_CRAFTING);
 		serverPlayNetworkHandler.sendPacket(
 			new GameJoinS2CPacket(
 				player.getId(),
@@ -183,6 +186,7 @@ public abstract class PlayerManager {
 				this.simulationDistance,
 				bl2,
 				!bl,
+				bl3,
 				player.createCommonPlayerSpawnInfo(serverWorld2)
 			)
 		);
@@ -397,8 +401,8 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public ServerPlayerEntity createPlayer(GameProfile profile) {
-		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile);
+	public ServerPlayerEntity createPlayer(GameProfile profile, SyncedClientOptions syncedOptions) {
+		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, syncedOptions);
 	}
 
 	public boolean disconnectDuplicateLogins(GameProfile profile) {
@@ -438,7 +442,7 @@ public abstract class PlayerManager {
 		}
 
 		ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();
-		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile());
+		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), player.getClientOptions());
 		serverPlayerEntity.networkHandler = player.networkHandler;
 		serverPlayerEntity.copyFrom(player, alive);
 		serverPlayerEntity.setId(player.getId());

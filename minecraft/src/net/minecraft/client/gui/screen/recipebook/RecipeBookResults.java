@@ -14,6 +14,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -101,9 +102,9 @@ public class RecipeBookResults {
 
 	public void draw(DrawContext context, int x, int y, int mouseX, int mouseY, float delta) {
 		if (this.pageCount > 1) {
-			String string = this.currentPage + 1 + "/" + this.pageCount;
-			int i = this.client.textRenderer.getWidth(string);
-			context.drawText(this.client.textRenderer, string, x - i / 2 + 73, y + 141, -1, false);
+			Text text = Text.translatable("gui.recipebook.page", this.currentPage + 1, this.pageCount);
+			int i = this.client.textRenderer.getWidth(text);
+			context.drawText(this.client.textRenderer, text, x - i / 2 + 73, y + 141, -1, false);
 		}
 
 		this.hoveredResultButton = null;

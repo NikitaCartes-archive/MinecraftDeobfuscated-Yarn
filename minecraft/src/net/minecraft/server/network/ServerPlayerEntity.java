@@ -55,7 +55,7 @@ import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
@@ -185,7 +185,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private Vec3d levitationStartPos;
 	private int levitationStartTick;
 	private boolean disconnected;
-	private OptionalInt viewDistance = OptionalInt.empty();
+	private int viewDistance = 2;
+	private String language = "en_us";
 	@Nullable
 	private Vec3d fallStartPos;
 	@Nullable
@@ -260,7 +261,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private int screenHandlerSyncId;
 	public boolean notInAnyWorld;
 
-	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile) {
+	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, SyncedClientOptions clientOptions) {
 		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
 		this.textStream = server.createFilterer(this);
 		this.interactionManager = server.getPlayerInteractionManager(this);
@@ -269,6 +270,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.setStepHeight(1.0F);
 		this.moveToSpawn(world);
+		this.setClientOptions(clientOptions);
 	}
 
 	private void moveToSpawn(ServerWorld world) {
@@ -1152,7 +1154,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive) {
 		this.sculkShriekerWarningManager = oldPlayer.sculkShriekerWarningManager;
-		this.filterText = oldPlayer.filterText;
 		this.session = oldPlayer.session;
 		this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
 		this.sendAbilitiesUpdate();
@@ -1183,7 +1184,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.seenCredits = oldPlayer.seenCredits;
 		this.enteredNetherPos = oldPlayer.enteredNetherPos;
 		this.chunkFilter = oldPlayer.chunkFilter;
-		this.viewDistance = oldPlayer.viewDistance;
 		this.setShoulderEntityLeft(oldPlayer.getShoulderEntityLeft());
 		this.setShoulderEntityRight(oldPlayer.getShoulderEntityRight());
 		this.setLastDeathPos(oldPlayer.getLastDeathPos());
@@ -1348,14 +1348,23 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return socketAddress instanceof InetSocketAddress inetSocketAddress ? InetAddresses.toAddrString(inetSocketAddress.getAddress()) : "<unknown>";
 	}
 
-	public void setClientSettings(ClientSettingsC2SPacket packet) {
-		this.viewDistance = OptionalInt.of(packet.viewDistance());
-		this.clientChatVisibility = packet.chatVisibility();
-		this.clientChatColorsEnabled = packet.chatColors();
-		this.filterText = packet.filterText();
-		this.allowServerListing = packet.allowsListing();
-		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.playerModelBitMask());
-		this.getDataTracker().set(MAIN_ARM, (byte)(packet.mainArm() == Arm.LEFT ? 0 : 1));
+	public void setClientOptions(SyncedClientOptions clientOptions) {
+		this.language = clientOptions.language();
+		this.viewDistance = clientOptions.viewDistance();
+		this.clientChatVisibility = clientOptions.chatVisibility();
+		this.clientChatColorsEnabled = clientOptions.chatColorsEnabled();
+		this.filterText = clientOptions.filtersText();
+		this.allowServerListing = clientOptions.allowsServerListing();
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientOptions.playerModelParts());
+		this.getDataTracker().set(MAIN_ARM, (byte)clientOptions.mainArm().getId());
+	}
+
+	public SyncedClientOptions getClientOptions() {
+		int i = this.getDataTracker().get(PLAYER_MODEL_PARTS);
+		Arm arm = (Arm)Arm.BY_ID.apply(this.getDataTracker().get(MAIN_ARM));
+		return new SyncedClientOptions(
+			this.language, this.viewDistance, this.clientChatVisibility, this.clientChatColorsEnabled, i, arm, this.filterText, this.allowServerListing
+		);
 	}
 
 	public boolean areClientChatColorsEnabled() {
@@ -1374,7 +1383,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.clientChatVisibility == ChatVisibility.FULL;
 	}
 
-	public OptionalInt getViewDistance() {
+	public int getViewDistance() {
 		return this.viewDistance;
 	}
 

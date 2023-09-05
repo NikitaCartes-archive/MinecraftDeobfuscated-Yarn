@@ -368,7 +368,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 		if (context.isAdvanced()) {
 			if (mapState != null) {
 				if (!bl && b == 0) {
-					tooltip.add(Text.translatable("filled_map.id", integer).formatted(Formatting.GRAY));
+					tooltip.add(getIdText(integer));
 				}
 
 				int i = Math.min(mapState.scale + b, 4);
@@ -378,6 +378,14 @@ public class FilledMapItem extends NetworkSyncedItem {
 				tooltip.add(Text.translatable("filled_map.unknown").formatted(Formatting.GRAY));
 			}
 		}
+	}
+
+	private static Text getIdText(int id) {
+		return Text.translatable("filled_map.id", id).formatted(Formatting.GRAY);
+	}
+
+	public static Text getIdText(ItemStack stack) {
+		return getIdText(getMapId(stack));
 	}
 
 	public static int getMapColor(ItemStack stack) {

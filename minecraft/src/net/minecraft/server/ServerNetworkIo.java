@@ -102,7 +102,7 @@ public class ServerNetworkIo {
 									int i = ServerNetworkIo.this.server.getRateLimit();
 									ClientConnection clientConnection = (ClientConnection)(i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.SERVERBOUND));
 									ServerNetworkIo.this.connections.add(clientConnection);
-									channelPipeline.addLast("packet_handler", clientConnection);
+									clientConnection.addFlowControlHandler(channelPipeline);
 									clientConnection.setInitialPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 								}
 							}
@@ -127,7 +127,7 @@ public class ServerNetworkIo {
 					ServerNetworkIo.this.connections.add(clientConnection);
 					ChannelPipeline channelPipeline = channel.pipeline();
 					ClientConnection.addValidator(channelPipeline, NetworkSide.SERVERBOUND);
-					channelPipeline.addLast("packet_handler", clientConnection);
+					clientConnection.addFlowControlHandler(channelPipeline);
 				}
 			}).group((EventLoopGroup)DEFAULT_CHANNEL.get()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
 			this.channels.add(channelFuture);

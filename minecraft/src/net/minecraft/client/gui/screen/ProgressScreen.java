@@ -41,7 +41,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	@Override
 	public void setTitleAndTask(Text title) {
 		this.title = title;
-		this.setTask(Text.translatable("progress.working"));
+		this.setTask(Text.translatable("menu.working"));
 	}
 
 	@Override

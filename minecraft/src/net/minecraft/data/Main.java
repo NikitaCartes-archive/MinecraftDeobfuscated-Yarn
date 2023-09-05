@@ -21,6 +21,7 @@ import net.minecraft.data.report.DynamicRegistriesProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
 import net.minecraft.data.server.BiomeParametersProvider;
 import net.minecraft.data.server.advancement.vanilla.VanillaAdvancementProviders;
+import net.minecraft.data.server.loottable.rebalance.TradeRebalanceLootTableProviders;
 import net.minecraft.data.server.loottable.vanilla.VanillaLootTableProviders;
 import net.minecraft.data.server.recipe.BundleRecipeProvider;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
@@ -150,6 +151,7 @@ public class Main {
 		pack3.addProvider(
 			outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.trade_rebalance.description"), FeatureSet.of(FeatureFlags.TRADE_REBALANCE))
 		);
+		pack3.addProvider(TradeRebalanceLootTableProviders::createTradeRebalanceProvider);
 		return dataGenerator;
 	}
 }

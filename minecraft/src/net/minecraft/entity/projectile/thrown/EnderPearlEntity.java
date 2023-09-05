@@ -80,7 +80,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	@Override
 	public void tick() {
 		Entity entity = this.getOwner();
-		if (entity instanceof PlayerEntity && !entity.isAlive()) {
+		if (entity instanceof PlayerEntity && !entity.isAlive() && this.getWorld().getGameRules().getBoolean(GameRules.ENDER_PEARLS_VANISH_ON_DEATH)) {
 			this.discard();
 		} else {
 			super.tick();

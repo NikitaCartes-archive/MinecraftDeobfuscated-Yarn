@@ -42,7 +42,9 @@ public class SymlinkFinder {
 			return list;
 		}
 
-		if (!basicFileAttributes.isRegularFile() && !basicFileAttributes.isOther()) {
+		if (basicFileAttributes.isRegularFile()) {
+			throw new IOException("Path " + path + " is not a directory");
+		} else {
 			if (basicFileAttributes.isSymbolicLink()) {
 				if (!resolveSymlink) {
 					this.validate(path, list);
@@ -54,8 +56,6 @@ public class SymlinkFinder {
 
 			this.validateRecursively(path, list);
 			return list;
-		} else {
-			throw new IOException("Path " + path + " is not a directory");
 		}
 	}
 

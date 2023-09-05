@@ -39,6 +39,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	static final Identifier SORT_UP_TEXTURE = new Identifier("statistics/sort_up");
 	static final Identifier SORT_DOWN_TEXTURE = new Identifier("statistics/sort_down");
 	private static final Text DOWNLOADING_STATS_TEXT = Text.translatable("multiplayer.downloadingStats");
+	static final Text NONE_TEXT = Text.translatable("stats.none");
 	protected final Screen parent;
 	private StatsScreen.GeneralStatsListWidget generalStats;
 	StatsScreen.ItemStatsListWidget itemStats;
@@ -491,8 +492,8 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			protected void render(DrawContext context, @Nullable Stat<?> stat, int x, int y, boolean white) {
-				String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
-				context.drawTextWithShadow(StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, white ? 16777215 : 9474192);
+				Text text = (Text)(stat == null ? StatsScreen.NONE_TEXT : Text.literal(stat.format(StatsScreen.this.statHandler.getStat(stat))));
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, text, x - StatsScreen.this.textRenderer.getWidth(text), y + 5, white ? 16777215 : 9474192);
 			}
 
 			@Override

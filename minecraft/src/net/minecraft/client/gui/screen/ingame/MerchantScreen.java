@@ -48,7 +48,6 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private static final int SCROLLBAR_OFFSET_Y = 18;
 	private static final int SCROLLBAR_OFFSET_X = 94;
 	private static final Text TRADES_TEXT = Text.translatable("merchant.trades");
-	private static final Text SEPARATOR_TEXT = Text.literal(" - ");
 	private static final Text DEPRECATED_TEXT = Text.translatable("merchant.deprecated");
 	private int selectedIndex;
 	private final MerchantScreen.WidgetButtonPage[] offers = new MerchantScreen.WidgetButtonPage[7];
@@ -89,7 +88,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
 		int i = this.handler.getLevelProgress();
 		if (i > 0 && i <= 5 && this.handler.isLeveled()) {
-			Text text = this.title.copy().append(SEPARATOR_TEXT).append(Text.translatable("merchant.level." + i));
+			Text text = Text.translatable("merchant.title", this.title, Text.translatable("merchant.level." + i));
 			int j = this.textRenderer.getWidth(text);
 			int k = 49 + this.backgroundWidth / 2 - j / 2;
 			context.drawText(this.textRenderer, text, k, 6, 4210752, false);

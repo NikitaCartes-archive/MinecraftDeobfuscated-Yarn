@@ -18,10 +18,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class LanguageOptionsScreen extends GameOptionsScreen {
-	private static final Text LANGUAGE_WARNING_TEXT = Text.literal("(")
-		.append(Text.translatable("options.languageWarning"))
-		.append(")")
-		.formatted(Formatting.GRAY);
+	private static final Text LANGUAGE_WARNING_TEXT = Text.translatable("options.languageAccuracyWarning").formatted(Formatting.GRAY);
 	private LanguageOptionsScreen.LanguageSelectionListWidget languageSelectionList;
 	final LanguageManager languageManager;
 
