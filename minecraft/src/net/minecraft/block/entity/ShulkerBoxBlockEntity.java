@@ -120,9 +120,9 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 						entity.move(
 							MovementType.SHULKER_BOX,
 							new Vec3d(
-								(box.getXLength() + 0.01) * (double)direction.getOffsetX(),
-								(box.getYLength() + 0.01) * (double)direction.getOffsetY(),
-								(box.getZLength() + 0.01) * (double)direction.getOffsetZ()
+								(box.getLengthX() + 0.01) * (double)direction.getOffsetX(),
+								(box.getLengthY() + 0.01) * (double)direction.getOffsetY(),
+								(box.getLengthZ() + 0.01) * (double)direction.getOffsetZ()
 							)
 						);
 					}

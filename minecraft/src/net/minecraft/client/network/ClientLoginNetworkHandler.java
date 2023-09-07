@@ -12,6 +12,8 @@ import com.mojang.logging.LogUtils;
 import java.math.BigInteger;
 import java.security.PublicKey;
 import java.time.Duration;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
@@ -59,6 +61,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private final Duration worldLoadTime;
 	@Nullable
 	private String minigameName;
+	private final AtomicReference<ClientLoginNetworkHandler.State> state = new AtomicReference(ClientLoginNetworkHandler.State.CONNECTING);
 
 	public ClientLoginNetworkHandler(
 		ClientConnection connection,
@@ -78,8 +81,21 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		this.worldLoadTime = worldLoadTime;
 	}
 
+	private void switchTo(ClientLoginNetworkHandler.State state) {
+		ClientLoginNetworkHandler.State state2 = (ClientLoginNetworkHandler.State)this.state.updateAndGet(currentState -> {
+			if (!state.prevStates.contains(currentState)) {
+				throw new IllegalStateException("Tried to switch to " + state + " from " + currentState + ", but expected one of " + state.prevStates);
+			} else {
+				return state;
+			}
+		});
+		this.statusConsumer.accept(state2.name);
+	}
+
 	@Override
 	public void onHello(LoginHelloS2CPacket packet) {
+		this.switchTo(ClientLoginNetworkHandler.State.AUTHORIZING);
+
 		Cipher cipher;
 		Cipher cipher2;
 		String string;
@@ -96,7 +112,6 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			throw new IllegalStateException("Protocol error", var9);
 		}
 
-		this.statusConsumer.accept(Text.translatable("connect.authorizing"));
 		NetworkUtils.EXECUTOR.submit((Runnable)(() -> {
 			Text text = this.joinServerSession(string);
 			if (text != null) {
@@ -108,7 +123,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 				LOGGER.warn(text.getString());
 			}
 
-			this.statusConsumer.accept(Text.translatable("connect.encrypting"));
+			this.switchTo(ClientLoginNetworkHandler.State.ENCRYPTING);
 			this.connection.send(loginKeyC2SPacket, PacketCallbacks.always(() -> this.connection.setupEncryption(cipher, cipher2)));
 		}));
 	}
@@ -137,7 +152,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	@Override
 	public void onSuccess(LoginSuccessS2CPacket packet) {
-		this.statusConsumer.accept(Text.translatable("connect.joining"));
+		this.switchTo(ClientLoginNetworkHandler.State.JOINING);
 		GameProfile gameProfile = packet.getProfile();
 		this.connection.send(new EnterConfigurationC2SPacket());
 		this.connection
@@ -194,5 +209,21 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	public void setMinigameName(String minigameName) {
 		this.minigameName = minigameName;
+	}
+
+	@Environment(EnvType.CLIENT)
+	static enum State {
+		CONNECTING(Text.translatable("connect.connecting"), Set.of()),
+		AUTHORIZING(Text.translatable("connect.authorizing"), Set.of(CONNECTING)),
+		ENCRYPTING(Text.translatable("connect.encrypting"), Set.of(AUTHORIZING)),
+		JOINING(Text.translatable("connect.joining"), Set.of(ENCRYPTING, CONNECTING));
+
+		final Text name;
+		final Set<ClientLoginNetworkHandler.State> prevStates;
+
+		private State(Text name, Set<ClientLoginNetworkHandler.State> prevStates) {
+			this.name = name;
+			this.prevStates = prevStates;
+		}
 	}
 }

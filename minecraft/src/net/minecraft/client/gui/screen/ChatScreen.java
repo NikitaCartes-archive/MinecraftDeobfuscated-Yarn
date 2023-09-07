@@ -58,6 +58,7 @@ public class ChatScreen extends Screen {
 		this.chatField.setFocusUnlocked(false);
 		this.addSelectableChild(this.chatField);
 		this.chatInputSuggestor = new ChatInputSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
+		this.chatInputSuggestor.setCanLeave(false);
 		this.chatInputSuggestor.refresh();
 		this.setInitialFocus(this.chatField);
 	}

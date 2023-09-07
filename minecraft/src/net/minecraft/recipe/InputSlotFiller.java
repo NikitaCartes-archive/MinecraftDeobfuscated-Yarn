@@ -14,7 +14,6 @@ import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 
 public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<Integer> {
@@ -28,7 +27,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 	}
 
 	public void fillInputSlots(ServerPlayerEntity entity, @Nullable RecipeEntry<? extends Recipe<C>> recipe, boolean craftAll) {
-		if (recipe != null && (!entity.getWorld().getGameRules().getBoolean(GameRules.DO_LIMITED_CRAFTING) || entity.getRecipeBook().contains(recipe))) {
+		if (recipe != null && entity.getRecipeBook().contains(recipe)) {
 			this.inventory = entity.getInventory();
 			if (this.canReturnInputs() || entity.isCreative()) {
 				this.matcher.clear();

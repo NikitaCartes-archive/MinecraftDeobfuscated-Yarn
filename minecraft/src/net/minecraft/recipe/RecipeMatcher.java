@@ -26,7 +26,7 @@ public class RecipeMatcher {
 	/**
 	 * Adds a full item stack to the pool of available resources.
 	 * 
-	 * <p>This is equivalent to calling {@code addInput(stack, Item.DEFAULT_MAX_COUNT)}.</p>
+	 * <p>This is equivalent to calling {@code addInput(stack, Item.DEFAULT_MAX_COUNT)}.
 	 */
 	public void addUnenchantedInput(ItemStack stack) {
 		if (!stack.isDamaged() && !stack.hasEnchantments() && !stack.hasCustomName()) {
@@ -37,7 +37,7 @@ public class RecipeMatcher {
 	/**
 	 * Adds a full item stack to the pool of available resources.
 	 * 
-	 * <p>This is equivalent to calling {@code addInput(stack, Item.DEFAULT_MAX_COUNT)}.</p>
+	 * <p>This is equivalent to calling {@code addInput(stack, Item.DEFAULT_MAX_COUNT)}.
 	 */
 	public void addInput(ItemStack stack) {
 		this.addInput(stack, 64);

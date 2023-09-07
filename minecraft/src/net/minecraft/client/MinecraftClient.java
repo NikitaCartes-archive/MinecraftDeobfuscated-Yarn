@@ -89,6 +89,7 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -191,6 +192,7 @@ import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
@@ -905,6 +907,23 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					)
 			);
 		this.searchManager.put(SearchManager.ITEM_TAG, stacks -> new IdentifierSearchProvider(stack -> stack.streamTags().map(TagKey::id), stacks));
+		this.searchManager
+			.put(
+				SearchManager.RECIPE_OUTPUT,
+				list -> new TextSearchProvider(
+						recipeResultCollection -> recipeResultCollection.getAllRecipes()
+								.stream()
+								.flatMap(
+									recipeEntry -> recipeEntry.value().getResult(recipeResultCollection.getRegistryManager()).getTooltip(null, TooltipContext.Default.BASIC).stream()
+								)
+								.map(text -> Formatting.strip(text.getString()).trim())
+								.filter(string -> !string.isEmpty()),
+						recipeResultCollection -> recipeResultCollection.getAllRecipes()
+								.stream()
+								.map(recipeEntry -> Registries.ITEM.getId(recipeEntry.value().getResult(recipeResultCollection.getRegistryManager()).getItem())),
+						list
+					)
+			);
 		ItemGroups.getSearchGroup().setSearchProviderReloader(stacks -> {
 			this.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, stacks);
 			this.reloadSearchProvider(SearchManager.ITEM_TAG, stacks);
@@ -2512,6 +2531,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			systemDetails.addSection("Current Language", (Supplier<String>)(() -> languageManager.getLanguage()));
 		}
 
+		systemDetails.addSection("Locale", String.valueOf(Locale.getDefault()));
 		systemDetails.addSection("CPU", GlDebugInfo::getCpuInfo);
 		return systemDetails;
 	}

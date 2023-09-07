@@ -23,7 +23,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	final LanguageManager languageManager;
 
 	public LanguageOptionsScreen(Screen parent, GameOptions options, LanguageManager languageManager) {
-		super(parent, options, Text.translatable("options.language"));
+		super(parent, options, Text.translatable("options.language.title"));
 		this.languageManager = languageManager;
 	}
 

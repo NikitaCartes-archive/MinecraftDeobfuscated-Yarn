@@ -9,9 +9,12 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -316,6 +319,7 @@ public class CommandFunction {
 	}
 
 	static class Macro extends CommandFunction {
+		private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#");
 		private final List<String> variables;
 		private static final int CACHE_SIZE = 8;
 		private final Object2ObjectLinkedOpenHashMap<List<String>, CommandFunction> cache = new Object2ObjectLinkedOpenHashMap<>(8, 0.25F);
@@ -360,9 +364,9 @@ public class CommandFunction {
 
 		private static String toString(NbtElement nbt) {
 			if (nbt instanceof NbtFloat nbtFloat) {
-				return String.valueOf(nbtFloat.floatValue());
+				return DECIMAL_FORMAT.format((double)nbtFloat.floatValue());
 			} else if (nbt instanceof NbtDouble nbtDouble) {
-				return String.valueOf(nbtDouble.doubleValue());
+				return DECIMAL_FORMAT.format(nbtDouble.doubleValue());
 			} else if (nbt instanceof NbtByte nbtByte) {
 				return String.valueOf(nbtByte.byteValue());
 			} else if (nbt instanceof NbtShort nbtShort) {
@@ -406,6 +410,11 @@ public class CommandFunction {
 
 			Identifier identifier = this.getId();
 			return new CommandFunction(new Identifier(identifier.getNamespace(), identifier.getPath() + "/" + arguments.hashCode()), elements2);
+		}
+
+		static {
+			DECIMAL_FORMAT.setMaximumFractionDigits(15);
+			DECIMAL_FORMAT.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
 		}
 	}
 

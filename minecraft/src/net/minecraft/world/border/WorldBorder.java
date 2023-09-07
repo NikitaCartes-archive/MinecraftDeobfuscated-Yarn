@@ -77,7 +77,7 @@ public class WorldBorder {
 	}
 
 	public boolean canCollide(Entity entity, Box box) {
-		double d = Math.max(MathHelper.absMax(box.getXLength(), box.getZLength()), 1.0);
+		double d = Math.max(MathHelper.absMax(box.getLengthX(), box.getLengthZ()), 1.0);
 		return this.getDistanceInsideBorder(entity) < d * 2.0 && this.contains(entity.getX(), entity.getZ(), d);
 	}
 

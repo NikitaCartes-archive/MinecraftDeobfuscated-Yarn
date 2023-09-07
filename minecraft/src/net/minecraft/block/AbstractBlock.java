@@ -1167,7 +1167,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 					if (box.getAverageSideLength() >= 0.7291666666666666) {
 						return true;
 					} else {
-						return box.getYLength() >= 1.0;
+						return box.getLengthY() >= 1.0;
 					}
 				}
 			}

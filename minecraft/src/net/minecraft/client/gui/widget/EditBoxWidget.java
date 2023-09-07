@@ -87,14 +87,12 @@ public class EditBoxWidget extends ScrollableWidget {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (super.mouseClicked(mouseX, mouseY, button)) {
-			return true;
-		} else if (this.isWithinBounds(mouseX, mouseY) && button == 0) {
+		if (this.isWithinBounds(mouseX, mouseY) && button == 0) {
 			this.editBox.setSelecting(Screen.hasShiftDown());
 			this.moveCursor(mouseX, mouseY);
 			return true;
 		} else {
-			return false;
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 	}
 

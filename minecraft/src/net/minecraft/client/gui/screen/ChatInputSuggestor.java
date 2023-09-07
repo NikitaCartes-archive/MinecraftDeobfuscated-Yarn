@@ -75,6 +75,7 @@ public class ChatInputSuggestor {
 	private ChatInputSuggestor.SuggestionWindow window;
 	private boolean windowActive;
 	boolean completingSuggestions;
+	private boolean canLeave = true;
 
 	public ChatInputSuggestor(
 		MinecraftClient client,
@@ -108,14 +109,19 @@ public class ChatInputSuggestor {
 		}
 	}
 
+	public void setCanLeave(boolean canLeave) {
+		this.canLeave = canLeave;
+	}
+
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (this.window != null && this.window.keyPressed(keyCode, scanCode, modifiers)) {
+		boolean bl = this.window != null;
+		if (bl && this.window.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (this.owner.getFocused() == this.textField && keyCode == 258) {
+		} else if (this.owner.getFocused() != this.textField || keyCode != 258 || this.canLeave && !bl) {
+			return false;
+		} else {
 			this.show(true);
 			return true;
-		} else {
-			return false;
 		}
 	}
 
@@ -143,6 +149,18 @@ public class ChatInputSuggestor {
 				int k = this.chatScreenSized ? this.owner.height - 12 : 72;
 				this.window = new ChatInputSuggestor.SuggestionWindow(j, k, i, this.sortSuggestions(suggestions), narrateFirstSuggestion);
 			}
+		}
+	}
+
+	public boolean isOpen() {
+		return this.window != null;
+	}
+
+	public Text getSuggestionUsageNarrationText() {
+		if (this.window != null && this.window.completed) {
+			return this.canLeave ? Text.translatable("narration.suggestion.usage.cycle.hidable") : Text.translatable("narration.suggestion.usage.cycle.fixed");
+		} else {
+			return this.canLeave ? Text.translatable("narration.suggestion.usage.fill.hidable") : Text.translatable("narration.suggestion.usage.fill.fixed");
 		}
 	}
 
@@ -382,7 +400,7 @@ public class ChatInputSuggestor {
 		private int inWindowIndex;
 		private int selection;
 		private Vec2f mouse = Vec2f.ZERO;
-		private boolean completed;
+		boolean completed;
 		private int lastNarrationIndex;
 
 		SuggestionWindow(int x, int y, int width, List<Suggestion> suggestions, boolean narrateFirstSuggestion) {

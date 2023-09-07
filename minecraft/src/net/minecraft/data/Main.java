@@ -26,6 +26,7 @@ import net.minecraft.data.server.loottable.vanilla.VanillaLootTableProviders;
 import net.minecraft.data.server.recipe.BundleRecipeProvider;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.data.server.tag.TagProvider;
+import net.minecraft.data.server.tag.rebalance.RebalanceStructureTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBannerPatternTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBiomeTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBlockTagProvider;
@@ -152,6 +153,7 @@ public class Main {
 			outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.trade_rebalance.description"), FeatureSet.of(FeatureFlags.TRADE_REBALANCE))
 		);
 		pack3.addProvider(TradeRebalanceLootTableProviders::createTradeRebalanceProvider);
+		pack3.addProvider(toFactory(RebalanceStructureTagProvider::new, completableFuture));
 		return dataGenerator;
 	}
 }

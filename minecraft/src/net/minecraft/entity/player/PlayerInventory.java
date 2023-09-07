@@ -38,13 +38,13 @@ public class PlayerInventory implements Inventory, Nameable {
 	/**
 	 * The number of columns ({@value}) in the inventory.
 	 * 
-	 * <p>The same value dictates the size of the player's hotbar, excluding the offhand slot.</p>
+	 * <p>The same value dictates the size of the player's hotbar, excluding the offhand slot.
 	 */
 	private static final int HOTBAR_SIZE = 9;
 	/**
 	 * Zero-based index of the offhand slot.
 	 * 
-	 * <p>This value is the result of the sum {@code MAIN_SIZE (36) + ARMOR_SIZE (4)}.</p>
+	 * <p>This value is the result of the sum {@code MAIN_SIZE (36) + ARMOR_SIZE (4)}.
 	 */
 	public static final int OFF_HAND_SLOT = 40;
 	/**

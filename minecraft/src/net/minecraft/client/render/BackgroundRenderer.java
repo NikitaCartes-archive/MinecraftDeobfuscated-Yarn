@@ -26,11 +26,11 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class BackgroundRenderer {
-	private static final int field_32685 = 96;
+	private static final int WATER_FOG_LENGTH = 96;
 	private static final List<BackgroundRenderer.StatusEffectFogModifier> FOG_MODIFIERS = Lists.<BackgroundRenderer.StatusEffectFogModifier>newArrayList(
 		new BackgroundRenderer.BlindnessFogModifier(), new BackgroundRenderer.DarknessFogModifier()
 	);
-	public static final float field_32684 = 5000.0F;
+	public static final float WATER_FOG_CHANGE_DURATION = 5000.0F;
 	private static float red;
 	private static float green;
 	private static float blue;
@@ -269,7 +269,7 @@ public class BackgroundRenderer {
 		RenderSystem.setShaderFogShape(fogData.fogShape);
 	}
 
-	public static void setFogBlack() {
+	public static void applyFogColor() {
 		RenderSystem.setShaderFogColor(red, green, blue);
 	}
 
