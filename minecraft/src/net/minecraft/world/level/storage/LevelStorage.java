@@ -62,7 +62,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashMemoryReserve;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.path.AllowedSymlinkPathMatcher;
 import net.minecraft.util.path.SymlinkEntry;
 import net.minecraft.util.path.SymlinkFinder;
@@ -228,27 +231,42 @@ public class LevelStorage {
 						boolean bl;
 						try {
 							bl = SessionLock.isLocked(levelSave.path());
-						} catch (Exception var6) {
-							LOGGER.warn("Failed to read {} lock", levelSave.path(), var6);
+						} catch (Exception var14) {
+							LOGGER.warn("Failed to read {} lock", levelSave.path(), var14);
 							return null;
 						}
 
 						try {
 							LevelSummary levelSummary = this.readLevelProperties(levelSave, this.createLevelDataParser(levelSave, bl));
 							return levelSummary != null ? levelSummary : null;
-						} catch (OutOfMemoryError var4x) {
+						} catch (OutOfMemoryError var12) {
 							CrashMemoryReserve.releaseMemory();
 							System.gc();
-							LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of memory trying to read summary of {}", levelSave.getRootPath());
-							throw var4x;
-						} catch (StackOverflowError var5) {
+							String string = "Ran out of memory trying to read summary of world folder \"" + levelSave.getRootPath() + "\"";
+							LOGGER.error(LogUtils.FATAL_MARKER, string);
+							OutOfMemoryError outOfMemoryError2 = new OutOfMemoryError("Ran out of memory reading level data");
+							outOfMemoryError2.initCause(var12);
+							CrashReport crashReport = CrashReport.create(outOfMemoryError2, string);
+							CrashReportSection crashReportSection = crashReport.addElement("World details");
+							crashReportSection.add("Folder Name", levelSave.getRootPath());
+
+							try {
+								long l = Files.size(levelSave.getLevelDatPath());
+								crashReportSection.add("level.dat size", l);
+							} catch (IOException var11) {
+								crashReportSection.add("level.dat size", (Throwable)var11);
+							}
+
+							throw new CrashException(crashReport);
+						} catch (StackOverflowError var13) {
 							LOGGER.error(
 								LogUtils.FATAL_MARKER,
-								"Ran out of stack trying to read summary of {}. Assuming corruption; attempting to restore from from level.dat_old.",
-								levelSave.getRootPath()
+								"Ran out of stack trying to read summary of world folder \"{}\". Assuming corruption; attempting to restore from from {}.",
+								levelSave.getRootPath(),
+								levelSave.getLevelDatOldPath()
 							);
 							Util.backupAndReplace(levelSave.getLevelDatPath(), levelSave.getLevelDatOldPath(), levelSave.getCorruptedLevelDatPath(LocalDateTime.now()), true);
-							throw var5;
+							throw var13;
 						}
 					},
 					Util.getMainWorkerExecutor()

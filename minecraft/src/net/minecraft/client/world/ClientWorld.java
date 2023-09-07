@@ -315,16 +315,8 @@ public class ClientWorld extends World {
 		return this.entityManager.getEntityCount();
 	}
 
-	public void addPlayer(int id, AbstractClientPlayerEntity player) {
-		this.addEntityPrivate(id, player);
-	}
-
-	public void addEntity(int id, Entity entity) {
-		this.addEntityPrivate(id, entity);
-	}
-
-	private void addEntityPrivate(int id, Entity entity) {
-		this.removeEntity(id, Entity.RemovalReason.DISCARDED);
+	public void addEntity(Entity entity) {
+		this.removeEntity(entity.getId(), Entity.RemovalReason.DISCARDED);
 		this.entityManager.addEntity(entity);
 	}
 

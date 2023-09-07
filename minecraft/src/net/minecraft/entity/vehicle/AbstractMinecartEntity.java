@@ -760,27 +760,27 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	public double getLerpTargetX() {
-		return this.clientX;
+		return this.clientInterpolationSteps > 0 ? this.clientX : this.getX();
 	}
 
 	@Override
 	public double getLerpTargetY() {
-		return this.clientY;
+		return this.clientInterpolationSteps > 0 ? this.clientY : this.getY();
 	}
 
 	@Override
 	public double getLerpTargetZ() {
-		return this.clientZ;
+		return this.clientInterpolationSteps > 0 ? this.clientZ : this.getZ();
 	}
 
 	@Override
 	public float getLerpTargetPitch() {
-		return (float)this.clientPitch;
+		return this.clientInterpolationSteps > 0 ? (float)this.clientPitch : this.getPitch();
 	}
 
 	@Override
 	public float getLerpTargetYaw() {
-		return (float)this.clientYaw;
+		return this.clientInterpolationSteps > 0 ? (float)this.clientYaw : this.getYaw();
 	}
 
 	@Override

@@ -1,7 +1,8 @@
 package net.minecraft.client.gui.screen.recipebook;
 
 import com.google.common.collect.Lists;
-import java.util.Arrays;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +24,7 @@ import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
+import net.minecraft.client.search.SearchManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.recipe.Ingredient;
@@ -35,7 +37,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.GameRules;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -189,35 +190,20 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 
 	private void refreshResults(boolean resetCurrentPage) {
 		List<RecipeResultCollection> list = this.recipeBook.getResultsForGroup(this.currentTab.getCategory());
-		boolean bl = this.client.world.getGameRules().getBoolean(GameRules.DO_LIMITED_CRAFTING);
 		list.forEach(
 			resultCollection -> resultCollection.computeCraftables(
-					this.recipeFinder, this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.recipeBook, bl
+					this.recipeFinder, this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.recipeBook
 				)
 		);
 		List<RecipeResultCollection> list2 = Lists.<RecipeResultCollection>newArrayList(list);
+		list2.removeIf(resultCollection -> !resultCollection.isInitialized());
 		list2.removeIf(resultCollection -> !resultCollection.hasFittingRecipes());
 		String string = this.searchField.getText();
-		if (string.isEmpty() || bl) {
-			list2.removeIf(resultCollection -> !resultCollection.isInitialized());
-		}
-
 		if (!string.isEmpty()) {
-			list2.removeIf(
-				resultCollection -> resultCollection.getAllRecipes()
-						.stream()
-						.noneMatch(
-							recipe -> Arrays.stream(recipe.value().getResult(this.client.world.getRegistryManager()).getName().getString().toLowerCase(Locale.ROOT).split("\\W+"))
-									.anyMatch(word -> word.startsWith(string.toLowerCase(Locale.ROOT)))
-						)
+			ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
+				this.client.getSearchProvider(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT))
 			);
-			list2.sort((a, b) -> {
-				if (a.isInitialized() == b.isInitialized()) {
-					return 0;
-				} else {
-					return a.isInitialized() ? -1 : 1;
-				}
-			});
+			list2.removeIf(resultCollection -> !objectSet.contains(resultCollection));
 		}
 
 		if (this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {

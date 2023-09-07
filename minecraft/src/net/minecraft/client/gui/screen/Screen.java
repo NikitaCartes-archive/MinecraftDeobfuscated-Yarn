@@ -559,12 +559,16 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			if (list.size() > 1) {
 				builder.put(NarrationPart.POSITION, Text.translatable("narrator.position.screen", selectedElementNarrationData.index + 1, list.size()));
 				if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
-					builder.put(NarrationPart.USAGE, Text.translatable("narration.component_list.usage"));
+					builder.put(NarrationPart.USAGE, this.getUsageNarrationText());
 				}
 			}
 
 			selectedElementNarrationData.selectable.appendNarrations(builder.nextMessage());
 		}
+	}
+
+	protected Text getUsageNarrationText() {
+		return Text.translatable("narration.component_list.usage");
 	}
 
 	@Nullable

@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
@@ -97,5 +98,11 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void sendMessage(Text message) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.inGameHud.getChatHud().addMessage(message);
+	}
+
+	@Override
+	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+		super.onSpawnPacket(packet);
+		this.resetPosition();
 	}
 }

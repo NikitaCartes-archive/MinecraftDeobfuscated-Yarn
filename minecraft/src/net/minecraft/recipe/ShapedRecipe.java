@@ -132,7 +132,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	/**
 	 * Removes empty space from around the recipe pattern.
 	 * 
-	 * <p>Turns patterns such as:</p>
+	 * <p>Turns patterns such as:
 	 * <pre>
 	 * {@code
 	 * "   o"

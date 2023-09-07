@@ -31,9 +31,9 @@ public class OptionsScreen extends Screen {
 	private static final Text VIDEO_TEXT = Text.translatable("options.video");
 	private static final Text CONTROL_TEXT = Text.translatable("options.controls");
 	private static final Text LANGUAGE_TEXT = Text.translatable("options.language");
-	private static final Text CHAT_TEXT = Text.translatable("options.chat.title");
+	private static final Text CHAT_TEXT = Text.translatable("options.chat");
 	private static final Text RESOURCE_PACK_TEXT = Text.translatable("options.resourcepack");
-	private static final Text ACCESSIBILITY_TEXT = Text.translatable("options.accessibility.title");
+	private static final Text ACCESSIBILITY_TEXT = Text.translatable("options.accessibility");
 	private static final Text TELEMETRY_TEXT = Text.translatable("options.telemetry");
 	private static final Text CREDITS_AND_ATTRIBUTION_TEXT = Text.translatable("options.credits_and_attribution");
 	private static final int COLUMNS = 2;

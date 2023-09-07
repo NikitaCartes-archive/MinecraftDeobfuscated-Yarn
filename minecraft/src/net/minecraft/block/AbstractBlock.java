@@ -1164,7 +1164,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 					return false;
 				} else {
 					Box box = voxelShape.getBoundingBox();
-					return box.getAverageSideLength() >= 0.7291666666666666 ? true : box.getYLength() >= 1.0;
+					return box.getAverageSideLength() >= 0.7291666666666666 ? true : box.getLengthY() >= 1.0;
 				}
 			}
 		}

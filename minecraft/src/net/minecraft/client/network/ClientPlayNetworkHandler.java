@@ -52,6 +52,7 @@ import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.VillageSectionsDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
+import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.session.ProfileKeys;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
@@ -216,7 +217,6 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
@@ -399,9 +399,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 		this.client.debugRenderer.reset();
 		this.client.player.init();
-		int i = packet.playerEntityId();
-		this.client.player.setId(i);
-		this.world.addPlayer(i, this.client.player);
+		this.client.player.setId(packet.playerEntityId());
+		this.world.addEntity(this.client.player);
 		this.client.player.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(this.client.player);
 		this.client.cameraEntity = this.client.player;
@@ -427,28 +426,42 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntitySpawn(EntitySpawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		EntityType<?> entityType = packet.getEntityType();
-		Entity entity = entityType.create(this.world);
+		Entity entity = this.createEntity(packet);
 		if (entity != null) {
 			entity.onSpawnPacket(packet);
-			int i = packet.getId();
-			this.world.addEntity(i, entity);
+			this.world.addEntity(entity);
 			this.playSpawnSound(entity);
 		} else {
-			LOGGER.warn("Skipping Entity with id {}", entityType);
+			LOGGER.warn("Skipping Entity with id {}", packet.getEntityType());
+		}
+	}
+
+	@Nullable
+	private Entity createEntity(EntitySpawnS2CPacket packet) {
+		EntityType<?> entityType = packet.getEntityType();
+		if (entityType == EntityType.PLAYER) {
+			PlayerListEntry playerListEntry = this.getPlayerListEntry(packet.getUuid());
+			if (playerListEntry == null) {
+				LOGGER.warn("Server attempted to add player prior to sending player info (Player id {})", packet.getUuid());
+				return null;
+			} else {
+				return new OtherClientPlayerEntity(this.world, playerListEntry.getProfile());
+			}
+		} else {
+			return entityType.create(this.world);
 		}
 	}
 
 	private void playSpawnSound(Entity entity) {
-		if (entity instanceof AbstractMinecartEntity) {
-			this.client.getSoundManager().play(new MovingMinecartSoundInstance((AbstractMinecartEntity)entity));
-		} else if (entity instanceof BeeEntity) {
-			boolean bl = ((BeeEntity)entity).hasAngerTime();
+		if (entity instanceof AbstractMinecartEntity abstractMinecartEntity) {
+			this.client.getSoundManager().play(new MovingMinecartSoundInstance(abstractMinecartEntity));
+		} else if (entity instanceof BeeEntity beeEntity) {
+			boolean bl = beeEntity.hasAngerTime();
 			AbstractBeeSoundInstance abstractBeeSoundInstance;
 			if (bl) {
-				abstractBeeSoundInstance = new AggressiveBeeSoundInstance((BeeEntity)entity);
+				abstractBeeSoundInstance = new AggressiveBeeSoundInstance(beeEntity);
 			} else {
-				abstractBeeSoundInstance = new PassiveBeeSoundInstance((BeeEntity)entity);
+				abstractBeeSoundInstance = new PassiveBeeSoundInstance(beeEntity);
 			}
 
 			this.client.getSoundManager().playNextTick(abstractBeeSoundInstance);
@@ -466,7 +479,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		entity.setYaw(0.0F);
 		entity.setPitch(0.0F);
 		entity.setId(packet.getId());
-		this.world.addEntity(packet.getId(), entity);
+		this.world.addEntity(entity);
 	}
 
 	@Override
@@ -484,28 +497,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		Entity entity = this.world.getEntityById(packet.id());
 		if (entity != null) {
 			entity.getDataTracker().writeUpdatedEntries(packet.trackedValues());
-		}
-	}
-
-	@Override
-	public void onPlayerSpawn(PlayerSpawnS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		PlayerListEntry playerListEntry = this.getPlayerListEntry(packet.getPlayerUuid());
-		if (playerListEntry == null) {
-			LOGGER.warn("Server attempted to add player prior to sending player info (Player id {})", packet.getPlayerUuid());
-		} else {
-			double d = packet.getX();
-			double e = packet.getY();
-			double f = packet.getZ();
-			float g = (float)(packet.getYaw() * 360) / 256.0F;
-			float h = (float)(packet.getPitch() * 360) / 256.0F;
-			int i = packet.getId();
-			OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(this.client.world, playerListEntry.getProfile());
-			otherClientPlayerEntity.setId(i);
-			otherClientPlayerEntity.updateTrackedPosition(d, e, f);
-			otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
-			otherClientPlayerEntity.resetPosition();
-			this.world.addPlayer(i, otherClientPlayerEntity);
 		}
 	}
 
@@ -1034,7 +1025,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		RegistryKey<World> registryKey = commonPlayerSpawnInfo.dimension();
 		RegistryEntry<DimensionType> registryEntry = this.combinedDynamicRegistries.get(RegistryKeys.DIMENSION_TYPE).entryOf(commonPlayerSpawnInfo.dimensionType());
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
-		int i = clientPlayerEntity.getId();
 		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
 			Scoreboard scoreboard = this.world.getScoreboard();
 			Map<String, MapState> map = this.world.getMapStates();
@@ -1076,7 +1066,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook());
 		}
 
-		clientPlayerEntity2.setId(i);
+		clientPlayerEntity2.setId(clientPlayerEntity.getId());
 		this.client.player = clientPlayerEntity2;
 		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
 			this.client.getMusicTracker().stop();
@@ -1095,7 +1085,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		clientPlayerEntity2.init();
-		this.world.addPlayer(i, clientPlayerEntity2);
+		this.world.addEntity(clientPlayerEntity2);
 		clientPlayerEntity2.setYaw(-180.0F);
 		clientPlayerEntity2.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(clientPlayerEntity2);
@@ -1403,6 +1393,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.recipeManager.setRecipes(packet.getRecipes());
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
 		clientRecipeBook.reload(this.recipeManager.values(), this.client.world.getRegistryManager());
+		this.client.reloadSearchProvider(SearchManager.RECIPE_OUTPUT, clientRecipeBook.getOrderedResults());
 	}
 
 	@Override

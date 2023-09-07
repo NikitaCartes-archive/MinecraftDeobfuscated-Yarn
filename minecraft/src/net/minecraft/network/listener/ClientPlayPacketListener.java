@@ -71,7 +71,6 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
@@ -124,8 +123,6 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket packet);
 
 	void onScoreboardObjectiveUpdate(ScoreboardObjectiveUpdateS2CPacket packet);
-
-	void onPlayerSpawn(PlayerSpawnS2CPacket packet);
 
 	void onEntityAnimation(EntityAnimationS2CPacket packet);
 

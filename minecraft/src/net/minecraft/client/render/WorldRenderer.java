@@ -948,7 +948,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		profiler.swap("clear");
 		BackgroundRenderer.render(camera, tickDelta, this.client.world, this.client.options.getClampedViewDistance(), gameRenderer.getSkyDarkness(tickDelta));
-		BackgroundRenderer.setFogBlack();
+		BackgroundRenderer.applyFogColor();
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 		float g = gameRenderer.getViewDistance();
 		boolean bl2 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
@@ -1612,7 +1612,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					float f = (float)vec3d.x;
 					float g = (float)vec3d.y;
 					float h = (float)vec3d.z;
-					BackgroundRenderer.setFogBlack();
+					BackgroundRenderer.applyFogColor();
 					BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 					RenderSystem.depthMask(false);
 					RenderSystem.setShaderColor(f, g, h, 1.0F);
@@ -1778,7 +1778,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 			RenderSystem.setShader(GameRenderer::getPositionTexColorNormalProgram);
 			RenderSystem.setShaderTexture(0, CLOUDS);
-			BackgroundRenderer.setFogBlack();
+			BackgroundRenderer.applyFogColor();
 			matrices.push();
 			matrices.scale(12.0F, 1.0F, 12.0F);
 			matrices.translate(-l, m, -n);

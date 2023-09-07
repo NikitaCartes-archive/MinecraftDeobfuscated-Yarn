@@ -2903,27 +2903,27 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public double getLerpTargetX() {
-		return this.serverX;
+		return this.bodyTrackingIncrements > 0 ? this.serverX : this.getX();
 	}
 
 	@Override
 	public double getLerpTargetY() {
-		return this.serverY;
+		return this.bodyTrackingIncrements > 0 ? this.serverY : this.getY();
 	}
 
 	@Override
 	public double getLerpTargetZ() {
-		return this.serverZ;
+		return this.bodyTrackingIncrements > 0 ? this.serverZ : this.getZ();
 	}
 
 	@Override
 	public float getLerpTargetPitch() {
-		return (float)this.serverPitch;
+		return this.bodyTrackingIncrements > 0 ? (float)this.serverPitch : this.getPitch();
 	}
 
 	@Override
 	public float getLerpTargetYaw() {
-		return (float)this.serverYaw;
+		return this.bodyTrackingIncrements > 0 ? (float)this.serverYaw : this.getYaw();
 	}
 
 	@Override

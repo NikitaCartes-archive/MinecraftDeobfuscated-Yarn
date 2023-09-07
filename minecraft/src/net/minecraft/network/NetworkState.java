@@ -161,7 +161,6 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
@@ -218,7 +217,6 @@ public enum NetworkState {
 					.registerBundlePacket(BundleS2CPacket.class, BundleS2CPacket::new)
 					.register(EntitySpawnS2CPacket.class, EntitySpawnS2CPacket::new)
 					.register(ExperienceOrbSpawnS2CPacket.class, ExperienceOrbSpawnS2CPacket::new)
-					.register(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)
 					.register(EntityAnimationS2CPacket.class, EntityAnimationS2CPacket::new)
 					.register(StatisticsS2CPacket.class, StatisticsS2CPacket::new)
 					.register(PlayerActionResponseS2CPacket.class, PlayerActionResponseS2CPacket::new)

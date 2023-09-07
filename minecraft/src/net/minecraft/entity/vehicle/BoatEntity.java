@@ -272,27 +272,27 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 	@Override
 	public double getLerpTargetX() {
-		return this.x;
+		return this.field_7708 > 0 ? this.x : this.getX();
 	}
 
 	@Override
 	public double getLerpTargetY() {
-		return this.y;
+		return this.field_7708 > 0 ? this.y : this.getY();
 	}
 
 	@Override
 	public double getLerpTargetZ() {
-		return this.z;
+		return this.field_7708 > 0 ? this.z : this.getZ();
 	}
 
 	@Override
 	public float getLerpTargetPitch() {
-		return (float)this.boatPitch;
+		return this.field_7708 > 0 ? (float)this.boatPitch : this.getPitch();
 	}
 
 	@Override
 	public float getLerpTargetYaw() {
-		return (float)this.boatYaw;
+		return this.field_7708 > 0 ? (float)this.boatYaw : this.getYaw();
 	}
 
 	@Override

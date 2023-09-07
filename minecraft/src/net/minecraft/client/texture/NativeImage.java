@@ -65,6 +65,10 @@ public final class NativeImage implements AutoCloseable {
 			} else {
 				this.pointer = MemoryUtil.nmemAlloc(this.sizeBytes);
 			}
+
+			if (this.pointer == 0L) {
+				throw new IllegalStateException("Unable to allocate texture of size " + width + "x" + height + " (" + format.getChannelCount() + " channels)");
+			}
 		} else {
 			throw new IllegalArgumentException("Invalid texture size: " + width + "x" + height);
 		}
@@ -679,12 +683,11 @@ public final class NativeImage implements AutoCloseable {
 
 	public void mirrorVertically() {
 		this.checkAllocated();
+		int i = this.format.getChannelCount();
+		int j = this.getWidth() * i;
+		long l = MemoryUtil.nmemAlloc((long)j);
 
-		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			int i = this.format.getChannelCount();
-			int j = this.getWidth() * i;
-			long l = memoryStack.nmalloc(j);
-
+		try {
 			for (int k = 0; k < this.getHeight() / 2; k++) {
 				int m = k * this.getWidth() * i;
 				int n = (this.getHeight() - 1 - k) * this.getWidth() * i;
@@ -692,6 +695,8 @@ public final class NativeImage implements AutoCloseable {
 				MemoryUtil.memCopy(this.pointer + (long)n, this.pointer + (long)m, (long)j);
 				MemoryUtil.memCopy(l, this.pointer + (long)n, (long)j);
 			}
+		} finally {
+			MemoryUtil.nmemFree(l);
 		}
 	}
 

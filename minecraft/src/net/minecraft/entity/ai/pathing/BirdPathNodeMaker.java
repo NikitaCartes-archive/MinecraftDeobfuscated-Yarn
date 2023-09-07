@@ -358,9 +358,9 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 				BlockPos.ofFloored(box.maxX, (double)entity.getBlockY(), box.maxZ)
 			);
 		} else {
-			double d = Math.max(0.0, (1.5 - box.getZLength()) / 2.0);
-			double e = Math.max(0.0, (1.5 - box.getXLength()) / 2.0);
-			double g = Math.max(0.0, (1.5 - box.getYLength()) / 2.0);
+			double d = Math.max(0.0, (1.5 - box.getLengthZ()) / 2.0);
+			double e = Math.max(0.0, (1.5 - box.getLengthX()) / 2.0);
+			double g = Math.max(0.0, (1.5 - box.getLengthY()) / 2.0);
 			Box box2 = box.expand(e, g, d);
 			return BlockPos.iterateRandomly(
 				entity.getRandom(),

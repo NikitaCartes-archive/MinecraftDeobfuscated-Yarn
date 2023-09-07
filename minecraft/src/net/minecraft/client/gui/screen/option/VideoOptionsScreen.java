@@ -92,10 +92,20 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			(prefix, value) -> {
 				if (monitor == null) {
 					return Text.translatable("options.fullscreen.unavailable");
+				} else if (value == -1) {
+					return GameOptions.getGenericValueText(prefix, Text.translatable("options.fullscreen.current"));
 				} else {
-					return value == -1
-						? GameOptions.getGenericValueText(prefix, Text.translatable("options.fullscreen.current"))
-						: GameOptions.getGenericValueText(prefix, Text.literal(monitor.getVideoMode(value).toString()));
+					VideoMode videoMode = monitor.getVideoMode(value);
+					return GameOptions.getGenericValueText(
+						prefix,
+						Text.translatable(
+							"options.fullscreen.entry",
+							videoMode.getWidth(),
+							videoMode.getHeight(),
+							videoMode.getRefreshRate(),
+							videoMode.getRedBits() + videoMode.getGreenBits() + videoMode.getBlueBits()
+						)
+					);
 				}
 			},
 			new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1),

@@ -62,16 +62,16 @@ public class RecipeResultCollection {
 		}
 	}
 
-	public void computeCraftables(RecipeMatcher recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook, boolean bl) {
+	public void computeCraftables(RecipeMatcher recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
 		for (RecipeEntry<?> recipeEntry : this.recipes) {
-			boolean bl2 = recipeEntry.value().fits(gridWidth, gridHeight) && (!bl || recipeBook.contains(recipeEntry));
-			if (bl2) {
+			boolean bl = recipeEntry.value().fits(gridWidth, gridHeight) && recipeBook.contains(recipeEntry);
+			if (bl) {
 				this.fittingRecipes.add(recipeEntry);
 			} else {
 				this.fittingRecipes.remove(recipeEntry);
 			}
 
-			if (bl2 && recipeFinder.match(recipeEntry.value(), null)) {
+			if (bl && recipeFinder.match(recipeEntry.value(), null)) {
 				this.craftableRecipes.add(recipeEntry);
 			} else {
 				this.craftableRecipes.remove(recipeEntry);

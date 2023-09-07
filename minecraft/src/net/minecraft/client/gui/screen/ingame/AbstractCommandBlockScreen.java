@@ -86,6 +86,11 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	@Override
+	protected Text getUsageNarrationText() {
+		return this.commandSuggestor.isOpen() ? this.commandSuggestor.getSuggestionUsageNarrationText() : super.getUsageNarrationText();
+	}
+
+	@Override
 	public void resize(MinecraftClient client, int width, int height) {
 		String string = this.consoleCommandTextField.getText();
 		this.init(client, width, height);

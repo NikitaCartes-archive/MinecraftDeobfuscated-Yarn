@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FireBlock;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.EndCrystalEntity;
@@ -114,7 +115,9 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 				(double)spike.getCenterX() + 0.5, (double)(spike.getHeight() + 1), (double)spike.getCenterZ() + 0.5, random.nextFloat() * 360.0F, 0.0F
 			);
 			world.spawnEntity(endCrystalEntity);
-			this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
+			BlockPos blockPosx = endCrystalEntity.getBlockPos();
+			this.setBlockState(world, blockPosx.down(), Blocks.BEDROCK.getDefaultState());
+			this.setBlockState(world, blockPosx, FireBlock.getState(world, blockPosx));
 		}
 	}
 

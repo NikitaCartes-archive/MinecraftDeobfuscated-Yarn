@@ -201,9 +201,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	private boolean isBlocked(PathNode node) {
 		Box box = this.entity.getBoundingBox();
 		Vec3d vec3d = new Vec3d(
-			(double)node.x - this.entity.getX() + box.getXLength() / 2.0,
-			(double)node.y - this.entity.getY() + box.getYLength() / 2.0,
-			(double)node.z - this.entity.getZ() + box.getZLength() / 2.0
+			(double)node.x - this.entity.getX() + box.getLengthX() / 2.0,
+			(double)node.y - this.entity.getY() + box.getLengthY() / 2.0,
+			(double)node.z - this.entity.getZ() + box.getLengthZ() / 2.0
 		);
 		int i = MathHelper.ceil(vec3d.length() / box.getAverageSideLength());
 		vec3d = vec3d.multiply((double)(1.0F / (float)i));

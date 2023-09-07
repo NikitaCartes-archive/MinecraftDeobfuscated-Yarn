@@ -49,7 +49,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.PublicPlayerSession;
-import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
@@ -79,7 +78,6 @@ import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
@@ -1588,11 +1586,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 			.sendPacket(
 				new PlaySoundS2CPacket(Registries.SOUND_EVENT.getEntry(event), category, this.getX(), this.getY(), this.getZ(), volume, pitch, this.random.nextLong())
 			);
-	}
-
-	@Override
-	public Packet<ClientPlayPacketListener> createSpawnPacket() {
-		return new PlayerSpawnS2CPacket(this);
 	}
 
 	@Override

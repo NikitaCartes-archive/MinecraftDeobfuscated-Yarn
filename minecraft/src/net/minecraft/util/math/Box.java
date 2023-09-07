@@ -345,21 +345,30 @@ public class Box {
 	}
 
 	public double getAverageSideLength() {
-		double d = this.getXLength();
-		double e = this.getYLength();
-		double f = this.getZLength();
+		double d = this.getLengthX();
+		double e = this.getLengthY();
+		double f = this.getLengthZ();
 		return (d + e + f) / 3.0;
 	}
 
-	public double getXLength() {
+	/**
+	 * {@return the length of this box on the X axis}
+	 */
+	public double getLengthX() {
 		return this.maxX - this.minX;
 	}
 
-	public double getYLength() {
+	/**
+	 * {@return the length of this box on the Y axis}
+	 */
+	public double getLengthY() {
 		return this.maxY - this.minY;
 	}
 
-	public double getZLength() {
+	/**
+	 * {@return the length of this box on the Z axis}
+	 */
+	public double getLengthZ() {
 		return this.maxZ - this.minZ;
 	}
 

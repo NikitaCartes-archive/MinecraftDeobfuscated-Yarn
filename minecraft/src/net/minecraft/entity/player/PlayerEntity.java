@@ -2175,7 +2175,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else if (this.isInSwimmingPose()) {
 			return this.getLerpedPos(delta).add(new Vec3d(d, 0.2, -0.15).rotateX(-f).rotateY(-g));
 		} else {
-			double l = this.getBoundingBox().getYLength() - 1.0;
+			double l = this.getBoundingBox().getLengthY() - 1.0;
 			double e = this.isInSneakingPose() ? -0.2 : 0.07;
 			return this.getLerpedPos(delta).add(new Vec3d(d, l, e).rotateY(-g));
 		}

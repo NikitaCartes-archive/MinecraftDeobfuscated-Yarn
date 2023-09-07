@@ -107,9 +107,9 @@ public class TestRunner {
 			gameTestState.setPos(structureBlockBlockEntity.getPos());
 			map.put(gameTestState, new BlockPos(this.reusablePos));
 			this.rowBoundingBox = this.rowBoundingBox.union(box);
-			this.reusablePos.move((int)box.getXLength() + 5, 0, 0);
+			this.reusablePos.move((int)box.getLengthX() + 5, 0, 0);
 			if (this.testCount++ % this.sizeZ == this.sizeZ - 1) {
-				this.reusablePos.move(0, 0, (int)this.rowBoundingBox.getZLength() + 6);
+				this.reusablePos.move(0, 0, (int)this.rowBoundingBox.getLengthZ() + 6);
 				this.reusablePos.setX(this.pos.getX());
 				this.rowBoundingBox = new Box(this.reusablePos);
 			}
