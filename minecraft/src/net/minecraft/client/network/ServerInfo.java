@@ -1,6 +1,7 @@
 package net.minecraft.client.network;
 
 import com.mojang.logging.LogUtils;
+import java.io.IOException;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.Text;
+import net.minecraft.util.PngMetadata;
 import org.slf4j.Logger;
 
 /**
@@ -27,6 +29,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ServerInfo {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final int MAX_FAVICON_SIZE = 1024;
 	public String name;
 	public String address;
 	public Text playerCountLabel;
@@ -88,7 +91,8 @@ public class ServerInfo {
 		ServerInfo serverInfo = new ServerInfo(root.getString("name"), root.getString("ip"), ServerInfo.ServerType.OTHER);
 		if (root.contains("icon", NbtElement.STRING_TYPE)) {
 			try {
-				serverInfo.setFavicon(Base64.getDecoder().decode(root.getString("icon")));
+				byte[] bs = Base64.getDecoder().decode(root.getString("icon"));
+				serverInfo.setFavicon(validateFavicon(bs));
 			} catch (IllegalArgumentException var3) {
 				LOGGER.warn("Malformed base64 server icon", (Throwable)var3);
 			}
@@ -143,6 +147,22 @@ public class ServerInfo {
 		this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
 		this.serverType = serverInfo.serverType;
 		this.secureChatEnforced = serverInfo.secureChatEnforced;
+	}
+
+	@Nullable
+	public static byte[] validateFavicon(@Nullable byte[] favicon) {
+		if (favicon != null) {
+			try {
+				PngMetadata pngMetadata = PngMetadata.fromBytes(favicon);
+				if (pngMetadata.width() <= 1024 && pngMetadata.height() <= 1024) {
+					return favicon;
+				}
+			} catch (IOException var2) {
+				LOGGER.warn("Failed to decode server icon", (Throwable)var2);
+			}
+		}
+
+		return null;
 	}
 
 	/**

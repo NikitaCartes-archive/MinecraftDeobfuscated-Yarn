@@ -1,7 +1,6 @@
 package net.minecraft.client.realms.gui.screen;
 
 import com.mojang.logging.LogUtils;
-import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -25,14 +24,12 @@ public class RealmsTermsScreen extends RealmsScreen {
 	private static final Text SENTENCE_ONE_TEXT = Text.translatable("mco.terms.sentence.1");
 	private static final Text SENTENCE_TWO_TEXT = ScreenTexts.space().append(Text.translatable("mco.terms.sentence.2").fillStyle(Style.EMPTY.withUnderline(true)));
 	private final Screen parent;
-	private final RealmsMainScreen mainScreen;
 	private final RealmsServer realmsServer;
 	private boolean onLink;
 
-	public RealmsTermsScreen(Screen parent, RealmsMainScreen mainScreen, RealmsServer realmsServer) {
+	public RealmsTermsScreen(Screen parent, RealmsServer realmsServer) {
 		super(TITLE);
 		this.parent = parent;
-		this.mainScreen = mainScreen;
 		this.realmsServer = realmsServer;
 	}
 
@@ -64,10 +61,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 
 		try {
 			realmsClient.agreeToTos();
-			this.client
-				.setScreen(
-					new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsGetServerDetailsTask(this.mainScreen, this.parent, this.realmsServer, new ReentrantLock()))
-				);
+			this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsGetServerDetailsTask(this.parent, this.realmsServer)));
 		} catch (RealmsServiceException var3) {
 			LOGGER.error("Couldn't agree to TOS", (Throwable)var3);
 		}

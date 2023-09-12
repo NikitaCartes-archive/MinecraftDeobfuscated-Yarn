@@ -47,31 +47,55 @@ public class NbtCompound implements NbtElement {
 	private static final int SIZE = 48;
 	private static final int field_41719 = 32;
 	public static final NbtType<NbtCompound> TYPE = new NbtType.OfVariableSize<NbtCompound>() {
-		public NbtCompound read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(48L);
-			if (i > 512) {
-				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
-			} else {
-				Map<String, NbtElement> map = Maps.<String, NbtElement>newHashMap();
+		public NbtCompound read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.pushStack();
 
-				byte b;
-				while ((b = NbtCompound.readByte(dataInput, nbtTagSizeTracker)) != 0) {
-					String string = NbtCompound.readString(dataInput, nbtTagSizeTracker);
-					nbtTagSizeTracker.add((long)(28 + 2 * string.length()));
-					NbtElement nbtElement = NbtCompound.read(NbtTypes.byId(b), string, dataInput, i + 1, nbtTagSizeTracker);
-					if (map.put(string, nbtElement) == null) {
-						nbtTagSizeTracker.add(36L);
-					}
-				}
-
-				return new NbtCompound(map);
+			NbtCompound var3;
+			try {
+				var3 = readCompound(dataInput, nbtTagSizeTracker);
+			} finally {
+				nbtTagSizeTracker.popStack();
 			}
+
+			return var3;
+		}
+
+		private static NbtCompound readCompound(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(48L);
+			Map<String, NbtElement> map = Maps.<String, NbtElement>newHashMap();
+
+			byte b;
+			while ((b = input.readByte()) != 0) {
+				String string = input.readUTF();
+				tracker.add(28L + 2L * (long)string.length());
+				NbtElement nbtElement = NbtCompound.read(NbtTypes.byId(b), string, input, tracker);
+				if (map.put(string, nbtElement) == null) {
+					tracker.add(36L);
+				}
+			}
+
+			return new NbtCompound(map);
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			tracker.pushStack();
+
+			NbtScanner.Result var4;
+			try {
+				var4 = scanCompound(input, visitor, tracker);
+			} finally {
+				tracker.popStack();
+			}
+
+			return var4;
+		}
+
+		private static NbtScanner.Result scanCompound(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(48L);
+
 			byte b;
-			label33:
+			label35:
 			while ((b = input.readByte()) != 0) {
 				NbtType<?> nbtType = NbtTypes.byId(b);
 				switch (visitor.visitSubNbtType(nbtType)) {
@@ -79,25 +103,27 @@ public class NbtCompound implements NbtElement {
 						return NbtScanner.Result.HALT;
 					case BREAK:
 						NbtString.skip(input);
-						nbtType.skip(input);
-						break label33;
+						nbtType.skip(input, tracker);
+						break label35;
 					case SKIP:
 						NbtString.skip(input);
-						nbtType.skip(input);
+						nbtType.skip(input, tracker);
 						break;
 					default:
 						String string = input.readUTF();
+						tracker.add(28L + 2L * (long)string.length());
 						switch (visitor.startSubNbt(nbtType, string)) {
 							case HALT:
 								return NbtScanner.Result.HALT;
 							case BREAK:
-								nbtType.skip(input);
-								break label33;
+								nbtType.skip(input, tracker);
+								break label35;
 							case SKIP:
-								nbtType.skip(input);
+								nbtType.skip(input, tracker);
 								break;
 							default:
-								switch (nbtType.doAccept(input, visitor)) {
+								tracker.add(36L);
+								switch (nbtType.doAccept(input, visitor, tracker)) {
 									case HALT:
 										return NbtScanner.Result.HALT;
 									case BREAK:
@@ -109,7 +135,7 @@ public class NbtCompound implements NbtElement {
 			if (b != 0) {
 				while ((b = input.readByte()) != 0) {
 					NbtString.skip(input);
-					NbtTypes.byId(b).skip(input);
+					NbtTypes.byId(b).skip(input, tracker);
 				}
 			}
 
@@ -117,11 +143,28 @@ public class NbtCompound implements NbtElement {
 		}
 
 		@Override
-		public void skip(DataInput input) throws IOException {
+		public void skip(DataInput input, int count, NbtTagSizeTracker tracker) throws IOException {
+			tracker.pushStack();
+
+			try {
+				NbtType.OfVariableSize.super.skip(input, count, tracker);
+			} finally {
+				tracker.popStack();
+			}
+		}
+
+		@Override
+		public void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.pushStack();
+
 			byte b;
-			while ((b = input.readByte()) != 0) {
-				NbtString.skip(input);
-				NbtTypes.byId(b).skip(input);
+			try {
+				while ((b = input.readByte()) != 0) {
+					NbtString.skip(input);
+					NbtTypes.byId(b).skip(input, tracker);
+				}
+			} finally {
+				tracker.popStack();
 			}
 		}
 
@@ -736,19 +779,11 @@ public class NbtCompound implements NbtElement {
 		}
 	}
 
-	static byte readByte(DataInput input, NbtTagSizeTracker tracker) throws IOException {
-		return input.readByte();
-	}
-
-	static String readString(DataInput input, NbtTagSizeTracker tracker) throws IOException {
-		return input.readUTF();
-	}
-
-	static NbtElement read(NbtType<?> reader, String key, DataInput input, int depth, NbtTagSizeTracker tracker) {
+	static NbtElement read(NbtType<?> reader, String key, DataInput input, NbtTagSizeTracker nbtTagSizeTracker) {
 		try {
-			return reader.read(input, depth, tracker);
-		} catch (IOException var8) {
-			CrashReport crashReport = CrashReport.create(var8, "Loading NBT data");
+			return reader.read(input, nbtTagSizeTracker);
+		} catch (IOException var7) {
+			CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
 			CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
 			crashReportSection.add("Tag name", key);
 			crashReportSection.add("Tag type", reader.getCrashReportName());

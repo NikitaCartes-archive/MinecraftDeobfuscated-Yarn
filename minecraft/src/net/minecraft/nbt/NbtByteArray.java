@@ -18,25 +18,26 @@ import org.apache.commons.lang3.ArrayUtils;
 public class NbtByteArray extends AbstractNbtList<NbtByte> {
 	private static final int SIZE = 24;
 	public static final NbtType<NbtByteArray> TYPE = new NbtType.OfVariableSize<NbtByteArray>() {
-		public NbtByteArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(24L);
-			int j = dataInput.readInt();
-			nbtTagSizeTracker.add(1L * (long)j);
-			byte[] bs = new byte[j];
-			dataInput.readFully(bs);
-			return new NbtByteArray(bs);
+		public NbtByteArray read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			return new NbtByteArray(readByteArray(dataInput, nbtTagSizeTracker));
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			return visitor.visitByteArray(readByteArray(input, tracker));
+		}
+
+		private static byte[] readByteArray(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(24L);
 			int i = input.readInt();
+			tracker.add(1L * (long)i);
 			byte[] bs = new byte[i];
 			input.readFully(bs);
-			return visitor.visitByteArray(bs);
+			return bs;
 		}
 
 		@Override
-		public void skip(DataInput input) throws IOException {
+		public void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 			input.skipBytes(input.readInt() * 1);
 		}
 

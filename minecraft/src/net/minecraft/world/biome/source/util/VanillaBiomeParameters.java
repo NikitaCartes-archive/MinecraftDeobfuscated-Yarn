@@ -1203,8 +1203,8 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
-	public static boolean method_43718(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction.NoisePos noisePos) {
-		return densityFunction.sample(noisePos) < -0.225F && densityFunction2.sample(noisePos) > 0.9F;
+	public static boolean inDeepDarkParameters(DensityFunction erosion, DensityFunction depth, DensityFunction.NoisePos pos) {
+		return erosion.sample(pos) < -0.225F && depth.sample(pos) > 0.9F;
 	}
 
 	public static String getPeaksValleysDescription(double weirdness) {
@@ -1289,7 +1289,7 @@ public final class VanillaBiomeParameters {
 	}
 
 	@Debug
-	public MultiNoiseUtil.ParameterRange[] getWeirdnessParameters() {
+	public MultiNoiseUtil.ParameterRange[] getPeaksValleysParameters() {
 		return new MultiNoiseUtil.ParameterRange[]{
 			MultiNoiseUtil.ParameterRange.of(-2.0F, DensityFunctions.getPeaksValleysNoise(0.05F)),
 			MultiNoiseUtil.ParameterRange.of(DensityFunctions.getPeaksValleysNoise(0.05F), DensityFunctions.getPeaksValleysNoise(0.26666668F)),
@@ -1300,7 +1300,7 @@ public final class VanillaBiomeParameters {
 	}
 
 	@Debug
-	public MultiNoiseUtil.ParameterRange[] method_40015() {
+	public MultiNoiseUtil.ParameterRange[] getWeirdnessParameters() {
 		return new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-2.0F, 0.0F), MultiNoiseUtil.ParameterRange.of(0.0F, 2.0F)};
 	}
 }

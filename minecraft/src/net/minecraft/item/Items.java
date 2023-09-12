@@ -1208,7 +1208,7 @@ public class Items {
 			Blocks.WITHER_SKELETON_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN
 		)
 	);
-	public static final Item PLAYER_HEAD = register(new SkullItem(Blocks.PLAYER_HEAD, Blocks.PLAYER_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item PLAYER_HEAD = register(new PlayerHeadItem(Blocks.PLAYER_HEAD, Blocks.PLAYER_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item ZOMBIE_HEAD = register(
 		new VerticallyAttachableBlockItem(Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN)
 	);

@@ -62,7 +62,7 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	private void createWorld() {
 		RealmsCreateWorldScreen realmsCreateWorldScreen = RealmsCreateWorldScreen.newRealm(this.parent, this.server, () -> this.client.execute(() -> {
 				this.parent.resetServerList();
-				this.client.setScreen(this.parent.newScreen());
+				this.client.setScreen(this.parent);
 			}));
 		this.client
 			.setScreen(

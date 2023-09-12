@@ -13,14 +13,18 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtShort extends AbstractNbtNumber {
 	private static final int SIZE = 10;
 	public static final NbtType<NbtShort> TYPE = new NbtType.OfFixedSize<NbtShort>() {
-		public NbtShort read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(10L);
-			return NbtShort.of(dataInput.readShort());
+		public NbtShort read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			return NbtShort.of(readShort(dataInput, nbtTagSizeTracker));
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
-			return visitor.visitShort(input.readShort());
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			return visitor.visitShort(readShort(input, tracker));
+		}
+
+		private static short readShort(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(10L);
+			return input.readShort();
 		}
 
 		@Override

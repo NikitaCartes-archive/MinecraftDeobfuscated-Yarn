@@ -93,7 +93,7 @@ public class MultiplayerServerListPinger {
 						}, () -> entry.playerCountLabel = Text.translatable("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY));
 						serverMetadata.favicon().ifPresent(favicon -> {
 							if (!Arrays.equals(favicon.iconBytes(), entry.getFavicon())) {
-								entry.setFavicon(favicon.iconBytes());
+								entry.setFavicon(ServerInfo.validateFavicon(favicon.iconBytes()));
 								saver.run();
 							}
 						});

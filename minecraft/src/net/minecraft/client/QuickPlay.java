@@ -1,6 +1,5 @@
 package net.minecraft.client;
 
-import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConnectScreen;
@@ -93,9 +92,7 @@ public class QuickPlay {
 			client.setScreen(new DisconnectedScreen(screen, ERROR_TITLE, ERROR_REALM_PERMISSION, TO_REALMS));
 		} else {
 			TitleScreen titleScreen = new TitleScreen();
-			RealmsGetServerDetailsTask realmsGetServerDetailsTask = new RealmsGetServerDetailsTask(
-				new RealmsMainScreen(titleScreen), titleScreen, realmsServer, new ReentrantLock()
-			);
+			RealmsGetServerDetailsTask realmsGetServerDetailsTask = new RealmsGetServerDetailsTask(titleScreen, realmsServer);
 			client.setScreen(new RealmsLongRunningMcoTaskScreen(titleScreen, realmsGetServerDetailsTask));
 		}
 	}

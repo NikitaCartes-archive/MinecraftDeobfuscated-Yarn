@@ -19,33 +19,30 @@ import org.apache.commons.lang3.ArrayUtils;
 public class NbtLongArray extends AbstractNbtList<NbtLong> {
 	private static final int SIZE = 24;
 	public static final NbtType<NbtLongArray> TYPE = new NbtType.OfVariableSize<NbtLongArray>() {
-		public NbtLongArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(24L);
-			int j = dataInput.readInt();
-			nbtTagSizeTracker.add(8L * (long)j);
-			long[] ls = new long[j];
-
-			for (int k = 0; k < j; k++) {
-				ls[k] = dataInput.readLong();
-			}
-
-			return new NbtLongArray(ls);
+		public NbtLongArray read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			return new NbtLongArray(readLongArray(dataInput, nbtTagSizeTracker));
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			return visitor.visitLongArray(readLongArray(input, tracker));
+		}
+
+		private static long[] readLongArray(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(24L);
 			int i = input.readInt();
+			tracker.add(8L * (long)i);
 			long[] ls = new long[i];
 
 			for (int j = 0; j < i; j++) {
 				ls[j] = input.readLong();
 			}
 
-			return visitor.visitLongArray(ls);
+			return ls;
 		}
 
 		@Override
-		public void skip(DataInput input) throws IOException {
+		public void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 			input.skipBytes(input.readInt() * 8);
 		}
 

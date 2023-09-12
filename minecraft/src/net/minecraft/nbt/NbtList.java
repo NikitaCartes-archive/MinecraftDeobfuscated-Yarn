@@ -31,40 +31,64 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtList extends AbstractNbtList<NbtElement> {
 	private static final int SIZE = 37;
 	public static final NbtType<NbtList> TYPE = new NbtType.OfVariableSize<NbtList>() {
-		public NbtList read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(37L);
-			if (i > 512) {
-				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
+		public NbtList read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.pushStack();
+
+			NbtList var3;
+			try {
+				var3 = readList(dataInput, nbtTagSizeTracker);
+			} finally {
+				nbtTagSizeTracker.popStack();
+			}
+
+			return var3;
+		}
+
+		private static NbtList readList(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(37L);
+			byte b = input.readByte();
+			int i = input.readInt();
+			if (b == 0 && i > 0) {
+				throw new RuntimeException("Missing type on ListTag");
 			} else {
-				byte b = dataInput.readByte();
-				int j = dataInput.readInt();
-				if (b == 0 && j > 0) {
-					throw new RuntimeException("Missing type on ListTag");
-				} else {
-					nbtTagSizeTracker.add(4L * (long)j);
-					NbtType<?> nbtType = NbtTypes.byId(b);
-					List<NbtElement> list = Lists.<NbtElement>newArrayListWithCapacity(j);
+				tracker.add(4L * (long)i);
+				NbtType<?> nbtType = NbtTypes.byId(b);
+				List<NbtElement> list = Lists.<NbtElement>newArrayListWithCapacity(i);
 
-					for (int k = 0; k < j; k++) {
-						list.add(nbtType.read(dataInput, i + 1, nbtTagSizeTracker));
-					}
-
-					return new NbtList(list, b);
+				for (int j = 0; j < i; j++) {
+					list.add(nbtType.read(input, tracker));
 				}
+
+				return new NbtList(list, b);
 			}
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			tracker.pushStack();
+
+			NbtScanner.Result var4;
+			try {
+				var4 = scanList(input, visitor, tracker);
+			} finally {
+				tracker.popStack();
+			}
+
+			return var4;
+		}
+
+		private static NbtScanner.Result scanList(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(37L);
 			NbtType<?> nbtType = NbtTypes.byId(input.readByte());
 			int i = input.readInt();
 			switch (visitor.visitListMeta(nbtType, i)) {
 				case HALT:
 					return NbtScanner.Result.HALT;
 				case BREAK:
-					nbtType.skip(input, i);
+					nbtType.skip(input, i, tracker);
 					return visitor.endNested();
 				default:
+					tracker.add(4L * (long)i);
 					int j = 0;
 
 					while (true) {
@@ -74,13 +98,13 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 									case HALT:
 										return NbtScanner.Result.HALT;
 									case BREAK:
-										nbtType.skip(input);
+										nbtType.skip(input, tracker);
 										break;
 									case SKIP:
-										nbtType.skip(input);
+										nbtType.skip(input, tracker);
 										break label41;
 									default:
-										switch (nbtType.doAccept(input, visitor)) {
+										switch (nbtType.doAccept(input, visitor, tracker)) {
 											case HALT:
 												return NbtScanner.Result.HALT;
 											case BREAK:
@@ -93,7 +117,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 
 							int k = i - 1 - j;
 							if (k > 0) {
-								nbtType.skip(input, k);
+								nbtType.skip(input, k, tracker);
 							}
 
 							return visitor.endNested();
@@ -105,10 +129,27 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		}
 
 		@Override
-		public void skip(DataInput input) throws IOException {
-			NbtType<?> nbtType = NbtTypes.byId(input.readByte());
-			int i = input.readInt();
-			nbtType.skip(input, i);
+		public void skip(DataInput input, int count, NbtTagSizeTracker tracker) throws IOException {
+			tracker.pushStack();
+
+			try {
+				NbtType.OfVariableSize.super.skip(input, count, tracker);
+			} finally {
+				tracker.popStack();
+			}
+		}
+
+		@Override
+		public void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.pushStack();
+
+			try {
+				NbtType<?> nbtType = NbtTypes.byId(input.readByte());
+				int i = input.readInt();
+				nbtType.skip(input, i, tracker);
+			} finally {
+				tracker.popStack();
+			}
 		}
 
 		@Override

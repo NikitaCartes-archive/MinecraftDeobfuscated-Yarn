@@ -15,7 +15,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 
 	public SetTradeOffersS2CPacket(int syncId, TradeOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
 		this.syncId = syncId;
-		this.offers = offers;
+		this.offers = offers.copy();
 		this.levelProgress = levelProgress;
 		this.experience = experience;
 		this.leveled = leveled;

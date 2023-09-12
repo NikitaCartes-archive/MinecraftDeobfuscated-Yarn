@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,7 +21,6 @@ import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningTickableTaskScreen;
-import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsTermsScreen;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
@@ -33,14 +31,10 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 	private static final Text TITLE = Text.translatable("mco.connect.connecting");
 	private final RealmsServer server;
 	private final Screen lastScreen;
-	private final RealmsMainScreen mainScreen;
-	private final ReentrantLock connectLock;
 
-	public RealmsGetServerDetailsTask(RealmsMainScreen mainScreen, Screen lastScreen, RealmsServer server, ReentrantLock connectLock) {
+	public RealmsGetServerDetailsTask(Screen lastScreen, RealmsServer server) {
 		this.lastScreen = lastScreen;
-		this.mainScreen = mainScreen;
 		this.server = server;
-		this.connectLock = connectLock;
 	}
 
 	public void run() {
@@ -53,13 +47,13 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		} catch (RealmsServiceException var5) {
 			switch (var5.error.getErrorCode()) {
 				case 6002:
-					setScreen(new RealmsTermsScreen(this.lastScreen, this.mainScreen, this.server));
+					setScreen(new RealmsTermsScreen(this.lastScreen, this.server));
 					return;
 				case 6006:
 					boolean bl = MinecraftClient.getInstance().uuidEquals(this.server.ownerUUID);
 					setScreen(
 						(Screen)(bl
-							? new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME)
+							? new RealmsBrokenWorldScreen(this.lastScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME)
 							: new RealmsGenericErrorScreen(Text.translatable("mco.brokenworld.nonowner.title"), Text.translatable("mco.brokenworld.nonowner.error"), this.lastScreen))
 					);
 					return;
@@ -115,22 +109,15 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		RealmsServerAddress address, Function<RealmsServerAddress, Screen> connectingScreenCreator
 	) {
 		BooleanConsumer booleanConsumer = confirmed -> {
-			try {
-				if (confirmed) {
-					this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
-						MinecraftClient.getInstance().getServerResourcePackProvider().clear();
-						LOGGER.error("Failed to download resource pack from {}", address, throwable);
-						setScreen(new RealmsGenericErrorScreen(Text.translatable("mco.download.resourcePack.fail"), this.lastScreen));
-						return null;
-					});
-					return;
-				}
-
+			if (!confirmed) {
 				setScreen(this.lastScreen);
-			} finally {
-				if (this.connectLock.isHeldByCurrentThread()) {
-					this.connectLock.unlock();
-				}
+			} else {
+				this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
+					MinecraftClient.getInstance().getServerResourcePackProvider().clear();
+					LOGGER.error("Failed to download resource pack from {}", address, throwable);
+					setScreen(new RealmsGenericErrorScreen(Text.translatable("mco.download.resourcePack.fail"), this.lastScreen));
+					return null;
+				});
 			}
 		};
 		return new RealmsLongConfirmationScreen(

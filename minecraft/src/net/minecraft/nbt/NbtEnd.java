@@ -14,22 +14,23 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtEnd implements NbtElement {
 	private static final int SIZE = 8;
 	public static final NbtType<NbtEnd> TYPE = new NbtType<NbtEnd>() {
-		public NbtEnd read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
+		public NbtEnd read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) {
 			nbtTagSizeTracker.add(8L);
 			return NbtEnd.INSTANCE;
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) {
+			tracker.add(8L);
 			return visitor.visitEnd();
 		}
 
 		@Override
-		public void skip(DataInput input, int count) {
+		public void skip(DataInput input, int count, NbtTagSizeTracker tracker) {
 		}
 
 		@Override
-		public void skip(DataInput input) {
+		public void skip(DataInput input, NbtTagSizeTracker tracker) {
 		}
 
 		@Override

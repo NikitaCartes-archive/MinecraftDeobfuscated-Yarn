@@ -285,7 +285,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
@@ -1601,7 +1600,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (this.serverInfo != null) {
 			this.serverInfo.label = packet.getDescription();
-			packet.getFavicon().ifPresent(this.serverInfo::setFavicon);
+			packet.getFavicon().map(ServerInfo::validateFavicon).ifPresent(this.serverInfo::setFavicon);
 			this.serverInfo.setSecureChatEnforced(packet.isSecureChatEnforced());
 			ServerList.updateServerListEntry(this.serverInfo);
 			if (!this.displayedUnsecureChatWarning && !packet.isSecureChatEnforced()) {
@@ -2109,7 +2108,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
 		if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler merchantScreenHandler) {
-			merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toNbt()));
+			merchantScreenHandler.setOffers(packet.getOffers());
 			merchantScreenHandler.setExperienceFromServer(packet.getExperience());
 			merchantScreenHandler.setLevelProgress(packet.getLevelProgress());
 			merchantScreenHandler.setLeveled(packet.isLeveled());

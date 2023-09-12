@@ -181,7 +181,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SkullItem;
+import net.minecraft.item.PlayerHeadItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
@@ -1014,7 +1014,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 								this.resourceReloadLogger.finish();
 								completableFuture.complete(null);
 								this.onFinishedLoading(loadingContext);
-							}), true
+							}), !force
 					)
 				);
 				return completableFuture;
@@ -2432,7 +2432,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
 		NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
 		BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), nbtCompound);
-		if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
+		if (stack.getItem() instanceof PlayerHeadItem && nbtCompound.contains("SkullOwner")) {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
 			NbtCompound nbtCompound3 = stack.getOrCreateNbt();
 			nbtCompound3.put("SkullOwner", nbtCompound2);

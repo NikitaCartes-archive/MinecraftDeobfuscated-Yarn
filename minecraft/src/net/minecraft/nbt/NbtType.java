@@ -8,25 +8,25 @@ import net.minecraft.nbt.scanner.NbtScanner;
  * Represents an NBT type.
  */
 public interface NbtType<T extends NbtElement> {
-	T read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException;
+	T read(DataInput input, NbtTagSizeTracker tracker) throws IOException;
 
-	NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException;
+	NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException;
 
-	default void accept(DataInput input, NbtScanner visitor) throws IOException {
+	default void accept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
 		switch (visitor.start(this)) {
 			case CONTINUE:
-				this.doAccept(input, visitor);
+				this.doAccept(input, visitor, tracker);
 			case HALT:
 			default:
 				break;
 			case BREAK:
-				this.skip(input);
+				this.skip(input, tracker);
 		}
 	}
 
-	void skip(DataInput input, int count) throws IOException;
+	void skip(DataInput input, int count, NbtTagSizeTracker tracker) throws IOException;
 
-	void skip(DataInput input) throws IOException;
+	void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException;
 
 	/**
 	 * Determines the immutability of this type.
@@ -57,22 +57,22 @@ public interface NbtType<T extends NbtElement> {
 				return new IOException("Invalid tag id: " + type);
 			}
 
-			public NbtEnd read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			public NbtEnd read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 				throw this.createException();
 			}
 
 			@Override
-			public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+			public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
 				throw this.createException();
 			}
 
 			@Override
-			public void skip(DataInput input, int count) throws IOException {
+			public void skip(DataInput input, int count, NbtTagSizeTracker tracker) throws IOException {
 				throw this.createException();
 			}
 
 			@Override
-			public void skip(DataInput input) throws IOException {
+			public void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 				throw this.createException();
 			}
 
@@ -93,12 +93,12 @@ public interface NbtType<T extends NbtElement> {
 	 */
 	public interface OfFixedSize<T extends NbtElement> extends NbtType<T> {
 		@Override
-		default void skip(DataInput input) throws IOException {
+		default void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 			input.skipBytes(this.getSizeInBytes());
 		}
 
 		@Override
-		default void skip(DataInput input, int count) throws IOException {
+		default void skip(DataInput input, int count, NbtTagSizeTracker tracker) throws IOException {
 			input.skipBytes(this.getSizeInBytes() * count);
 		}
 
@@ -113,9 +113,9 @@ public interface NbtType<T extends NbtElement> {
 	 */
 	public interface OfVariableSize<T extends NbtElement> extends NbtType<T> {
 		@Override
-		default void skip(DataInput input, int count) throws IOException {
+		default void skip(DataInput input, int count, NbtTagSizeTracker tracker) throws IOException {
 			for (int i = 0; i < count; i++) {
-				this.skip(input);
+				this.skip(input, tracker);
 			}
 		}
 	}

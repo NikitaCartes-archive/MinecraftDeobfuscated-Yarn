@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
@@ -32,6 +33,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements DynamicTextur
 	private List<SpriteContents> spritesToLoad = List.of();
 	private List<Sprite.TickableAnimation> animatedSprites = List.of();
 	private Map<Identifier, Sprite> sprites = Map.of();
+	@Nullable
+	private Sprite missingSprite;
 	private final Identifier id;
 	private final int maxTextureSize;
 	private int width;
@@ -55,30 +58,35 @@ public class SpriteAtlasTexture extends AbstractTexture implements DynamicTextur
 		this.mipLevel = stitchResult.mipLevel();
 		this.clear();
 		this.sprites = Map.copyOf(stitchResult.regions());
-		List<SpriteContents> list = new ArrayList();
-		List<Sprite.TickableAnimation> list2 = new ArrayList();
+		this.missingSprite = (Sprite)this.sprites.get(MissingSprite.getMissingSpriteId());
+		if (this.missingSprite == null) {
+			throw new IllegalStateException("Atlas '" + this.id + "' (" + this.sprites.size() + " sprites) has no missing texture sprite");
+		} else {
+			List<SpriteContents> list = new ArrayList();
+			List<Sprite.TickableAnimation> list2 = new ArrayList();
 
-		for (Sprite sprite : stitchResult.regions().values()) {
-			list.add(sprite.getContents());
+			for (Sprite sprite : stitchResult.regions().values()) {
+				list.add(sprite.getContents());
 
-			try {
-				sprite.upload();
-			} catch (Throwable var9) {
-				CrashReport crashReport = CrashReport.create(var9, "Stitching texture atlas");
-				CrashReportSection crashReportSection = crashReport.addElement("Texture being stitched together");
-				crashReportSection.add("Atlas path", this.id);
-				crashReportSection.add("Sprite", sprite);
-				throw new CrashException(crashReport);
+				try {
+					sprite.upload();
+				} catch (Throwable var9) {
+					CrashReport crashReport = CrashReport.create(var9, "Stitching texture atlas");
+					CrashReportSection crashReportSection = crashReport.addElement("Texture being stitched together");
+					crashReportSection.add("Atlas path", this.id);
+					crashReportSection.add("Sprite", sprite);
+					throw new CrashException(crashReport);
+				}
+
+				Sprite.TickableAnimation tickableAnimation = sprite.createAnimation();
+				if (tickableAnimation != null) {
+					list2.add(tickableAnimation);
+				}
 			}
 
-			Sprite.TickableAnimation tickableAnimation = sprite.createAnimation();
-			if (tickableAnimation != null) {
-				list2.add(tickableAnimation);
-			}
+			this.spritesToLoad = List.copyOf(list);
+			this.animatedSprites = List.copyOf(list2);
 		}
-
-		this.spritesToLoad = List.copyOf(list);
-		this.animatedSprites = List.copyOf(list2);
 	}
 
 	@Override
@@ -147,8 +155,12 @@ public class SpriteAtlasTexture extends AbstractTexture implements DynamicTextur
 	}
 
 	public Sprite getSprite(Identifier id) {
-		Sprite sprite = (Sprite)this.sprites.get(id);
-		return sprite == null ? (Sprite)this.sprites.get(MissingSprite.getMissingSpriteId()) : sprite;
+		Sprite sprite = (Sprite)this.sprites.getOrDefault(id, this.missingSprite);
+		if (sprite == null) {
+			throw new IllegalStateException("Tried to lookup sprite, but atlas is not initialized");
+		} else {
+			return sprite;
+		}
 	}
 
 	public void clear() {
@@ -157,6 +169,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements DynamicTextur
 		this.spritesToLoad = List.of();
 		this.animatedSprites = List.of();
 		this.sprites = Map.of();
+		this.missingSprite = null;
 	}
 
 	public Identifier getId() {

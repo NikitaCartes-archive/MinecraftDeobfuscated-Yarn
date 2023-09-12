@@ -90,4 +90,14 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 		nbtCompound.put("Recipes", nbtList);
 		return nbtCompound;
 	}
+
+	public TradeOfferList copy() {
+		TradeOfferList tradeOfferList = new TradeOfferList(this.size());
+
+		for (TradeOffer tradeOffer : this) {
+			tradeOfferList.add(tradeOffer.copy());
+		}
+
+		return tradeOfferList;
+	}
 }

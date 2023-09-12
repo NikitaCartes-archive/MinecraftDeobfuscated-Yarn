@@ -35,7 +35,6 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32120 = 80;
 	private final Screen parent;
-	private final RealmsMainScreen mainScreen;
 	@Nullable
 	private RealmsServer serverData;
 	private final long serverId;
@@ -44,10 +43,9 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	private final List<Integer> slotsThatHasBeenDownloaded = Lists.<Integer>newArrayList();
 	private int animTick;
 
-	public RealmsBrokenWorldScreen(Screen parent, RealmsMainScreen mainScreen, long serverId, boolean minigame) {
+	public RealmsBrokenWorldScreen(Screen parent, long serverId, boolean minigame) {
 		super(minigame ? Text.translatable("mco.brokenworld.minigame.title") : Text.translatable("mco.brokenworld.title"));
 		this.parent = parent;
-		this.mainScreen = mainScreen;
 		this.serverId = serverId;
 	}
 
@@ -171,26 +169,20 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	}
 
 	public void play() {
-		new Thread(
-				() -> {
-					RealmsClient realmsClient = RealmsClient.create();
-					if (this.serverData.state == RealmsServer.State.CLOSED) {
-						this.client
-							.execute(
-								() -> this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.serverData, this, this.mainScreen, true, this.client)))
-							);
-					} else {
-						try {
-							RealmsServer realmsServer = realmsClient.getOwnWorld(this.serverId);
-							this.client.execute(() -> this.mainScreen.newScreen().play(realmsServer, this));
-						} catch (RealmsServiceException var3) {
-							LOGGER.error("Couldn't get own world", (Throwable)var3);
-							this.client.execute(() -> this.client.setScreen(this.parent));
-						}
-					}
+		new Thread(() -> {
+			RealmsClient realmsClient = RealmsClient.create();
+			if (this.serverData.state == RealmsServer.State.CLOSED) {
+				this.client.execute(() -> this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.serverData, this, true, this.client))));
+			} else {
+				try {
+					RealmsServer realmsServer = realmsClient.getOwnWorld(this.serverId);
+					this.client.execute(() -> RealmsMainScreen.play(realmsServer, this));
+				} catch (RealmsServiceException var3) {
+					LOGGER.error("Couldn't get own world", (Throwable)var3);
+					this.client.execute(() -> this.client.setScreen(this.parent));
 				}
-			)
-			.start();
+			}
+		}).start();
 	}
 
 	private void downloadWorld(int slotId) {

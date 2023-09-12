@@ -49,6 +49,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.scanner.ExclusiveNbtCollector;
 import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -102,6 +103,7 @@ public class LevelStorage {
 	private static final String DATA_KEY = "Data";
 	private static final PathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = path -> false;
 	public static final String ALLOWED_SYMLINKS_FILE_NAME = "allowed_symlinks.txt";
+	private static final int field_46205 = 1073741824;
 	private final Path savesDirectory;
 	private final Path backupsDirectory;
 	final DataFixer dataFixer;
@@ -225,53 +227,39 @@ public class LevelStorage {
 		List<CompletableFuture<LevelSummary>> list = new ArrayList(levels.levels.size());
 
 		for (LevelStorage.LevelSave levelSave : levels.levels) {
-			list.add(
-				CompletableFuture.supplyAsync(
-					() -> {
-						boolean bl;
-						try {
-							bl = SessionLock.isLocked(levelSave.path());
-						} catch (Exception var14) {
-							LOGGER.warn("Failed to read {} lock", levelSave.path(), var14);
-							return null;
-						}
+			list.add(CompletableFuture.supplyAsync(() -> {
+				boolean bl;
+				try {
+					bl = SessionLock.isLocked(levelSave.path());
+				} catch (Exception var13) {
+					LOGGER.warn("Failed to read {} lock", levelSave.path(), var13);
+					return null;
+				}
 
-						try {
-							LevelSummary levelSummary = this.readLevelProperties(levelSave, this.createLevelDataParser(levelSave, bl));
-							return levelSummary != null ? levelSummary : null;
-						} catch (OutOfMemoryError var12) {
-							CrashMemoryReserve.releaseMemory();
-							System.gc();
-							String string = "Ran out of memory trying to read summary of world folder \"" + levelSave.getRootPath() + "\"";
-							LOGGER.error(LogUtils.FATAL_MARKER, string);
-							OutOfMemoryError outOfMemoryError2 = new OutOfMemoryError("Ran out of memory reading level data");
-							outOfMemoryError2.initCause(var12);
-							CrashReport crashReport = CrashReport.create(outOfMemoryError2, string);
-							CrashReportSection crashReportSection = crashReport.addElement("World details");
-							crashReportSection.add("Folder Name", levelSave.getRootPath());
+				try {
+					LevelSummary levelSummary = this.readLevelProperties(levelSave, this.createLevelDataParser(levelSave, bl));
+					return levelSummary != null ? levelSummary : null;
+				} catch (OutOfMemoryError var12) {
+					CrashMemoryReserve.releaseMemory();
+					System.gc();
+					String string = "Ran out of memory trying to read summary of world folder \"" + levelSave.getRootPath() + "\"";
+					LOGGER.error(LogUtils.FATAL_MARKER, string);
+					OutOfMemoryError outOfMemoryError2 = new OutOfMemoryError("Ran out of memory reading level data");
+					outOfMemoryError2.initCause(var12);
+					CrashReport crashReport = CrashReport.create(outOfMemoryError2, string);
+					CrashReportSection crashReportSection = crashReport.addElement("World details");
+					crashReportSection.add("Folder Name", levelSave.getRootPath());
 
-							try {
-								long l = Files.size(levelSave.getLevelDatPath());
-								crashReportSection.add("level.dat size", l);
-							} catch (IOException var11) {
-								crashReportSection.add("level.dat size", (Throwable)var11);
-							}
+					try {
+						long l = Files.size(levelSave.getLevelDatPath());
+						crashReportSection.add("level.dat size", l);
+					} catch (IOException var11) {
+						crashReportSection.add("level.dat size", (Throwable)var11);
+					}
 
-							throw new CrashException(crashReport);
-						} catch (StackOverflowError var13) {
-							LOGGER.error(
-								LogUtils.FATAL_MARKER,
-								"Ran out of stack trying to read summary of world folder \"{}\". Assuming corruption; attempting to restore from from {}.",
-								levelSave.getRootPath(),
-								levelSave.getLevelDatOldPath()
-							);
-							Util.backupAndReplace(levelSave.getLevelDatPath(), levelSave.getLevelDatOldPath(), levelSave.getCorruptedLevelDatPath(LocalDateTime.now()), true);
-							throw var13;
-						}
-					},
-					Util.getMainWorkerExecutor()
-				)
-			);
+					throw new CrashException(crashReport);
+				}
+			}, Util.getMainWorkerExecutor()));
 		}
 
 		return Util.combineCancellable(list).thenApply(summaries -> summaries.stream().filter(Objects::nonNull).sorted().toList());
@@ -400,7 +388,7 @@ public class LevelStorage {
 		ExclusiveNbtCollector exclusiveNbtCollector = new ExclusiveNbtCollector(
 			new NbtScanQuery("Data", NbtCompound.TYPE, "Player"), new NbtScanQuery("Data", NbtCompound.TYPE, "WorldGenSettings")
 		);
-		NbtIo.scanCompressed(path.toFile(), exclusiveNbtCollector);
+		NbtIo.scanCompressed(path.toFile(), exclusiveNbtCollector, NbtTagSizeTracker.of(1073741824L));
 		return exclusiveNbtCollector.getRoot();
 	}
 
