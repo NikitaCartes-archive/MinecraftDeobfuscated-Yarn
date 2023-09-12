@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.lang.runtime.ObjectMethods;
 import java.util.OptionalInt;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
@@ -79,24 +78,12 @@ public interface Scaling {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static final class Stretch extends Record implements Scaling {
+	public static record Stretch() implements Scaling {
 		public static final Codec<Scaling.Stretch> CODEC = Codec.unit(Scaling.Stretch::new);
 
 		@Override
 		public Scaling.Type getType() {
 			return Scaling.Type.STRETCH;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",Scaling.Stretch,"">(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",Scaling.Stretch,"">(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",Scaling.Stretch,"">(this, object);
 		}
 	}
 

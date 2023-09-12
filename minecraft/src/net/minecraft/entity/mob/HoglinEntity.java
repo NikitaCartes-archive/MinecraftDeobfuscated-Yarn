@@ -81,7 +81,8 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS,
 		MemoryModuleType.NEAREST_VISIBLE_ADULT,
 		MemoryModuleType.NEAREST_REPELLENT,
-		MemoryModuleType.PACIFIED
+		MemoryModuleType.PACIFIED,
+		MemoryModuleType.IS_PANICKING
 	);
 
 	public HoglinEntity(EntityType<? extends HoglinEntity> entityType, World world) {

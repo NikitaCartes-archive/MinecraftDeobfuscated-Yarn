@@ -18,14 +18,18 @@ public class NbtFloat extends AbstractNbtNumber {
 	 */
 	public static final NbtFloat ZERO = new NbtFloat(0.0F);
 	public static final NbtType<NbtFloat> TYPE = new NbtType.OfFixedSize<NbtFloat>() {
-		public NbtFloat read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(12L);
-			return NbtFloat.of(dataInput.readFloat());
+		public NbtFloat read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			return NbtFloat.of(readFloat(dataInput, nbtTagSizeTracker));
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
-			return visitor.visitFloat(input.readFloat());
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			return visitor.visitFloat(readFloat(input, tracker));
+		}
+
+		private static float readFloat(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(12L);
+			return input.readFloat();
 		}
 
 		@Override

@@ -18,14 +18,18 @@ public class NbtDouble extends AbstractNbtNumber {
 	 */
 	public static final NbtDouble ZERO = new NbtDouble(0.0);
 	public static final NbtType<NbtDouble> TYPE = new NbtType.OfFixedSize<NbtDouble>() {
-		public NbtDouble read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(16L);
-			return NbtDouble.of(dataInput.readDouble());
+		public NbtDouble read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			return NbtDouble.of(readDouble(dataInput, nbtTagSizeTracker));
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
-			return visitor.visitDouble(input.readDouble());
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+			return visitor.visitDouble(readDouble(input, tracker));
+		}
+
+		private static double readDouble(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			tracker.add(16L);
+			return input.readDouble();
 		}
 
 		@Override

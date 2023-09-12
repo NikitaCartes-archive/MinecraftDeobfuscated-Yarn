@@ -296,9 +296,9 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	private void joinRealm(RealmsServer serverData) {
 		if (this.server.state == RealmsServer.State.OPEN) {
-			this.parent.play(serverData, new RealmsConfigureWorldScreen(this.parent.newScreen(), this.serverId));
+			RealmsMainScreen.play(serverData, new RealmsConfigureWorldScreen(this.parent, this.serverId));
 		} else {
-			this.openTheWorld(true, new RealmsConfigureWorldScreen(this.parent.newScreen(), this.serverId));
+			this.openTheWorld(true, new RealmsConfigureWorldScreen(this.parent, this.serverId));
 		}
 	}
 
@@ -445,7 +445,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	public void openTheWorld(boolean join, Screen screen) {
-		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(screen, new OpenServerTask(this.server, this, this.parent, join, this.client)));
+		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(screen, new OpenServerTask(this.server, this, join, this.client)));
 	}
 
 	public void closeTheWorld(Screen screen) {

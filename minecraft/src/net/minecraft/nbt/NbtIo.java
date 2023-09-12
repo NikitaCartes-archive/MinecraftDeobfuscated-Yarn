@@ -22,6 +22,8 @@ import net.minecraft.util.crash.CrashReportSection;
 
 /**
  * A set of utility functions for reading, writing, and scanning NBT files.
+ * Methods that do not require {@link NbtTagSizeTracker} accept any bytes of data,
+ * provided that its depth does not exceed {@value NbtTagSizeTracker#DEFAULT_MAX_DEPTH}.
  */
 public class NbtIo {
 	/**
@@ -30,6 +32,7 @@ public class NbtIo {
 	 * @return the NBT compound from the file
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
+	 * @throws NbtSizeValidationException if the NBT is too deep
 	 * @see #readCompressed(InputStream)
 	 */
 	public static NbtCompound readCompressed(File file) throws IOException {
@@ -65,6 +68,7 @@ public class NbtIo {
 	 * @return the NBT compound from the stream
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
+	 * @throws NbtSizeValidationException if the NBT is too deep
 	 * @see #readCompressed(File)
 	 */
 	public static NbtCompound readCompressed(InputStream stream) throws IOException {
@@ -72,7 +76,7 @@ public class NbtIo {
 
 		NbtCompound var2;
 		try {
-			var2 = readCompound(dataInputStream, NbtTagSizeTracker.EMPTY);
+			var2 = readCompound(dataInputStream, NbtTagSizeTracker.ofUnlimitedBytes());
 		} catch (Throwable var5) {
 			if (dataInputStream != null) {
 				try {
@@ -100,21 +104,22 @@ public class NbtIo {
 	 * {@link net.minecraft.nbt.scanner.NbtCollector#getRoot()}.
 	 * 
 	 * @throws IOException if the IO operation fails
-	 * @see #scanCompressed(InputStream, NbtScanner)
+	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
+	 * @see #scanCompressed(InputStream, NbtScanner, NbtTagSizeTracker)
 	 */
-	public static void scanCompressed(File file, NbtScanner scanner) throws IOException {
+	public static void scanCompressed(File file, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
 		InputStream inputStream = new FileInputStream(file);
 
 		try {
-			scanCompressed(inputStream, scanner);
-		} catch (Throwable var6) {
+			scanCompressed(inputStream, scanner, tracker);
+		} catch (Throwable var7) {
 			try {
 				inputStream.close();
-			} catch (Throwable var5) {
-				var6.addSuppressed(var5);
+			} catch (Throwable var6) {
+				var7.addSuppressed(var6);
 			}
 
-			throw var6;
+			throw var7;
 		}
 
 		inputStream.close();
@@ -128,23 +133,24 @@ public class NbtIo {
 	 * {@link net.minecraft.nbt.scanner.NbtCollector#getRoot()}.
 	 * 
 	 * @throws IOException if the IO operation fails
-	 * @see #scanCompressed(File, NbtScanner)
+	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
+	 * @see #scanCompressed(File, NbtScanner, NbtTagSizeTracker)
 	 */
-	public static void scanCompressed(InputStream stream, NbtScanner scanner) throws IOException {
+	public static void scanCompressed(InputStream stream, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
 		DataInputStream dataInputStream = decompress(stream);
 
 		try {
-			scan(dataInputStream, scanner);
-		} catch (Throwable var6) {
+			scan(dataInputStream, scanner, tracker);
+		} catch (Throwable var7) {
 			if (dataInputStream != null) {
 				try {
 					dataInputStream.close();
-				} catch (Throwable var5) {
-					var6.addSuppressed(var5);
+				} catch (Throwable var6) {
+					var7.addSuppressed(var6);
 				}
 			}
 
-			throw var6;
+			throw var7;
 		}
 
 		if (dataInputStream != null) {
@@ -244,6 +250,7 @@ public class NbtIo {
 	 * @return the NBT compound from the file, or {@code null} if the file does not exist
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
+	 * @throws NbtSizeValidationException if the NBT is too deep
 	 */
 	@Nullable
 	public static NbtCompound read(File file) throws IOException {
@@ -257,7 +264,7 @@ public class NbtIo {
 				DataInputStream dataInputStream = new DataInputStream(fileInputStream);
 
 				try {
-					var3 = readCompound(dataInputStream, NbtTagSizeTracker.EMPTY);
+					var3 = readCompound(dataInputStream, NbtTagSizeTracker.ofUnlimitedBytes());
 				} catch (Throwable var7) {
 					try {
 						dataInputStream.close();
@@ -290,9 +297,10 @@ public class NbtIo {
 	 * @return the NBT compound from the input
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
+	 * @throws NbtSizeValidationException if the NBT is too deep
 	 */
 	public static NbtCompound readCompound(DataInput input) throws IOException {
-		return readCompound(input, NbtTagSizeTracker.EMPTY);
+		return readCompound(input, NbtTagSizeTracker.ofUnlimitedBytes());
 	}
 
 	/**
@@ -301,9 +309,10 @@ public class NbtIo {
 	 * @return the NBT compound from the input
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
+	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
 	 */
 	public static NbtCompound readCompound(DataInput input, NbtTagSizeTracker tracker) throws IOException {
-		NbtElement nbtElement = read(input, 0, tracker);
+		NbtElement nbtElement = readElement(input, tracker);
 		if (nbtElement instanceof NbtCompound) {
 			return (NbtCompound)nbtElement;
 		} else {
@@ -329,8 +338,10 @@ public class NbtIo {
 	 * {@link net.minecraft.nbt.scanner.NbtCollector#getRoot()}.
 	 * 
 	 * @throws IOException if the IO operation fails
+	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
 	 */
-	public static void scan(DataInput input, NbtScanner scanner) throws IOException {
+	public static void scan(DataInput input, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
+		tracker.add(8L);
 		NbtType<?> nbtType = NbtTypes.byId(input.readByte());
 		if (nbtType == NbtEnd.TYPE) {
 			if (scanner.start(NbtEnd.TYPE) == NbtScanner.Result.CONTINUE) {
@@ -343,11 +354,11 @@ public class NbtIo {
 					break;
 				case BREAK:
 					NbtString.skip(input);
-					nbtType.skip(input);
+					nbtType.skip(input, tracker);
 					break;
 				case CONTINUE:
 					NbtString.skip(input);
-					nbtType.doAccept(input, scanner);
+					nbtType.doAccept(input, scanner, tracker);
 			}
 		}
 	}
@@ -359,10 +370,11 @@ public class NbtIo {
 	 * 
 	 * @return the NBT element from the input
 	 * @throws IOException if the IO operation fails
+	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
 	 */
 	public static NbtElement read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 		byte b = input.readByte();
-		return (NbtElement)(b == 0 ? NbtEnd.INSTANCE : read(input, 0, tracker, b));
+		return (NbtElement)(b == 0 ? NbtEnd.INSTANCE : readElement(input, tracker, b));
 	}
 
 	/**
@@ -398,23 +410,23 @@ public class NbtIo {
 		}
 	}
 
-	private static NbtElement read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
+	private static NbtElement readElement(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 		byte b = input.readByte();
 		if (b == 0) {
 			return NbtEnd.INSTANCE;
 		} else {
 			NbtString.skip(input);
-			return read(input, depth, tracker, b);
+			return readElement(input, tracker, b);
 		}
 	}
 
-	private static NbtElement read(DataInput input, int depth, NbtTagSizeTracker tracker, byte type) {
+	private static NbtElement readElement(DataInput input, NbtTagSizeTracker tracker, byte typeId) {
 		try {
-			return NbtTypes.byId(type).read(input, depth, tracker);
-		} catch (IOException var7) {
-			CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
+			return NbtTypes.byId(typeId).read(input, tracker);
+		} catch (IOException var6) {
+			CrashReport crashReport = CrashReport.create(var6, "Loading NBT data");
 			CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
-			crashReportSection.add("Tag type", type);
+			crashReportSection.add("Tag type", typeId);
 			throw new CrashException(crashReport);
 		}
 	}

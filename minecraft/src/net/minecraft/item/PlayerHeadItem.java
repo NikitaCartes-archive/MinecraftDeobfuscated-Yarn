@@ -7,10 +7,10 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 
-public class SkullItem extends VerticallyAttachableBlockItem {
+public class PlayerHeadItem extends VerticallyAttachableBlockItem {
 	public static final String SKULL_OWNER_KEY = "SkullOwner";
 
-	public SkullItem(Block block, Block wallBlock, Item.Settings settings) {
+	public PlayerHeadItem(Block block, Block wallBlock, Item.Settings settings) {
 		super(block, wallBlock, settings, Direction.DOWN);
 	}
 

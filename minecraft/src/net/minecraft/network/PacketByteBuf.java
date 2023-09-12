@@ -262,7 +262,7 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Deprecated
 	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec) {
-		return this.decode(ops, codec, NbtTagSizeTracker.EMPTY);
+		return this.decode(ops, codec, NbtTagSizeTracker.ofUnlimitedBytes());
 	}
 
 	/**
@@ -1289,7 +1289,7 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Nullable
 	public NbtCompound readNbt() {
-		NbtElement nbtElement = this.readNbt(new NbtTagSizeTracker(2097152L));
+		NbtElement nbtElement = this.readNbt(NbtTagSizeTracker.of(2097152L));
 		if (nbtElement != null && !(nbtElement instanceof NbtCompound)) {
 			throw new DecoderException("Not a compound tag: " + nbtElement);
 		} else {

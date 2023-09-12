@@ -10,7 +10,6 @@ import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.lang.runtime.ObjectMethods;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -170,7 +169,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		ApplyBonusLootFunction.Type getType();
 	}
 
-	static final class OreDrops extends Record implements ApplyBonusLootFunction.Formula {
+	static record OreDrops() implements ApplyBonusLootFunction.Formula {
 		public static final Codec<ApplyBonusLootFunction.OreDrops> CODEC = Codec.unit(ApplyBonusLootFunction.OreDrops::new);
 		public static final ApplyBonusLootFunction.Type TYPE = new ApplyBonusLootFunction.Type(new Identifier("ore_drops"), CODEC);
 
@@ -191,18 +190,6 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		@Override
 		public ApplyBonusLootFunction.Type getType() {
 			return TYPE;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",ApplyBonusLootFunction.OreDrops,"">(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",ApplyBonusLootFunction.OreDrops,"">(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",ApplyBonusLootFunction.OreDrops,"">(this, object);
 		}
 	}
 

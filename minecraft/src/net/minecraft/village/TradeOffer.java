@@ -70,6 +70,19 @@ public class TradeOffer {
 		this.demandBonus = demandBonus;
 	}
 
+	private TradeOffer(TradeOffer offer) {
+		this.firstBuyItem = offer.firstBuyItem.copy();
+		this.secondBuyItem = offer.secondBuyItem.copy();
+		this.sellItem = offer.sellItem.copy();
+		this.uses = offer.uses;
+		this.maxUses = offer.maxUses;
+		this.rewardingPlayerExperience = offer.rewardingPlayerExperience;
+		this.specialPrice = offer.specialPrice;
+		this.demandBonus = offer.demandBonus;
+		this.priceMultiplier = offer.priceMultiplier;
+		this.merchantExperience = offer.merchantExperience;
+	}
+
 	/**
 	 * Returns the first buy item of this trade offer.
 	 */
@@ -299,5 +312,9 @@ public class TradeOffer {
 
 			return true;
 		}
+	}
+
+	public TradeOffer copy() {
+		return new TradeOffer(this);
 	}
 }
