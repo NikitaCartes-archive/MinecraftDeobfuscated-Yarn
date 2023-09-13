@@ -1,24 +1,11 @@
 package net.minecraft.util.math;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public interface BlockPointer extends Position {
-	@Override
-	double getX();
-
-	@Override
-	double getY();
-
-	@Override
-	double getZ();
-
-	BlockPos getPos();
-
-	BlockState getBlockState();
-
-	<T extends BlockEntity> T getBlockEntity();
-
-	ServerWorld getWorld();
+public record BlockPointer(ServerWorld getWorld, BlockPos getPos, BlockState getBlockState, DispenserBlockEntity getBlockEntity) {
+	public Vec3d method_53906() {
+		return this.getPos.toCenterPos();
+	}
 }

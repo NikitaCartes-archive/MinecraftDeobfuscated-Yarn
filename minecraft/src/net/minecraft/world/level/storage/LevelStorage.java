@@ -103,7 +103,7 @@ public class LevelStorage {
 	private static final String DATA_KEY = "Data";
 	private static final PathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = path -> false;
 	public static final String ALLOWED_SYMLINKS_FILE_NAME = "allowed_symlinks.txt";
-	private static final int field_46205 = 1073741824;
+	private static final int MAX_LEVEL_DATA_BYTES = 104857600;
 	private final Path savesDirectory;
 	private final Path backupsDirectory;
 	final DataFixer dataFixer;
@@ -388,7 +388,7 @@ public class LevelStorage {
 		ExclusiveNbtCollector exclusiveNbtCollector = new ExclusiveNbtCollector(
 			new NbtScanQuery("Data", NbtCompound.TYPE, "Player"), new NbtScanQuery("Data", NbtCompound.TYPE, "WorldGenSettings")
 		);
-		NbtIo.scanCompressed(path.toFile(), exclusiveNbtCollector, NbtTagSizeTracker.of(1073741824L));
+		NbtIo.scanCompressed(path.toFile(), exclusiveNbtCollector, NbtTagSizeTracker.of(104857600L));
 		return exclusiveNbtCollector.getRoot();
 	}
 
@@ -411,7 +411,7 @@ public class LevelStorage {
 		}
 	}
 
-	private Path resolve(String name) {
+	public Path resolve(String name) {
 		return this.savesDirectory.resolve(name);
 	}
 

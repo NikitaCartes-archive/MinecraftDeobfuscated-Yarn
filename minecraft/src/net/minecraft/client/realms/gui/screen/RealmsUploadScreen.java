@@ -18,6 +18,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.FileUpload;
 import net.minecraft.client.realms.RealmsClient;
@@ -106,7 +107,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	}
 
 	private void onBack() {
-		this.client.setScreen(this.parent);
+		this.client.setScreen(new RealmsConfigureWorldScreen(new RealmsMainScreen(new TitleScreen()), this.worldId));
 	}
 
 	private void onCancel() {

@@ -22,6 +22,7 @@ import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.management.ManagementFactory;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -2475,6 +2476,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private static SystemDetails addSystemDetailsToCrashReport(
 		SystemDetails systemDetails, @Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, GameOptions options
 	) {
+		systemDetails.addSection("JVM uptime in seconds", (Supplier<String>)(() -> String.valueOf((double)ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0)));
 		systemDetails.addSection("Launched Version", (Supplier<String>)(() -> version));
 		systemDetails.addSection("Backend library", RenderSystem::getBackendDescription);
 		systemDetails.addSection("Backend API", RenderSystem::getApiDescription);

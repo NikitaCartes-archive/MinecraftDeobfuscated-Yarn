@@ -5,9 +5,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.WorldChunk;
 
 public class MobNavigation extends EntityNavigation {
 	private boolean avoidSunlight;
@@ -35,34 +37,41 @@ public class MobNavigation extends EntityNavigation {
 
 	@Override
 	public Path findPathTo(BlockPos target, int distance) {
-		if (this.world.getBlockState(target).isAir()) {
-			BlockPos blockPos = target.down();
-
-			while (blockPos.getY() > this.world.getBottomY() && this.world.getBlockState(blockPos).isAir()) {
-				blockPos = blockPos.down();
-			}
-
-			if (blockPos.getY() > this.world.getBottomY()) {
-				return super.findPathTo(blockPos.up(), distance);
-			}
-
-			while (blockPos.getY() < this.world.getTopY() && this.world.getBlockState(blockPos).isAir()) {
-				blockPos = blockPos.up();
-			}
-
-			target = blockPos;
-		}
-
-		if (!this.world.getBlockState(target).isSolid()) {
-			return super.findPathTo(target, distance);
+		WorldChunk worldChunk = this.world
+			.getChunkManager()
+			.getWorldChunk(ChunkSectionPos.getSectionCoord(target.getX()), ChunkSectionPos.getSectionCoord(target.getZ()));
+		if (worldChunk == null) {
+			return null;
 		} else {
-			BlockPos blockPos = target.up();
+			if (worldChunk.getBlockState(target).isAir()) {
+				BlockPos blockPos = target.down();
 
-			while (blockPos.getY() < this.world.getTopY() && this.world.getBlockState(blockPos).isSolid()) {
-				blockPos = blockPos.up();
+				while (blockPos.getY() > this.world.getBottomY() && worldChunk.getBlockState(blockPos).isAir()) {
+					blockPos = blockPos.down();
+				}
+
+				if (blockPos.getY() > this.world.getBottomY()) {
+					return super.findPathTo(blockPos.up(), distance);
+				}
+
+				while (blockPos.getY() < this.world.getTopY() && worldChunk.getBlockState(blockPos).isAir()) {
+					blockPos = blockPos.up();
+				}
+
+				target = blockPos;
 			}
 
-			return super.findPathTo(blockPos, distance);
+			if (!worldChunk.getBlockState(target).isSolid()) {
+				return super.findPathTo(target, distance);
+			} else {
+				BlockPos blockPos = target.up();
+
+				while (blockPos.getY() < this.world.getTopY() && worldChunk.getBlockState(blockPos).isSolid()) {
+					blockPos = blockPos.up();
+				}
+
+				return super.findPathTo(blockPos, distance);
+			}
 		}
 	}
 

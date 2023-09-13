@@ -74,5 +74,7 @@ public class VanillaDamageTypeTagProvider extends TagProvider<DamageType> {
 		this.getOrCreateTagBuilder(DamageTypeTags.ALWAYS_TRIGGERS_SILVERFISH).add(DamageTypes.MAGIC);
 		this.getOrCreateTagBuilder(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).addTag(DamageTypeTags.IS_EXPLOSION);
 		this.getOrCreateTagBuilder(DamageTypeTags.NO_KNOCKBACK).add(DamageTypes.EXPLOSION, DamageTypes.PLAYER_EXPLOSION, DamageTypes.BAD_RESPAWN_POINT);
+		this.getOrCreateTagBuilder(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS)
+			.add(DamageTypes.ARROW, DamageTypes.TRIDENT, DamageTypes.MOB_PROJECTILE, DamageTypes.FIREBALL, DamageTypes.WITHER_SKULL);
 	}
 }

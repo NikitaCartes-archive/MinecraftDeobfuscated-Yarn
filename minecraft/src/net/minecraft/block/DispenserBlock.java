@@ -1,10 +1,12 @@
 package net.minecraft.block;
 
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.DropperBlockEntity;
 import net.minecraft.entity.LivingEntity;
@@ -28,17 +30,17 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPointer;
-import net.minecraft.util.math.BlockPointerImpl;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
-import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
+import org.slf4j.Logger;
 
 public class DispenserBlock extends BlockWithEntity {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 	private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(
@@ -74,18 +76,22 @@ public class DispenserBlock extends BlockWithEntity {
 		}
 	}
 
-	protected void dispense(ServerWorld world, BlockPos pos) {
-		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
-		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
-		int i = dispenserBlockEntity.chooseNonEmptySlot(world.random);
-		if (i < 0) {
-			world.syncWorldEvent(WorldEvents.DISPENSER_FAILS, pos, 0);
-			world.emitGameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Emitter.of(dispenserBlockEntity.getCachedState()));
+	protected void dispense(ServerWorld world, BlockState state, BlockPos pos) {
+		DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)world.getBlockEntity(pos, BlockEntityType.DISPENSER).orElse(null);
+		if (dispenserBlockEntity == null) {
+			LOGGER.warn("Ignoring dispensing attempt for Dispenser without matching block entity at {}", pos);
 		} else {
-			ItemStack itemStack = dispenserBlockEntity.getStack(i);
-			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);
-			if (dispenserBehavior != DispenserBehavior.NOOP) {
-				dispenserBlockEntity.setStack(i, dispenserBehavior.dispense(blockPointerImpl, itemStack));
+			BlockPointer blockPointer = new BlockPointer(world, pos, state, dispenserBlockEntity);
+			int i = dispenserBlockEntity.chooseNonEmptySlot(world.random);
+			if (i < 0) {
+				world.syncWorldEvent(WorldEvents.DISPENSER_FAILS, pos, 0);
+				world.emitGameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Emitter.of(dispenserBlockEntity.getCachedState()));
+			} else {
+				ItemStack itemStack = dispenserBlockEntity.getStack(i);
+				DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);
+				if (dispenserBehavior != DispenserBehavior.NOOP) {
+					dispenserBlockEntity.setStack(i, dispenserBehavior.dispense(blockPointer, itemStack));
+				}
 			}
 		}
 	}
@@ -108,7 +114,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		this.dispense(world, pos);
+		this.dispense(world, state, pos);
 	}
 
 	@Override
@@ -146,10 +152,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	public static Position getOutputLocation(BlockPointer pointer) {
 		Direction direction = pointer.getBlockState().get(FACING);
-		double d = pointer.getX() + 0.7 * (double)direction.getOffsetX();
-		double e = pointer.getY() + 0.7 * (double)direction.getOffsetY();
-		double f = pointer.getZ() + 0.7 * (double)direction.getOffsetZ();
-		return new PositionImpl(d, e, f);
+		return pointer.method_53906().add(0.7 * (double)direction.getOffsetX(), 0.7 * (double)direction.getOffsetY(), 0.7 * (double)direction.getOffsetZ());
 	}
 
 	@Override

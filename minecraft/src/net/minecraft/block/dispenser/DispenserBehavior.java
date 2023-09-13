@@ -22,9 +22,7 @@ import net.minecraft.block.TntBlock;
 import net.minecraft.block.WitherSkullBlock;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
@@ -69,6 +67,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.RotationPropertyHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -300,8 +299,8 @@ public interface DispenserBehavior {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-				FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(pointer.getWorld(), stack, pointer.getX(), pointer.getY(), pointer.getX(), true);
-				DispenserBehavior.setEntityPosition(pointer, fireworkRocketEntity, direction);
+				Vec3d vec3d = DispenserBehavior.setEntityPosition(pointer, EntityType.FIREWORK_ROCKET, direction);
+				FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(pointer.getWorld(), stack, vec3d.getX(), vec3d.getY(), vec3d.getZ(), true);
 				fireworkRocketEntity.setVelocity((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ(), 0.5F, 1.0F);
 				pointer.getWorld().spawnEntity(fireworkRocketEntity);
 				stack.decrement(1);
@@ -399,7 +398,7 @@ public interface DispenserBehavior {
 						if (stack.isEmpty()) {
 							return new ItemStack(item);
 						} else {
-							if (pointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(new ItemStack(item)) < 0) {
+							if (pointer.getBlockEntity().addToFirstFreeSlot(new ItemStack(item)) < 0) {
 								this.fallbackBehavior.dispense(pointer, new ItemStack(item));
 							}
 
@@ -548,7 +547,7 @@ public interface DispenserBehavior {
 						pointer.getWorld().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.getPos());
 						return filledBottleStack.copy();
 					} else {
-						if (pointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(filledBottleStack.copy()) < 0) {
+						if (pointer.getBlockEntity().addToFirstFreeSlot(filledBottleStack.copy()) < 0) {
 							this.fallbackBehavior.dispense(pointer, filledBottleStack.copy());
 						}
 
@@ -660,11 +659,12 @@ public interface DispenserBehavior {
 		);
 	}
 
-	static void setEntityPosition(BlockPointer pointer, Entity entity, Direction direction) {
-		entity.setPosition(
-			pointer.getX() + (double)direction.getOffsetX() * (0.5000099999997474 - (double)entity.getWidth() / 2.0),
-			pointer.getY() + (double)direction.getOffsetY() * (0.5000099999997474 - (double)entity.getHeight() / 2.0) - (double)entity.getHeight() / 2.0,
-			pointer.getZ() + (double)direction.getOffsetZ() * (0.5000099999997474 - (double)entity.getWidth() / 2.0)
-		);
+	static Vec3d setEntityPosition(BlockPointer pointer, EntityType<?> entityType, Direction direction) {
+		return pointer.method_53906()
+			.add(
+				(double)direction.getOffsetX() * (0.5000099999997474 - (double)entityType.getWidth() / 2.0),
+				(double)direction.getOffsetY() * (0.5000099999997474 - (double)entityType.getHeight() / 2.0) - (double)entityType.getHeight() / 2.0,
+				(double)direction.getOffsetZ() * (0.5000099999997474 - (double)entityType.getWidth() / 2.0)
+			);
 	}
 }

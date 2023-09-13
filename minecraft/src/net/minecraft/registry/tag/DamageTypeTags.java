@@ -31,6 +31,7 @@ public interface DamageTypeTags {
 	TagKey<DamageType> ALWAYS_TRIGGERS_SILVERFISH = of("always_triggers_silverfish");
 	TagKey<DamageType> ALWAYS_HURTS_ENDER_DRAGONS = of("always_hurts_ender_dragons");
 	TagKey<DamageType> NO_KNOCKBACK = of("no_knockback");
+	TagKey<DamageType> ALWAYS_KILLS_ARMOR_STANDS = of("always_kills_armor_stands");
 
 	private static TagKey<DamageType> of(String id) {
 		return TagKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(id));
