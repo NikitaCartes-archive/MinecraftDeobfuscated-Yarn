@@ -26,8 +26,8 @@ public class WorldEvents {
 	/**
 	 * A dispenser fails to dispense an item.
 	 * <br>Plays the dispenser fail sound event.
-	 * <p>Called by {@link net.minecraft.block.DispenserBlock#dispense(net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos) DispenserBlock#dispense},
-	 * {@link net.minecraft.block.DropperBlock#dispense(net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos) DropperBlock#dispense},
+	 * <p>Called by {@link net.minecraft.block.DispenserBlock#dispense(net.minecraft.server.world.ServerWorld, net.minecraft.block.BlockState, net.minecraft.util.math.BlockPos) DispenserBlock#dispense},
+	 * {@link net.minecraft.block.DropperBlock#dispense(net.minecraft.server.world.ServerWorld, net.minecraft.block.BlockState, net.minecraft.util.math.BlockPos) DropperBlock#dispense},
 	 * and {@link net.minecraft.block.dispenser.FallibleItemDispenserBehavior#playSound(net.minecraft.util.math.BlockPointer) FallibleItemDispenserBehavior#playSound}
 	 */
 	public static final int DISPENSER_FAILS = 1001;

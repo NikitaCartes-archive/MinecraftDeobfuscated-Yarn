@@ -12,6 +12,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
@@ -24,9 +25,10 @@ public class MinecartItem extends Item {
 		public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 			Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 			World world = pointer.getWorld();
-			double d = pointer.getX() + (double)direction.getOffsetX() * 1.125;
-			double e = Math.floor(pointer.getY()) + (double)direction.getOffsetY();
-			double f = pointer.getZ() + (double)direction.getOffsetZ() * 1.125;
+			Vec3d vec3d = pointer.method_53906();
+			double d = vec3d.getX() + (double)direction.getOffsetX() * 1.125;
+			double e = Math.floor(vec3d.getY()) + (double)direction.getOffsetY();
+			double f = vec3d.getZ() + (double)direction.getOffsetZ() * 1.125;
 			BlockPos blockPos = pointer.getPos().offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
 			RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock

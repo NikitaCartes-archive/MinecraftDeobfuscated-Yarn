@@ -402,14 +402,13 @@ public class ArmorStandEntity extends LivingEntity {
 			this.updateHealth(source, 4.0F);
 			return false;
 		} else {
-			boolean bl = source.getSource() instanceof PersistentProjectileEntity;
-			boolean bl2 = bl && ((PersistentProjectileEntity)source.getSource()).getPierceLevel() > 0;
-			boolean bl3 = "player".equals(source.getName());
-			if (!bl3 && !bl) {
+			boolean bl = "player".equals(source.getName());
+			boolean bl2 = source.isIn(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
+			if (!bl && !bl2) {
 				return false;
 			} else {
-				Entity var7 = source.getAttacker();
-				if (var7 instanceof PlayerEntity playerEntity && !playerEntity.getAbilities().allowModifyWorld) {
+				Entity var6 = source.getAttacker();
+				if (var6 instanceof PlayerEntity playerEntity && !playerEntity.getAbilities().allowModifyWorld) {
 					return false;
 				}
 
@@ -417,10 +416,15 @@ public class ArmorStandEntity extends LivingEntity {
 					this.playBreakSound();
 					this.spawnBreakParticles();
 					this.kill();
-					return bl2;
+					var6 = source.getSource();
+					if (var6 instanceof PersistentProjectileEntity persistentProjectileEntity && persistentProjectileEntity.getPierceLevel() > 0) {
+						return true;
+					}
+
+					return false;
 				} else {
 					long l = this.getWorld().getTime();
-					if (l - this.lastHitTime > 5L && !bl) {
+					if (l - this.lastHitTime > 5L && !bl2) {
 						this.getWorld().sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
 						this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
 						this.lastHitTime = l;

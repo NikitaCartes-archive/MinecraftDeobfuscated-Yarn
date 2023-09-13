@@ -9,6 +9,7 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
@@ -30,10 +31,11 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 	public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 		Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 		World world = pointer.getWorld();
+		Vec3d vec3d = pointer.method_53906();
 		double d = 0.5625 + (double)EntityType.BOAT.getWidth() / 2.0;
-		double e = pointer.getX() + (double)direction.getOffsetX() * d;
-		double f = pointer.getY() + (double)((float)direction.getOffsetY() * 1.125F);
-		double g = pointer.getZ() + (double)direction.getOffsetZ() * d;
+		double e = vec3d.getX() + (double)direction.getOffsetX() * d;
+		double f = vec3d.getY() + (double)((float)direction.getOffsetY() * 1.125F);
+		double g = vec3d.getZ() + (double)direction.getOffsetZ() * d;
 		BlockPos blockPos = pointer.getPos().offset(direction);
 		double h;
 		if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {

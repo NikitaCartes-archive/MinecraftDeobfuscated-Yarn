@@ -6,6 +6,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -42,7 +43,10 @@ import net.minecraft.server.SaveLoading;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashMemoryReserve;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.path.SymlinkValidationException;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionOptions;
@@ -65,7 +69,21 @@ public class IntegratedServerLoader {
 	}
 
 	public void start(Screen parent, String levelName) {
-		this.start(parent, levelName, false, true);
+		try {
+			this.start(parent, levelName, false, true);
+		} catch (OutOfMemoryError var9) {
+			CrashMemoryReserve.releaseMemory();
+			System.gc();
+			Path path = this.storage.resolve(levelName);
+			String string = "Ran out of memory trying to read level data of world folder \"" + path + "\"";
+			LOGGER.error(LogUtils.FATAL_MARKER, string);
+			OutOfMemoryError outOfMemoryError2 = new OutOfMemoryError("Ran out of memory reading level data");
+			outOfMemoryError2.initCause(var9);
+			CrashReport crashReport = CrashReport.create(outOfMemoryError2, string);
+			CrashReportSection crashReportSection = crashReport.addElement("World details");
+			crashReportSection.add("World folder", path);
+			throw new CrashException(crashReport);
+		}
 	}
 
 	public void createAndStart(
