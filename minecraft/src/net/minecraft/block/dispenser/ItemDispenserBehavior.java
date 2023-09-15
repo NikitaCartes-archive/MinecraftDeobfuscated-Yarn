@@ -14,15 +14,15 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 	public final ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
 		ItemStack itemStack2 = this.dispenseSilently(blockPointer, itemStack);
 		this.playSound(blockPointer);
-		this.spawnParticles(blockPointer, blockPointer.getBlockState().get(DispenserBlock.FACING));
+		this.spawnParticles(blockPointer, blockPointer.state().get(DispenserBlock.FACING));
 		return itemStack2;
 	}
 
 	protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-		Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+		Direction direction = pointer.state().get(DispenserBlock.FACING);
 		Position position = DispenserBlock.getOutputLocation(pointer);
 		ItemStack itemStack = stack.split(1);
-		spawnItem(pointer.getWorld(), itemStack, 6, direction, position);
+		spawnItem(pointer.world(), itemStack, 6, direction, position);
 		return stack;
 	}
 
@@ -47,10 +47,10 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 	}
 
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getPos(), 0);
+		pointer.world().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.pos(), 0);
 	}
 
 	protected void spawnParticles(BlockPointer pointer, Direction side) {
-		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_ACTIVATED, pointer.getPos(), side.getId());
+		pointer.world().syncWorldEvent(WorldEvents.DISPENSER_ACTIVATED, pointer.pos(), side.getId());
 	}
 }

@@ -51,7 +51,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 			if (b == 0 && i > 0) {
 				throw new RuntimeException("Missing type on ListTag");
 			} else {
-				tracker.add(4L * (long)i);
+				tracker.add(4L, (long)i);
 				NbtType<?> nbtType = NbtTypes.byId(b);
 				List<NbtElement> list = Lists.<NbtElement>newArrayListWithCapacity(i);
 
@@ -88,7 +88,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 					nbtType.skip(input, i, tracker);
 					return visitor.endNested();
 				default:
-					tracker.add(4L * (long)i);
+					tracker.add(4L, (long)i);
 					int j = 0;
 
 					while (true) {
@@ -125,17 +125,6 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 
 						j++;
 					}
-			}
-		}
-
-		@Override
-		public void skip(DataInput input, int count, NbtTagSizeTracker tracker) throws IOException {
-			tracker.pushStack();
-
-			try {
-				NbtType.OfVariableSize.super.skip(input, count, tracker);
-			} finally {
-				tracker.popStack();
 			}
 		}
 

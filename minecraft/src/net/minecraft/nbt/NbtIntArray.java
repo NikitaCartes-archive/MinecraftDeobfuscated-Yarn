@@ -30,7 +30,7 @@ public class NbtIntArray extends AbstractNbtList<NbtInt> {
 		private static int[] readIntArray(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 			tracker.add(24L);
 			int i = input.readInt();
-			tracker.add(4L * (long)i);
+			tracker.add(4L, (long)i);
 			int[] is = new int[i];
 
 			for (int j = 0; j < i; j++) {

@@ -151,8 +151,8 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	public static Position getOutputLocation(BlockPointer pointer) {
-		Direction direction = pointer.getBlockState().get(FACING);
-		return pointer.method_53906().add(0.7 * (double)direction.getOffsetX(), 0.7 * (double)direction.getOffsetY(), 0.7 * (double)direction.getOffsetZ());
+		Direction direction = pointer.state().get(FACING);
+		return pointer.centerPos().add(0.7 * (double)direction.getOffsetX(), 0.7 * (double)direction.getOffsetY(), 0.7 * (double)direction.getOffsetZ());
 	}
 
 	@Override

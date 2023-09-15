@@ -36,7 +36,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 		float l
 	) {
 		if (!abstractClientPlayerEntity.isInvisible() && abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)) {
-			SkinTextures skinTextures = abstractClientPlayerEntity.method_52814();
+			SkinTextures skinTextures = abstractClientPlayerEntity.getSkinTextures();
 			if (skinTextures.capeTexture() != null) {
 				ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
 				if (!itemStack.isOf(Items.ELYTRA)) {

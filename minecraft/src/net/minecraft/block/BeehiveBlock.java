@@ -11,7 +11,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -39,6 +38,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -87,14 +87,18 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	private void angerNearbyBees(World world, BlockPos pos) {
-		List<BeeEntity> list = world.getNonSpectatingEntities(BeeEntity.class, new Box(pos).expand(8.0, 6.0, 8.0));
+		Box box = new Box(pos).expand(8.0, 6.0, 8.0);
+		List<BeeEntity> list = world.getNonSpectatingEntities(BeeEntity.class, box);
 		if (!list.isEmpty()) {
-			List<PlayerEntity> list2 = world.getNonSpectatingEntities(PlayerEntity.class, new Box(pos).expand(8.0, 6.0, 8.0));
-			int i = list2.size();
+			List<PlayerEntity> list2 = world.getNonSpectatingEntities(PlayerEntity.class, box);
+			if (list2.isEmpty()) {
+				return;
+			}
 
 			for (BeeEntity beeEntity : list) {
 				if (beeEntity.getTarget() == null) {
-					beeEntity.setTarget((LivingEntity)list2.get(world.random.nextInt(i)));
+					PlayerEntity playerEntity = Util.getRandom(list2, world.random);
+					beeEntity.setTarget(playerEntity);
 				}
 			}
 		}

@@ -6,7 +6,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -71,17 +70,16 @@ public class IntegratedServerLoader {
 	public void start(Screen parent, String levelName) {
 		try {
 			this.start(parent, levelName, false, true);
-		} catch (OutOfMemoryError var9) {
+		} catch (OutOfMemoryError var8) {
 			CrashMemoryReserve.releaseMemory();
 			System.gc();
-			Path path = this.storage.resolve(levelName);
-			String string = "Ran out of memory trying to read level data of world folder \"" + path + "\"";
+			String string = "Ran out of memory trying to read level data of world folder \"" + levelName + "\"";
 			LOGGER.error(LogUtils.FATAL_MARKER, string);
 			OutOfMemoryError outOfMemoryError2 = new OutOfMemoryError("Ran out of memory reading level data");
-			outOfMemoryError2.initCause(var9);
+			outOfMemoryError2.initCause(var8);
 			CrashReport crashReport = CrashReport.create(outOfMemoryError2, string);
 			CrashReportSection crashReportSection = crashReport.addElement("World details");
-			crashReportSection.add("World folder", path);
+			crashReportSection.add("World folder", levelName);
 			throw new CrashException(crashReport);
 		}
 	}

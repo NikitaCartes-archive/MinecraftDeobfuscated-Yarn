@@ -62,7 +62,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return this.lastVelocity.lerp(this.getVelocity(), (double)tickDelta);
 	}
 
-	public SkinTextures method_52814() {
+	public SkinTextures getSkinTextures() {
 		PlayerListEntry playerListEntry = this.getPlayerListEntry();
 		return playerListEntry == null ? DefaultSkinHelper.getTexture(this.getUuid()) : playerListEntry.getSkinTextures();
 	}

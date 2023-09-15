@@ -47,8 +47,8 @@ public class ArmorItem extends Item implements Equipment {
 	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
 	public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
-		BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-		List<LivingEntity> list = pointer.getWorld()
+		BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+		List<LivingEntity> list = pointer.world()
 			.getEntitiesByClass(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.Equipable(armor)));
 		if (list.isEmpty()) {
 			return false;

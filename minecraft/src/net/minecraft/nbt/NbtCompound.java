@@ -66,8 +66,7 @@ public class NbtCompound implements NbtElement {
 
 			byte b;
 			while ((b = input.readByte()) != 0) {
-				String string = input.readUTF();
-				tracker.add(28L + 2L * (long)string.length());
+				String string = readString(input, tracker);
 				NbtElement nbtElement = NbtCompound.read(NbtTypes.byId(b), string, input, tracker);
 				if (map.put(string, nbtElement) == null) {
 					tracker.add(36L);
@@ -110,8 +109,7 @@ public class NbtCompound implements NbtElement {
 						nbtType.skip(input, tracker);
 						break;
 					default:
-						String string = input.readUTF();
-						tracker.add(28L + 2L * (long)string.length());
+						String string = readString(input, tracker);
 						switch (visitor.startSubNbt(nbtType, string)) {
 							case HALT:
 								return NbtScanner.Result.HALT;
@@ -142,15 +140,11 @@ public class NbtCompound implements NbtElement {
 			return visitor.endNested();
 		}
 
-		@Override
-		public void skip(DataInput input, int count, NbtTagSizeTracker tracker) throws IOException {
-			tracker.pushStack();
-
-			try {
-				NbtType.OfVariableSize.super.skip(input, count, tracker);
-			} finally {
-				tracker.popStack();
-			}
+		private static String readString(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+			String string = input.readUTF();
+			tracker.add(28L);
+			tracker.add(2L, (long)string.length());
+			return string;
 		}
 
 		@Override

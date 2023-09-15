@@ -4,8 +4,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public record BlockPointer(ServerWorld getWorld, BlockPos getPos, BlockState getBlockState, DispenserBlockEntity getBlockEntity) {
-	public Vec3d method_53906() {
-		return this.getPos.toCenterPos();
+public record BlockPointer(ServerWorld world, BlockPos pos, BlockState state, DispenserBlockEntity blockEntity) {
+	public Vec3d centerPos() {
+		return this.pos.toCenterPos();
 	}
 }

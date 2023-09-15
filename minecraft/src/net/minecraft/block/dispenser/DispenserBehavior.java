@@ -180,18 +180,18 @@ public interface DispenserBehavior {
 		ItemDispenserBehavior itemDispenserBehavior = new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+				Direction direction = pointer.state().get(DispenserBlock.FACING);
 				EntityType<?> entityType = ((SpawnEggItem)stack.getItem()).getEntityType(stack.getNbt());
 
 				try {
-					entityType.spawnFromItemStack(pointer.getWorld(), stack, null, pointer.getPos().offset(direction), SpawnReason.DISPENSER, direction != Direction.UP, false);
+					entityType.spawnFromItemStack(pointer.world(), stack, null, pointer.pos().offset(direction), SpawnReason.DISPENSER, direction != Direction.UP, false);
 				} catch (Exception var6) {
-					LOGGER.error("Error while dispensing spawn egg from dispenser at {}", pointer.getPos(), var6);
+					LOGGER.error("Error while dispensing spawn egg from dispenser at {}", pointer.pos(), var6);
 					return ItemStack.EMPTY;
 				}
 
 				stack.decrement(1);
-				pointer.getWorld().emitGameEvent(null, GameEvent.ENTITY_PLACE, pointer.getPos());
+				pointer.world().emitGameEvent(null, GameEvent.ENTITY_PLACE, pointer.pos());
 				return stack;
 			}
 		};
@@ -203,9 +203,9 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.ARMOR_STAND, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-				BlockPos blockPos = pointer.getPos().offset(direction);
-				ServerWorld serverWorld = pointer.getWorld();
+				Direction direction = pointer.state().get(DispenserBlock.FACING);
+				BlockPos blockPos = pointer.pos().offset(direction);
+				ServerWorld serverWorld = pointer.world();
 				Consumer<ArmorStandEntity> consumer = EntityType.copier(armorStandEntityx -> armorStandEntityx.setYaw(direction.asRotation()), serverWorld, stack, null);
 				ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.spawn(serverWorld, stack.getNbt(), consumer, blockPos, SpawnReason.DISPENSER, false, false);
 				if (armorStandEntity != null) {
@@ -220,8 +220,8 @@ public interface DispenserBehavior {
 			new FallibleItemDispenserBehavior() {
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-					List<LivingEntity> list = pointer.getWorld()
+					BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+					List<LivingEntity> list = pointer.world()
 						.getEntitiesByClass(
 							LivingEntity.class,
 							new Box(blockPos),
@@ -241,9 +241,9 @@ public interface DispenserBehavior {
 		ItemDispenserBehavior itemDispenserBehavior2 = new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 
-				for (AbstractHorseEntity abstractHorseEntity : pointer.getWorld()
+				for (AbstractHorseEntity abstractHorseEntity : pointer.world()
 					.getEntitiesByClass(AbstractHorseEntity.class, new Box(blockPos), entity -> entity.isAlive() && entity.hasArmorSlot())) {
 					if (abstractHorseEntity.isHorseArmor(stack) && !abstractHorseEntity.hasArmorInSlot() && abstractHorseEntity.isTame()) {
 						abstractHorseEntity.getStackReference(401).set(stack.split(1));
@@ -280,9 +280,9 @@ public interface DispenserBehavior {
 			new FallibleItemDispenserBehavior() {
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+					BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 
-					for (AbstractDonkeyEntity abstractDonkeyEntity : pointer.getWorld()
+					for (AbstractDonkeyEntity abstractDonkeyEntity : pointer.world()
 						.getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), entity -> entity.isAlive() && !entity.hasChest())) {
 						if (abstractDonkeyEntity.isTame() && abstractDonkeyEntity.getStackReference(499).set(stack)) {
 							stack.decrement(1);
@@ -298,29 +298,29 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.FIREWORK_ROCKET, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+				Direction direction = pointer.state().get(DispenserBlock.FACING);
 				Vec3d vec3d = DispenserBehavior.setEntityPosition(pointer, EntityType.FIREWORK_ROCKET, direction);
-				FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(pointer.getWorld(), stack, vec3d.getX(), vec3d.getY(), vec3d.getZ(), true);
+				FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(pointer.world(), stack, vec3d.getX(), vec3d.getY(), vec3d.getZ(), true);
 				fireworkRocketEntity.setVelocity((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ(), 0.5F, 1.0F);
-				pointer.getWorld().spawnEntity(fireworkRocketEntity);
+				pointer.world().spawnEntity(fireworkRocketEntity);
 				stack.decrement(1);
 				return stack;
 			}
 
 			@Override
 			protected void playSound(BlockPointer pointer) {
-				pointer.getWorld().syncWorldEvent(WorldEvents.FIREWORK_ROCKET_SHOOTS, pointer.getPos(), 0);
+				pointer.world().syncWorldEvent(WorldEvents.FIREWORK_ROCKET_SHOOTS, pointer.pos(), 0);
 			}
 		});
 		DispenserBlock.registerBehavior(Items.FIRE_CHARGE, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+				Direction direction = pointer.state().get(DispenserBlock.FACING);
 				Position position = DispenserBlock.getOutputLocation(pointer);
 				double d = position.getX() + (double)((float)direction.getOffsetX() * 0.3F);
 				double e = position.getY() + (double)((float)direction.getOffsetY() * 0.3F);
 				double f = position.getZ() + (double)((float)direction.getOffsetZ() * 0.3F);
-				World world = pointer.getWorld();
+				World world = pointer.world();
 				Random random = world.random;
 				double g = random.nextTriangular((double)direction.getOffsetX(), 0.11485000000000001);
 				double h = random.nextTriangular((double)direction.getOffsetY(), 0.11485000000000001);
@@ -333,7 +333,7 @@ public interface DispenserBehavior {
 
 			@Override
 			protected void playSound(BlockPointer pointer) {
-				pointer.getWorld().syncWorldEvent(WorldEvents.BLAZE_SHOOTS, pointer.getPos(), 0);
+				pointer.world().syncWorldEvent(WorldEvents.BLAZE_SHOOTS, pointer.pos(), 0);
 			}
 		});
 		DispenserBlock.registerBehavior(Items.OAK_BOAT, new BoatDispenserBehavior(BoatEntity.Type.OAK));
@@ -360,8 +360,8 @@ public interface DispenserBehavior {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				FluidModificationItem fluidModificationItem = (FluidModificationItem)stack.getItem();
-				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-				World world = pointer.getWorld();
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+				World world = pointer.world();
 				if (fluidModificationItem.placeFluid(null, world, blockPos, null)) {
 					fluidModificationItem.onEmptied(null, world, stack, blockPos);
 					return new ItemStack(Items.BUCKET);
@@ -384,8 +384,8 @@ public interface DispenserBehavior {
 
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				WorldAccess worldAccess = pointer.getWorld();
-				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+				WorldAccess worldAccess = pointer.world();
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 				BlockState blockState = worldAccess.getBlockState(blockPos);
 				if (blockState.getBlock() instanceof FluidDrainable fluidDrainable) {
 					ItemStack itemStack = fluidDrainable.tryDrainFluid(null, worldAccess, blockPos, blockState);
@@ -398,7 +398,7 @@ public interface DispenserBehavior {
 						if (stack.isEmpty()) {
 							return new ItemStack(item);
 						} else {
-							if (pointer.getBlockEntity().addToFirstFreeSlot(new ItemStack(item)) < 0) {
+							if (pointer.blockEntity().addToFirstFreeSlot(new ItemStack(item)) < 0) {
 								this.fallbackBehavior.dispense(pointer, new ItemStack(item));
 							}
 
@@ -413,10 +413,10 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.FLINT_AND_STEEL, new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				World world = pointer.getWorld();
+				World world = pointer.world();
 				this.setSuccess(true);
-				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-				BlockPos blockPos = pointer.getPos().offset(direction);
+				Direction direction = pointer.state().get(DispenserBlock.FACING);
+				BlockPos blockPos = pointer.pos().offset(direction);
 				BlockState blockState = world.getBlockState(blockPos);
 				if (AbstractFireBlock.canPlaceAt(world, blockPos, direction)) {
 					world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
@@ -442,8 +442,8 @@ public interface DispenserBehavior {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				this.setSuccess(true);
-				World world = pointer.getWorld();
-				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+				World world = pointer.world();
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 				if (!BoneMealItem.useOnFertilizable(stack, world, blockPos) && !BoneMealItem.useOnGround(stack, world, blockPos, null)) {
 					this.setSuccess(false);
 				} else if (!world.isClient) {
@@ -456,8 +456,8 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Blocks.TNT, new ItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				World world = pointer.getWorld();
-				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+				World world = pointer.world();
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 				TntEntity tntEntity = new TntEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
 				world.spawnEntity(tntEntity);
 				world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -484,9 +484,9 @@ public interface DispenserBehavior {
 			new FallibleItemDispenserBehavior() {
 				@Override
 				protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					World world = pointer.getWorld();
-					Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-					BlockPos blockPos = pointer.getPos().offset(direction);
+					World world = pointer.world();
+					Direction direction = pointer.state().get(DispenserBlock.FACING);
+					BlockPos blockPos = pointer.pos().offset(direction);
 					if (world.isAir(blockPos) && WitherSkullBlock.canDispense(world, blockPos, stack)) {
 						world.setBlockState(
 							blockPos,
@@ -512,8 +512,8 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Blocks.CARVED_PUMPKIN, new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				World world = pointer.getWorld();
-				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+				World world = pointer.world();
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
 				if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
 					if (!world.isClient) {
@@ -544,10 +544,10 @@ public interface DispenserBehavior {
 				private ItemStack tryPutFilledBottle(BlockPointer pointer, ItemStack emptyBottleStack, ItemStack filledBottleStack) {
 					emptyBottleStack.decrement(1);
 					if (emptyBottleStack.isEmpty()) {
-						pointer.getWorld().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.getPos());
+						pointer.world().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.pos());
 						return filledBottleStack.copy();
 					} else {
-						if (pointer.getBlockEntity().addToFirstFreeSlot(filledBottleStack.copy()) < 0) {
+						if (pointer.blockEntity().addToFirstFreeSlot(filledBottleStack.copy()) < 0) {
 							this.fallbackBehavior.dispense(pointer, filledBottleStack.copy());
 						}
 
@@ -558,8 +558,8 @@ public interface DispenserBehavior {
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 					this.setSuccess(false);
-					ServerWorld serverWorld = pointer.getWorld();
-					BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+					ServerWorld serverWorld = pointer.world();
+					BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 					BlockState blockState = serverWorld.getBlockState(blockPos);
 					if (blockState.isIn(BlockTags.BEEHIVES, state -> state.contains(BeehiveBlock.HONEY_LEVEL) && state.getBlock() instanceof BeehiveBlock)
 						&& (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
@@ -578,9 +578,9 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.GLOWSTONE, new FallibleItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-				BlockPos blockPos = pointer.getPos().offset(direction);
-				World world = pointer.getWorld();
+				Direction direction = pointer.state().get(DispenserBlock.FACING);
+				BlockPos blockPos = pointer.pos().offset(direction);
+				World world = pointer.world();
 				BlockState blockState = world.getBlockState(blockPos);
 				this.setSuccess(true);
 				if (blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
@@ -601,8 +601,8 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.HONEYCOMB, new FallibleItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-				World world = pointer.getWorld();
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+				World world = pointer.world();
 				BlockState blockState = world.getBlockState(blockPos);
 				Optional<BlockState> optional = HoneycombItem.getWaxedState(blockState);
 				if (optional.isPresent()) {
@@ -626,9 +626,9 @@ public interface DispenserBehavior {
 					if (PotionUtil.getPotion(stack) != Potions.WATER) {
 						return this.fallback.dispense(pointer, stack);
 					} else {
-						ServerWorld serverWorld = pointer.getWorld();
-						BlockPos blockPos = pointer.getPos();
-						BlockPos blockPos2 = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+						ServerWorld serverWorld = pointer.world();
+						BlockPos blockPos = pointer.pos();
+						BlockPos blockPos2 = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 						if (!serverWorld.getBlockState(blockPos2).isIn(BlockTags.CONVERTABLE_TO_MUD)) {
 							return this.fallback.dispense(pointer, stack);
 						} else {
@@ -660,7 +660,7 @@ public interface DispenserBehavior {
 	}
 
 	static Vec3d setEntityPosition(BlockPointer pointer, EntityType<?> entityType, Direction direction) {
-		return pointer.method_53906()
+		return pointer.centerPos()
 			.add(
 				(double)direction.getOffsetX() * (0.5000099999997474 - (double)entityType.getWidth() / 2.0),
 				(double)direction.getOffsetY() * (0.5000099999997474 - (double)entityType.getHeight() / 2.0) - (double)entityType.getHeight() / 2.0,

@@ -48,6 +48,7 @@ import net.minecraft.world.event.GameEvent;
 import org.joml.Vector3f;
 
 public abstract class AbstractMinecartEntity extends Entity {
+	private static final float PASSENGER_ATTACHMENT_Y_OFFSET = 0.1875F;
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_SIDE = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Float> DAMAGE_WOBBLE_STRENGTH = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -151,7 +152,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, 0.25F, 0.0F);
+		return new Vector3f(0.0F, 0.1875F, 0.0F);
 	}
 
 	@Override

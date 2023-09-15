@@ -38,7 +38,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 		if (itemStack.isOf(Items.ELYTRA)) {
 			Identifier identifier;
 			if (livingEntity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
-				SkinTextures skinTextures = abstractClientPlayerEntity.method_52814();
+				SkinTextures skinTextures = abstractClientPlayerEntity.getSkinTextures();
 				if (skinTextures.elytraTexture() != null) {
 					identifier = skinTextures.elytraTexture();
 				} else if (skinTextures.capeTexture() != null && abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)) {

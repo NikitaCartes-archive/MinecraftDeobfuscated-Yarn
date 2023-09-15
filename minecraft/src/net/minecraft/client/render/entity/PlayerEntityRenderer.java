@@ -147,7 +147,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	public Identifier getTexture(AbstractClientPlayerEntity abstractClientPlayerEntity) {
-		return abstractClientPlayerEntity.method_52814().texture();
+		return abstractClientPlayerEntity.getSkinTextures().texture();
 	}
 
 	protected void scale(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f) {
@@ -198,7 +198,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.leaningPitch = 0.0F;
 		playerEntityModel.setAngles(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		arm.pitch = 0.0F;
-		Identifier identifier = player.method_52814().texture();
+		Identifier identifier = player.getSkinTextures().texture();
 		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(identifier)), light, OverlayTexture.DEFAULT_UV);
 		sleeve.pitch = 0.0F;
 		sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(identifier)), light, OverlayTexture.DEFAULT_UV);

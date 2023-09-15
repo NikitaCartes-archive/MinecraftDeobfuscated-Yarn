@@ -27,26 +27,33 @@ public class NbtTagSizeTracker {
 		return new NbtTagSizeTracker(Long.MAX_VALUE, 512);
 	}
 
+	public void add(long multiplier, long bytes) {
+		this.add(multiplier * bytes);
+	}
+
 	public void add(long bytes) {
-		this.allocatedBytes += bytes;
-		if (this.allocatedBytes > this.maxBytes) {
+		if (this.allocatedBytes + bytes > this.maxBytes) {
 			throw new NbtSizeValidationException(
-				"Tried to read NBT tag that was too big; tried to allocate: " + this.allocatedBytes + " bytes where max allowed: " + this.maxBytes
+				"Tried to read NBT tag that was too big; tried to allocate: " + this.allocatedBytes + " + " + bytes + " bytes where max allowed: " + this.maxBytes
 			);
+		} else {
+			this.allocatedBytes += bytes;
 		}
 	}
 
 	public void pushStack() {
-		this.depth++;
-		if (this.depth > this.maxDepth) {
+		if (this.depth >= this.maxDepth) {
 			throw new NbtSizeValidationException("Tried to read NBT tag with too high complexity, depth > " + this.maxDepth);
+		} else {
+			this.depth++;
 		}
 	}
 
 	public void popStack() {
-		this.depth--;
-		if (this.depth < 0) {
+		if (this.depth <= 0) {
 			throw new NbtSizeValidationException("NBT-Accounter tried to pop stack-depth at top-level");
+		} else {
+			this.depth--;
 		}
 	}
 

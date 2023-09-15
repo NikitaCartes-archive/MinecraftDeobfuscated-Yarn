@@ -341,7 +341,6 @@ public class NbtIo {
 	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
 	 */
 	public static void scan(DataInput input, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
-		tracker.add(8L);
 		NbtType<?> nbtType = NbtTypes.byId(input.readByte());
 		if (nbtType == NbtEnd.TYPE) {
 			if (scanner.start(NbtEnd.TYPE) == NbtScanner.Result.CONTINUE) {

@@ -20,9 +20,9 @@ import net.minecraft.world.event.GameEvent;
 public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 	@Override
 	protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-		ServerWorld serverWorld = pointer.getWorld();
+		ServerWorld serverWorld = pointer.world();
 		if (!serverWorld.isClient()) {
-			BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+			BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 			this.setSuccess(tryShearBlock(serverWorld, blockPos) || tryShearEntity(serverWorld, blockPos));
 			if (this.isSuccess() && stack.damage(1, serverWorld.getRandom(), null)) {
 				stack.setCount(0);

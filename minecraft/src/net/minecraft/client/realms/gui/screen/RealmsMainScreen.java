@@ -60,6 +60,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.slf4j.Logger;
 
@@ -106,6 +107,8 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static final int field_44513 = 5;
 	private static final int field_44514 = 44;
 	private static final int field_45212 = 10;
+	private static final int field_46215 = 216;
+	private static final int field_46216 = 36;
 	private final CompletableFuture<RealmsAvailability.Info> availabilityInfo = RealmsAvailability.check();
 	@Nullable
 	private PeriodicRunnerFactory.RunnersManager periodicRunnersManager;
@@ -392,7 +395,15 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	private void addNotificationEntry(RealmsMainScreen.RealmSelectionList selectionList, RealmsNotification notification) {
 		if (notification instanceof RealmsNotification.VisitUrl visitUrl) {
-			selectionList.addEntry(new RealmsMainScreen.VisitUrlNotification(visitUrl.getDefaultMessage(), visitUrl));
+			Text text = visitUrl.getDefaultMessage();
+			int i = this.textRenderer.getWrappedLinesHeight(text, 216);
+			int j = MathHelper.ceilDiv(i + 7, 36) - 1;
+			selectionList.addEntry(new RealmsMainScreen.VisitUrlNotification(text, j + 2, visitUrl));
+
+			for (int k = 0; k < j; k++) {
+				selectionList.addEntry(new RealmsMainScreen.EmptyEntry());
+			}
+
 			selectionList.addEntry(new RealmsMainScreen.VisitButtonEntry(visitUrl.createButton(this)));
 		}
 	}
@@ -558,6 +569,18 @@ public class RealmsMainScreen extends RealmsScreen {
 		protected CrossButton(ButtonWidget.PressAction onPress, Text tooltip) {
 			super(0, 0, 14, 14, TEXTURES, onPress);
 			this.setTooltip(Tooltip.of(tooltip));
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	class EmptyEntry extends RealmsMainScreen.Entry {
+		@Override
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		}
+
+		@Override
+		public Text getNarration() {
+			return Text.empty();
 		}
 	}
 
@@ -803,9 +826,9 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class VisitUrlNotification extends RealmsMainScreen.Entry {
 		private static final int field_43002 = 40;
-		private static final int field_43003 = 36;
 		private static final int field_43004 = -12303292;
 		private final Text message;
+		private final int field_46218;
 		private final List<ClickableWidget> gridChildren = new ArrayList();
 		@Nullable
 		private final RealmsMainScreen.CrossButton dismissButton;
@@ -814,17 +837,17 @@ public class RealmsMainScreen extends RealmsScreen {
 		private final SimplePositioningWidget textGrid;
 		private int width = -1;
 
-		public VisitUrlNotification(Text message, RealmsNotification notification) {
+		public VisitUrlNotification(Text message, int i, RealmsNotification notification) {
 			this.message = message;
+			this.field_46218 = i;
 			this.grid = new GridWidget();
-			int i = 7;
+			int j = 7;
 			this.grid.add(IconWidget.create(20, 20, RealmsMainScreen.INFO_ICON_TEXTURE), 0, 0, this.grid.copyPositioner().margin(7, 7, 0, 0));
 			this.grid.add(EmptyWidget.ofWidth(40), 0, 0);
-			this.textGrid = this.grid.add(new SimplePositioningWidget(0, 9 * 3), 0, 1, this.grid.copyPositioner().marginTop(7));
+			this.textGrid = this.grid.add(new SimplePositioningWidget(0, 9 * 3 * (i - 1)), 0, 1, this.grid.copyPositioner().marginTop(7));
 			this.textWidget = this.textGrid
 				.add(
-					new MultilineTextWidget(message, RealmsMainScreen.this.textRenderer).setCentered(true).setMaxRows(3),
-					this.textGrid.copyPositioner().alignHorizontalCenter().alignTop()
+					new MultilineTextWidget(message, RealmsMainScreen.this.textRenderer).setCentered(true), this.textGrid.copyPositioner().alignHorizontalCenter().alignTop()
 				);
 			this.grid.add(EmptyWidget.ofWidth(40), 0, 2);
 			if (notification.isDismissable()) {
@@ -868,7 +891,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
 		) {
 			super.drawBorder(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickDelta);
-			context.drawBorder(x - 2, y - 2, entryWidth, 70, -12303292);
+			context.drawBorder(x - 2, y - 2, entryWidth, 36 * this.field_46218 - 2, -12303292);
 		}
 
 		@Override
