@@ -30,7 +30,7 @@ public class NbtByteArray extends AbstractNbtList<NbtByte> {
 		private static byte[] readByteArray(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 			tracker.add(24L);
 			int i = input.readInt();
-			tracker.add(1L * (long)i);
+			tracker.add(1L, (long)i);
 			byte[] bs = new byte[i];
 			input.readFully(bs);
 			return bs;

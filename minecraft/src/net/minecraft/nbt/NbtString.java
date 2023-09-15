@@ -28,7 +28,7 @@ public class NbtString implements NbtElement {
 		private static String readString(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 			tracker.add(36L);
 			String string = input.readUTF();
-			tracker.add(2L * (long)string.length());
+			tracker.add(2L, (long)string.length());
 			return string;
 		}
 

@@ -29,14 +29,14 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 
 	@Override
 	public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-		Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-		World world = pointer.getWorld();
-		Vec3d vec3d = pointer.method_53906();
+		Direction direction = pointer.state().get(DispenserBlock.FACING);
+		World world = pointer.world();
+		Vec3d vec3d = pointer.centerPos();
 		double d = 0.5625 + (double)EntityType.BOAT.getWidth() / 2.0;
 		double e = vec3d.getX() + (double)direction.getOffsetX() * d;
 		double f = vec3d.getY() + (double)((float)direction.getOffsetY() * 1.125F);
 		double g = vec3d.getZ() + (double)direction.getOffsetZ() * d;
-		BlockPos blockPos = pointer.getPos().offset(direction);
+		BlockPos blockPos = pointer.pos().offset(direction);
 		double h;
 		if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 			h = 1.0;
@@ -58,6 +58,6 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 
 	@Override
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getPos(), 0);
+		pointer.world().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.pos(), 0);
 	}
 }

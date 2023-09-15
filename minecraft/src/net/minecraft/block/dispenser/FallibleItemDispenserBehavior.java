@@ -16,6 +16,6 @@ public abstract class FallibleItemDispenserBehavior extends ItemDispenserBehavio
 
 	@Override
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().syncWorldEvent(this.isSuccess() ? WorldEvents.DISPENSER_DISPENSES : WorldEvents.DISPENSER_FAILS, pointer.getPos(), 0);
+		pointer.world().syncWorldEvent(this.isSuccess() ? WorldEvents.DISPENSER_DISPENSES : WorldEvents.DISPENSER_FAILS, pointer.pos(), 0);
 	}
 }

@@ -9,7 +9,7 @@ import net.minecraft.loot.context.LootContextTypes;
 public class TradeRebalanceLootTableProviders {
 	public static LootTableProvider createTradeRebalanceProvider(DataOutput output) {
 		return new LootTableProvider(
-			output, Set.of(), List.of(new LootTableProvider.LootTypeGenerator(TradeRebalanceChestLootTableGenerator::new, LootContextTypes.ENTITY))
+			output, Set.of(), List.of(new LootTableProvider.LootTypeGenerator(TradeRebalanceChestLootTableGenerator::new, LootContextTypes.CHEST))
 		);
 	}
 }

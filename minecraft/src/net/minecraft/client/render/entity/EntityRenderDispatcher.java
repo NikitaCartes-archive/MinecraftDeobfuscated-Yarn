@@ -101,7 +101,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 	public <T extends Entity> EntityRenderer<? super T> getRenderer(T entity) {
 		if (entity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
-			SkinTextures.Model model = abstractClientPlayerEntity.method_52814().model();
+			SkinTextures.Model model = abstractClientPlayerEntity.getSkinTextures().model();
 			EntityRenderer<? extends PlayerEntity> entityRenderer = (EntityRenderer)this.modelRenderers.get(model);
 			return entityRenderer != null ? entityRenderer : (EntityRenderer)this.modelRenderers.get(SkinTextures.Model.WIDE);
 		} else {

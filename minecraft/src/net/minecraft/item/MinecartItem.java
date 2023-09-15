@@ -23,13 +23,13 @@ public class MinecartItem extends Item {
 
 		@Override
 		public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-			Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-			World world = pointer.getWorld();
-			Vec3d vec3d = pointer.method_53906();
+			Direction direction = pointer.state().get(DispenserBlock.FACING);
+			World world = pointer.world();
+			Vec3d vec3d = pointer.centerPos();
 			double d = vec3d.getX() + (double)direction.getOffsetX() * 1.125;
 			double e = Math.floor(vec3d.getY()) + (double)direction.getOffsetY();
 			double f = vec3d.getZ() + (double)direction.getOffsetZ() * 1.125;
-			BlockPos blockPos = pointer.getPos().offset(direction);
+			BlockPos blockPos = pointer.pos().offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
 			RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 				? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
@@ -69,7 +69,7 @@ public class MinecartItem extends Item {
 
 		@Override
 		protected void playSound(BlockPointer pointer) {
-			pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getPos(), 0);
+			pointer.world().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.pos(), 0);
 		}
 	};
 	final AbstractMinecartEntity.Type type;

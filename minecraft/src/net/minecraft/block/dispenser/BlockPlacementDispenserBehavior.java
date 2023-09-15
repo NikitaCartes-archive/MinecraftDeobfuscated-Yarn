@@ -19,12 +19,12 @@ public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavi
 		this.setSuccess(false);
 		Item item = stack.getItem();
 		if (item instanceof BlockItem) {
-			Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-			BlockPos blockPos = pointer.getPos().offset(direction);
-			Direction direction2 = pointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
+			Direction direction = pointer.state().get(DispenserBlock.FACING);
+			BlockPos blockPos = pointer.pos().offset(direction);
+			Direction direction2 = pointer.world().isAir(blockPos.down()) ? direction : Direction.UP;
 
 			try {
-				this.setSuccess(((BlockItem)item).place(new AutomaticItemPlacementContext(pointer.getWorld(), blockPos, direction, stack, direction2)).isAccepted());
+				this.setSuccess(((BlockItem)item).place(new AutomaticItemPlacementContext(pointer.world(), blockPos, direction, stack, direction2)).isAccepted());
 			} catch (Exception var8) {
 				LOGGER.error("Error trying to place shulker box at {}", blockPos, var8);
 			}
