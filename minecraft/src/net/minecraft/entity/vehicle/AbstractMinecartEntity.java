@@ -25,6 +25,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -48,6 +50,7 @@ import net.minecraft.world.event.GameEvent;
 import org.joml.Vector3f;
 
 public abstract class AbstractMinecartEntity extends Entity {
+	private static final float VILLAGER_PASSENGER_ATTACHMENT_Y_OFFSET = 0.0F;
 	private static final float PASSENGER_ATTACHMENT_Y_OFFSET = 0.1875F;
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_SIDE = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -152,7 +155,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, 0.1875F, 0.0F);
+		boolean bl = passenger instanceof VillagerEntity || passenger instanceof WanderingTraderEntity;
+		return new Vector3f(0.0F, bl ? 0.0F : 0.1875F, 0.0F);
 	}
 
 	@Override

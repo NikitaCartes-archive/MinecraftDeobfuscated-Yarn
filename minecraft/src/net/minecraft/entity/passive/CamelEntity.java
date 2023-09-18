@@ -466,7 +466,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		int i = Math.max(this.getPassengerList().indexOf(passenger), 0);
 		boolean bl = i == 0;
 		float f = 0.5F;
-		float g = (float)(this.isRemoved() ? 0.01F : this.method_45346(bl, 0.0F, dimensions, scaleFactor));
+		float g = (float)(this.isRemoved() ? 0.01F : this.getPassengerAttachmentY(bl, 0.0F, dimensions, scaleFactor));
 		if (this.getPassengerList().size() > 1) {
 			if (!bl) {
 				f = -0.7F;
@@ -485,34 +485,34 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		return this.isBaby() ? 0.45F : 1.0F;
 	}
 
-	private double method_45346(boolean bl, float f, EntityDimensions entityDimensions, float g) {
-		double d = (double)(entityDimensions.height - 0.375F * g);
-		float h = g * 1.43F;
-		float i = h - g * 0.2F;
-		float j = h - i;
-		boolean bl2 = this.isChangingPose();
-		boolean bl3 = this.isSitting();
-		if (bl2) {
-			int k = bl3 ? 40 : 52;
-			int l;
-			float m;
-			if (bl3) {
-				l = 28;
-				m = bl ? 0.5F : 0.1F;
+	private double getPassengerAttachmentY(boolean primaryPassenger, float tickDelta, EntityDimensions dimensions, float scaleFactor) {
+		double d = (double)(dimensions.height - 0.375F * scaleFactor);
+		float f = scaleFactor * 1.43F;
+		float g = f - scaleFactor * 0.2F;
+		float h = f - g;
+		boolean bl = this.isChangingPose();
+		boolean bl2 = this.isSitting();
+		if (bl) {
+			int i = bl2 ? 40 : 52;
+			int j;
+			float k;
+			if (bl2) {
+				j = 28;
+				k = primaryPassenger ? 0.5F : 0.1F;
 			} else {
-				l = bl ? 24 : 32;
-				m = bl ? 0.6F : 0.35F;
+				j = primaryPassenger ? 24 : 32;
+				k = primaryPassenger ? 0.6F : 0.35F;
 			}
 
-			float n = MathHelper.clamp((float)this.getLastPoseTickDelta() + f, 0.0F, (float)k);
-			boolean bl4 = n < (float)l;
-			float o = bl4 ? n / (float)l : (n - (float)l) / (float)(k - l);
-			float p = h - m * i;
-			d += bl3 ? (double)MathHelper.lerp(o, bl4 ? h : p, bl4 ? p : j) : (double)MathHelper.lerp(o, bl4 ? j - h : j - p, bl4 ? j - p : 0.0F);
+			float l = MathHelper.clamp((float)this.getLastPoseTickDelta() + tickDelta, 0.0F, (float)i);
+			boolean bl3 = l < (float)j;
+			float m = bl3 ? l / (float)j : (l - (float)j) / (float)(i - j);
+			float n = f - k * g;
+			d += bl2 ? (double)MathHelper.lerp(m, bl3 ? f : n, bl3 ? n : h) : (double)MathHelper.lerp(m, bl3 ? h - f : h - n, bl3 ? h - n : 0.0F);
 		}
 
-		if (bl3 && !bl2) {
-			d += (double)j;
+		if (bl2 && !bl) {
+			d += (double)h;
 		}
 
 		return d;
@@ -522,7 +522,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	public Vec3d getLeashOffset(float tickDelta) {
 		EntityDimensions entityDimensions = this.getDimensions(this.getPose());
 		float f = this.getScaleFactor();
-		return new Vec3d(0.0, this.method_45346(true, tickDelta, entityDimensions, f) - (double)(0.2F * f), (double)(entityDimensions.width * 0.56F));
+		return new Vec3d(0.0, this.getPassengerAttachmentY(true, tickDelta, entityDimensions, f) - (double)(0.2F * f), (double)(entityDimensions.width * 0.56F));
 	}
 
 	private void clampHeadYaw(Entity entity, float range) {

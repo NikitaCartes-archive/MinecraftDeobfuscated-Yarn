@@ -35,9 +35,9 @@ public interface Merchant {
 		return false;
 	}
 
-	default void sendOffers(PlayerEntity player, Text test, int levelProgress) {
+	default void sendOffers(PlayerEntity player, Text name, int levelProgress) {
 		OptionalInt optionalInt = player.openHandledScreen(
-			new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new MerchantScreenHandler(syncId, playerInventory, this), test)
+			new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new MerchantScreenHandler(syncId, playerInventory, this), name)
 		);
 		if (optionalInt.isPresent()) {
 			TradeOfferList tradeOfferList = this.getOffers();
