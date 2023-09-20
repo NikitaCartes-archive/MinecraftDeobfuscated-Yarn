@@ -62,13 +62,13 @@ public class PlayerSkinProvider {
 
 	public Supplier<SkinTextures> getSkinTexturesSupplier(GameProfile profile) {
 		CompletableFuture<SkinTextures> completableFuture = this.fetchSkinTextures(profile);
-		SkinTextures skinTextures = DefaultSkinHelper.getTexture(profile);
+		SkinTextures skinTextures = DefaultSkinHelper.getSkinTextures(profile);
 		return () -> (SkinTextures)completableFuture.getNow(skinTextures);
 	}
 
 	public SkinTextures getSkinTextures(GameProfile profile) {
 		SkinTextures skinTextures = (SkinTextures)this.fetchSkinTextures(profile).getNow(null);
-		return skinTextures != null ? skinTextures : DefaultSkinHelper.getTexture(profile);
+		return skinTextures != null ? skinTextures : DefaultSkinHelper.getSkinTextures(profile);
 	}
 
 	public CompletableFuture<SkinTextures> fetchSkinTextures(GameProfile profile) {
@@ -83,7 +83,7 @@ public class PlayerSkinProvider {
 			completableFuture = this.skinCache.get(minecraftProfileTexture);
 			model = SkinTextures.Model.fromName(minecraftProfileTexture.getMetadata("model"));
 		} else {
-			SkinTextures skinTextures = DefaultSkinHelper.getTexture(profile);
+			SkinTextures skinTextures = DefaultSkinHelper.getSkinTextures(profile);
 			completableFuture = CompletableFuture.completedFuture(skinTextures.texture());
 			model = skinTextures.model();
 		}

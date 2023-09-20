@@ -64,7 +64,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	public SkinTextures getSkinTextures() {
 		PlayerListEntry playerListEntry = this.getPlayerListEntry();
-		return playerListEntry == null ? DefaultSkinHelper.getTexture(this.getUuid()) : playerListEntry.getSkinTextures();
+		return playerListEntry == null ? DefaultSkinHelper.getSkinTextures(this.getUuid()) : playerListEntry.getSkinTextures();
 	}
 
 	public float getFovMultiplier() {

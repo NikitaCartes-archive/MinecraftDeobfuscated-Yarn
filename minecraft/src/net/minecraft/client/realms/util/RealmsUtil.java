@@ -48,7 +48,7 @@ public class RealmsUtil {
 		ProfileResult profileResult = minecraftClient.getSessionService().fetchProfile(playerUuid, false);
 		SkinTextures skinTextures = profileResult != null
 			? minecraftClient.getSkinProvider().getSkinTextures(profileResult.profile())
-			: DefaultSkinHelper.getTexture(playerUuid);
+			: DefaultSkinHelper.getSkinTextures(playerUuid);
 		PlayerSkinDrawer.draw(context, skinTextures.texture(), x, y, size);
 	}
 }

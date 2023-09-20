@@ -33,12 +33,12 @@ public class DefaultSkinHelper {
 		return SKINS[6].texture();
 	}
 
-	public static SkinTextures getTexture(UUID uuid) {
+	public static SkinTextures getSkinTextures(UUID uuid) {
 		return SKINS[Math.floorMod(uuid.hashCode(), SKINS.length)];
 	}
 
-	public static SkinTextures getTexture(GameProfile profile) {
-		return getTexture(profile.getId());
+	public static SkinTextures getSkinTextures(GameProfile profile) {
+		return getSkinTextures(profile.getId());
 	}
 
 	private static SkinTextures createSkinTextures(String texture, SkinTextures.Model model) {
