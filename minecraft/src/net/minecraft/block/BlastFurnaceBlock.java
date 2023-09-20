@@ -29,7 +29,7 @@ public class BlastFurnaceBlock extends AbstractFurnaceBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return checkType(world, type, BlockEntityType.BLAST_FURNACE);
+		return validateTicker(world, type, BlockEntityType.BLAST_FURNACE);
 	}
 
 	@Override

@@ -2311,7 +2311,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		this.sendQueuedPackets();
-		if (this.client.getDebugHud().showShowPacketSizeAndPingCharts()) {
+		if (this.client.getDebugHud().shouldShowPacketSizeAndPingCharts()) {
 			this.pingMeasurer.ping();
 		}
 

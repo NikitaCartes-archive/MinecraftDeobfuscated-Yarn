@@ -42,7 +42,7 @@ public class PlayerListEntry {
 		PlayerSkinProvider playerSkinProvider = minecraftClient.getSkinProvider();
 		CompletableFuture<SkinTextures> completableFuture = playerSkinProvider.fetchSkinTextures(profile);
 		boolean bl = !minecraftClient.uuidEquals(profile.getId());
-		SkinTextures skinTextures = DefaultSkinHelper.getTexture(profile);
+		SkinTextures skinTextures = DefaultSkinHelper.getSkinTextures(profile);
 		return () -> {
 			SkinTextures skinTextures2 = (SkinTextures)completableFuture.getNow(skinTextures);
 			return bl && !skinTextures2.secure() ? skinTextures : skinTextures2;

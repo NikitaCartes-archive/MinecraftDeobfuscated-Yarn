@@ -538,7 +538,7 @@ public class DebugHud {
 		return this.shouldShowDebugHud() && this.renderingChartVisible;
 	}
 
-	public boolean showShowPacketSizeAndPingCharts() {
+	public boolean shouldShowPacketSizeAndPingCharts() {
 		return this.shouldShowDebugHud() && this.packetSizeAndPingChartsVisible;
 	}
 
