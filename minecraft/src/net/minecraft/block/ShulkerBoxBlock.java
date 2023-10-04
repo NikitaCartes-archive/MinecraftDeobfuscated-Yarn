@@ -1,9 +1,13 @@
 package net.minecraft.block;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -47,8 +51,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class ShulkerBoxBlock extends BlockWithEntity {
+	public static final MapCodec<ShulkerBoxBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(DyeColor.CODEC.optionalFieldOf("color").forGetter(block -> Optional.ofNullable(block.color)), createSettingsCodec())
+				.apply(instance, (color, settings) -> new ShulkerBoxBlock((DyeColor)color.orElse(null), settings))
+	);
 	private static final float field_41075 = 1.0F;
 	private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
 	private static final VoxelShape DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
@@ -68,6 +77,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = new Identifier("contents");
 	@Nullable
 	private final DyeColor color;
+
+	@Override
+	public MapCodec<ShulkerBoxBlock> getCodec() {
+		return CODEC;
+	}
 
 	public ShulkerBoxBlock(@Nullable DyeColor color, AbstractBlock.Settings settings) {
 		super(settings);
@@ -133,7 +147,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
 			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
@@ -151,7 +165,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	@Override
@@ -251,7 +265,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		ItemStack itemStack = super.getPickStack(world, pos, state);
 		world.getBlockEntity(pos, BlockEntityType.SHULKER_BOX).ifPresent(blockEntity -> blockEntity.setStackNbt(itemStack));
 		return itemStack;

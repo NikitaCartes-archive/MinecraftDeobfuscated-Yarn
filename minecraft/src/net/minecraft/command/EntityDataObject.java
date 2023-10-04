@@ -72,6 +72,6 @@ public class EntityDataObject implements DataCommandObject {
 
 	@Override
 	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
-		return Text.translatable("commands.data.entity.get", path, this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
+		return Text.translatable("commands.data.entity.get", path.getString(), this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
 	}
 }

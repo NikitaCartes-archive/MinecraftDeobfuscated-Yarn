@@ -36,25 +36,25 @@ import net.minecraft.util.Identifier;
 public class BlockArgumentParser {
 	public static final SimpleCommandExceptionType DISALLOWED_TAG_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.block.tag.disallowed"));
 	public static final DynamicCommandExceptionType INVALID_BLOCK_ID_EXCEPTION = new DynamicCommandExceptionType(
-		block -> Text.translatable("argument.block.id.invalid", block)
+		block -> Text.stringifiedTranslatable("argument.block.id.invalid", block)
 	);
 	public static final Dynamic2CommandExceptionType UNKNOWN_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(block, property) -> Text.translatable("argument.block.property.unknown", block, property)
+		(block, property) -> Text.stringifiedTranslatable("argument.block.property.unknown", block, property)
 	);
 	public static final Dynamic2CommandExceptionType DUPLICATE_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(block, property) -> Text.translatable("argument.block.property.duplicate", property, block)
+		(block, property) -> Text.stringifiedTranslatable("argument.block.property.duplicate", property, block)
 	);
 	public static final Dynamic3CommandExceptionType INVALID_PROPERTY_EXCEPTION = new Dynamic3CommandExceptionType(
-		(block, property, value) -> Text.translatable("argument.block.property.invalid", block, value, property)
+		(block, property, value) -> Text.stringifiedTranslatable("argument.block.property.invalid", block, value, property)
 	);
 	public static final Dynamic2CommandExceptionType EMPTY_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(block, property) -> Text.translatable("argument.block.property.novalue", block, property)
+		(block, property) -> Text.stringifiedTranslatable("argument.block.property.novalue", block, property)
 	);
 	public static final SimpleCommandExceptionType UNCLOSED_PROPERTIES_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("argument.block.property.unclosed")
 	);
 	public static final DynamicCommandExceptionType UNKNOWN_BLOCK_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		tag -> Text.translatable("arguments.block.tag.unknown", tag)
+		tag -> Text.stringifiedTranslatable("arguments.block.tag.unknown", tag)
 	);
 	private static final char PROPERTIES_OPENING = '[';
 	private static final char NBT_OPENING = '{';

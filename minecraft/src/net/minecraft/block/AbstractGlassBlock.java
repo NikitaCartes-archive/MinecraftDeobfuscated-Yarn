@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -9,6 +10,9 @@ public abstract class AbstractGlassBlock extends TransparentBlock {
 	protected AbstractGlassBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractGlassBlock> getCodec();
 
 	@Override
 	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {

@@ -24,10 +24,9 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		this.predicate = LootConditionTypes.matchingAll(conditions);
 	}
 
-	protected static <T extends ConditionalLootFunction> P1<Mu<T>, List<LootCondition>> method_53344(Instance<T> instance) {
+	protected static <T extends ConditionalLootFunction> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {
 		return instance.group(
-			Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of())
-				.forGetter(conditionalLootFunction -> conditionalLootFunction.conditions)
+			Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(function -> function.conditions)
 		);
 	}
 

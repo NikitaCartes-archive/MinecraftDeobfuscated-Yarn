@@ -7,9 +7,9 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
-import it.unimi.dsi.fastutil.objects.Object2FloatMap;
-import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
-import it.unimi.dsi.fastutil.objects.Object2FloatOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2FloatMap;
+import it.unimi.dsi.fastutil.objects.Reference2FloatMaps;
+import it.unimi.dsi.fastutil.objects.Reference2FloatOpenHashMap;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -57,9 +57,7 @@ public class WorldUpdater {
 	private volatile int totalChunkCount;
 	private volatile int upgradedChunkCount;
 	private volatile int skippedChunkCount;
-	private final Object2FloatMap<RegistryKey<World>> dimensionProgress = Object2FloatMaps.synchronize(
-		new Object2FloatOpenCustomHashMap<>(Util.identityHashStrategy())
-	);
+	private final Reference2FloatMap<RegistryKey<World>> dimensionProgress = Reference2FloatMaps.synchronize(new Reference2FloatOpenHashMap<>());
 	private volatile Text status = Text.translatable("optimizeWorld.stage.counting");
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;

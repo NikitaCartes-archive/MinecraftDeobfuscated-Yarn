@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -19,6 +20,9 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	protected AbstractPlantBlock(AbstractBlock.Settings settings, Direction direction, VoxelShape voxelShape, boolean bl) {
 		super(settings, direction, voxelShape, bl);
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractPlantBlock> getCodec();
 
 	protected BlockState copyState(BlockState from, BlockState to) {
 		return to;
@@ -45,7 +49,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(this.getStem());
 	}
 

@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 public record ProfilelessChatMessageS2CPacket(Text message, MessageType.Serialized chatType) implements Packet<ClientPlayPacketListener> {
 	public ProfilelessChatMessageS2CPacket(PacketByteBuf buf) {
-		this(buf.readText(), new MessageType.Serialized(buf));
+		this(buf.readUnlimitedText(), new MessageType.Serialized(buf));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
@@ -8,6 +9,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class SlimeBlock extends TransparentBlock {
+	public static final MapCodec<SlimeBlock> CODEC = createCodec(SlimeBlock::new);
+
+	@Override
+	public MapCodec<SlimeBlock> getCodec() {
+		return CODEC;
+	}
+
 	public SlimeBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

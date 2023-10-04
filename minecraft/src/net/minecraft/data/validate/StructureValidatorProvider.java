@@ -21,9 +21,9 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 	public static NbtCompound update(String name, NbtCompound nbt) {
 		StructureTemplate structureTemplate = new StructureTemplate();
 		int i = NbtHelper.getDataVersion(nbt, 500);
-		int j = 3563;
-		if (i < 3563) {
-			LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 3563, name);
+		int j = 3678;
+		if (i < 3678) {
+			LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 3678, name);
 		}
 
 		NbtCompound nbtCompound = DataFixTypes.STRUCTURE.update(Schemas.getFixer(), nbt, i);

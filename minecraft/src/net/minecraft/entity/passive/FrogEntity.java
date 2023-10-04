@@ -177,11 +177,6 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	}
 
 	@Override
-	public boolean canBreatheInWater() {
-		return true;
-	}
-
-	@Override
 	protected void mobTick() {
 		this.getWorld().getProfiler().push("frogBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);

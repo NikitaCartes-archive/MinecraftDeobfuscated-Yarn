@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
@@ -15,9 +16,16 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class EndPortalBlock extends BlockWithEntity {
+	public static final MapCodec<EndPortalBlock> CODEC = createCodec(EndPortalBlock::new);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 6.0, 0.0, 16.0, 12.0, 16.0);
+
+	@Override
+	public MapCodec<EndPortalBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected EndPortalBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -61,7 +69,7 @@ public class EndPortalBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;
 	}
 

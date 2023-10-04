@@ -1,6 +1,9 @@
 package net.minecraft.block;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Map;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -18,9 +21,18 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class BannerBlock extends AbstractBannerBlock {
+	public static final MapCodec<BannerBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(DyeColor.CODEC.fieldOf("color").forGetter(AbstractBannerBlock::getColor), createSettingsCodec())
+				.apply(instance, BannerBlock::new)
+	);
 	public static final IntProperty ROTATION = Properties.ROTATION;
 	private static final Map<DyeColor, Block> COLORED_BANNERS = Maps.<DyeColor, Block>newHashMap();
 	private static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
+
+	@Override
+	public MapCodec<BannerBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BannerBlock(DyeColor dyeColor, AbstractBlock.Settings settings) {
 		super(dyeColor, settings);

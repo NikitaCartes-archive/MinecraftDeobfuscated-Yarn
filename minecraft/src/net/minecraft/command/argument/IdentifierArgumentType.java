@@ -21,14 +21,16 @@ import net.minecraft.util.Identifier;
 public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_ADVANCEMENT_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("advancement.advancementNotFound", id)
+		id -> Text.stringifiedTranslatable("advancement.advancementNotFound", id)
 	);
-	private static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("recipe.notFound", id));
+	private static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(
+		id -> Text.stringifiedTranslatable("recipe.notFound", id)
+	);
 	private static final DynamicCommandExceptionType UNKNOWN_PREDICATE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("predicate.unknown", id)
+		id -> Text.stringifiedTranslatable("predicate.unknown", id)
 	);
 	private static final DynamicCommandExceptionType UNKNOWN_ITEM_MODIFIER_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("item_modifier.unknown", id)
+		id -> Text.stringifiedTranslatable("item_modifier.unknown", id)
 	);
 
 	public static IdentifierArgumentType identifier() {

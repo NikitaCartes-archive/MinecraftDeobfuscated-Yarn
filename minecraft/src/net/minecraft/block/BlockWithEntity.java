@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -26,6 +27,9 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 	protected BlockWithEntity(AbstractBlock.Settings settings) {
 		super(settings);
 	}
+
+	@Override
+	protected abstract MapCodec<? extends BlockWithEntity> getCodec();
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {

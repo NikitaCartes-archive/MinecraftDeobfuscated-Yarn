@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -29,6 +30,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
+	public static final MapCodec<CandleBlock> CODEC = createCodec(CandleBlock::new);
 	public static final int field_31050 = 1;
 	public static final int MAX_CANDLE_AMOUNT = 4;
 	public static final IntProperty CANDLES = Properties.CANDLES;
@@ -52,6 +54,11 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	private static final VoxelShape TWO_CANDLES_SHAPE = Block.createCuboidShape(5.0, 0.0, 6.0, 11.0, 6.0, 9.0);
 	private static final VoxelShape THREE_CANDLES_SHAPE = Block.createCuboidShape(5.0, 0.0, 6.0, 10.0, 6.0, 11.0);
 	private static final VoxelShape FOUR_CANDLES_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 10.0);
+
+	@Override
+	public MapCodec<CandleBlock> getCodec() {
+		return CODEC;
+	}
 
 	public CandleBlock(AbstractBlock.Settings settings) {
 		super(settings);

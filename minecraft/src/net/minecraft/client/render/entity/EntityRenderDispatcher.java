@@ -45,7 +45,6 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
@@ -151,7 +150,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			matrices.translate(d, e, f);
 			entityRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
 			if (entity.doesRenderOnFire()) {
-				this.renderFire(matrices, vertexConsumers, entity);
+				this.renderFire(matrices, vertexConsumers, entity, MathHelper.rotateAround(MathHelper.Y_AXIS, this.rotation, new Quaternionf()));
 			}
 
 			matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
@@ -249,7 +248,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			.next();
 	}
 
-	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity) {
+	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, Quaternionf rotation) {
 		Sprite sprite = ModelLoader.FIRE_0.getSprite();
 		Sprite sprite2 = ModelLoader.FIRE_1.getSprite();
 		matrices.push();
@@ -259,7 +258,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		float h = 0.0F;
 		float i = entity.getHeight() / f;
 		float j = 0.0F;
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-this.camera.getYaw()));
+		matrices.multiply(rotation);
 		matrices.translate(0.0F, 0.0F, -0.3F + (float)((int)i) * 0.02F);
 		float k = 0.0F;
 		int l = 0;

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -28,6 +29,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class TurtleEggBlock extends Block {
+	public static final MapCodec<TurtleEggBlock> CODEC = createCodec(TurtleEggBlock::new);
 	public static final int field_31272 = 2;
 	public static final int field_31273 = 1;
 	public static final int field_31274 = 4;
@@ -35,6 +37,11 @@ public class TurtleEggBlock extends Block {
 	private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 7.0, 15.0);
 	public static final IntProperty HATCH = Properties.HATCH;
 	public static final IntProperty EGGS = Properties.EGGS;
+
+	@Override
+	public MapCodec<TurtleEggBlock> getCodec() {
+		return CODEC;
+	}
 
 	public TurtleEggBlock(AbstractBlock.Settings settings) {
 		super(settings);

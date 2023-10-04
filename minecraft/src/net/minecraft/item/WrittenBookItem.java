@@ -156,13 +156,13 @@ public class WrittenBookItem extends Item {
 	private static String textToJson(@Nullable ServerCommandSource commandSource, @Nullable PlayerEntity player, String text) {
 		Text text2;
 		try {
-			text2 = Text.Serializer.fromLenientJson(text);
+			text2 = Text.Serialization.fromLenientJson(text);
 			text2 = Texts.parse(commandSource, text2, player, 0);
 		} catch (Exception var5) {
 			text2 = Text.literal(text);
 		}
 
-		return Text.Serializer.toJson(text2);
+		return Text.Serialization.toJsonString(text2);
 	}
 
 	@Override

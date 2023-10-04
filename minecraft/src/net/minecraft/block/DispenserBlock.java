@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import net.minecraft.block.dispenser.DispenserBehavior;
@@ -41,12 +42,18 @@ import org.slf4j.Logger;
 
 public class DispenserBlock extends BlockWithEntity {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final MapCodec<DispenserBlock> CODEC = createCodec(DispenserBlock::new);
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 	private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(
 		new Object2ObjectOpenHashMap<>(), map -> map.defaultReturnValue(new ItemDispenserBehavior())
 	);
 	private static final int SCHEDULED_TICK_DELAY = 4;
+
+	@Override
+	public MapCodec<? extends DispenserBlock> getCodec() {
+		return CODEC;
+	}
 
 	public static void registerBehavior(ItemConvertible provider, DispenserBehavior behavior) {
 		BEHAVIORS.put(provider.asItem(), behavior);

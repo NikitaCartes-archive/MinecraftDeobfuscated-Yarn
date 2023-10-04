@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -11,7 +12,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class MagmaBlock extends Block {
+	public static final MapCodec<MagmaBlock> CODEC = createCodec(MagmaBlock::new);
 	private static final int SCHEDULED_TICK_DELAY = 20;
+
+	@Override
+	public MapCodec<MagmaBlock> getCodec() {
+		return CODEC;
+	}
 
 	public MagmaBlock(AbstractBlock.Settings settings) {
 		super(settings);

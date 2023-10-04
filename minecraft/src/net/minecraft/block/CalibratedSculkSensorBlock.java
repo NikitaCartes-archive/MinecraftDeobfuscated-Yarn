@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -18,7 +19,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.Vibrations;
 
 public class CalibratedSculkSensorBlock extends SculkSensorBlock {
+	public static final MapCodec<CalibratedSculkSensorBlock> CODEC = createCodec(CalibratedSculkSensorBlock::new);
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+
+	@Override
+	public MapCodec<CalibratedSculkSensorBlock> getCodec() {
+		return CODEC;
+	}
 
 	public CalibratedSculkSensorBlock(AbstractBlock.Settings settings) {
 		super(settings);

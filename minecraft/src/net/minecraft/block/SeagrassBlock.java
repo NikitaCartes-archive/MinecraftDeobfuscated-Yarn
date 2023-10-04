@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,8 +20,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFillable {
+	public static final MapCodec<SeagrassBlock> CODEC = createCodec(SeagrassBlock::new);
 	protected static final float field_31242 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
+
+	@Override
+	public MapCodec<SeagrassBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected SeagrassBlock(AbstractBlock.Settings settings) {
 		super(settings);

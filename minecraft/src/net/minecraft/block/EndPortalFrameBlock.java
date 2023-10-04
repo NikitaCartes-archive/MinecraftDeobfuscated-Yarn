@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.base.Predicates;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -21,12 +22,18 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EndPortalFrameBlock extends Block {
+	public static final MapCodec<EndPortalFrameBlock> CODEC = createCodec(EndPortalFrameBlock::new);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty EYE = Properties.EYE;
 	protected static final VoxelShape FRAME_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 13.0, 16.0);
 	protected static final VoxelShape EYE_SHAPE = Block.createCuboidShape(4.0, 13.0, 4.0, 12.0, 16.0, 12.0);
 	protected static final VoxelShape FRAME_WITH_EYE_SHAPE = VoxelShapes.union(FRAME_SHAPE, EYE_SHAPE);
 	private static BlockPattern COMPLETED_FRAME;
+
+	@Override
+	public MapCodec<EndPortalFrameBlock> getCodec() {
+		return CODEC;
+	}
 
 	public EndPortalFrameBlock(AbstractBlock.Settings settings) {
 		super(settings);

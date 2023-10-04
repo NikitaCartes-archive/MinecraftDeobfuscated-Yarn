@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -15,7 +16,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class CoralParentBlock extends Block implements Waterloggable {
+public abstract class CoralParentBlock extends Block implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
 
@@ -23,6 +24,9 @@ public class CoralParentBlock extends Block implements Waterloggable {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
 	}
+
+	@Override
+	protected abstract MapCodec<? extends CoralParentBlock> getCodec();
 
 	protected void checkLivingConditions(BlockState state, WorldAccess world, BlockPos pos) {
 		if (!isInWater(state, world, pos)) {

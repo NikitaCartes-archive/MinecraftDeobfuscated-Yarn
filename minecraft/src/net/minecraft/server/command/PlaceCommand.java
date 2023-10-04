@@ -48,7 +48,7 @@ public class PlaceCommand {
 		Text.translatable("commands.place.structure.failed")
 	);
 	private static final DynamicCommandExceptionType TEMPLATE_INVALID_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("commands.place.template.invalid", id)
+		id -> Text.stringifiedTranslatable("commands.place.template.invalid", id)
 	);
 	private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("commands.place.template.failed")
@@ -321,7 +321,7 @@ public class PlaceCommand {
 			if (!bl) {
 				throw TEMPLATE_FAILED_EXCEPTION.create();
 			} else {
-				source.sendFeedback(() -> Text.translatable("commands.place.template.success", id, pos.getX(), pos.getY(), pos.getZ()), true);
+				source.sendFeedback(() -> Text.translatable("commands.place.template.success", Text.of(id), pos.getX(), pos.getY(), pos.getZ()), true);
 				return 1;
 			}
 		}

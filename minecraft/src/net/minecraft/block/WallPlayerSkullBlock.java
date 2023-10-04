@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
@@ -9,6 +10,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WallPlayerSkullBlock extends WallSkullBlock {
+	public static final MapCodec<WallPlayerSkullBlock> CODEC = createCodec(WallPlayerSkullBlock::new);
+
+	@Override
+	public MapCodec<WallPlayerSkullBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected WallPlayerSkullBlock(AbstractBlock.Settings settings) {
 		super(SkullBlock.Type.PLAYER, settings);
 	}

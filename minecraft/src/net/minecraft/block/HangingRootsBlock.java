@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -15,8 +16,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class HangingRootsBlock extends Block implements Waterloggable {
+	public static final MapCodec<HangingRootsBlock> CODEC = createCodec(HangingRootsBlock::new);
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 10.0, 2.0, 14.0, 16.0, 14.0);
+
+	@Override
+	public MapCodec<HangingRootsBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected HangingRootsBlock(AbstractBlock.Settings settings) {
 		super(settings);

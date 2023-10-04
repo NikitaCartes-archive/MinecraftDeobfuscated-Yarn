@@ -2,6 +2,10 @@ package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,6 +17,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public record BlockNbtDataSource(String rawPos, @Nullable PosArgument pos) implements NbtDataSource {
+	public static final MapCodec<BlockNbtDataSource> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Codec.STRING.fieldOf("block").forGetter(BlockNbtDataSource::rawPos)).apply(instance, BlockNbtDataSource::new)
+	);
+	public static final NbtDataSource.Type<BlockNbtDataSource> TYPE = new NbtDataSource.Type<>(CODEC, "block");
+
 	public BlockNbtDataSource(String rawPath) {
 		this(rawPath, parsePos(rawPath));
 	}
@@ -40,6 +49,11 @@ public record BlockNbtDataSource(String rawPos, @Nullable PosArgument pos) imple
 		}
 
 		return Stream.empty();
+	}
+
+	@Override
+	public NbtDataSource.Type<?> getType() {
+		return TYPE;
 	}
 
 	public String toString() {

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -18,7 +19,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class StructureBlock extends BlockWithEntity implements OperatorBlock {
+	public static final MapCodec<StructureBlock> CODEC = createCodec(StructureBlock::new);
 	public static final EnumProperty<StructureBlockMode> MODE = Properties.STRUCTURE_BLOCK_MODE;
+
+	@Override
+	public MapCodec<StructureBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected StructureBlock(AbstractBlock.Settings settings) {
 		super(settings);

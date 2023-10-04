@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -26,11 +27,17 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.Vibrations;
 
 public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable {
+	public static final MapCodec<SculkShriekerBlock> CODEC = createCodec(SculkShriekerBlock::new);
 	public static final BooleanProperty SHRIEKING = Properties.SHRIEKING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty CAN_SUMMON = Properties.CAN_SUMMON;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	public static final double TOP = SHAPE.getMax(Direction.Axis.Y);
+
+	@Override
+	public MapCodec<SculkShriekerBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SculkShriekerBlock(AbstractBlock.Settings settings) {
 		super(settings);

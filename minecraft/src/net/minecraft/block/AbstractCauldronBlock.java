@@ -1,13 +1,12 @@
 package net.minecraft.block;
 
-import java.util.Map;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -30,7 +29,6 @@ import net.minecraft.world.World;
  * @see CauldronBlock empty cauldrons
  * @see LavaCauldronBlock cauldrons filled with lava
  * @see LeveledCauldronBlock cauldrons with varying levels of contents
- * @see PowderSnowCauldronBlock cauldrons filled with powder snow
  */
 public abstract class AbstractCauldronBlock extends Block {
 	private static final int field_30989 = 2;
@@ -49,19 +47,20 @@ public abstract class AbstractCauldronBlock extends Block {
 		),
 		BooleanBiFunction.ONLY_FIRST
 	);
-	private final Map<Item, CauldronBehavior> behaviorMap;
+	protected final CauldronBehavior.CauldronBehaviorMap behaviorMap;
+
+	@Override
+	protected abstract MapCodec<? extends AbstractCauldronBlock> getCodec();
 
 	/**
 	 * Constructs a cauldron block.
 	 * 
 	 * <p>The behavior map must match {@link CauldronBehavior#createMap} by providing
 	 * a nonnull value for <em>all</em> items.
-	 * 
-	 * @param behaviorMap the map containing cauldron behaviors for each item
 	 */
-	public AbstractCauldronBlock(AbstractBlock.Settings settings, Map<Item, CauldronBehavior> behaviorMap) {
+	public AbstractCauldronBlock(AbstractBlock.Settings settings, CauldronBehavior.CauldronBehaviorMap cauldronBehaviorMap) {
 		super(settings);
-		this.behaviorMap = behaviorMap;
+		this.behaviorMap = cauldronBehaviorMap;
 	}
 
 	protected double getFluidHeight(BlockState state) {
@@ -75,7 +74,7 @@ public abstract class AbstractCauldronBlock extends Block {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		CauldronBehavior cauldronBehavior = (CauldronBehavior)this.behaviorMap.get(itemStack.getItem());
+		CauldronBehavior cauldronBehavior = (CauldronBehavior)this.behaviorMap.map().get(itemStack.getItem());
 		return cauldronBehavior.interact(state, world, pos, player, hand, itemStack);
 	}
 

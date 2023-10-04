@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -11,12 +12,19 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class FrostedIceBlock extends IceBlock {
+	public static final MapCodec<FrostedIceBlock> CODEC = createCodec(FrostedIceBlock::new);
 	public static final int MAX_AGE = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
 	private static final int NEIGHBORS_CHECKED_ON_SCHEDULED_TICK = 4;
 	private static final int NEIGHBORS_CHECKED_ON_NEIGHBOR_UPDATE = 2;
+
+	@Override
+	public MapCodec<FrostedIceBlock> getCodec() {
+		return CODEC;
+	}
 
 	public FrostedIceBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -89,7 +97,7 @@ public class FrostedIceBlock extends IceBlock {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;
 	}
 }

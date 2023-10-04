@@ -1,5 +1,9 @@
 package net.minecraft.text;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -9,6 +13,10 @@ import javax.annotation.Nullable;
  * is not thread-safe.
  */
 public class KeybindTextContent implements TextContent {
+	public static final MapCodec<KeybindTextContent> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Codec.STRING.fieldOf("keybind").forGetter(content -> content.key)).apply(instance, KeybindTextContent::new)
+	);
+	public static final TextContent.Type<KeybindTextContent> TYPE = new TextContent.Type<>(CODEC, "keybind");
 	private final String key;
 	@Nullable
 	private Supplier<Text> translated;
@@ -57,5 +65,10 @@ public class KeybindTextContent implements TextContent {
 
 	public String getKey() {
 		return this.key;
+	}
+
+	@Override
+	public TextContent.Type<?> getType() {
+		return TYPE;
 	}
 }

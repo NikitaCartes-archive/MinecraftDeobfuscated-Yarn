@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.item.ItemPlacementContext;
@@ -10,12 +11,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class WallMountedBlock extends HorizontalFacingBlock {
+public abstract class WallMountedBlock extends HorizontalFacingBlock {
 	public static final EnumProperty<BlockFace> FACE = Properties.BLOCK_FACE;
 
 	protected WallMountedBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
+
+	@Override
+	protected abstract MapCodec<? extends WallMountedBlock> getCodec();
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {

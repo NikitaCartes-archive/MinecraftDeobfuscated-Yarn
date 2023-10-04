@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -20,13 +21,20 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.NetherPortal;
 
 public class NetherPortalBlock extends Block {
+	public static final MapCodec<NetherPortalBlock> CODEC = createCodec(NetherPortalBlock::new);
 	public static final EnumProperty<Direction.Axis> AXIS = Properties.HORIZONTAL_AXIS;
 	protected static final int field_31196 = 2;
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
+
+	@Override
+	public MapCodec<NetherPortalBlock> getCodec() {
+		return CODEC;
+	}
 
 	public NetherPortalBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -115,7 +123,7 @@ public class NetherPortalBlock extends Block {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;
 	}
 

@@ -282,6 +282,10 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
+			if (spawnReason == SpawnReason.SPAWNER) {
+				return canMobSpawn(type, world, spawnReason, pos, random);
+			}
+
 			if (world.getBiome(pos).isIn(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)
 				&& pos.getY() > 50
 				&& pos.getY() < 70

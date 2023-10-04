@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
@@ -15,12 +16,18 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class ChainBlock extends PillarBlock implements Waterloggable {
+	public static final MapCodec<ChainBlock> CODEC = createCodec(ChainBlock::new);
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final float field_31054 = 6.5F;
 	protected static final float field_31055 = 9.5F;
 	protected static final VoxelShape Y_SHAPE = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.5, 6.5, 0.0, 9.5, 9.5, 16.0);
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 6.5, 6.5, 16.0, 9.5, 9.5);
+
+	@Override
+	public MapCodec<ChainBlock> getCodec() {
+		return CODEC;
+	}
 
 	public ChainBlock(AbstractBlock.Settings settings) {
 		super(settings);

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import javax.annotation.Nullable;
@@ -38,6 +39,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class ComposterBlock extends Block implements InventoryProvider {
+	public static final MapCodec<ComposterBlock> CODEC = createCodec(ComposterBlock::new);
 	public static final int NUM_LEVELS = 8;
 	public static final int MIN_LEVEL = 0;
 	public static final int MAX_LEVEL = 7;
@@ -57,6 +59,11 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			shapes[8] = shapes[7];
 		}
 	);
+
+	@Override
+	public MapCodec<ComposterBlock> getCodec() {
+		return CODEC;
+	}
 
 	public static void registerDefaultCompostableItems() {
 		ITEM_TO_LEVEL_INCREASE_CHANCE.defaultReturnValue(-1.0F);

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -10,6 +11,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class WetSpongeBlock extends Block {
+	public static final MapCodec<WetSpongeBlock> CODEC = createCodec(WetSpongeBlock::new);
+
+	@Override
+	public MapCodec<WetSpongeBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected WetSpongeBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

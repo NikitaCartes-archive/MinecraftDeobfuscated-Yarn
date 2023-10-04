@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.function.BiFunction;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -21,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class FlowerbedBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<FlowerbedBlock> CODEC = createCodec(FlowerbedBlock::new);
 	public static final int field_42762 = 1;
 	public static final int field_42763 = 4;
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
@@ -43,6 +45,11 @@ public class FlowerbedBlock extends PlantBlock implements Fertilizable {
 			return voxelShape.asCuboid();
 		})
 	);
+
+	@Override
+	public MapCodec<FlowerbedBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected FlowerbedBlock(AbstractBlock.Settings settings) {
 		super(settings);

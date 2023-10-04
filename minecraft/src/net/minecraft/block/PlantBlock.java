@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -8,10 +9,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class PlantBlock extends Block {
+public abstract class PlantBlock extends Block {
 	protected PlantBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
+
+	@Override
+	protected abstract MapCodec<? extends PlantBlock> getCodec();
 
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
 		return floor.isIn(BlockTags.DIRT) || floor.isOf(Blocks.FARMLAND);

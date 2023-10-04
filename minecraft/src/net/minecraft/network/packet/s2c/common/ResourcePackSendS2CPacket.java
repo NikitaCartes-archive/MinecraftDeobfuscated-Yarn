@@ -29,7 +29,7 @@ public class ResourcePackSendS2CPacket implements Packet<ClientCommonPacketListe
 		this.url = buf.readString();
 		this.hash = buf.readString(40);
 		this.required = buf.readBoolean();
-		this.prompt = buf.readNullable(PacketByteBuf::readText);
+		this.prompt = buf.readNullable(PacketByteBuf::readUnlimitedText);
 	}
 
 	@Override

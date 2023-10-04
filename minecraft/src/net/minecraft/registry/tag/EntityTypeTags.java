@@ -6,7 +6,9 @@ import net.minecraft.util.Identifier;
 
 public final class EntityTypeTags {
 	public static final TagKey<EntityType<?>> SKELETONS = of("skeletons");
+	public static final TagKey<EntityType<?>> ZOMBIES = of("zombies");
 	public static final TagKey<EntityType<?>> RAIDERS = of("raiders");
+	public static final TagKey<EntityType<?>> UNDEAD = of("undead");
 	public static final TagKey<EntityType<?>> BEEHIVE_INHABITORS = of("beehive_inhabitors");
 	public static final TagKey<EntityType<?>> ARROWS = of("arrows");
 	public static final TagKey<EntityType<?>> IMPACT_PROJECTILES = of("impact_projectiles");
@@ -15,6 +17,7 @@ public final class EntityTypeTags {
 	public static final TagKey<EntityType<?>> AXOLOTL_HUNT_TARGETS = of("axolotl_hunt_targets");
 	public static final TagKey<EntityType<?>> FREEZE_IMMUNE_ENTITY_TYPES = of("freeze_immune_entity_types");
 	public static final TagKey<EntityType<?>> FREEZE_HURTS_EXTRA_TYPES = of("freeze_hurts_extra_types");
+	public static final TagKey<EntityType<?>> CAN_BREATHE_UNDER_WATER = of("can_breathe_under_water");
 	public static final TagKey<EntityType<?>> FROG_FOOD = of("frog_food");
 	public static final TagKey<EntityType<?>> FALL_DAMAGE_IMMUNE = of("fall_damage_immune");
 	public static final TagKey<EntityType<?>> DISMOUNTS_UNDERWATER = of("dismounts_underwater");

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -16,7 +17,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class BarrierBlock extends Block implements Waterloggable {
+	public static final MapCodec<BarrierBlock> CODEC = createCodec(BarrierBlock::new);
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+
+	@Override
+	public MapCodec<BarrierBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected BarrierBlock(AbstractBlock.Settings settings) {
 		super(settings);

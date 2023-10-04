@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Collection;
 import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.fluid.FluidState;
@@ -21,9 +22,15 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class SculkVeinBlock extends MultifaceGrowthBlock implements SculkSpreadable, Waterloggable {
+	public static final MapCodec<SculkVeinBlock> CODEC = createCodec(SculkVeinBlock::new);
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private final LichenGrower allGrowTypeGrower = new LichenGrower(new SculkVeinBlock.SculkVeinGrowChecker(LichenGrower.GROW_TYPES));
 	private final LichenGrower samePositionOnlyGrower = new LichenGrower(new SculkVeinBlock.SculkVeinGrowChecker(LichenGrower.GrowType.SAME_POSITION));
+
+	@Override
+	public MapCodec<SculkVeinBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SculkVeinBlock(AbstractBlock.Settings settings) {
 		super(settings);

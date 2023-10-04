@@ -184,13 +184,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		public SerializableTeam(PacketByteBuf buf) {
-			this.displayName = buf.readText();
+			this.displayName = buf.readUnlimitedText();
 			this.friendlyFlags = buf.readByte();
 			this.nameTagVisibilityRule = buf.readString(40);
 			this.collisionRule = buf.readString(40);
 			this.color = buf.readEnumConstant(Formatting.class);
-			this.prefix = buf.readText();
-			this.suffix = buf.readText();
+			this.prefix = buf.readUnlimitedText();
+			this.suffix = buf.readUnlimitedText();
 		}
 
 		public Text getDisplayName() {

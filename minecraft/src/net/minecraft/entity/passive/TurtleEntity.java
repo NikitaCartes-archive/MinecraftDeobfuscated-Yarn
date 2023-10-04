@@ -206,11 +206,6 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canBreatheInWater() {
-		return true;
-	}
-
-	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.AQUATIC;
 	}

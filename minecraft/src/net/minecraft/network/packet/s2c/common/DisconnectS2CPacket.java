@@ -13,7 +13,7 @@ public class DisconnectS2CPacket implements Packet<ClientCommonPacketListener> {
 	}
 
 	public DisconnectS2CPacket(PacketByteBuf buf) {
-		this.reason = buf.readText();
+		this.reason = buf.readUnlimitedText();
 	}
 
 	@Override

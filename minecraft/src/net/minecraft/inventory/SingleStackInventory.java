@@ -1,11 +1,25 @@
 package net.minecraft.inventory;
 
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
 /**
  * An inventory that holds exactly one {@link ItemStack}, at slot {@code 0}.
  */
 public interface SingleStackInventory extends Inventory {
+	ItemStack getStack();
+
+	ItemStack decreaseStack(int count);
+
+	void setStack(ItemStack stack);
+
+	BlockEntity asBlockEntity();
+
+	default ItemStack emptyStack() {
+		return this.decreaseStack(this.getMaxCountPerStack());
+	}
+
 	@Override
 	default int size() {
 		return 1;
@@ -18,34 +32,33 @@ public interface SingleStackInventory extends Inventory {
 
 	@Override
 	default void clear() {
-		this.removeStack();
-	}
-
-	/**
-	 * {@return the stack held by the inventory}
-	 */
-	default ItemStack getStack() {
-		return this.getStack(0);
-	}
-
-	/**
-	 * Removes the stack held by the inventory.
-	 * 
-	 * @return the removed stack
-	 */
-	default ItemStack removeStack() {
-		return this.removeStack(0);
-	}
-
-	/**
-	 * Sets the stack held by the inventory to {@code stack}.
-	 */
-	default void setStack(ItemStack stack) {
-		this.setStack(0, stack);
+		this.emptyStack();
 	}
 
 	@Override
 	default ItemStack removeStack(int slot) {
 		return this.removeStack(slot, this.getMaxCountPerStack());
+	}
+
+	@Override
+	default ItemStack getStack(int slot) {
+		return slot == 0 ? this.getStack() : ItemStack.EMPTY;
+	}
+
+	@Override
+	default ItemStack removeStack(int slot, int amount) {
+		return slot != 0 ? ItemStack.EMPTY : this.decreaseStack(amount);
+	}
+
+	@Override
+	default void setStack(int slot, ItemStack stack) {
+		if (slot == 0) {
+			this.setStack(stack);
+		}
+	}
+
+	@Override
+	default boolean canPlayerUse(PlayerEntity player) {
+		return Inventory.canPlayerUse(this.asBlockEntity(), player);
 	}
 }

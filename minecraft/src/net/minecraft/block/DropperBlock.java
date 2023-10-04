@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,7 +20,13 @@ import org.slf4j.Logger;
 
 public class DropperBlock extends DispenserBlock {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final MapCodec<DropperBlock> CODEC = createCodec(DropperBlock::new);
 	private static final DispenserBehavior BEHAVIOR = new ItemDispenserBehavior();
+
+	@Override
+	public MapCodec<DropperBlock> getCodec() {
+		return CODEC;
+	}
 
 	public DropperBlock(AbstractBlock.Settings settings) {
 		super(settings);

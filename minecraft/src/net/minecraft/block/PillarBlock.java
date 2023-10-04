@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -8,7 +9,13 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.Direction;
 
 public class PillarBlock extends Block {
+	public static final MapCodec<PillarBlock> CODEC = createCodec(PillarBlock::new);
 	public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;
+
+	@Override
+	public MapCodec<? extends PillarBlock> getCodec() {
+		return CODEC;
+	}
 
 	public PillarBlock(AbstractBlock.Settings settings) {
 		super(settings);

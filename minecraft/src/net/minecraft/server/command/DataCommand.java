@@ -37,20 +37,20 @@ import net.minecraft.util.math.MathHelper;
 public class DataCommand {
 	private static final SimpleCommandExceptionType MERGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.data.merge.failed"));
 	private static final DynamicCommandExceptionType GET_INVALID_EXCEPTION = new DynamicCommandExceptionType(
-		path -> Text.translatable("commands.data.get.invalid", path)
+		path -> Text.stringifiedTranslatable("commands.data.get.invalid", path)
 	);
 	private static final DynamicCommandExceptionType GET_UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
-		path -> Text.translatable("commands.data.get.unknown", path)
+		path -> Text.stringifiedTranslatable("commands.data.get.unknown", path)
 	);
 	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.data.get.multiple"));
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(
-		nbt -> Text.translatable("commands.data.modify.expected_object", nbt)
+		nbt -> Text.stringifiedTranslatable("commands.data.modify.expected_object", nbt)
 	);
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_VALUE_EXCEPTION = new DynamicCommandExceptionType(
-		nbt -> Text.translatable("commands.data.modify.expected_value", nbt)
+		nbt -> Text.stringifiedTranslatable("commands.data.modify.expected_value", nbt)
 	);
 	private static final Dynamic2CommandExceptionType MODIFY_INVALID_SUBSTRING_EXCEPTION = new Dynamic2CommandExceptionType(
-		(startIndex, endIndex) -> Text.translatable("commands.data.modify.invalid_substring", startIndex, endIndex)
+		(startIndex, endIndex) -> Text.stringifiedTranslatable("commands.data.modify.invalid_substring", startIndex, endIndex)
 	);
 	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPE_FACTORIES = ImmutableList.of(
 		EntityDataObject.TYPE_FACTORY, BlockDataObject.TYPE_FACTORY, StorageDataObject.TYPE_FACTORY

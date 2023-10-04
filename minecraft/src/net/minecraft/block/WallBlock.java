@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -26,6 +27,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallBlock extends Block implements Waterloggable {
+	public static final MapCodec<WallBlock> CODEC = createCodec(WallBlock::new);
 	public static final BooleanProperty UP = Properties.UP;
 	public static final EnumProperty<WallShape> EAST_SHAPE = Properties.EAST_WALL_SHAPE;
 	public static final EnumProperty<WallShape> NORTH_SHAPE = Properties.NORTH_WALL_SHAPE;
@@ -45,6 +47,11 @@ public class WallBlock extends Block implements Waterloggable {
 	private static final VoxelShape TALL_SOUTH_SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 16.0);
 	private static final VoxelShape TALL_WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 7.0, 9.0, 16.0, 9.0);
 	private static final VoxelShape TALL_EAST_SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 16.0, 16.0, 9.0);
+
+	@Override
+	public MapCodec<WallBlock> getCodec() {
+		return CODEC;
+	}
 
 	public WallBlock(AbstractBlock.Settings settings) {
 		super(settings);

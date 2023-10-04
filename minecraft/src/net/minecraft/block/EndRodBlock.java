@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
@@ -9,6 +10,13 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class EndRodBlock extends RodBlock {
+	public static final MapCodec<EndRodBlock> CODEC = createCodec(EndRodBlock::new);
+
+	@Override
+	public MapCodec<EndRodBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected EndRodBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));

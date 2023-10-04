@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -25,6 +26,9 @@ public abstract class AbstractSkullBlock extends BlockWithEntity implements Equi
 		this.type = type;
 		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)));
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractSkullBlock> getCodec();
 
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {

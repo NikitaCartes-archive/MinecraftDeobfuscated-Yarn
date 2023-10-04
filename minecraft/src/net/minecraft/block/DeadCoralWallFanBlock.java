@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.Fluids;
@@ -18,6 +19,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
+	public static final MapCodec<DeadCoralWallFanBlock> CODEC = createCodec(DeadCoralWallFanBlock::new);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
@@ -31,6 +33,11 @@ public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
 			Block.createCuboidShape(0.0, 4.0, 0.0, 11.0, 12.0, 16.0)
 		)
 	);
+
+	@Override
+	public MapCodec<? extends DeadCoralWallFanBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected DeadCoralWallFanBlock(AbstractBlock.Settings settings) {
 		super(settings);

@@ -3,6 +3,7 @@ package net.minecraft.block;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -34,6 +35,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class RedstoneWireBlock extends Block {
+	public static final MapCodec<RedstoneWireBlock> CODEC = createCodec(RedstoneWireBlock::new);
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_NORTH = Properties.NORTH_WIRE_CONNECTION;
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = Properties.EAST_WIRE_CONNECTION;
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_SOUTH = Properties.SOUTH_WIRE_CONNECTION;
@@ -87,6 +89,11 @@ public class RedstoneWireBlock extends Block {
 	private static final float field_31221 = 0.2F;
 	private final BlockState dotState;
 	private boolean wiresGivePower = true;
+
+	@Override
+	public MapCodec<RedstoneWireBlock> getCodec() {
+		return CODEC;
+	}
 
 	public RedstoneWireBlock(AbstractBlock.Settings settings) {
 		super(settings);

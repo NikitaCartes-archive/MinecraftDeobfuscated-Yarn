@@ -31,7 +31,7 @@ import net.minecraft.world.GameRules;
 public class CloneCommand {
 	private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.clone.overlap"));
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxCount, count) -> Text.translatable("commands.clone.toobig", maxCount, count)
+		(maxCount, count) -> Text.stringifiedTranslatable("commands.clone.toobig", maxCount, count)
 	);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.clone.failed"));
 	public static final Predicate<CachedBlockPosition> IS_AIR_PREDICATE = pos -> !pos.getBlockState().isAir();

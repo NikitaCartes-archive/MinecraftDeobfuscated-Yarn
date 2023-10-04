@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -24,6 +25,9 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	protected AbstractRedstoneGateBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractRedstoneGateBlock> getCodec();
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {

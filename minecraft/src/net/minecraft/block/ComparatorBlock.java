@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -26,7 +27,13 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.tick.TickPriority;
 
 public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockEntityProvider {
+	public static final MapCodec<ComparatorBlock> CODEC = createCodec(ComparatorBlock::new);
 	public static final EnumProperty<ComparatorMode> MODE = Properties.COMPARATOR_MODE;
+
+	@Override
+	public MapCodec<ComparatorBlock> getCodec() {
+		return CODEC;
+	}
 
 	public ComparatorBlock(AbstractBlock.Settings settings) {
 		super(settings);

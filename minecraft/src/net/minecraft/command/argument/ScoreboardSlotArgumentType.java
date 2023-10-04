@@ -18,7 +18,7 @@ import net.minecraft.text.Text;
 public class ScoreboardSlotArgumentType implements ArgumentType<ScoreboardDisplaySlot> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("sidebar", "foo.bar");
 	public static final DynamicCommandExceptionType INVALID_SLOT_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.translatable("argument.scoreboardDisplaySlot.invalid", name)
+		name -> Text.stringifiedTranslatable("argument.scoreboardDisplaySlot.invalid", name)
 	);
 
 	private ScoreboardSlotArgumentType() {

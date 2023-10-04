@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -7,6 +8,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class RootedDirtBlock extends Block implements Fertilizable {
+	public static final MapCodec<RootedDirtBlock> CODEC = createCodec(RootedDirtBlock::new);
+
+	@Override
+	public MapCodec<RootedDirtBlock> getCodec() {
+		return CODEC;
+	}
+
 	public RootedDirtBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

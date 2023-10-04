@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Dismounting;
@@ -37,6 +38,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class RespawnAnchorBlock extends Block {
+	public static final MapCodec<RespawnAnchorBlock> CODEC = createCodec(RespawnAnchorBlock::new);
 	public static final int NO_CHARGES = 0;
 	public static final int MAX_CHARGES = 4;
 	public static final IntProperty CHARGES = Properties.CHARGES;
@@ -56,6 +58,11 @@ public class RespawnAnchorBlock extends Block {
 		.addAll(VALID_HORIZONTAL_SPAWN_OFFSETS.stream().map(Vec3i::up).iterator())
 		.add(new Vec3i(0, 1, 0))
 		.build();
+
+	@Override
+	public MapCodec<RespawnAnchorBlock> getCodec() {
+		return CODEC;
+	}
 
 	public RespawnAnchorBlock(AbstractBlock.Settings settings) {
 		super(settings);

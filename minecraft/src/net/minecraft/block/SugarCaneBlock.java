@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
@@ -16,9 +17,15 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SugarCaneBlock extends Block {
+	public static final MapCodec<SugarCaneBlock> CODEC = createCodec(SugarCaneBlock::new);
 	public static final IntProperty AGE = Properties.AGE_15;
 	protected static final float field_31258 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
+
+	@Override
+	public MapCodec<SugarCaneBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected SugarCaneBlock(AbstractBlock.Settings settings) {
 		super(settings);

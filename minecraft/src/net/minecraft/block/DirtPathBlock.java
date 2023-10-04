@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -12,7 +13,13 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class DirtPathBlock extends Block {
+	public static final MapCodec<DirtPathBlock> CODEC = createCodec(DirtPathBlock::new);
 	protected static final VoxelShape SHAPE = FarmlandBlock.SHAPE;
+
+	@Override
+	public MapCodec<DirtPathBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected DirtPathBlock(AbstractBlock.Settings settings) {
 		super(settings);

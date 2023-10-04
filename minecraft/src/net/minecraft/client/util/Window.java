@@ -325,6 +325,9 @@ public final class Window implements AutoCloseable {
 				this.width = videoMode.getWidth();
 				this.height = videoMode.getHeight();
 				GLFW.glfwSetWindowMonitor(this.handle, monitor.getHandle(), this.x, this.y, this.width, this.height, videoMode.getRefreshRate());
+				if (MinecraftClient.IS_SYSTEM_MAC) {
+					MacWindowUtil.fixStyleMask(this.handle);
+				}
 			}
 		} else {
 			this.x = this.windowedX;

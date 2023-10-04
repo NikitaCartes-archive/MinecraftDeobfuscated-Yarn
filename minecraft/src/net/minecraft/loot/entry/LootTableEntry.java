@@ -17,9 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class LootTableEntry extends LeafEntry {
 	public static final Codec<LootTableEntry> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(lootTableEntry -> lootTableEntry.id))
-				.and(method_53290(instance))
-				.apply(instance, LootTableEntry::new)
+		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(entry -> entry.id)).and(addLeafFields(instance)).apply(instance, LootTableEntry::new)
 	);
 	private final Identifier id;
 

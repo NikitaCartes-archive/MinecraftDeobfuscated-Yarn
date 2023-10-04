@@ -1,7 +1,9 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -17,8 +19,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
+	public static final MapCodec<WallRedstoneTorchBlock> CODEC = createCodec(WallRedstoneTorchBlock::new);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
+
+	@Override
+	public MapCodec<WallRedstoneTorchBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected WallRedstoneTorchBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -62,7 +70,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 			double e = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
 			double f = (double)pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
 			double g = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
-			world.addParticle(this.particle, e, f, g, 0.0, 0.0, 0.0);
+			world.addParticle(DustParticleEffect.DEFAULT, e, f, g, 0.0, 0.0, 0.0);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -17,6 +18,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BeaconBlock extends BlockWithEntity implements Stainable {
+	public static final MapCodec<BeaconBlock> CODEC = createCodec(BeaconBlock::new);
+
+	@Override
+	public MapCodec<BeaconBlock> getCodec() {
+		return CODEC;
+	}
+
 	public BeaconBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

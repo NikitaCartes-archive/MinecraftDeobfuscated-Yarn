@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -13,6 +14,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 
 public class TrappedChestBlock extends ChestBlock {
+	public static final MapCodec<TrappedChestBlock> CODEC = createCodec(TrappedChestBlock::new);
+
+	@Override
+	public MapCodec<TrappedChestBlock> getCodec() {
+		return CODEC;
+	}
+
 	public TrappedChestBlock(AbstractBlock.Settings settings) {
 		super(settings, () -> BlockEntityType.TRAPPED_CHEST);
 	}

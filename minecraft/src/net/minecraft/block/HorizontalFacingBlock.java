@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
@@ -11,6 +12,9 @@ public abstract class HorizontalFacingBlock extends Block {
 	protected HorizontalFacingBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
+
+	@Override
+	protected abstract MapCodec<? extends HorizontalFacingBlock> getCodec();
 
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {

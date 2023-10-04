@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -9,6 +10,13 @@ import net.minecraft.world.World;
  * A cauldron filled with lava.
  */
 public class LavaCauldronBlock extends AbstractCauldronBlock {
+	public static final MapCodec<LavaCauldronBlock> CODEC = createCodec(LavaCauldronBlock::new);
+
+	@Override
+	public MapCodec<LavaCauldronBlock> getCodec() {
+		return CODEC;
+	}
+
 	public LavaCauldronBlock(AbstractBlock.Settings settings) {
 		super(settings, CauldronBehavior.LAVA_CAULDRON_BEHAVIOR);
 	}

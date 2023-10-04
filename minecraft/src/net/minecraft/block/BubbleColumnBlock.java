@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -27,8 +28,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class BubbleColumnBlock extends Block implements FluidDrainable {
+	public static final MapCodec<BubbleColumnBlock> CODEC = createCodec(BubbleColumnBlock::new);
 	public static final BooleanProperty DRAG = Properties.DRAG;
 	private static final int SCHEDULED_TICK_DELAY = 5;
+
+	@Override
+	public MapCodec<BubbleColumnBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BubbleColumnBlock(AbstractBlock.Settings settings) {
 		super(settings);

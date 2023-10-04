@@ -1,7 +1,10 @@
 package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -34,6 +38,7 @@ import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.FluidTags;
@@ -325,6 +330,20 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		this.dynamicBounds = settings.dynamicBounds;
 		this.requiredFeatures = settings.requiredFeatures;
 		this.settings = settings;
+	}
+
+	public AbstractBlock.Settings getSettings() {
+		return this.settings;
+	}
+
+	protected abstract MapCodec<? extends Block> getCodec();
+
+	protected static <B extends Block> RecordCodecBuilder<B, AbstractBlock.Settings> createSettingsCodec() {
+		return AbstractBlock.Settings.CODEC.fieldOf("properties").forGetter(AbstractBlock::getSettings);
+	}
+
+	public static <B extends Block> MapCodec<B> createCodec(Function<AbstractBlock.Settings, B> blockFromSettings) {
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(createSettingsCodec()).apply(instance, blockFromSettings));
 	}
 
 	/**
@@ -890,7 +909,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 */
 	@Deprecated
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		this.scheduledTick(state, world, pos, random);
 	}
 
 	/**
@@ -1526,6 +1544,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.getBlock() == block;
 		}
 
+		public boolean matchesKey(RegistryKey<Block> key) {
+			return this.getBlock().getRegistryEntry().matchesKey(key);
+		}
+
 		public FluidState getFluidState() {
 			return this.fluidState;
 		}
@@ -1648,6 +1670,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	}
 
 	public static class Settings {
+		public static final Codec<AbstractBlock.Settings> CODEC = Codec.unit((Supplier<AbstractBlock.Settings>)(() -> create()));
 		Function<BlockState, MapColor> mapColorProvider = state -> MapColor.CLEAR;
 		boolean collidable = true;
 		BlockSoundGroup soundGroup = BlockSoundGroup.STONE;

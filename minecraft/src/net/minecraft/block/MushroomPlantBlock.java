@@ -1,5 +1,8 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Optional;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -15,11 +18,22 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<MushroomPlantBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					RegistryKey.createCodec(RegistryKeys.CONFIGURED_FEATURE).fieldOf("feature").forGetter(block -> block.featureKey), createSettingsCodec()
+				)
+				.apply(instance, MushroomPlantBlock::new)
+	);
 	protected static final float field_31195 = 3.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
 	private final RegistryKey<ConfiguredFeature<?, ?>> featureKey;
 
-	public MushroomPlantBlock(AbstractBlock.Settings settings, RegistryKey<ConfiguredFeature<?, ?>> featureKey) {
+	@Override
+	public MapCodec<MushroomPlantBlock> getCodec() {
+		return CODEC;
+	}
+
+	public MushroomPlantBlock(RegistryKey<ConfiguredFeature<?, ?>> featureKey, AbstractBlock.Settings settings) {
 		super(settings);
 		this.featureKey = featureKey;
 	}

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
@@ -18,8 +19,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class RepeaterBlock extends AbstractRedstoneGateBlock {
+	public static final MapCodec<RepeaterBlock> CODEC = createCodec(RepeaterBlock::new);
 	public static final BooleanProperty LOCKED = Properties.LOCKED;
 	public static final IntProperty DELAY = Properties.DELAY;
+
+	@Override
+	public MapCodec<RepeaterBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected RepeaterBlock(AbstractBlock.Settings settings) {
 		super(settings);

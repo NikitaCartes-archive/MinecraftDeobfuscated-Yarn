@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 
 public record GameMessageS2CPacket(Text content, boolean overlay) implements Packet<ClientPlayPacketListener> {
 	public GameMessageS2CPacket(PacketByteBuf buf) {
-		this(buf.readText(), buf.readBoolean());
+		this(buf.readUnlimitedText(), buf.readBoolean());
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -34,6 +35,9 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 		super(settings);
 		this.forbidCurves = forbidCurves;
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractRailBlock> getCodec();
 
 	public boolean cannotMakeCurves() {
 		return this.forbidCurves;

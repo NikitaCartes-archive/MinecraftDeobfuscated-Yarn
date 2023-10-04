@@ -24,7 +24,9 @@ import net.minecraft.util.Identifier;
 
 public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "particle with options");
-	public static final DynamicCommandExceptionType UNKNOWN_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("particle.notFound", id));
+	public static final DynamicCommandExceptionType UNKNOWN_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(
+		id -> Text.stringifiedTranslatable("particle.notFound", id)
+	);
 	private final RegistryWrapper<ParticleType<?>> registryWrapper;
 
 	public ParticleEffectArgumentType(CommandRegistryAccess registryAccess) {

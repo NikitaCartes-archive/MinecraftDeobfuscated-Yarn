@@ -2,6 +2,8 @@ package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
@@ -9,6 +11,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 public class KickCommand {
+	private static final SimpleCommandExceptionType CANNOT_KICK_OWNER_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.kick.owner.failed"));
+
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("kick")
@@ -26,12 +30,21 @@ public class KickCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text reason) {
+	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text reason) throws CommandSyntaxException {
+		int i = 0;
+
 		for(ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.networkHandler.disconnect(reason);
-			source.sendFeedback(() -> Text.translatable("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
+			if (!source.getServer().isHost(serverPlayerEntity.getGameProfile())) {
+				serverPlayerEntity.networkHandler.disconnect(reason);
+				source.sendFeedback(() -> Text.translatable("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
+				++i;
+			}
 		}
 
-		return targets.size();
+		if (i == 0) {
+			throw CANNOT_KICK_OWNER_EXCEPTION.create();
+		} else {
+			return i;
+		}
 	}
 }

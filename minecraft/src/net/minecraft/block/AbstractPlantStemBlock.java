@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -23,6 +24,9 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 		this.growthChance = growthChance;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractPlantStemBlock> getCodec();
 
 	@Override
 	public BlockState getRandomGrowthState(WorldAccess world) {

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -20,7 +21,13 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
 public class TallPlantBlock extends PlantBlock {
+	public static final MapCodec<TallPlantBlock> CODEC = createCodec(TallPlantBlock::new);
 	public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
+
+	@Override
+	public MapCodec<? extends TallPlantBlock> getCodec() {
+		return CODEC;
+	}
 
 	public TallPlantBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -78,7 +85,7 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient) {
 			if (player.isCreative()) {
 				onBreakInCreative(world, pos, state, player);
@@ -87,7 +94,7 @@ public class TallPlantBlock extends PlantBlock {
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	@Override

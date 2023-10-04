@@ -1,7 +1,7 @@
 package net.minecraft.client.render.model;
 
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +14,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,7 +27,7 @@ public class MultipartBakedModel implements BakedModel {
 	protected final Sprite sprite;
 	protected final ModelTransformation transformations;
 	protected final ModelOverrideList itemPropertyOverrides;
-	private final Map<BlockState, BitSet> stateCache = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
+	private final Map<BlockState, BitSet> stateCache = new Reference2ObjectOpenHashMap<>();
 
 	public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> components) {
 		this.components = components;

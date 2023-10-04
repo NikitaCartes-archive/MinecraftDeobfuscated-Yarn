@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -13,6 +14,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BeetrootsBlock extends CropBlock {
+	public static final MapCodec<BeetrootsBlock> CODEC = createCodec(BeetrootsBlock::new);
 	public static final int BEETROOTS_MAX_AGE = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
@@ -21,6 +23,11 @@ public class BeetrootsBlock extends CropBlock {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0)
 	};
+
+	@Override
+	public MapCodec<BeetrootsBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BeetrootsBlock(AbstractBlock.Settings settings) {
 		super(settings);

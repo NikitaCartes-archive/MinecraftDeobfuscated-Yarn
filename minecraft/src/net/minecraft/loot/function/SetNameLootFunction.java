@@ -17,6 +17,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.text.Texts;
 import net.minecraft.util.dynamic.Codecs;
 import org.slf4j.Logger;
@@ -24,11 +25,11 @@ import org.slf4j.Logger;
 public class SetNameLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<SetNameLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.and(
 					instance.group(
-						Codecs.createStrictOptionalFieldCodec(Codecs.TEXT, "name").forGetter(setNameLootFunction -> setNameLootFunction.name),
-						Codecs.createStrictOptionalFieldCodec(LootContext.EntityTarget.CODEC, "entity").forGetter(setNameLootFunction -> setNameLootFunction.entity)
+						Codecs.createStrictOptionalFieldCodec(TextCodecs.CODEC, "name").forGetter(function -> function.name),
+						Codecs.createStrictOptionalFieldCodec(LootContext.EntityTarget.CODEC, "entity").forGetter(function -> function.entity)
 					)
 				)
 				.apply(instance, SetNameLootFunction::new)
@@ -49,7 +50,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return (Set<LootContextParameter<?>>)this.entity.map(entityTarget -> Set.of(entityTarget.getParameter())).orElse(Set.of());
+		return (Set<LootContextParameter<?>>)this.entity.map(entity -> Set.of(entity.getParameter())).orElse(Set.of());
 	}
 
 	public static UnaryOperator<Text> applySourceEntity(LootContext context, @Nullable LootContext.EntityTarget sourceEntity) {
@@ -73,7 +74,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		this.name.ifPresent(text -> stack.setCustomName((Text)applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null)).apply(text)));
+		this.name.ifPresent(name -> stack.setCustomName((Text)applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null)).apply(name)));
 		return stack;
 	}
 

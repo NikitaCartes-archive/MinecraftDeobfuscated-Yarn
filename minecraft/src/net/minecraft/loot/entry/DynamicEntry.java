@@ -13,9 +13,7 @@ import net.minecraft.util.Identifier;
 
 public class DynamicEntry extends LeafEntry {
 	public static final Codec<DynamicEntry> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(dynamicEntry -> dynamicEntry.name))
-				.and(method_53290(instance))
-				.apply(instance, DynamicEntry::new)
+		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(entry -> entry.name)).and(addLeafFields(instance)).apply(instance, DynamicEntry::new)
 	);
 	private final Identifier name;
 

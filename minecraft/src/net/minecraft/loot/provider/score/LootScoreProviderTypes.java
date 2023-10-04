@@ -13,12 +13,10 @@ public class LootScoreProviderTypes {
 		.getCodec()
 		.dispatch(LootScoreProvider::getType, LootScoreProviderType::codec);
 	public static final Codec<LootScoreProvider> CODEC = Codecs.createLazy(
-		() -> Codec.either(ContextLootScoreProvider.field_45893, BASE_CODEC)
+		() -> Codec.either(ContextLootScoreProvider.INLINE_CODEC, BASE_CODEC)
 				.xmap(
 					either -> either.map(Function.identity(), Function.identity()),
-					lootScoreProvider -> lootScoreProvider instanceof ContextLootScoreProvider contextLootScoreProvider
-							? Either.left(contextLootScoreProvider)
-							: Either.right(lootScoreProvider)
+					provider -> provider instanceof ContextLootScoreProvider contextLootScoreProvider ? Either.left(contextLootScoreProvider) : Either.right(provider)
 				)
 	);
 	public static final LootScoreProviderType FIXED = register("fixed", FixedLootScoreProvider.CODEC);

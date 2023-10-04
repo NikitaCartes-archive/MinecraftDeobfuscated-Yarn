@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -16,7 +17,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
-public class RedstoneTorchBlock extends TorchBlock {
+public class RedstoneTorchBlock extends AbstractTorchBlock {
+	public static final MapCodec<RedstoneTorchBlock> CODEC = createCodec(RedstoneTorchBlock::new);
 	public static final BooleanProperty LIT = Properties.LIT;
 	private static final Map<BlockView, List<RedstoneTorchBlock.BurnoutEntry>> BURNOUT_MAP = new WeakHashMap();
 	public static final int field_31227 = 60;
@@ -24,8 +26,13 @@ public class RedstoneTorchBlock extends TorchBlock {
 	public static final int field_31229 = 160;
 	private static final int SCHEDULED_TICK_DELAY = 2;
 
+	@Override
+	public MapCodec<? extends RedstoneTorchBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected RedstoneTorchBlock(AbstractBlock.Settings settings) {
-		super(settings, DustParticleEffect.DEFAULT);
+		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(LIT, Boolean.valueOf(true)));
 	}
 
@@ -99,7 +106,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 			double d = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
 			double e = (double)pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2;
 			double f = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
-			world.addParticle(this.particle, d, e, f, 0.0, 0.0, 0.0);
+			world.addParticle(DustParticleEffect.DEFAULT, d, e, f, 0.0, 0.0, 0.0);
 		}
 	}
 

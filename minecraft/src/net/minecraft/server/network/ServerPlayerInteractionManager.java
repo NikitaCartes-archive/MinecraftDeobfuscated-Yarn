@@ -234,10 +234,10 @@ public class ServerPlayerInteractionManager {
 			} else if (this.player.isBlockBreakingRestricted(this.world, pos, this.gameMode)) {
 				return false;
 			} else {
-				block.onBreak(this.world, pos, blockState, this.player);
+				BlockState blockState2 = block.onBreak(this.world, pos, blockState, this.player);
 				boolean bl = this.world.removeBlock(pos, false);
 				if (bl) {
-					block.onBroken(this.world, pos, blockState);
+					block.onBroken(this.world, pos, blockState2);
 				}
 
 				if (this.isCreative()) {
@@ -245,10 +245,10 @@ public class ServerPlayerInteractionManager {
 				} else {
 					ItemStack itemStack = this.player.getMainHandStack();
 					ItemStack itemStack2 = itemStack.copy();
-					boolean bl2 = this.player.canHarvest(blockState);
-					itemStack.postMine(this.world, blockState, pos, this.player);
+					boolean bl2 = this.player.canHarvest(blockState2);
+					itemStack.postMine(this.world, blockState2, pos, this.player);
 					if (bl && bl2) {
-						block.afterBreak(this.world, this.player, pos, blockState, blockEntity, itemStack2);
+						block.afterBreak(this.world, this.player, pos, blockState2, blockEntity, itemStack2);
 					}
 
 					return true;

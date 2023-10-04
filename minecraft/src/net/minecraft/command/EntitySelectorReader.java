@@ -42,7 +42,7 @@ public class EntitySelectorReader {
 	private static final char ALL_ENTITIES = 'e';
 	public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.entity.invalid"));
 	public static final DynamicCommandExceptionType UNKNOWN_SELECTOR_EXCEPTION = new DynamicCommandExceptionType(
-		selectorType -> Text.translatable("argument.entity.selector.unknown", selectorType)
+		selectorType -> Text.stringifiedTranslatable("argument.entity.selector.unknown", selectorType)
 	);
 	public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("argument.entity.selector.not_allowed")
@@ -52,7 +52,7 @@ public class EntitySelectorReader {
 		Text.translatable("argument.entity.options.unterminated")
 	);
 	public static final DynamicCommandExceptionType VALUELESS_EXCEPTION = new DynamicCommandExceptionType(
-		option -> Text.translatable("argument.entity.options.valueless", option)
+		option -> Text.stringifiedTranslatable("argument.entity.options.valueless", option)
 	);
 	public static final BiConsumer<Vec3d, List<? extends Entity>> NEAREST = (pos, entities) -> entities.sort(
 			(entity1, entity2) -> Doubles.compare(entity1.squaredDistanceTo(pos), entity2.squaredDistanceTo(pos))

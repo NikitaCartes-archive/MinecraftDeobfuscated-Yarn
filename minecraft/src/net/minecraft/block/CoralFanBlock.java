@@ -1,5 +1,8 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -9,7 +12,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class CoralFanBlock extends DeadCoralFanBlock {
+	public static final MapCodec<CoralFanBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(CoralBlockBlock.DEAD_FIELD.forGetter(block -> block.deadCoralBlock), createSettingsCodec()).apply(instance, CoralFanBlock::new)
+	);
 	private final Block deadCoralBlock;
+
+	@Override
+	public MapCodec<CoralFanBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected CoralFanBlock(Block deadCoralBlock, AbstractBlock.Settings settings) {
 		super(settings);

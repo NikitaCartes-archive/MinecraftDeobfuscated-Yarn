@@ -88,7 +88,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		}
 
 		if (this.customName != null) {
-			nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName));
 		}
 	}
 
@@ -96,7 +96,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
+			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"));
 		}
 
 		this.patternListNbt = nbt.getList("Patterns", NbtElement.COMPOUND_TYPE);

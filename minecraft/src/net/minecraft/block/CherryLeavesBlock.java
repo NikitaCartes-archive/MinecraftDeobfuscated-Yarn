@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -8,6 +9,13 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class CherryLeavesBlock extends LeavesBlock {
+	public static final MapCodec<CherryLeavesBlock> CODEC = createCodec(CherryLeavesBlock::new);
+
+	@Override
+	public MapCodec<CherryLeavesBlock> getCodec() {
+		return CODEC;
+	}
+
 	public CherryLeavesBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

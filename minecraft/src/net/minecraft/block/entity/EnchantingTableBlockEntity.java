@@ -34,7 +34,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		if (this.hasCustomName()) {
-			nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName));
 		}
 	}
 
@@ -42,7 +42,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
+			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"));
 		}
 	}
 

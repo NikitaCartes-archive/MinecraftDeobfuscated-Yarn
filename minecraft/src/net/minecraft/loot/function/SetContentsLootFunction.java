@@ -23,11 +23,11 @@ import net.minecraft.util.collection.DefaultedList;
 
 public class SetContentsLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetContentsLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.and(
 					instance.group(
-						Registries.BLOCK_ENTITY_TYPE.createEntryCodec().fieldOf("type").forGetter(setContentsLootFunction -> setContentsLootFunction.type),
-						LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(setContentsLootFunction -> setContentsLootFunction.entries)
+						Registries.BLOCK_ENTITY_TYPE.createEntryCodec().fieldOf("type").forGetter(function -> function.type),
+						LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(function -> function.entries)
 					)
 				)
 				.apply(instance, SetContentsLootFunction::new)

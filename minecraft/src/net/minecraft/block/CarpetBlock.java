@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -8,7 +9,13 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class CarpetBlock extends Block {
+	public static final MapCodec<CarpetBlock> CODEC = createCodec(CarpetBlock::new);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
+
+	@Override
+	public MapCodec<? extends CarpetBlock> getCodec() {
+		return CODEC;
+	}
 
 	public CarpetBlock(AbstractBlock.Settings settings) {
 		super(settings);

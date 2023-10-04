@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -37,6 +38,7 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.Vibrations;
 
 public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
+	public static final MapCodec<SculkSensorBlock> CODEC = createCodec(SculkSensorBlock::new);
 	public static final int field_31239 = 30;
 	public static final int field_44607 = 10;
 	public static final EnumProperty<SculkSensorPhase> SCULK_SENSOR_PHASE = Properties.SCULK_SENSOR_PHASE;
@@ -50,6 +52,11 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 			frequency[i] = NoteBlock.getNotePitch(is[i]);
 		}
 	});
+
+	@Override
+	public MapCodec<? extends SculkSensorBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SculkSensorBlock(AbstractBlock.Settings settings) {
 		super(settings);

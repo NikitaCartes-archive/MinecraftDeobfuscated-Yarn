@@ -63,14 +63,14 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 
 				if (text == null) {
 					try {
-						text = Text.Serializer.fromJson(string);
+						text = Text.Serialization.fromJson(string);
 					} catch (Exception var7) {
 					}
 				}
 
 				if (text == null) {
 					try {
-						text = Text.Serializer.fromLenientJson(string);
+						text = Text.Serialization.fromLenientJson(string);
 					} catch (Exception var6) {
 					}
 				}
@@ -85,7 +85,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 			text = ScreenTexts.EMPTY;
 		}
 
-		return dynamic.set(lineName, dynamic.createString(Text.Serializer.toJson(text)));
+		return dynamic.set(lineName, dynamic.createString(Text.Serialization.toJsonString(text)));
 	}
 
 	@Override

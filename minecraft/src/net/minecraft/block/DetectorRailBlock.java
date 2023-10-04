@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.block.enums.RailShape;
@@ -25,9 +26,15 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class DetectorRailBlock extends AbstractRailBlock {
+	public static final MapCodec<DetectorRailBlock> CODEC = createCodec(DetectorRailBlock::new);
 	public static final EnumProperty<RailShape> SHAPE = Properties.STRAIGHT_RAIL_SHAPE;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private static final int SCHEDULED_TICK_DELAY = 20;
+
+	@Override
+	public MapCodec<DetectorRailBlock> getCodec() {
+		return CODEC;
+	}
 
 	public DetectorRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);

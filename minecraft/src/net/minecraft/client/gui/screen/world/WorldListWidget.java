@@ -345,7 +345,9 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 		@Override
 		public Text getNarration() {
-			Text text = Text.translatable("narrator.select.world_info", this.level.getDisplayName(), new Date(this.level.getLastPlayed()), this.level.getDetails());
+			Text text = Text.translatable(
+				"narrator.select.world_info", this.level.getDisplayName(), Text.of(new Date(this.level.getLastPlayed())), this.level.getDetails()
+			);
 			if (this.level.isLocked()) {
 				text = ScreenTexts.joinSentences(text, WorldListWidget.LOCKED_TEXT);
 			}

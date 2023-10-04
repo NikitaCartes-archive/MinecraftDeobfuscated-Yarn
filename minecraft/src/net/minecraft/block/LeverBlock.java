@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DustParticleEffect;
@@ -21,6 +22,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class LeverBlock extends WallMountedBlock {
+	public static final MapCodec<LeverBlock> CODEC = createCodec(LeverBlock::new);
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	protected static final int field_31184 = 6;
 	protected static final int field_31185 = 6;
@@ -33,6 +35,11 @@ public class LeverBlock extends WallMountedBlock {
 	protected static final VoxelShape FLOOR_X_AXIS_SHAPE = Block.createCuboidShape(4.0, 0.0, 5.0, 12.0, 6.0, 11.0);
 	protected static final VoxelShape CEILING_Z_AXIS_SHAPE = Block.createCuboidShape(5.0, 10.0, 4.0, 11.0, 16.0, 12.0);
 	protected static final VoxelShape CEILING_X_AXIS_SHAPE = Block.createCuboidShape(4.0, 10.0, 5.0, 12.0, 16.0, 11.0);
+
+	@Override
+	public MapCodec<LeverBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected LeverBlock(AbstractBlock.Settings settings) {
 		super(settings);

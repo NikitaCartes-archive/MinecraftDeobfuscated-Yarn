@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -10,7 +11,13 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class RedstoneLampBlock extends Block {
+	public static final MapCodec<RedstoneLampBlock> CODEC = createCodec(RedstoneLampBlock::new);
 	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
+
+	@Override
+	public MapCodec<RedstoneLampBlock> getCodec() {
+		return CODEC;
+	}
 
 	public RedstoneLampBlock(AbstractBlock.Settings settings) {
 		super(settings);

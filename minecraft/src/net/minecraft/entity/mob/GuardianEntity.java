@@ -109,11 +109,6 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean canBreatheInWater() {
-		return true;
-	}
-
-	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.AQUATIC;
 	}

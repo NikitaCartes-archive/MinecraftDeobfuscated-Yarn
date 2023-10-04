@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.passive.SnifferEntity;
@@ -21,12 +22,18 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class SnifferEggBlock extends Block {
+	public static final MapCodec<SnifferEggBlock> CODEC = createCodec(SnifferEggBlock::new);
 	public static final int FINAL_HATCH_STAGE = 2;
 	public static final IntProperty HATCH = Properties.HATCH;
 	private static final int HATCHING_TIME = 24000;
 	private static final int BOOSTED_HATCHING_TIME = 12000;
 	private static final int MAX_RANDOM_CRACK_TIME_OFFSET = 300;
 	private static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 2.0, 15.0, 16.0, 14.0);
+
+	@Override
+	public MapCodec<SnifferEggBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SnifferEggBlock(AbstractBlock.Settings settings) {
 		super(settings);

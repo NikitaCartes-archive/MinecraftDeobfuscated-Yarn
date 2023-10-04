@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,9 +25,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class ConduitBlock extends BlockWithEntity implements Waterloggable {
+	public static final MapCodec<ConduitBlock> CODEC = createCodec(ConduitBlock::new);
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final int field_31075 = 3;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
+
+	@Override
+	public MapCodec<ConduitBlock> getCodec() {
+		return CODEC;
+	}
 
 	public ConduitBlock(AbstractBlock.Settings settings) {
 		super(settings);

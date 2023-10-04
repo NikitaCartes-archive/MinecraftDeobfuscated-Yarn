@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.function.ToIntFunction;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -18,8 +19,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class GlowLichenBlock extends MultifaceGrowthBlock implements Fertilizable, Waterloggable {
+	public static final MapCodec<GlowLichenBlock> CODEC = createCodec(GlowLichenBlock::new);
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private final LichenGrower grower = new LichenGrower(this);
+
+	@Override
+	public MapCodec<GlowLichenBlock> getCodec() {
+		return CODEC;
+	}
 
 	public GlowLichenBlock(AbstractBlock.Settings settings) {
 		super(settings);

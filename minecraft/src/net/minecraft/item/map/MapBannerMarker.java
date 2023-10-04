@@ -31,7 +31,7 @@ public class MapBannerMarker {
 	public static MapBannerMarker fromNbt(NbtCompound nbt) {
 		BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("Pos"));
 		DyeColor dyeColor = DyeColor.byName(nbt.getString("Color"), DyeColor.WHITE);
-		Text text = nbt.contains("Name") ? Text.Serializer.fromJson(nbt.getString("Name")) : null;
+		Text text = nbt.contains("Name") ? Text.Serialization.fromJson(nbt.getString("Name")) : null;
 		return new MapBannerMarker(blockPos, dyeColor, text);
 	}
 
@@ -118,7 +118,7 @@ public class MapBannerMarker {
 		nbtCompound.put("Pos", NbtHelper.fromBlockPos(this.pos));
 		nbtCompound.putString("Color", this.color.getName());
 		if (this.name != null) {
-			nbtCompound.putString("Name", Text.Serializer.toJson(this.name));
+			nbtCompound.putString("Name", Text.Serialization.toJsonString(this.name));
 		}
 
 		return nbtCompound;

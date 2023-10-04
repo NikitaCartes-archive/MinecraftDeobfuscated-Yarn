@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
 import java.util.EnumMap;
 import java.util.Map;
 import net.minecraft.state.property.BooleanProperty;
@@ -14,7 +15,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
-public class ConnectingBlock extends Block {
+public abstract class ConnectingBlock extends Block {
 	private static final Direction[] FACINGS = Direction.values();
 	public static final BooleanProperty NORTH = Properties.NORTH;
 	public static final BooleanProperty EAST = Properties.EAST;
@@ -36,6 +37,9 @@ public class ConnectingBlock extends Block {
 		super(settings);
 		this.facingsToShape = this.generateFacingsToShapeMap(radius);
 	}
+
+	@Override
+	protected abstract MapCodec<? extends ConnectingBlock> getCodec();
 
 	private VoxelShape[] generateFacingsToShapeMap(float radius) {
 		float f = 0.5F - radius;

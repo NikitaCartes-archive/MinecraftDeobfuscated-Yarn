@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -12,6 +13,13 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.UndergroundConfiguredFeatures;
 
 public class MossBlock extends Block implements Fertilizable {
+	public static final MapCodec<MossBlock> CODEC = createCodec(MossBlock::new);
+
+	@Override
+	public MapCodec<MossBlock> getCodec() {
+		return CODEC;
+	}
+
 	public MossBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

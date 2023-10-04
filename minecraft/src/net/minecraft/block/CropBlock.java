@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemConvertible;
@@ -19,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class CropBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<CropBlock> CODEC = createCodec(CropBlock::new);
 	public static final int MAX_AGE = 7;
 	public static final IntProperty AGE = Properties.AGE_7;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
@@ -31,6 +33,11 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0),
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
 	};
+
+	@Override
+	public MapCodec<? extends CropBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected CropBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -166,7 +173,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(this.getSeedsItem());
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.LivingEntity;
@@ -25,10 +26,16 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, Waterloggable {
+	public static final MapCodec<SmallDripleafBlock> CODEC = createCodec(SmallDripleafBlock::new);
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	protected static final float field_31246 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
+
+	@Override
+	public MapCodec<SmallDripleafBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SmallDripleafBlock(AbstractBlock.Settings settings) {
 		super(settings);

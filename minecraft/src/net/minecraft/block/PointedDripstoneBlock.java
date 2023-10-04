@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -41,6 +42,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class PointedDripstoneBlock extends Block implements LandingBlock, Waterloggable {
+	public static final MapCodec<PointedDripstoneBlock> CODEC = createCodec(PointedDripstoneBlock::new);
 	public static final DirectionProperty VERTICAL_DIRECTION = Properties.VERTICAL_DIRECTION;
 	public static final EnumProperty<Thickness> THICKNESS = Properties.THICKNESS;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -70,6 +72,11 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 	private static final float field_31204 = 0.125F;
 	private static final VoxelShape DRIP_COLLISION_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
+
+	@Override
+	public MapCodec<PointedDripstoneBlock> getCodec() {
+		return CODEC;
+	}
 
 	public PointedDripstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);

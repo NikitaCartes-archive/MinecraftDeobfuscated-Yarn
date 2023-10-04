@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -17,6 +18,13 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class BlastFurnaceBlock extends AbstractFurnaceBlock {
+	public static final MapCodec<BlastFurnaceBlock> CODEC = createCodec(BlastFurnaceBlock::new);
+
+	@Override
+	public MapCodec<BlastFurnaceBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected BlastFurnaceBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

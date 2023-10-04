@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -12,7 +13,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 
 public class MangroveRootsBlock extends Block implements Waterloggable {
+	public static final MapCodec<MangroveRootsBlock> CODEC = createCodec(MangroveRootsBlock::new);
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+
+	@Override
+	public MapCodec<MangroveRootsBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected MangroveRootsBlock(AbstractBlock.Settings settings) {
 		super(settings);

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
@@ -37,6 +38,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class LecternBlock extends BlockWithEntity {
+	public static final MapCodec<LecternBlock> CODEC = createCodec(LecternBlock::new);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty HAS_BOOK = Properties.HAS_BOOK;
@@ -70,6 +72,11 @@ public class LecternBlock extends BlockWithEntity {
 		BASE_SHAPE
 	);
 	private static final int SCHEDULED_TICK_DELAY = 2;
+
+	@Override
+	public MapCodec<LecternBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected LecternBlock(AbstractBlock.Settings settings) {
 		super(settings);

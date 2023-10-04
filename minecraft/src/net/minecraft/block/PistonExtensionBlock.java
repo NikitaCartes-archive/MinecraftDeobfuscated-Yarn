@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -28,10 +29,17 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public class PistonExtensionBlock extends BlockWithEntity {
+	public static final MapCodec<PistonExtensionBlock> CODEC = createCodec(PistonExtensionBlock::new);
 	public static final DirectionProperty FACING = PistonHeadBlock.FACING;
 	public static final EnumProperty<PistonType> TYPE = PistonHeadBlock.TYPE;
+
+	@Override
+	public MapCodec<PistonExtensionBlock> getCodec() {
+		return CODEC;
+	}
 
 	public PistonExtensionBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -107,7 +115,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;
 	}
 

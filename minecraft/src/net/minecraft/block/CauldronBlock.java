@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -13,8 +14,14 @@ import net.minecraft.world.event.GameEvent;
  * An empty cauldron block.
  */
 public class CauldronBlock extends AbstractCauldronBlock {
+	public static final MapCodec<CauldronBlock> CODEC = createCodec(CauldronBlock::new);
 	private static final float FILL_WITH_RAIN_CHANCE = 0.05F;
 	private static final float FILL_WITH_SNOW_CHANCE = 0.1F;
+
+	@Override
+	public MapCodec<CauldronBlock> getCodec() {
+		return CODEC;
+	}
 
 	public CauldronBlock(AbstractBlock.Settings settings) {
 		super(settings, CauldronBehavior.EMPTY_CAULDRON_BEHAVIOR);

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +26,9 @@ public abstract class SpreadableBlock extends SnowyBlock {
 			return i < world.getMaxLightLevel();
 		}
 	}
+
+	@Override
+	protected abstract MapCodec<? extends SpreadableBlock> getCodec();
 
 	private static boolean canSpread(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.up();
