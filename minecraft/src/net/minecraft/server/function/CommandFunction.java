@@ -330,13 +330,13 @@ public class CommandFunction {
 		@Override
 		public CommandFunction withMacroReplaced(@Nullable NbtCompound arguments, CommandDispatcher<ServerCommandSource> dispatcher, ServerCommandSource source) throws MacroException {
 			if (arguments == null) {
-				throw new MacroException(Text.translatable("commands.function.error.missing_arguments", this.getId()));
+				throw new MacroException(Text.translatable("commands.function.error.missing_arguments", Text.of(this.getId())));
 			} else {
 				List<String> list = new ArrayList(this.variables.size());
 
 				for (String string : this.variables) {
 					if (!arguments.contains(string)) {
-						throw new MacroException(Text.translatable("commands.function.error.missing_argument", this.getId(), string));
+						throw new MacroException(Text.translatable("commands.function.error.missing_argument", Text.of(this.getId()), string));
 					}
 
 					list.add(toString(arguments.get(string)));
@@ -400,7 +400,7 @@ public class CommandFunction {
 
 						elements2[i] = new CommandFunction.CommandElement(parseResults);
 					} catch (CommandSyntaxException var13) {
-						throw new MacroException(Text.translatable("commands.function.error.parse", this.getId(), string2, var13.getMessage()));
+						throw new MacroException(Text.translatable("commands.function.error.parse", Text.of(this.getId()), string2, var13.getMessage()));
 					}
 				}
 			}

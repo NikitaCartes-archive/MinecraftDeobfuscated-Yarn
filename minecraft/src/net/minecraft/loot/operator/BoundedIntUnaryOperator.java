@@ -20,19 +20,17 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
 public class BoundedIntUnaryOperator {
-	private static final Codec<BoundedIntUnaryOperator> field_45791 = RecordCodecBuilder.create(
+	private static final Codec<BoundedIntUnaryOperator> OPERATOR_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(LootNumberProviderTypes.CODEC, "min")
-						.forGetter(boundedIntUnaryOperator -> Optional.ofNullable(boundedIntUnaryOperator.min)),
-					Codecs.createStrictOptionalFieldCodec(LootNumberProviderTypes.CODEC, "max")
-						.forGetter(boundedIntUnaryOperator -> Optional.ofNullable(boundedIntUnaryOperator.max))
+					Codecs.createStrictOptionalFieldCodec(LootNumberProviderTypes.CODEC, "min").forGetter(operator -> Optional.ofNullable(operator.min)),
+					Codecs.createStrictOptionalFieldCodec(LootNumberProviderTypes.CODEC, "max").forGetter(operator -> Optional.ofNullable(operator.max))
 				)
 				.apply(instance, BoundedIntUnaryOperator::new)
 	);
-	public static final Codec<BoundedIntUnaryOperator> CODEC = Codec.either(Codec.INT, field_45791)
-		.xmap(either -> either.map(BoundedIntUnaryOperator::create, Function.identity()), boundedIntUnaryOperator -> {
-			OptionalInt optionalInt = boundedIntUnaryOperator.method_53263();
-			return optionalInt.isPresent() ? Either.left(optionalInt.getAsInt()) : Either.right(boundedIntUnaryOperator);
+	public static final Codec<BoundedIntUnaryOperator> CODEC = Codec.either(Codec.INT, OPERATOR_CODEC)
+		.xmap(either -> either.map(BoundedIntUnaryOperator::create, Function.identity()), operator -> {
+			OptionalInt optionalInt = operator.getConstantValue();
+			return optionalInt.isPresent() ? Either.left(optionalInt.getAsInt()) : Either.right(operator);
 		});
 	@Nullable
 	private final LootNumberProvider min;
@@ -103,7 +101,7 @@ public class BoundedIntUnaryOperator {
 		return this.tester.test(context, value);
 	}
 
-	private OptionalInt method_53263() {
+	private OptionalInt getConstantValue() {
 		return Objects.equals(this.min, this.max)
 				&& this.min instanceof ConstantLootNumberProvider constantLootNumberProvider
 				&& Math.floor((double)constantLootNumberProvider.value()) == (double)constantLootNumberProvider.value()

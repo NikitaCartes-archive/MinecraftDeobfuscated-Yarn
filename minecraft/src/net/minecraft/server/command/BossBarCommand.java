@@ -25,10 +25,10 @@ import net.minecraft.util.Identifier;
 
 public class BossBarCommand {
 	private static final DynamicCommandExceptionType CREATE_FAILED_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.translatable("commands.bossbar.create.failed", name)
+		name -> Text.stringifiedTranslatable("commands.bossbar.create.failed", name)
 	);
 	private static final DynamicCommandExceptionType UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.translatable("commands.bossbar.unknown", name)
+		name -> Text.stringifiedTranslatable("commands.bossbar.unknown", name)
 	);
 	private static final SimpleCommandExceptionType SET_PLAYERS_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("commands.bossbar.set.players.unchanged")

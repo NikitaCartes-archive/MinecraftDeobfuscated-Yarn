@@ -2,7 +2,6 @@ package net.minecraft.nbt;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -271,7 +270,10 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	public NbtElement createByteList(ByteBuffer byteBuffer) {
-		return new NbtByteArray(DataFixUtils.toArray(byteBuffer));
+		ByteBuffer byteBuffer2 = byteBuffer.duplicate().clear();
+		byte[] bs = new byte[byteBuffer.capacity()];
+		byteBuffer2.get(0, bs, 0, bs.length);
+		return new NbtByteArray(bs);
 	}
 
 	public DataResult<IntStream> getIntStream(NbtElement nbtElement) {

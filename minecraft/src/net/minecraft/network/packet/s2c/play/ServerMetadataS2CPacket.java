@@ -18,7 +18,7 @@ public class ServerMetadataS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	public ServerMetadataS2CPacket(PacketByteBuf buf) {
-		this.description = buf.readText();
+		this.description = buf.readUnlimitedText();
 		this.favicon = buf.readOptional(PacketByteBuf::readByteArray);
 		this.secureChatEnforced = buf.readBoolean();
 	}

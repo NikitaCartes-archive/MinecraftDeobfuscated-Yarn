@@ -97,8 +97,8 @@ public class AdvancementDisplay {
 	}
 
 	public static AdvancementDisplay fromJson(JsonObject obj) {
-		Text text = Text.Serializer.fromJson(obj.get("title"));
-		Text text2 = Text.Serializer.fromJson(obj.get("description"));
+		Text text = Text.Serialization.fromJsonTree(obj.get("title"));
+		Text text2 = Text.Serialization.fromJsonTree(obj.get("description"));
 		if (text != null && text2 != null) {
 			ItemStack itemStack = iconFromJson(JsonHelper.getObject(obj, "icon"));
 			Identifier identifier = obj.has("background") ? new Identifier(JsonHelper.getString(obj, "background")) : null;
@@ -163,8 +163,8 @@ public class AdvancementDisplay {
 	}
 
 	public static AdvancementDisplay fromPacket(PacketByteBuf buf) {
-		Text text = buf.readText();
-		Text text2 = buf.readText();
+		Text text = buf.readUnlimitedText();
+		Text text2 = buf.readUnlimitedText();
 		ItemStack itemStack = buf.readItemStack();
 		AdvancementFrame advancementFrame = buf.readEnumConstant(AdvancementFrame.class);
 		int i = buf.readInt();
@@ -179,8 +179,8 @@ public class AdvancementDisplay {
 	public JsonElement toJson() {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.add("icon", this.iconToJson());
-		jsonObject.add("title", Text.Serializer.toJsonTree(this.title));
-		jsonObject.add("description", Text.Serializer.toJsonTree(this.description));
+		jsonObject.add("title", Text.Serialization.toJsonTree(this.title));
+		jsonObject.add("description", Text.Serialization.toJsonTree(this.description));
 		jsonObject.addProperty("frame", this.frame.getId());
 		jsonObject.addProperty("show_toast", this.showToast);
 		jsonObject.addProperty("announce_to_chat", this.announceToChat);

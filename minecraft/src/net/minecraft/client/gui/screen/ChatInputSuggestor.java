@@ -598,7 +598,7 @@ public class ChatInputSuggestor {
 			Suggestion suggestion = (Suggestion)this.suggestions.get(this.selection);
 			Message message = suggestion.getTooltip();
 			return message != null
-				? Text.translatable("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), message)
+				? Text.translatable("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), Text.of(message))
 				: Text.translatable("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
 		}
 	}

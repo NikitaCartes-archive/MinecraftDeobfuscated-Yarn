@@ -12,8 +12,8 @@ import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 
 public class LimitCountLootFunction extends ConditionalLootFunction {
 	public static final Codec<LimitCountLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(BoundedIntUnaryOperator.CODEC.fieldOf("limit").forGetter(limitCountLootFunction -> limitCountLootFunction.limit))
+		instance -> addConditionsField(instance)
+				.and(BoundedIntUnaryOperator.CODEC.fieldOf("limit").forGetter(function -> function.limit))
 				.apply(instance, LimitCountLootFunction::new)
 	);
 	private final BoundedIntUnaryOperator limit;

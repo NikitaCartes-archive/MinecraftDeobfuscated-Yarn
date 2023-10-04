@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.FluidState;
@@ -11,7 +12,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class LilyPadBlock extends PlantBlock {
+	public static final MapCodec<LilyPadBlock> CODEC = createCodec(LilyPadBlock::new);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 1.5, 15.0);
+
+	@Override
+	public MapCodec<LilyPadBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected LilyPadBlock(AbstractBlock.Settings settings) {
 		super(settings);

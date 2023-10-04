@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList.Builder;
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -151,7 +150,7 @@ public class PlacedFeatureIndexer {
 
 	public static record IndexedFeatures(List<PlacedFeature> features, ToIntFunction<PlacedFeature> indexMapping) {
 		IndexedFeatures(List<PlacedFeature> features) {
-			this(features, Util.lastIndexGetter(features, size -> new Object2IntOpenCustomHashMap(size, Util.identityHashStrategy())));
+			this(features, Util.lastIdentityIndexGetter(features));
 		}
 	}
 }

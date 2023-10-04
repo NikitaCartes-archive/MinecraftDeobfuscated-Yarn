@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -15,7 +16,14 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class PumpkinBlock extends GourdBlock {
+public class PumpkinBlock extends Block {
+	public static final MapCodec<PumpkinBlock> CODEC = createCodec(PumpkinBlock::new);
+
+	@Override
+	public MapCodec<PumpkinBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected PumpkinBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
@@ -51,15 +59,5 @@ public class PumpkinBlock extends GourdBlock {
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
 		}
-	}
-
-	@Override
-	public StemBlock getStem() {
-		return (StemBlock)Blocks.PUMPKIN_STEM;
-	}
-
-	@Override
-	public AttachedStemBlock getAttachedStem() {
-		return (AttachedStemBlock)Blocks.ATTACHED_PUMPKIN_STEM;
 	}
 }

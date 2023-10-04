@@ -258,11 +258,6 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	@Override
-	public boolean canBreatheInWater() {
-		return true;
-	}
-
-	@Override
 	public boolean isPushedByFluids() {
 		return false;
 	}

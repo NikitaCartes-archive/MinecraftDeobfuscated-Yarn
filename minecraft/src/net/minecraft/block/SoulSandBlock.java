@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -12,8 +13,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class SoulSandBlock extends Block {
+	public static final MapCodec<SoulSandBlock> CODEC = createCodec(SoulSandBlock::new);
 	protected static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0);
 	private static final int SCHEDULED_TICK_DELAY = 20;
+
+	@Override
+	public MapCodec<SoulSandBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SoulSandBlock(AbstractBlock.Settings settings) {
 		super(settings);

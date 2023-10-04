@@ -11,6 +11,7 @@ import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.dynamic.Codecs;
 
 public record ArmorTrimMaterial(
@@ -24,7 +25,7 @@ public record ArmorTrimMaterial(
 					Codec.unboundedMap(ArmorMaterials.CODEC, Codec.STRING)
 						.optionalFieldOf("override_armor_materials", Map.of())
 						.forGetter(ArmorTrimMaterial::overrideArmorMaterials),
-					Codecs.TEXT.fieldOf("description").forGetter(ArmorTrimMaterial::description)
+					TextCodecs.CODEC.fieldOf("description").forGetter(ArmorTrimMaterial::description)
 				)
 				.apply(instance, ArmorTrimMaterial::new)
 	);

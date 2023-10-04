@@ -3,6 +3,7 @@ package net.minecraft.client.realms.dto;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,16 +17,21 @@ public class RealmsText {
 	private static final String ARGS_KEY = "args";
 	private final String translationKey;
 	@Nullable
-	private final Object[] args;
+	private final String[] args;
 
-	private RealmsText(String translationKey, @Nullable Object[] args) {
+	private RealmsText(String translationKey, @Nullable String[] args) {
 		this.translationKey = translationKey;
 		this.args = args;
 	}
 
 	public Text toText(Text fallback) {
+		return (Text)Objects.requireNonNullElse(this.toText(), fallback);
+	}
+
+	@Nullable
+	public Text toText() {
 		if (!I18n.hasTranslation(this.translationKey)) {
-			return fallback;
+			return null;
 		} else {
 			return this.args == null ? Text.translatable(this.translationKey) : Text.translatable(this.translationKey, this.args);
 		}
@@ -47,5 +53,9 @@ public class RealmsText {
 		}
 
 		return new RealmsText(string, strings);
+	}
+
+	public String toString() {
+		return this.translationKey;
 	}
 }

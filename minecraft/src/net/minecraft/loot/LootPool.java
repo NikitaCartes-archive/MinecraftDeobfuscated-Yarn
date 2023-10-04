@@ -29,11 +29,11 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public class LootPool {
 	public static final Codec<LootPool> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(lootPool -> lootPool.entries),
-					Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(lootPool -> lootPool.conditions),
-					Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(lootPool -> lootPool.functions),
-					LootNumberProviderTypes.CODEC.fieldOf("rolls").forGetter(lootPool -> lootPool.rolls),
-					LootNumberProviderTypes.CODEC.fieldOf("bonus_rolls").orElse(ConstantLootNumberProvider.create(0.0F)).forGetter(lootPool -> lootPool.bonusRolls)
+					LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(pool -> pool.entries),
+					Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(pool -> pool.conditions),
+					Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(pool -> pool.functions),
+					LootNumberProviderTypes.CODEC.fieldOf("rolls").forGetter(pool -> pool.rolls),
+					LootNumberProviderTypes.CODEC.fieldOf("bonus_rolls").orElse(ConstantLootNumberProvider.create(0.0F)).forGetter(pool -> pool.bonusRolls)
 				)
 				.apply(instance, LootPool::new)
 	);

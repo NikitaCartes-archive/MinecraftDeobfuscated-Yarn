@@ -163,13 +163,13 @@ public class RandomCommand {
 
 	private static int executeReset(ServerCommandSource source, Identifier sequenceId) throws CommandSyntaxException {
 		source.getWorld().getRandomSequences().reset(sequenceId);
-		source.sendFeedback(() -> Text.translatable("commands.random.reset.success", sequenceId), false);
+		source.sendFeedback(() -> Text.translatable("commands.random.reset.success", Text.of(sequenceId)), false);
 		return 1;
 	}
 
 	private static int executeReset(ServerCommandSource source, Identifier sequenceId, int salt, boolean includeWorldSeed, boolean includeSequenceId) throws CommandSyntaxException {
 		source.getWorld().getRandomSequences().reset(sequenceId, salt, includeWorldSeed, includeSequenceId);
-		source.sendFeedback(() -> Text.translatable("commands.random.reset.success", sequenceId), false);
+		source.sendFeedback(() -> Text.translatable("commands.random.reset.success", Text.of(sequenceId)), false);
 		return 1;
 	}
 

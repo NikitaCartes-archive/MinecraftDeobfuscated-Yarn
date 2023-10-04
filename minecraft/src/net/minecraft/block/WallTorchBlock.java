@@ -2,10 +2,12 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -21,6 +23,9 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallTorchBlock extends TorchBlock {
+	public static final MapCodec<WallTorchBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(PARTICLE_TYPE_CODEC.forGetter(block -> block.particle), createSettingsCodec()).apply(instance, WallTorchBlock::new)
+	);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	protected static final float field_31285 = 2.5F;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
@@ -36,8 +41,13 @@ public class WallTorchBlock extends TorchBlock {
 		)
 	);
 
-	protected WallTorchBlock(AbstractBlock.Settings settings, ParticleEffect particleEffect) {
-		super(settings, particleEffect);
+	@Override
+	public MapCodec<WallTorchBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected WallTorchBlock(DefaultParticleType defaultParticleType, AbstractBlock.Settings settings) {
+		super(defaultParticleType, settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
 

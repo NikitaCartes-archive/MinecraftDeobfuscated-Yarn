@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -32,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ChiseledBookshelfBlock extends BlockWithEntity {
+	public static final MapCodec<ChiseledBookshelfBlock> CODEC = createCodec(ChiseledBookshelfBlock::new);
 	private static final int MAX_BOOK_COUNT = 6;
 	public static final int BOOK_HEIGHT = 3;
 	public static final List<BooleanProperty> SLOT_OCCUPIED_PROPERTIES = List.of(
@@ -42,6 +44,11 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 		Properties.SLOT_4_OCCUPIED,
 		Properties.SLOT_5_OCCUPIED
 	);
+
+	@Override
+	public MapCodec<ChiseledBookshelfBlock> getCodec() {
+		return CODEC;
+	}
 
 	public ChiseledBookshelfBlock(AbstractBlock.Settings settings) {
 		super(settings);

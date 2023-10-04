@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +14,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class PlayerSkullBlock extends SkullBlock {
+	public static final MapCodec<PlayerSkullBlock> CODEC = createCodec(PlayerSkullBlock::new);
+
+	@Override
+	public MapCodec<PlayerSkullBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected PlayerSkullBlock(AbstractBlock.Settings settings) {
 		super(SkullBlock.Type.PLAYER, settings);
 	}

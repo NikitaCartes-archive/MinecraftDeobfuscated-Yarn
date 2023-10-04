@@ -47,7 +47,7 @@ public class ScoreboardCommand {
 		Text.translatable("commands.scoreboard.players.enable.invalid")
 	);
 	private static final Dynamic2CommandExceptionType PLAYERS_GET_NULL_EXCEPTION = new Dynamic2CommandExceptionType(
-		(objective, target) -> Text.translatable("commands.scoreboard.players.get.null", objective, target)
+		(objective, target) -> Text.stringifiedTranslatable("commands.scoreboard.players.get.null", objective, target)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

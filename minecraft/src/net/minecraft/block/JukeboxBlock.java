@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -23,7 +24,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class JukeboxBlock extends BlockWithEntity {
+	public static final MapCodec<JukeboxBlock> CODEC = createCodec(JukeboxBlock::new);
 	public static final BooleanProperty HAS_RECORD = Properties.HAS_RECORD;
+
+	@Override
+	public MapCodec<JukeboxBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected JukeboxBlock(AbstractBlock.Settings settings) {
 		super(settings);

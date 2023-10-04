@@ -1,43 +1,38 @@
 package net.minecraft.block;
 
-import net.minecraft.particle.ParticleEffect;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldView;
 
-public class TorchBlock extends Block {
-	protected static final int field_31265 = 2;
-	protected static final VoxelShape BOUNDING_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
-	protected final ParticleEffect particle;
+public class TorchBlock extends AbstractTorchBlock {
+	protected static final MapCodec<DefaultParticleType> PARTICLE_TYPE_CODEC = Registries.PARTICLE_TYPE
+		.getCodec()
+		.<DefaultParticleType>comapFlatMap(
+			particleType -> particleType instanceof DefaultParticleType defaultParticleType
+					? DataResult.success(defaultParticleType)
+					: DataResult.error(() -> "Not a SimpleParticleType: " + particleType),
+			particleType -> particleType
+		)
+		.fieldOf("particle_options");
+	public static final MapCodec<TorchBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(PARTICLE_TYPE_CODEC.forGetter(block -> block.particle), createSettingsCodec()).apply(instance, TorchBlock::new)
+	);
+	protected final DefaultParticleType particle;
 
-	protected TorchBlock(AbstractBlock.Settings settings, ParticleEffect particle) {
+	@Override
+	public MapCodec<? extends TorchBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected TorchBlock(DefaultParticleType particle, AbstractBlock.Settings settings) {
 		super(settings);
 		this.particle = particle;
-	}
-
-	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return BOUNDING_SHAPE;
-	}
-
-	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
-	) {
-		return direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)
-			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
-	}
-
-	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return sideCoversSmallSquare(world, pos.down(), Direction.UP);
 	}
 
 	@Override

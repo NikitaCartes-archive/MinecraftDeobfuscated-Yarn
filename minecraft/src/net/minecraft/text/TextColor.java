@@ -3,6 +3,7 @@ package net.minecraft.text;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Lifecycle;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -20,10 +21,7 @@ import net.minecraft.util.Formatting;
  */
 public final class TextColor {
 	private static final String RGB_PREFIX = "#";
-	public static final Codec<TextColor> CODEC = Codec.STRING.comapFlatMap(color -> {
-		TextColor textColor = parse(color);
-		return textColor != null ? DataResult.success(textColor) : DataResult.error(() -> "String is not a valid color name or hex color code");
-	}, TextColor::getName);
+	public static final Codec<TextColor> CODEC = Codec.STRING.comapFlatMap(TextColor::parse, TextColor::getName);
 	private static final Map<Formatting, TextColor> FORMATTING_TO_COLOR = (Map<Formatting, TextColor>)Stream.of(Formatting.values())
 		.filter(Formatting::isColor)
 		.collect(ImmutableMap.toImmutableMap(Function.identity(), formatting -> new TextColor(formatting.getColorValue(), formatting.getName())));
@@ -35,12 +33,12 @@ public final class TextColor {
 	private final String name;
 
 	private TextColor(int rgb, String name) {
-		this.rgb = rgb;
+		this.rgb = rgb & 16777215;
 		this.name = name;
 	}
 
 	private TextColor(int rgb) {
-		this.rgb = rgb;
+		this.rgb = rgb & 16777215;
 		this.name = null;
 	}
 
@@ -81,7 +79,7 @@ public final class TextColor {
 	}
 
 	public String toString() {
-		return this.name != null ? this.name : this.getHexCode();
+		return this.getName();
 	}
 
 	/**
@@ -108,17 +106,17 @@ public final class TextColor {
 	 * 
 	 * @param name the name
 	 */
-	@Nullable
-	public static TextColor parse(String name) {
+	public static DataResult<TextColor> parse(String name) {
 		if (name.startsWith("#")) {
 			try {
 				int i = Integer.parseInt(name.substring(1), 16);
-				return fromRgb(i);
+				return i >= 0 && i <= 16777215 ? DataResult.success(fromRgb(i), Lifecycle.stable()) : DataResult.error(() -> "Color value out of range: " + name);
 			} catch (NumberFormatException var2) {
-				return null;
+				return DataResult.error(() -> "Invalid color value: " + name);
 			}
 		} else {
-			return (TextColor)BY_NAME.get(name);
+			TextColor textColor = (TextColor)BY_NAME.get(name);
+			return textColor == null ? DataResult.error(() -> "Invalid color name: " + name) : DataResult.success(textColor, Lifecycle.stable());
 		}
 	}
 }

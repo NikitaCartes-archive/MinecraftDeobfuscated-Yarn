@@ -2,6 +2,9 @@ package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
@@ -16,6 +19,14 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public class ScoreTextContent implements TextContent {
 	private static final String SENDER_PLACEHOLDER = "*";
+	public static final MapCodec<ScoreTextContent> INNER_CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Codec.STRING.fieldOf("name").forGetter(ScoreTextContent::getName), Codec.STRING.fieldOf("objective").forGetter(ScoreTextContent::getObjective)
+				)
+				.apply(instance, ScoreTextContent::new)
+	);
+	public static final MapCodec<ScoreTextContent> CODEC = INNER_CODEC.fieldOf("score");
+	public static final TextContent.Type<ScoreTextContent> TYPE = new TextContent.Type<>(CODEC, "score");
 	private final String name;
 	@Nullable
 	private final EntitySelector selector;
@@ -34,6 +45,11 @@ public class ScoreTextContent implements TextContent {
 		this.name = name;
 		this.selector = parseEntitySelector(name);
 		this.objective = objective;
+	}
+
+	@Override
+	public TextContent.Type<?> getType() {
+		return TYPE;
 	}
 
 	public String getName() {

@@ -22,10 +22,8 @@ public abstract class LootPoolEntry implements EntryCombiner {
 		this.conditionPredicate = LootConditionTypes.matchingAll(conditions);
 	}
 
-	protected static <T extends LootPoolEntry> P1<Mu<T>, List<LootCondition>> method_53287(Instance<T> instance) {
-		return instance.group(
-			Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(lootPoolEntry -> lootPoolEntry.conditions)
-		);
+	protected static <T extends LootPoolEntry> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {
+		return instance.group(Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(entry -> entry.conditions));
 	}
 
 	public void validate(LootTableReporter reporter) {

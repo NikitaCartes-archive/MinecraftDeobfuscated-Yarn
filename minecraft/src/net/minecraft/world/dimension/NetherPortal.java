@@ -181,23 +181,23 @@ public class NetherPortal {
 		BlockPos blockPos = portalRect.lowerLeft;
 		double g;
 		if (d > 0.0) {
-			float f = (float)blockPos.getComponentAlongAxis(portalAxis) + entityDimensions.width / 2.0F;
-			g = MathHelper.clamp(MathHelper.getLerpProgress(entityPos.getComponentAlongAxis(portalAxis) - (double)f, 0.0, d), 0.0, 1.0);
+			double f = (double)blockPos.getComponentAlongAxis(portalAxis) + (double)entityDimensions.width / 2.0;
+			g = MathHelper.clamp(MathHelper.getLerpProgress(entityPos.getComponentAlongAxis(portalAxis) - f, 0.0, d), 0.0, 1.0);
 		} else {
 			g = 0.5;
 		}
 
-		double h;
+		double f;
 		if (e > 0.0) {
 			Direction.Axis axis = Direction.Axis.Y;
-			h = MathHelper.clamp(MathHelper.getLerpProgress(entityPos.getComponentAlongAxis(axis) - (double)blockPos.getComponentAlongAxis(axis), 0.0, e), 0.0, 1.0);
+			f = MathHelper.clamp(MathHelper.getLerpProgress(entityPos.getComponentAlongAxis(axis) - (double)blockPos.getComponentAlongAxis(axis), 0.0, e), 0.0, 1.0);
 		} else {
-			h = 0.0;
+			f = 0.0;
 		}
 
 		Direction.Axis axis = portalAxis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-		double i = entityPos.getComponentAlongAxis(axis) - ((double)blockPos.getComponentAlongAxis(axis) + 0.5);
-		return new Vec3d(g, h, i);
+		double h = entityPos.getComponentAlongAxis(axis) - ((double)blockPos.getComponentAlongAxis(axis) + 0.5);
+		return new Vec3d(g, f, h);
 	}
 
 	/**

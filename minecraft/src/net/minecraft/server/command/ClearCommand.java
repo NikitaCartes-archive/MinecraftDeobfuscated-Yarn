@@ -16,10 +16,10 @@ import net.minecraft.text.Text;
 
 public class ClearCommand {
 	private static final DynamicCommandExceptionType FAILED_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
-		playerName -> Text.translatable("clear.failed.single", playerName)
+		playerName -> Text.stringifiedTranslatable("clear.failed.single", playerName)
 	);
 	private static final DynamicCommandExceptionType FAILED_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(
-		playerCount -> Text.translatable("clear.failed.multiple", playerCount)
+		playerCount -> Text.stringifiedTranslatable("clear.failed.multiple", playerCount)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -18,11 +19,17 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class HoneyBlock extends TransparentBlock {
+	public static final MapCodec<HoneyBlock> CODEC = createCodec(HoneyBlock::new);
 	private static final double field_31101 = 0.13;
 	private static final double field_31102 = 0.08;
 	private static final double field_31103 = 0.05;
 	private static final int TICKS_PER_SECOND = 20;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
+
+	@Override
+	public MapCodec<HoneyBlock> getCodec() {
+		return CODEC;
+	}
 
 	public HoneyBlock(AbstractBlock.Settings settings) {
 		super(settings);

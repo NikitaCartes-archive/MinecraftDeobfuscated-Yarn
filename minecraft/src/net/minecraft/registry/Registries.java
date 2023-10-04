@@ -4,9 +4,11 @@ import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockTypes;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DecoratedPotPatterns;
 import net.minecraft.block.entity.BannerPattern;
@@ -199,6 +201,7 @@ public class Registries {
 	public static final Registry<Codec<? extends DensityFunction>> DENSITY_FUNCTION_TYPE = create(
 		RegistryKeys.DENSITY_FUNCTION_TYPE, DensityFunctionTypes::registerAndGetDefault
 	);
+	public static final Registry<MapCodec<? extends Block>> BLOCK_TYPE = create(RegistryKeys.BLOCK_TYPE, BlockTypes::registerAndGetDefault);
 	public static final Registry<StructureProcessorType<?>> STRUCTURE_PROCESSOR = create(
 		RegistryKeys.STRUCTURE_PROCESSOR, registry -> StructureProcessorType.BLOCK_IGNORE
 	);

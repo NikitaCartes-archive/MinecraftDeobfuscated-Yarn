@@ -15,12 +15,10 @@ public class LootNumberProviderTypes {
 	public static final Codec<LootNumberProvider> CODEC = Codecs.createLazy(
 		() -> {
 			Codec<LootNumberProvider> codec = Codecs.alternatively(BASE_CODEC, UniformLootNumberProvider.CODEC);
-			return Codec.either(ConstantLootNumberProvider.field_45887, codec)
+			return Codec.either(ConstantLootNumberProvider.INLINE_CODEC, codec)
 				.xmap(
 					either -> either.map(Function.identity(), Function.identity()),
-					lootNumberProvider -> lootNumberProvider instanceof ConstantLootNumberProvider constantLootNumberProvider
-							? Either.left(constantLootNumberProvider)
-							: Either.right(lootNumberProvider)
+					provider -> provider instanceof ConstantLootNumberProvider constantLootNumberProvider ? Either.left(constantLootNumberProvider) : Either.right(provider)
 				);
 		}
 	);

@@ -93,13 +93,13 @@ import net.minecraft.world.chunk.WorldChunk;
 public class ExecuteCommand {
 	private static final int MAX_BLOCKS = 32768;
 	private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxCount, count) -> Text.translatable("commands.execute.blocks.toobig", maxCount, count)
+		(maxCount, count) -> Text.stringifiedTranslatable("commands.execute.blocks.toobig", maxCount, count)
 	);
 	private static final SimpleCommandExceptionType CONDITIONAL_FAIL_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("commands.execute.conditional.fail")
 	);
 	private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(
-		count -> Text.translatable("commands.execute.conditional.fail_count", count)
+		count -> Text.stringifiedTranslatable("commands.execute.conditional.fail_count", count)
 	);
 	private static final BinaryOperator<ResultConsumer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (consumer, consumer2) -> (context, success, result) -> {
 			consumer.onCommandComplete(context, success, result);

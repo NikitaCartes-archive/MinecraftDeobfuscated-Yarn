@@ -25,11 +25,11 @@ public class SetBannerPatternFunction extends ConditionalLootFunction {
 		)
 		.codec();
 	public static final Codec<SetBannerPatternFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<List<Pair<RegistryEntry<BannerPattern>, DyeColor>>, boolean>and(
 					instance.group(
-						BANNER_PATTERN_AND_COLOR_CODEC.listOf().fieldOf("patterns").forGetter(setBannerPatternFunction -> setBannerPatternFunction.patterns),
-						Codec.BOOL.fieldOf("append").forGetter(setBannerPatternFunction -> setBannerPatternFunction.append)
+						BANNER_PATTERN_AND_COLOR_CODEC.listOf().fieldOf("patterns").forGetter(function -> function.patterns),
+						Codec.BOOL.fieldOf("append").forGetter(function -> function.append)
 					)
 				)
 				.apply(instance, SetBannerPatternFunction::new)

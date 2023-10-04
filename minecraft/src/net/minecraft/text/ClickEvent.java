@@ -1,10 +1,18 @@
 package net.minecraft.text;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.dynamic.Codecs;
 
 public class ClickEvent {
+	public static final Codec<ClickEvent> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(ClickEvent.Action.CODEC.forGetter(event -> event.action), Codec.STRING.fieldOf("value").forGetter(event -> event.value))
+				.apply(instance, ClickEvent::new)
+	);
 	private final ClickEvent.Action action;
 	private final String value;
 
@@ -26,11 +34,7 @@ public class ClickEvent {
 			return true;
 		} else if (o != null && this.getClass() == o.getClass()) {
 			ClickEvent clickEvent = (ClickEvent)o;
-			if (this.action != clickEvent.action) {
-				return false;
-			} else {
-				return this.value != null ? this.value.equals(clickEvent.value) : clickEvent.value == null;
-			}
+			return this.action == clickEvent.action && this.value.equals(clickEvent.value);
 		} else {
 			return false;
 		}
@@ -42,10 +46,10 @@ public class ClickEvent {
 
 	public int hashCode() {
 		int i = this.action.hashCode();
-		return 31 * i + (this.value != null ? this.value.hashCode() : 0);
+		return 31 * i + this.value.hashCode();
 	}
 
-	public static enum Action {
+	public static enum Action implements StringIdentifiable {
 		OPEN_URL("open_url", true),
 		OPEN_FILE("open_file", false),
 		RUN_COMMAND("run_command", true),
@@ -53,8 +57,8 @@ public class ClickEvent {
 		CHANGE_PAGE("change_page", true),
 		COPY_TO_CLIPBOARD("copy_to_clipboard", true);
 
-		private static final Map<String, ClickEvent.Action> BY_NAME = (Map<String, ClickEvent.Action>)Arrays.stream(values())
-			.collect(Collectors.toMap(ClickEvent.Action::getName, a -> a));
+		public static final MapCodec<ClickEvent.Action> UNVALIDATED_CODEC = StringIdentifiable.createCodec(ClickEvent.Action::values).fieldOf("action");
+		public static final MapCodec<ClickEvent.Action> CODEC = Codecs.validate(UNVALIDATED_CODEC, ClickEvent.Action::validate);
 		private final boolean userDefinable;
 		private final String name;
 
@@ -67,12 +71,13 @@ public class ClickEvent {
 			return this.userDefinable;
 		}
 
-		public String getName() {
+		@Override
+		public String asString() {
 			return this.name;
 		}
 
-		public static ClickEvent.Action byName(String name) {
-			return (ClickEvent.Action)BY_NAME.get(name);
+		public static DataResult<ClickEvent.Action> validate(ClickEvent.Action action) {
+			return !action.isUserDefinable() ? DataResult.error(() -> "Action not allowed: " + action) : DataResult.success(action, Lifecycle.stable());
 		}
 	}
 }

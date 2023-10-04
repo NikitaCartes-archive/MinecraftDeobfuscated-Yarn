@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -24,6 +25,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class CakeBlock extends Block {
+	public static final MapCodec<CakeBlock> CODEC = createCodec(CakeBlock::new);
 	public static final int MAX_BITES = 6;
 	public static final IntProperty BITES = Properties.BITES;
 	public static final int DEFAULT_COMPARATOR_OUTPUT = getComparatorOutput(0);
@@ -38,6 +40,11 @@ public class CakeBlock extends Block {
 		Block.createCuboidShape(11.0, 0.0, 1.0, 15.0, 8.0, 15.0),
 		Block.createCuboidShape(13.0, 0.0, 1.0, 15.0, 8.0, 15.0)
 	};
+
+	@Override
+	public MapCodec<CakeBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected CakeBlock(AbstractBlock.Settings settings) {
 		super(settings);

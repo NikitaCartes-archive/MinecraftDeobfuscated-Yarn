@@ -35,13 +35,13 @@ import net.minecraft.world.gen.structure.Structure;
 public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry.Reference<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 	private static final DynamicCommandExceptionType NOT_SUMMONABLE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("entity.not_summonable", id)
+		id -> Text.stringifiedTranslatable("entity.not_summonable", id)
 	);
 	public static final Dynamic2CommandExceptionType NOT_FOUND_EXCEPTION = new Dynamic2CommandExceptionType(
-		(element, type) -> Text.translatable("argument.resource.not_found", element, type)
+		(element, type) -> Text.stringifiedTranslatable("argument.resource.not_found", element, type)
 	);
 	public static final Dynamic3CommandExceptionType INVALID_TYPE_EXCEPTION = new Dynamic3CommandExceptionType(
-		(element, type, expectedType) -> Text.translatable("argument.resource.invalid_type", element, type, expectedType)
+		(element, type, expectedType) -> Text.stringifiedTranslatable("argument.resource.invalid_type", element, type, expectedType)
 	);
 	final RegistryKey<? extends Registry<T>> registryRef;
 	private final RegistryWrapper<T> registryWrapper;

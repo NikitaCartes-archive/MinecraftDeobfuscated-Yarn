@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
@@ -37,6 +38,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class BigDripleafBlock extends HorizontalFacingBlock implements Fertilizable, Waterloggable {
+	public static final MapCodec<BigDripleafBlock> CODEC = createCodec(BigDripleafBlock::new);
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final EnumProperty<Tilt> TILT = Properties.TILT;
 	private static final int field_31015 = -1;
@@ -72,6 +74,11 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		VoxelShapes.combine(BigDripleafStemBlock.WEST_SHAPE, BASE_SHAPE, BooleanBiFunction.ONLY_FIRST)
 	);
 	private final Map<BlockState, VoxelShape> shapes;
+
+	@Override
+	public MapCodec<BigDripleafBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected BigDripleafBlock(AbstractBlock.Settings settings) {
 		super(settings);

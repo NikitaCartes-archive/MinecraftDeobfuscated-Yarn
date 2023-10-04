@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -14,6 +15,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class PaneBlock extends HorizontalConnectingBlock {
+	public static final MapCodec<PaneBlock> CODEC = createCodec(PaneBlock::new);
+
+	@Override
+	public MapCodec<? extends PaneBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected PaneBlock(AbstractBlock.Settings settings) {
 		super(1.0F, 1.0F, 16.0F, 16.0F, 16.0F, settings);
 		this.setDefaultState(

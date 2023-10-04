@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
+import net.minecraft.client.gui.screen.PopupScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -328,6 +330,18 @@ public class RealmsMainScreen extends RealmsScreen {
 		request(RealmsClient::listNotifications, notifications -> {
 			this.notifications.clear();
 			this.notifications.addAll(notifications);
+
+			for (RealmsNotification realmsNotification : notifications) {
+				if (realmsNotification instanceof RealmsNotification.InfoPopup infoPopup) {
+					PopupScreen popupScreen = infoPopup.createScreen(this, this::dismissNotification);
+					if (popupScreen != null) {
+						this.client.setScreen(popupScreen);
+						this.markAsSeen(List.of(realmsNotification));
+						break;
+					}
+				}
+			}
+
 			if (!this.notifications.isEmpty() && this.loadStatus != RealmsMainScreen.LoadStatus.LOADING) {
 				this.onLoadStatusChange(RealmsMainScreen.LoadStatus.LIST);
 				this.refresh();
@@ -349,6 +363,23 @@ public class RealmsMainScreen extends RealmsScreen {
 		return runnersManager;
 	}
 
+	private void markAsSeen(Collection<RealmsNotification> notifications) {
+		List<UUID> list = new ArrayList(notifications.size());
+
+		for (RealmsNotification realmsNotification : notifications) {
+			if (!realmsNotification.isSeen() && !this.seenNotifications.contains(realmsNotification.getUuid())) {
+				list.add(realmsNotification.getUuid());
+			}
+		}
+
+		if (!list.isEmpty()) {
+			request(client -> {
+				client.markNotificationsAsSeen(list);
+				return null;
+			}, result -> this.seenNotifications.addAll(list));
+		}
+	}
+
 	private static <T> void request(RealmsMainScreen.Request<T> request, Consumer<T> resultConsumer) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		CompletableFuture.supplyAsync(() -> {
@@ -366,20 +397,12 @@ public class RealmsMainScreen extends RealmsScreen {
 	private void refresh() {
 		RealmsServer realmsServer = this.findServer();
 		this.realmSelectionList.clear();
-		List<UUID> list = new ArrayList();
 
 		for (RealmsNotification realmsNotification : this.notifications) {
-			this.addNotificationEntry(this.realmSelectionList, realmsNotification);
-			if (!realmsNotification.isSeen() && !this.seenNotifications.contains(realmsNotification.getUuid())) {
-				list.add(realmsNotification.getUuid());
+			if (this.addNotificationEntry(realmsNotification)) {
+				this.markAsSeen(List.of(realmsNotification));
+				break;
 			}
-		}
-
-		if (!list.isEmpty()) {
-			request(client -> {
-				client.markNotificationsAsSeen(list);
-				return null;
-			}, void_ -> this.seenNotifications.addAll(list));
 		}
 
 		for (RealmsServer realmsServer2 : this.serverFilterer) {
@@ -393,18 +416,21 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.refreshButtons();
 	}
 
-	private void addNotificationEntry(RealmsMainScreen.RealmSelectionList selectionList, RealmsNotification notification) {
-		if (notification instanceof RealmsNotification.VisitUrl visitUrl) {
+	private boolean addNotificationEntry(RealmsNotification notification) {
+		if (!(notification instanceof RealmsNotification.VisitUrl visitUrl)) {
+			return false;
+		} else {
 			Text text = visitUrl.getDefaultMessage();
 			int i = this.textRenderer.getWrappedLinesHeight(text, 216);
 			int j = MathHelper.ceilDiv(i + 7, 36) - 1;
-			selectionList.addEntry(new RealmsMainScreen.VisitUrlNotification(text, j + 2, visitUrl));
+			this.realmSelectionList.addEntry(new RealmsMainScreen.VisitUrlNotification(text, j + 2, visitUrl));
 
 			for (int k = 0; k < j; k++) {
-				selectionList.addEntry(new RealmsMainScreen.EmptyEntry());
+				this.realmSelectionList.addEntry(new RealmsMainScreen.EmptyEntry());
 			}
 
-			selectionList.addEntry(new RealmsMainScreen.VisitButtonEntry(visitUrl.createButton(this)));
+			this.realmSelectionList.addEntry(new RealmsMainScreen.VisitButtonEntry(visitUrl.createButton(this)));
+			return true;
 		}
 	}
 

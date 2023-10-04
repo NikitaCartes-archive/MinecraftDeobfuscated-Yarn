@@ -1,7 +1,10 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -19,12 +22,21 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
 public class ChorusFlowerBlock extends Block {
+	public static final MapCodec<ChorusFlowerBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Registries.BLOCK.getCodec().fieldOf("plant").forGetter(block -> block.plantBlock), createSettingsCodec())
+				.apply(instance, ChorusFlowerBlock::new)
+	);
 	public static final int MAX_AGE = 5;
 	public static final IntProperty AGE = Properties.AGE_5;
-	protected static final VoxelShape field_45145 = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
-	private final ChorusPlantBlock plantBlock;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
+	private final Block plantBlock;
 
-	protected ChorusFlowerBlock(ChorusPlantBlock plantBlock, AbstractBlock.Settings settings) {
+	@Override
+	public MapCodec<ChorusFlowerBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected ChorusFlowerBlock(Block plantBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.plantBlock = plantBlock;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
@@ -44,7 +56,7 @@ public class ChorusFlowerBlock extends Block {
 
 	@Override
 	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
-		return field_45145;
+		return SHAPE;
 	}
 
 	@Override
@@ -81,7 +93,7 @@ public class ChorusFlowerBlock extends Block {
 				}
 
 				if (bl && isSurroundedByAir(world, blockPos, null) && world.isAir(pos.up(2))) {
-					world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), Block.NOTIFY_LISTENERS);
+					world.setBlockState(pos, ChorusPlantBlock.withConnectionProperties(world, pos, this.plantBlock.getDefaultState()), Block.NOTIFY_LISTENERS);
 					this.grow(world, blockPos, i);
 				} else if (i < 4) {
 					int j = random.nextInt(4);
@@ -101,7 +113,7 @@ public class ChorusFlowerBlock extends Block {
 					}
 
 					if (bl3) {
-						world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), Block.NOTIFY_LISTENERS);
+						world.setBlockState(pos, ChorusPlantBlock.withConnectionProperties(world, pos, this.plantBlock.getDefaultState()), Block.NOTIFY_LISTENERS);
 					} else {
 						this.die(world, pos);
 					}
@@ -178,12 +190,12 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	public static void generate(WorldAccess world, BlockPos pos, Random random, int size) {
-		world.setBlockState(pos, ((ChorusPlantBlock)Blocks.CHORUS_PLANT).withConnectionProperties(world, pos), Block.NOTIFY_LISTENERS);
+		world.setBlockState(pos, ChorusPlantBlock.withConnectionProperties(world, pos, Blocks.CHORUS_PLANT.getDefaultState()), Block.NOTIFY_LISTENERS);
 		generate(world, pos, random, pos, size, 0);
 	}
 
 	private static void generate(WorldAccess world, BlockPos pos, Random random, BlockPos rootPos, int size, int layer) {
-		ChorusPlantBlock chorusPlantBlock = (ChorusPlantBlock)Blocks.CHORUS_PLANT;
+		Block block = Blocks.CHORUS_PLANT;
 		int i = random.nextInt(4) + 1;
 		if (layer == 0) {
 			i++;
@@ -195,8 +207,8 @@ public class ChorusFlowerBlock extends Block {
 				return;
 			}
 
-			world.setBlockState(blockPos, chorusPlantBlock.withConnectionProperties(world, blockPos), Block.NOTIFY_LISTENERS);
-			world.setBlockState(blockPos.down(), chorusPlantBlock.withConnectionProperties(world, blockPos.down()), Block.NOTIFY_LISTENERS);
+			world.setBlockState(blockPos, ChorusPlantBlock.withConnectionProperties(world, blockPos, block.getDefaultState()), Block.NOTIFY_LISTENERS);
+			world.setBlockState(blockPos.down(), ChorusPlantBlock.withConnectionProperties(world, blockPos.down(), block.getDefaultState()), Block.NOTIFY_LISTENERS);
 		}
 
 		boolean bl = false;
@@ -215,10 +227,10 @@ public class ChorusFlowerBlock extends Block {
 					&& world.isAir(blockPos2.down())
 					&& isSurroundedByAir(world, blockPos2, direction.getOpposite())) {
 					bl = true;
-					world.setBlockState(blockPos2, chorusPlantBlock.withConnectionProperties(world, blockPos2), Block.NOTIFY_LISTENERS);
+					world.setBlockState(blockPos2, ChorusPlantBlock.withConnectionProperties(world, blockPos2, block.getDefaultState()), Block.NOTIFY_LISTENERS);
 					world.setBlockState(
 						blockPos2.offset(direction.getOpposite()),
-						chorusPlantBlock.withConnectionProperties(world, blockPos2.offset(direction.getOpposite())),
+						ChorusPlantBlock.withConnectionProperties(world, blockPos2.offset(direction.getOpposite()), block.getDefaultState()),
 						Block.NOTIFY_LISTENERS
 					);
 					generate(world, blockPos2, random, rootPos, size, layer + 1);

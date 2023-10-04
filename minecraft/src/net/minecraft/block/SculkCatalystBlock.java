@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -17,8 +18,14 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class SculkCatalystBlock extends BlockWithEntity {
+	public static final MapCodec<SculkCatalystBlock> CODEC = createCodec(SculkCatalystBlock::new);
 	public static final BooleanProperty BLOOM = Properties.BLOOM;
 	private final IntProvider experience = ConstantIntProvider.create(5);
+
+	@Override
+	public MapCodec<SculkCatalystBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SculkCatalystBlock(AbstractBlock.Settings settings) {
 		super(settings);

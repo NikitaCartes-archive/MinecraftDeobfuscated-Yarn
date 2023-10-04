@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,9 +25,15 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StonecutterBlock extends Block {
+	public static final MapCodec<StonecutterBlock> CODEC = createCodec(StonecutterBlock::new);
 	private static final Text TITLE = Text.translatable("container.stonecutter");
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
+
+	@Override
+	public MapCodec<StonecutterBlock> getCodec() {
+		return CODEC;
+	}
 
 	public StonecutterBlock(AbstractBlock.Settings settings) {
 		super(settings);

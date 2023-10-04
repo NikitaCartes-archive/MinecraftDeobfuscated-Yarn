@@ -155,10 +155,10 @@ public class PlaySoundCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					() -> Text.translatable("commands.playsound.success.single", sound, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
+					() -> Text.translatable("commands.playsound.success.single", Text.of(sound), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				source.sendFeedback(() -> Text.translatable("commands.playsound.success.multiple", sound, targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.playsound.success.multiple", Text.of(sound), targets.size()), true);
 			}
 
 			return i;

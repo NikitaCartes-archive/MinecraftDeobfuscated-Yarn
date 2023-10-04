@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -13,6 +14,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class MushroomBlock extends Block {
+	public static final MapCodec<MushroomBlock> CODEC = createCodec(MushroomBlock::new);
 	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
 	public static final BooleanProperty EAST = ConnectingBlock.EAST;
 	public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
@@ -20,6 +22,11 @@ public class MushroomBlock extends Block {
 	public static final BooleanProperty UP = ConnectingBlock.UP;
 	public static final BooleanProperty DOWN = ConnectingBlock.DOWN;
 	private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES;
+
+	@Override
+	public MapCodec<MushroomBlock> getCodec() {
+		return CODEC;
+	}
 
 	public MushroomBlock(AbstractBlock.Settings settings) {
 		super(settings);

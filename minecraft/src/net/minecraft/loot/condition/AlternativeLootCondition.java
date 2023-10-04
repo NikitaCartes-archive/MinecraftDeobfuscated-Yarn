@@ -24,7 +24,7 @@ public abstract class AlternativeLootCondition implements LootCondition {
 		);
 	}
 
-	protected static <T extends AlternativeLootCondition> Codec<T> method_53410(Function<List<LootCondition>, T> termsToCondition) {
+	protected static <T extends AlternativeLootCondition> Codec<T> createInlineCodec(Function<List<LootCondition>, T> termsToCondition) {
 		return LootConditionTypes.CODEC.listOf().xmap(termsToCondition, condition -> condition.terms);
 	}
 

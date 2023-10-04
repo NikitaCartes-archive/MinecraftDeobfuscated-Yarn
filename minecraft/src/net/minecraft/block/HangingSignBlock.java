@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -36,6 +38,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class HangingSignBlock extends AbstractSignBlock {
+	public static final MapCodec<HangingSignBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(WoodType.CODEC.fieldOf("wood_type").forGetter(AbstractSignBlock::getWoodType), createSettingsCodec())
+				.apply(instance, HangingSignBlock::new)
+	);
 	public static final IntProperty ROTATION = Properties.ROTATION;
 	public static final BooleanProperty ATTACHED = Properties.ATTACHED;
 	protected static final float field_40302 = 5.0F;
@@ -53,8 +59,13 @@ public class HangingSignBlock extends AbstractSignBlock {
 		)
 	);
 
-	public HangingSignBlock(AbstractBlock.Settings settings, WoodType woodType) {
-		super(settings.sounds(woodType.hangingSignSoundType()), woodType);
+	@Override
+	public MapCodec<HangingSignBlock> getCodec() {
+		return CODEC;
+	}
+
+	public HangingSignBlock(WoodType woodType, AbstractBlock.Settings settings) {
+		super(woodType, settings.sounds(woodType.hangingSignSoundType()));
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(ROTATION, Integer.valueOf(0)).with(ATTACHED, Boolean.valueOf(false)).with(WATERLOGGED, Boolean.valueOf(false))
 		);

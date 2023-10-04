@@ -29,12 +29,8 @@ import net.minecraft.util.math.random.Random;
 
 public class SetAttributesLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetAttributesLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(
-					Codecs.nonEmptyList(SetAttributesLootFunction.Attribute.CODEC.listOf())
-						.fieldOf("modifiers")
-						.forGetter(setAttributesLootFunction -> setAttributesLootFunction.attributes)
-				)
+		instance -> addConditionsField(instance)
+				.and(Codecs.nonEmptyList(SetAttributesLootFunction.Attribute.CODEC.listOf()).fieldOf("modifiers").forGetter(function -> function.attributes))
 				.apply(instance, SetAttributesLootFunction::new)
 	);
 	private final List<SetAttributesLootFunction.Attribute> attributes;

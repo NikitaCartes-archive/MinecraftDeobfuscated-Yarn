@@ -2,11 +2,14 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -24,6 +27,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class CandleCakeBlock extends AbstractCandleBlock {
+	public static final MapCodec<CandleCakeBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Registries.BLOCK.getCodec().fieldOf("candle").forGetter(block -> block.candle), createSettingsCodec())
+				.apply(instance, CandleCakeBlock::new)
+	);
 	public static final BooleanProperty LIT = AbstractCandleBlock.LIT;
 	protected static final float field_31052 = 1.0F;
 	protected static final VoxelShape CAKE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0);
@@ -31,11 +38,18 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 	protected static final VoxelShape SHAPE = VoxelShapes.union(CAKE_SHAPE, CANDLE_SHAPE);
 	private static final Map<Block, CandleCakeBlock> CANDLES_TO_CANDLE_CAKES = Maps.<Block, CandleCakeBlock>newHashMap();
 	private static final Iterable<Vec3d> PARTICLE_OFFSETS = ImmutableList.<Vec3d>of(new Vec3d(0.5, 1.0, 0.5));
+	private final Block candle;
+
+	@Override
+	public MapCodec<CandleCakeBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected CandleCakeBlock(Block candle, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(LIT, Boolean.valueOf(false)));
 		CANDLES_TO_CANDLE_CAKES.put(candle, this);
+		this.candle = candle;
 	}
 
 	@Override
@@ -76,7 +90,7 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Blocks.CAKE);
 	}
 

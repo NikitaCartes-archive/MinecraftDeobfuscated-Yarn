@@ -26,14 +26,14 @@ import net.minecraft.util.dynamic.Codecs;
 
 public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetEnchantmentsLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<Map<RegistryEntry<Enchantment>, LootNumberProvider>, boolean>and(
 					instance.group(
 						Codecs.createStrictOptionalFieldCodec(
 								Codec.unboundedMap(Registries.ENCHANTMENT.createEntryCodec(), LootNumberProviderTypes.CODEC), "enchantments", Map.of()
 							)
-							.forGetter(setEnchantmentsLootFunction -> setEnchantmentsLootFunction.enchantments),
-						Codec.BOOL.fieldOf("add").orElse(false).forGetter(setEnchantmentsLootFunction -> setEnchantmentsLootFunction.add)
+							.forGetter(function -> function.enchantments),
+						Codec.BOOL.fieldOf("add").orElse(false).forGetter(function -> function.add)
 					)
 				)
 				.apply(instance, SetEnchantmentsLootFunction::new)

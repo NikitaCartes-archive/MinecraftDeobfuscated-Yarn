@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -33,6 +34,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class HopperBlock extends BlockWithEntity {
+	public static final MapCodec<HopperBlock> CODEC = createCodec(HopperBlock::new);
 	public static final DirectionProperty FACING = Properties.HOPPER_FACING;
 	public static final BooleanProperty ENABLED = Properties.ENABLED;
 	private static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 10.0, 0.0, 16.0, 16.0, 16.0);
@@ -49,6 +51,11 @@ public class HopperBlock extends BlockWithEntity {
 	private static final VoxelShape NORTH_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
 	private static final VoxelShape SOUTH_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
 	private static final VoxelShape WEST_RAYCAST_SHAPE = VoxelShapes.union(Hopper.INSIDE_SHAPE, Block.createCuboidShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
+
+	@Override
+	public MapCodec<HopperBlock> getCodec() {
+		return CODEC;
+	}
 
 	public HopperBlock(AbstractBlock.Settings settings) {
 		super(settings);

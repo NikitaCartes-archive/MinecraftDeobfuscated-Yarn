@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -29,6 +30,7 @@ public final class Uuids {
 			return DataResult.error(() -> "Invalid UUID " + string + ": " + var2.getMessage());
 		}
 	}, UndashedUuid::toString)).xmap(either -> either.map(uuid -> uuid, uuid -> uuid), Either::right);
+	public static Codec<UUID> STRICT_CODEC = Codec.either(INT_STREAM_CODEC, STRING_CODEC).xmap(either -> either.map(uuid -> uuid, uuid -> uuid), Either::left);
 	public static final int BYTE_ARRAY_SIZE = 16;
 	private static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
 
@@ -66,5 +68,10 @@ public final class Uuids {
 
 	public static UUID getOfflinePlayerUuid(String nickname) {
 		return UUID.nameUUIDFromBytes(("OfflinePlayer:" + nickname).getBytes(StandardCharsets.UTF_8));
+	}
+
+	public static GameProfile getOfflinePlayerProfile(String nickname) {
+		UUID uUID = getOfflinePlayerUuid(nickname);
+		return new GameProfile(uUID, nickname);
 	}
 }

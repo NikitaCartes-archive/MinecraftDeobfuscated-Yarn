@@ -26,7 +26,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 		StringRange stringRange = StringRange.between(i, i + j);
 		List<Suggestion> list = buf.readList(buf2 -> {
 			String string = buf2.readString();
-			Text text = buf2.readNullable(PacketByteBuf::readText);
+			Text text = buf2.readNullable(PacketByteBuf::readUnlimitedText);
 			return new Suggestion(stringRange, string, text);
 		});
 		this.suggestions = new Suggestions(stringRange, list);

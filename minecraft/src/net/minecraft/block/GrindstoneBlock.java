@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class GrindstoneBlock extends WallMountedBlock {
+	public static final MapCodec<GrindstoneBlock> CODEC = createCodec(GrindstoneBlock::new);
 	public static final VoxelShape WEST_FLOOR_LEG = Block.createCuboidShape(2.0, 0.0, 6.0, 4.0, 7.0, 10.0);
 	public static final VoxelShape EAST_FLOOR_LEG = Block.createCuboidShape(12.0, 0.0, 6.0, 14.0, 7.0, 10.0);
 	public static final VoxelShape WEST_FLOOR_HINGE = Block.createCuboidShape(2.0, 7.0, 5.0, 4.0, 13.0, 11.0);
@@ -89,6 +91,11 @@ public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape X_CEILING_SIDES = VoxelShapes.union(NORTH_CEILING_SIDE, SOUTH_CEILING_SIDE);
 	public static final VoxelShape X_CEILING_SHAPE = VoxelShapes.union(X_CEILING_SIDES, Block.createCuboidShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
 	private static final Text TITLE = Text.translatable("container.grindstone_title");
+
+	@Override
+	public MapCodec<GrindstoneBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected GrindstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);

@@ -90,11 +90,6 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean canBreatheInWater() {
-		return false;
-	}
-
-	@Override
 	protected void tickWaterBreathingAir(int air) {
 	}
 

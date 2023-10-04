@@ -1,9 +1,14 @@
 package net.minecraft.block;
 
-import java.util.function.Supplier;
+import com.mojang.datafixers.DataFixUtils;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -19,6 +24,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class StemBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<StemBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					RegistryKey.createCodec(RegistryKeys.BLOCK).fieldOf("fruit").forGetter(block -> block.gourdBlock),
+					RegistryKey.createCodec(RegistryKeys.BLOCK).fieldOf("attached_stem").forGetter(block -> block.attachedStemBlock),
+					RegistryKey.createCodec(RegistryKeys.ITEM).fieldOf("seed").forGetter(block -> block.pickBlockItem),
+					createSettingsCodec()
+				)
+				.apply(instance, StemBlock::new)
+	);
 	public static final int MAX_AGE = 7;
 	public static final IntProperty AGE = Properties.AGE_7;
 	protected static final float field_31256 = 1.0F;
@@ -32,12 +46,19 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 14.0, 9.0),
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)
 	};
-	private final GourdBlock gourdBlock;
-	private final Supplier<Item> pickBlockItem;
+	private final RegistryKey<Block> gourdBlock;
+	private final RegistryKey<Block> attachedStemBlock;
+	private final RegistryKey<Item> pickBlockItem;
 
-	protected StemBlock(GourdBlock gourdBlock, Supplier<Item> pickBlockItem, AbstractBlock.Settings settings) {
+	@Override
+	public MapCodec<StemBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected StemBlock(RegistryKey<Block> gourdBlock, RegistryKey<Block> attachedStemBlock, RegistryKey<Item> pickBlockItem, AbstractBlock.Settings settings) {
 		super(settings);
 		this.gourdBlock = gourdBlock;
+		this.attachedStemBlock = attachedStemBlock;
 		this.pickBlockItem = pickBlockItem;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
@@ -66,8 +87,13 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 					BlockPos blockPos = pos.offset(direction);
 					BlockState blockState = world.getBlockState(blockPos.down());
 					if (world.getBlockState(blockPos).isAir() && (blockState.isOf(Blocks.FARMLAND) || blockState.isIn(BlockTags.DIRT))) {
-						world.setBlockState(blockPos, this.gourdBlock.getDefaultState());
-						world.setBlockState(pos, this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction));
+						Registry<Block> registry = world.getRegistryManager().get(RegistryKeys.BLOCK);
+						Optional<Block> optional = registry.getOrEmpty(this.gourdBlock);
+						Optional<Block> optional2 = registry.getOrEmpty(this.attachedStemBlock);
+						if (optional.isPresent() && optional2.isPresent()) {
+							world.setBlockState(blockPos, ((Block)optional.get()).getDefaultState());
+							world.setBlockState(pos, ((Block)optional2.get()).getDefaultState().with(HorizontalFacingBlock.FACING, direction));
+						}
 					}
 				}
 			}
@@ -75,8 +101,8 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return new ItemStack((ItemConvertible)this.pickBlockItem.get());
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+		return new ItemStack(DataFixUtils.orElse(world.getRegistryManager().get(RegistryKeys.ITEM).getOrEmpty(this.pickBlockItem), this));
 	}
 
 	@Override
@@ -102,9 +128,5 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(AGE);
-	}
-
-	public GourdBlock getGourdBlock() {
-		return this.gourdBlock;
 	}
 }

@@ -1,17 +1,18 @@
 package net.minecraft.text;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.logging.LogUtils;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Encoder;
+import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -20,198 +21,143 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import org.slf4j.Logger;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Uuids;
+import net.minecraft.util.dynamic.Codecs;
 
 public class HoverEvent {
-	static final Logger LOGGER = LogUtils.getLogger();
-	private final HoverEvent.Action<?> action;
-	private final Object contents;
+	public static final Codec<HoverEvent> CODEC = Codec.either(HoverEvent.EventData.CODEC.codec(), HoverEvent.EventData.LEGACY_CODEC.codec())
+		.xmap(either -> new HoverEvent(either.map(data -> data, data -> data)), event -> Either.left(event.data));
+	private final HoverEvent.EventData<?> data;
 
 	public <T> HoverEvent(HoverEvent.Action<T> action, T contents) {
-		this.action = action;
-		this.contents = contents;
+		this(new HoverEvent.EventData<>(action, contents));
+	}
+
+	private HoverEvent(HoverEvent.EventData<?> data) {
+		this.data = data;
 	}
 
 	public HoverEvent.Action<?> getAction() {
-		return this.action;
+		return this.data.action;
 	}
 
 	@Nullable
 	public <T> T getValue(HoverEvent.Action<T> action) {
-		return this.action == action ? action.cast(this.contents) : null;
+		return this.data.action == action ? action.cast(this.data.value) : null;
 	}
 
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			HoverEvent hoverEvent = (HoverEvent)o;
-			return this.action == hoverEvent.action && Objects.equals(this.contents, hoverEvent.contents);
 		} else {
-			return false;
+			return o != null && this.getClass() == o.getClass() ? ((HoverEvent)o).data.equals(this.data) : false;
 		}
 	}
 
 	public String toString() {
-		return "HoverEvent{action=" + this.action + ", value='" + this.contents + "'}";
+		return this.data.toString();
 	}
 
 	public int hashCode() {
-		int i = this.action.hashCode();
-		return 31 * i + (this.contents != null ? this.contents.hashCode() : 0);
+		return this.data.hashCode();
 	}
 
-	@Nullable
-	public static HoverEvent fromJson(JsonObject json) {
-		String string = JsonHelper.getString(json, "action", null);
-		if (string == null) {
-			return null;
-		} else {
-			HoverEvent.Action<?> action = HoverEvent.Action.byName(string);
-			if (action == null) {
-				return null;
-			} else {
-				JsonElement jsonElement = json.get("contents");
-				if (jsonElement != null) {
-					return action.buildHoverEvent(jsonElement);
-				} else {
-					Text text = Text.Serializer.fromJson(json.get("value"));
-					return text != null ? action.buildHoverEvent(text) : null;
-				}
-			}
-		}
-	}
-
-	public JsonObject toJson() {
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("action", this.action.getName());
-		jsonObject.add("contents", this.action.contentsToJson(this.contents));
-		return jsonObject;
-	}
-
-	public static class Action<T> {
-		public static final HoverEvent.Action<Text> SHOW_TEXT = new HoverEvent.Action<>(
-			"show_text", true, Text.Serializer::fromJson, Text.Serializer::toJsonTree, Function.identity()
-		);
+	public static class Action<T> implements StringIdentifiable {
+		public static final HoverEvent.Action<Text> SHOW_TEXT = new HoverEvent.Action<>("show_text", true, TextCodecs.CODEC, DataResult::success);
 		public static final HoverEvent.Action<HoverEvent.ItemStackContent> SHOW_ITEM = new HoverEvent.Action<>(
-			"show_item", true, HoverEvent.ItemStackContent::parse, HoverEvent.ItemStackContent::toJson, HoverEvent.ItemStackContent::parse
+			"show_item", true, HoverEvent.ItemStackContent.CODEC, HoverEvent.ItemStackContent::legacySerializer
 		);
 		public static final HoverEvent.Action<HoverEvent.EntityContent> SHOW_ENTITY = new HoverEvent.Action<>(
-			"show_entity", true, HoverEvent.EntityContent::parse, HoverEvent.EntityContent::toJson, HoverEvent.EntityContent::parse
+			"show_entity", true, HoverEvent.EntityContent.CODEC, HoverEvent.EntityContent::legacySerializer
 		);
-		private static final Map<String, HoverEvent.Action<?>> BY_NAME = (Map<String, HoverEvent.Action<?>>)Stream.of(SHOW_TEXT, SHOW_ITEM, SHOW_ENTITY)
-			.collect(ImmutableMap.toImmutableMap(HoverEvent.Action::getName, action -> action));
+		public static final Codec<HoverEvent.Action<?>> UNVALIDATED_CODEC = StringIdentifiable.createBasicCodec(
+			() -> new HoverEvent.Action[]{SHOW_TEXT, SHOW_ITEM, SHOW_ENTITY}
+		);
+		public static final Codec<HoverEvent.Action<?>> CODEC = Codecs.validate(UNVALIDATED_CODEC, HoverEvent.Action::validate);
 		private final String name;
 		private final boolean parsable;
-		private final Function<JsonElement, T> deserializer;
-		private final Function<T, JsonElement> serializer;
-		private final Function<Text, T> legacyDeserializer;
+		final Codec<HoverEvent.EventData<T>> codec;
+		final Codec<HoverEvent.EventData<T>> legacyCodec;
 
-		public Action(String name, boolean parsable, Function<JsonElement, T> deserializer, Function<T, JsonElement> serializer, Function<Text, T> legacyDeserializer) {
+		public Action(String name, boolean parsable, Codec<T> contentCodec, Function<Text, DataResult<T>> legacySerializer) {
 			this.name = name;
 			this.parsable = parsable;
-			this.deserializer = deserializer;
-			this.serializer = serializer;
-			this.legacyDeserializer = legacyDeserializer;
+			this.codec = contentCodec.<HoverEvent.EventData<T>>xmap(content -> new HoverEvent.EventData<>(this, (T)content), action -> action.value)
+				.fieldOf("contents")
+				.codec();
+			this.legacyCodec = Codec.of(
+				Encoder.error("Can't encode in legacy format"), TextCodecs.CODEC.flatMap(legacySerializer).map(text -> new HoverEvent.EventData<>(this, (T)text))
+			);
 		}
 
 		public boolean isParsable() {
 			return this.parsable;
 		}
 
-		public String getName() {
+		@Override
+		public String asString() {
 			return this.name;
-		}
-
-		@Nullable
-		public static HoverEvent.Action<?> byName(String name) {
-			return (HoverEvent.Action<?>)BY_NAME.get(name);
 		}
 
 		T cast(Object o) {
 			return (T)o;
 		}
 
-		@Nullable
-		public HoverEvent buildHoverEvent(JsonElement contents) {
-			T object = (T)this.deserializer.apply(contents);
-			return object == null ? null : new HoverEvent(this, object);
-		}
-
-		@Nullable
-		public HoverEvent buildHoverEvent(Text value) {
-			T object = (T)this.legacyDeserializer.apply(value);
-			return object == null ? null : new HoverEvent(this, object);
-		}
-
-		public JsonElement contentsToJson(Object contents) {
-			return (JsonElement)this.serializer.apply(this.cast(contents));
-		}
-
 		public String toString() {
 			return "<action " + this.name + ">";
+		}
+
+		private static DataResult<HoverEvent.Action<?>> validate(@Nullable HoverEvent.Action<?> action) {
+			if (action == null) {
+				return DataResult.error(() -> "Unknown action");
+			} else {
+				return !action.isParsable() ? DataResult.error(() -> "Action not allowed: " + action) : DataResult.success(action, Lifecycle.stable());
+			}
 		}
 	}
 
 	public static class EntityContent {
+		public static final Codec<HoverEvent.EntityContent> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Registries.ENTITY_TYPE.getCodec().fieldOf("type").forGetter(content -> content.entityType),
+						Uuids.STRICT_CODEC.fieldOf("id").forGetter(content -> content.uuid),
+						Codecs.createStrictOptionalFieldCodec(TextCodecs.CODEC, "name").forGetter(content -> content.name)
+					)
+					.apply(instance, HoverEvent.EntityContent::new)
+		);
 		public final EntityType<?> entityType;
 		public final UUID uuid;
-		@Nullable
-		public final Text name;
+		public final Optional<Text> name;
 		@Nullable
 		private List<Text> tooltip;
 
 		public EntityContent(EntityType<?> entityType, UUID uuid, @Nullable Text name) {
+			this(entityType, uuid, Optional.ofNullable(name));
+		}
+
+		public EntityContent(EntityType<?> entityType, UUID uuid, Optional<Text> name) {
 			this.entityType = entityType;
 			this.uuid = uuid;
 			this.name = name;
 		}
 
-		@Nullable
-		public static HoverEvent.EntityContent parse(JsonElement json) {
-			if (!json.isJsonObject()) {
-				return null;
-			} else {
-				JsonObject jsonObject = json.getAsJsonObject();
-				EntityType<?> entityType = Registries.ENTITY_TYPE.get(new Identifier(JsonHelper.getString(jsonObject, "type")));
-				UUID uUID = UUID.fromString(JsonHelper.getString(jsonObject, "id"));
-				Text text = Text.Serializer.fromJson(jsonObject.get("name"));
-				return new HoverEvent.EntityContent(entityType, uUID, text);
-			}
-		}
-
-		@Nullable
-		public static HoverEvent.EntityContent parse(Text text) {
+		public static DataResult<HoverEvent.EntityContent> legacySerializer(Text text) {
 			try {
 				NbtCompound nbtCompound = StringNbtReader.parse(text.getString());
-				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("name"));
+				Text text2 = Text.Serialization.fromJson(nbtCompound.getString("name"));
 				EntityType<?> entityType = Registries.ENTITY_TYPE.get(new Identifier(nbtCompound.getString("type")));
 				UUID uUID = UUID.fromString(nbtCompound.getString("id"));
-				return new HoverEvent.EntityContent(entityType, uUID, text2);
+				return DataResult.success(new HoverEvent.EntityContent(entityType, uUID, text2));
 			} catch (Exception var5) {
-				return null;
+				return DataResult.error(() -> "Failed to parse tooltip: " + var5.getMessage());
 			}
-		}
-
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("type", Registries.ENTITY_TYPE.getId(this.entityType).toString());
-			jsonObject.addProperty("id", this.uuid.toString());
-			if (this.name != null) {
-				jsonObject.add("name", Text.Serializer.toJsonTree(this.name));
-			}
-
-			return jsonObject;
 		}
 
 		public List<Text> asTooltip() {
 			if (this.tooltip == null) {
-				this.tooltip = Lists.<Text>newArrayList();
-				if (this.name != null) {
-					this.tooltip.add(this.name);
-				}
-
+				this.tooltip = new ArrayList();
+				this.name.ifPresent(this.tooltip::add);
 				this.tooltip.add(Text.translatable("gui.entity_tooltip.type", this.entityType.getName()));
 				this.tooltip.add(Text.literal(this.uuid.toString()));
 			}
@@ -224,7 +170,7 @@ public class HoverEvent {
 				return true;
 			} else if (o != null && this.getClass() == o.getClass()) {
 				HoverEvent.EntityContent entityContent = (HoverEvent.EntityContent)o;
-				return this.entityType.equals(entityContent.entityType) && this.uuid.equals(entityContent.uuid) && Objects.equals(this.name, entityContent.name);
+				return this.entityType.equals(entityContent.entityType) && this.uuid.equals(entityContent.uuid) && this.name.equals(entityContent.name);
 			} else {
 				return false;
 			}
@@ -233,26 +179,46 @@ public class HoverEvent {
 		public int hashCode() {
 			int i = this.entityType.hashCode();
 			i = 31 * i + this.uuid.hashCode();
-			return 31 * i + (this.name != null ? this.name.hashCode() : 0);
+			return 31 * i + this.name.hashCode();
 		}
 	}
 
+	static record EventData<T>(HoverEvent.Action<T> action, T value) {
+		public static final MapCodec<HoverEvent.EventData<?>> CODEC = HoverEvent.Action.CODEC
+			.dispatchMap("action", HoverEvent.EventData::action, action -> action.codec);
+		public static final MapCodec<HoverEvent.EventData<?>> LEGACY_CODEC = HoverEvent.Action.CODEC
+			.dispatchMap("action", HoverEvent.EventData::action, action -> action.legacyCodec);
+	}
+
 	public static class ItemStackContent {
+		public static final Codec<HoverEvent.ItemStackContent> ITEM_STACK_CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Registries.ITEM.getCodec().fieldOf("id").forGetter(content -> content.item),
+						Codecs.createStrictOptionalFieldCodec(Codec.INT, "count", 1).forGetter(content -> content.count),
+						Codecs.createStrictOptionalFieldCodec(StringNbtReader.STRINGIFIED_CODEC, "tag").forGetter(content -> content.nbt)
+					)
+					.apply(instance, HoverEvent.ItemStackContent::new)
+		);
+		public static final Codec<HoverEvent.ItemStackContent> CODEC = Codec.either(Registries.ITEM.getCodec(), ITEM_STACK_CODEC)
+			.xmap(either -> either.map(item -> new HoverEvent.ItemStackContent(item, 1, Optional.empty()), content -> content), Either::right);
 		private final Item item;
 		private final int count;
-		@Nullable
-		private final NbtCompound nbt;
+		private final Optional<NbtCompound> nbt;
 		@Nullable
 		private ItemStack stack;
 
 		ItemStackContent(Item item, int count, @Nullable NbtCompound nbt) {
+			this(item, count, Optional.ofNullable(nbt));
+		}
+
+		ItemStackContent(Item item, int count, Optional<NbtCompound> nbt) {
 			this.item = item;
 			this.count = count;
 			this.nbt = nbt;
 		}
 
 		public ItemStackContent(ItemStack stack) {
-			this(stack.getItem(), stack.getCount(), stack.getNbt() != null ? stack.getNbt().copy() : null);
+			this(stack.getItem(), stack.getCount(), stack.getNbt() != null ? Optional.of(stack.getNbt().copy()) : Optional.empty());
 		}
 
 		public boolean equals(Object o) {
@@ -260,7 +226,7 @@ public class HoverEvent {
 				return true;
 			} else if (o != null && this.getClass() == o.getClass()) {
 				HoverEvent.ItemStackContent itemStackContent = (HoverEvent.ItemStackContent)o;
-				return this.count == itemStackContent.count && this.item.equals(itemStackContent.item) && Objects.equals(this.nbt, itemStackContent.nbt);
+				return this.count == itemStackContent.count && this.item.equals(itemStackContent.item) && this.nbt.equals(itemStackContent.nbt);
 			} else {
 				return false;
 			}
@@ -269,65 +235,25 @@ public class HoverEvent {
 		public int hashCode() {
 			int i = this.item.hashCode();
 			i = 31 * i + this.count;
-			return 31 * i + (this.nbt != null ? this.nbt.hashCode() : 0);
+			return 31 * i + this.nbt.hashCode();
 		}
 
 		public ItemStack asStack() {
 			if (this.stack == null) {
 				this.stack = new ItemStack(this.item, this.count);
-				if (this.nbt != null) {
-					this.stack.setNbt(this.nbt);
-				}
+				this.nbt.ifPresent(this.stack::setNbt);
 			}
 
 			return this.stack;
 		}
 
-		private static HoverEvent.ItemStackContent parse(JsonElement json) {
-			if (json.isJsonPrimitive()) {
-				return new HoverEvent.ItemStackContent(Registries.ITEM.get(new Identifier(json.getAsString())), 1, null);
-			} else {
-				JsonObject jsonObject = JsonHelper.asObject(json, "item");
-				Item item = Registries.ITEM.get(new Identifier(JsonHelper.getString(jsonObject, "id")));
-				int i = JsonHelper.getInt(jsonObject, "count", 1);
-				if (jsonObject.has("tag")) {
-					String string = JsonHelper.getString(jsonObject, "tag");
-
-					try {
-						NbtCompound nbtCompound = StringNbtReader.parse(string);
-						return new HoverEvent.ItemStackContent(item, i, nbtCompound);
-					} catch (CommandSyntaxException var6) {
-						HoverEvent.LOGGER.warn("Failed to parse tag: {}", string, var6);
-					}
-				}
-
-				return new HoverEvent.ItemStackContent(item, i, null);
-			}
-		}
-
-		@Nullable
-		private static HoverEvent.ItemStackContent parse(Text text) {
+		private static DataResult<HoverEvent.ItemStackContent> legacySerializer(Text text) {
 			try {
 				NbtCompound nbtCompound = StringNbtReader.parse(text.getString());
-				return new HoverEvent.ItemStackContent(ItemStack.fromNbt(nbtCompound));
+				return DataResult.success(new HoverEvent.ItemStackContent(ItemStack.fromNbt(nbtCompound)));
 			} catch (CommandSyntaxException var2) {
-				HoverEvent.LOGGER.warn("Failed to parse item tag: {}", text, var2);
-				return null;
+				return DataResult.error(() -> "Failed to parse item tag: " + var2.getMessage());
 			}
-		}
-
-		private JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("id", Registries.ITEM.getId(this.item).toString());
-			if (this.count != 1) {
-				jsonObject.addProperty("count", this.count);
-			}
-
-			if (this.nbt != null) {
-				jsonObject.addProperty("tag", this.nbt.toString());
-			}
-
-			return jsonObject;
 		}
 	}
 }

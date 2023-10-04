@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -12,6 +13,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class KelpPlantBlock extends AbstractPlantBlock implements FluidFillable {
+	public static final MapCodec<KelpPlantBlock> CODEC = createCodec(KelpPlantBlock::new);
+
+	@Override
+	public MapCodec<KelpPlantBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected KelpPlantBlock(AbstractBlock.Settings settings) {
 		super(settings, Direction.UP, VoxelShapes.fullCube(), true);
 	}

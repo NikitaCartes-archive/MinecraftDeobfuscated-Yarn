@@ -179,7 +179,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 	 */
 	public static record Serialized(int typeId, Text name, @Nullable Text targetName) {
 		public Serialized(PacketByteBuf buf) {
-			this(buf.readVarInt(), buf.readText(), buf.readNullable(PacketByteBuf::readText));
+			this(buf.readVarInt(), buf.readUnlimitedText(), buf.readNullable(PacketByteBuf::readUnlimitedText));
 		}
 
 		public void write(PacketByteBuf buf) {

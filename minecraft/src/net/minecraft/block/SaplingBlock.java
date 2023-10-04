@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
-import net.minecraft.block.sapling.SaplingGenerator;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -13,10 +14,19 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class SaplingBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<SaplingBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(SaplingGenerator.CODEC.fieldOf("tree").forGetter(block -> block.generator), createSettingsCodec())
+				.apply(instance, SaplingBlock::new)
+	);
 	public static final IntProperty STAGE = Properties.STAGE;
 	protected static final float field_31236 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
-	private final SaplingGenerator generator;
+	protected final SaplingGenerator generator;
+
+	@Override
+	public MapCodec<? extends SaplingBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected SaplingBlock(SaplingGenerator generator, AbstractBlock.Settings settings) {
 		super(settings);

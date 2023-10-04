@@ -25,11 +25,11 @@ import net.minecraft.util.StringIdentifiable;
 
 public class CopyNbtLootFunction extends ConditionalLootFunction {
 	public static final Codec<CopyNbtLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<LootNbtProvider, List<CopyNbtLootFunction.Operation>>and(
 					instance.group(
-						LootNbtProviderTypes.CODEC.fieldOf("source").forGetter(copyNbtLootFunction -> copyNbtLootFunction.source),
-						CopyNbtLootFunction.Operation.CODEC.listOf().fieldOf("ops").forGetter(copyNbtLootFunction -> copyNbtLootFunction.operations)
+						LootNbtProviderTypes.CODEC.fieldOf("source").forGetter(function -> function.source),
+						CopyNbtLootFunction.Operation.CODEC.listOf().fieldOf("ops").forGetter(function -> function.operations)
 					)
 				)
 				.apply(instance, CopyNbtLootFunction::new)
@@ -173,17 +173,17 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	static record Path(String string, NbtPathArgumentType.NbtPath path) {
-		public static final Codec<CopyNbtLootFunction.Path> CODEC = Codec.STRING.comapFlatMap(string -> {
+		public static final Codec<CopyNbtLootFunction.Path> CODEC = Codec.STRING.comapFlatMap(path -> {
 			try {
-				return DataResult.success(parse(string));
+				return DataResult.success(parse(path));
 			} catch (CommandSyntaxException var2) {
-				return DataResult.error(() -> "Failed to parse path " + string + ": " + var2.getMessage());
+				return DataResult.error(() -> "Failed to parse path " + path + ": " + var2.getMessage());
 			}
 		}, CopyNbtLootFunction.Path::string);
 
-		public static CopyNbtLootFunction.Path parse(String string) throws CommandSyntaxException {
-			NbtPathArgumentType.NbtPath nbtPath = new NbtPathArgumentType().parse(new StringReader(string));
-			return new CopyNbtLootFunction.Path(string, nbtPath);
+		public static CopyNbtLootFunction.Path parse(String path) throws CommandSyntaxException {
+			NbtPathArgumentType.NbtPath nbtPath = new NbtPathArgumentType().parse(new StringReader(path));
+			return new CopyNbtLootFunction.Path(path, nbtPath);
 		}
 	}
 }

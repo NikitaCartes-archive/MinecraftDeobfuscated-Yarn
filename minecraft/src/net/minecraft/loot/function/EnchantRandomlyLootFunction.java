@@ -24,13 +24,13 @@ import org.slf4j.Logger;
 
 public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Codec<RegistryEntryList<Enchantment>> field_45824 = Registries.ENCHANTMENT
+	private static final Codec<RegistryEntryList<Enchantment>> ENCHANTMENT_LIST_CODEC = Registries.ENCHANTMENT
 		.createEntryCodec()
 		.listOf()
-		.xmap(RegistryEntryList::of, registryEntryList -> registryEntryList.stream().toList());
+		.xmap(RegistryEntryList::of, enchantments -> enchantments.stream().toList());
 	public static final Codec<EnchantRandomlyLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(Codecs.createStrictOptionalFieldCodec(field_45824, "enchantments").forGetter(enchantRandomlyLootFunction -> enchantRandomlyLootFunction.enchantments))
+		instance -> addConditionsField(instance)
+				.and(Codecs.createStrictOptionalFieldCodec(ENCHANTMENT_LIST_CODEC, "enchantments").forGetter(function -> function.enchantments))
 				.apply(instance, EnchantRandomlyLootFunction::new)
 	);
 	private final Optional<RegistryEntryList<Enchantment>> enchantments;
@@ -49,13 +49,13 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Random random = context.getRandom();
 		Optional<RegistryEntry<Enchantment>> optional = this.enchantments
-			.flatMap(registryEntryList -> registryEntryList.getRandom(random))
+			.flatMap(enchantments -> enchantments.getRandom(random))
 			.or(
 				() -> {
 					boolean bl = stack.isOf(Items.BOOK);
 					List<RegistryEntry.Reference<Enchantment>> list = Registries.ENCHANTMENT
 						.streamEntries()
-						.filter(reference -> ((Enchantment)reference.value()).isAvailableForRandomSelection())
+						.filter(enchantment -> ((Enchantment)enchantment.value()).isAvailableForRandomSelection())
 						.filter(enchantment -> bl || ((Enchantment)enchantment.value()).isAcceptableItem(stack))
 						.toList();
 					return Util.getRandomOrEmpty(list, random);

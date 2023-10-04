@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.LoomScreenHandler;
@@ -16,7 +17,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class LoomBlock extends HorizontalFacingBlock {
+	public static final MapCodec<LoomBlock> CODEC = createCodec(LoomBlock::new);
 	private static final Text TITLE = Text.translatable("container.loom");
+
+	@Override
+	public MapCodec<LoomBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected LoomBlock(AbstractBlock.Settings settings) {
 		super(settings);

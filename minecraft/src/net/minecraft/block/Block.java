@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import java.util.List;
 import java.util.function.Function;
@@ -87,6 +88,7 @@ import org.slf4j.Logger;
  * @see BlockState
  */
 public class Block extends AbstractBlock implements ItemConvertible {
+	public static final MapCodec<Block> CODEC = createCodec(Block::new);
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final RegistryEntry.Reference<Block> registryEntry = Registries.BLOCK.createEntry(this);
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
@@ -151,6 +153,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		object2ByteLinkedOpenHashMap.defaultReturnValue((byte)127);
 		return object2ByteLinkedOpenHashMap;
 	});
+
+	@Override
+	protected MapCodec<? extends Block> getCodec() {
+		return CODEC;
+	}
 
 	public static int getRawIdFromState(@Nullable BlockState state) {
 		if (state == null) {
@@ -573,7 +580,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * corresponding {@link net.minecraft.item.BlockItem}, such as crops, should
 	 * override this method to return the correct item stack.
 	 */
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(this);
 	}
 
@@ -613,13 +620,14 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * @see AbstractBlock#onStacksDropped
 	 * @see #onBroken
 	 */
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		this.spawnBreakParticles(world, player, pos, state);
 		if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
 			PiglinBrain.onGuardedBlockInteracted(player, false);
 		}
 
 		world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(player, state));
+		return state;
 	}
 
 	/**

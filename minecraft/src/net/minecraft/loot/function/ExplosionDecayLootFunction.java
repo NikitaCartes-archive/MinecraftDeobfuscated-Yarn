@@ -11,7 +11,7 @@ import net.minecraft.util.math.random.Random;
 
 public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 	public static final Codec<ExplosionDecayLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance).apply(instance, ExplosionDecayLootFunction::new)
+		instance -> addConditionsField(instance).apply(instance, ExplosionDecayLootFunction::new)
 	);
 
 	private ExplosionDecayLootFunction(List<LootCondition> conditions) {

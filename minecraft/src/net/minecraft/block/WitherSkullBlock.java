@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BlockEntity;
@@ -21,10 +22,16 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class WitherSkullBlock extends SkullBlock {
+	public static final MapCodec<WitherSkullBlock> CODEC = createCodec(WitherSkullBlock::new);
 	@Nullable
 	private static BlockPattern witherBossPattern;
 	@Nullable
 	private static BlockPattern witherDispenserPattern;
+
+	@Override
+	public MapCodec<WitherSkullBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected WitherSkullBlock(AbstractBlock.Settings settings) {
 		super(SkullBlock.Type.WITHER_SKELETON, settings);

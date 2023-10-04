@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -20,12 +21,15 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	protected static final VoxelShape PRESSED_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
 	protected static final VoxelShape DEFAULT_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
 	protected static final Box BOX = new Box(0.0625, 0.0, 0.0625, 0.9375, 0.25, 0.9375);
-	private final BlockSetType blockSetType;
+	protected final BlockSetType blockSetType;
 
 	protected AbstractPressurePlateBlock(AbstractBlock.Settings settings, BlockSetType blockSetType) {
 		super(settings.sounds(blockSetType.soundType()));
 		this.blockSetType = blockSetType;
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractPressurePlateBlock> getCodec();
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {

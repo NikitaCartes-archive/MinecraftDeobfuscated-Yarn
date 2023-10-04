@@ -31,7 +31,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 			this.displayName = ScreenTexts.EMPTY;
 			this.type = ScoreboardCriterion.RenderType.INTEGER;
 		} else {
-			this.displayName = buf.readText();
+			this.displayName = buf.readUnlimitedText();
 			this.type = buf.readEnumConstant(ScoreboardCriterion.RenderType.class);
 		}
 	}

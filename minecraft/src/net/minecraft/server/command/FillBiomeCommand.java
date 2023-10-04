@@ -29,7 +29,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public class FillBiomeCommand {
 	public static final SimpleCommandExceptionType UNLOADED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.pos.unloaded"));
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maximum, specified) -> Text.translatable("commands.fillbiome.toobig", maximum, specified)
+		(maximum, specified) -> Text.stringifiedTranslatable("commands.fillbiome.toobig", maximum, specified)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {

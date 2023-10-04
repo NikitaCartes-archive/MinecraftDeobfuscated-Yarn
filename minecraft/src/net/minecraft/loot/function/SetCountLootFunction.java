@@ -14,11 +14,11 @@ import net.minecraft.util.math.MathHelper;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetCountLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<LootNumberProvider, boolean>and(
 					instance.group(
-						LootNumberProviderTypes.CODEC.fieldOf("count").forGetter(setCountLootFunction -> setCountLootFunction.countRange),
-						Codec.BOOL.fieldOf("add").orElse(false).forGetter(setCountLootFunction -> setCountLootFunction.add)
+						LootNumberProviderTypes.CODEC.fieldOf("count").forGetter(function -> function.countRange),
+						Codec.BOOL.fieldOf("add").orElse(false).forGetter(function -> function.add)
 					)
 				)
 				.apply(instance, SetCountLootFunction::new)

@@ -1,25 +1,18 @@
 package net.minecraft.text;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.util.StringIdentifiable;
 
 /**
  * Represents type-specific content of text. It is stored in each tree node
  * in a text tree structure. Its implementations are immutable.
  */
 public interface TextContent {
-	/**
-	 * An empty text content.
-	 */
-	TextContent EMPTY = new TextContent() {
-		public String toString() {
-			return "empty";
-		}
-	};
-
 	/**
 	 * Visits this content. Returns a value if the visitor terminates amid
 	 * the visit, or {@code Optional.empty()} if it proceeds.
@@ -50,5 +43,14 @@ public interface TextContent {
 	 */
 	default MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		return MutableText.of(this);
+	}
+
+	TextContent.Type<?> getType();
+
+	public static record Type<T extends TextContent>(MapCodec<T> codec, String id) implements StringIdentifiable {
+		@Override
+		public String asString() {
+			return this.id;
+		}
 	}
 }

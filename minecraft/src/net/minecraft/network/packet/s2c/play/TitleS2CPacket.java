@@ -13,7 +13,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public TitleS2CPacket(PacketByteBuf buf) {
-		this.title = buf.readText();
+		this.title = buf.readUnlimitedText();
 	}
 
 	@Override

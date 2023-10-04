@@ -60,7 +60,7 @@ public class AlUtil {
 	static boolean checkAlcErrors(long deviceHandle, String sectionName) {
 		int i = ALC10.alcGetError(deviceHandle);
 		if (i != 0) {
-			LOGGER.error("{}{}: {}", sectionName, deviceHandle, getAlcErrorMessage(i));
+			LOGGER.error("{} ({}): {}", sectionName, deviceHandle, getAlcErrorMessage(i));
 			return true;
 		} else {
 			return false;

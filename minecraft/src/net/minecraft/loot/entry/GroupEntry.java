@@ -18,13 +18,13 @@ public class GroupEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(List<? extends EntryCombiner> list) {
-		return switch (list.size()) {
+	protected EntryCombiner combine(List<? extends EntryCombiner> terms) {
+		return switch (terms.size()) {
 			case 0 -> ALWAYS_TRUE;
-			case 1 -> (EntryCombiner)list.get(0);
+			case 1 -> (EntryCombiner)terms.get(0);
 			case 2 -> {
-				EntryCombiner entryCombiner = (EntryCombiner)list.get(0);
-				EntryCombiner entryCombiner2 = (EntryCombiner)list.get(1);
+				EntryCombiner entryCombiner = (EntryCombiner)terms.get(0);
+				EntryCombiner entryCombiner2 = (EntryCombiner)terms.get(1);
 				yield (context, choiceConsumer) -> {
 					entryCombiner.expand(context, choiceConsumer);
 					entryCombiner2.expand(context, choiceConsumer);
@@ -32,7 +32,7 @@ public class GroupEntry extends CombinedEntry {
 				};
 			}
 			default -> (context, lootChoiceExpander) -> {
-			for (EntryCombiner entryCombinerx : list) {
+			for (EntryCombiner entryCombinerx : terms) {
 				entryCombinerx.expand(context, lootChoiceExpander);
 			}
 

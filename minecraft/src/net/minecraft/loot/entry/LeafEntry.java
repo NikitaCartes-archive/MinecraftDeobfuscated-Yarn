@@ -20,8 +20,8 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class LeafEntry extends LootPoolEntry {
-	public static final int field_31847 = 1;
-	public static final int field_31848 = 0;
+	public static final int DEFAULT_WEIGHT = 1;
+	public static final int DEFAULT_QUALITY = 0;
 	protected final int weight;
 	protected final int quality;
 	protected final List<LootFunction> functions;
@@ -41,13 +41,13 @@ public abstract class LeafEntry extends LootPoolEntry {
 		this.compiledFunctions = LootFunctionTypes.join(functions);
 	}
 
-	protected static <T extends LeafEntry> P4<Mu<T>, Integer, Integer, List<LootCondition>, List<LootFunction>> method_53290(Instance<T> instance) {
+	protected static <T extends LeafEntry> P4<Mu<T>, Integer, Integer, List<LootCondition>, List<LootFunction>> addLeafFields(Instance<T> instance) {
 		return instance.group(
-				Codecs.createStrictOptionalFieldCodec(Codec.INT, "weight", 1).forGetter(leafEntry -> leafEntry.weight),
-				Codecs.createStrictOptionalFieldCodec(Codec.INT, "quality", 0).forGetter(leafEntry -> leafEntry.quality)
+				Codecs.createStrictOptionalFieldCodec(Codec.INT, "weight", 1).forGetter(entry -> entry.weight),
+				Codecs.createStrictOptionalFieldCodec(Codec.INT, "quality", 0).forGetter(entry -> entry.quality)
 			)
-			.and(method_53287(instance).t1())
-			.and(Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(leafEntry -> leafEntry.functions));
+			.and(addConditionsField(instance).t1())
+			.and(Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(entry -> entry.functions));
 	}
 
 	@Override

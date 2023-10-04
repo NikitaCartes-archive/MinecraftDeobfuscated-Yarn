@@ -53,6 +53,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.network.encoding.StringEncoding;
 import net.minecraft.network.encoding.VarInts;
@@ -65,6 +66,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -1080,38 +1082,43 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	/**
-	 * Reads a text from this buf. A text is represented by a JSON string with
-	 * max length {@value #MAX_TEXT_LENGTH}.
+	 * Reads a text from this buf. A text is represented as an NBT-encoded data
+	 * with {@linkplain NbtTagSizeTracker the maximum size} as {@value #MAX_READ_NBT_SIZE}.
 	 * 
 	 * @return the read text
-	 * @throws io.netty.handler.codec.DecoderException if the JSON string read
-	 * exceeds {@value #MAX_TEXT_LENGTH} in length
+	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
+	 * @throws net.minecraft.nbt.NbtSizeValidationException if the serialized text is too big
+	 * @see #readUnlimitedText()
 	 * @see #writeText(Text)
-	 * @see #MAX_TEXT_LENGTH
+	 * @see #MAX_READ_NBT_SIZE
 	 */
 	public Text readText() {
-		Text text = Text.Serializer.fromJson(this.readString(MAX_TEXT_LENGTH));
-		if (text == null) {
-			throw new DecoderException("Received unexpected null component");
-		} else {
-			return text;
-		}
+		return this.decode(NbtOps.INSTANCE, TextCodecs.CODEC, NbtTagSizeTracker.of(2097152L));
 	}
 
 	/**
-	 * Writes a text to this buf. A text is represented by a JSON string with
-	 * max length {@value #MAX_TEXT_LENGTH}.
+	 * Reads a text from this buf. A text is represented as an NBT-encoded data.
+	 * Unlike {@link #readText()}, this method can read an unlimited amount of text.
+	 * 
+	 * @return the read text
+	 * @see #readText()
+	 * @see #writeText(Text)
+	 */
+	public Text readUnlimitedText() {
+		return this.decode(NbtOps.INSTANCE, TextCodecs.CODEC);
+	}
+
+	/**
+	 * Writes a text to this buf. A text is represented as an NBT-encoded data.
 	 * 
 	 * @return this buf, for chaining
-	 * @throws io.netty.handler.codec.EncoderException if the JSON string
-	 * written exceeds {@value #MAX_TEXT_LENGTH} in length
 	 * @see #readText()
-	 * @see #MAX_TEXT_LENGTH
+	 * @see #readUnlimitedText()
 	 * 
 	 * @param text the text to write
 	 */
 	public PacketByteBuf writeText(Text text) {
-		return this.writeString(Text.Serializer.toJson(text), MAX_TEXT_LENGTH);
+		return this.encode(NbtOps.INSTANCE, TextCodecs.CODEC, text);
 	}
 
 	/**
@@ -1282,7 +1289,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @return the read compound, may be {@code null}
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
-	 * @throws RuntimeException if the compound exceeds the allowed maximum size
+	 * @throws net.minecraft.nbt.NbtSizeValidationException if the compound exceeds the allowed maximum size
 	 * @see #writeNbt(NbtCompound)
 	 * @see #readNbt(NbtTagSizeTracker)
 	 * @see #MAX_READ_NBT_SIZE
@@ -1305,7 +1312,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @return the read element, may be {@code null}
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
-	 * @throws RuntimeException if the element exceeds the allowed maximum size
+	 * @throws net.minecraft.nbt.NbtSizeValidationException if the element exceeds the allowed maximum size
 	 * @see #writeNbt(NbtElement)
 	 * @see #readNbt()
 	 */

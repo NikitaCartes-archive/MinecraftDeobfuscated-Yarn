@@ -19,13 +19,13 @@ import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.util.dynamic.Codecs;
 
 public class LootingEnchantLootFunction extends ConditionalLootFunction {
-	public static final int field_31854 = 0;
+	public static final int DEFAULT_LIMIT = 0;
 	public static final Codec<LootingEnchantLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<LootNumberProvider, int>and(
 					instance.group(
-						LootNumberProviderTypes.CODEC.fieldOf("count").forGetter(lootingEnchantLootFunction -> lootingEnchantLootFunction.countRange),
-						Codecs.createStrictOptionalFieldCodec(Codec.INT, "limit", 0).forGetter(lootingEnchantLootFunction -> lootingEnchantLootFunction.limit)
+						LootNumberProviderTypes.CODEC.fieldOf("count").forGetter(function -> function.countRange),
+						Codecs.createStrictOptionalFieldCodec(Codec.INT, "limit", 0).forGetter(function -> function.limit)
 					)
 				)
 				.apply(instance, LootingEnchantLootFunction::new)

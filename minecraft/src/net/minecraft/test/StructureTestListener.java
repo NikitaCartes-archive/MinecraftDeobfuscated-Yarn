@@ -44,7 +44,10 @@ class StructureTestListener implements TestListener {
 	@Override
 	public void onPassed(GameTestState test) {
 		this.successes++;
-		if (!test.isFlaky()) {
+		if (test.shouldRerunUntilFailed()) {
+			passTest(test, test.getTemplatePath() + " passed! (" + test.getElapsedMilliseconds() + "ms). Rerunning until failed.");
+			this.init();
+		} else if (!test.isFlaky()) {
 			passTest(test, test.getTemplatePath() + " passed! (" + test.getElapsedMilliseconds() + "ms)");
 		} else {
 			if (this.successes >= test.getRequiredSuccesses()) {
@@ -109,6 +112,7 @@ class StructureTestListener implements TestListener {
 	private void init() {
 		this.test.clearArea();
 		GameTestState gameTestState = new GameTestState(this.test.getTestFunction(), this.test.getRotation(), this.test.getWorld());
+		gameTestState.setRerunUntilFailed(this.test.shouldRerunUntilFailed());
 		gameTestState.startCountdown();
 		this.testManager.start(gameTestState);
 		gameTestState.addListener(this);

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
@@ -21,6 +22,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterloggable {
+	public static final MapCodec<SeaPickleBlock> CODEC = createCodec(SeaPickleBlock::new);
 	public static final int MAX_PICKLES = 4;
 	public static final IntProperty PICKLES = Properties.PICKLES;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -28,6 +30,11 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	protected static final VoxelShape TWO_PICKLES_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 6.0, 13.0);
 	protected static final VoxelShape THREE_PICKLES_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 6.0, 14.0);
 	protected static final VoxelShape FOUR_PICKLES_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 7.0, 14.0);
+
+	@Override
+	public MapCodec<SeaPickleBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected SeaPickleBlock(AbstractBlock.Settings settings) {
 		super(settings);

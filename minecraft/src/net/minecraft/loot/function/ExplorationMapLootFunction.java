@@ -26,20 +26,19 @@ import net.minecraft.world.gen.structure.Structure;
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	public static final TagKey<Structure> DEFAULT_DESTINATION = StructureTags.ON_TREASURE_MAPS;
 	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
-	public static final byte field_31851 = 2;
-	public static final int field_31852 = 50;
-	public static final boolean field_31853 = true;
+	public static final byte DEFAULT_ZOOM = 2;
+	public static final int DEFAULT_SEARCH_RADIUS = 50;
+	public static final boolean DEFAULT_SKIP_EXISTING_CHUNKS = true;
 	public static final Codec<ExplorationMapLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<TagKey<Structure>, MapIcon.Type, byte, int, boolean>and(
 					instance.group(
 						Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.STRUCTURE), "destination", DEFAULT_DESTINATION)
-							.forGetter(explorationMapLootFunction -> explorationMapLootFunction.destination),
-						MapIcon.Type.CODEC.optionalFieldOf("decoration", DEFAULT_DECORATION).forGetter(explorationMapLootFunction -> explorationMapLootFunction.decoration),
-						Codecs.createStrictOptionalFieldCodec(Codec.BYTE, "zoom", (byte)2).forGetter(explorationMapLootFunction -> explorationMapLootFunction.zoom),
-						Codecs.createStrictOptionalFieldCodec(Codec.INT, "search_radius", 50).forGetter(explorationMapLootFunction -> explorationMapLootFunction.searchRadius),
-						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "skip_existing_chunks", true)
-							.forGetter(explorationMapLootFunction -> explorationMapLootFunction.skipExistingChunks)
+							.forGetter(function -> function.destination),
+						MapIcon.Type.CODEC.optionalFieldOf("decoration", DEFAULT_DECORATION).forGetter(function -> function.decoration),
+						Codecs.createStrictOptionalFieldCodec(Codec.BYTE, "zoom", (byte)2).forGetter(function -> function.zoom),
+						Codecs.createStrictOptionalFieldCodec(Codec.INT, "search_radius", 50).forGetter(function -> function.searchRadius),
+						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "skip_existing_chunks", true).forGetter(function -> function.skipExistingChunks)
 					)
 				)
 				.apply(instance, ExplorationMapLootFunction::new)

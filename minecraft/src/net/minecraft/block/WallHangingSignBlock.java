@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -34,6 +36,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallHangingSignBlock extends AbstractSignBlock {
+	public static final MapCodec<WallHangingSignBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(WoodType.CODEC.fieldOf("wood_type").forGetter(AbstractSignBlock::getWoodType), createSettingsCodec())
+				.apply(instance, WallHangingSignBlock::new)
+	);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final VoxelShape NORTH_SOUTH_COLLISION_SHAPE = Block.createCuboidShape(0.0, 14.0, 6.0, 16.0, 16.0, 10.0);
 	public static final VoxelShape EAST_WEST_COLLISION_SHAPE = Block.createCuboidShape(6.0, 14.0, 0.0, 10.0, 16.0, 16.0);
@@ -43,8 +49,13 @@ public class WallHangingSignBlock extends AbstractSignBlock {
 		ImmutableMap.of(Direction.NORTH, NORTH_SOUTH_SHAPE, Direction.SOUTH, NORTH_SOUTH_SHAPE, Direction.EAST, EAST_WEST_SHAPE, Direction.WEST, EAST_WEST_SHAPE)
 	);
 
-	public WallHangingSignBlock(AbstractBlock.Settings settings, WoodType woodType) {
-		super(settings.sounds(woodType.hangingSignSoundType()), woodType);
+	@Override
+	public MapCodec<WallHangingSignBlock> getCodec() {
+		return CODEC;
+	}
+
+	public WallHangingSignBlock(WoodType woodType, AbstractBlock.Settings settings) {
+		super(woodType, settings.sounds(woodType.hangingSignSoundType()));
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 

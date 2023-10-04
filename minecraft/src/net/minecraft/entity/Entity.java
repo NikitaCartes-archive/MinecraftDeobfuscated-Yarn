@@ -2175,7 +2175,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			nbt.putUuid("UUID", this.getUuid());
 			Text text = this.getCustomName();
 			if (text != null) {
-				nbt.putString("CustomName", Text.Serializer.toJson(text));
+				nbt.putString("CustomName", Text.Serialization.toJsonString(text));
 			}
 
 			if (this.isCustomNameVisible()) {
@@ -2281,7 +2281,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					String string = nbt.getString("CustomName");
 
 					try {
-						this.setCustomName(Text.Serializer.fromJson(string));
+						this.setCustomName(Text.Serialization.fromJson(string));
 					} catch (Exception var16) {
 						LOGGER.warn("Failed to parse entity custom name {}", string, var16);
 					}

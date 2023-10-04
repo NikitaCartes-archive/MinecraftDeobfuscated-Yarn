@@ -2,6 +2,9 @@ package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -13,6 +16,11 @@ import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.command.ServerCommandSource;
 
 public record EntityNbtDataSource(String rawSelector, @Nullable EntitySelector selector) implements NbtDataSource {
+	public static final MapCodec<EntityNbtDataSource> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Codec.STRING.fieldOf("entity").forGetter(EntityNbtDataSource::rawSelector)).apply(instance, EntityNbtDataSource::new)
+	);
+	public static final NbtDataSource.Type<EntityNbtDataSource> TYPE = new NbtDataSource.Type<>(CODEC, "entity");
+
 	public EntityNbtDataSource(String rawPath) {
 		this(rawPath, parseSelector(rawPath));
 	}
@@ -35,6 +43,11 @@ public record EntityNbtDataSource(String rawSelector, @Nullable EntitySelector s
 		} else {
 			return Stream.empty();
 		}
+	}
+
+	@Override
+	public NbtDataSource.Type<?> getType() {
+		return TYPE;
 	}
 
 	public String toString() {

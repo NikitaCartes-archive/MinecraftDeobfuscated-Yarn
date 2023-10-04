@@ -33,34 +33,34 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 			ApplyBonusLootFunction.BinomialWithBonusCount.TYPE, ApplyBonusLootFunction.OreDrops.TYPE, ApplyBonusLootFunction.UniformBonusCount.TYPE
 		)
 		.collect(Collectors.toMap(ApplyBonusLootFunction.Type::id, Function.identity()));
-	static final Codec<ApplyBonusLootFunction.Type> field_45807 = Identifier.CODEC.comapFlatMap(identifier -> {
-		ApplyBonusLootFunction.Type type = (ApplyBonusLootFunction.Type)FACTORIES.get(identifier);
-		return type != null ? DataResult.success(type) : DataResult.error(() -> "No formula type with id: '" + identifier + "'");
+	static final Codec<ApplyBonusLootFunction.Type> TYPE_CODEC = Identifier.CODEC.comapFlatMap(id -> {
+		ApplyBonusLootFunction.Type type = (ApplyBonusLootFunction.Type)FACTORIES.get(id);
+		return type != null ? DataResult.success(type) : DataResult.error(() -> "No formula type with id: '" + id + "'");
 	}, ApplyBonusLootFunction.Type::id);
-	private static final MapCodec<ApplyBonusLootFunction.Formula> field_45808 = new MapCodec<ApplyBonusLootFunction.Formula>() {
-		private static final String field_45809 = "formula";
-		private static final String field_45810 = "parameters";
+	private static final MapCodec<ApplyBonusLootFunction.Formula> FORMULA_CODEC = new MapCodec<ApplyBonusLootFunction.Formula>() {
+		private static final String FORMULA_KEY = "formula";
+		private static final String PARAMETERS_KEY = "parameters";
 
 		@Override
-		public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
-			return Stream.of(dynamicOps.createString("formula"), dynamicOps.createString("parameters"));
+		public <T> Stream<T> keys(DynamicOps<T> ops) {
+			return Stream.of(ops.createString("formula"), ops.createString("parameters"));
 		}
 
 		@Override
-		public <T> DataResult<ApplyBonusLootFunction.Formula> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
-			T object = mapLike.get("formula");
+		public <T> DataResult<ApplyBonusLootFunction.Formula> decode(DynamicOps<T> ops, MapLike<T> input) {
+			T object = input.get("formula");
 			return object == null
-				? DataResult.error(() -> "Missing type for formula in: " + mapLike)
-				: ApplyBonusLootFunction.field_45807.decode(dynamicOps, object).flatMap(pair -> {
-					T objectx = (T)Objects.requireNonNullElseGet(mapLike.get("parameters"), dynamicOps::emptyMap);
-					return ((ApplyBonusLootFunction.Type)pair.getFirst()).codec().decode(dynamicOps, objectx).map(Pair::getFirst);
+				? DataResult.error(() -> "Missing type for formula in: " + input)
+				: ApplyBonusLootFunction.TYPE_CODEC.decode(ops, object).flatMap(pair -> {
+					T objectx = (T)Objects.requireNonNullElseGet(input.get("parameters"), ops::emptyMap);
+					return ((ApplyBonusLootFunction.Type)pair.getFirst()).codec().decode(ops, objectx).map(Pair::getFirst);
 				});
 		}
 
 		public <T> RecordBuilder<T> encode(ApplyBonusLootFunction.Formula formula, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
 			ApplyBonusLootFunction.Type type = formula.getType();
-			recordBuilder.add("formula", ApplyBonusLootFunction.field_45807.encodeStart(dynamicOps, type));
-			DataResult<T> dataResult = this.method_53303(type.codec(), formula, dynamicOps);
+			recordBuilder.add("formula", ApplyBonusLootFunction.TYPE_CODEC.encodeStart(dynamicOps, type));
+			DataResult<T> dataResult = this.encodeFormula(type.codec(), formula, dynamicOps);
 			if (dataResult.result().isEmpty() || !Objects.equals(dataResult.result().get(), dynamicOps.emptyMap())) {
 				recordBuilder.add("parameters", dataResult);
 			}
@@ -68,18 +68,18 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 			return recordBuilder;
 		}
 
-		private <T, F extends ApplyBonusLootFunction.Formula> DataResult<T> method_53303(
-			Codec<F> codec, ApplyBonusLootFunction.Formula formula, DynamicOps<T> dynamicOps
+		private <T, F extends ApplyBonusLootFunction.Formula> DataResult<T> encodeFormula(
+			Codec<F> typeCodec, ApplyBonusLootFunction.Formula formula, DynamicOps<T> ops
 		) {
-			return codec.encodeStart(dynamicOps, (F)formula);
+			return typeCodec.encodeStart(ops, (F)formula);
 		}
 	};
 	public static final Codec<ApplyBonusLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<RegistryEntry<Enchantment>, ApplyBonusLootFunction.Formula>and(
 					instance.group(
-						Registries.ENCHANTMENT.createEntryCodec().fieldOf("enchantment").forGetter(applyBonusLootFunction -> applyBonusLootFunction.enchantment),
-						field_45808.forGetter(applyBonusLootFunction -> applyBonusLootFunction.formula)
+						Registries.ENCHANTMENT.createEntryCodec().fieldOf("enchantment").forGetter(function -> function.enchantment),
+						FORMULA_CODEC.forGetter(function -> function.formula)
 					)
 				)
 				.apply(instance, ApplyBonusLootFunction::new)

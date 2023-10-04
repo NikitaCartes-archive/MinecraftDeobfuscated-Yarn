@@ -15,8 +15,8 @@ import net.minecraft.util.StringIdentifiable;
 
 public class CopyNameLootFunction extends ConditionalLootFunction {
 	public static final Codec<CopyNameLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(CopyNameLootFunction.Source.CODEC.fieldOf("source").forGetter(copyNameLootFunction -> copyNameLootFunction.source))
+		instance -> addConditionsField(instance)
+				.and(CopyNameLootFunction.Source.CODEC.fieldOf("source").forGetter(function -> function.source))
 				.apply(instance, CopyNameLootFunction::new)
 	);
 	private final CopyNameLootFunction.Source source;
@@ -46,7 +46,7 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(CopyNameLootFunction.Source source) {
-		return builder(list -> new CopyNameLootFunction(list, source));
+		return builder(conditions -> new CopyNameLootFunction(conditions, source));
 	}
 
 	public static enum Source implements StringIdentifiable {

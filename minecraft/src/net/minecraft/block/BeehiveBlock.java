@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
@@ -37,6 +38,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -52,10 +55,16 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class BeehiveBlock extends BlockWithEntity {
+	public static final MapCodec<BeehiveBlock> CODEC = createCodec(BeehiveBlock::new);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final IntProperty HONEY_LEVEL = Properties.HONEY_LEVEL;
 	public static final int FULL_HONEY_LEVEL = 5;
 	private static final int DROPPED_HONEYCOMB_COUNT = 3;
+
+	@Override
+	public MapCodec<BeehiveBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BeehiveBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -252,7 +261,7 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient
 			&& player.isCreative()
 			&& world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)
@@ -276,7 +285,7 @@ public class BeehiveBlock extends BlockWithEntity {
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	@Override
@@ -305,5 +314,15 @@ public class BeehiveBlock extends BlockWithEntity {
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+	}
+
+	@Override
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return state.with(FACING, rotation.rotate(state.get(FACING)));
+	}
+
+	@Override
+	public BlockState mirror(BlockState state, BlockMirror mirror) {
+		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
 }

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -14,7 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SmithingTableBlock extends CraftingTableBlock {
+	public static final MapCodec<SmithingTableBlock> CODEC = createCodec(SmithingTableBlock::new);
 	private static final Text SCREEN_TITLE = Text.translatable("container.upgrade");
+
+	@Override
+	public MapCodec<SmithingTableBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected SmithingTableBlock(AbstractBlock.Settings settings) {
 		super(settings);

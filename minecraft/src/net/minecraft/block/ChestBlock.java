@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements Waterloggable {
+	public static final MapCodec<ChestBlock> CODEC = createCodec(settings -> new ChestBlock(settings, () -> BlockEntityType.CHEST));
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final EnumProperty<ChestType> CHEST_TYPE = Properties.CHEST_TYPE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -112,6 +114,11 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			return Optional.empty();
 		}
 	};
+
+	@Override
+	public MapCodec<? extends ChestBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected ChestBlock(AbstractBlock.Settings settings, Supplier<BlockEntityType<? extends ChestBlockEntity>> supplier) {
 		super(settings, supplier);

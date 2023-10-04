@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -17,6 +19,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallBannerBlock extends AbstractBannerBlock {
+	public static final MapCodec<WallBannerBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(DyeColor.CODEC.fieldOf("color").forGetter(AbstractBannerBlock::getColor), createSettingsCodec())
+				.apply(instance, WallBannerBlock::new)
+	);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
@@ -30,6 +36,11 @@ public class WallBannerBlock extends AbstractBannerBlock {
 			Block.createCuboidShape(0.0, 0.0, 0.0, 2.0, 12.5, 16.0)
 		)
 	);
+
+	@Override
+	public MapCodec<WallBannerBlock> getCodec() {
+		return CODEC;
+	}
 
 	public WallBannerBlock(DyeColor dyeColor, AbstractBlock.Settings settings) {
 		super(dyeColor, settings);

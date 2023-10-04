@@ -3,8 +3,8 @@ package net.minecraft.client.gui.screen.world;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -32,14 +32,12 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class OptimizeWorldScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Object2IntMap<RegistryKey<World>> DIMENSION_COLORS = Util.make(
-		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), colors -> {
-			colors.put(World.OVERWORLD, -13408734);
-			colors.put(World.NETHER, -10075085);
-			colors.put(World.END, -8943531);
-			colors.defaultReturnValue(-2236963);
-		}
-	);
+	private static final ToIntFunction<RegistryKey<World>> DIMENSION_COLORS = Util.make(new Reference2IntOpenHashMap<>(), map -> {
+		map.put(World.OVERWORLD, -13408734);
+		map.put(World.NETHER, -10075085);
+		map.put(World.END, -8943531);
+		map.defaultReturnValue(-2236963);
+	});
 	private final BooleanConsumer callback;
 	private final WorldUpdater updater;
 
@@ -122,7 +120,7 @@ public class OptimizeWorldScreen extends Screen {
 
 			for (RegistryKey<World> registryKey : this.updater.getWorlds()) {
 				int n = MathHelper.floor(this.updater.getProgress(registryKey) * (float)(j - i));
-				context.fill(i + m, k, i + m + n, l, DIMENSION_COLORS.getInt(registryKey));
+				context.fill(i + m, k, i + m + n, l, DIMENSION_COLORS.applyAsInt(registryKey));
 				m += n;
 			}
 

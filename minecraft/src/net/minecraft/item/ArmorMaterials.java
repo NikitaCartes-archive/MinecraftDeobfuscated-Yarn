@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import com.mojang.serialization.Codec;
 import java.util.EnumMap;
 import java.util.function.Supplier;
 import net.minecraft.recipe.Ingredient;
@@ -53,7 +54,7 @@ public enum ArmorMaterials implements StringIdentifiable, ArmorMaterial {
 		map.put(ArmorItem.Type.HELMET, 3);
 	}), 15, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, () -> Ingredient.ofItems(Items.NETHERITE_INGOT));
 
-	public static final StringIdentifiable.EnumCodec<ArmorMaterials> CODEC = StringIdentifiable.createCodec(ArmorMaterials::values);
+	public static final Codec<ArmorMaterials> CODEC = StringIdentifiable.createCodec(ArmorMaterials::values);
 	private static final EnumMap<ArmorItem.Type, Integer> BASE_DURABILITY = Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 13);
 		map.put(ArmorItem.Type.LEGGINGS, 15);

@@ -24,16 +24,16 @@ import net.minecraft.text.Text;
 
 public class AttributeCommand {
 	private static final DynamicCommandExceptionType ENTITY_FAILED_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.translatable("commands.attribute.failed.entity", name)
+		name -> Text.stringifiedTranslatable("commands.attribute.failed.entity", name)
 	);
 	private static final Dynamic2CommandExceptionType NO_ATTRIBUTE_EXCEPTION = new Dynamic2CommandExceptionType(
-		(entityName, attributeName) -> Text.translatable("commands.attribute.failed.no_attribute", entityName, attributeName)
+		(entityName, attributeName) -> Text.stringifiedTranslatable("commands.attribute.failed.no_attribute", entityName, attributeName)
 	);
 	private static final Dynamic3CommandExceptionType NO_MODIFIER_EXCEPTION = new Dynamic3CommandExceptionType(
-		(entityName, attributeName, uuid) -> Text.translatable("commands.attribute.failed.no_modifier", attributeName, entityName, uuid)
+		(entityName, attributeName, uuid) -> Text.stringifiedTranslatable("commands.attribute.failed.no_modifier", attributeName, entityName, uuid)
 	);
 	private static final Dynamic3CommandExceptionType MODIFIER_ALREADY_PRESENT_EXCEPTION = new Dynamic3CommandExceptionType(
-		(entityName, attributeName, uuid) -> Text.translatable("commands.attribute.failed.modifier_already_present", uuid, attributeName, entityName)
+		(entityName, attributeName, uuid) -> Text.stringifiedTranslatable("commands.attribute.failed.modifier_already_present", uuid, attributeName, entityName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
@@ -252,7 +252,7 @@ public class AttributeCommand {
 			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), uuid);
 		} else {
 			double d = attributeContainer.getModifierValue(attribute, uuid);
-			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.value.get.success", uuid, getName(attribute), target.getName(), d), false);
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.value.get.success", Text.of(uuid), getName(attribute), target.getName(), d), false);
 			return (int)(d * multiplier);
 		}
 	}
@@ -278,7 +278,7 @@ public class AttributeCommand {
 			throw MODIFIER_ALREADY_PRESENT_EXCEPTION.create(target.getName(), getName(attribute), uuid);
 		} else {
 			entityAttributeInstance.addPersistentModifier(entityAttributeModifier);
-			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.add.success", uuid, getName(attribute), target.getName()), false);
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.add.success", Text.of(uuid), getName(attribute), target.getName()), false);
 			return 1;
 		}
 	}
@@ -286,7 +286,7 @@ public class AttributeCommand {
 	private static int executeModifierRemove(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, UUID uuid) throws CommandSyntaxException {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
 		if (entityAttributeInstance.tryRemoveModifier(uuid)) {
-			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.remove.success", uuid, getName(attribute), target.getName()), false);
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.remove.success", Text.of(uuid), getName(attribute), target.getName()), false);
 			return 1;
 		} else {
 			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), uuid);

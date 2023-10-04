@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.entity.player.PlayerEntity;
 import org.slf4j.Logger;
 
 public class UserCache {
@@ -68,26 +69,29 @@ public class UserCache {
 	}
 
 	private static Optional<GameProfile> findProfileByName(GameProfileRepository repository, String name) {
-		final AtomicReference<GameProfile> atomicReference = new AtomicReference();
-		ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
-			@Override
-			public void onProfileLookupSucceeded(GameProfile profile) {
-				atomicReference.set(profile);
-			}
-
-			@Override
-			public void onProfileLookupFailed(String string, Exception exception) {
-				atomicReference.set(null);
-			}
-		};
-		repository.findProfilesByNames(new String[]{name}, profileLookupCallback);
-		GameProfile gameProfile = (GameProfile)atomicReference.get();
-		if (!shouldUseRemote() && gameProfile == null) {
-			UUID uUID = Uuids.getOfflinePlayerUuid(name);
-			return Optional.of(new GameProfile(uUID, name));
+		if (!PlayerEntity.isUsernameValid(name)) {
+			return getOfflinePlayerProfile(name);
 		} else {
-			return Optional.ofNullable(gameProfile);
+			final AtomicReference<GameProfile> atomicReference = new AtomicReference();
+			ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
+				@Override
+				public void onProfileLookupSucceeded(GameProfile profile) {
+					atomicReference.set(profile);
+				}
+
+				@Override
+				public void onProfileLookupFailed(String string, Exception exception) {
+					atomicReference.set(null);
+				}
+			};
+			repository.findProfilesByNames(new String[]{name}, profileLookupCallback);
+			GameProfile gameProfile = (GameProfile)atomicReference.get();
+			return gameProfile != null ? Optional.of(gameProfile) : getOfflinePlayerProfile(name);
 		}
+	}
+
+	private static Optional<GameProfile> getOfflinePlayerProfile(String name) {
+		return shouldUseRemote() ? Optional.empty() : Optional.of(Uuids.getOfflinePlayerProfile(name));
 	}
 
 	public static void setUseRemote(boolean value) {

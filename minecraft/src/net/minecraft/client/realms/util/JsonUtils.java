@@ -23,6 +23,18 @@ public class JsonUtils {
 		}
 	}
 
+	@Nullable
+	public static <T> T getNullable(String key, JsonObject node, Function<JsonObject, T> deserializer) {
+		JsonElement jsonElement = node.get(key);
+		if (jsonElement == null || jsonElement.isJsonNull()) {
+			return null;
+		} else if (!jsonElement.isJsonObject()) {
+			throw new IllegalStateException("Required property " + key + " was not a JsonObject as espected");
+		} else {
+			return (T)deserializer.apply(jsonElement.getAsJsonObject());
+		}
+	}
+
 	public static String getString(String key, JsonObject node) {
 		String string = getStringOr(key, node, null);
 		if (string == null) {

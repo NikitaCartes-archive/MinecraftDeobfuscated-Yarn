@@ -21,7 +21,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		instance -> instance.group(
 					Codec.STRING.fieldOf("translation_key").forGetter(Decoration::translationKey),
 					Decoration.Parameter.CODEC.listOf().fieldOf("parameters").forGetter(Decoration::parameters),
-					Style.CODEC.optionalFieldOf("style", Style.EMPTY).forGetter(Decoration::style)
+					Style.Codecs.CODEC.optionalFieldOf("style", Style.EMPTY).forGetter(Decoration::style)
 				)
 				.apply(instance, Decoration::new)
 	);

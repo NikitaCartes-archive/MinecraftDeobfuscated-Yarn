@@ -12,9 +12,9 @@ public class LootContextTypes {
 	private static final BiMap<Identifier, LootContextType> MAP = HashBiMap.create();
 	public static final Codec<LootContextType> CODEC = Identifier.CODEC
 		.comapFlatMap(
-			identifier -> (DataResult)Optional.ofNullable((LootContextType)MAP.get(identifier))
+			id -> (DataResult)Optional.ofNullable((LootContextType)MAP.get(id))
 					.map(DataResult::success)
-					.orElseGet(() -> DataResult.error(() -> "No parameter set exists with id: '" + identifier + "'")),
+					.orElseGet(() -> DataResult.error(() -> "No parameter set exists with id: '" + id + "'")),
 			MAP.inverse()::get
 		);
 	public static final LootContextType EMPTY = register("empty", builder -> {

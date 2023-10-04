@@ -1,7 +1,8 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
-import net.minecraft.block.sapling.MangroveSaplingGenerator;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -21,6 +22,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class PropaguleBlock extends SaplingBlock implements Waterloggable {
+	public static final MapCodec<PropaguleBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(SaplingGenerator.CODEC.fieldOf("tree").forGetter(block -> block.generator), createSettingsCodec())
+				.apply(instance, PropaguleBlock::new)
+	);
 	public static final IntProperty AGE = Properties.AGE_4;
 	public static final int field_37589 = 4;
 	private static final VoxelShape[] SHAPES = new VoxelShape[]{
@@ -32,10 +37,14 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 	};
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty HANGING = Properties.HANGING;
-	private static final float field_38749 = 0.85F;
 
-	public PropaguleBlock(AbstractBlock.Settings settings) {
-		super(new MangroveSaplingGenerator(0.85F), settings);
+	@Override
+	public MapCodec<PropaguleBlock> getCodec() {
+		return CODEC;
+	}
+
+	public PropaguleBlock(SaplingGenerator saplingGenerator, AbstractBlock.Settings settings) {
+		super(saplingGenerator, settings);
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()

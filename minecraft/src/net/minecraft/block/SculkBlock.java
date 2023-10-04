@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.sound.SoundCategory;
@@ -11,8 +12,15 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 
 public class SculkBlock extends ExperienceDroppingBlock implements SculkSpreadable {
+	public static final MapCodec<SculkBlock> CODEC = createCodec(SculkBlock::new);
+
+	@Override
+	public MapCodec<SculkBlock> getCodec() {
+		return CODEC;
+	}
+
 	public SculkBlock(AbstractBlock.Settings settings) {
-		super(settings, ConstantIntProvider.create(1));
+		super(ConstantIntProvider.create(1), settings);
 	}
 
 	@Override

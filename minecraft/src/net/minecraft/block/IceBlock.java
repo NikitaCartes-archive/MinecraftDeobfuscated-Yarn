@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -13,6 +14,13 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class IceBlock extends TransparentBlock {
+	public static final MapCodec<IceBlock> CODEC = createCodec(IceBlock::new);
+
+	@Override
+	public MapCodec<? extends IceBlock> getCodec() {
+		return CODEC;
+	}
+
 	public IceBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -14,7 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CraftingTableBlock extends Block {
+	public static final MapCodec<CraftingTableBlock> CODEC = createCodec(CraftingTableBlock::new);
 	private static final Text TITLE = Text.translatable("container.crafting");
+
+	@Override
+	public MapCodec<? extends CraftingTableBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected CraftingTableBlock(AbstractBlock.Settings settings) {
 		super(settings);

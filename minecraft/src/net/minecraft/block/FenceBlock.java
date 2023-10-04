@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -22,7 +23,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class FenceBlock extends HorizontalConnectingBlock {
+	public static final MapCodec<FenceBlock> CODEC = createCodec(FenceBlock::new);
 	private final VoxelShape[] cullingShapes;
+
+	@Override
+	public MapCodec<FenceBlock> getCodec() {
+		return CODEC;
+	}
 
 	public FenceBlock(AbstractBlock.Settings settings) {
 		super(2.0F, 2.0F, 16.0F, 16.0F, 24.0F, settings);

@@ -3,6 +3,11 @@ package net.minecraft.text;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -14,9 +19,25 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Language;
+import net.minecraft.util.dynamic.Codecs;
 
 public class TranslatableTextContent implements TextContent {
 	public static final Object[] EMPTY_ARGUMENTS = new Object[0];
+	private static final Codec<Object> OBJECT_ARGUMENT_CODEC = Codecs.validate(Codecs.BASIC_OBJECT, TranslatableTextContent::validate);
+	private static final Codec<Object> ARGUMENT_CODEC = Codec.either(OBJECT_ARGUMENT_CODEC, TextCodecs.CODEC)
+		.xmap(
+			either -> either.map(object -> object, text -> Objects.requireNonNullElse(text.getLiteralString(), text)),
+			argument -> argument instanceof Text text ? Either.right(text) : Either.left(argument)
+		);
+	public static final MapCodec<TranslatableTextContent> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Codec.STRING.fieldOf("translate").forGetter(content -> content.key),
+					Codec.STRING.optionalFieldOf("fallback").forGetter(content -> Optional.ofNullable(content.fallback)),
+					Codecs.createStrictOptionalFieldCodec(ARGUMENT_CODEC.listOf(), "with").forGetter(content -> toOptionalList(content.args))
+				)
+				.apply(instance, TranslatableTextContent::of)
+	);
+	public static final TextContent.Type<TranslatableTextContent> TYPE = new TextContent.Type<>(CODEC, "translatable");
 	private static final StringVisitable LITERAL_PERCENT_SIGN = StringVisitable.plain("%");
 	private static final StringVisitable NULL_ARGUMENT = StringVisitable.plain("null");
 	private final String key;
@@ -28,10 +49,41 @@ public class TranslatableTextContent implements TextContent {
 	private List<StringVisitable> translations = ImmutableList.of();
 	private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
+	private static DataResult<Object> validate(@Nullable Object object) {
+		return !isPrimitive(object) ? DataResult.error(() -> "This value needs to be parsed as component") : DataResult.success(object);
+	}
+
+	/**
+	 * {@return whether {@code argument} is primitive}
+	 * 
+	 * <p>Primitives include numbers, booleans, and strings. These (along with {@code Text})
+	 * can be used as translatable text arguments; others need to be converted first.
+	 */
+	public static boolean isPrimitive(@Nullable Object argument) {
+		return argument instanceof Number || argument instanceof Boolean || argument instanceof String;
+	}
+
+	private static Optional<List<Object>> toOptionalList(Object[] args) {
+		return args.length == 0 ? Optional.empty() : Optional.of(Arrays.asList(args));
+	}
+
+	private static Object[] toArray(Optional<List<Object>> args) {
+		return (Object[])args.map(list -> list.isEmpty() ? EMPTY_ARGUMENTS : list.toArray()).orElse(EMPTY_ARGUMENTS);
+	}
+
+	private static TranslatableTextContent of(String key, Optional<String> fallback, Optional<List<Object>> args) {
+		return new TranslatableTextContent(key, (String)fallback.orElse(null), toArray(args));
+	}
+
 	public TranslatableTextContent(String key, @Nullable String fallback, Object[] args) {
 		this.key = key;
 		this.fallback = fallback;
 		this.args = args;
+	}
+
+	@Override
+	public TextContent.Type<?> getType() {
+		return TYPE;
 	}
 
 	private void updateTranslations() {
@@ -146,8 +198,8 @@ public class TranslatableTextContent implements TextContent {
 
 		for (int i = 0; i < objects.length; i++) {
 			Object object = this.args[i];
-			if (object instanceof Text) {
-				objects[i] = Texts.parse(source, (Text)object, sender, depth);
+			if (object instanceof Text text) {
+				objects[i] = Texts.parse(source, text, sender, depth);
 			} else {
 				objects[i] = object;
 			}

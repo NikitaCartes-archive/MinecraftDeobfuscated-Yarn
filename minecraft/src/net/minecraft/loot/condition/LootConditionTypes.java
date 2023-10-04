@@ -12,7 +12,7 @@ public class LootConditionTypes {
 	private static final Codec<LootCondition> BASE_CODEC = Registries.LOOT_CONDITION_TYPE
 		.getCodec()
 		.dispatch("condition", LootCondition::getType, LootConditionType::codec);
-	public static final Codec<LootCondition> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AllOfLootCondition.field_45858));
+	public static final Codec<LootCondition> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AllOfLootCondition.INLINE_CODEC));
 	public static final LootConditionType INVERTED = register("inverted", InvertedLootCondition.CODEC);
 	public static final LootConditionType ANY_OF = register("any_of", AnyOfLootCondition.CODEC);
 	public static final LootConditionType ALL_OF = register("all_of", AllOfLootCondition.CODEC);
@@ -63,15 +63,15 @@ public class LootConditionTypes {
 	 * Returns a predicate that returns true if any its element predicates
 	 * return true, as if applied by logical or.
 	 */
-	public static <T> Predicate<T> matchingAny(List<? extends Predicate<T>> list) {
-		List<Predicate<T>> list2 = List.copyOf(list);
+	public static <T> Predicate<T> matchingAny(List<? extends Predicate<T>> predicates) {
+		List<Predicate<T>> list = List.copyOf(predicates);
 
-		return switch (list2.size()) {
+		return switch (list.size()) {
 			case 0 -> predicatesx -> false;
-			case 1 -> (Predicate)list2.get(0);
-			case 2 -> ((Predicate)list2.get(0)).or((Predicate)list2.get(1));
+			case 1 -> (Predicate)list.get(0);
+			case 2 -> ((Predicate)list.get(0)).or((Predicate)list.get(1));
 			default -> operand -> {
-			for (Predicate<T> predicate : list2) {
+			for (Predicate<T> predicate : list) {
 				if (predicate.test(operand)) {
 					return true;
 				}

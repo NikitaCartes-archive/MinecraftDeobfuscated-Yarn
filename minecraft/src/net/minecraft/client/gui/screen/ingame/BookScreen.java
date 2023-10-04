@@ -337,7 +337,7 @@ public class BookScreen extends Screen {
 			NbtCompound nbtCompound = stack.getNbt();
 			return (List<String>)(nbtCompound != null && WrittenBookItem.isValid(nbtCompound)
 				? BookScreen.readPages(nbtCompound)
-				: ImmutableList.of(Text.Serializer.toJson(Text.translatable("book.invalid.tag").formatted(Formatting.DARK_RED))));
+				: ImmutableList.of(Text.Serialization.toJsonString(Text.translatable("book.invalid.tag").formatted(Formatting.DARK_RED))));
 		}
 
 		@Override
@@ -350,7 +350,7 @@ public class BookScreen extends Screen {
 			String string = (String)this.pages.get(index);
 
 			try {
-				StringVisitable stringVisitable = Text.Serializer.fromJson(string);
+				StringVisitable stringVisitable = Text.Serialization.fromJson(string);
 				if (stringVisitable != null) {
 					return stringVisitable;
 				}

@@ -1,5 +1,8 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.Entity;
@@ -24,6 +27,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class ButtonBlock extends WallMountedBlock {
+	public static final MapCodec<ButtonBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					BlockSetType.CODEC.fieldOf("block_set_type").forGetter(block -> block.blockSetType),
+					Codec.intRange(1, 1024).fieldOf("ticks_to_stay_pressed").forGetter(block -> block.pressTicks),
+					createSettingsCodec()
+				)
+				.apply(instance, ButtonBlock::new)
+	);
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private static final int field_31040 = 1;
 	private static final int field_31041 = 2;
@@ -47,14 +58,17 @@ public class ButtonBlock extends WallMountedBlock {
 	protected static final VoxelShape EAST_PRESSED_SHAPE = Block.createCuboidShape(0.0, 6.0, 5.0, 1.0, 10.0, 11.0);
 	private final BlockSetType blockSetType;
 	private final int pressTicks;
-	private final boolean wooden;
 
-	protected ButtonBlock(AbstractBlock.Settings settings, BlockSetType blockSetType, int pressTicks, boolean wooden) {
+	@Override
+	public MapCodec<ButtonBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected ButtonBlock(BlockSetType blockSetType, int pressTicks, AbstractBlock.Settings settings) {
 		super(settings.sounds(blockSetType.soundType()));
 		this.blockSetType = blockSetType;
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, BlockFace.WALL));
 		this.pressTicks = pressTicks;
-		this.wooden = wooden;
 	}
 
 	@Override
@@ -146,13 +160,13 @@ public class ButtonBlock extends WallMountedBlock {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!world.isClient && this.wooden && !(Boolean)state.get(POWERED)) {
+		if (!world.isClient && this.blockSetType.canButtonBeActivatedByArrows() && !(Boolean)state.get(POWERED)) {
 			this.tryPowerWithProjectiles(state, world, pos);
 		}
 	}
 
 	protected void tryPowerWithProjectiles(BlockState state, World world, BlockPos pos) {
-		PersistentProjectileEntity persistentProjectileEntity = this.wooden
+		PersistentProjectileEntity persistentProjectileEntity = this.blockSetType.canButtonBeActivatedByArrows()
 			? (PersistentProjectileEntity)world.getNonSpectatingEntities(
 					PersistentProjectileEntity.class, state.getOutlineShape(world, pos).getBoundingBox().offset(pos)
 				)

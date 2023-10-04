@@ -72,7 +72,7 @@ public class SoundEngine {
 
 	public void init(@Nullable String deviceSpecifier, boolean directionalAudio) {
 		this.devicePointer = openDeviceOrFallback(deviceSpecifier);
-		this.disconnectExtensionPresent = ALC10.alcIsExtensionPresent(this.devicePointer, "ALC_EXT_disconnect");
+		this.disconnectExtensionPresent = false;
 		ALCCapabilities aLCCapabilities = ALC.createCapabilities(this.devicePointer);
 		if (AlUtil.checkAlcErrors(this.devicePointer, "Get capabilities")) {
 			throw new IllegalStateException("Failed to get OpenAL capabilities");
@@ -86,23 +86,28 @@ public class SoundEngine {
 				this.contextPointer = ALC10.alcCreateContext(this.devicePointer, intBuffer);
 			}
 
-			ALC10.alcMakeContextCurrent(this.contextPointer);
-			int i = this.getMonoSourceCount();
-			int j = MathHelper.clamp((int)MathHelper.sqrt((float)i), 2, 8);
-			int k = MathHelper.clamp(i - j, 8, 255);
-			this.streamingSources = new SoundEngine.SourceSetImpl(k);
-			this.staticSources = new SoundEngine.SourceSetImpl(j);
-			ALCapabilities aLCapabilities = AL.createCapabilities(aLCCapabilities);
-			AlUtil.checkErrors("Initialization");
-			if (!aLCapabilities.AL_EXT_source_distance_model) {
-				throw new IllegalStateException("AL_EXT_source_distance_model is not supported");
+			if (AlUtil.checkAlcErrors(this.devicePointer, "Create context")) {
+				throw new IllegalStateException("Unable to create OpenAL context");
 			} else {
-				AL10.alEnable(512);
-				if (!aLCapabilities.AL_EXT_LINEAR_DISTANCE) {
-					throw new IllegalStateException("AL_EXT_LINEAR_DISTANCE is not supported");
+				ALC10.alcMakeContextCurrent(this.contextPointer);
+				int i = this.getMonoSourceCount();
+				int j = MathHelper.clamp((int)MathHelper.sqrt((float)i), 2, 8);
+				int k = MathHelper.clamp(i - j, 8, 255);
+				this.streamingSources = new SoundEngine.SourceSetImpl(k);
+				this.staticSources = new SoundEngine.SourceSetImpl(j);
+				ALCapabilities aLCapabilities = AL.createCapabilities(aLCCapabilities);
+				AlUtil.checkErrors("Initialization");
+				if (!aLCapabilities.AL_EXT_source_distance_model) {
+					throw new IllegalStateException("AL_EXT_source_distance_model is not supported");
 				} else {
-					AlUtil.checkErrors("Enable per-source distance models");
-					LOGGER.info("OpenAL initialized on device {}", this.getCurrentDeviceName());
+					AL10.alEnable(512);
+					if (!aLCapabilities.AL_EXT_LINEAR_DISTANCE) {
+						throw new IllegalStateException("AL_EXT_LINEAR_DISTANCE is not supported");
+					} else {
+						AlUtil.checkErrors("Enable per-source distance models");
+						LOGGER.info("OpenAL initialized on device {}", this.getCurrentDeviceName());
+						this.disconnectExtensionPresent = ALC10.alcIsExtensionPresent(this.devicePointer, "ALC_EXT_disconnect");
+					}
 				}
 			}
 		}

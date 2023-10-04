@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -35,13 +36,20 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable {
+	public static final MapCodec<DecoratedPotBlock> CODEC = createCodec(DecoratedPotBlock::new);
 	public static final Identifier SHERDS_DYNAMIC_DROP_ID = new Identifier("sherds");
 	private static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 	private static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
-	private static final BooleanProperty CRACKED = Properties.CRACKED;
+	public static final BooleanProperty CRACKED = Properties.CRACKED;
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+
+	@Override
+	public MapCodec<DecoratedPotBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected DecoratedPotBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -109,7 +117,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		ItemStack itemStack = player.getMainHandStack();
 		BlockState blockState = state;
 		if (itemStack.isIn(ItemTags.BREAKS_DECORATED_POTS) && !EnchantmentHelper.hasSilkTouch(itemStack)) {
@@ -117,7 +125,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 			world.setBlockState(pos, blockState, Block.NO_REDRAW);
 		}
 
-		super.onBreak(world, pos, blockState, player);
+		return super.onBreak(world, pos, blockState, player);
 	}
 
 	@Override
@@ -142,7 +150,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return world.getBlockEntity(pos) instanceof DecoratedPotBlockEntity decoratedPotBlockEntity
 			? decoratedPotBlockEntity.asStack()
 			: super.getPickStack(world, pos, state);

@@ -22,11 +22,11 @@ import net.minecraft.state.property.Property;
 
 public class CopyStateFunction extends ConditionalLootFunction {
 	public static final Codec<CopyStateFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<RegistryEntry<Block>, List<String>>and(
 					instance.group(
-						Registries.BLOCK.createEntryCodec().fieldOf("block").forGetter(copyStateFunction -> copyStateFunction.block),
-						Codec.STRING.listOf().fieldOf("properties").forGetter(copyStateFunction -> copyStateFunction.properties.stream().map(Property::getName).toList())
+						Registries.BLOCK.createEntryCodec().fieldOf("block").forGetter(function -> function.block),
+						Codec.STRING.listOf().fieldOf("properties").forGetter(function -> function.properties.stream().map(Property::getName).toList())
 					)
 				)
 				.apply(instance, CopyStateFunction::new)

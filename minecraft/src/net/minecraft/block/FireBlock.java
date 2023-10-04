@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class FireBlock extends AbstractFireBlock {
+	public static final MapCodec<FireBlock> CODEC = createCodec(FireBlock::new);
 	public static final int field_31093 = 15;
 	public static final IntProperty AGE = Properties.AGE_15;
 	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
@@ -54,6 +56,11 @@ public class FireBlock extends AbstractFireBlock {
 	private static final int field_31092 = 5;
 	private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<>();
 	private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<>();
+
+	@Override
+	public MapCodec<FireBlock> getCodec() {
+		return CODEC;
+	}
 
 	public FireBlock(AbstractBlock.Settings settings) {
 		super(settings, 1.0F);

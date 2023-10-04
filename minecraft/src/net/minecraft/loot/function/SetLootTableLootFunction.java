@@ -20,12 +20,12 @@ import net.minecraft.util.dynamic.Codecs;
 
 public class SetLootTableLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetLootTableLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<Identifier, long, RegistryEntry<BlockEntityType<?>>>and(
 					instance.group(
-						Identifier.CODEC.fieldOf("name").forGetter(setLootTableLootFunction -> setLootTableLootFunction.id),
-						Codecs.createStrictOptionalFieldCodec(Codec.LONG, "seed", 0L).forGetter(setLootTableLootFunction -> setLootTableLootFunction.seed),
-						Registries.BLOCK_ENTITY_TYPE.createEntryCodec().fieldOf("type").forGetter(setLootTableLootFunction -> setLootTableLootFunction.type)
+						Identifier.CODEC.fieldOf("name").forGetter(function -> function.id),
+						Codecs.createStrictOptionalFieldCodec(Codec.LONG, "seed", 0L).forGetter(function -> function.seed),
+						Registries.BLOCK_ENTITY_TYPE.createEntryCodec().fieldOf("type").forGetter(function -> function.type)
 					)
 				)
 				.apply(instance, SetLootTableLootFunction::new)

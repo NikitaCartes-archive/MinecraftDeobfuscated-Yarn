@@ -898,7 +898,7 @@ public final class ItemStack {
 		NbtCompound nbtCompound = this.getSubNbt("display");
 		if (nbtCompound != null && nbtCompound.contains("Name", NbtElement.STRING_TYPE)) {
 			try {
-				Text text = Text.Serializer.fromJson(nbtCompound.getString("Name"));
+				Text text = Text.Serialization.fromJson(nbtCompound.getString("Name"));
 				if (text != null) {
 					return text;
 				}
@@ -925,7 +925,7 @@ public final class ItemStack {
 	public ItemStack setCustomName(@Nullable Text name) {
 		NbtCompound nbtCompound = this.getOrCreateSubNbt("display");
 		if (name != null) {
-			nbtCompound.putString("Name", Text.Serializer.toJson(name));
+			nbtCompound.putString("Name", Text.Serialization.toJsonString(name));
 		} else {
 			nbtCompound.remove("Name");
 		}
@@ -1011,7 +1011,7 @@ public final class ItemStack {
 						String string = nbtList.getString(j);
 
 						try {
-							MutableText mutableText2 = Text.Serializer.fromJson(string);
+							MutableText mutableText2 = Text.Serialization.fromJson(string);
 							if (mutableText2 != null) {
 								list.add(Texts.setStyleIfAbsent(mutableText2, LORE_STYLE));
 							}

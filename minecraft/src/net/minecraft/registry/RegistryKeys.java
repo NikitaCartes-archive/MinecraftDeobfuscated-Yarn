@@ -1,6 +1,7 @@
 package net.minecraft.registry;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntityType;
@@ -92,6 +93,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN = of("banner_pattern");
 	public static final RegistryKey<Registry<Codec<? extends BiomeSource>>> BIOME_SOURCE = of("worldgen/biome_source");
 	public static final RegistryKey<Registry<Block>> BLOCK = of("block");
+	public static final RegistryKey<Registry<MapCodec<? extends Block>>> BLOCK_TYPE = of("block_type");
 	public static final RegistryKey<Registry<BlockEntityType<?>>> BLOCK_ENTITY_TYPE = of("block_entity_type");
 	public static final RegistryKey<Registry<BlockPredicateType<?>>> BLOCK_PREDICATE_TYPE = of("block_predicate_type");
 	public static final RegistryKey<Registry<BlockStateProviderType<?>>> BLOCK_STATE_PROVIDER_TYPE = of("worldgen/block_state_provider_type");

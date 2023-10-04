@@ -12,7 +12,7 @@ public class ParticleTypes {
 		"block", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);
 	public static final ParticleType<BlockStateParticleEffect> BLOCK_MARKER = register(
-		"block_marker", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
+		"block_marker", true, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);
 	public static final DefaultParticleType BUBBLE = register("bubble", false);
 	public static final DefaultParticleType CLOUD = register("cloud", false);

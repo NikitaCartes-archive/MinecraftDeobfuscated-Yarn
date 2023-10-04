@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
@@ -22,6 +23,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
+	public static final MapCodec<PitcherCropBlock> CODEC = createCodec(PitcherCropBlock::new);
 	public static final IntProperty AGE = Properties.AGE_4;
 	public static final int field_43240 = 4;
 	private static final int field_43241 = 3;
@@ -34,6 +36,11 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 	private static final VoxelShape[] LOWER_OUTLINE_SHAPES = new VoxelShape[]{
 		AGE_0_SHAPE, Block.createCuboidShape(3.0, -1.0, 3.0, 13.0, 14.0, 13.0), GROWN_LOWER_OUTLINE_SHAPE, GROWN_LOWER_OUTLINE_SHAPE, GROWN_LOWER_OUTLINE_SHAPE
 	};
+
+	@Override
+	public MapCodec<PitcherCropBlock> getCodec() {
+		return CODEC;
+	}
 
 	public PitcherCropBlock(AbstractBlock.Settings settings) {
 		super(settings);

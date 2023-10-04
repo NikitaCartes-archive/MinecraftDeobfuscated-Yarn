@@ -106,7 +106,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		UPDATE_LISTED((serialized, buf) -> serialized.listed = buf.readBoolean(), (buf, entry) -> buf.writeBoolean(entry.listed())),
 		UPDATE_LATENCY((serialized, buf) -> serialized.latency = buf.readVarInt(), (buf, entry) -> buf.writeVarInt(entry.latency())),
 		UPDATE_DISPLAY_NAME(
-			(serialized, buf) -> serialized.displayName = buf.readNullable(PacketByteBuf::readText),
+			(serialized, buf) -> serialized.displayName = buf.readNullable(PacketByteBuf::readUnlimitedText),
 			(buf, entry) -> buf.writeNullable(entry.displayName(), PacketByteBuf::writeText)
 		);
 

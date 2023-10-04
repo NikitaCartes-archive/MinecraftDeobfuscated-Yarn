@@ -13,8 +13,8 @@ import net.minecraft.registry.tag.TagKey;
 
 public class SetInstrumentLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetInstrumentLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(TagKey.codec(RegistryKeys.INSTRUMENT).fieldOf("options").forGetter(setInstrumentLootFunction -> setInstrumentLootFunction.options))
+		instance -> addConditionsField(instance)
+				.and(TagKey.codec(RegistryKeys.INSTRUMENT).fieldOf("options").forGetter(function -> function.options))
 				.apply(instance, SetInstrumentLootFunction::new)
 	);
 	private final TagKey<Instrument> options;

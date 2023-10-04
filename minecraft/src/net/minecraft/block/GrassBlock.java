@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.registry.RegistryKeys;
@@ -15,6 +16,13 @@ import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
 import net.minecraft.world.gen.feature.VegetationPlacedFeatures;
 
 public class GrassBlock extends SpreadableBlock implements Fertilizable {
+	public static final MapCodec<GrassBlock> CODEC = createCodec(GrassBlock::new);
+
+	@Override
+	public MapCodec<GrassBlock> getCodec() {
+		return CODEC;
+	}
+
 	public GrassBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

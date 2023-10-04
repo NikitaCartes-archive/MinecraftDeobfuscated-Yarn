@@ -763,7 +763,7 @@ public class ServerPlayNetworkHandler
 				itemStack2.setSubNbt("title", NbtString.of(title.raw()));
 			}
 
-			this.setTextToBook(pages, text -> Text.Serializer.toJson(Text.literal(text)), itemStack2);
+			this.setTextToBook(pages, text -> Text.Serialization.toJsonString(Text.literal(text)), itemStack2);
 			this.player.getInventory().setStack(slotId, itemStack2);
 		}
 	}

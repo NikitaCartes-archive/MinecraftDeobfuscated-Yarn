@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -11,12 +12,17 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertilizable, CaveVines {
+	public static final MapCodec<CaveVinesHeadBlock> CODEC = createCodec(CaveVinesHeadBlock::new);
 	private static final float GROW_CHANCE = 0.11F;
+
+	@Override
+	public MapCodec<CaveVinesHeadBlock> getCodec() {
+		return CODEC;
+	}
 
 	public CaveVinesHeadBlock(AbstractBlock.Settings settings) {
 		super(settings, Direction.DOWN, SHAPE, false, 0.1);
@@ -49,7 +55,7 @@ public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertil
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Items.GLOW_BERRIES);
 	}
 

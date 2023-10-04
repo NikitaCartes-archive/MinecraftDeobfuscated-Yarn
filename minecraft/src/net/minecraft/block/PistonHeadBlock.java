@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -21,6 +22,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class PistonHeadBlock extends FacingBlock {
+	public static final MapCodec<PistonHeadBlock> CODEC = createCodec(PistonHeadBlock::new);
 	public static final EnumProperty<PistonType> TYPE = Properties.PISTON_TYPE;
 	public static final BooleanProperty SHORT = Properties.SHORT;
 	public static final float field_31377 = 4.0F;
@@ -47,6 +49,11 @@ public class PistonHeadBlock extends FacingBlock {
 	protected static final VoxelShape SHORT_WEST_ARM_SHAPE = Block.createCuboidShape(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
 	private static final VoxelShape[] SHORT_HEAD_SHAPES = getHeadShapes(true);
 	private static final VoxelShape[] HEAD_SHAPES = getHeadShapes(false);
+
+	@Override
+	protected MapCodec<PistonHeadBlock> getCodec() {
+		return CODEC;
+	}
 
 	private static VoxelShape[] getHeadShapes(boolean shortHead) {
 		return (VoxelShape[])Arrays.stream(Direction.values()).map(direction -> getHeadShape(direction, shortHead)).toArray(VoxelShape[]::new);
@@ -91,7 +98,7 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient && player.getAbilities().creativeMode) {
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 			if (this.isAttached(state, world.getBlockState(blockPos))) {
@@ -99,7 +106,7 @@ public class PistonHeadBlock extends FacingBlock {
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	@Override
@@ -136,7 +143,7 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(state.get(TYPE) == PistonType.STICKY ? Blocks.STICKY_PISTON : Blocks.PISTON);
 	}
 

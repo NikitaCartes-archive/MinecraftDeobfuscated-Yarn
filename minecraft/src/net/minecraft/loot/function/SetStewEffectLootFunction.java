@@ -38,11 +38,8 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 		}
 	);
 	public static final Codec<SetStewEffectLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(
-					Codecs.createStrictOptionalFieldCodec(STEW_EFFECT_LIST_CODEC, "effects", List.of())
-						.forGetter(setStewEffectLootFunction -> setStewEffectLootFunction.stewEffects)
-				)
+		instance -> addConditionsField(instance)
+				.and(Codecs.createStrictOptionalFieldCodec(STEW_EFFECT_LIST_CODEC, "effects", List.of()).forGetter(function -> function.stewEffects))
 				.apply(instance, SetStewEffectLootFunction::new)
 	);
 	private final List<SetStewEffectLootFunction.StewEffect> stewEffects;

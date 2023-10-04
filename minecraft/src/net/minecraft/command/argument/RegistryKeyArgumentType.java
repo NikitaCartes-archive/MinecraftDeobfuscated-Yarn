@@ -30,13 +30,13 @@ import net.minecraft.world.gen.structure.Structure;
 public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 	private static final DynamicCommandExceptionType INVALID_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("commands.place.feature.invalid", id)
+		id -> Text.stringifiedTranslatable("commands.place.feature.invalid", id)
 	);
 	private static final DynamicCommandExceptionType INVALID_STRUCTURE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("commands.place.structure.invalid", id)
+		id -> Text.stringifiedTranslatable("commands.place.structure.invalid", id)
 	);
 	private static final DynamicCommandExceptionType INVALID_JIGSAW_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("commands.place.jigsaw.invalid", id)
+		id -> Text.stringifiedTranslatable("commands.place.jigsaw.invalid", id)
 	);
 	final RegistryKey<? extends Registry<T>> registryRef;
 

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -24,6 +25,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class BambooBlock extends Block implements Fertilizable {
+	public static final MapCodec<BambooBlock> CODEC = createCodec(BambooBlock::new);
 	protected static final float field_30997 = 3.0F;
 	protected static final float field_30998 = 5.0F;
 	protected static final float field_30999 = 1.5F;
@@ -38,6 +40,11 @@ public class BambooBlock extends Block implements Fertilizable {
 	public static final int field_31002 = 1;
 	public static final int field_31003 = 0;
 	public static final int field_31004 = 1;
+
+	@Override
+	public MapCodec<BambooBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BambooBlock(AbstractBlock.Settings settings) {
 		super(settings);

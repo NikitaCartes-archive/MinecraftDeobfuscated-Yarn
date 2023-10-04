@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
-public class HorizontalConnectingBlock extends Block implements Waterloggable {
+public abstract class HorizontalConnectingBlock extends Block implements Waterloggable {
 	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
 	public static final BooleanProperty EAST = ConnectingBlock.EAST;
 	public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
@@ -43,6 +44,9 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 			this.getShapeIndex(blockState);
 		}
 	}
+
+	@Override
+	protected abstract MapCodec<? extends HorizontalConnectingBlock> getCodec();
 
 	protected VoxelShape[] createShapes(float radius1, float radius2, float height1, float offset2, float height2) {
 		float f = 8.0F - radius1;

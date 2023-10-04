@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
@@ -28,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class AnvilBlock extends FallingBlock {
+	public static final MapCodec<AnvilBlock> CODEC = createCodec(AnvilBlock::new);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final VoxelShape BASE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
 	private static final VoxelShape X_STEP_SHAPE = Block.createCuboidShape(3.0, 4.0, 4.0, 13.0, 5.0, 12.0);
@@ -41,6 +43,11 @@ public class AnvilBlock extends FallingBlock {
 	private static final Text TITLE = Text.translatable("container.repair");
 	private static final float FALLING_BLOCK_ENTITY_DAMAGE_MULTIPLIER = 2.0F;
 	private static final int FALLING_BLOCK_ENTITY_MAX_DAMAGE = 40;
+
+	@Override
+	public MapCodec<AnvilBlock> getCodec() {
+		return CODEC;
+	}
 
 	public AnvilBlock(AbstractBlock.Settings settings) {
 		super(settings);

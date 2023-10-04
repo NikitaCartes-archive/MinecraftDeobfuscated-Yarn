@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.enums.JigsawOrientation;
@@ -19,7 +20,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class JigsawBlock extends Block implements BlockEntityProvider, OperatorBlock {
+	public static final MapCodec<JigsawBlock> CODEC = createCodec(JigsawBlock::new);
 	public static final EnumProperty<JigsawOrientation> ORIENTATION = Properties.ORIENTATION;
+
+	@Override
+	public MapCodec<JigsawBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected JigsawBlock(AbstractBlock.Settings settings) {
 		super(settings);

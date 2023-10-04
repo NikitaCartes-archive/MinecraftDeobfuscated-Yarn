@@ -19,10 +19,10 @@ import net.minecraft.world.World;
 public class ForceLoadCommand {
 	private static final int MAX_CHUNKS = 256;
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxCount, count) -> Text.translatable("commands.forceload.toobig", maxCount, count)
+		(maxCount, count) -> Text.stringifiedTranslatable("commands.forceload.toobig", maxCount, count)
 	);
 	private static final Dynamic2CommandExceptionType QUERY_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
-		(chunkPos, registryKey) -> Text.translatable("commands.forceload.query.failure", chunkPos, registryKey)
+		(chunkPos, registryKey) -> Text.stringifiedTranslatable("commands.forceload.query.failure", chunkPos, registryKey)
 	);
 	private static final SimpleCommandExceptionType ADDED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.forceload.added.failure"));
 	private static final SimpleCommandExceptionType REMOVED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(
@@ -89,7 +89,7 @@ public class ForceLoadCommand {
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		boolean bl = serverWorld.getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
-			source.sendFeedback(() -> Text.translatable("commands.forceload.query.success", chunkPos, registryKey.getValue()), false);
+			source.sendFeedback(() -> Text.translatable("commands.forceload.query.success", Text.of(chunkPos), Text.of(registryKey.getValue())), false);
 			return 1;
 		} else {
 			throw QUERY_FAILURE_EXCEPTION.create(chunkPos, registryKey.getValue());
@@ -104,12 +104,12 @@ public class ForceLoadCommand {
 		if (i > 0) {
 			String string = Joiner.on(", ").join(longSet.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
 			if (i == 1) {
-				source.sendFeedback(() -> Text.translatable("commands.forceload.list.single", registryKey.getValue(), string), false);
+				source.sendFeedback(() -> Text.translatable("commands.forceload.list.single", Text.of(registryKey.getValue()), string), false);
 			} else {
-				source.sendFeedback(() -> Text.translatable("commands.forceload.list.multiple", i, registryKey.getValue(), string), false);
+				source.sendFeedback(() -> Text.translatable("commands.forceload.list.multiple", i, Text.of(registryKey.getValue()), string), false);
 			}
 		} else {
-			source.sendError(Text.translatable("commands.forceload.added.none", registryKey.getValue()));
+			source.sendError(Text.translatable("commands.forceload.added.none", Text.of(registryKey.getValue())));
 		}
 
 		return i;
@@ -120,7 +120,7 @@ public class ForceLoadCommand {
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		LongSet longSet = serverWorld.getForcedChunks();
 		longSet.forEach(chunkPos -> serverWorld.setChunkForced(ChunkPos.getPackedX(chunkPos), ChunkPos.getPackedZ(chunkPos), false));
-		source.sendFeedback(() -> Text.translatable("commands.forceload.removed.all", registryKey.getValue()), true);
+		source.sendFeedback(() -> Text.translatable("commands.forceload.removed.all", Text.of(registryKey.getValue())), true);
 		return 0;
 	}
 
@@ -161,14 +161,19 @@ public class ForceLoadCommand {
 				} else {
 					if (r == 1) {
 						source.sendFeedback(
-							() -> Text.translatable("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos2, registryKey.getValue()), true
+							() -> Text.translatable("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", Text.of(chunkPos2), Text.of(registryKey.getValue())),
+							true
 						);
 					} else {
 						ChunkPos chunkPos3 = new ChunkPos(m, n);
 						ChunkPos chunkPos4 = new ChunkPos(o, p);
 						source.sendFeedback(
 							() -> Text.translatable(
-									"commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", chunkPos2, registryKey.getValue(), chunkPos3, chunkPos4
+									"commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple",
+									Text.of(chunkPos2),
+									Text.of(registryKey.getValue()),
+									Text.of(chunkPos3),
+									Text.of(chunkPos4)
 								),
 							true
 						);

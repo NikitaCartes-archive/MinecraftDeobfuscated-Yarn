@@ -2,17 +2,16 @@ package net.minecraft.util.collection;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.minecraft.util.Util;
 
 public class IdList<T> implements IndexedIterable<T> {
 	private int nextId;
-	private final Object2IntMap<T> idMap;
+	private final Reference2IntMap<T> idMap;
 	private final List<T> list;
 
 	public IdList() {
@@ -21,7 +20,7 @@ public class IdList<T> implements IndexedIterable<T> {
 
 	public IdList(int initialSize) {
 		this.list = Lists.<T>newArrayListWithExpectedSize(initialSize);
-		this.idMap = new Object2IntOpenCustomHashMap<>(initialSize, Util.identityHashStrategy());
+		this.idMap = new Reference2IntOpenHashMap<>(initialSize);
 		this.idMap.defaultReturnValue(-1);
 	}
 

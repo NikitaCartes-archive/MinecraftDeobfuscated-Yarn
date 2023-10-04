@@ -48,10 +48,10 @@ import net.minecraft.world.GameMode;
 public class EntitySelectorOptions {
 	private static final Map<String, EntitySelectorOptions.SelectorOption> OPTIONS = Maps.<String, EntitySelectorOptions.SelectorOption>newHashMap();
 	public static final DynamicCommandExceptionType UNKNOWN_OPTION_EXCEPTION = new DynamicCommandExceptionType(
-		option -> Text.translatable("argument.entity.options.unknown", option)
+		option -> Text.stringifiedTranslatable("argument.entity.options.unknown", option)
 	);
 	public static final DynamicCommandExceptionType INAPPLICABLE_OPTION_EXCEPTION = new DynamicCommandExceptionType(
-		option -> Text.translatable("argument.entity.options.inapplicable", option)
+		option -> Text.stringifiedTranslatable("argument.entity.options.inapplicable", option)
 	);
 	public static final SimpleCommandExceptionType NEGATIVE_DISTANCE_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("argument.entity.options.distance.negative")
@@ -63,13 +63,13 @@ public class EntitySelectorOptions {
 		Text.translatable("argument.entity.options.limit.toosmall")
 	);
 	public static final DynamicCommandExceptionType IRREVERSIBLE_SORT_EXCEPTION = new DynamicCommandExceptionType(
-		sortType -> Text.translatable("argument.entity.options.sort.irreversible", sortType)
+		sortType -> Text.stringifiedTranslatable("argument.entity.options.sort.irreversible", sortType)
 	);
 	public static final DynamicCommandExceptionType INVALID_MODE_EXCEPTION = new DynamicCommandExceptionType(
-		gameMode -> Text.translatable("argument.entity.options.mode.invalid", gameMode)
+		gameMode -> Text.stringifiedTranslatable("argument.entity.options.mode.invalid", gameMode)
 	);
 	public static final DynamicCommandExceptionType INVALID_TYPE_EXCEPTION = new DynamicCommandExceptionType(
-		entity -> Text.translatable("argument.entity.options.type.invalid", entity)
+		entity -> Text.stringifiedTranslatable("argument.entity.options.type.invalid", entity)
 	);
 
 	private static void putOption(String id, EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {

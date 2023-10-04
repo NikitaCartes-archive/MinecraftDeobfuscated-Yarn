@@ -12,13 +12,13 @@ import net.minecraft.text.Text;
 
 public class RideCommand {
 	private static final DynamicCommandExceptionType NOT_RIDING_EXCEPTION = new DynamicCommandExceptionType(
-		entity -> Text.translatable("commands.ride.not_riding", entity)
+		entity -> Text.stringifiedTranslatable("commands.ride.not_riding", entity)
 	);
 	private static final Dynamic2CommandExceptionType ALREADY_RIDING_EXCEPTION = new Dynamic2CommandExceptionType(
-		(rider, vehicle) -> Text.translatable("commands.ride.already_riding", rider, vehicle)
+		(rider, vehicle) -> Text.stringifiedTranslatable("commands.ride.already_riding", rider, vehicle)
 	);
 	private static final Dynamic2CommandExceptionType GENERIC_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
-		(rider, vehicle) -> Text.translatable("commands.ride.mount.failure.generic", rider, vehicle)
+		(rider, vehicle) -> Text.stringifiedTranslatable("commands.ride.mount.failure.generic", rider, vehicle)
 	);
 	private static final SimpleCommandExceptionType CANT_RIDE_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("commands.ride.mount.failure.cant_ride_players")

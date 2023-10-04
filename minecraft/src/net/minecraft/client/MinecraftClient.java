@@ -322,6 +322,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 * @see net.minecraft.client.util.Window#throwGlError(int, long)
 	 */
 	public static final String GL_ERROR_DIALOGUE = "Please make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).";
+	private final long field_46550 = Double.doubleToLongBits(Math.PI);
 	private final Path resourcePackDir;
 	private final CompletableFuture<com.mojang.authlib.yggdrasil.ProfileResult> gameProfileFuture;
 	private final TextureManager textureManager;
@@ -446,6 +447,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public Screen currentScreen;
 	@Nullable
 	private Overlay overlay;
+	private boolean disconnecting;
 	private Thread thread;
 	private volatile boolean running;
 	@Nullable
@@ -481,11 +483,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final CommandHistoryManager commandHistoryManager;
 	private final SymlinkFinder symlinkFinder;
 	private boolean finishedLoading;
+	private final long startTime;
+	private long uptimeInTicks;
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs args) {
 		super("Client");
 		instance = this;
+		this.startTime = System.currentTimeMillis();
 		this.runDirectory = args.directories.runDir;
 		File file = args.directories.assetDir;
 		this.resourcePackDir = args.directories.resourcePackDir.toPath();
@@ -661,6 +666,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.messageHandler.setChatDelay(this.options.getChatDelay().getValue());
 		this.abuseReportContext = AbuseReportContext.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
 		SplashOverlay.init(this);
+		this.setScreen(new MessageScreen(Text.translatable("gui.loadingMinecraft")));
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
 		ResourceReload resourceReload = this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list);
@@ -1117,33 +1123,37 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.currentScreen.removed();
 		}
 
-		if (screen == null && this.world == null) {
-			screen = new TitleScreen();
-		} else if (screen == null && this.player.isDead()) {
-			if (this.player.showsDeathScreen()) {
-				screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
-			} else {
-				this.player.requestRespawn();
-			}
-		}
-
-		this.currentScreen = screen;
-		if (this.currentScreen != null) {
-			this.currentScreen.onDisplayed();
-		}
-
-		BufferRenderer.reset();
-		if (screen != null) {
-			this.mouse.unlockCursor();
-			KeyBinding.unpressAll();
-			screen.init(this, this.window.getScaledWidth(), this.window.getScaledHeight());
-			this.skipGameRender = false;
+		if (screen == null && this.disconnecting) {
+			throw new IllegalStateException("Trying to return to in-game GUI during disconnection");
 		} else {
-			this.soundManager.resumeAll();
-			this.mouse.lockCursor();
-		}
+			if (screen == null && this.world == null) {
+				screen = new TitleScreen();
+			} else if (screen == null && this.player.isDead()) {
+				if (this.player.showsDeathScreen()) {
+					screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
+				} else {
+					this.player.requestRespawn();
+				}
+			}
 
-		this.updateWindowTitle();
+			this.currentScreen = screen;
+			if (this.currentScreen != null) {
+				this.currentScreen.onDisplayed();
+			}
+
+			BufferRenderer.reset();
+			if (screen != null) {
+				this.mouse.unlockCursor();
+				KeyBinding.unpressAll();
+				screen.init(this, this.window.getScaledWidth(), this.window.getScaledHeight());
+				this.skipGameRender = false;
+			} else {
+				this.soundManager.resumeAll();
+				this.mouse.lockCursor();
+			}
+
+			this.updateWindowTitle();
+		}
 	}
 
 	public void setOverlay(@Nullable Overlay overlay) {
@@ -1874,6 +1884,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void tick() {
+		this.uptimeInTicks++;
 		if (this.itemUseCooldown > 0) {
 			this.itemUseCooldown--;
 		}
@@ -2203,11 +2214,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.disconnect(new ProgressScreen(true));
 	}
 
-	public void disconnect(Screen screen) {
+	public void disconnect(Screen disconnectionScreen) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			this.cancelTasks();
-			clientPlayNetworkHandler.clearWorld();
+			clientPlayNetworkHandler.unloadWorld();
 		}
 
 		this.socialInteractionsManager.unloadBlockList();
@@ -2220,30 +2231,42 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.gameRenderer.reset();
 		this.interactionManager = null;
 		this.narratorManager.clear();
-		this.reset(screen);
-		if (this.world != null) {
-			if (integratedServer != null) {
-				this.profiler.push("waitForServer");
+		this.disconnecting = true;
 
-				while (!integratedServer.isStopping()) {
-					this.render(false);
+		try {
+			this.reset(disconnectionScreen);
+			if (this.world != null) {
+				if (integratedServer != null) {
+					this.profiler.push("waitForServer");
+
+					while (!integratedServer.isStopping()) {
+						this.render(false);
+					}
+
+					this.profiler.pop();
 				}
 
-				this.profiler.pop();
+				this.serverResourcePackProvider.clear();
+				this.inGameHud.clear();
+				this.integratedServerRunning = false;
 			}
 
-			this.serverResourcePackProvider.clear();
-			this.inGameHud.clear();
-			this.integratedServerRunning = false;
+			this.world = null;
+			this.setWorld(null);
+			this.player = null;
+		} finally {
+			this.disconnecting = false;
 		}
 
-		this.world = null;
-		this.setWorld(null);
-		this.player = null;
 		SkullBlockEntity.clearServices();
 	}
 
-	public void enterReconfiguration(Screen screen) {
+	public void enterReconfiguration(Screen reconfigurationScreen) {
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
+		if (clientPlayNetworkHandler != null) {
+			clientPlayNetworkHandler.clearWorld();
+		}
+
 		if (this.recorder.isActive()) {
 			this.forceStopRecorder();
 		}
@@ -2251,21 +2274,28 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.gameRenderer.reset();
 		this.interactionManager = null;
 		this.narratorManager.clear();
-		this.reset(screen);
-		this.inGameHud.clear();
-		this.serverResourcePackProvider.clear();
-		this.world = null;
-		this.setWorld(null);
-		this.player = null;
+		this.disconnecting = true;
+
+		try {
+			this.reset(reconfigurationScreen);
+			this.inGameHud.clear();
+			this.serverResourcePackProvider.clear();
+			this.world = null;
+			this.setWorld(null);
+			this.player = null;
+		} finally {
+			this.disconnecting = false;
+		}
+
 		SkullBlockEntity.clearServices();
 	}
 
-	private void reset(Screen screen) {
+	private void reset(Screen resettingScreen) {
 		this.profiler.push("forcedTick");
 		this.soundManager.stopAll();
 		this.cameraEntity = null;
 		this.integratedServerConnection = null;
-		this.setScreen(screen);
+		this.setScreen(resettingScreen);
 		this.render(false);
 		this.profiler.pop();
 	}
@@ -2454,6 +2484,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public CrashReport addDetailsToCrashReport(CrashReport report) {
 		SystemDetails systemDetails = report.getSystemDetailsSection();
 		addSystemDetailsToCrashReport(systemDetails, this, this.languageManager, this.gameVersion, this.options);
+		this.addUptimesToCrashReport(report.addElement("Uptime"));
 		if (this.world != null) {
 			this.world.addDetailsToCrashReport(report);
 		}
@@ -2473,10 +2504,22 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		addSystemDetailsToCrashReport(systemDetails, client, languageManager, version, options);
 	}
 
+	private static String formatSeconds(double seconds) {
+		return String.format(Locale.ROOT, "%.3fs", seconds);
+	}
+
+	private void addUptimesToCrashReport(CrashReportSection section) {
+		section.add("JVM uptime", (CrashCallable<String>)(() -> formatSeconds((double)ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0)));
+		section.add("Wall uptime", (CrashCallable<String>)(() -> formatSeconds((double)(System.currentTimeMillis() - this.startTime) / 1000.0)));
+		section.add("High-res time", (CrashCallable<String>)(() -> formatSeconds((double)Util.getMeasuringTimeMs() / 1000.0)));
+		section.add(
+			"Client ticks", (CrashCallable<String>)(() -> String.format(Locale.ROOT, "%d ticks / %.3fs", this.uptimeInTicks, (double)this.uptimeInTicks / 20.0))
+		);
+	}
+
 	private static SystemDetails addSystemDetailsToCrashReport(
 		SystemDetails systemDetails, @Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, GameOptions options
 	) {
-		systemDetails.addSection("JVM uptime in seconds", (Supplier<String>)(() -> String.valueOf((double)ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0)));
 		systemDetails.addSection("Launched Version", (Supplier<String>)(() -> version));
 		systemDetails.addSection("Backend library", RenderSystem::getBackendDescription);
 		systemDetails.addSection("Backend API", RenderSystem::getApiDescription);
@@ -2490,6 +2533,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		);
 		systemDetails.addSection("Using VBOs", (Supplier<String>)(() -> "Yes"));
 		systemDetails.addSection("Is Modded", (Supplier<String>)(() -> getModStatus().getMessage()));
+		systemDetails.addSection("Universe", (Supplier<String>)(() -> Long.toHexString(client.field_46550)));
 		systemDetails.addSection("Type", "Client (map_client.txt)");
 		if (options != null) {
 			if (instance != null) {

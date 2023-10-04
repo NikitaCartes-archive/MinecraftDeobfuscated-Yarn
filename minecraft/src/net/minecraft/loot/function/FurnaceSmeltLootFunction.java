@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<FurnaceSmeltLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance).apply(instance, FurnaceSmeltLootFunction::new)
+		instance -> addConditionsField(instance).apply(instance, FurnaceSmeltLootFunction::new)
 	);
 
 	private FurnaceSmeltLootFunction(List<LootCondition> conditions) {

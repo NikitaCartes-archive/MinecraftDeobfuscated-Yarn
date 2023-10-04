@@ -14,7 +14,7 @@ public record ContextLootScoreProvider(LootContext.EntityTarget target) implemen
 		instance -> instance.group(LootContext.EntityTarget.CODEC.fieldOf("target").forGetter(ContextLootScoreProvider::target))
 				.apply(instance, ContextLootScoreProvider::new)
 	);
-	public static final Codec<ContextLootScoreProvider> field_45893 = LootContext.EntityTarget.CODEC
+	public static final Codec<ContextLootScoreProvider> INLINE_CODEC = LootContext.EntityTarget.CODEC
 		.xmap(ContextLootScoreProvider::new, ContextLootScoreProvider::target);
 
 	public static LootScoreProvider create(LootContext.EntityTarget target) {

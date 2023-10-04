@@ -37,7 +37,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 				byte b = buf3.readByte();
 				byte c = buf3.readByte();
 				byte d = (byte)(buf3.readByte() & 15);
-				Text text = buf3.readNullable(PacketByteBuf::readText);
+				Text text = buf3.readNullable(PacketByteBuf::readUnlimitedText);
 				return new MapIcon(type, b, c, d, text);
 			}));
 		int i = buf.readUnsignedByte();

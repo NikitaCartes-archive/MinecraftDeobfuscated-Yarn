@@ -16,7 +16,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.block.GourdBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -387,9 +386,11 @@ public class UpgradeData {
 			@Override
 			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
 				if ((Integer)oldState.get(StemBlock.AGE) == 7) {
-					GourdBlock gourdBlock = ((StemBlock)oldState.getBlock()).getGourdBlock();
-					if (otherState.isOf(gourdBlock)) {
-						return gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);
+					Block block = oldState.isOf(Blocks.PUMPKIN_STEM) ? Blocks.PUMPKIN : Blocks.MELON;
+					if (otherState.isOf(block)) {
+						return (oldState.isOf(Blocks.PUMPKIN_STEM) ? Blocks.ATTACHED_PUMPKIN_STEM : Blocks.ATTACHED_MELON_STEM)
+							.getDefaultState()
+							.with(HorizontalFacingBlock.FACING, direction);
 					}
 				}
 

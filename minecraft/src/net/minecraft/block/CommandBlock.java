@@ -1,6 +1,9 @@
 package net.minecraft.block;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.entity.LivingEntity;
@@ -28,12 +31,20 @@ import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 public class CommandBlock extends BlockWithEntity implements OperatorBlock {
+	public static final MapCodec<CommandBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Codec.BOOL.fieldOf("automatic").forGetter(block -> block.auto), createSettingsCodec()).apply(instance, CommandBlock::new)
+	);
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty CONDITIONAL = Properties.CONDITIONAL;
 	private final boolean auto;
 
-	public CommandBlock(AbstractBlock.Settings settings, boolean auto) {
+	@Override
+	public MapCodec<CommandBlock> getCodec() {
+		return CODEC;
+	}
+
+	public CommandBlock(boolean auto, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CONDITIONAL, Boolean.valueOf(false)));
 		this.auto = auto;

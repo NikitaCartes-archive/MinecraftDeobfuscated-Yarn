@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -14,6 +16,10 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class WallSkullBlock extends AbstractSkullBlock {
+	public static final MapCodec<WallSkullBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(SkullBlock.SkullType.CODEC.fieldOf("kind").forGetter(AbstractSkullBlock::getSkullType), createSettingsCodec())
+				.apply(instance, WallSkullBlock::new)
+	);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
@@ -27,6 +33,11 @@ public class WallSkullBlock extends AbstractSkullBlock {
 			Block.createCuboidShape(8.0, 4.0, 4.0, 16.0, 12.0, 12.0)
 		)
 	);
+
+	@Override
+	public MapCodec<? extends WallSkullBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected WallSkullBlock(SkullBlock.SkullType skullType, AbstractBlock.Settings settings) {
 		super(skullType, settings);

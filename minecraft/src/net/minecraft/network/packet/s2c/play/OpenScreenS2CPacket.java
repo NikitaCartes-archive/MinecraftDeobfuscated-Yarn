@@ -22,7 +22,7 @@ public class OpenScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 	public OpenScreenS2CPacket(PacketByteBuf buf) {
 		this.syncId = buf.readVarInt();
 		this.screenHandlerId = buf.readRegistryValue(Registries.SCREEN_HANDLER);
-		this.name = buf.readText();
+		this.name = buf.readUnlimitedText();
 	}
 
 	@Override

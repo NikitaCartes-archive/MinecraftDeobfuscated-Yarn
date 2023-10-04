@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.CartographyTableScreenHandler;
@@ -15,7 +16,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CartographyTableBlock extends Block {
+	public static final MapCodec<CartographyTableBlock> CODEC = createCodec(CartographyTableBlock::new);
 	private static final Text TITLE = Text.translatable("container.cartography_table");
+
+	@Override
+	public MapCodec<CartographyTableBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected CartographyTableBlock(AbstractBlock.Settings settings) {
 		super(settings);

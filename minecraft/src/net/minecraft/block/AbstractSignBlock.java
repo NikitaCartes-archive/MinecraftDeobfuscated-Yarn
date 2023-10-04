@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -20,7 +21,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.LiteralTextContent;
+import net.minecraft.text.PlainTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -39,10 +40,13 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 	private final WoodType type;
 
-	protected AbstractSignBlock(AbstractBlock.Settings settings, WoodType type) {
+	protected AbstractSignBlock(WoodType type, AbstractBlock.Settings settings) {
 		super(settings);
 		this.type = type;
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractSignBlock> getCodec();
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
@@ -118,7 +122,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	private boolean isTextLiteralOrEmpty(PlayerEntity player, SignBlockEntity blockEntity, boolean front) {
 		SignText signText = blockEntity.getText(front);
 		return Arrays.stream(signText.getMessages(player.shouldFilterText()))
-			.allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof LiteralTextContent);
+			.allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof PlainTextContent);
 	}
 
 	public abstract float getRotationDegrees(BlockState state);

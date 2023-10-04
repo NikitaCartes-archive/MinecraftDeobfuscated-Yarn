@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -18,8 +19,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class BambooSaplingBlock extends Block implements Fertilizable {
+	public static final MapCodec<BambooSaplingBlock> CODEC = createCodec(BambooSaplingBlock::new);
 	protected static final float field_31005 = 4.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
+
+	@Override
+	public MapCodec<BambooSaplingBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BambooSaplingBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -59,7 +66,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Items.BAMBOO);
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,7 +25,13 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
 public class TntBlock extends Block {
+	public static final MapCodec<TntBlock> CODEC = createCodec(TntBlock::new);
 	public static final BooleanProperty UNSTABLE = Properties.UNSTABLE;
+
+	@Override
+	public MapCodec<TntBlock> getCodec() {
+		return CODEC;
+	}
 
 	public TntBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -50,12 +57,12 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient() && !player.isCreative() && (Boolean)state.get(UNSTABLE)) {
 			primeTnt(world, pos);
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	@Override

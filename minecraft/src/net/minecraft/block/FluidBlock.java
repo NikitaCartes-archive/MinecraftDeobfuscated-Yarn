@@ -2,6 +2,10 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +16,7 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -29,6 +34,15 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 
 public class FluidBlock extends Block implements FluidDrainable {
+	private static final Codec<FlowableFluid> FLUID_CODEC = Registries.FLUID
+		.getCodec()
+		.comapFlatMap(
+			fluid -> fluid instanceof FlowableFluid flowableFluid ? DataResult.success(flowableFluid) : DataResult.error(() -> "Not a flowing fluid: " + fluid),
+			fluid -> fluid
+		);
+	public static final MapCodec<FluidBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(FLUID_CODEC.fieldOf("fluid").forGetter(block -> block.fluid), createSettingsCodec()).apply(instance, FluidBlock::new)
+	);
 	public static final IntProperty LEVEL = Properties.LEVEL_15;
 	protected final FlowableFluid fluid;
 	private final List<FluidState> statesByLevel;
@@ -36,6 +50,11 @@ public class FluidBlock extends Block implements FluidDrainable {
 	public static final ImmutableList<Direction> FLOW_DIRECTIONS = ImmutableList.of(
 		Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
 	);
+
+	@Override
+	public MapCodec<FluidBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected FluidBlock(FlowableFluid fluid, AbstractBlock.Settings settings) {
 		super(settings);

@@ -27,7 +27,7 @@ import net.minecraft.world.GameRules;
 
 public class FillCommand {
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxCount, count) -> Text.translatable("commands.fill.toobig", maxCount, count)
+		(maxCount, count) -> Text.stringifiedTranslatable("commands.fill.toobig", maxCount, count)
 	);
 	static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.fill.failed"));

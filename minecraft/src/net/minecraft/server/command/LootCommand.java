@@ -47,10 +47,10 @@ public class LootCommand {
 		return CommandSource.suggestIdentifiers(lootManager.getIds(LootDataType.LOOT_TABLES), builder);
 	};
 	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
-		entityName -> Text.translatable("commands.drop.no_held_items", entityName)
+		entityName -> Text.stringifiedTranslatable("commands.drop.no_held_items", entityName)
 	);
 	private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(
-		entityName -> Text.translatable("commands.drop.no_loot_table", entityName)
+		entityName -> Text.stringifiedTranslatable("commands.drop.no_loot_table", entityName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -401,9 +401,11 @@ public class LootCommand {
 	private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks, Identifier lootTable) {
 		if (stacks.size() == 1) {
 			ItemStack itemStack = (ItemStack)stacks.get(0);
-			source.sendFeedback(() -> Text.translatable("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), lootTable), false);
+			source.sendFeedback(
+				() -> Text.translatable("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), Text.of(lootTable)), false
+			);
 		} else {
-			source.sendFeedback(() -> Text.translatable("commands.drop.success.multiple_with_table", stacks.size(), lootTable), false);
+			source.sendFeedback(() -> Text.translatable("commands.drop.success.multiple_with_table", stacks.size(), Text.of(lootTable)), false);
 		}
 	}
 

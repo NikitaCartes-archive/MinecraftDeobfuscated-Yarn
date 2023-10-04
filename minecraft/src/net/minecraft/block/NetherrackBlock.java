@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -8,6 +9,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class NetherrackBlock extends Block implements Fertilizable {
+	public static final MapCodec<NetherrackBlock> CODEC = createCodec(NetherrackBlock::new);
+
+	@Override
+	public MapCodec<NetherrackBlock> getCodec() {
+		return CODEC;
+	}
+
 	public NetherrackBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

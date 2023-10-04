@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -9,8 +10,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class FernBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<FernBlock> CODEC = createCodec(FernBlock::new);
 	protected static final float field_31261 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
+
+	@Override
+	public MapCodec<FernBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected FernBlock(AbstractBlock.Settings settings) {
 		super(settings);

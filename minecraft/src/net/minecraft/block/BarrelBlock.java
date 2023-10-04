@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -28,8 +29,14 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithEntity {
+	public static final MapCodec<BarrelBlock> CODEC = createCodec(BarrelBlock::new);
 	public static final DirectionProperty FACING = Properties.FACING;
 	public static final BooleanProperty OPEN = Properties.OPEN;
+
+	@Override
+	public MapCodec<BarrelBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BarrelBlock(AbstractBlock.Settings settings) {
 		super(settings);

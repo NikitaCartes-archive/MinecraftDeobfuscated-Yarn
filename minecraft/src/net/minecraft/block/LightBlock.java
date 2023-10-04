@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.function.ToIntFunction;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -21,12 +22,19 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public class LightBlock extends Block implements Waterloggable {
+	public static final MapCodec<LightBlock> CODEC = createCodec(LightBlock::new);
 	public static final int field_33722 = 15;
 	public static final IntProperty LEVEL_15 = Properties.LEVEL_15;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final ToIntFunction<BlockState> STATE_TO_LUMINANCE = state -> (Integer)state.get(LEVEL_15);
+
+	@Override
+	public MapCodec<LightBlock> getCodec() {
+		return CODEC;
+	}
 
 	public LightBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -85,7 +93,7 @@ public class LightBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return addNbtForLevel(super.getPickStack(world, pos, state), (Integer)state.get(LEVEL_15));
 	}
 

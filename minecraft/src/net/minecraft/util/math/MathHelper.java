@@ -7,6 +7,8 @@ import java.util.stream.IntStream;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 /**
  * Contains math-related helper methods. This includes {@code float}-specific extensions
@@ -31,6 +33,9 @@ public class MathHelper {
 	public static final float EPSILON = 1.0E-5F;
 	public static final float SQUARE_ROOT_OF_TWO = sqrt(2.0F);
 	private static final float DEGREES_TO_SINE_TABLE_INDEX = 10430.378F;
+	public static final Vector3f Y_AXIS = new Vector3f(0.0F, 1.0F, 0.0F);
+	public static final Vector3f X_AXIS = new Vector3f(1.0F, 0.0F, 0.0F);
+	public static final Vector3f Z_AXIS = new Vector3f(0.0F, 0.0F, 1.0F);
 	private static final float[] SINE_TABLE = Util.make(new float[65536], sineTable -> {
 		for (int ix = 0; ix < sineTable.length; ix++) {
 			sineTable[ix] = (float)Math.sin((double)ix * Math.PI * 2.0 / 65536.0);
@@ -931,6 +936,11 @@ public class MathHelper {
 				return seed + n + steps;
 			}) : IntStream.empty();
 		}
+	}
+
+	public static Quaternionf rotateAround(Vector3f axis, Quaternionf rotation, Quaternionf result) {
+		float f = axis.dot(rotation.x, rotation.y, rotation.z);
+		return result.set(axis.x * f, axis.y * f, axis.z * f, rotation.w).normalize();
 	}
 
 	static {

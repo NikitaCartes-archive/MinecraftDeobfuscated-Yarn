@@ -18,7 +18,9 @@ import net.minecraft.text.Text;
 
 public class TeamArgumentType implements ArgumentType<String> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "123");
-	private static final DynamicCommandExceptionType UNKNOWN_TEAM_EXCEPTION = new DynamicCommandExceptionType(name -> Text.translatable("team.notFound", name));
+	private static final DynamicCommandExceptionType UNKNOWN_TEAM_EXCEPTION = new DynamicCommandExceptionType(
+		name -> Text.stringifiedTranslatable("team.notFound", name)
+	);
 
 	public static TeamArgumentType team() {
 		return new TeamArgumentType();

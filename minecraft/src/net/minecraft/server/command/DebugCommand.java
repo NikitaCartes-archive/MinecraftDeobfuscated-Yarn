@@ -121,7 +121,7 @@ public class DebugCommand {
 		int j = i;
 		if (functions.size() == 1) {
 			source.sendFeedback(
-				() -> Text.translatable("commands.debug.function.success.single", j, ((CommandFunction)functions.iterator().next()).getId(), string), true
+				() -> Text.translatable("commands.debug.function.success.single", j, Text.of(((CommandFunction)functions.iterator().next()).getId()), string), true
 			);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.debug.function.success.multiple", j, functions.size(), string), true);

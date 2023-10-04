@@ -1,5 +1,8 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -18,8 +21,18 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class AmethystClusterBlock extends AmethystBlock implements Waterloggable {
+	public static final MapCodec<AmethystClusterBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Codec.FLOAT.fieldOf("height").forGetter(block -> block.height),
+					Codec.FLOAT.fieldOf("aabb_offset").forGetter(block -> block.xzOffset),
+					createSettingsCodec()
+				)
+				.apply(instance, AmethystClusterBlock::new)
+	);
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final DirectionProperty FACING = Properties.FACING;
+	private final float height;
+	private final float xzOffset;
 	protected final VoxelShape northShape;
 	protected final VoxelShape southShape;
 	protected final VoxelShape eastShape;
@@ -27,15 +40,28 @@ public class AmethystClusterBlock extends AmethystBlock implements Waterloggable
 	protected final VoxelShape upShape;
 	protected final VoxelShape downShape;
 
-	public AmethystClusterBlock(int height, int xzOffset, AbstractBlock.Settings settings) {
+	@Override
+	public MapCodec<AmethystClusterBlock> getCodec() {
+		return CODEC;
+	}
+
+	public AmethystClusterBlock(float height, float xzOffset, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, Direction.UP));
-		this.upShape = Block.createCuboidShape((double)xzOffset, 0.0, (double)xzOffset, (double)(16 - xzOffset), (double)height, (double)(16 - xzOffset));
-		this.downShape = Block.createCuboidShape((double)xzOffset, (double)(16 - height), (double)xzOffset, (double)(16 - xzOffset), 16.0, (double)(16 - xzOffset));
-		this.northShape = Block.createCuboidShape((double)xzOffset, (double)xzOffset, (double)(16 - height), (double)(16 - xzOffset), (double)(16 - xzOffset), 16.0);
-		this.southShape = Block.createCuboidShape((double)xzOffset, (double)xzOffset, 0.0, (double)(16 - xzOffset), (double)(16 - xzOffset), (double)height);
-		this.eastShape = Block.createCuboidShape(0.0, (double)xzOffset, (double)xzOffset, (double)height, (double)(16 - xzOffset), (double)(16 - xzOffset));
-		this.westShape = Block.createCuboidShape((double)(16 - height), (double)xzOffset, (double)xzOffset, 16.0, (double)(16 - xzOffset), (double)(16 - xzOffset));
+		this.upShape = Block.createCuboidShape((double)xzOffset, 0.0, (double)xzOffset, (double)(16.0F - xzOffset), (double)height, (double)(16.0F - xzOffset));
+		this.downShape = Block.createCuboidShape(
+			(double)xzOffset, (double)(16.0F - height), (double)xzOffset, (double)(16.0F - xzOffset), 16.0, (double)(16.0F - xzOffset)
+		);
+		this.northShape = Block.createCuboidShape(
+			(double)xzOffset, (double)xzOffset, (double)(16.0F - height), (double)(16.0F - xzOffset), (double)(16.0F - xzOffset), 16.0
+		);
+		this.southShape = Block.createCuboidShape((double)xzOffset, (double)xzOffset, 0.0, (double)(16.0F - xzOffset), (double)(16.0F - xzOffset), (double)height);
+		this.eastShape = Block.createCuboidShape(0.0, (double)xzOffset, (double)xzOffset, (double)height, (double)(16.0F - xzOffset), (double)(16.0F - xzOffset));
+		this.westShape = Block.createCuboidShape(
+			(double)(16.0F - height), (double)xzOffset, (double)xzOffset, 16.0, (double)(16.0F - xzOffset), (double)(16.0F - xzOffset)
+		);
+		this.height = height;
+		this.xzOffset = xzOffset;
 	}
 
 	@Override

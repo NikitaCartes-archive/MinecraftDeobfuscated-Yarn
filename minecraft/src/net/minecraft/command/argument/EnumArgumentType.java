@@ -21,7 +21,7 @@ import net.minecraft.util.StringIdentifiable;
 
 public class EnumArgumentType<T extends Enum<T> & StringIdentifiable> implements ArgumentType<T> {
 	private static final DynamicCommandExceptionType INVALID_ENUM_EXCEPTION = new DynamicCommandExceptionType(
-		value -> Text.translatable("argument.enum.invalid", value)
+		value -> Text.stringifiedTranslatable("argument.enum.invalid", value)
 	);
 	private final Codec<T> codec;
 	private final Supplier<T[]> valuesSupplier;

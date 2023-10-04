@@ -78,7 +78,7 @@ public class BlockDataObject implements DataCommandObject {
 	@Override
 	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
 		return Text.translatable(
-			"commands.data.block.get", path, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", scale), result
+			"commands.data.block.get", path.getString(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", scale), result
 		);
 	}
 }

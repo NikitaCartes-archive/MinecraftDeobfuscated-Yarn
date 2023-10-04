@@ -69,8 +69,12 @@ public class TestCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("test")
-				.then(CommandManager.literal("runthis").executes(context -> executeRunThis(context.getSource())))
-				.then(CommandManager.literal("runthese").executes(context -> executeRunThese(context.getSource())))
+				.then(
+					CommandManager.literal("runthis")
+						.executes(context -> executeRunThis(context.getSource(), false))
+						.then(CommandManager.literal("untilFailed").executes(context -> executeRunThis(context.getSource(), true)))
+				)
+				.then(CommandManager.literal("runthese").executes(context -> executeRunThese(context.getSource(), false)))
 				.then(
 					CommandManager.literal("runfailed")
 						.executes(context -> executeRerunFailed(context.getSource(), false, 0, 8))
@@ -275,7 +279,7 @@ public class TestCommand {
 		}
 	}
 
-	private static int executeRunThis(ServerCommandSource source) {
+	private static int executeRunThis(ServerCommandSource source, boolean rerunUntilFailed) {
 		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
 		BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld);
@@ -284,12 +288,12 @@ public class TestCommand {
 			return 0;
 		} else {
 			TestUtil.clearDebugMarkers(serverWorld);
-			run(serverWorld, blockPos2, null);
+			run(serverWorld, blockPos2, null, rerunUntilFailed);
 			return 1;
 		}
 	}
 
-	private static int executeRunThese(ServerCommandSource source) {
+	private static int executeRunThese(ServerCommandSource source, boolean rerunUntilFailed) {
 		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
 		Collection<BlockPos> collection = StructureTestUtil.findStructureBlocks(blockPos, 200, serverWorld);
@@ -300,16 +304,17 @@ public class TestCommand {
 			TestUtil.clearDebugMarkers(serverWorld);
 			sendMessage(source, "Running " + collection.size() + " tests...");
 			TestSet testSet = new TestSet();
-			collection.forEach(pos -> run(serverWorld, pos, testSet));
+			collection.forEach(pos -> run(serverWorld, pos, testSet, rerunUntilFailed));
 			return 1;
 		}
 	}
 
-	private static void run(ServerWorld world, BlockPos pos, @Nullable TestSet tests) {
+	private static void run(ServerWorld world, BlockPos pos, @Nullable TestSet tests, boolean rerunUntilFailed) {
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		String string = structureBlockBlockEntity.getStructurePath();
 		TestFunction testFunction = TestFunctions.getTestFunctionOrThrow(string);
 		GameTestState gameTestState = new GameTestState(testFunction, structureBlockBlockEntity.getRotation(), world);
+		gameTestState.setRerunUntilFailed(rerunUntilFailed);
 		if (tests != null) {
 			tests.add(gameTestState);
 			gameTestState.addListener(new TestCommand.Listener(world, tests));

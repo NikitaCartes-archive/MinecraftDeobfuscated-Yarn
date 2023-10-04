@@ -1,6 +1,9 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -15,12 +18,25 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class FungusBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<FungusBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					RegistryKey.createCodec(RegistryKeys.CONFIGURED_FEATURE).fieldOf("feature").forGetter(block -> block.featureKey),
+					Registries.BLOCK.getCodec().fieldOf("grows_on").forGetter(block -> block.nylium),
+					createSettingsCodec()
+				)
+				.apply(instance, FungusBlock::new)
+	);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 9.0, 12.0);
 	private static final double GROW_CHANCE = 0.4;
 	private final Block nylium;
 	private final RegistryKey<ConfiguredFeature<?, ?>> featureKey;
 
-	protected FungusBlock(AbstractBlock.Settings settings, RegistryKey<ConfiguredFeature<?, ?>> featureKey, Block nylium) {
+	@Override
+	public MapCodec<FungusBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected FungusBlock(RegistryKey<ConfiguredFeature<?, ?>> featureKey, Block nylium, AbstractBlock.Settings settings) {
 		super(settings);
 		this.featureKey = featureKey;
 		this.nylium = nylium;

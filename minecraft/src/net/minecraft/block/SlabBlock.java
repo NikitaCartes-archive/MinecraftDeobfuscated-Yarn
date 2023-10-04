@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -22,10 +23,16 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class SlabBlock extends Block implements Waterloggable {
+	public static final MapCodec<SlabBlock> CODEC = createCodec(SlabBlock::new);
 	public static final EnumProperty<SlabType> TYPE = Properties.SLAB_TYPE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	protected static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 8.0, 0.0, 16.0, 16.0, 16.0);
+
+	@Override
+	public MapCodec<? extends SlabBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SlabBlock(AbstractBlock.Settings settings) {
 		super(settings);

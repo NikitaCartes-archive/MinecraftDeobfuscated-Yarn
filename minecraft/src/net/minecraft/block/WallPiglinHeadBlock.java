@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -8,6 +9,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class WallPiglinHeadBlock extends WallSkullBlock {
+	public static final MapCodec<WallPiglinHeadBlock> CODEC = createCodec(WallPiglinHeadBlock::new);
 	private static final Map<Direction, VoxelShape> SHAPES = Maps.immutableEnumMap(
 		Map.of(
 			Direction.NORTH,
@@ -20,6 +22,11 @@ public class WallPiglinHeadBlock extends WallSkullBlock {
 			Block.createCuboidShape(8.0, 4.0, 3.0, 16.0, 12.0, 13.0)
 		)
 	);
+
+	@Override
+	public MapCodec<WallPiglinHeadBlock> getCodec() {
+		return CODEC;
+	}
 
 	public WallPiglinHeadBlock(AbstractBlock.Settings settings) {
 		super(SkullBlock.Type.PIGLIN, settings);

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,13 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class RedstoneOreBlock extends Block {
+	public static final MapCodec<RedstoneOreBlock> CODEC = createCodec(RedstoneOreBlock::new);
 	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
+
+	@Override
+	public MapCodec<RedstoneOreBlock> getCodec() {
+		return CODEC;
+	}
 
 	public RedstoneOreBlock(AbstractBlock.Settings settings) {
 		super(settings);

@@ -8,15 +8,15 @@ import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 public record ArmorTrimPattern(Identifier assetId, RegistryEntry<Item> templateItem, Text description, boolean decal) {
 	public static final Codec<ArmorTrimPattern> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("asset_id").forGetter(ArmorTrimPattern::assetId),
 					RegistryFixedCodec.of(RegistryKeys.ITEM).fieldOf("template_item").forGetter(ArmorTrimPattern::templateItem),
-					Codecs.TEXT.fieldOf("description").forGetter(ArmorTrimPattern::description),
+					TextCodecs.CODEC.fieldOf("description").forGetter(ArmorTrimPattern::description),
 					Codec.BOOL.fieldOf("decal").orElse(false).forGetter(ArmorTrimPattern::decal)
 				)
 				.apply(instance, ArmorTrimPattern::new)

@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.state.StateManager;
@@ -9,13 +11,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class PressurePlateBlock extends AbstractPressurePlateBlock {
+	public static final MapCodec<PressurePlateBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(BlockSetType.CODEC.fieldOf("block_set_type").forGetter(block -> block.blockSetType), createSettingsCodec())
+				.apply(instance, PressurePlateBlock::new)
+	);
 	public static final BooleanProperty POWERED = Properties.POWERED;
-	private final PressurePlateBlock.ActivationRule type;
 
-	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, AbstractBlock.Settings settings, BlockSetType blockSetType) {
-		super(settings, blockSetType);
+	@Override
+	public MapCodec<PressurePlateBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected PressurePlateBlock(BlockSetType type, AbstractBlock.Settings settings) {
+		super(settings, type);
 		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)));
-		this.type = type;
 	}
 
 	@Override
@@ -30,7 +39,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected int getRedstoneOutput(World world, BlockPos pos) {
-		Class class_ = switch (this.type) {
+		Class<? extends Entity> class_ = switch (this.blockSetType.pressurePlateSensitivity()) {
 			case EVERYTHING -> Entity.class;
 			case MOBS -> LivingEntity.class;
 		};
@@ -40,10 +49,5 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(POWERED);
-	}
-
-	public static enum ActivationRule {
-		EVERYTHING,
-		MOBS;
 	}
 }

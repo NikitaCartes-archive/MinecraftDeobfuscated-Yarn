@@ -17,7 +17,7 @@ import net.minecraft.world.GameMode;
 public class PublishCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.publish.failed"));
 	private static final DynamicCommandExceptionType ALREADY_PUBLISHED_EXCEPTION = new DynamicCommandExceptionType(
-		port -> Text.translatable("commands.publish.alreadyPublished", port)
+		port -> Text.stringifiedTranslatable("commands.publish.alreadyPublished", port)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

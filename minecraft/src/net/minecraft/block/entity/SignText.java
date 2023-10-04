@@ -13,12 +13,12 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public class SignText {
-	private static final Codec<Text[]> MESSAGES_CODEC = Codecs.STRINGIFIED_TEXT
+	private static final Codec<Text[]> MESSAGES_CODEC = TextCodecs.STRINGIFIED_CODEC
 		.listOf()
 		.comapFlatMap(
 			messages -> Util.decodeFixedLengthList(messages, 4).map(list -> new Text[]{(Text)list.get(0), (Text)list.get(1), (Text)list.get(2), (Text)list.get(3)}),

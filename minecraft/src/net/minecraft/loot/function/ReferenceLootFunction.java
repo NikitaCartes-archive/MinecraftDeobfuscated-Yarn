@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 public class ReferenceLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<ReferenceLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(Identifier.CODEC.fieldOf("name").forGetter(referenceLootFunction -> referenceLootFunction.name))
+		instance -> addConditionsField(instance)
+				.and(Identifier.CODEC.fieldOf("name").forGetter(function -> function.name))
 				.apply(instance, ReferenceLootFunction::new)
 	);
 	private final Identifier name;

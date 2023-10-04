@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -11,7 +12,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class RailBlock extends AbstractRailBlock {
+	public static final MapCodec<RailBlock> CODEC = createCodec(RailBlock::new);
 	public static final EnumProperty<RailShape> SHAPE = Properties.RAIL_SHAPE;
+
+	@Override
+	public MapCodec<RailBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected RailBlock(AbstractBlock.Settings settings) {
 		super(false, settings);
@@ -32,75 +39,89 @@ public class RailBlock extends AbstractRailBlock {
 
 	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		switch (rotation) {
-			case CLOCKWISE_180:
-				switch ((RailShape)state.get(SHAPE)) {
-					case ASCENDING_EAST:
-						return state.with(SHAPE, RailShape.ASCENDING_WEST);
-					case ASCENDING_WEST:
-						return state.with(SHAPE, RailShape.ASCENDING_EAST);
-					case ASCENDING_NORTH:
-						return state.with(SHAPE, RailShape.ASCENDING_SOUTH);
-					case ASCENDING_SOUTH:
-						return state.with(SHAPE, RailShape.ASCENDING_NORTH);
-					case SOUTH_EAST:
-						return state.with(SHAPE, RailShape.NORTH_WEST);
-					case SOUTH_WEST:
-						return state.with(SHAPE, RailShape.NORTH_EAST);
-					case NORTH_WEST:
-						return state.with(SHAPE, RailShape.SOUTH_EAST);
-					case NORTH_EAST:
-						return state.with(SHAPE, RailShape.SOUTH_WEST);
-				}
-			case COUNTERCLOCKWISE_90:
-				switch ((RailShape)state.get(SHAPE)) {
-					case ASCENDING_EAST:
-						return state.with(SHAPE, RailShape.ASCENDING_NORTH);
-					case ASCENDING_WEST:
-						return state.with(SHAPE, RailShape.ASCENDING_SOUTH);
-					case ASCENDING_NORTH:
-						return state.with(SHAPE, RailShape.ASCENDING_WEST);
-					case ASCENDING_SOUTH:
-						return state.with(SHAPE, RailShape.ASCENDING_EAST);
-					case SOUTH_EAST:
-						return state.with(SHAPE, RailShape.NORTH_EAST);
-					case SOUTH_WEST:
-						return state.with(SHAPE, RailShape.SOUTH_EAST);
-					case NORTH_WEST:
-						return state.with(SHAPE, RailShape.SOUTH_WEST);
-					case NORTH_EAST:
-						return state.with(SHAPE, RailShape.NORTH_WEST);
+		RailShape railShape = state.get(SHAPE);
+
+		return state.with(SHAPE, switch (rotation) {
+			case CLOCKWISE_180 -> {
+				switch (railShape) {
 					case NORTH_SOUTH:
-						return state.with(SHAPE, RailShape.EAST_WEST);
+						yield RailShape.NORTH_SOUTH;
 					case EAST_WEST:
-						return state.with(SHAPE, RailShape.NORTH_SOUTH);
-				}
-			case CLOCKWISE_90:
-				switch ((RailShape)state.get(SHAPE)) {
+						yield RailShape.EAST_WEST;
 					case ASCENDING_EAST:
-						return state.with(SHAPE, RailShape.ASCENDING_SOUTH);
+						yield RailShape.ASCENDING_WEST;
 					case ASCENDING_WEST:
-						return state.with(SHAPE, RailShape.ASCENDING_NORTH);
+						yield RailShape.ASCENDING_EAST;
 					case ASCENDING_NORTH:
-						return state.with(SHAPE, RailShape.ASCENDING_EAST);
+						yield RailShape.ASCENDING_SOUTH;
 					case ASCENDING_SOUTH:
-						return state.with(SHAPE, RailShape.ASCENDING_WEST);
+						yield RailShape.ASCENDING_NORTH;
 					case SOUTH_EAST:
-						return state.with(SHAPE, RailShape.SOUTH_WEST);
+						yield RailShape.NORTH_WEST;
 					case SOUTH_WEST:
-						return state.with(SHAPE, RailShape.NORTH_WEST);
+						yield RailShape.NORTH_EAST;
 					case NORTH_WEST:
-						return state.with(SHAPE, RailShape.NORTH_EAST);
+						yield RailShape.SOUTH_EAST;
 					case NORTH_EAST:
-						return state.with(SHAPE, RailShape.SOUTH_EAST);
-					case NORTH_SOUTH:
-						return state.with(SHAPE, RailShape.EAST_WEST);
-					case EAST_WEST:
-						return state.with(SHAPE, RailShape.NORTH_SOUTH);
+						yield RailShape.SOUTH_WEST;
+					default:
+						throw new IncompatibleClassChangeError();
 				}
-			default:
-				return state;
-		}
+			}
+			case COUNTERCLOCKWISE_90 -> {
+				switch (railShape) {
+					case NORTH_SOUTH:
+						yield RailShape.EAST_WEST;
+					case EAST_WEST:
+						yield RailShape.NORTH_SOUTH;
+					case ASCENDING_EAST:
+						yield RailShape.ASCENDING_NORTH;
+					case ASCENDING_WEST:
+						yield RailShape.ASCENDING_SOUTH;
+					case ASCENDING_NORTH:
+						yield RailShape.ASCENDING_WEST;
+					case ASCENDING_SOUTH:
+						yield RailShape.ASCENDING_EAST;
+					case SOUTH_EAST:
+						yield RailShape.NORTH_EAST;
+					case SOUTH_WEST:
+						yield RailShape.SOUTH_EAST;
+					case NORTH_WEST:
+						yield RailShape.SOUTH_WEST;
+					case NORTH_EAST:
+						yield RailShape.NORTH_WEST;
+					default:
+						throw new IncompatibleClassChangeError();
+				}
+			}
+			case CLOCKWISE_90 -> {
+				switch (railShape) {
+					case NORTH_SOUTH:
+						yield RailShape.EAST_WEST;
+					case EAST_WEST:
+						yield RailShape.NORTH_SOUTH;
+					case ASCENDING_EAST:
+						yield RailShape.ASCENDING_SOUTH;
+					case ASCENDING_WEST:
+						yield RailShape.ASCENDING_NORTH;
+					case ASCENDING_NORTH:
+						yield RailShape.ASCENDING_EAST;
+					case ASCENDING_SOUTH:
+						yield RailShape.ASCENDING_WEST;
+					case SOUTH_EAST:
+						yield RailShape.SOUTH_WEST;
+					case SOUTH_WEST:
+						yield RailShape.NORTH_WEST;
+					case NORTH_WEST:
+						yield RailShape.NORTH_EAST;
+					case NORTH_EAST:
+						yield RailShape.SOUTH_EAST;
+					default:
+						throw new IncompatibleClassChangeError();
+				}
+			}
+			default -> railShape;
+		});
 	}
 
 	@Override

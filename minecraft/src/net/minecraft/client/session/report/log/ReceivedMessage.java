@@ -14,6 +14,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.network.message.MessageTrustStatus;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -141,7 +142,7 @@ public interface ReceivedMessage extends ChatLogEntry {
 	public static record GameMessage(Text message, Instant timestamp) implements ReceivedMessage {
 		public static final Codec<ReceivedMessage.GameMessage> GAME_MESSAGE_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.TEXT.fieldOf("message").forGetter(ReceivedMessage.GameMessage::message),
+						TextCodecs.CODEC.fieldOf("message").forGetter(ReceivedMessage.GameMessage::message),
 						Codecs.INSTANT.fieldOf("time_stamp").forGetter(ReceivedMessage.GameMessage::timestamp)
 					)
 					.apply(instance, ReceivedMessage.GameMessage::new)

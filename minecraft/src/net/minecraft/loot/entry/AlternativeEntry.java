@@ -21,13 +21,13 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(List<? extends EntryCombiner> list) {
-		return switch (list.size()) {
+	protected EntryCombiner combine(List<? extends EntryCombiner> terms) {
+		return switch (terms.size()) {
 			case 0 -> ALWAYS_FALSE;
-			case 1 -> (EntryCombiner)list.get(0);
-			case 2 -> ((EntryCombiner)list.get(0)).or((EntryCombiner)list.get(1));
+			case 1 -> (EntryCombiner)terms.get(0);
+			case 2 -> ((EntryCombiner)terms.get(0)).or((EntryCombiner)terms.get(1));
 			default -> (context, lootChoiceExpander) -> {
-			for (EntryCombiner entryCombiner : list) {
+			for (EntryCombiner entryCombiner : terms) {
 				if (entryCombiner.expand(context, lootChoiceExpander)) {
 					return true;
 				}

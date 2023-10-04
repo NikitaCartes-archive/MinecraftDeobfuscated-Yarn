@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -10,10 +11,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class EndGatewayBlock extends BlockWithEntity {
+	public static final MapCodec<EndGatewayBlock> CODEC = createCodec(EndGatewayBlock::new);
+
+	@Override
+	public MapCodec<EndGatewayBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected EndGatewayBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
@@ -57,7 +65,7 @@ public class EndGatewayBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;
 	}
 

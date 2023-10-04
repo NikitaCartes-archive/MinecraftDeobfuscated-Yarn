@@ -20,11 +20,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
-public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
+public class SnowGolemPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
 	private final BlockRenderManager blockRenderManager;
 	private final ItemRenderer itemRenderer;
 
-	public SnowmanPumpkinFeatureRenderer(
+	public SnowGolemPumpkinFeatureRenderer(
 		FeatureRendererContext<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> context, BlockRenderManager blockRenderManager, ItemRenderer itemRenderer
 	) {
 		super(context);

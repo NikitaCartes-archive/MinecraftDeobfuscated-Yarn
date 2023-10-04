@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -39,6 +41,9 @@ import net.minecraft.world.WorldEvents;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvider {
+	public static final MapCodec<BedBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(DyeColor.CODEC.fieldOf("color").forGetter(BedBlock::getColor), createSettingsCodec()).apply(instance, BedBlock::new)
+	);
 	public static final EnumProperty<BedPart> PART = Properties.BED_PART;
 	public static final BooleanProperty OCCUPIED = Properties.OCCUPIED;
 	protected static final int field_31009 = 9;
@@ -53,6 +58,11 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	protected static final VoxelShape WEST_SHAPE = VoxelShapes.union(TOP_SHAPE, LEG_1_SHAPE, LEG_2_SHAPE);
 	protected static final VoxelShape EAST_SHAPE = VoxelShapes.union(TOP_SHAPE, LEG_3_SHAPE, LEG_4_SHAPE);
 	private final DyeColor color;
+
+	@Override
+	public MapCodec<BedBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BedBlock(DyeColor color, AbstractBlock.Settings settings) {
 		super(settings);
@@ -171,7 +181,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient && player.isCreative()) {
 			BedPart bedPart = state.get(PART);
 			if (bedPart == BedPart.FOOT) {
@@ -184,7 +194,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	@Nullable

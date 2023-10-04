@@ -1,8 +1,11 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -12,11 +15,20 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class CoralBlockBlock extends Block {
+	public static final MapCodec<Block> DEAD_FIELD = Registries.BLOCK.getCodec().fieldOf("dead");
+	public static final MapCodec<CoralBlockBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(DEAD_FIELD.forGetter(block -> block.deadCoralBlock), createSettingsCodec()).apply(instance, CoralBlockBlock::new)
+	);
 	private final Block deadCoralBlock;
 
 	public CoralBlockBlock(Block deadCoralBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.deadCoralBlock = deadCoralBlock;
+	}
+
+	@Override
+	public MapCodec<CoralBlockBlock> getCodec() {
+		return CODEC;
 	}
 
 	@Override

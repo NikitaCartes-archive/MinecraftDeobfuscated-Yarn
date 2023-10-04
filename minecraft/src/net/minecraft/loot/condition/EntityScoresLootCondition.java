@@ -15,11 +15,11 @@ import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 
-public record EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget target) implements LootCondition {
+public record EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget entity) implements LootCondition {
 	public static final Codec<EntityScoresLootCondition> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.unboundedMap(Codec.STRING, BoundedIntUnaryOperator.CODEC).fieldOf("scores").forGetter(EntityScoresLootCondition::scores),
-					LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(EntityScoresLootCondition::target)
+					LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(EntityScoresLootCondition::entity)
 				)
 				.apply(instance, EntityScoresLootCondition::new)
 	);
@@ -32,14 +32,13 @@ public record EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> sco
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return (Set<LootContextParameter<?>>)Stream.concat(
-				Stream.of(this.target.getParameter()),
-				this.scores.values().stream().flatMap(boundedIntUnaryOperator -> boundedIntUnaryOperator.getRequiredParameters().stream())
+				Stream.of(this.entity.getParameter()), this.scores.values().stream().flatMap(operator -> operator.getRequiredParameters().stream())
 			)
 			.collect(ImmutableSet.toImmutableSet());
 	}
 
 	public boolean test(LootContext lootContext) {
-		Entity entity = lootContext.get(this.target.getParameter());
+		Entity entity = lootContext.get(this.entity.getParameter());
 		if (entity == null) {
 			return false;
 		} else {

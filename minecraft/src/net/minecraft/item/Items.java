@@ -1050,8 +1050,8 @@ public class Items {
 	public static final Item SHEARS = register("shears", new ShearsItem(new Item.Settings().maxDamage(238)));
 	public static final Item MELON_SLICE = register("melon_slice", new Item(new Item.Settings().food(FoodComponents.MELON_SLICE)));
 	public static final Item DRIED_KELP = register("dried_kelp", new Item(new Item.Settings().food(FoodComponents.DRIED_KELP)));
-	public static final Item PUMPKIN_SEEDS = register("pumpkin_seeds", new AliasedBlockItem(Blocks.PUMPKIN_STEM, new Item.Settings()));
-	public static final Item MELON_SEEDS = register("melon_seeds", new AliasedBlockItem(Blocks.MELON_STEM, new Item.Settings()));
+	public static final Item PUMPKIN_SEEDS = register(ItemKeys.PUMPKIN_SEEDS, new AliasedBlockItem(Blocks.PUMPKIN_STEM, new Item.Settings()));
+	public static final Item MELON_SEEDS = register(ItemKeys.MELON_SEEDS, new AliasedBlockItem(Blocks.MELON_STEM, new Item.Settings()));
 	public static final Item BEEF = register("beef", new Item(new Item.Settings().food(FoodComponents.BEEF)));
 	public static final Item COOKED_BEEF = register("cooked_beef", new Item(new Item.Settings().food(FoodComponents.COOKED_BEEF)));
 	public static final Item CHICKEN = register("chicken", new Item(new Item.Settings().food(FoodComponents.CHICKEN)));

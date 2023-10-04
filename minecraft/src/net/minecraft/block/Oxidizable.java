@@ -3,8 +3,10 @@ package net.minecraft.block;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
+import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.function.Supplier;
+import net.minecraft.util.StringIdentifiable;
 
 public interface Oxidizable extends Degradable<Oxidizable.OxidationLevel> {
 	Supplier<BiMap<Block, Block>> OXIDATION_LEVEL_INCREASES = Suppliers.memoize(
@@ -64,10 +66,22 @@ public interface Oxidizable extends Degradable<Oxidizable.OxidationLevel> {
 		return this.getDegradationLevel() == Oxidizable.OxidationLevel.UNAFFECTED ? 0.75F : 1.0F;
 	}
 
-	public static enum OxidationLevel {
-		UNAFFECTED,
-		EXPOSED,
-		WEATHERED,
-		OXIDIZED;
+	public static enum OxidationLevel implements StringIdentifiable {
+		UNAFFECTED("unaffected"),
+		EXPOSED("exposed"),
+		WEATHERED("weathered"),
+		OXIDIZED("oxidized");
+
+		public static final Codec<Oxidizable.OxidationLevel> CODEC = StringIdentifiable.createCodec(Oxidizable.OxidationLevel::values);
+		private final String id;
+
+		private OxidationLevel(String id) {
+			this.id = id;
+		}
+
+		@Override
+		public String asString() {
+			return this.id;
+		}
 	}
 }

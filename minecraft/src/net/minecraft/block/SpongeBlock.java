@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.FluidTags;
@@ -10,9 +11,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class SpongeBlock extends Block {
+	public static final MapCodec<SpongeBlock> CODEC = createCodec(SpongeBlock::new);
 	public static final int field_31250 = 6;
 	public static final int field_31251 = 64;
 	private static final Direction[] field_43257 = Direction.values();
+
+	@Override
+	public MapCodec<SpongeBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected SpongeBlock(AbstractBlock.Settings settings) {
 		super(settings);

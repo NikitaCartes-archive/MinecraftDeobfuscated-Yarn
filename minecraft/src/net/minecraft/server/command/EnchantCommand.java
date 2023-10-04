@@ -21,16 +21,16 @@ import net.minecraft.text.Text;
 
 public class EnchantCommand {
 	private static final DynamicCommandExceptionType FAILED_ENTITY_EXCEPTION = new DynamicCommandExceptionType(
-		entityName -> Text.translatable("commands.enchant.failed.entity", entityName)
+		entityName -> Text.stringifiedTranslatable("commands.enchant.failed.entity", entityName)
 	);
 	private static final DynamicCommandExceptionType FAILED_ITEMLESS_EXCEPTION = new DynamicCommandExceptionType(
-		entityName -> Text.translatable("commands.enchant.failed.itemless", entityName)
+		entityName -> Text.stringifiedTranslatable("commands.enchant.failed.itemless", entityName)
 	);
 	private static final DynamicCommandExceptionType FAILED_INCOMPATIBLE_EXCEPTION = new DynamicCommandExceptionType(
-		itemName -> Text.translatable("commands.enchant.failed.incompatible", itemName)
+		itemName -> Text.stringifiedTranslatable("commands.enchant.failed.incompatible", itemName)
 	);
 	private static final Dynamic2CommandExceptionType FAILED_LEVEL_EXCEPTION = new Dynamic2CommandExceptionType(
-		(level, maxLevel) -> Text.translatable("commands.enchant.failed.level", level, maxLevel)
+		(level, maxLevel) -> Text.stringifiedTranslatable("commands.enchant.failed.level", level, maxLevel)
 	);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.enchant.failed"));
 

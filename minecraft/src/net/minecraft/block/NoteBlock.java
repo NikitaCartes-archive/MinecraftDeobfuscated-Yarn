@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.enums.Instrument;
@@ -29,10 +30,16 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class NoteBlock extends Block {
+	public static final MapCodec<NoteBlock> CODEC = createCodec(NoteBlock::new);
 	public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final IntProperty NOTE = Properties.NOTE;
 	public static final int field_41678 = 3;
+
+	@Override
+	public MapCodec<NoteBlock> getCodec() {
+		return CODEC;
+	}
 
 	public NoteBlock(AbstractBlock.Settings settings) {
 		super(settings);

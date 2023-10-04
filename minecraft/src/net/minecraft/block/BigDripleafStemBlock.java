@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -20,12 +21,18 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class BigDripleafStemBlock extends HorizontalFacingBlock implements Fertilizable, Waterloggable {
+	public static final MapCodec<BigDripleafStemBlock> CODEC = createCodec(BigDripleafStemBlock::new);
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final int field_31021 = 6;
 	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 9.0, 11.0, 16.0, 15.0);
 	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 1.0, 11.0, 16.0, 7.0);
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(1.0, 0.0, 5.0, 7.0, 16.0, 11.0);
 	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(9.0, 0.0, 5.0, 15.0, 16.0, 11.0);
+
+	@Override
+	public MapCodec<BigDripleafStemBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected BigDripleafStemBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -125,7 +132,7 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Blocks.BIG_DRIPLEAF);
 	}
 }

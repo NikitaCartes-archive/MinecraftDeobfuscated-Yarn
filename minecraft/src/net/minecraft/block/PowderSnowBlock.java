@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -28,6 +29,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 
 public class PowderSnowBlock extends Block implements FluidDrainable {
+	public static final MapCodec<PowderSnowBlock> CODEC = createCodec(PowderSnowBlock::new);
 	private static final float field_31216 = 0.083333336F;
 	private static final float HORIZONTAL_MOVEMENT_MULTIPLIER = 0.9F;
 	private static final float VERTICAL_MOVEMENT_MULTIPLIER = 1.5F;
@@ -35,6 +37,11 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	private static final VoxelShape FALLING_SHAPE = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, 0.9F, 1.0);
 	private static final double field_36189 = 4.0;
 	private static final double SMALL_FALL_SOUND_MAX_DISTANCE = 7.0;
+
+	@Override
+	public MapCodec<PowderSnowBlock> getCodec() {
+		return CODEC;
+	}
 
 	public PowderSnowBlock(AbstractBlock.Settings settings) {
 		super(settings);

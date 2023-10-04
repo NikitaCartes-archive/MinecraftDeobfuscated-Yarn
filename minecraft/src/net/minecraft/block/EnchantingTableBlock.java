@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -28,11 +29,17 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EnchantingTableBlock extends BlockWithEntity {
+	public static final MapCodec<EnchantingTableBlock> CODEC = createCodec(EnchantingTableBlock::new);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
 	public static final List<BlockPos> POWER_PROVIDER_OFFSETS = BlockPos.stream(-2, 0, -2, 2, 1, 2)
 		.filter(pos -> Math.abs(pos.getX()) == 2 || Math.abs(pos.getZ()) == 2)
 		.map(BlockPos::toImmutable)
 		.toList();
+
+	@Override
+	public MapCodec<EnchantingTableBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected EnchantingTableBlock(AbstractBlock.Settings settings) {
 		super(settings);

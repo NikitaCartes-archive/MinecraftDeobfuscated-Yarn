@@ -686,6 +686,8 @@ public abstract class PlayerManager {
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, world.getRainGradient(1.0F)));
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, world.getThunderGradient(1.0F)));
 		}
+
+		player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.INITIAL_CHUNKS_COMING, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 	}
 
 	public void sendPlayerStatus(ServerPlayerEntity player) {

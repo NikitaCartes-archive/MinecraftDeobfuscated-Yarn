@@ -17,16 +17,17 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.dynamic.Codecs;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetLoreLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<boolean, List<Text>, Optional<LootContext.EntityTarget>>and(
 					instance.group(
-						Codec.BOOL.fieldOf("replace").orElse(false).forGetter(setLoreLootFunction -> setLoreLootFunction.replace),
-						Codecs.TEXT.listOf().fieldOf("lore").forGetter(setLoreLootFunction -> setLoreLootFunction.lore),
-						Codecs.createStrictOptionalFieldCodec(LootContext.EntityTarget.CODEC, "entity").forGetter(setLoreLootFunction -> setLoreLootFunction.entity)
+						Codec.BOOL.fieldOf("replace").orElse(false).forGetter(function -> function.replace),
+						TextCodecs.CODEC.listOf().fieldOf("lore").forGetter(function -> function.lore),
+						Codecs.createStrictOptionalFieldCodec(LootContext.EntityTarget.CODEC, "entity").forGetter(function -> function.entity)
 					)
 				)
 				.apply(instance, SetLoreLootFunction::new)
@@ -49,7 +50,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return (Set<LootContextParameter<?>>)this.entity.map(entityTarget -> Set.of(entityTarget.getParameter())).orElseGet(Set::of);
+		return (Set<LootContextParameter<?>>)this.entity.map(entity -> Set.of(entity.getParameter())).orElseGet(Set::of);
 	}
 
 	@Override
@@ -61,7 +62,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 			}
 
 			UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null));
-			this.lore.stream().map(unaryOperator).map(Text.Serializer::toJson).map(NbtString::of).forEach(nbtList::add);
+			this.lore.stream().map(unaryOperator).map(Text.Serialization::toJsonString).map(NbtString::of).forEach(nbtList::add);
 		}
 
 		return stack;

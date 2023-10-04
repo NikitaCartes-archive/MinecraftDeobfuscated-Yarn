@@ -15,9 +15,18 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 
 	@Override
 	protected void configure(RegistryWrapper.WrapperLookup lookup) {
-		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON);
+		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON, EntityType.SKELETON_HORSE);
+		this.getOrCreateTagBuilder(EntityTypeTags.ZOMBIES)
+			.add(
+				EntityType.ZOMBIE_HORSE, EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER, EntityType.ZOMBIFIED_PIGLIN, EntityType.ZOGLIN, EntityType.DROWNED, EntityType.HUSK
+			);
 		this.getOrCreateTagBuilder(EntityTypeTags.RAIDERS)
 			.add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
+		this.getOrCreateTagBuilder(EntityTypeTags.UNDEAD)
+			.addTag(EntityTypeTags.SKELETONS)
+			.addTag(EntityTypeTags.ZOMBIES)
+			.add(EntityType.WITHER)
+			.add(EntityType.PHANTOM);
 		this.getOrCreateTagBuilder(EntityTypeTags.BEEHIVE_INHABITORS).add(EntityType.BEE);
 		this.getOrCreateTagBuilder(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
 		this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES)
@@ -37,6 +46,23 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 		this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES).add(EntityType.DROWNED, EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN);
 		this.getOrCreateTagBuilder(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(EntityType.STRAY, EntityType.POLAR_BEAR, EntityType.SNOW_GOLEM, EntityType.WITHER);
 		this.getOrCreateTagBuilder(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES).add(EntityType.STRIDER, EntityType.BLAZE, EntityType.MAGMA_CUBE);
+		this.getOrCreateTagBuilder(EntityTypeTags.CAN_BREATHE_UNDER_WATER)
+			.addTag(EntityTypeTags.UNDEAD)
+			.add(
+				EntityType.AXOLOTL,
+				EntityType.FROG,
+				EntityType.GUARDIAN,
+				EntityType.ELDER_GUARDIAN,
+				EntityType.TURTLE,
+				EntityType.GLOW_SQUID,
+				EntityType.COD,
+				EntityType.PUFFERFISH,
+				EntityType.SALMON,
+				EntityType.SQUID,
+				EntityType.TROPICAL_FISH,
+				EntityType.TADPOLE,
+				EntityType.ARMOR_STAND
+			);
 		this.getOrCreateTagBuilder(EntityTypeTags.FROG_FOOD).add(EntityType.SLIME, EntityType.MAGMA_CUBE);
 		this.getOrCreateTagBuilder(EntityTypeTags.FALL_DAMAGE_IMMUNE)
 			.add(

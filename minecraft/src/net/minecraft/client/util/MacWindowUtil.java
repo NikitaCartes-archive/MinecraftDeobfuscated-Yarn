@@ -14,10 +14,18 @@ import org.lwjgl.glfw.GLFWNativeCocoa;
 
 @Environment(EnvType.CLIENT)
 public class MacWindowUtil {
+	private static final int field_46537 = 8;
 	private static final int FULLSCREEN_MASK = 16384;
 
 	public static void toggleFullscreen(long handle) {
 		getCocoaWindow(handle).filter(MacWindowUtil::isFullscreen).ifPresent(MacWindowUtil::toggleFullscreen);
+	}
+
+	public static void fixStyleMask(long handle) {
+		getCocoaWindow(handle).ifPresent(windowHandle -> {
+			long l = getStyleMask(windowHandle);
+			windowHandle.send("setStyleMask:", new Object[]{l & -9L});
+		});
 	}
 
 	private static Optional<NSObject> getCocoaWindow(long handle) {
@@ -26,7 +34,11 @@ public class MacWindowUtil {
 	}
 
 	private static boolean isFullscreen(NSObject handle) {
-		return ((Long)handle.sendRaw("styleMask", new Object[0]) & 16384L) == 16384L;
+		return (getStyleMask(handle) & 16384L) != 0L;
+	}
+
+	private static long getStyleMask(NSObject handle) {
+		return (Long)handle.sendRaw("styleMask", new Object[0]);
 	}
 
 	private static void toggleFullscreen(NSObject handle) {

@@ -40,22 +40,22 @@ import net.minecraft.util.math.BlockPos;
 
 public class ItemCommand {
 	static final Dynamic3CommandExceptionType NOT_A_CONTAINER_TARGET_EXCEPTION = new Dynamic3CommandExceptionType(
-		(x, y, z) -> Text.translatable("commands.item.target.not_a_container", x, y, z)
+		(x, y, z) -> Text.stringifiedTranslatable("commands.item.target.not_a_container", x, y, z)
 	);
 	private static final Dynamic3CommandExceptionType NOT_A_CONTAINER_SOURCE_EXCEPTION = new Dynamic3CommandExceptionType(
-		(x, y, z) -> Text.translatable("commands.item.source.not_a_container", x, y, z)
+		(x, y, z) -> Text.stringifiedTranslatable("commands.item.source.not_a_container", x, y, z)
 	);
 	static final DynamicCommandExceptionType NO_SUCH_SLOT_TARGET_EXCEPTION = new DynamicCommandExceptionType(
-		slot -> Text.translatable("commands.item.target.no_such_slot", slot)
+		slot -> Text.stringifiedTranslatable("commands.item.target.no_such_slot", slot)
 	);
 	private static final DynamicCommandExceptionType NO_SUCH_SLOT_SOURCE_EXCEPTION = new DynamicCommandExceptionType(
-		slot -> Text.translatable("commands.item.source.no_such_slot", slot)
+		slot -> Text.stringifiedTranslatable("commands.item.source.no_such_slot", slot)
 	);
 	private static final DynamicCommandExceptionType NO_CHANGES_EXCEPTION = new DynamicCommandExceptionType(
-		slot -> Text.translatable("commands.item.target.no_changes", slot)
+		slot -> Text.stringifiedTranslatable("commands.item.target.no_changes", slot)
 	);
 	private static final Dynamic2CommandExceptionType KNOWN_ITEM_EXCEPTION = new Dynamic2CommandExceptionType(
-		(itemName, slot) -> Text.translatable("commands.item.target.no_changed.known_item", itemName, slot)
+		(itemName, slot) -> Text.stringifiedTranslatable("commands.item.target.no_changed.known_item", itemName, slot)
 	);
 	private static final SuggestionProvider<ServerCommandSource> MODIFIER_SUGGESTION_PROVIDER = (context, builder) -> {
 		LootManager lootManager = context.getSource().getServer().getLootManager();

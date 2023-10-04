@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -58,6 +59,9 @@ public abstract class MultifaceGrowthBlock extends Block {
 		this.canMirrorX = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.X).filter(this::canHaveDirection).count() % 2L == 0L;
 		this.canMirrorZ = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::canHaveDirection).count() % 2L == 0L;
 	}
+
+	@Override
+	protected abstract MapCodec<? extends MultifaceGrowthBlock> getCodec();
 
 	public static Set<Direction> collectDirections(BlockState state) {
 		if (!(state.getBlock() instanceof MultifaceGrowthBlock)) {

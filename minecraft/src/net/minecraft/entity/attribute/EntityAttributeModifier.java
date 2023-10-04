@@ -2,44 +2,46 @@ package net.minecraft.entity.attribute;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
 
 public class EntityAttributeModifier {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final Codec<EntityAttributeModifier> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Uuids.INT_STREAM_CODEC.fieldOf("UUID").forGetter(EntityAttributeModifier::getId),
+					Codec.STRING.fieldOf("Name").forGetter(modifier -> modifier.name),
+					Codec.DOUBLE.fieldOf("Amount").forGetter(EntityAttributeModifier::getValue),
+					EntityAttributeModifier.Operation.CODEC.fieldOf("Operation").forGetter(EntityAttributeModifier::getOperation)
+				)
+				.apply(instance, EntityAttributeModifier::new)
+	);
 	private final double value;
 	private final EntityAttributeModifier.Operation operation;
-	private final Supplier<String> nameGetter;
+	private final String name;
 	private final UUID uuid;
 
 	public EntityAttributeModifier(String name, double value, EntityAttributeModifier.Operation operation) {
-		this(MathHelper.randomUuid(Random.createLocal()), (Supplier<String>)(() -> name), value, operation);
+		this(MathHelper.randomUuid(Random.createLocal()), name, value, operation);
 	}
 
 	public EntityAttributeModifier(UUID uuid, String name, double value, EntityAttributeModifier.Operation operation) {
-		this(uuid, (Supplier<String>)(() -> name), value, operation);
-	}
-
-	public EntityAttributeModifier(UUID uuid, Supplier<String> nameGetter, double value, EntityAttributeModifier.Operation operation) {
 		this.uuid = uuid;
-		this.nameGetter = nameGetter;
+		this.name = name;
 		this.value = value;
 		this.operation = operation;
 	}
 
 	public UUID getId() {
 		return this.uuid;
-	}
-
-	public String getName() {
-		return (String)this.nameGetter.get();
 	}
 
 	public EntityAttributeModifier.Operation getOperation() {
@@ -66,12 +68,12 @@ public class EntityAttributeModifier {
 	}
 
 	public String toString() {
-		return "AttributeModifier{amount=" + this.value + ", operation=" + this.operation + ", name='" + (String)this.nameGetter.get() + "', id=" + this.uuid + "}";
+		return "AttributeModifier{amount=" + this.value + ", operation=" + this.operation + ", name='" + this.name + "', id=" + this.uuid + "}";
 	}
 
 	public NbtCompound toNbt() {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", this.getName());
+		nbtCompound.putString("Name", this.name);
 		nbtCompound.putDouble("Amount", this.value);
 		nbtCompound.putInt("Operation", this.operation.getId());
 		nbtCompound.putUuid("UUID", this.uuid);

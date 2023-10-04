@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -21,6 +23,9 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class FenceGateBlock extends HorizontalFacingBlock {
+	public static final MapCodec<FenceGateBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(WoodType.CODEC.fieldOf("wood_type").forGetter(block -> block.type), createSettingsCodec()).apply(instance, FenceGateBlock::new)
+	);
 	public static final BooleanProperty OPEN = Properties.OPEN;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty IN_WALL = Properties.IN_WALL;
@@ -46,7 +51,12 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	);
 	private final WoodType type;
 
-	public FenceGateBlock(AbstractBlock.Settings settings, WoodType type) {
+	@Override
+	public MapCodec<FenceGateBlock> getCodec() {
+		return CODEC;
+	}
+
+	public FenceGateBlock(WoodType type, AbstractBlock.Settings settings) {
 		super(settings.sounds(type.soundType()));
 		this.type = type;
 		this.setDefaultState(

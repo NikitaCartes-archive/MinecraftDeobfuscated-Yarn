@@ -40,7 +40,7 @@ public class LootDataType<T> {
 
 	public Optional<T> parse(Identifier id, JsonElement json) {
 		DataResult<T> dataResult = this.codec.parse(JsonOps.INSTANCE, json);
-		dataResult.error().ifPresent(partialResult -> LOGGER.error("Couldn't parse element {}:{} - {}", this.id, id, partialResult.message()));
+		dataResult.error().ifPresent(result -> LOGGER.error("Couldn't parse element {}:{} - {}", this.id, id, result.message()));
 		return dataResult.result();
 	}
 

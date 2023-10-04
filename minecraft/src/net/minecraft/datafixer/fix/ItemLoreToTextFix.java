@@ -10,7 +10,6 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.text.Text;
 
 public class ItemLoreToTextFix extends DataFix {
 	public ItemLoreToTextFix(Schema outputSchema, boolean changesType) {
@@ -40,10 +39,6 @@ public class ItemLoreToTextFix extends DataFix {
 	}
 
 	private static <T> Stream<Dynamic<T>> fixLoreNbt(Stream<Dynamic<T>> nbt) {
-		return nbt.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToTextFix::componentize).map(dynamic::createString).result(), dynamic));
-	}
-
-	private static String componentize(String string) {
-		return Text.Serializer.toJson(Text.literal(string));
+		return nbt.map(TextFixes::fixText);
 	}
 }

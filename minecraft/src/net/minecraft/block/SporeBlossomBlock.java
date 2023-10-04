@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -12,10 +13,16 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SporeBlossomBlock extends Block {
+	public static final MapCodec<SporeBlossomBlock> CODEC = createCodec(SporeBlossomBlock::new);
 	private static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 13.0, 2.0, 14.0, 16.0, 14.0);
 	private static final int field_31252 = 14;
 	private static final int field_31253 = 10;
 	private static final int field_31254 = 10;
+
+	@Override
+	public MapCodec<SporeBlossomBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SporeBlossomBlock(AbstractBlock.Settings settings) {
 		super(settings);

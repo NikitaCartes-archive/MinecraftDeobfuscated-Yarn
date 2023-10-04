@@ -2,6 +2,9 @@ package net.minecraft.block;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,6 +36,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class PistonBlock extends FacingBlock {
+	public static final MapCodec<PistonBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Codec.BOOL.fieldOf("sticky").forGetter(block -> block.sticky), createSettingsCodec()).apply(instance, PistonBlock::new)
+	);
 	public static final BooleanProperty EXTENDED = Properties.EXTENDED;
 	public static final int field_31373 = 0;
 	public static final int field_31374 = 1;
@@ -45,6 +51,11 @@ public class PistonBlock extends FacingBlock {
 	protected static final VoxelShape EXTENDED_UP_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
 	protected static final VoxelShape EXTENDED_DOWN_SHAPE = Block.createCuboidShape(0.0, 4.0, 0.0, 16.0, 16.0, 16.0);
 	private final boolean sticky;
+
+	@Override
+	public MapCodec<PistonBlock> getCodec() {
+		return CODEC;
+	}
 
 	public PistonBlock(boolean sticky, AbstractBlock.Settings settings) {
 		super(settings);

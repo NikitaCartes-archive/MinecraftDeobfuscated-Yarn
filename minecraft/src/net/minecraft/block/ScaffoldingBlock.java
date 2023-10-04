@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -20,6 +21,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class ScaffoldingBlock extends Block implements Waterloggable {
+	public static final MapCodec<ScaffoldingBlock> CODEC = createCodec(ScaffoldingBlock::new);
 	private static final int field_31238 = 1;
 	private static final VoxelShape NORMAL_OUTLINE_SHAPE;
 	private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
@@ -29,6 +31,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	public static final IntProperty DISTANCE = Properties.DISTANCE_0_7;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty BOTTOM = Properties.BOTTOM;
+
+	@Override
+	public MapCodec<ScaffoldingBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected ScaffoldingBlock(AbstractBlock.Settings settings) {
 		super(settings);

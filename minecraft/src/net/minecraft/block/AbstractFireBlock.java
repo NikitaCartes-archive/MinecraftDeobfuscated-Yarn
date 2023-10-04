@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +27,9 @@ public abstract class AbstractFireBlock extends Block {
 		super(settings);
 		this.damage = damage;
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractFireBlock> getCodec();
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
@@ -156,12 +160,12 @@ public abstract class AbstractFireBlock extends Block {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient()) {
 			world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, pos, 0);
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	public static boolean canPlaceAt(World world, BlockPos pos, Direction direction) {

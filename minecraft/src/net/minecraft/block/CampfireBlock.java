@@ -1,5 +1,8 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -46,6 +49,14 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class CampfireBlock extends BlockWithEntity implements Waterloggable {
+	public static final MapCodec<CampfireBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Codec.BOOL.fieldOf("spawn_particles").forGetter(block -> block.emitsParticles),
+					Codec.intRange(0, 1000).fieldOf("fire_damage").forGetter(block -> block.fireDamage),
+					createSettingsCodec()
+				)
+				.apply(instance, CampfireBlock::new)
+	);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 7.0, 16.0);
 	public static final BooleanProperty LIT = Properties.LIT;
 	public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
@@ -58,6 +69,11 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	private static final int field_31049 = 5;
 	private final boolean emitsParticles;
 	private final int fireDamage;
+
+	@Override
+	public MapCodec<CampfireBlock> getCodec() {
+		return CODEC;
+	}
 
 	public CampfireBlock(boolean emitsParticles, int fireDamage, AbstractBlock.Settings settings) {
 		super(settings);

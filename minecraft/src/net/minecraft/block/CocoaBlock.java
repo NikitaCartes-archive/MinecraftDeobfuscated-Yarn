@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
@@ -18,6 +19,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
+	public static final MapCodec<CocoaBlock> CODEC = createCodec(CocoaBlock::new);
 	public static final int MAX_AGE = 2;
 	public static final IntProperty AGE = Properties.AGE_2;
 	protected static final int field_31062 = 4;
@@ -49,6 +51,11 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 		Block.createCuboidShape(5.0, 5.0, 9.0, 11.0, 12.0, 15.0),
 		Block.createCuboidShape(4.0, 3.0, 7.0, 12.0, 12.0, 15.0)
 	};
+
+	@Override
+	public MapCodec<CocoaBlock> getCodec() {
+		return CODEC;
+	}
 
 	public CocoaBlock(AbstractBlock.Settings settings) {
 		super(settings);

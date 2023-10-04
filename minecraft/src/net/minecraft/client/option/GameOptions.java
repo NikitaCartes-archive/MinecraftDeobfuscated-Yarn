@@ -530,7 +530,7 @@ public class GameOptions {
 	public final KeyBinding attackKey = new KeyBinding("key.attack", InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT, KeyBinding.GAMEPLAY_CATEGORY);
 	/**
 	 * A key binding for holding an item corresponding to the {@linkplain net.minecraft.entity.Entity#getPickBlockStack() entity}
-	 * or {@linkplain net.minecraft.block.Block#getPickStack(net.minecraft.world.BlockView,
+	 * or {@linkplain net.minecraft.block.Block#getPickStack(net.minecraft.world.WorldView,
 	 * net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState) block} the player is looking at.
 	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_MOUSE_BUTTON_MIDDLE the middle mouse button} by default.
 	 */

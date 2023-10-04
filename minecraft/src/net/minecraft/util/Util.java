@@ -10,11 +10,14 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DataResult.PartialResult;
-import it.unimi.dsi.fastutil.Hash.Strategy;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ReferenceImmutableList;
+import it.unimi.dsi.fastutil.objects.ReferenceList;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -57,7 +60,6 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -93,6 +95,7 @@ public class Util {
 	 * as the format string. Example: {@code 2022-01-01_00.00.00}
 	 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
+	private static final int field_46220 = 8;
 	public static final long field_45714 = 1000000L;
 	public static TimeSupplier.Nanoseconds nanoTimeSupplier = System::nanoTime;
 	public static final Ticker TICKER = new Ticker() {
@@ -467,15 +470,6 @@ public class Util {
 	public static <T> T make(T object, Consumer<? super T> initializer) {
 		initializer.accept(object);
 		return object;
-	}
-
-	/**
-	 * {@return the {@link Hash.Strategy} that uses identity comparison}
-	 * 
-	 * <p>fastutil's "reference" object types should be used instead in most cases.
-	 */
-	public static <K> Strategy<K> identityHashStrategy() {
-		return Util.IdentityHashStrategy.INSTANCE;
 	}
 
 	/**
@@ -1032,38 +1026,58 @@ public class Util {
 	 * 
 	 * @implNote Unlike {@link java.util.List#lastIndexOf}, the returned function will
 	 * return {@code 0} when given values not in the passed list.
+	 * 
+	 * @see #lastIdentityIndexGetter
 	 */
 	public static <T> ToIntFunction<T> lastIndexGetter(List<T> values) {
-		return lastIndexGetter(values, Object2IntOpenHashMap::new);
+		int i = values.size();
+		if (i < 8) {
+			return values::indexOf;
+		} else {
+			Object2IntMap<T> object2IntMap = new Object2IntOpenHashMap<>(i);
+			object2IntMap.defaultReturnValue(-1);
+
+			for (int j = 0; j < i; j++) {
+				object2IntMap.put((T)values.get(j), j);
+			}
+
+			return object2IntMap;
+		}
 	}
 
 	/**
 	 * {@return a function that, when given a value in {@code values}, returns the last
-	 * index of the value in the list}
+	 * index of the value in the list using identity comparison}
 	 * 
 	 * @implNote Unlike {@link java.util.List#lastIndexOf}, the returned function will
 	 * return {@code 0} when given values not in the passed list.
 	 * 
-	 * @param mapCreator a function that, when given the size of {@code values},
-	 * returns a map for storing the indices of the values
+	 * @see #lastIndexGetter
 	 */
-	public static <T> ToIntFunction<T> lastIndexGetter(List<T> values, IntFunction<Object2IntMap<T>> mapCreator) {
-		Object2IntMap<T> object2IntMap = (Object2IntMap<T>)mapCreator.apply(values.size());
+	public static <T> ToIntFunction<T> lastIdentityIndexGetter(List<T> values) {
+		int i = values.size();
+		if (i < 8) {
+			ReferenceList<T> referenceList = new ReferenceImmutableList<>(values);
+			return referenceList::indexOf;
+		} else {
+			Reference2IntMap<T> reference2IntMap = new Reference2IntOpenHashMap<>(i);
+			reference2IntMap.defaultReturnValue(-1);
 
-		for (int i = 0; i < values.size(); i++) {
-			object2IntMap.put((T)values.get(i), i);
+			for (int j = 0; j < i; j++) {
+				reference2IntMap.put((T)values.get(j), j);
+			}
+
+			return reference2IntMap;
 		}
-
-		return object2IntMap;
 	}
 
 	/**
 	 * {@return the result wrapped in {@code result}}
 	 */
-	public static <T, E extends Exception> T getResult(DataResult<T> result, Function<String, E> exceptionGetter) throws E {
+	public static <T, E extends Throwable> T getResult(DataResult<T> result, Function<String, E> exceptionGetter) throws E {
 		Optional<PartialResult<T>> optional = result.error();
 		if (optional.isPresent()) {
-			throw (Exception)exceptionGetter.apply(((PartialResult)optional.get()).message());
+			throw (Throwable)exceptionGetter.apply(((PartialResult)optional.get()).message());
 		} else {
 			return (T)result.result().orElseThrow();
 		}
@@ -1085,20 +1099,6 @@ public class Util {
 	 */
 	public static boolean isBlank(@Nullable String string) {
 		return string != null && string.length() != 0 ? string.chars().allMatch(Util::isWhitespace) : true;
-	}
-
-	static enum IdentityHashStrategy implements Strategy<Object> {
-		INSTANCE;
-
-		@Override
-		public int hashCode(Object o) {
-			return System.identityHashCode(o);
-		}
-
-		@Override
-		public boolean equals(Object o, Object o2) {
-			return o == o2;
-		}
 	}
 
 	/**

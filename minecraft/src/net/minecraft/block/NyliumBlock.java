@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -15,6 +16,13 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.NetherConfiguredFeatures;
 
 public class NyliumBlock extends Block implements Fertilizable {
+	public static final MapCodec<NyliumBlock> CODEC = createCodec(NyliumBlock::new);
+
+	@Override
+	public MapCodec<NyliumBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected NyliumBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

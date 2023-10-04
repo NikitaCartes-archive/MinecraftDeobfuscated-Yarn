@@ -16,7 +16,7 @@ public class DeathMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public DeathMessageS2CPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		this.message = buf.readText();
+		this.message = buf.readUnlimitedText();
 	}
 
 	@Override

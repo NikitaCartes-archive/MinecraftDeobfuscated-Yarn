@@ -11,8 +11,8 @@ import net.minecraft.nbt.StringNbtReader;
 
 public class SetNbtLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetNbtLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(StringNbtReader.STRINGIFIED_CODEC.fieldOf("tag").forGetter(setNbtLootFunction -> setNbtLootFunction.nbt))
+		instance -> addConditionsField(instance)
+				.and(StringNbtReader.STRINGIFIED_CODEC.fieldOf("tag").forGetter(function -> function.nbt))
 				.apply(instance, SetNbtLootFunction::new)
 	);
 	private final NbtCompound nbt;

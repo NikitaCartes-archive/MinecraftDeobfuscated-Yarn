@@ -11,11 +11,11 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.PrivateKey;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionException;
@@ -123,7 +123,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	@Override
 	public void onHello(LoginHelloC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.HELLO, "Unexpected hello packet");
-		Validate.validState(isValidName(packet.name()), "Invalid characters in username");
+		Validate.validState(PlayerEntity.isUsernameValid(packet.name()), "Invalid characters in username");
 		this.profileName = packet.name();
 		GameProfile gameProfile = this.server.getHostProfile();
 		if (gameProfile != null && this.profileName.equalsIgnoreCase(gameProfile.getName())) {
@@ -133,7 +133,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 				this.state = ServerLoginNetworkHandler.State.KEY;
 				this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
 			} else {
-				this.startVerify(createOfflineProfile(this.profileName));
+				this.startVerify(Uuids.getOfflinePlayerProfile(this.profileName));
 			}
 		}
 	}
@@ -171,10 +171,6 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 		this.connection.send(new LoginSuccessS2CPacket(profile));
 	}
 
-	public static boolean isValidName(String name) {
-		return name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
-	}
-
 	@Override
 	public void onKey(LoginKeyC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.KEY, "Unexpected key packet");
@@ -208,7 +204,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 						ServerLoginNetworkHandler.this.startVerify(gameProfile);
 					} else if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
 						ServerLoginNetworkHandler.LOGGER.warn("Failed to verify username but will let them in anyway!");
-						ServerLoginNetworkHandler.this.startVerify(ServerLoginNetworkHandler.createOfflineProfile(string));
+						ServerLoginNetworkHandler.this.startVerify(Uuids.getOfflinePlayerProfile(string));
 					} else {
 						ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.unverified_username"));
 						ServerLoginNetworkHandler.LOGGER.error("Username '{}' tried to join with an invalid session", string);
@@ -216,7 +212,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 				} catch (AuthenticationUnavailableException var4) {
 					if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
 						ServerLoginNetworkHandler.LOGGER.warn("Authentication servers are down but will let them in anyway!");
-						ServerLoginNetworkHandler.this.startVerify(ServerLoginNetworkHandler.createOfflineProfile(string));
+						ServerLoginNetworkHandler.this.startVerify(Uuids.getOfflinePlayerProfile(string));
 					} else {
 						ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.authservers_down"));
 						ServerLoginNetworkHandler.LOGGER.error("Couldn't verify username because servers are unavailable");
@@ -249,11 +245,6 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 		this.connection.setPacketListener(serverConfigurationNetworkHandler);
 		serverConfigurationNetworkHandler.sendConfigurations();
 		this.state = ServerLoginNetworkHandler.State.ACCEPTED;
-	}
-
-	protected static GameProfile createOfflineProfile(String name) {
-		UUID uUID = Uuids.getOfflinePlayerUuid(name);
-		return new GameProfile(uUID, name);
 	}
 
 	static enum State {

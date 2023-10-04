@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 import net.minecraft.network.encryption.SignatureUpdatable;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 /**
  * A signed message, consisting of the signature, the signed content,
@@ -31,7 +31,7 @@ public record SignedMessage(
 					MessageLink.CODEC.fieldOf("link").forGetter(SignedMessage::link),
 					MessageSignatureData.CODEC.optionalFieldOf("signature").forGetter(message -> Optional.ofNullable(message.signature)),
 					MessageBody.CODEC.forGetter(SignedMessage::signedBody),
-					Codecs.TEXT.optionalFieldOf("unsigned_content").forGetter(message -> Optional.ofNullable(message.unsignedContent)),
+					TextCodecs.CODEC.optionalFieldOf("unsigned_content").forGetter(message -> Optional.ofNullable(message.unsignedContent)),
 					FilterMask.CODEC.optionalFieldOf("filter_mask", FilterMask.PASS_THROUGH).forGetter(SignedMessage::filterMask)
 				)
 				.apply(

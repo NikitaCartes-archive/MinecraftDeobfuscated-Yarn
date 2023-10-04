@@ -1,12 +1,11 @@
 package net.minecraft.block;
 
-import java.util.Map;
-import java.util.function.Predicate;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -17,41 +16,35 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
 
 /**
- * A cauldron with a varying level of contents.
- * This includes water and powder snow cauldrons.
- * 
- * <p>The amount of stored substance is controlled with the {@link #LEVEL}
- * block state property which can take values between {@value #MIN_LEVEL} and
- * {@value #MAX_LEVEL} (inclusive).
+ * Constructs a leveled cauldron block.
  */
 public class LeveledCauldronBlock extends AbstractCauldronBlock {
+	public static final MapCodec<LeveledCauldronBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Biome.Precipitation.CODEC.fieldOf("precipitation").forGetter(block -> block.precipitation),
+					CauldronBehavior.CODEC.fieldOf("interactions").forGetter(block -> block.behaviorMap),
+					createSettingsCodec()
+				)
+				.apply(instance, LeveledCauldronBlock::new)
+	);
 	public static final int MIN_LEVEL = 1;
 	public static final int MAX_LEVEL = 3;
 	public static final IntProperty LEVEL = Properties.LEVEL_3;
 	private static final int BASE_FLUID_HEIGHT = 6;
 	private static final double FLUID_HEIGHT_PER_LEVEL = 3.0;
-	/**
-	 * A precipitation predicate that allows {@link Biome.Precipitation#RAIN}.
-	 */
-	public static final Predicate<Biome.Precipitation> RAIN_PREDICATE = precipitation -> precipitation == Biome.Precipitation.RAIN;
-	/**
-	 * A precipitation predicate that allows {@link Biome.Precipitation#SNOW}.
-	 */
-	public static final Predicate<Biome.Precipitation> SNOW_PREDICATE = precipitation -> precipitation == Biome.Precipitation.SNOW;
-	private final Predicate<Biome.Precipitation> precipitationPredicate;
+	private final Biome.Precipitation precipitation;
+
+	@Override
+	public MapCodec<LeveledCauldronBlock> getCodec() {
+		return CODEC;
+	}
 
 	/**
 	 * Constructs a leveled cauldron block.
-	 * 
-	 * @apiNote The precipitation predicates are compared using identity comparisons in some cases,
-	 * so callers should typically use {@link #RAIN_PREDICATE} and {@link #SNOW_PREDICATE} if applicable.
-	 * 
-	 * @param behaviorMap the map containing cauldron behaviors for each item
-	 * @param precipitationPredicate a predicate that checks what type of precipitation can fill this cauldron
 	 */
-	public LeveledCauldronBlock(AbstractBlock.Settings settings, Predicate<Biome.Precipitation> precipitationPredicate, Map<Item, CauldronBehavior> behaviorMap) {
+	public LeveledCauldronBlock(Biome.Precipitation precipitation, CauldronBehavior.CauldronBehaviorMap behaviorMap, AbstractBlock.Settings settings) {
 		super(settings, behaviorMap);
-		this.precipitationPredicate = precipitationPredicate;
+		this.precipitation = precipitation;
 		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, Integer.valueOf(1)));
 	}
 
@@ -62,7 +55,7 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 
 	@Override
 	protected boolean canBeFilledByDripstone(Fluid fluid) {
-		return fluid == Fluids.WATER && this.precipitationPredicate == RAIN_PREDICATE;
+		return fluid == Fluids.WATER && this.precipitation == Biome.Precipitation.RAIN;
 	}
 
 	@Override
@@ -80,8 +73,12 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 		}
 	}
 
-	protected void onFireCollision(BlockState state, World world, BlockPos pos) {
-		decrementFluidLevel(state, world, pos);
+	private void onFireCollision(BlockState state, World world, BlockPos pos) {
+		if (this.precipitation == Biome.Precipitation.SNOW) {
+			decrementFluidLevel(Blocks.WATER_CAULDRON.getDefaultState().with(LEVEL, (Integer)state.get(LEVEL)), world, pos);
+		} else {
+			decrementFluidLevel(state, world, pos);
+		}
 	}
 
 	public static void decrementFluidLevel(BlockState state, World world, BlockPos pos) {
@@ -93,7 +90,7 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 
 	@Override
 	public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
-		if (CauldronBlock.canFillWithPrecipitation(world, precipitation) && (Integer)state.get(LEVEL) != 3 && this.precipitationPredicate.test(precipitation)) {
+		if (CauldronBlock.canFillWithPrecipitation(world, precipitation) && (Integer)state.get(LEVEL) != 3 && precipitation == this.precipitation) {
 			BlockState blockState = state.cycle(LEVEL);
 			world.setBlockState(pos, blockState);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));

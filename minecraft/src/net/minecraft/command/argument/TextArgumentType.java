@@ -13,7 +13,7 @@ import net.minecraft.text.Text;
 public class TextArgumentType implements ArgumentType<Text> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("\"hello world\"", "\"\"", "\"{\"text\":\"hello world\"}", "[\"\"]");
 	public static final DynamicCommandExceptionType INVALID_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(
-		text -> Text.translatable("argument.component.invalid", text)
+		text -> Text.stringifiedTranslatable("argument.component.invalid", text)
 	);
 
 	private TextArgumentType() {
@@ -29,7 +29,7 @@ public class TextArgumentType implements ArgumentType<Text> {
 
 	public Text parse(StringReader stringReader) throws CommandSyntaxException {
 		try {
-			Text text = Text.Serializer.fromJson(stringReader);
+			Text text = Text.Serialization.fromJson(stringReader);
 			if (text == null) {
 				throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, "empty");
 			} else {

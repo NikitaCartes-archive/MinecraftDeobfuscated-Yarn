@@ -33,21 +33,18 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 		}
 	};
 	public static final ContextLootNbtProvider BLOCK_ENTITY = new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
-	private static final Codec<ContextLootNbtProvider.Target> field_45881 = Codec.STRING.xmap(string -> {
-		if (string.equals("block_entity")) {
+	private static final Codec<ContextLootNbtProvider.Target> TARGET_CODEC = Codec.STRING.xmap(type -> {
+		if (type.equals("block_entity")) {
 			return BLOCK_ENTITY_TARGET;
 		} else {
-			LootContext.EntityTarget entityTarget = LootContext.EntityTarget.fromString(string);
+			LootContext.EntityTarget entityTarget = LootContext.EntityTarget.fromString(type);
 			return getTarget(entityTarget);
 		}
 	}, ContextLootNbtProvider.Target::getName);
 	public static final Codec<ContextLootNbtProvider> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(field_45881.fieldOf("target").forGetter(contextLootNbtProvider -> contextLootNbtProvider.target))
-				.apply(instance, ContextLootNbtProvider::new)
+		instance -> instance.group(TARGET_CODEC.fieldOf("target").forGetter(provider -> provider.target)).apply(instance, ContextLootNbtProvider::new)
 	);
-	public static final Codec<ContextLootNbtProvider> field_45880 = field_45881.xmap(
-		ContextLootNbtProvider::new, contextLootNbtProvider -> contextLootNbtProvider.target
-	);
+	public static final Codec<ContextLootNbtProvider> INLINE_CODEC = TARGET_CODEC.xmap(ContextLootNbtProvider::new, provider -> provider.target);
 	private final ContextLootNbtProvider.Target target;
 
 	private static ContextLootNbtProvider.Target getTarget(LootContext.EntityTarget entityTarget) {

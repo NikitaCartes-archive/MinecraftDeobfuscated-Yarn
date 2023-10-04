@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
@@ -17,6 +18,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class LanternBlock extends Block implements Waterloggable {
+	public static final MapCodec<LanternBlock> CODEC = createCodec(LanternBlock::new);
 	public static final BooleanProperty HANGING = Properties.HANGING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape STANDING_SHAPE = VoxelShapes.union(
@@ -25,6 +27,11 @@ public class LanternBlock extends Block implements Waterloggable {
 	protected static final VoxelShape HANGING_SHAPE = VoxelShapes.union(
 		Block.createCuboidShape(5.0, 1.0, 5.0, 11.0, 8.0, 11.0), Block.createCuboidShape(6.0, 8.0, 6.0, 10.0, 10.0, 10.0)
 	);
+
+	@Override
+	public MapCodec<LanternBlock> getCodec() {
+		return CODEC;
+	}
 
 	public LanternBlock(AbstractBlock.Settings settings) {
 		super(settings);

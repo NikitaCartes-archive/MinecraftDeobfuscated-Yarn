@@ -18,13 +18,13 @@ public class SequenceEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(List<? extends EntryCombiner> list) {
-		return switch (list.size()) {
+	protected EntryCombiner combine(List<? extends EntryCombiner> terms) {
+		return switch (terms.size()) {
 			case 0 -> ALWAYS_TRUE;
-			case 1 -> (EntryCombiner)list.get(0);
-			case 2 -> ((EntryCombiner)list.get(0)).and((EntryCombiner)list.get(1));
+			case 1 -> (EntryCombiner)terms.get(0);
+			case 2 -> ((EntryCombiner)terms.get(0)).and((EntryCombiner)terms.get(1));
 			default -> (context, lootChoiceExpander) -> {
-			for (EntryCombiner entryCombiner : list) {
+			for (EntryCombiner entryCombiner : terms) {
 				if (!entryCombiner.expand(context, lootChoiceExpander)) {
 					return false;
 				}

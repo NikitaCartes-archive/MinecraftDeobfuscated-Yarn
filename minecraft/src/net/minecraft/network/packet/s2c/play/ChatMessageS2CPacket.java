@@ -48,7 +48,7 @@ public record ChatMessageS2CPacket(
 			buf.readVarInt(),
 			buf.readNullable(MessageSignatureData::fromBuf),
 			new MessageBody.Serialized(buf),
-			buf.readNullable(PacketByteBuf::readText),
+			buf.readNullable(PacketByteBuf::readUnlimitedText),
 			FilterMask.readMask(buf),
 			new MessageType.Serialized(buf)
 		);

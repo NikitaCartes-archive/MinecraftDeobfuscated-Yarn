@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -23,9 +24,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class DaylightDetectorBlock extends BlockWithEntity {
+	public static final MapCodec<DaylightDetectorBlock> CODEC = createCodec(DaylightDetectorBlock::new);
 	public static final IntProperty POWER = Properties.POWER;
 	public static final BooleanProperty INVERTED = Properties.INVERTED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0);
+
+	@Override
+	public MapCodec<DaylightDetectorBlock> getCodec() {
+		return CODEC;
+	}
 
 	public DaylightDetectorBlock(AbstractBlock.Settings settings) {
 		super(settings);

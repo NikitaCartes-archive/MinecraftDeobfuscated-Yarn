@@ -295,6 +295,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.updatePose();
 	}
 
+	@Override
+	protected float getMaxRelativeHeadRotation() {
+		return this.isBlocking() ? 15.0F : super.getMaxRelativeHeadRotation();
+	}
+
 	public boolean shouldCancelInteraction() {
 		return this.isSneaking();
 	}
@@ -2226,6 +2231,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else {
 			return this.isSprinting() ? 0.025999999F : 0.02F;
 		}
+	}
+
+	public static boolean isUsernameValid(String name) {
+		return name.length() > 16 ? false : name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
 	}
 
 	/**

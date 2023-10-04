@@ -1,31 +1,28 @@
-package net.minecraft.loot;
+package net.minecraft.loot.function;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.BiFunction;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.function.LootFunction;
-import net.minecraft.loot.function.LootFunctionType;
-import net.minecraft.loot.function.LootFunctionTypes;
 
-public class AndFunction implements LootFunction {
-	public static final Codec<AndFunction> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(LootFunctionTypes.CODEC.listOf().fieldOf("functions").forGetter(andFunction -> andFunction.terms))
-				.apply(instance, AndFunction::new)
+public class AndLootFunction implements LootFunction {
+	public static final Codec<AndLootFunction> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(LootFunctionTypes.CODEC.listOf().fieldOf("functions").forGetter(function -> function.terms)).apply(instance, AndLootFunction::new)
 	);
-	public static final Codec<AndFunction> field_45835 = LootFunctionTypes.CODEC.listOf().xmap(AndFunction::new, andFunction -> andFunction.terms);
+	public static final Codec<AndLootFunction> INLINE_CODEC = LootFunctionTypes.CODEC.listOf().xmap(AndLootFunction::new, function -> function.terms);
 	private final List<LootFunction> terms;
 	private final BiFunction<ItemStack, LootContext, ItemStack> applier;
 
-	private AndFunction(List<LootFunction> terms) {
+	private AndLootFunction(List<LootFunction> terms) {
 		this.terms = terms;
 		this.applier = LootFunctionTypes.join(terms);
 	}
 
-	public static AndFunction create(List<LootFunction> terms) {
-		return new AndFunction(List.copyOf(terms));
+	public static AndLootFunction create(List<LootFunction> terms) {
+		return new AndLootFunction(List.copyOf(terms));
 	}
 
 	public ItemStack apply(ItemStack itemStack, LootContext lootContext) {

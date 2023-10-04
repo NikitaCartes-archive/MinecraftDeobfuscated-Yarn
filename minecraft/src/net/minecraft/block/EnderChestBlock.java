@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -37,10 +38,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> implements Waterloggable {
+	public static final MapCodec<EnderChestBlock> CODEC = createCodec(EnderChestBlock::new);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 	private static final Text CONTAINER_NAME = Text.translatable("container.enderchest");
+
+	@Override
+	public MapCodec<EnderChestBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected EnderChestBlock(AbstractBlock.Settings settings) {
 		super(settings, () -> BlockEntityType.ENDER_CHEST);

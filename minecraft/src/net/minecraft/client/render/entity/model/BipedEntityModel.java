@@ -60,6 +60,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	private static final float SPYGLASS_ARM_YAW_OFFSET = (float) (Math.PI / 12);
 	private static final float SPYGLASS_ARM_PITCH_OFFSET = 1.9198622F;
 	private static final float SPYGLASS_SNEAKING_ARM_PITCH_OFFSET = (float) (Math.PI / 12);
+	private static final float field_46576 = (float) (-Math.PI * 4.0 / 9.0);
+	private static final float field_46577 = 0.43633232F;
 	public static final float field_39069 = 1.4835298F;
 	public static final float field_39070 = (float) (Math.PI / 6);
 	public final ModelPart head;
@@ -299,8 +301,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 				this.rightArm.yaw = 0.0F;
 				break;
 			case BLOCK:
-				this.rightArm.pitch = this.rightArm.pitch * 0.5F - 0.9424779F;
-				this.rightArm.yaw = (float) (-Math.PI / 6);
+				this.positionBlockingArm(this.rightArm, true);
 				break;
 			case ITEM:
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) (Math.PI / 10);
@@ -342,8 +343,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 				this.leftArm.yaw = 0.0F;
 				break;
 			case BLOCK:
-				this.leftArm.pitch = this.leftArm.pitch * 0.5F - 0.9424779F;
-				this.leftArm.yaw = (float) (Math.PI / 6);
+				this.positionBlockingArm(this.leftArm, false);
 				break;
 			case ITEM:
 				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) (Math.PI / 10);
@@ -377,6 +377,11 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 				this.leftArm.pitch = MathHelper.clamp(this.head.pitch, -1.2F, 1.2F) - 1.4835298F;
 				this.leftArm.yaw = this.head.yaw + (float) (Math.PI / 6);
 		}
+	}
+
+	private void positionBlockingArm(ModelPart arm, boolean rightArm) {
+		arm.pitch = arm.pitch * 0.5F - 0.9424779F + MathHelper.clamp(this.head.pitch, (float) (-Math.PI * 4.0 / 9.0), 0.43633232F);
+		arm.yaw = (rightArm ? -30.0F : 30.0F) * (float) (Math.PI / 180.0) + this.head.yaw;
 	}
 
 	protected void animateArms(T entity, float animationProgress) {

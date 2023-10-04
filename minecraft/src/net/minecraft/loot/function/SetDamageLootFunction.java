@@ -17,11 +17,11 @@ import org.slf4j.Logger;
 public class SetDamageLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<SetDamageLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<LootNumberProvider, boolean>and(
 					instance.group(
-						LootNumberProviderTypes.CODEC.fieldOf("damage").forGetter(setDamageLootFunction -> setDamageLootFunction.durabilityRange),
-						Codec.BOOL.fieldOf("add").orElse(false).forGetter(setDamageLootFunction -> setDamageLootFunction.add)
+						LootNumberProviderTypes.CODEC.fieldOf("damage").forGetter(function -> function.durabilityRange),
+						Codec.BOOL.fieldOf("add").orElse(false).forGetter(function -> function.add)
 					)
 				)
 				.apply(instance, SetDamageLootFunction::new)

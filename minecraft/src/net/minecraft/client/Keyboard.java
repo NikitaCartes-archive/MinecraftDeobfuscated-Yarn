@@ -109,11 +109,11 @@ public class Keyboard {
 	}
 
 	private void debugLog(String key, Object... args) {
-		this.debugLog(Text.translatable(key, args));
+		this.debugLog(Text.stringifiedTranslatable(key, args));
 	}
 
 	private void debugError(String key, Object... args) {
-		this.addDebugMessage(Formatting.RED, Text.translatable(key, args));
+		this.addDebugMessage(Formatting.RED, Text.stringifiedTranslatable(key, args));
 	}
 
 	private void debugFormattedLog(String pattern, Object... args) {

@@ -52,9 +52,7 @@ public class ServerConfigHandler {
 			server.getGameProfileRepo().findProfilesByNames(strings, callback);
 		} else {
 			for (String string : strings) {
-				UUID uUID = Uuids.getOfflinePlayerUuid(string);
-				GameProfile gameProfile = new GameProfile(uUID, string);
-				callback.onProfileLookupSucceeded(gameProfile);
+				callback.onProfileLookupSucceeded(Uuids.getOfflinePlayerProfile(string));
 			}
 		}
 	}

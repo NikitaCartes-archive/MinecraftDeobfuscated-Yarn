@@ -13,7 +13,7 @@ public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListene
 	}
 
 	public LoginDisconnectS2CPacket(PacketByteBuf buf) {
-		this.reason = Text.Serializer.fromLenientJson(buf.readString(PacketByteBuf.MAX_TEXT_LENGTH));
+		this.reason = Text.Serialization.fromLenientJson(buf.readString(PacketByteBuf.MAX_TEXT_LENGTH));
 	}
 
 	@Override

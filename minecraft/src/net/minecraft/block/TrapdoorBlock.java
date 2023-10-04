@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -24,6 +26,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
+	public static final MapCodec<TrapdoorBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(BlockSetType.CODEC.fieldOf("block_set_type").forGetter(block -> block.blockSetType), createSettingsCodec())
+				.apply(instance, TrapdoorBlock::new)
+	);
 	public static final BooleanProperty OPEN = Properties.OPEN;
 	public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
 	public static final BooleanProperty POWERED = Properties.POWERED;
@@ -37,9 +43,14 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	protected static final VoxelShape OPEN_TOP_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
 	private final BlockSetType blockSetType;
 
-	protected TrapdoorBlock(AbstractBlock.Settings settings, BlockSetType blockSetType) {
-		super(settings.sounds(blockSetType.soundType()));
-		this.blockSetType = blockSetType;
+	@Override
+	public MapCodec<TrapdoorBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected TrapdoorBlock(BlockSetType type, AbstractBlock.Settings settings) {
+		super(settings.sounds(type.soundType()));
+		this.blockSetType = type;
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()

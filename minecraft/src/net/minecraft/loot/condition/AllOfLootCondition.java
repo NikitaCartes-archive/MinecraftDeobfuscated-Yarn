@@ -5,7 +5,7 @@ import java.util.List;
 
 public class AllOfLootCondition extends AlternativeLootCondition {
 	public static final Codec<AllOfLootCondition> CODEC = createCodec(AllOfLootCondition::new);
-	public static final Codec<AllOfLootCondition> field_45858 = method_53410(AllOfLootCondition::new);
+	public static final Codec<AllOfLootCondition> INLINE_CODEC = createInlineCodec(AllOfLootCondition::new);
 
 	AllOfLootCondition(List<LootCondition> terms) {
 		super(terms, LootConditionTypes.matchingAll(terms));

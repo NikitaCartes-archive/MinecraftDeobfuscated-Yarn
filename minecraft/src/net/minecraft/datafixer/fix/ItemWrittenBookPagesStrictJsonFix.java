@@ -38,14 +38,14 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 
 								if (text == null) {
 									try {
-										text = Text.Serializer.fromJson(string);
+										text = Text.Serialization.fromJson(string);
 									} catch (Exception var5) {
 									}
 								}
 
 								if (text == null) {
 									try {
-										text = Text.Serializer.fromLenientJson(string);
+										text = Text.Serialization.fromLenientJson(string);
 									} catch (Exception var4) {
 									}
 								}
@@ -60,7 +60,7 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 							text = ScreenTexts.EMPTY;
 						}
 
-						return dynamicxx.createString(Text.Serializer.toJson(text));
+						return dynamicxx.createString(Text.Serialization.toJsonString(text));
 					}
 				})).map(dynamic::createList).result(), dynamic.emptyList()));
 	}

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.OptionalInt;
 import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.fluid.FluidState;
@@ -22,11 +23,17 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class LeavesBlock extends Block implements Waterloggable {
+	public static final MapCodec<LeavesBlock> CODEC = createCodec(LeavesBlock::new);
 	public static final int MAX_DISTANCE = 7;
 	public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
 	public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final int field_31112 = 1;
+
+	@Override
+	public MapCodec<? extends LeavesBlock> getCodec() {
+		return CODEC;
+	}
 
 	public LeavesBlock(AbstractBlock.Settings settings) {
 		super(settings);

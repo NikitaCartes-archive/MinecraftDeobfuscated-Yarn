@@ -18,10 +18,9 @@ import net.minecraft.registry.tag.TagKey;
 public class TagEntry extends LeafEntry {
 	public static final Codec<TagEntry> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("name").forGetter(tagEntry -> tagEntry.name),
-					Codec.BOOL.fieldOf("expand").forGetter(tagEntry -> tagEntry.expand)
+					TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("name").forGetter(entry -> entry.name), Codec.BOOL.fieldOf("expand").forGetter(entry -> entry.expand)
 				)
-				.<int, int, List<LootCondition>, List<LootFunction>>and(method_53290(instance))
+				.<int, int, List<LootCondition>, List<LootFunction>>and(addLeafFields(instance))
 				.apply(instance, TagEntry::new)
 	);
 	private final TagKey<Item> name;

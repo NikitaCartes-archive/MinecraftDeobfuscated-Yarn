@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
@@ -53,8 +54,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -72,18 +73,23 @@ import org.joml.Vector3f;
  * {@link #nonEmptyList(Codec)}.
  */
 public class Codecs {
-	public static final Codec<JsonElement> JSON_ELEMENT = Codec.PASSTHROUGH
-		.xmap(dynamic -> dynamic.convert(JsonOps.INSTANCE).getValue(), element -> new Dynamic<>(JsonOps.INSTANCE, element));
-	public static final Codec<Text> TEXT = fromJsonSerializer(Text.Serializer::fromJson, Text.Serializer::toJsonTree);
-	public static final Codec<Text> STRINGIFIED_TEXT = Codec.STRING.flatXmap(json -> {
+	public static final Codec<JsonElement> JSON_ELEMENT = fromOps(JsonOps.INSTANCE);
+	/**
+	 * A passthrough codec for a basic object. See {@link RuntimeOps} for
+	 * types of objects this can "serialize".
+	 * 
+	 * @see RuntimeOps
+	 */
+	public static final Codec<Object> BASIC_OBJECT = fromOps(RuntimeOps.INSTANCE);
+	public static final Codec<JsonElement> STRINGIFIED_TEXT = Codec.STRING.flatXmap(json -> {
 		try {
-			return DataResult.success(Text.Serializer.fromJson(json));
+			return DataResult.success(JsonParser.parseString(json));
 		} catch (JsonParseException var2) {
 			return DataResult.error(var2::getMessage);
 		}
-	}, text -> {
+	}, json -> {
 		try {
-			return DataResult.success(Text.Serializer.toJson(text));
+			return DataResult.success(JsonHelper.toSortedString(json));
 		} catch (IllegalArgumentException var2) {
 			return DataResult.error(var2::getMessage);
 		}
@@ -210,21 +216,8 @@ public class Codecs {
 		path -> !Identifier.isPathValid(path) ? DataResult.error(() -> "Invalid string to use as a resource path element: " + path) : DataResult.success(path)
 	);
 
-	@Deprecated
-	public static <T> Codec<T> fromJsonSerializer(Function<JsonElement, T> deserializer, Function<T, JsonElement> serializer) {
-		return JSON_ELEMENT.flatXmap(json -> {
-			try {
-				return DataResult.success(deserializer.apply(json));
-			} catch (JsonParseException var3) {
-				return DataResult.error(var3::getMessage);
-			}
-		}, value -> {
-			try {
-				return DataResult.success((JsonElement)serializer.apply(value));
-			} catch (IllegalArgumentException var3) {
-				return DataResult.error(var3::getMessage);
-			}
-		});
+	public static <T> Codec<T> fromOps(DynamicOps<T> ops) {
+		return Codec.PASSTHROUGH.xmap(dynamic -> dynamic.convert(ops).getValue(), object -> new Dynamic<>(ops, (T)object));
 	}
 
 	/**
@@ -331,6 +324,29 @@ public class Codecs {
 			@Override
 			public <T> DataResult<Pair<E, T>> decode(DynamicOps<T> ops, T input) {
 				return ops.compressMaps() ? compressedCodec.decode(ops, input) : uncompressedCodec.decode(ops, input);
+			}
+
+			public String toString() {
+				return uncompressedCodec + " orCompressed " + compressedCodec;
+			}
+		};
+	}
+
+	public static <E> MapCodec<E> orCompressed(MapCodec<E> uncompressedCodec, MapCodec<E> compressedCodec) {
+		return new MapCodec<E>() {
+			@Override
+			public <T> RecordBuilder<T> encode(E input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+				return ops.compressMaps() ? compressedCodec.encode(input, ops, prefix) : uncompressedCodec.encode(input, ops, prefix);
+			}
+
+			@Override
+			public <T> DataResult<E> decode(DynamicOps<T> ops, MapLike<T> input) {
+				return ops.compressMaps() ? compressedCodec.decode(ops, input) : uncompressedCodec.decode(ops, input);
+			}
+
+			@Override
+			public <T> Stream<T> keys(DynamicOps<T> ops) {
+				return compressedCodec.keys(ops);
 			}
 
 			public String toString() {

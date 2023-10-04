@@ -762,7 +762,9 @@ public abstract class DisplayEntity extends Entity {
 
 		@Override
 		protected void refreshData(boolean shouldLerp, float lerpProgress) {
-			this.data = new DisplayEntity.ItemDisplayEntity.Data(this.getItemStack(), this.getTransformationMode());
+			ItemStack itemStack = this.getItemStack();
+			itemStack.setHolder(this);
+			this.data = new DisplayEntity.ItemDisplayEntity.Data(itemStack, this.getTransformationMode());
 		}
 
 		public static record Data(ItemStack itemStack, ModelTransformationMode itemTransform) {
@@ -909,7 +911,7 @@ public abstract class DisplayEntity extends Entity {
 				String string = nbt.getString("text");
 
 				try {
-					Text text = Text.Serializer.fromJson(string);
+					Text text = Text.Serialization.fromJson(string);
 					if (text != null) {
 						ServerCommandSource serverCommandSource = this.getCommandSource().withLevel(2);
 						Text text2 = Texts.parse(serverCommandSource, text, this, 0);
@@ -930,7 +932,7 @@ public abstract class DisplayEntity extends Entity {
 		@Override
 		protected void writeCustomDataToNbt(NbtCompound nbt) {
 			super.writeCustomDataToNbt(nbt);
-			nbt.putString("text", Text.Serializer.toJson(this.getText()));
+			nbt.putString("text", Text.Serialization.toJsonString(this.getText()));
 			nbt.putInt("line_width", this.getLineWidth());
 			nbt.putInt("background", this.getBackground());
 			nbt.putByte("text_opacity", this.getTextOpacity());

@@ -1,11 +1,14 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BrushableBlockEntity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
@@ -21,13 +24,27 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class BrushableBlock extends BlockWithEntity implements LandingBlock {
+	public static final MapCodec<BrushableBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Registries.BLOCK.getCodec().fieldOf("turns_into").forGetter(BrushableBlock::getBaseBlock),
+					Registries.SOUND_EVENT.getCodec().fieldOf("brush_sound").forGetter(BrushableBlock::getBrushingSound),
+					Registries.SOUND_EVENT.getCodec().fieldOf("brush_comleted_sound").forGetter(BrushableBlock::getBrushingCompleteSound),
+					createSettingsCodec()
+				)
+				.apply(instance, BrushableBlock::new)
+	);
 	private static final IntProperty DUSTED = Properties.DUSTED;
 	public static final int field_42773 = 2;
 	private final Block baseBlock;
 	private final SoundEvent brushingSound;
 	private final SoundEvent brushingCompleteSound;
 
-	public BrushableBlock(Block baseBlock, AbstractBlock.Settings settings, SoundEvent brushingSound, SoundEvent brushingCompleteSound) {
+	@Override
+	public MapCodec<BrushableBlock> getCodec() {
+		return CODEC;
+	}
+
+	public BrushableBlock(Block baseBlock, SoundEvent brushingSound, SoundEvent brushingCompleteSound, AbstractBlock.Settings settings) {
 		super(settings);
 		this.baseBlock = baseBlock;
 		this.brushingSound = brushingSound;

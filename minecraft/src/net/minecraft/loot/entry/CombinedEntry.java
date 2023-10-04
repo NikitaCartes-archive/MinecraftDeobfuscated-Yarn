@@ -32,7 +32,7 @@ public abstract class CombinedEntry extends LootPoolEntry {
 		}
 	}
 
-	protected abstract EntryCombiner combine(List<? extends EntryCombiner> list);
+	protected abstract EntryCombiner combine(List<? extends EntryCombiner> terms);
 
 	@Override
 	public final boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {
@@ -42,15 +42,15 @@ public abstract class CombinedEntry extends LootPoolEntry {
 	public static <T extends CombinedEntry> Codec<T> createCodec(CombinedEntry.Factory<T> factory) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(LootPoolEntryTypes.CODEC.listOf(), "children", List.of()).forGetter(combinedEntry -> combinedEntry.children)
+						Codecs.createStrictOptionalFieldCodec(LootPoolEntryTypes.CODEC.listOf(), "children", List.of()).forGetter(entry -> entry.children)
 					)
-					.and(method_53287(instance).t1())
+					.and(addConditionsField(instance).t1())
 					.apply(instance, factory::create)
 		);
 	}
 
 	@FunctionalInterface
 	public interface Factory<T extends CombinedEntry> {
-		T create(List<LootPoolEntry> list, List<LootCondition> list2);
+		T create(List<LootPoolEntry> terms, List<LootCondition> conditions);
 	}
 }

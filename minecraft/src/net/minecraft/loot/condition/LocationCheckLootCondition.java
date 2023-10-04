@@ -13,7 +13,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
 public record LocationCheckLootCondition(Optional<LocationPredicate> predicate, BlockPos offset) implements LootCondition {
-	private static final MapCodec<BlockPos> BLOCK_POS_CODEC = RecordCodecBuilder.mapCodec(
+	private static final MapCodec<BlockPos> OFFSET_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(Codec.INT, "offsetX", 0).forGetter(Vec3i::getX),
 					Codecs.createStrictOptionalFieldCodec(Codec.INT, "offsetY", 0).forGetter(Vec3i::getY),
@@ -24,7 +24,7 @@ public record LocationCheckLootCondition(Optional<LocationPredicate> predicate, 
 	public static final Codec<LocationCheckLootCondition> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "predicate").forGetter(LocationCheckLootCondition::predicate),
-					BLOCK_POS_CODEC.forGetter(LocationCheckLootCondition::offset)
+					OFFSET_CODEC.forGetter(LocationCheckLootCondition::offset)
 				)
 				.apply(instance, LocationCheckLootCondition::new)
 	);

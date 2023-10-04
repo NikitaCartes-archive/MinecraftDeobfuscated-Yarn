@@ -32,13 +32,13 @@ import net.minecraft.world.BlockView;
 public class SpreadPlayersCommand {
 	private static final int MAX_ATTEMPTS = 10000;
 	private static final Dynamic4CommandExceptionType FAILED_TEAMS_EXCEPTION = new Dynamic4CommandExceptionType(
-		(pilesCount, x, z, maxSpreadDistance) -> Text.translatable("commands.spreadplayers.failed.teams", pilesCount, x, z, maxSpreadDistance)
+		(pilesCount, x, z, maxSpreadDistance) -> Text.stringifiedTranslatable("commands.spreadplayers.failed.teams", pilesCount, x, z, maxSpreadDistance)
 	);
 	private static final Dynamic4CommandExceptionType FAILED_ENTITIES_EXCEPTION = new Dynamic4CommandExceptionType(
-		(pilesCount, x, z, maxSpreadDistance) -> Text.translatable("commands.spreadplayers.failed.entities", pilesCount, x, z, maxSpreadDistance)
+		(pilesCount, x, z, maxSpreadDistance) -> Text.stringifiedTranslatable("commands.spreadplayers.failed.entities", pilesCount, x, z, maxSpreadDistance)
 	);
 	private static final Dynamic2CommandExceptionType INVALID_HEIGHT_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxY, worldBottomY) -> Text.translatable("commands.spreadplayers.failed.invalid.height", maxY, worldBottomY)
+		(maxY, worldBottomY) -> Text.stringifiedTranslatable("commands.spreadplayers.failed.invalid.height", maxY, worldBottomY)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

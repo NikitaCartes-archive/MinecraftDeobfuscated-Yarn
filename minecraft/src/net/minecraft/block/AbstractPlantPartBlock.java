@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -22,6 +23,9 @@ public abstract class AbstractPlantPartBlock extends Block {
 		this.outlineShape = outlineShape;
 		this.tickWater = tickWater;
 	}
+
+	@Override
+	protected abstract MapCodec<? extends AbstractPlantPartBlock> getCodec();
 
 	@Nullable
 	@Override

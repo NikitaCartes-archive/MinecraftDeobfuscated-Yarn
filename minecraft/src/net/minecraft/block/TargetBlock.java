@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -21,9 +22,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class TargetBlock extends Block {
+	public static final MapCodec<TargetBlock> CODEC = createCodec(TargetBlock::new);
 	private static final IntProperty POWER = Properties.POWER;
 	private static final int RECOVERABLE_POWER_DELAY = 20;
 	private static final int REGULAR_POWER_DELAY = 8;
+
+	@Override
+	public MapCodec<TargetBlock> getCodec() {
+		return CODEC;
+	}
 
 	public TargetBlock(AbstractBlock.Settings settings) {
 		super(settings);

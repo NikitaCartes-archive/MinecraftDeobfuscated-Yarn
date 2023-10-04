@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.TadpoleEntity;
@@ -20,6 +21,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class FrogspawnBlock extends Block {
+	public static final MapCodec<FrogspawnBlock> CODEC = createCodec(FrogspawnBlock::new);
 	private static final int MIN_TADPOLES = 2;
 	private static final int MAX_TADPOLES = 5;
 	private static final int MIN_HATCH_TIME = 3600;
@@ -27,6 +29,11 @@ public class FrogspawnBlock extends Block {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.5, 16.0);
 	private static int minHatchTime = 3600;
 	private static int maxHatchTime = 12000;
+
+	@Override
+	public MapCodec<FrogspawnBlock> getCodec() {
+		return CODEC;
+	}
 
 	public FrogspawnBlock(AbstractBlock.Settings settings) {
 		super(settings);

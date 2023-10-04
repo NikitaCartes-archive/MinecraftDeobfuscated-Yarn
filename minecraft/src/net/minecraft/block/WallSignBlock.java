@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.FluidState;
@@ -20,6 +22,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class WallSignBlock extends AbstractSignBlock {
+	public static final MapCodec<WallSignBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(WoodType.CODEC.fieldOf("wood_type").forGetter(AbstractSignBlock::getWoodType), createSettingsCodec())
+				.apply(instance, WallSignBlock::new)
+	);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	protected static final float field_31282 = 2.0F;
 	protected static final float field_31283 = 4.5F;
@@ -37,8 +43,13 @@ public class WallSignBlock extends AbstractSignBlock {
 		)
 	);
 
-	public WallSignBlock(AbstractBlock.Settings settings, WoodType woodType) {
-		super(settings.sounds(woodType.soundType()), woodType);
+	@Override
+	public MapCodec<WallSignBlock> getCodec() {
+		return CODEC;
+	}
+
+	public WallSignBlock(WoodType woodType, AbstractBlock.Settings settings) {
+		super(woodType, settings.sounds(woodType.soundType()));
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 

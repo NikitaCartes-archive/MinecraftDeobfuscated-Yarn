@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -12,8 +13,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class PoweredRailBlock extends AbstractRailBlock {
+	public static final MapCodec<PoweredRailBlock> CODEC = createCodec(PoweredRailBlock::new);
 	public static final EnumProperty<RailShape> SHAPE = Properties.STRAIGHT_RAIL_SHAPE;
 	public static final BooleanProperty POWERED = Properties.POWERED;
+
+	@Override
+	public MapCodec<PoweredRailBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected PoweredRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);

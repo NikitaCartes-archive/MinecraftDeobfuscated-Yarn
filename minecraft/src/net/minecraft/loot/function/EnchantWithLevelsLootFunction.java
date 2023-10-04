@@ -15,11 +15,11 @@ import net.minecraft.util.math.random.Random;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	public static final Codec<EnchantWithLevelsLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
+		instance -> addConditionsField(instance)
 				.<LootNumberProvider, boolean>and(
 					instance.group(
-						LootNumberProviderTypes.CODEC.fieldOf("levels").forGetter(enchantWithLevelsLootFunction -> enchantWithLevelsLootFunction.range),
-						Codec.BOOL.fieldOf("treasure").orElse(false).forGetter(enchantWithLevelsLootFunction -> enchantWithLevelsLootFunction.treasureEnchantmentsAllowed)
+						LootNumberProviderTypes.CODEC.fieldOf("levels").forGetter(function -> function.range),
+						Codec.BOOL.fieldOf("treasure").orElse(false).forGetter(function -> function.treasureEnchantmentsAllowed)
 					)
 				)
 				.apply(instance, EnchantWithLevelsLootFunction::new)

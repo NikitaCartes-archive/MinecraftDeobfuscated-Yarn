@@ -12,8 +12,8 @@ import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Uuids;
-import net.minecraft.util.dynamic.Codecs;
 
 /**
  * Represents metadata sent to the client. This describes the server's message of the day, online players and the protocol version.
@@ -27,7 +27,7 @@ public record ServerMetadata(
 ) {
 	public static final Codec<ServerMetadata> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.TEXT.optionalFieldOf("description", ScreenTexts.EMPTY).forGetter(ServerMetadata::description),
+					TextCodecs.CODEC.optionalFieldOf("description", ScreenTexts.EMPTY).forGetter(ServerMetadata::description),
 					ServerMetadata.Players.CODEC.optionalFieldOf("players").forGetter(ServerMetadata::players),
 					ServerMetadata.Version.CODEC.optionalFieldOf("version").forGetter(ServerMetadata::version),
 					ServerMetadata.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerMetadata::favicon),

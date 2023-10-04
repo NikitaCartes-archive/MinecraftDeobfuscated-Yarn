@@ -24,7 +24,7 @@ import net.minecraft.world.timer.Timer;
 public class ScheduleCommand {
 	private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.schedule.same_tick"));
 	private static final DynamicCommandExceptionType CLEARED_FAILURE_EXCEPTION = new DynamicCommandExceptionType(
-		eventName -> Text.translatable("commands.schedule.cleared.failure", eventName)
+		eventName -> Text.stringifiedTranslatable("commands.schedule.cleared.failure", eventName)
 	);
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
 			context.getSource().getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().getEventNames(), builder
@@ -92,7 +92,7 @@ public class ScheduleCommand {
 				}
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
-				source.sendFeedback(() -> Text.translatable("commands.schedule.created.function", identifier, time, l), true);
+				source.sendFeedback(() -> Text.translatable("commands.schedule.created.function", Text.of(identifier), time, l), true);
 			}).ifRight(functions -> {
 				String string = "#" + identifier;
 				if (replace) {
@@ -100,7 +100,7 @@ public class ScheduleCommand {
 				}
 
 				timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
-				source.sendFeedback(() -> Text.translatable("commands.schedule.created.tag", identifier, time, l), true);
+				source.sendFeedback(() -> Text.translatable("commands.schedule.created.tag", Text.of(identifier), time, l), true);
 			});
 			return Math.floorMod(l, Integer.MAX_VALUE);
 		}

@@ -134,7 +134,7 @@ public class CommandBossBar extends ServerBossBar {
 
 	public NbtCompound toNbt() {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", Text.Serializer.toJson(this.name));
+		nbtCompound.putString("Name", Text.Serialization.toJsonString(this.name));
 		nbtCompound.putBoolean("Visible", this.isVisible());
 		nbtCompound.putInt("Value", this.value);
 		nbtCompound.putInt("Max", this.maxValue);
@@ -154,7 +154,7 @@ public class CommandBossBar extends ServerBossBar {
 	}
 
 	public static CommandBossBar fromNbt(NbtCompound nbt, Identifier id) {
-		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serializer.fromJson(nbt.getString("Name")));
+		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serialization.fromJson(nbt.getString("Name")));
 		commandBossBar.setVisible(nbt.getBoolean("Visible"));
 		commandBossBar.setValue(nbt.getInt("Value"));
 		commandBossBar.setMaxValue(nbt.getInt("Max"));

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
@@ -19,6 +20,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SnowBlock extends Block {
+	public static final MapCodec<SnowBlock> CODEC = createCodec(SnowBlock::new);
 	public static final int MAX_LAYERS = 8;
 	public static final IntProperty LAYERS = Properties.LAYERS;
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[]{
@@ -33,6 +35,11 @@ public class SnowBlock extends Block {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
 	};
 	public static final int field_31248 = 5;
+
+	@Override
+	public MapCodec<SnowBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected SnowBlock(AbstractBlock.Settings settings) {
 		super(settings);

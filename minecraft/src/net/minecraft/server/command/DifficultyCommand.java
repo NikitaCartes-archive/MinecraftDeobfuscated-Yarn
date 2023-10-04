@@ -10,7 +10,7 @@ import net.minecraft.world.Difficulty;
 
 public class DifficultyCommand {
 	private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(
-		difficulty -> Text.translatable("commands.difficulty.failure", difficulty)
+		difficulty -> Text.stringifiedTranslatable("commands.difficulty.failure", difficulty)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

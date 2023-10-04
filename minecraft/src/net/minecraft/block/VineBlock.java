@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class VineBlock extends Block {
+	public static final MapCodec<VineBlock> CODEC = createCodec(VineBlock::new);
 	public static final BooleanProperty UP = ConnectingBlock.UP;
 	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
 	public static final BooleanProperty EAST = ConnectingBlock.EAST;
@@ -40,6 +42,11 @@ public class VineBlock extends Block {
 	private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
 	private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
 	private final Map<BlockState, VoxelShape> shapesByState;
+
+	@Override
+	public MapCodec<VineBlock> getCodec() {
+		return CODEC;
+	}
 
 	public VineBlock(AbstractBlock.Settings settings) {
 		super(settings);

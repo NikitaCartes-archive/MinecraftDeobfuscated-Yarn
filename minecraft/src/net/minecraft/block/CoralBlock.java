@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -11,9 +13,17 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class CoralBlock extends CoralParentBlock {
+	public static final MapCodec<CoralBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(CoralBlockBlock.DEAD_FIELD.forGetter(block -> block.deadCoralBlock), createSettingsCodec()).apply(instance, CoralBlock::new)
+	);
 	private final Block deadCoralBlock;
 	protected static final float field_31076 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 15.0, 14.0);
+
+	@Override
+	public MapCodec<CoralBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected CoralBlock(Block deadCoralBlock, AbstractBlock.Settings settings) {
 		super(settings);

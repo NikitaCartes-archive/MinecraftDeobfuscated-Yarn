@@ -14,7 +14,7 @@ import net.minecraft.world.GameMode;
 public class SpectateCommand {
 	private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.spectate.self"));
 	private static final DynamicCommandExceptionType NOT_SPECTATOR_EXCEPTION = new DynamicCommandExceptionType(
-		playerName -> Text.translatable("commands.spectate.not_spectator", playerName)
+		playerName -> Text.stringifiedTranslatable("commands.spectate.not_spectator", playerName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

@@ -13,12 +13,10 @@ public class LootNbtProviderTypes {
 		.getCodec()
 		.dispatch(LootNbtProvider::getType, LootNbtProviderType::codec);
 	public static final Codec<LootNbtProvider> CODEC = Codecs.createLazy(
-		() -> Codec.either(ContextLootNbtProvider.field_45880, BASE_CODEC)
+		() -> Codec.either(ContextLootNbtProvider.INLINE_CODEC, BASE_CODEC)
 				.xmap(
 					either -> either.map(Function.identity(), Function.identity()),
-					lootNbtProvider -> lootNbtProvider instanceof ContextLootNbtProvider contextLootNbtProvider
-							? Either.left(contextLootNbtProvider)
-							: Either.right(lootNbtProvider)
+					provider -> provider instanceof ContextLootNbtProvider contextLootNbtProvider ? Either.left(contextLootNbtProvider) : Either.right(provider)
 				)
 	);
 	public static final LootNbtProviderType STORAGE = register("storage", StorageLootNbtProvider.CODEC);

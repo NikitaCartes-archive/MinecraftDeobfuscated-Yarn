@@ -29,6 +29,7 @@ public class GameTestState {
 	private long expectedStopTime;
 	private long tick;
 	private boolean started;
+	private boolean rerunUntilFailed;
 	private final Stopwatch stopwatch = Stopwatch.createUnstarted();
 	private boolean completed;
 	private final BlockRotation rotation;
@@ -262,5 +263,13 @@ public class GameTestState {
 
 	public int getRequiredSuccesses() {
 		return this.testFunction.getRequiredSuccesses();
+	}
+
+	public void setRerunUntilFailed(boolean rerunUntilFailed) {
+		this.rerunUntilFailed = rerunUntilFailed;
+	}
+
+	public boolean shouldRerunUntilFailed() {
+		return this.rerunUntilFailed;
 	}
 }

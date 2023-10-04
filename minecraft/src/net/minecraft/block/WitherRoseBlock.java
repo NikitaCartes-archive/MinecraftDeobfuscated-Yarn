@@ -1,5 +1,8 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -15,8 +18,21 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class WitherRoseBlock extends FlowerBlock {
-	public WitherRoseBlock(StatusEffect effect, AbstractBlock.Settings settings) {
-		super(effect, 8, settings);
+	public static final MapCodec<WitherRoseBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(STEW_EFFECT_CODEC.forGetter(FlowerBlock::getStewEffects), createSettingsCodec()).apply(instance, WitherRoseBlock::new)
+	);
+
+	@Override
+	public MapCodec<WitherRoseBlock> getCodec() {
+		return CODEC;
+	}
+
+	public WitherRoseBlock(StatusEffect effect, int i, AbstractBlock.Settings settings) {
+		this(createStewEffectList(effect, i), settings);
+	}
+
+	public WitherRoseBlock(List<SuspiciousStewIngredient.StewEffect> list, AbstractBlock.Settings settings) {
+		super(list, settings);
 	}
 
 	@Override

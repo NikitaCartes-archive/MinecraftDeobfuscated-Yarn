@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.feature.SnowmanPumpkinFeatureRenderer;
+import net.minecraft.client.render.entity.feature.SnowGolemPumpkinFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SnowGolemEntityModel;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -14,7 +14,7 @@ public class SnowGolemEntityRenderer extends MobEntityRenderer<SnowGolemEntity, 
 
 	public SnowGolemEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SnowGolemEntityModel<>(context.getPart(EntityModelLayers.SNOW_GOLEM)), 0.5F);
-		this.addFeature(new SnowmanPumpkinFeatureRenderer(this, context.getBlockRenderManager(), context.getItemRenderer()));
+		this.addFeature(new SnowGolemPumpkinFeatureRenderer(this, context.getBlockRenderManager(), context.getItemRenderer()));
 	}
 
 	public Identifier getTexture(SnowGolemEntity snowGolemEntity) {

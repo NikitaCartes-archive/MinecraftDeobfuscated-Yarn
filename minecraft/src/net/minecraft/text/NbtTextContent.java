@@ -4,6 +4,9 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,6 +19,16 @@ import org.slf4j.Logger;
 
 public class NbtTextContent implements TextContent {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final MapCodec<NbtTextContent> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Codec.STRING.fieldOf("nbt").forGetter(NbtTextContent::getPath),
+					Codec.BOOL.optionalFieldOf("interpret", Boolean.valueOf(false)).forGetter(NbtTextContent::shouldInterpret),
+					TextCodecs.CODEC.optionalFieldOf("separator").forGetter(NbtTextContent::getSeparator),
+					NbtDataSource.CODEC.forGetter(NbtTextContent::getDataSource)
+				)
+				.apply(instance, NbtTextContent::new)
+	);
+	public static final TextContent.Type<NbtTextContent> TYPE = new TextContent.Type<>(CODEC, "nbt");
 	private final boolean interpret;
 	private final Optional<Text> separator;
 	private final String rawPath;
@@ -101,7 +114,7 @@ public class NbtTextContent implements TextContent {
 				Text text = DataFixUtils.orElse(Texts.parse(source, this.separator, sender, depth), Texts.DEFAULT_SEPARATOR_TEXT);
 				return (MutableText)stream.flatMap(textx -> {
 					try {
-						MutableText mutableText = Text.Serializer.fromJson(textx);
+						MutableText mutableText = Text.Serialization.fromJson(textx);
 						return Stream.of(Texts.parse(source, mutableText, sender, depth));
 					} catch (Exception var5x) {
 						LOGGER.warn("Failed to parse component: {}", textx, var5x);
@@ -116,5 +129,10 @@ public class NbtTextContent implements TextContent {
 		} else {
 			return Text.empty();
 		}
+	}
+
+	@Override
+	public TextContent.Type<?> getType() {
+		return TYPE;
 	}
 }

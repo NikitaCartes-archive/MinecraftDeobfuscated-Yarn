@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -13,6 +14,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class TorchflowerBlock extends CropBlock {
+	public static final MapCodec<TorchflowerBlock> CODEC = createCodec(TorchflowerBlock::new);
 	public static final int field_42775 = 2;
 	public static final IntProperty AGE = Properties.AGE_1;
 	private static final float field_42777 = 3.0F;
@@ -20,6 +22,11 @@ public class TorchflowerBlock extends CropBlock {
 		Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0), Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0)
 	};
 	private static final int field_44479 = 1;
+
+	@Override
+	public MapCodec<TorchflowerBlock> getCodec() {
+		return CODEC;
+	}
 
 	public TorchflowerBlock(AbstractBlock.Settings settings) {
 		super(settings);

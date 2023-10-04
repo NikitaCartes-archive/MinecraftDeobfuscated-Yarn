@@ -57,12 +57,12 @@ public class StopSoundCommand {
 
 		if (category != null) {
 			if (sound != null) {
-				source.sendFeedback(() -> Text.translatable("commands.stopsound.success.source.sound", sound, category.getName()), true);
+				source.sendFeedback(() -> Text.translatable("commands.stopsound.success.source.sound", Text.of(sound), category.getName()), true);
 			} else {
 				source.sendFeedback(() -> Text.translatable("commands.stopsound.success.source.any", category.getName()), true);
 			}
 		} else if (sound != null) {
-			source.sendFeedback(() -> Text.translatable("commands.stopsound.success.sourceless.sound", sound), true);
+			source.sendFeedback(() -> Text.translatable("commands.stopsound.success.sourceless.sound", Text.of(sound)), true);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.stopsound.success.sourceless.any"), true);
 		}

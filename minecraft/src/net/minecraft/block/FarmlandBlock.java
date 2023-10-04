@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,9 +25,15 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class FarmlandBlock extends Block {
+	public static final MapCodec<FarmlandBlock> CODEC = createCodec(FarmlandBlock::new);
 	public static final IntProperty MOISTURE = Properties.MOISTURE;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
 	public static final int MAX_MOISTURE = 7;
+
+	@Override
+	public MapCodec<FarmlandBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected FarmlandBlock(AbstractBlock.Settings settings) {
 		super(settings);

@@ -8,7 +8,7 @@ public record ConstantLootNumberProvider(float value) implements LootNumberProvi
 	public static final Codec<ConstantLootNumberProvider> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(Codec.FLOAT.fieldOf("value").forGetter(ConstantLootNumberProvider::value)).apply(instance, ConstantLootNumberProvider::new)
 	);
-	public static final Codec<ConstantLootNumberProvider> field_45887 = Codec.FLOAT.xmap(ConstantLootNumberProvider::new, ConstantLootNumberProvider::value);
+	public static final Codec<ConstantLootNumberProvider> INLINE_CODEC = Codec.FLOAT.xmap(ConstantLootNumberProvider::new, ConstantLootNumberProvider::value);
 
 	@Override
 	public LootNumberProviderType getType() {

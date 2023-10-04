@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -25,11 +26,17 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<SweetBerryBushBlock> CODEC = createCodec(SweetBerryBushBlock::new);
 	private static final float field_31260 = 0.003F;
 	public static final int MAX_AGE = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
 	private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 8.0, 13.0);
 	private static final VoxelShape LARGE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
+
+	@Override
+	public MapCodec<SweetBerryBushBlock> getCodec() {
+		return CODEC;
+	}
 
 	public SweetBerryBushBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -37,7 +44,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Items.SWEET_BERRIES);
 	}
 

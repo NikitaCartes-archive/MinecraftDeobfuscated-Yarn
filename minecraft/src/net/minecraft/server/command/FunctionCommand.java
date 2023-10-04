@@ -22,7 +22,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 
 public class FunctionCommand {
 	private static final DynamicCommandExceptionType ARGUMENT_NOT_COMPOUND_EXCEPTION = new DynamicCommandExceptionType(
-		argument -> Text.translatable("commands.function.error.argument_not_compound", argument)
+		argument -> Text.stringifiedTranslatable("commands.function.error.argument_not_compound", argument)
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
 		CommandFunctionManager commandFunctionManager = context.getSource().getServer().getCommandFunctionManager();
@@ -103,9 +103,11 @@ public class FunctionCommand {
 			int j = i;
 			if (functions.size() == 1) {
 				if (bl) {
-					source.sendFeedback(() -> Text.translatable("commands.function.success.single.result", j, ((CommandFunction)functions.iterator().next()).getId()), true);
+					source.sendFeedback(
+						() -> Text.translatable("commands.function.success.single.result", j, Text.of(((CommandFunction)functions.iterator().next()).getId())), true
+					);
 				} else {
-					source.sendFeedback(() -> Text.translatable("commands.function.success.single", j, ((CommandFunction)functions.iterator().next()).getId()), true);
+					source.sendFeedback(() -> Text.translatable("commands.function.success.single", j, Text.of(((CommandFunction)functions.iterator().next()).getId())), true);
 				}
 			} else if (bl) {
 				source.sendFeedback(() -> Text.translatable("commands.function.success.multiple.result", functions.size()), true);

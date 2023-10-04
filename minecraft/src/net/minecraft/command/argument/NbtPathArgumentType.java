@@ -35,13 +35,13 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 	);
 	public static final SimpleCommandExceptionType TOO_DEEP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.nbtpath.too_deep"));
 	public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(
-		path -> Text.translatable("arguments.nbtpath.nothing_found", path)
+		path -> Text.stringifiedTranslatable("arguments.nbtpath.nothing_found", path)
 	);
 	static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(
-		nbt -> Text.translatable("commands.data.modify.expected_list", nbt)
+		nbt -> Text.stringifiedTranslatable("commands.data.modify.expected_list", nbt)
 	);
 	static final DynamicCommandExceptionType INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(
-		index -> Text.translatable("commands.data.modify.invalid_index", index)
+		index -> Text.stringifiedTranslatable("commands.data.modify.invalid_index", index)
 	);
 	private static final char LEFT_SQUARE_BRACKET = '[';
 	private static final char RIGHT_SQUARE_BRACKET = ']';
@@ -626,7 +626,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 				} else {
 					NbtPathArgumentType.PathNode pathNode = this.nodes[this.nodes.length - 1];
 					MutableBoolean mutableBoolean = new MutableBoolean(false);
-					return forEach(list, nbtElement2 -> pathNode.set(nbtElement2, () -> {
+					return forEach(list, nbt -> pathNode.set(nbt, () -> {
 							if (mutableBoolean.isFalse()) {
 								mutableBoolean.setTrue();
 								return nbtElement;
@@ -700,6 +700,10 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		}
 
 		public String toString() {
+			return this.string;
+		}
+
+		public String getString() {
 			return this.string;
 		}
 	}

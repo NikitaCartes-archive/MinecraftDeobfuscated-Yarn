@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -8,6 +9,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class TallFlowerBlock extends TallPlantBlock implements Fertilizable {
+	public static final MapCodec<TallFlowerBlock> CODEC = createCodec(TallFlowerBlock::new);
+
+	@Override
+	public MapCodec<TallFlowerBlock> getCodec() {
+		return CODEC;
+	}
+
 	public TallFlowerBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

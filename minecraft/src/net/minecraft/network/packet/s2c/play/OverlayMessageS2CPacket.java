@@ -13,7 +13,7 @@ public class OverlayMessageS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	public OverlayMessageS2CPacket(PacketByteBuf buf) {
-		this.message = buf.readText();
+		this.message = buf.readUnlimitedText();
 	}
 
 	@Override

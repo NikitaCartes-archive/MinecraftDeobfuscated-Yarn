@@ -17,8 +17,8 @@ import net.minecraft.nbt.NbtHelper;
 
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	public static final Codec<FillPlayerHeadLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> method_53344(instance)
-				.and(LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(fillPlayerHeadLootFunction -> fillPlayerHeadLootFunction.entity))
+		instance -> addConditionsField(instance)
+				.and(LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(function -> function.entity))
 				.apply(instance, FillPlayerHeadLootFunction::new)
 	);
 	private final LootContext.EntityTarget entity;
@@ -49,6 +49,6 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(LootContext.EntityTarget target) {
-		return builder(list -> new FillPlayerHeadLootFunction(list, target));
+		return builder(conditons -> new FillPlayerHeadLootFunction(conditons, target));
 	}
 }

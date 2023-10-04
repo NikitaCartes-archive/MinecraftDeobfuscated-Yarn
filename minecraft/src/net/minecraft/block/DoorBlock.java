@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -32,6 +34,10 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class DoorBlock extends Block {
+	public static final MapCodec<DoorBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(BlockSetType.CODEC.fieldOf("block_set_type").forGetter(DoorBlock::getBlockSetType), createSettingsCodec())
+				.apply(instance, DoorBlock::new)
+	);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty OPEN = Properties.OPEN;
 	public static final EnumProperty<DoorHinge> HINGE = Properties.DOOR_HINGE;
@@ -44,7 +50,12 @@ public class DoorBlock extends Block {
 	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
 	private final BlockSetType blockSetType;
 
-	protected DoorBlock(AbstractBlock.Settings settings, BlockSetType blockSetType) {
+	@Override
+	public MapCodec<DoorBlock> getCodec() {
+		return CODEC;
+	}
+
+	protected DoorBlock(BlockSetType blockSetType, AbstractBlock.Settings settings) {
 		super(settings.sounds(blockSetType.soundType()));
 		this.blockSetType = blockSetType;
 		this.setDefaultState(
@@ -100,12 +111,12 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient && player.isCreative()) {
 			TallPlantBlock.onBreakInCreative(world, pos, state, player);
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	@Override

@@ -1,36 +1,33 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.IntStream;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.StairShape;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.explosion.Explosion;
 
 public class StairsBlock extends Block implements Waterloggable {
+	public static final MapCodec<StairsBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(BlockState.CODEC.fieldOf("base_state").forGetter(block -> block.baseBlockState), createSettingsCodec())
+				.apply(instance, StairsBlock::new)
+	);
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
 	public static final EnumProperty<StairShape> SHAPE = Properties.STAIR_SHAPE;
@@ -53,7 +50,12 @@ public class StairsBlock extends Block implements Waterloggable {
 	);
 	private static final int[] SHAPE_INDICES = new int[]{12, 5, 3, 10, 14, 13, 7, 11, 13, 7, 11, 14, 8, 4, 1, 2, 4, 1, 2, 8};
 	private final Block baseBlock;
-	private final BlockState baseBlockState;
+	protected final BlockState baseBlockState;
+
+	@Override
+	public MapCodec<? extends StairsBlock> getCodec() {
+		return CODEC;
+	}
 
 	private static VoxelShape[] composeShapes(VoxelShape base, VoxelShape northWest, VoxelShape northEast, VoxelShape southWest, VoxelShape southEast) {
 		return (VoxelShape[])IntStream.range(0, 16).mapToObj(i -> composeShape(i, base, northWest, northEast, southWest, southEast)).toArray(VoxelShape[]::new);
@@ -109,68 +111,8 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		this.baseBlock.randomDisplayTick(state, world, pos, random);
-	}
-
-	@Override
-	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-		this.baseBlockState.onBlockBreakStart(world, pos, player);
-	}
-
-	@Override
-	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
-		this.baseBlock.onBroken(world, pos, state);
-	}
-
-	@Override
 	public float getBlastResistance() {
 		return this.baseBlock.getBlastResistance();
-	}
-
-	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (!state.isOf(state.getBlock())) {
-			world.updateNeighbor(this.baseBlockState, pos, Blocks.AIR, pos, false);
-			this.baseBlock.onBlockAdded(this.baseBlockState, world, pos, oldState, false);
-		}
-	}
-
-	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!state.isOf(newState.getBlock())) {
-			this.baseBlockState.onStateReplaced(world, pos, newState, moved);
-		}
-	}
-
-	@Override
-	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-		this.baseBlock.onSteppedOn(world, pos, state, entity);
-	}
-
-	@Override
-	public boolean hasRandomTicks(BlockState state) {
-		return this.baseBlock.hasRandomTicks(state);
-	}
-
-	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		this.baseBlock.randomTick(state, world, pos, random);
-	}
-
-	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		this.baseBlock.scheduledTick(state, world, pos, random);
-	}
-
-	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		return this.baseBlockState.onUse(world, player, hand, hit);
-	}
-
-	@Override
-	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
-		this.baseBlock.onDestroyedByExplosion(world, pos, explosion);
 	}
 
 	@Override

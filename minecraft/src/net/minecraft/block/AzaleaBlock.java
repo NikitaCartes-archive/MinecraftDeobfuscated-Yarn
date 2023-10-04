@@ -1,6 +1,6 @@
 package net.minecraft.block;
 
-import net.minecraft.block.sapling.AzaleaSaplingGenerator;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -11,10 +11,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class AzaleaBlock extends PlantBlock implements Fertilizable {
-	private static final AzaleaSaplingGenerator GENERATOR = new AzaleaSaplingGenerator();
+	public static final MapCodec<AzaleaBlock> CODEC = createCodec(AzaleaBlock::new);
 	private static final VoxelShape SHAPE = VoxelShapes.union(
 		Block.createCuboidShape(0.0, 8.0, 0.0, 16.0, 16.0, 16.0), Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 8.0, 10.0)
 	);
+
+	@Override
+	public MapCodec<AzaleaBlock> getCodec() {
+		return CODEC;
+	}
 
 	protected AzaleaBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -42,6 +47,6 @@ public class AzaleaBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		GENERATOR.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
+		SaplingGenerator.AZALEA.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
 	}
 }

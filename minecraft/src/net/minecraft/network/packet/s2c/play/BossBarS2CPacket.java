@@ -125,7 +125,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		private AddAction(PacketByteBuf buf) {
-			this.name = buf.readText();
+			this.name = buf.readUnlimitedText();
 			this.percent = buf.readFloat();
 			this.color = buf.readEnumConstant(BossBar.Color.class);
 			this.style = buf.readEnumConstant(BossBar.Style.class);
@@ -198,7 +198,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		private UpdateNameAction(PacketByteBuf buf) {
-			this.name = buf.readText();
+			this.name = buf.readUnlimitedText();
 		}
 
 		@Override

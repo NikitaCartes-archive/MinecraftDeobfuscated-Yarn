@@ -1,11 +1,14 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -23,6 +26,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class TripwireBlock extends Block {
+	public static final MapCodec<TripwireBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Registries.BLOCK.getCodec().fieldOf("hook").forGetter(block -> block.hookBlock), createSettingsCodec())
+				.apply(instance, TripwireBlock::new)
+	);
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty ATTACHED = Properties.ATTACHED;
 	public static final BooleanProperty DISARMED = Properties.DISARMED;
@@ -34,9 +41,14 @@ public class TripwireBlock extends Block {
 	protected static final VoxelShape ATTACHED_SHAPE = Block.createCuboidShape(0.0, 1.0, 0.0, 16.0, 2.5, 16.0);
 	protected static final VoxelShape DETACHED_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	private static final int SCHEDULED_TICK_DELAY = 10;
-	private final TripwireHookBlock hookBlock;
+	private final Block hookBlock;
 
-	public TripwireBlock(TripwireHookBlock hookBlock, AbstractBlock.Settings settings) {
+	@Override
+	public MapCodec<TripwireBlock> getCodec() {
+		return CODEC;
+	}
+
+	public TripwireBlock(Block hookBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -92,13 +104,13 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient && !player.getMainHandStack().isEmpty() && player.getMainHandStack().isOf(Items.SHEARS)) {
 			world.setBlockState(pos, state.with(DISARMED, Boolean.valueOf(true)), Block.NO_REDRAW);
 			world.emitGameEvent(player, GameEvent.SHEAR, pos);
 		}
 
-		super.onBreak(world, pos, state, player);
+		return super.onBreak(world, pos, state, player);
 	}
 
 	private void update(World world, BlockPos pos, BlockState state) {
@@ -108,7 +120,7 @@ public class TripwireBlock extends Block {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(this.hookBlock)) {
 					if (blockState.get(TripwireHookBlock.FACING) == direction.getOpposite()) {
-						this.hookBlock.update(world, blockPos, blockState, false, true, i, state);
+						TripwireHookBlock.update(world, blockPos, blockState, false, true, i, state);
 					}
 					break;
 				}

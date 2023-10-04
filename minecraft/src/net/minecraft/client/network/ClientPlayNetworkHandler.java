@@ -331,6 +331,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
 	private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
 	private final PingMeasurer pingMeasurer;
+	@Nullable
+	private WorldLoadingState worldLoadingState;
 	private boolean displayedUnsecureChatWarning = false;
 	private volatile boolean worldCleared;
 
@@ -348,10 +350,15 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		return this.commandSource;
 	}
 
-	public void clearWorld() {
+	public void unloadWorld() {
 		this.worldCleared = true;
-		this.world = null;
+		this.clearWorld();
 		this.worldSession.onUnload();
+	}
+
+	public void clearWorld() {
+		this.world = null;
+		this.worldLoadingState = null;
 	}
 
 	public RecipeManager getRecipeManager() {
@@ -403,7 +410,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.client.player.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(this.client.player);
 		this.client.cameraEntity = this.client.player;
-		this.client.setScreen(new DownloadingTerrainScreen());
+		this.startWorldLoading(this.client.player, this.world);
 		this.client.player.setReducedDebugInfo(packet.reducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showDeathScreen());
 		this.client.player.setLimitedCraftingEnabled(packet.doLimitedCrafting());
@@ -913,9 +920,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.world.setSpawnPos(packet.getPos(), packet.getAngle());
-		if (this.client.currentScreen instanceof DownloadingTerrainScreen downloadingTerrainScreen) {
-			downloadingTerrainScreen.setReady();
-		}
 	}
 
 	@Override
@@ -1046,7 +1050,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			this.world.setScoreboard(scoreboard);
 			this.world.putMapStates(map);
 			this.client.joinWorld(this.world);
-			this.client.setScreen(new DownloadingTerrainScreen());
 		}
 
 		this.client.cameraEntity = null;
@@ -1065,6 +1068,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook());
 		}
 
+		this.startWorldLoading(clientPlayerEntity2, this.world);
 		clientPlayerEntity2.setId(clientPlayerEntity.getId());
 		this.client.player = clientPlayerEntity2;
 		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
@@ -1262,7 +1266,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		} else if (reason == GameStateChangeS2CPacket.GAME_WON) {
 			if (i == 0) {
 				this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
-				this.client.setScreen(new DownloadingTerrainScreen());
+				this.client.setScreen(new DownloadingTerrainScreen(() -> false));
 			} else if (i == 1) {
 				this.client.setScreen(new CreditsScreen(true, () -> {
 					this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
@@ -1319,7 +1323,14 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			this.client.player.setShowsDeathScreen(f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN);
 		} else if (reason == GameStateChangeS2CPacket.LIMITED_CRAFTING_TOGGLED) {
 			this.client.player.setLimitedCraftingEnabled(f == 1.0F);
+		} else if (reason == GameStateChangeS2CPacket.INITIAL_CHUNKS_COMING && this.worldLoadingState != null) {
+			this.worldLoadingState.handleChunksComingPacket();
 		}
+	}
+
+	private void startWorldLoading(ClientPlayerEntity player, ClientWorld world) {
+		this.worldLoadingState = new WorldLoadingState(player, world, this.client.worldRenderer);
+		this.client.setScreen(new DownloadingTerrainScreen(this.worldLoadingState::isReady));
 	}
 
 	@Override
@@ -1896,12 +1907,12 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				.gameEventDebugRenderer
 				.addListener(debugGameEventListenersCustomPayload.listenerPos(), debugGameEventListenersCustomPayload.listenerRange());
 		} else {
-			this.method_52801(payload);
+			this.warnOnUnknownPayload(payload);
 		}
 	}
 
-	private void method_52801(CustomPayload customPayload) {
-		LOGGER.warn("Unknown custom packet payload: {}", customPayload.id());
+	private void warnOnUnknownPayload(CustomPayload payload) {
+		LOGGER.warn("Unknown custom packet payload: {}", payload.id());
 	}
 
 	@Override
@@ -2316,6 +2327,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		this.worldSession.tick();
+		if (this.worldLoadingState != null) {
+			this.worldLoadingState.tick();
+		}
 	}
 
 	public void updateKeyPair(PlayerKeyPair keyPair) {

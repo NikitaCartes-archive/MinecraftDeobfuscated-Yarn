@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -7,8 +8,14 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 public class BuddingAmethystBlock extends AmethystBlock {
+	public static final MapCodec<BuddingAmethystBlock> CODEC = createCodec(BuddingAmethystBlock::new);
 	public static final int GROW_CHANCE = 5;
 	private static final Direction[] DIRECTIONS = Direction.values();
+
+	@Override
+	public MapCodec<BuddingAmethystBlock> getCodec() {
+		return CODEC;
+	}
 
 	public BuddingAmethystBlock(AbstractBlock.Settings settings) {
 		super(settings);

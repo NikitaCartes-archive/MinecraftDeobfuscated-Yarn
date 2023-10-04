@@ -21,16 +21,16 @@ import net.minecraft.text.Texts;
 
 public class DatapackCommand {
 	private static final DynamicCommandExceptionType UNKNOWN_DATAPACK_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.translatable("commands.datapack.unknown", name)
+		name -> Text.stringifiedTranslatable("commands.datapack.unknown", name)
 	);
 	private static final DynamicCommandExceptionType ALREADY_ENABLED_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.translatable("commands.datapack.enable.failed", name)
+		name -> Text.stringifiedTranslatable("commands.datapack.enable.failed", name)
 	);
 	private static final DynamicCommandExceptionType ALREADY_DISABLED_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.translatable("commands.datapack.disable.failed", name)
+		name -> Text.stringifiedTranslatable("commands.datapack.disable.failed", name)
 	);
 	private static final Dynamic2CommandExceptionType NO_FLAGS_EXCEPTION = new Dynamic2CommandExceptionType(
-		(name, flags) -> Text.translatable("commands.datapack.enable.failed.no_flags", name, flags)
+		(name, flags) -> Text.stringifiedTranslatable("commands.datapack.enable.failed.no_flags", name, flags)
 	);
 	private static final SuggestionProvider<ServerCommandSource> ENABLED_CONTAINERS_SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
 			context.getSource().getServer().getDataPackManager().getEnabledNames().stream().map(StringArgumentType::escapeIfRequired), builder

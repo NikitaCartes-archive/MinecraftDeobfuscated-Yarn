@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.BiFunction;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.AndFunction;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -16,7 +15,7 @@ public class LootFunctionTypes {
 	private static final Codec<LootFunction> BASE_CODEC = Registries.LOOT_FUNCTION_TYPE
 		.getCodec()
 		.dispatch("function", LootFunction::getType, LootFunctionType::codec);
-	public static final Codec<LootFunction> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AndFunction.field_45835));
+	public static final Codec<LootFunction> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AndLootFunction.INLINE_CODEC));
 	public static final LootFunctionType SET_COUNT = register("set_count", SetCountLootFunction.CODEC);
 	public static final LootFunctionType ENCHANT_WITH_LEVELS = register("enchant_with_levels", EnchantWithLevelsLootFunction.CODEC);
 	public static final LootFunctionType ENCHANT_RANDOMLY = register("enchant_randomly", EnchantRandomlyLootFunction.CODEC);
@@ -43,29 +42,29 @@ public class LootFunctionTypes {
 	public static final LootFunctionType SET_POTION = register("set_potion", SetPotionLootFunction.CODEC);
 	public static final LootFunctionType SET_INSTRUMENT = register("set_instrument", SetInstrumentLootFunction.CODEC);
 	public static final LootFunctionType REFERENCE = register("reference", ReferenceLootFunction.CODEC);
-	public static final LootFunctionType SEQUENCE = register("sequence", AndFunction.CODEC);
+	public static final LootFunctionType SEQUENCE = register("sequence", AndLootFunction.CODEC);
 
 	private static LootFunctionType register(String id, Codec<? extends LootFunction> codec) {
 		return Registry.register(Registries.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(codec));
 	}
 
-	public static BiFunction<ItemStack, LootContext, ItemStack> join(List<? extends BiFunction<ItemStack, LootContext, ItemStack>> list) {
-		List<BiFunction<ItemStack, LootContext, ItemStack>> list2 = List.copyOf(list);
+	public static BiFunction<ItemStack, LootContext, ItemStack> join(List<? extends BiFunction<ItemStack, LootContext, ItemStack>> terms) {
+		List<BiFunction<ItemStack, LootContext, ItemStack>> list = List.copyOf(terms);
 
-		return switch (list2.size()) {
+		return switch (list.size()) {
 			case 0 -> NOOP;
-			case 1 -> (BiFunction)list2.get(0);
+			case 1 -> (BiFunction)list.get(0);
 			case 2 -> {
-				BiFunction<ItemStack, LootContext, ItemStack> biFunction = (BiFunction<ItemStack, LootContext, ItemStack>)list2.get(0);
-				BiFunction<ItemStack, LootContext, ItemStack> biFunction2 = (BiFunction<ItemStack, LootContext, ItemStack>)list2.get(1);
+				BiFunction<ItemStack, LootContext, ItemStack> biFunction = (BiFunction<ItemStack, LootContext, ItemStack>)list.get(0);
+				BiFunction<ItemStack, LootContext, ItemStack> biFunction2 = (BiFunction<ItemStack, LootContext, ItemStack>)list.get(1);
 				yield (stack, context) -> (ItemStack)biFunction2.apply((ItemStack)biFunction.apply(stack, context), context);
 			}
-			default -> (itemStack, lootContext) -> {
-			for (BiFunction<ItemStack, LootContext, ItemStack> biFunctionx : list2) {
-				itemStack = (ItemStack)biFunctionx.apply(itemStack, lootContext);
+			default -> (stack, context) -> {
+			for (BiFunction<ItemStack, LootContext, ItemStack> biFunctionx : list) {
+				stack = (ItemStack)biFunctionx.apply(stack, context);
 			}
 
-			return itemStack;
+			return stack;
 		};
 		};
 	}

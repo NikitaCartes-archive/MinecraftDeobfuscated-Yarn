@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,6 +31,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 
 public class LightningRodBlock extends RodBlock implements Waterloggable {
+	public static final MapCodec<LightningRodBlock> CODEC = createCodec(LightningRodBlock::new);
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private static final int SCHEDULED_TICK_DELAY = 8;
@@ -40,6 +42,11 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 	 */
 	public static final int MAX_REDIRECT_DISTANCE = 128;
 	private static final int field_31191 = 200;
+
+	@Override
+	public MapCodec<LightningRodBlock> getCodec() {
+		return CODEC;
+	}
 
 	public LightningRodBlock(AbstractBlock.Settings settings) {
 		super(settings);

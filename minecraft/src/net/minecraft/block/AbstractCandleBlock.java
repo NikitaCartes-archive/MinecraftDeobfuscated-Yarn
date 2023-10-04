@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -20,6 +21,9 @@ import net.minecraft.world.event.GameEvent;
 public abstract class AbstractCandleBlock extends Block {
 	public static final int field_30987 = 3;
 	public static final BooleanProperty LIT = Properties.LIT;
+
+	@Override
+	protected abstract MapCodec<? extends AbstractCandleBlock> getCodec();
 
 	protected AbstractCandleBlock(AbstractBlock.Settings settings) {
 		super(settings);

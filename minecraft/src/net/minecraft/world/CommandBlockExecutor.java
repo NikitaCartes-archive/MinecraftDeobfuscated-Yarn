@@ -55,10 +55,10 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	public NbtCompound writeNbt(NbtCompound nbt) {
 		nbt.putString("Command", this.command);
 		nbt.putInt("SuccessCount", this.successCount);
-		nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
+		nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName));
 		nbt.putBoolean("TrackOutput", this.trackOutput);
 		if (this.lastOutput != null && this.trackOutput) {
-			nbt.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
+			nbt.putString("LastOutput", Text.Serialization.toJsonString(this.lastOutput));
 		}
 
 		nbt.putBoolean("UpdateLastExecution", this.updateLastExecution);
@@ -73,7 +73,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.command = nbt.getString("Command");
 		this.successCount = nbt.getInt("SuccessCount");
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.setCustomName(Text.Serializer.fromJson(nbt.getString("CustomName")));
+			this.setCustomName(Text.Serialization.fromJson(nbt.getString("CustomName")));
 		}
 
 		if (nbt.contains("TrackOutput", NbtElement.BYTE_TYPE)) {
@@ -82,7 +82,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 		if (nbt.contains("LastOutput", NbtElement.STRING_TYPE) && this.trackOutput) {
 			try {
-				this.lastOutput = Text.Serializer.fromJson(nbt.getString("LastOutput"));
+				this.lastOutput = Text.Serialization.fromJson(nbt.getString("LastOutput"));
 			} catch (Throwable var3) {
 				this.lastOutput = Text.literal(var3.getMessage());
 			}

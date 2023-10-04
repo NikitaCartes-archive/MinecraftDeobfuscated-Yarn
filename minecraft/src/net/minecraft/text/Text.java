@@ -3,32 +3,30 @@ package net.minecraft.text;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.Message;
-import java.io.IOException;
+import com.mojang.serialization.JsonOps;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Map.Entry;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ChunkPos;
 
 /**
  * A text. Can be converted to and from JSON format.
@@ -82,6 +80,22 @@ public interface Text extends Message, StringVisitable {
 	 * Returns the siblings of this text.
 	 */
 	List<Text> getSiblings();
+
+	/**
+	 * {@return the string of the literal text, or {@code null} if this text is not
+	 * a literal}
+	 * 
+	 * <p>A literal text is an unstyled {@link PlainTextContent} without any siblings.
+	 * Such texts are serialized as a string instead of an object.
+	 */
+	@Nullable
+	default String getLiteralString() {
+		if (this.getContent() instanceof PlainTextContent plainTextContent && this.getSiblings().isEmpty() && this.getStyle().isEmpty()) {
+			return plainTextContent.string();
+		}
+
+		return null;
+	}
 
 	/**
 	 * Copies the text's content, excluding the styles or siblings.
@@ -173,15 +187,40 @@ public interface Text extends Message, StringVisitable {
 	}
 
 	static MutableText literal(String string) {
-		return MutableText.of(new LiteralTextContent(string));
+		return MutableText.of(PlainTextContent.of(string));
 	}
 
 	static MutableText translatable(String key) {
 		return MutableText.of(new TranslatableTextContent(key, null, TranslatableTextContent.EMPTY_ARGUMENTS));
 	}
 
+	/**
+	 * {@return a translatable text with arguments}
+	 * 
+	 * <p>The arguments passed <strong>must be either numbers, booleans, strings, or another
+	 * {@link Text}</strong>. Use {@link #stringifiedTranslatable} to construct texts with
+	 * other objects as arguments. Alternatively, convert them using static methods here
+	 * like {@link #of(Identifier)}.
+	 */
 	static MutableText translatable(String key, Object... args) {
 		return MutableText.of(new TranslatableTextContent(key, null, args));
+	}
+
+	/**
+	 * {@return a translatable text with arguments}
+	 * 
+	 * <p>Arguments that are not numbers, booleans, strings, or another {@link Text} are
+	 * converted to strings using {@link String#valueOf(Object)}.
+	 */
+	static MutableText stringifiedTranslatable(String key, Object... args) {
+		for (int i = 0; i < args.length; i++) {
+			Object object = args[i];
+			if (!TranslatableTextContent.isPrimitive(object) && !(object instanceof Text)) {
+				args[i] = String.valueOf(object);
+			}
+		}
+
+		return translatable(key, args);
 	}
 
 	static MutableText translatableWithFallback(String key, @Nullable String fallback) {
@@ -193,7 +232,7 @@ public interface Text extends Message, StringVisitable {
 	}
 
 	static MutableText empty() {
-		return MutableText.of(TextContent.EMPTY);
+		return MutableText.of(PlainTextContent.EMPTY);
 	}
 
 	static MutableText keybind(String string) {
@@ -213,17 +252,57 @@ public interface Text extends Message, StringVisitable {
 	}
 
 	/**
-	 * A JSON serializer for {@link Text}.
+	 * {@return a {@linkplain #literal literal} text representing {@code date}}
+	 * 
+	 * @implNote The date is converted to a string using {@link Date#toString}.
+	 * Notably, it does not localize the date format.
 	 */
-	public static class Serializer implements JsonDeserializer<MutableText>, JsonSerializer<Text> {
-		private static final Gson GSON = Util.make(() -> {
-			GsonBuilder gsonBuilder = new GsonBuilder();
-			gsonBuilder.disableHtmlEscaping();
-			gsonBuilder.registerTypeHierarchyAdapter(Text.class, new Text.Serializer());
-			gsonBuilder.registerTypeHierarchyAdapter(Style.class, new Style.Serializer());
-			gsonBuilder.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory());
-			return gsonBuilder.create();
-		});
+	static Text of(Date date) {
+		return literal(date.toString());
+	}
+
+	/**
+	 * {@return a text with {@code message}}
+	 * 
+	 * <p>If a text instance is passed, this method returns {@code message} itself;
+	 * otherwise this creates a new literal text with the message content.
+	 */
+	static Text of(Message message) {
+		return (Text)(message instanceof Text text ? text : literal(message.getString()));
+	}
+
+	/**
+	 * {@return a text representing {@code uuid}}
+	 * 
+	 * <p>The UUID is converted to a string like {@code 12345678-90AB-CDEF-1234-567890ABCDEF}.
+	 * 
+	 * @see UUID#toString
+	 */
+	static Text of(UUID uuid) {
+		return literal(uuid.toString());
+	}
+
+	/**
+	 * {@return a text representing {@code id}}
+	 * 
+	 * <p>The returned text has the format {@code namespace:path}.
+	 * Namespace is always included.
+	 */
+	static Text of(Identifier id) {
+		return literal(id.toString());
+	}
+
+	/**
+	 * {@return a text representing chunk {@code pos}}
+	 * 
+	 * <p>The returned text has the format {@code [X, Z]}.
+	 */
+	static Text of(ChunkPos pos) {
+		return literal(pos.toString());
+	}
+
+	public static class Serialization {
+		private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 		private static final Field JSON_READER_POS = Util.make(() -> {
 			try {
 				new JsonReader(new StringReader(""));
@@ -245,241 +324,52 @@ public interface Text extends Message, StringVisitable {
 			}
 		});
 
-		public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			if (jsonElement.isJsonPrimitive()) {
-				return Text.literal(jsonElement.getAsString());
-			} else if (!jsonElement.isJsonObject()) {
-				if (jsonElement.isJsonArray()) {
-					JsonArray jsonArray3 = jsonElement.getAsJsonArray();
-					MutableText mutableText = null;
-
-					for (JsonElement jsonElement2 : jsonArray3) {
-						MutableText mutableText2 = this.deserialize(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
-						if (mutableText == null) {
-							mutableText = mutableText2;
-						} else {
-							mutableText.append(mutableText2);
-						}
-					}
-
-					return mutableText;
-				} else {
-					throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
-				}
-			} else {
-				JsonObject jsonObject = jsonElement.getAsJsonObject();
-				MutableText mutableText;
-				if (jsonObject.has("text")) {
-					String string = JsonHelper.getString(jsonObject, "text");
-					mutableText = string.isEmpty() ? Text.empty() : Text.literal(string);
-				} else if (jsonObject.has("translate")) {
-					String string = JsonHelper.getString(jsonObject, "translate");
-					String string2 = JsonHelper.getString(jsonObject, "fallback", null);
-					if (jsonObject.has("with")) {
-						JsonArray jsonArray = JsonHelper.getArray(jsonObject, "with");
-						Object[] objects = new Object[jsonArray.size()];
-
-						for (int i = 0; i < objects.length; i++) {
-							objects[i] = optimizeArgument(this.deserialize(jsonArray.get(i), type, jsonDeserializationContext));
-						}
-
-						mutableText = Text.translatableWithFallback(string, string2, objects);
-					} else {
-						mutableText = Text.translatableWithFallback(string, string2);
-					}
-				} else if (jsonObject.has("score")) {
-					JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "score");
-					if (!jsonObject2.has("name") || !jsonObject2.has("objective")) {
-						throw new JsonParseException("A score component needs a least a name and an objective");
-					}
-
-					mutableText = Text.score(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
-				} else if (jsonObject.has("selector")) {
-					Optional<Text> optional = this.getSeparator(type, jsonDeserializationContext, jsonObject);
-					mutableText = Text.selector(JsonHelper.getString(jsonObject, "selector"), optional);
-				} else if (jsonObject.has("keybind")) {
-					mutableText = Text.keybind(JsonHelper.getString(jsonObject, "keybind"));
-				} else {
-					if (!jsonObject.has("nbt")) {
-						throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
-					}
-
-					String string = JsonHelper.getString(jsonObject, "nbt");
-					Optional<Text> optional2 = this.getSeparator(type, jsonDeserializationContext, jsonObject);
-					boolean bl = JsonHelper.getBoolean(jsonObject, "interpret", false);
-					NbtDataSource nbtDataSource;
-					if (jsonObject.has("block")) {
-						nbtDataSource = new BlockNbtDataSource(JsonHelper.getString(jsonObject, "block"));
-					} else if (jsonObject.has("entity")) {
-						nbtDataSource = new EntityNbtDataSource(JsonHelper.getString(jsonObject, "entity"));
-					} else {
-						if (!jsonObject.has("storage")) {
-							throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
-						}
-
-						nbtDataSource = new StorageNbtDataSource(new Identifier(JsonHelper.getString(jsonObject, "storage")));
-					}
-
-					mutableText = Text.nbt(string, bl, optional2, nbtDataSource);
-				}
-
-				if (jsonObject.has("extra")) {
-					JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "extra");
-					if (jsonArray2.size() <= 0) {
-						throw new JsonParseException("Unexpected empty array of components");
-					}
-
-					for (int j = 0; j < jsonArray2.size(); j++) {
-						mutableText.append(this.deserialize(jsonArray2.get(j), type, jsonDeserializationContext));
-					}
-				}
-
-				mutableText.setStyle(jsonDeserializationContext.deserialize(jsonElement, Style.class));
-				return mutableText;
-			}
+		private Serialization() {
 		}
 
-		private static Object optimizeArgument(Object text) {
-			if (text instanceof Text text2
-				&& text2.getStyle().isEmpty()
-				&& text2.getSiblings().isEmpty()
-				&& text2.getContent() instanceof LiteralTextContent literalTextContent) {
-				return literalTextContent.string();
-			}
-
-			return text;
+		static MutableText fromJson(JsonElement json) {
+			return (MutableText)Util.getResult(TextCodecs.CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new);
 		}
 
-		private Optional<Text> getSeparator(Type type, JsonDeserializationContext context, JsonObject json) {
-			return json.has("separator") ? Optional.of(this.deserialize(json.get("separator"), type, context)) : Optional.empty();
+		static JsonElement toJson(Text text) {
+			return Util.getResult(TextCodecs.CODEC.encodeStart(JsonOps.INSTANCE, text), JsonParseException::new);
 		}
 
-		private void addStyle(Style style, JsonObject json, JsonSerializationContext context) {
-			JsonElement jsonElement = context.serialize(style);
-			if (jsonElement.isJsonObject()) {
-				JsonObject jsonObject = (JsonObject)jsonElement;
-
-				for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-					json.add((String)entry.getKey(), (JsonElement)entry.getValue());
-				}
-			}
-		}
-
-		public JsonElement serialize(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
-			JsonObject jsonObject = new JsonObject();
-			if (!text.getStyle().isEmpty()) {
-				this.addStyle(text.getStyle(), jsonObject, jsonSerializationContext);
-			}
-
-			if (!text.getSiblings().isEmpty()) {
-				JsonArray jsonArray = new JsonArray();
-
-				for (Text text2 : text.getSiblings()) {
-					jsonArray.add(this.serialize(text2, Text.class, jsonSerializationContext));
-				}
-
-				jsonObject.add("extra", jsonArray);
-			}
-
-			TextContent textContent = text.getContent();
-			if (textContent == TextContent.EMPTY) {
-				jsonObject.addProperty("text", "");
-			} else if (textContent instanceof LiteralTextContent literalTextContent) {
-				jsonObject.addProperty("text", literalTextContent.string());
-			} else if (textContent instanceof TranslatableTextContent translatableTextContent) {
-				jsonObject.addProperty("translate", translatableTextContent.getKey());
-				String string = translatableTextContent.getFallback();
-				if (string != null) {
-					jsonObject.addProperty("fallback", string);
-				}
-
-				if (translatableTextContent.getArgs().length > 0) {
-					JsonArray jsonArray2 = new JsonArray();
-
-					for (Object object : translatableTextContent.getArgs()) {
-						if (object instanceof Text) {
-							jsonArray2.add(this.serialize((Text)object, object.getClass(), jsonSerializationContext));
-						} else {
-							jsonArray2.add(new JsonPrimitive(String.valueOf(object)));
-						}
-					}
-
-					jsonObject.add("with", jsonArray2);
-				}
-			} else if (textContent instanceof ScoreTextContent scoreTextContent) {
-				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.addProperty("name", scoreTextContent.getName());
-				jsonObject2.addProperty("objective", scoreTextContent.getObjective());
-				jsonObject.add("score", jsonObject2);
-			} else if (textContent instanceof SelectorTextContent selectorTextContent) {
-				jsonObject.addProperty("selector", selectorTextContent.getPattern());
-				this.addSeparator(jsonSerializationContext, jsonObject, selectorTextContent.getSeparator());
-			} else if (textContent instanceof KeybindTextContent keybindTextContent) {
-				jsonObject.addProperty("keybind", keybindTextContent.getKey());
-			} else {
-				if (!(textContent instanceof NbtTextContent nbtTextContent)) {
-					throw new IllegalArgumentException("Don't know how to serialize " + textContent + " as a Component");
-				}
-
-				jsonObject.addProperty("nbt", nbtTextContent.getPath());
-				jsonObject.addProperty("interpret", nbtTextContent.shouldInterpret());
-				this.addSeparator(jsonSerializationContext, jsonObject, nbtTextContent.getSeparator());
-				NbtDataSource nbtDataSource = nbtTextContent.getDataSource();
-				if (nbtDataSource instanceof BlockNbtDataSource blockNbtDataSource) {
-					jsonObject.addProperty("block", blockNbtDataSource.rawPos());
-				} else if (nbtDataSource instanceof EntityNbtDataSource entityNbtDataSource) {
-					jsonObject.addProperty("entity", entityNbtDataSource.rawSelector());
-				} else {
-					if (!(nbtDataSource instanceof StorageNbtDataSource storageNbtDataSource)) {
-						throw new IllegalArgumentException("Don't know how to serialize " + textContent + " as a Component");
-					}
-
-					jsonObject.addProperty("storage", storageNbtDataSource.id().toString());
-				}
-			}
-
-			return jsonObject;
-		}
-
-		private void addSeparator(JsonSerializationContext context, JsonObject json, Optional<Text> optionalSeparator) {
-			optionalSeparator.ifPresent(separator -> json.add("separator", this.serialize(separator, separator.getClass(), context)));
-		}
-
-		public static String toJson(Text text) {
-			return GSON.toJson(text);
-		}
-
-		public static String toSortedJsonString(Text text) {
-			return JsonHelper.toSortedString(toJsonTree(text));
+		public static String toJsonString(Text text) {
+			return GSON.toJson(toJson(text));
 		}
 
 		public static JsonElement toJsonTree(Text text) {
-			return GSON.toJsonTree(text);
+			return toJson(text);
 		}
 
 		@Nullable
 		public static MutableText fromJson(String json) {
-			return JsonHelper.deserializeNullable(GSON, json, MutableText.class, false);
+			JsonElement jsonElement = JsonParser.parseString(json);
+			return jsonElement == null ? null : fromJson(jsonElement);
 		}
 
 		@Nullable
-		public static MutableText fromJson(JsonElement json) {
-			return GSON.fromJson(json, MutableText.class);
+		public static MutableText fromJsonTree(@Nullable JsonElement json) {
+			return json == null ? null : fromJson(json);
 		}
 
 		@Nullable
 		public static MutableText fromLenientJson(String json) {
-			return JsonHelper.deserializeNullable(GSON, json, MutableText.class, true);
+			JsonReader jsonReader = new JsonReader(new StringReader(json));
+			jsonReader.setLenient(true);
+			JsonElement jsonElement = JsonParser.parseReader(jsonReader);
+			return jsonElement == null ? null : fromJson(jsonElement);
 		}
 
 		public static MutableText fromJson(com.mojang.brigadier.StringReader reader) {
 			try {
 				JsonReader jsonReader = new JsonReader(new StringReader(reader.getRemaining()));
 				jsonReader.setLenient(false);
-				MutableText mutableText = GSON.<MutableText>getAdapter(MutableText.class).read(jsonReader);
+				JsonElement jsonElement = JsonParser.parseReader(jsonReader);
 				reader.setCursor(reader.getCursor() + getPosition(jsonReader));
-				return mutableText;
-			} catch (StackOverflowError | IOException var3) {
+				return fromJson(jsonElement);
+			} catch (StackOverflowError var3) {
 				throw new JsonParseException(var3);
 			}
 		}
@@ -490,6 +380,16 @@ public interface Text extends Message, StringVisitable {
 			} catch (IllegalAccessException var2) {
 				throw new IllegalStateException("Couldn't read position of JsonReader", var2);
 			}
+		}
+	}
+
+	public static class Serializer implements JsonDeserializer<MutableText>, JsonSerializer<Text> {
+		public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			return Text.Serialization.fromJson(jsonElement);
+		}
+
+		public JsonElement serialize(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
+			return Text.Serialization.toJson(text);
 		}
 	}
 }

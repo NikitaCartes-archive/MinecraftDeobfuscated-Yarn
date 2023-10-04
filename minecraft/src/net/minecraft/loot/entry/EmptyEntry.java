@@ -10,7 +10,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 
 public class EmptyEntry extends LeafEntry {
-	public static final Codec<EmptyEntry> CODEC = RecordCodecBuilder.create(instance -> method_53290(instance).apply(instance, EmptyEntry::new));
+	public static final Codec<EmptyEntry> CODEC = RecordCodecBuilder.create(instance -> addLeafFields(instance).apply(instance, EmptyEntry::new));
 
 	private EmptyEntry(int weight, int quality, List<LootCondition> conditions, List<LootFunction> functions) {
 		super(weight, quality, conditions, functions);

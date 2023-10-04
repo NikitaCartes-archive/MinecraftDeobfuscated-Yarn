@@ -32,10 +32,10 @@ import net.minecraft.util.Identifier;
 public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<RegistryEntryPredicateArgumentType.EntryPredicate<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012", "#skeletons", "#minecraft:skeletons");
 	private static final Dynamic2CommandExceptionType NOT_FOUND_EXCEPTION = new Dynamic2CommandExceptionType(
-		(tag, type) -> Text.translatable("argument.resource_tag.not_found", tag, type)
+		(tag, type) -> Text.stringifiedTranslatable("argument.resource_tag.not_found", tag, type)
 	);
 	private static final Dynamic3CommandExceptionType WRONG_TYPE_EXCEPTION = new Dynamic3CommandExceptionType(
-		(tag, type, expectedType) -> Text.translatable("argument.resource_tag.invalid_type", tag, type, expectedType)
+		(tag, type, expectedType) -> Text.stringifiedTranslatable("argument.resource_tag.invalid_type", tag, type, expectedType)
 	);
 	private final RegistryWrapper<T> registryWrapper;
 	final RegistryKey<? extends Registry<T>> registryRef;

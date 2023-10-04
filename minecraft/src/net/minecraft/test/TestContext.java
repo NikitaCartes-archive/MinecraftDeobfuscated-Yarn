@@ -480,6 +480,26 @@ public class TestContext {
 		}
 	}
 
+	public void expectItem(Item item) {
+		for (Entity entity : this.getWorld().getEntitiesByType(EntityType.ITEM, this.getTestBox(), Entity::isAlive)) {
+			ItemEntity itemEntity = (ItemEntity)entity;
+			if (itemEntity.getStack().getItem().equals(item)) {
+				return;
+			}
+		}
+
+		throw new GameTestException("Expected " + item.getName().getString() + " item");
+	}
+
+	public void dontExpectItem(Item item) {
+		for (Entity entity : this.getWorld().getEntitiesByType(EntityType.ITEM, this.getTestBox(), Entity::isAlive)) {
+			ItemEntity itemEntity = (ItemEntity)entity;
+			if (itemEntity.getStack().getItem().equals(item)) {
+				throw new GameTestException("Did not expect " + item.getName().getString() + " item");
+			}
+		}
+	}
+
 	public void dontExpectEntity(EntityType<?> type) {
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, this.getTestBox(), Entity::isAlive);
 		if (!list.isEmpty()) {
@@ -766,7 +786,7 @@ public class TestContext {
 		return this.test.getTick();
 	}
 
-	private Box getTestBox() {
+	public Box getTestBox() {
 		return this.test.getBoundingBox();
 	}
 

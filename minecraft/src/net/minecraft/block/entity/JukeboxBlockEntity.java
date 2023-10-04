@@ -1,14 +1,12 @@
 package net.minecraft.block.entity;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JukeboxBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.Item;
@@ -20,7 +18,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Clearable;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -29,7 +26,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class JukeboxBlockEntity extends BlockEntity implements Clearable, SingleStackInventory {
 	private static final int SECOND_PER_TICK = 20;
-	private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+	private ItemStack recordStack = ItemStack.EMPTY;
 	private int ticksThisSecond;
 	private long tickCount;
 	private long recordStartTick;
@@ -43,7 +40,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		if (nbt.contains("RecordItem", NbtElement.COMPOUND_TYPE)) {
-			this.inventory.set(0, ItemStack.fromNbt(nbt.getCompound("RecordItem")));
+			this.recordStack = ItemStack.fromNbt(nbt.getCompound("RecordItem"));
 		}
 
 		this.isPlaying = nbt.getBoolean("IsPlaying");
@@ -115,14 +112,14 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	}
 
 	@Override
-	public ItemStack getStack(int slot) {
-		return this.inventory.get(slot);
+	public ItemStack getStack() {
+		return this.recordStack;
 	}
 
 	@Override
-	public ItemStack removeStack(int slot, int amount) {
-		ItemStack itemStack = (ItemStack)Objects.requireNonNullElse(this.inventory.get(slot), ItemStack.EMPTY);
-		this.inventory.set(slot, ItemStack.EMPTY);
+	public ItemStack decreaseStack(int count) {
+		ItemStack itemStack = this.recordStack;
+		this.recordStack = ItemStack.EMPTY;
 		if (!itemStack.isEmpty()) {
 			this.updateState(null, false);
 			this.stopPlaying();
@@ -132,13 +129,13 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	}
 
 	@Override
-	public void setStack(int slot, ItemStack stack) {
+	public void setStack(ItemStack stack) {
 		if (stack.isIn(ItemTags.MUSIC_DISCS) && this.world != null) {
-			this.inventory.set(slot, stack);
+			this.recordStack = stack;
 			this.updateState(null, true);
 			this.startPlaying();
 		} else if (stack.isEmpty()) {
-			this.removeStack(slot, 1);
+			this.decreaseStack(1);
 		}
 	}
 
@@ -148,8 +145,8 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	}
 
 	@Override
-	public boolean canPlayerUse(PlayerEntity player) {
-		return Inventory.canPlayerUse(this, player);
+	public BlockEntity asBlockEntity() {
+		return this;
 	}
 
 	@Override
@@ -175,7 +172,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 			BlockPos blockPos = this.getPos();
 			ItemStack itemStack = this.getStack();
 			if (!itemStack.isEmpty()) {
-				this.removeStack();
+				this.emptyStack();
 				Vec3d vec3d = Vec3d.add(blockPos, 0.5, 1.01, 0.5).addRandom(this.world.random, 0.7F);
 				ItemStack itemStack2 = itemStack.copy();
 				ItemEntity itemEntity = new ItemEntity(this.world, vec3d.getX(), vec3d.getY(), vec3d.getZ(), itemStack2);
@@ -191,7 +188,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 
 	@VisibleForTesting
 	public void setDisc(ItemStack stack) {
-		this.inventory.set(0, stack);
+		this.recordStack = stack;
 		this.world.updateNeighborsAlways(this.getPos(), this.getCachedState().getBlock());
 		this.markDirty();
 	}

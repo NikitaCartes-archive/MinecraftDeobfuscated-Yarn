@@ -9,13 +9,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
 
 public class UpdateSignTextFormatFix extends ChoiceFix {
 	public static final String FILTERED_CORRECT = "_filtered_correct";
 	private static final String DEFAULT_COLOR = "black";
-	private static final String EMPTY_TEXT_JSON = Text.Serializer.toJson(ScreenTexts.EMPTY);
 
 	public UpdateSignTextFormatFix(Schema outputSchema, String name, String blockEntityId) {
 		super(outputSchema, false, name, TypeReferences.BLOCK_ENTITY, blockEntityId);
@@ -26,7 +23,7 @@ public class UpdateSignTextFormatFix extends ChoiceFix {
 	}
 
 	private static <T> Dynamic<T> updateFront(Dynamic<T> signData) {
-		Dynamic<T> dynamic = signData.createString(EMPTY_TEXT_JSON);
+		Dynamic<T> dynamic = TextFixes.empty(signData.getOps());
 		List<Dynamic<T>> list = streamKeys(signData, "Text").map(text -> (Dynamic)text.orElse(dynamic)).toList();
 		Dynamic<T> dynamic2 = signData.emptyMap()
 			.set("messages", signData.createList(list.stream()))
@@ -58,7 +55,7 @@ public class UpdateSignTextFormatFix extends ChoiceFix {
 	}
 
 	private static <T> Dynamic<T> emptySignData(Dynamic<T> signData) {
-		Dynamic<T> dynamic = signData.createString(EMPTY_TEXT_JSON);
+		Dynamic<T> dynamic = TextFixes.empty(signData.getOps());
 		return signData.createList(Stream.of(dynamic, dynamic, dynamic, dynamic));
 	}
 

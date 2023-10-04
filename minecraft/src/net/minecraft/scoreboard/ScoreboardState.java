@@ -38,7 +38,7 @@ public class ScoreboardState extends PersistentState {
 			NbtCompound nbtCompound = nbt.getCompound(i);
 			String string = nbtCompound.getString("Name");
 			Team team = this.scoreboard.addTeam(string);
-			Text text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
+			Text text = Text.Serialization.fromJson(nbtCompound.getString("DisplayName"));
 			if (text != null) {
 				team.setDisplayName(text);
 			}
@@ -56,14 +56,14 @@ public class ScoreboardState extends PersistentState {
 			}
 
 			if (nbtCompound.contains("MemberNamePrefix", NbtElement.STRING_TYPE)) {
-				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNamePrefix"));
+				Text text2 = Text.Serialization.fromJson(nbtCompound.getString("MemberNamePrefix"));
 				if (text2 != null) {
 					team.setPrefix(text2);
 				}
 			}
 
 			if (nbtCompound.contains("MemberNameSuffix", NbtElement.STRING_TYPE)) {
-				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNameSuffix"));
+				Text text2 = Text.Serialization.fromJson(nbtCompound.getString("MemberNameSuffix"));
 				if (text2 != null) {
 					team.setSuffix(text2);
 				}
@@ -120,7 +120,7 @@ public class ScoreboardState extends PersistentState {
 				return ScoreboardCriterion.DUMMY;
 			});
 			String string2 = nbtCompound.getString("Name");
-			Text text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
+			Text text = Text.Serialization.fromJson(nbtCompound.getString("DisplayName"));
 			ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(nbtCompound.getString("RenderType"));
 			this.scoreboard.addObjective(string2, scoreboardCriterion, text, renderType);
 		}
@@ -141,15 +141,15 @@ public class ScoreboardState extends PersistentState {
 		for (Team team : this.scoreboard.getTeams()) {
 			NbtCompound nbtCompound = new NbtCompound();
 			nbtCompound.putString("Name", team.getName());
-			nbtCompound.putString("DisplayName", Text.Serializer.toJson(team.getDisplayName()));
+			nbtCompound.putString("DisplayName", Text.Serialization.toJsonString(team.getDisplayName()));
 			if (team.getColor().getColorIndex() >= 0) {
 				nbtCompound.putString("TeamColor", team.getColor().getName());
 			}
 
 			nbtCompound.putBoolean("AllowFriendlyFire", team.isFriendlyFireAllowed());
 			nbtCompound.putBoolean("SeeFriendlyInvisibles", team.shouldShowFriendlyInvisibles());
-			nbtCompound.putString("MemberNamePrefix", Text.Serializer.toJson(team.getPrefix()));
-			nbtCompound.putString("MemberNameSuffix", Text.Serializer.toJson(team.getSuffix()));
+			nbtCompound.putString("MemberNamePrefix", Text.Serialization.toJsonString(team.getPrefix()));
+			nbtCompound.putString("MemberNameSuffix", Text.Serialization.toJsonString(team.getSuffix()));
 			nbtCompound.putString("NameTagVisibility", team.getNameTagVisibilityRule().name);
 			nbtCompound.putString("DeathMessageVisibility", team.getDeathMessageVisibilityRule().name);
 			nbtCompound.putString("CollisionRule", team.getCollisionRule().name);
@@ -188,7 +188,7 @@ public class ScoreboardState extends PersistentState {
 			NbtCompound nbtCompound = new NbtCompound();
 			nbtCompound.putString("Name", scoreboardObjective.getName());
 			nbtCompound.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
-			nbtCompound.putString("DisplayName", Text.Serializer.toJson(scoreboardObjective.getDisplayName()));
+			nbtCompound.putString("DisplayName", Text.Serialization.toJsonString(scoreboardObjective.getDisplayName()));
 			nbtCompound.putString("RenderType", scoreboardObjective.getRenderType().getName());
 			nbtList.add(nbtCompound);
 		}

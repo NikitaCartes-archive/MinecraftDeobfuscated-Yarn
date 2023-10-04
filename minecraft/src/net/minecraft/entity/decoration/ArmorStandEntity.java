@@ -19,7 +19,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -402,7 +401,7 @@ public class ArmorStandEntity extends LivingEntity {
 			this.updateHealth(source, 4.0F);
 			return false;
 		} else {
-			boolean bl = "player".equals(source.getName());
+			boolean bl = source.isIn(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
 			boolean bl2 = source.isIn(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
 			if (!bl && !bl2) {
 				return false;
@@ -415,11 +414,7 @@ public class ArmorStandEntity extends LivingEntity {
 					this.playBreakSound();
 					this.spawnBreakParticles();
 					this.kill();
-					if (source.getSource() instanceof PersistentProjectileEntity persistentProjectileEntity && persistentProjectileEntity.getPierceLevel() > 0) {
-						return true;
-					}
-
-					return false;
+					return true;
 				} else {
 					long l = this.getWorld().getTime();
 					if (l - this.lastHitTime > 5L && !bl2) {

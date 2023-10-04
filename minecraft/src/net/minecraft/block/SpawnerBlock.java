@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -23,6 +24,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class SpawnerBlock extends BlockWithEntity {
+	public static final MapCodec<SpawnerBlock> CODEC = createCodec(SpawnerBlock::new);
+
+	@Override
+	public MapCodec<SpawnerBlock> getCodec() {
+		return CODEC;
+	}
+
 	protected SpawnerBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

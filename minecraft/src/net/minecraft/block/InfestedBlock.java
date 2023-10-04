@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -8,16 +10,26 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 
 public class InfestedBlock extends Block {
+	public static final MapCodec<InfestedBlock> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Registries.BLOCK.getCodec().fieldOf("host").forGetter(InfestedBlock::getRegularBlock), createSettingsCodec())
+				.apply(instance, InfestedBlock::new)
+	);
 	private final Block regularBlock;
 	private static final Map<Block, Block> REGULAR_TO_INFESTED_BLOCK = Maps.<Block, Block>newIdentityHashMap();
 	private static final Map<BlockState, BlockState> REGULAR_TO_INFESTED_STATE = Maps.<BlockState, BlockState>newIdentityHashMap();
 	private static final Map<BlockState, BlockState> INFESTED_TO_REGULAR_STATE = Maps.<BlockState, BlockState>newIdentityHashMap();
+
+	@Override
+	public MapCodec<? extends InfestedBlock> getCodec() {
+		return CODEC;
+	}
 
 	/**
 	 * Creates an infested block

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -15,7 +16,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class ObserverBlock extends FacingBlock {
+	public static final MapCodec<ObserverBlock> CODEC = createCodec(ObserverBlock::new);
 	public static final BooleanProperty POWERED = Properties.POWERED;
+
+	@Override
+	public MapCodec<ObserverBlock> getCodec() {
+		return CODEC;
+	}
 
 	public ObserverBlock(AbstractBlock.Settings settings) {
 		super(settings);

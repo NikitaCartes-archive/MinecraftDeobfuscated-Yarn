@@ -164,7 +164,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected static final float field_30067 = 1.74F;
 	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F);
 	public static final float BABY_SCALE_FACTOR = 0.5F;
-	private static final int field_42636 = 50;
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.<StatusEffect, StatusEffectInstance>newHashMap();
@@ -330,8 +329,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	public boolean canBreatheInWater() {
-		return this.getGroup() == EntityGroup.UNDEAD;
+	public final boolean canBreatheInWater() {
+		return this.getType().isIn(EntityTypeTags.CAN_BREATHE_UNDER_WATER);
 	}
 
 	public float getLeaningPitch(float tickDelta) {
@@ -1382,12 +1381,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (!source.isIn(DamageTypeTags.BYPASSES_SHIELD) && this.isBlocking() && !bl) {
 			Vec3d vec3d = source.getPosition();
 			if (vec3d != null) {
-				Vec3d vec3d2 = this.getRotationVec(1.0F);
-				Vec3d vec3d3 = vec3d.relativize(this.getPos()).normalize();
-				vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
-				if (vec3d3.dotProduct(vec3d2) < 0.0) {
-					return true;
-				}
+				Vec3d vec3d2 = this.getRotationVector(0.0F, this.getHeadYaw());
+				Vec3d vec3d3 = vec3d.relativize(this.getPos());
+				vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z).normalize();
+				return vec3d3.dotProduct(vec3d2) < 0.0;
 			}
 		}
 
@@ -2637,8 +2634,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		float f = MathHelper.wrapDegrees(bodyRotation - this.bodyYaw);
 		this.bodyYaw += f * 0.3F;
 		float g = MathHelper.wrapDegrees(this.getYaw() - this.bodyYaw);
-		if (Math.abs(g) > 50.0F) {
-			this.bodyYaw = this.bodyYaw + (g - (float)(MathHelper.sign((double)g) * 50));
+		float h = this.getMaxRelativeHeadRotation();
+		if (Math.abs(g) > h) {
+			this.bodyYaw = this.bodyYaw + (g - (float)MathHelper.sign((double)g) * h);
 		}
 
 		boolean bl = g < -90.0F || g >= 90.0F;
@@ -2647,6 +2645,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		return headRotation;
+	}
+
+	/**
+	 * {@return the maximum rotation of the head relative to the body in degrees}
+	 */
+	protected float getMaxRelativeHeadRotation() {
+		return 50.0F;
 	}
 
 	public void tickMovement() {
@@ -3298,7 +3303,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public boolean isAffectedBySplashPotions() {
-		return true;
+		return !this.isDead();
 	}
 
 	public boolean isMobOrPlayer() {

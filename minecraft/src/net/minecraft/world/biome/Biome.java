@@ -329,10 +329,22 @@ public final class Biome {
 		}
 	}
 
-	public static enum Precipitation {
-		NONE,
-		RAIN,
-		SNOW;
+	public static enum Precipitation implements StringIdentifiable {
+		NONE("none"),
+		RAIN("rain"),
+		SNOW("snow");
+
+		public static final Codec<Biome.Precipitation> CODEC = StringIdentifiable.createCodec(Biome.Precipitation::values);
+		private final String name;
+
+		private Precipitation(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
+		}
 	}
 
 	public static enum TemperatureModifier implements StringIdentifiable {

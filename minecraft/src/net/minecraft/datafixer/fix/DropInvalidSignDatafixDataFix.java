@@ -9,11 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
 
 public class DropInvalidSignDatafixDataFix extends ChoiceFix {
-	private static final String EMPTY_TEXT_JSON = Text.Serializer.toJson(ScreenTexts.EMPTY);
 	private static final String[] KEYS_TO_REMOVE = new String[]{
 		"Text1", "Text2", "Text3", "Text4", "FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4", "Color", "GlowingText"
 	};
@@ -42,7 +39,7 @@ public class DropInvalidSignDatafixDataFix extends ChoiceFix {
 			if (optional.isEmpty()) {
 				return textData;
 			} else {
-				Dynamic<T> dynamic = textData.createString(EMPTY_TEXT_JSON);
+				Dynamic<T> dynamic = TextFixes.empty(textData.getOps());
 				List<Dynamic<T>> list = ((Stream)textData.get("messages").asStreamOpt().result().orElse(Stream.of())).toList();
 				List<Dynamic<T>> list2 = Streams.<Dynamic, Dynamic<T>>mapWithIndex((Stream<Dynamic>)optional.get(), (message, index) -> {
 					Dynamic<T> dynamic2 = index < (long)list.size() ? (Dynamic)list.get((int)index) : dynamic;

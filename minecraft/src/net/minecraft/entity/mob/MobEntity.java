@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.Map;
@@ -1513,6 +1514,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		}
 	}
 
+	@VisibleForTesting
 	public void clearGoalsAndTasks() {
 		this.clearGoals(goal -> true);
 		this.getBrain().clear();
