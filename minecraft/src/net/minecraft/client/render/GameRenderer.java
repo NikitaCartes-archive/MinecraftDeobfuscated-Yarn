@@ -42,7 +42,6 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -95,6 +94,7 @@ public class GameRenderer implements AutoCloseable {
 	 */
 	public static final float CAMERA_DEPTH = 0.05F;
 	private static final float field_44940 = 1000.0F;
+	private static final int field_46727 = 3;
 	final MinecraftClient client;
 	private final ResourceManager resourceManager;
 	private final Random random = Random.create();
@@ -781,41 +781,24 @@ public class GameRenderer implements AutoCloseable {
 				double d = (double)this.client.interactionManager.getReachDistance();
 				this.client.crosshairTarget = entity.raycast(d, tickDelta, false);
 				Vec3d vec3d = entity.getCameraPosVec(tickDelta);
-				boolean bl = false;
-				int i = 3;
-				double e = d;
-				if (this.client.interactionManager.hasExtendedReach()) {
-					e = 6.0;
-					d = e;
-				} else {
-					if (d > 3.0) {
-						bl = true;
-					}
-
-					d = d;
-				}
-
-				e *= e;
-				if (this.client.crosshairTarget != null) {
-					e = this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d);
-				}
-
+				boolean bl = this.client.interactionManager.hasExtendedReach();
+				d = bl ? 6.0 : d;
+				boolean bl2 = !bl;
+				double e = this.client.crosshairTarget != null ? this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d) : d * d;
 				Vec3d vec3d2 = entity.getRotationVec(1.0F);
 				Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 				float f = 1.0F;
 				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
 				EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.canHit(), e);
 				if (entityHitResult != null) {
-					Entity entity2 = entityHitResult.getEntity();
 					Vec3d vec3d4 = entityHitResult.getPos();
 					double g = vec3d.squaredDistanceTo(vec3d4);
-					if (bl && g > 9.0) {
+					if (bl2 && g > 9.0) {
 						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), BlockPos.ofFloored(vec3d4));
 					} else if (g < e || this.client.crosshairTarget == null) {
 						this.client.crosshairTarget = entityHitResult;
-						if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
-							this.client.targetedEntity = entity2;
-						}
+						Entity entity2 = entityHitResult.getEntity();
+						this.client.targetedEntity = entity2;
 					}
 				}
 

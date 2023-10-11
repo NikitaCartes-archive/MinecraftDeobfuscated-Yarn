@@ -520,7 +520,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				double d = DolphinEntity.this.getEyeY() - 0.3F;
 				ItemEntity itemEntity = new ItemEntity(DolphinEntity.this.getWorld(), DolphinEntity.this.getX(), d, DolphinEntity.this.getZ(), stack);
 				itemEntity.setPickupDelay(40);
-				itemEntity.setThrower(DolphinEntity.this.getUuid());
+				itemEntity.setThrower(DolphinEntity.this);
 				float f = 0.3F;
 				float g = DolphinEntity.this.random.nextFloat() * (float) (Math.PI * 2);
 				float h = 0.02F * DolphinEntity.this.random.nextFloat();

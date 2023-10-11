@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class TestUtil {
-	private static final int MAX_BATCH_SIZE = 100;
+	private static final int MAX_BATCH_SIZE = 50;
 	public static final int field_33148 = 2;
 	public static final int field_33149 = 5;
 	public static final int field_33150 = 6;
@@ -56,7 +56,7 @@ public class TestUtil {
 					Consumer<ServerWorld> consumer2 = TestFunctions.getAfterBatchConsumer(string);
 					MutableInt mutableInt = new MutableInt();
 					Collection<TestFunction> collection = (Collection<TestFunction>)entry.getValue();
-					return Streams.stream(Iterables.partition(collection, 100))
+					return Streams.stream(Iterables.partition(collection, 50))
 						.map(
 							testFunctionsx -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), ImmutableList.<TestFunction>copyOf(testFunctionsx), consumer, consumer2)
 						);

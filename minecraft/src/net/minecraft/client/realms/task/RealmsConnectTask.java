@@ -13,30 +13,30 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class RealmsConnectTask extends LongRunningTask {
 	private static final Text TITLE = Text.translatable("mco.connect.connecting");
-	private final RealmsConnection realmsConnect;
+	private final RealmsConnection realmsConnection;
 	private final RealmsServer server;
 	private final RealmsServerAddress address;
 
 	public RealmsConnectTask(Screen lastScreen, RealmsServer server, RealmsServerAddress address) {
 		this.server = server;
 		this.address = address;
-		this.realmsConnect = new RealmsConnection(lastScreen);
+		this.realmsConnection = new RealmsConnection(lastScreen);
 	}
 
 	public void run() {
-		this.realmsConnect.connect(this.server, ServerAddress.parse(this.address.address));
+		this.realmsConnection.connect(this.server, ServerAddress.parse(this.address.address));
 	}
 
 	@Override
 	public void abortTask() {
 		super.abortTask();
-		this.realmsConnect.abort();
+		this.realmsConnection.abort();
 		MinecraftClient.getInstance().getServerResourcePackProvider().clear();
 	}
 
 	@Override
 	public void tick() {
-		this.realmsConnect.tick();
+		this.realmsConnection.tick();
 	}
 
 	@Override

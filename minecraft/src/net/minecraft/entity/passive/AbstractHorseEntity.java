@@ -444,7 +444,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	public ActionResult interactHorse(PlayerEntity player, ItemStack stack) {
 		boolean bl = this.receiveFood(player, stack);
-		if (!player.getAbilities().creativeMode) {
+		if (bl & !player.getAbilities().creativeMode) {
 			stack.decrement(1);
 		}
 
@@ -502,16 +502,13 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			this.getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
 			if (!this.getWorld().isClient) {
 				this.growUp(i);
+				bl = true;
 			}
-
-			bl = true;
 		}
 
-		if (j > 0 && (bl || !this.isTame()) && this.getTemper() < this.getMaxTemper()) {
+		if (j > 0 && (bl || !this.isTame()) && this.getTemper() < this.getMaxTemper() && !this.getWorld().isClient) {
+			this.addTemper(j);
 			bl = true;
-			if (!this.getWorld().isClient) {
-				this.addTemper(j);
-			}
 		}
 
 		if (bl) {

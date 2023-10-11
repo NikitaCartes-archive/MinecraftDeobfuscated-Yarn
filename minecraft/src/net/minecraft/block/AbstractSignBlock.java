@@ -17,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.SignChangingItem;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -86,7 +85,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 				SignText signText = signBlockEntity.getText(bl2);
 				boolean bl3 = signBlockEntity.runCommandClickEvent(player, world, pos, bl2);
 				if (signBlockEntity.isWaxed()) {
-					world.playSound(null, signBlockEntity.getPos(), SoundEvents.BLOCK_SIGN_WAXED_INTERACT_FAIL, SoundCategory.BLOCKS);
+					world.playSound(null, signBlockEntity.getPos(), signBlockEntity.getInteractionFailSound(), SoundCategory.BLOCKS);
 					return this.getActionResult(bl);
 				} else if (bl
 					&& !this.isOtherPlayerEditing(player, signBlockEntity)

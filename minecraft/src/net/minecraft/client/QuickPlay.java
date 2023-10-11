@@ -18,7 +18,7 @@ import net.minecraft.client.realms.dto.RealmsServerList;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
-import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
+import net.minecraft.client.realms.task.RealmsPrepareConnectionTask;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -92,8 +92,8 @@ public class QuickPlay {
 			client.setScreen(new DisconnectedScreen(screen, ERROR_TITLE, ERROR_REALM_PERMISSION, TO_REALMS));
 		} else {
 			TitleScreen titleScreen = new TitleScreen();
-			RealmsGetServerDetailsTask realmsGetServerDetailsTask = new RealmsGetServerDetailsTask(titleScreen, realmsServer);
-			client.setScreen(new RealmsLongRunningMcoTaskScreen(titleScreen, realmsGetServerDetailsTask));
+			RealmsPrepareConnectionTask realmsPrepareConnectionTask = new RealmsPrepareConnectionTask(titleScreen, realmsServer);
+			client.setScreen(new RealmsLongRunningMcoTaskScreen(titleScreen, realmsPrepareConnectionTask));
 		}
 	}
 }

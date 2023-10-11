@@ -20,7 +20,6 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -28,7 +27,6 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -36,6 +34,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -44,17 +43,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.BlockLocating;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 import org.joml.Vector3f;
 
-public abstract class AbstractMinecartEntity extends Entity {
+public abstract class AbstractMinecartEntity extends VehicleEntity {
 	private static final float VILLAGER_PASSENGER_ATTACHMENT_Y_OFFSET = 0.0F;
 	private static final float PASSENGER_ATTACHMENT_Y_OFFSET = 0.1875F;
-	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Integer> DAMAGE_WOBBLE_SIDE = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Float> DAMAGE_WOBBLE_STRENGTH = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> CUSTOM_BLOCK_ID = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -105,22 +99,20 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.prevZ = z;
 	}
 
-	public static AbstractMinecartEntity create(World world, double x, double y, double z, AbstractMinecartEntity.Type type) {
-		if (type == AbstractMinecartEntity.Type.CHEST) {
-			return new ChestMinecartEntity(world, x, y, z);
-		} else if (type == AbstractMinecartEntity.Type.FURNACE) {
-			return new FurnaceMinecartEntity(world, x, y, z);
-		} else if (type == AbstractMinecartEntity.Type.TNT) {
-			return new TntMinecartEntity(world, x, y, z);
-		} else if (type == AbstractMinecartEntity.Type.SPAWNER) {
-			return new SpawnerMinecartEntity(world, x, y, z);
-		} else if (type == AbstractMinecartEntity.Type.HOPPER) {
-			return new HopperMinecartEntity(world, x, y, z);
-		} else {
-			return (AbstractMinecartEntity)(type == AbstractMinecartEntity.Type.COMMAND_BLOCK
-				? new CommandBlockMinecartEntity(world, x, y, z)
-				: new MinecartEntity(world, x, y, z));
-		}
+	public static AbstractMinecartEntity create(
+		ServerWorld world, double x, double y, double z, AbstractMinecartEntity.Type type, ItemStack stack, @Nullable PlayerEntity player
+	) {
+		AbstractMinecartEntity abstractMinecartEntity = (AbstractMinecartEntity)(switch (type) {
+			case CHEST -> new ChestMinecartEntity(world, x, y, z);
+			case FURNACE -> new FurnaceMinecartEntity(world, x, y, z);
+			case TNT -> new TntMinecartEntity(world, x, y, z);
+			case SPAWNER -> new SpawnerMinecartEntity(world, x, y, z);
+			case HOPPER -> new HopperMinecartEntity(world, x, y, z);
+			case COMMAND_BLOCK -> new CommandBlockMinecartEntity(world, x, y, z);
+			default -> new MinecartEntity(world, x, y, z);
+		});
+		EntityType.copier(world, stack, player).accept(abstractMinecartEntity);
+		return abstractMinecartEntity;
 	}
 
 	@Override
@@ -130,9 +122,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	protected void initDataTracker() {
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_TICKS, 0);
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_SIDE, 1);
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_STRENGTH, 0.0F);
+		super.initDataTracker();
 		this.dataTracker.startTracking(CUSTOM_BLOCK_ID, Block.getRawIdFromState(Blocks.AIR.getDefaultState()));
 		this.dataTracker.startTracking(CUSTOM_BLOCK_OFFSET, 6);
 		this.dataTracker.startTracking(CUSTOM_BLOCK_PRESENT, false);
@@ -209,50 +199,10 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.getWorld().isClient || this.isRemoved()) {
-			return true;
-		} else if (this.isInvulnerableTo(source)) {
-			return false;
-		} else {
-			this.setDamageWobbleSide(-this.getDamageWobbleSide());
-			this.setDamageWobbleTicks(10);
-			this.scheduleVelocityUpdate();
-			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
-			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
-			if (bl || this.getDamageWobbleStrength() > 40.0F) {
-				this.removeAllPassengers();
-				if (bl && !this.hasCustomName()) {
-					this.discard();
-				} else {
-					this.dropItems(source);
-				}
-			}
-
-			return true;
-		}
-	}
-
-	@Override
 	protected float getVelocityMultiplier() {
 		BlockState blockState = this.getWorld().getBlockState(this.getBlockPos());
 		return blockState.isIn(BlockTags.RAILS) ? 1.0F : super.getVelocityMultiplier();
 	}
-
-	public void dropItems(DamageSource damageSource) {
-		this.kill();
-		if (this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			ItemStack itemStack = new ItemStack(this.getItem());
-			if (this.hasCustomName()) {
-				itemStack.setCustomName(this.getCustomName());
-			}
-
-			this.dropStack(itemStack);
-		}
-	}
-
-	abstract Item getItem();
 
 	@Override
 	public void animateDamage(float yaw) {
@@ -794,30 +744,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.setVelocity(this.clientVelocity);
 	}
 
-	public void setDamageWobbleStrength(float damageWobbleStrength) {
-		this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, damageWobbleStrength);
-	}
-
-	public float getDamageWobbleStrength() {
-		return this.dataTracker.get(DAMAGE_WOBBLE_STRENGTH);
-	}
-
-	public void setDamageWobbleTicks(int wobbleTicks) {
-		this.dataTracker.set(DAMAGE_WOBBLE_TICKS, wobbleTicks);
-	}
-
-	public int getDamageWobbleTicks() {
-		return this.dataTracker.get(DAMAGE_WOBBLE_TICKS);
-	}
-
-	public void setDamageWobbleSide(int wobbleSide) {
-		this.dataTracker.set(DAMAGE_WOBBLE_SIDE, wobbleSide);
-	}
-
-	public int getDamageWobbleSide() {
-		return this.dataTracker.get(DAMAGE_WOBBLE_SIDE);
-	}
-
 	public abstract AbstractMinecartEntity.Type getMinecartType();
 
 	public BlockState getContainedBlock() {
@@ -857,12 +783,12 @@ public abstract class AbstractMinecartEntity extends Entity {
 	@Override
 	public ItemStack getPickBlockStack() {
 		return new ItemStack(switch (this.getMinecartType()) {
-			case FURNACE -> Items.FURNACE_MINECART;
 			case CHEST -> Items.CHEST_MINECART;
+			case FURNACE -> Items.FURNACE_MINECART;
 			case TNT -> Items.TNT_MINECART;
+			default -> Items.MINECART;
 			case HOPPER -> Items.HOPPER_MINECART;
 			case COMMAND_BLOCK -> Items.COMMAND_BLOCK_MINECART;
-			default -> Items.MINECART;
 		});
 	}
 

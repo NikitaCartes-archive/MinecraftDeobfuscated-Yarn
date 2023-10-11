@@ -496,8 +496,14 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * is removed, or to drop the contents of an inventory. The check {@code
 	 * state.isOf(newState.getBlock())} can be used to see if the block was removed or not.
 	 * 
+	 * <p>For most block entities, {@link net.minecraft.util.ItemScatterer#onStateReplaced}
+	 * provides a good implementation of this method. Make sure to call {@code
+	 * super.onStateReplaced(state, world, pos, newState, moved);} <strong>after</strong>
+	 * invoking {@code ItemScatterer} methods.
+	 * 
 	 * @deprecated Consider calling {@link AbstractBlockState#onStateReplaced} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 * 
+	 * @see net.minecraft.util.ItemScatterer#onStateReplaced
 	 * @see net.minecraft.util.ItemScatterer#spawn(World, BlockPos, net.minecraft.inventory.Inventory)
 	 * @see #onBlockAdded
 	 */

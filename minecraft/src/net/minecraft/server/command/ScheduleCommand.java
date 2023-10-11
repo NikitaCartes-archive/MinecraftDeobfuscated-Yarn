@@ -77,7 +77,10 @@ public class ScheduleCommand {
 	}
 
 	private static int execute(
-		ServerCommandSource source, Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> function, int time, boolean replace
+		ServerCommandSource source,
+		Pair<Identifier, Either<CommandFunction<ServerCommandSource>, Collection<CommandFunction<ServerCommandSource>>>> function,
+		int time,
+		boolean replace
 	) throws CommandSyntaxException {
 		if (time == 0) {
 			throw SAME_TICK_EXCEPTION.create();

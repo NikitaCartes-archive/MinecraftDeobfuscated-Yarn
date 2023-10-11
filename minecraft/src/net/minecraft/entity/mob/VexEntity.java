@@ -124,6 +124,14 @@ public class VexEntity extends HostileEntity implements Ownable {
 	}
 
 	@Override
+	public void copyFrom(Entity original) {
+		super.copyFrom(original);
+		if (original instanceof VexEntity vexEntity) {
+			this.owner = vexEntity.getOwner();
+		}
+	}
+
+	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		if (this.bounds != null) {

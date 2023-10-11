@@ -1,34 +1,42 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.ContextChain;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Locale;
+import net.minecraft.command.CommandExecutionContext;
+import net.minecraft.command.CommandFunctionAction;
+import net.minecraft.command.ControlFlowAware;
+import net.minecraft.command.ExecutionControl;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
-import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.function.MacroException;
+import net.minecraft.server.function.Procedure;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 public class DebugCommand {
-	private static final Logger LOGGER = LogUtils.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.debug.notRunning"));
 	private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.debug.alreadyRunning"));
+	static final SimpleCommandExceptionType NO_RECURSION_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.debug.function.noRecursion"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -38,11 +46,11 @@ public class DebugCommand {
 				.then(CommandManager.literal("stop").executes(context -> executeStop(context.getSource())))
 				.then(
 					CommandManager.literal("function")
-						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
+						.requires(source -> source.hasPermissionLevel(3))
 						.then(
 							CommandManager.argument("name", CommandFunctionArgumentType.commandFunction())
 								.suggests(FunctionCommand.SUGGESTION_PROVIDER)
-								.executes(context -> executeFunction(context.getSource(), CommandFunctionArgumentType.getFunctions(context, "name")))
+								.executes(new DebugCommand.Command())
 						)
 				)
 		);
@@ -75,62 +83,70 @@ public class DebugCommand {
 		}
 	}
 
-	private static int executeFunction(ServerCommandSource source, Collection<CommandFunction> functions) {
-		int i = 0;
-		MinecraftServer minecraftServer = source.getServer();
-		String string = "debug-trace-" + Util.getFormattedCurrentTime() + ".txt";
+	static class Command extends ControlFlowAware.Helper<ServerCommandSource> implements ControlFlowAware.Command<ServerCommandSource> {
+		public void executeInner(
+			ServerCommandSource serverCommandSource, ContextChain<ServerCommandSource> contextChain, boolean bl, ExecutionControl<ServerCommandSource> executionControl
+		) throws CommandSyntaxException {
+			if (executionControl.getTracer() != null) {
+				throw DebugCommand.NO_RECURSION_EXCEPTION.create();
+			} else {
+				CommandContext<ServerCommandSource> commandContext = contextChain.getTopContext();
+				Collection<CommandFunction<ServerCommandSource>> collection = CommandFunctionArgumentType.getFunctions(commandContext, "name");
+				MinecraftServer minecraftServer = serverCommandSource.getServer();
+				String string = "debug-trace-" + Util.getFormattedCurrentTime() + ".txt";
+				CommandDispatcher<ServerCommandSource> commandDispatcher = serverCommandSource.getServer().getCommandFunctionManager().getDispatcher();
+				int i = 0;
 
-		try {
-			Path path = minecraftServer.getFile("debug").toPath();
-			Files.createDirectories(path);
-			Writer writer = Files.newBufferedWriter(path.resolve(string), StandardCharsets.UTF_8);
-
-			try {
-				PrintWriter printWriter = new PrintWriter(writer);
-
-				for (CommandFunction commandFunction : functions) {
-					printWriter.println(commandFunction.getId());
+				try {
+					Path path = minecraftServer.getFile("debug").toPath();
+					Files.createDirectories(path);
+					final PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(path.resolve(string), StandardCharsets.UTF_8));
 					DebugCommand.Tracer tracer = new DebugCommand.Tracer(printWriter);
+					executionControl.setTracer(tracer);
 
-					try {
-						i += source.getServer().getCommandFunctionManager().execute(commandFunction, source.withOutput(tracer).withMaxLevel(2), tracer, null);
-					} catch (MacroException var13) {
-						source.sendError(var13.getMessage());
+					for (final CommandFunction<ServerCommandSource> commandFunction : collection) {
+						try {
+							ServerCommandSource serverCommandSource2 = serverCommandSource.withOutput(tracer).withMaxLevel(2);
+							Procedure<ServerCommandSource> procedure = commandFunction.withMacroReplaced(null, commandDispatcher, serverCommandSource2);
+							executionControl.enqueueAction((new CommandFunctionAction<ServerCommandSource>(procedure) {
+								public void execute(ServerCommandSource serverCommandSource, CommandExecutionContext<ServerCommandSource> commandExecutionContext, int i) {
+									printWriter.println(commandFunction.id());
+									super.execute(serverCommandSource, commandExecutionContext, i);
+								}
+							}).bind(serverCommandSource2));
+							i += procedure.entries().size();
+						} catch (MacroException var18) {
+							serverCommandSource.sendError(var18.getMessage());
+						}
 					}
+				} catch (IOException | UncheckedIOException var19) {
+					DebugCommand.LOGGER.warn("Tracing failed", (Throwable)var19);
+					serverCommandSource.sendError(Text.translatable("commands.debug.function.traceFailed"));
 				}
-			} catch (Throwable var14) {
-				if (writer != null) {
-					try {
-						writer.close();
-					} catch (Throwable var12) {
-						var14.addSuppressed(var12);
+
+				int j = i;
+				executionControl.enqueueAction(
+					(context, depth) -> {
+						if (collection.size() == 1) {
+							serverCommandSource.sendFeedback(
+								() -> Text.translatable("commands.debug.function.success.single", j, Text.of(((CommandFunction)collection.iterator().next()).id()), string), true
+							);
+						} else {
+							serverCommandSource.sendFeedback(() -> Text.translatable("commands.debug.function.success.multiple", j, collection.size(), string), true);
+						}
 					}
-				}
-
-				throw var14;
+				);
 			}
-
-			if (writer != null) {
-				writer.close();
-			}
-		} catch (IOException | UncheckedIOException var15) {
-			LOGGER.warn("Tracing failed", (Throwable)var15);
-			source.sendError(Text.translatable("commands.debug.function.traceFailed"));
 		}
 
-		int j = i;
-		if (functions.size() == 1) {
-			source.sendFeedback(
-				() -> Text.translatable("commands.debug.function.success.single", j, Text.of(((CommandFunction)functions.iterator().next()).getId()), string), true
-			);
-		} else {
-			source.sendFeedback(() -> Text.translatable("commands.debug.function.success.multiple", j, functions.size(), string), true);
+		protected void sendError(CommandSyntaxException commandSyntaxException, ServerCommandSource serverCommandSource, boolean bl) {
+			if (!bl) {
+				serverCommandSource.sendError(Texts.toText(commandSyntaxException.getRawMessage()));
+			}
 		}
-
-		return i;
 	}
 
-	static class Tracer implements CommandFunctionManager.Tracer, CommandOutput {
+	static class Tracer implements CommandOutput, net.minecraft.server.function.Tracer {
 		public static final int MARGIN = 1;
 		private final PrintWriter writer;
 		private int lastIndentWidth;
@@ -226,6 +242,11 @@ public class DebugCommand {
 		@Override
 		public boolean cannotBeSilenced() {
 			return true;
+		}
+
+		@Override
+		public void close() {
+			IOUtils.closeQuietly(this.writer);
 		}
 	}
 }

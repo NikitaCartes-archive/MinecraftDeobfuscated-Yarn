@@ -22,6 +22,8 @@ public abstract class Request<T extends Request<T>> {
 	protected String url;
 	private static final int READ_TIMEOUT = 60000;
 	private static final int CONNECT_TIMEOUT = 5000;
+	private static final String IS_PRERELEASE_HEADER = "Is-Prerelease";
+	private static final String COOKIE_HEADER = "Cookie";
 
 	public Request(String url, int connectTimeout, int readTimeout) {
 		try {
@@ -55,9 +57,8 @@ public abstract class Request<T extends Request<T>> {
 		}
 	}
 
-	public T withHeader(String name, String value) {
-		this.connection.addRequestProperty(name, value);
-		return (T)this;
+	public void prerelease(boolean prerelease) {
+		this.connection.addRequestProperty("Is-Prerelease", String.valueOf(prerelease));
 	}
 
 	public int getRetryAfterHeader() {

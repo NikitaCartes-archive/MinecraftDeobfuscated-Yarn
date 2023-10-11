@@ -19,28 +19,30 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public final class ProjectileUtil {
+	private static final float DEFAULT_MARGIN = 0.3F;
+
 	public static HitResult getCollision(Entity entity, Predicate<Entity> predicate) {
 		Vec3d vec3d = entity.getVelocity();
 		World world = entity.getWorld();
 		Vec3d vec3d2 = entity.getPos();
-		return getCollision(vec3d2, entity, predicate, vec3d, world);
+		return getCollision(vec3d2, entity, predicate, vec3d, world, 0.3F);
 	}
 
 	public static HitResult getCollision(Entity entity, Predicate<Entity> predicate, double range) {
 		Vec3d vec3d = entity.getRotationVec(0.0F).multiply(range);
 		World world = entity.getWorld();
 		Vec3d vec3d2 = entity.getEyePos();
-		return getCollision(vec3d2, entity, predicate, vec3d, world);
+		return getCollision(vec3d2, entity, predicate, vec3d, world, 0.0F);
 	}
 
-	private static HitResult getCollision(Vec3d pos, Entity entity, Predicate<Entity> predicate, Vec3d velocity, World world) {
+	private static HitResult getCollision(Vec3d pos, Entity entity, Predicate<Entity> predicate, Vec3d velocity, World world, float margin) {
 		Vec3d vec3d = pos.add(velocity);
 		HitResult hitResult = world.raycast(new RaycastContext(pos, vec3d, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity));
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			vec3d = hitResult.getPos();
 		}
 
-		HitResult hitResult2 = getEntityCollision(world, entity, pos, vec3d, entity.getBoundingBox().stretch(velocity).expand(1.0), predicate);
+		HitResult hitResult2 = getEntityCollision(world, entity, pos, vec3d, entity.getBoundingBox().stretch(velocity).expand(1.0), predicate, margin);
 		if (hitResult2 != null) {
 			hitResult = hitResult2;
 		}
@@ -49,9 +51,9 @@ public final class ProjectileUtil {
 	}
 
 	@Nullable
-	public static EntityHitResult raycast(Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate, double d) {
+	public static EntityHitResult raycast(Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate, double maxDistance) {
 		World world = entity.getWorld();
-		double e = d;
+		double d = maxDistance;
 		Entity entity2 = null;
 		Vec3d vec3d = null;
 
@@ -59,24 +61,24 @@ public final class ProjectileUtil {
 			Box box2 = entity3.getBoundingBox().expand((double)entity3.getTargetingMargin());
 			Optional<Vec3d> optional = box2.raycast(min, max);
 			if (box2.contains(min)) {
-				if (e >= 0.0) {
+				if (d >= 0.0) {
 					entity2 = entity3;
 					vec3d = (Vec3d)optional.orElse(min);
-					e = 0.0;
+					d = 0.0;
 				}
 			} else if (optional.isPresent()) {
 				Vec3d vec3d2 = (Vec3d)optional.get();
-				double f = min.squaredDistanceTo(vec3d2);
-				if (f < e || e == 0.0) {
+				double e = min.squaredDistanceTo(vec3d2);
+				if (e < d || d == 0.0) {
 					if (entity3.getRootVehicle() == entity.getRootVehicle()) {
-						if (e == 0.0) {
+						if (d == 0.0) {
 							entity2 = entity3;
 							vec3d = vec3d2;
 						}
 					} else {
 						entity2 = entity3;
 						vec3d = vec3d2;
-						e = f;
+						d = e;
 					}
 				}
 			}

@@ -17,7 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameRules;
@@ -172,7 +172,7 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 	}
 
 	@Override
-	public AbstractTeam getScoreboardTeam() {
+	public Team getScoreboardTeam() {
 		if (this.isTamed()) {
 			LivingEntity livingEntity = this.getOwner();
 			if (livingEntity != null) {

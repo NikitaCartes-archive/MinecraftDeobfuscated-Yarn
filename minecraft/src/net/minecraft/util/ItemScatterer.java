@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -67,6 +68,24 @@ public class ItemScatterer {
 				world.random.nextTriangular(0.0, 0.11485000171139836)
 			);
 			world.spawnEntity(itemEntity);
+		}
+	}
+
+	/**
+	 * Implementation {@link net.minecraft.block.AbstractBlock#onStateReplaced}.
+	 * This assumes that the block has a corresponding block entity.
+	 * 
+	 * <p>If the block changes, this {@linkplain #spawn(World, BlockPos, Inventory) spawns}
+	 * item entities around the block and updates redstone comparators.
+	 * 
+	 * @see net.minecraft.block.AbstractBlock#onStateReplaced
+	 */
+	public static void onStateReplaced(BlockState state, BlockState newState, World world, BlockPos pos) {
+		if (!state.isOf(newState.getBlock())) {
+			if (world.getBlockEntity(pos) instanceof Inventory inventory) {
+				spawn(world, pos, inventory);
+				world.updateComparators(pos, state.getBlock());
+			}
 		}
 	}
 }

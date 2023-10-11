@@ -34,12 +34,14 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 			final Identifier identifier = Identifier.fromCommandInput(stringReader);
 			return new CommandFunctionArgumentType.FunctionArgument() {
 				@Override
-				public Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+				public Collection<CommandFunction<ServerCommandSource>> getFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 					return CommandFunctionArgumentType.getFunctionTag(context, identifier);
 				}
 
 				@Override
-				public Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+				public Pair<Identifier, Either<CommandFunction<ServerCommandSource>, Collection<CommandFunction<ServerCommandSource>>>> getFunctionOrTag(
+					CommandContext<ServerCommandSource> context
+				) throws CommandSyntaxException {
 					return Pair.of(identifier, Either.right(CommandFunctionArgumentType.getFunctionTag(context, identifier)));
 				}
 			};
@@ -47,28 +49,30 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 			final Identifier identifier = Identifier.fromCommandInput(stringReader);
 			return new CommandFunctionArgumentType.FunctionArgument() {
 				@Override
-				public Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+				public Collection<CommandFunction<ServerCommandSource>> getFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 					return Collections.singleton(CommandFunctionArgumentType.getFunction(context, identifier));
 				}
 
 				@Override
-				public Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+				public Pair<Identifier, Either<CommandFunction<ServerCommandSource>, Collection<CommandFunction<ServerCommandSource>>>> getFunctionOrTag(
+					CommandContext<ServerCommandSource> context
+				) throws CommandSyntaxException {
 					return Pair.of(identifier, Either.left(CommandFunctionArgumentType.getFunction(context, identifier)));
 				}
 			};
 		}
 	}
 
-	static CommandFunction getFunction(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
-		return (CommandFunction)context.getSource()
+	static CommandFunction<ServerCommandSource> getFunction(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
+		return (CommandFunction<ServerCommandSource>)context.getSource()
 			.getServer()
 			.getCommandFunctionManager()
 			.getFunction(id)
 			.orElseThrow(() -> UNKNOWN_FUNCTION_EXCEPTION.create(id.toString()));
 	}
 
-	static Collection<CommandFunction> getFunctionTag(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
-		Collection<CommandFunction> collection = context.getSource().getServer().getCommandFunctionManager().getTag(id);
+	static Collection<CommandFunction<ServerCommandSource>> getFunctionTag(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
+		Collection<CommandFunction<ServerCommandSource>> collection = context.getSource().getServer().getCommandFunctionManager().getTag(id);
 		if (collection == null) {
 			throw UNKNOWN_FUNCTION_TAG_EXCEPTION.create(id.toString());
 		} else {
@@ -76,11 +80,13 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 		}
 	}
 
-	public static Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+	public static Collection<CommandFunction<ServerCommandSource>> getFunctions(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		return context.<CommandFunctionArgumentType.FunctionArgument>getArgument(name, CommandFunctionArgumentType.FunctionArgument.class).getFunctions(context);
 	}
 
-	public static Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+	public static Pair<Identifier, Either<CommandFunction<ServerCommandSource>, Collection<CommandFunction<ServerCommandSource>>>> getFunctionOrTag(
+		CommandContext<ServerCommandSource> context, String name
+	) throws CommandSyntaxException {
 		return context.<CommandFunctionArgumentType.FunctionArgument>getArgument(name, CommandFunctionArgumentType.FunctionArgument.class).getFunctionOrTag(context);
 	}
 
@@ -90,8 +96,10 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 	}
 
 	public interface FunctionArgument {
-		Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
+		Collection<CommandFunction<ServerCommandSource>> getFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
 
-		Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
+		Pair<Identifier, Either<CommandFunction<ServerCommandSource>, Collection<CommandFunction<ServerCommandSource>>>> getFunctionOrTag(
+			CommandContext<ServerCommandSource> context
+		) throws CommandSyntaxException;
 	}
 }

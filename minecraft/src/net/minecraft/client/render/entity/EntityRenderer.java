@@ -74,7 +74,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	 * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.
 	 */
 	protected boolean hasLabel(T entity) {
-		return entity.shouldRenderName() && entity.hasCustomName();
+		return entity.shouldRenderName() || entity.hasCustomName() && entity == this.dispatcher.targetedEntity;
 	}
 
 	public abstract Identifier getTexture(T entity);

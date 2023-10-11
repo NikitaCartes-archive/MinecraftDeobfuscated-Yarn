@@ -2,6 +2,7 @@ package net.minecraft.client.realms.gui.screen;
 
 import com.mojang.logging.LogUtils;
 import java.time.Duration;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,27 +25,43 @@ import org.slf4j.Logger;
 public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final RepeatedNarrator NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
-	private LongRunningTask task;
+	private final List<LongRunningTask> tasks;
 	private final Screen parent;
-	private volatile Text title = ScreenTexts.EMPTY;
 	private final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical();
+	private volatile Text title;
 	@Nullable
 	private RealmsLoadingWidget loading;
 
-	public RealmsLongRunningMcoTaskScreen(Screen parent, LongRunningTask task) {
+	public RealmsLongRunningMcoTaskScreen(Screen parent, LongRunningTask... tasks) {
 		super(NarratorManager.EMPTY);
 		this.parent = parent;
-		this.task = task;
-		this.setTitle(task.getTitle());
-		Thread thread = new Thread(task, "Realms-long-running-task");
-		thread.setUncaughtExceptionHandler(new RealmsDefaultUncaughtExceptionHandler(LOGGER));
-		thread.start();
+		this.tasks = List.of(tasks);
+		if (this.tasks.isEmpty()) {
+			throw new IllegalArgumentException("No tasks added");
+		} else {
+			this.title = ((LongRunningTask)this.tasks.get(0)).getTitle();
+			Runnable runnable = () -> {
+				for (LongRunningTask longRunningTask : tasks) {
+					this.setTitle(longRunningTask.getTitle());
+					if (longRunningTask.aborted()) {
+						break;
+					}
+
+					longRunningTask.run();
+				}
+			};
+			Thread thread = new Thread(runnable, "Realms-long-running-task");
+			thread.setUncaughtExceptionHandler(new RealmsDefaultUncaughtExceptionHandler(LOGGER));
+			thread.start();
+		}
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
-		NARRATOR.narrate(this.client.getNarratorManager(), this.loading.getMessage());
+		if (this.loading != null) {
+			NARRATOR.narrate(this.client.getNarratorManager(), this.loading.getMessage());
+		}
 	}
 
 	@Override
@@ -76,7 +93,10 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	}
 
 	protected void onCancel() {
-		this.task.abortTask();
+		for (LongRunningTask longRunningTask : this.tasks) {
+			longRunningTask.abortTask();
+		}
+
 		this.client.setScreen(this.parent);
 	}
 

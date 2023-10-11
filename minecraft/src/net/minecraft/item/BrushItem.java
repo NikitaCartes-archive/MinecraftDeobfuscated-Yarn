@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -28,7 +27,6 @@ import net.minecraft.world.World;
 public class BrushItem extends Item {
 	public static final int field_43390 = 10;
 	private static final int MAX_BRUSH_TIME = 200;
-	private static final double MAX_BRUSH_DISTANCE = Math.sqrt(ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE) - 1.0;
 
 	public BrushItem(Item.Settings settings) {
 		super(settings);
@@ -57,7 +55,7 @@ public class BrushItem extends Item {
 	@Override
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 		if (remainingUseTicks >= 0 && user instanceof PlayerEntity playerEntity) {
-			HitResult hitResult = this.getHitResult(user);
+			HitResult hitResult = this.getHitResult(playerEntity);
 			if (hitResult instanceof BlockHitResult blockHitResult && hitResult.getType() == HitResult.Type.BLOCK) {
 				int i = this.getMaxUseTime(stack) - remainingUseTicks + 1;
 				boolean bl = i % 10 == 5;
@@ -95,8 +93,8 @@ public class BrushItem extends Item {
 		}
 	}
 
-	private HitResult getHitResult(LivingEntity user) {
-		return ProjectileUtil.getCollision(user, entity -> !entity.isSpectator() && entity.canHit(), MAX_BRUSH_DISTANCE);
+	private HitResult getHitResult(PlayerEntity user) {
+		return ProjectileUtil.getCollision(user, entity -> !entity.isSpectator() && entity.canHit(), (double)PlayerEntity.getReachDistance(user.isCreative()));
 	}
 
 	private void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d userRotation, Arm arm) {

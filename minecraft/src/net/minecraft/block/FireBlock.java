@@ -306,7 +306,7 @@ public class FireBlock extends AbstractFireBlock {
 		builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
 	}
 
-	private void registerFlammableBlock(Block block, int burnChance, int spreadChance) {
+	public void registerFlammableBlock(Block block, int burnChance, int spreadChance) {
 		this.burnChances.put(block, burnChance);
 		this.spreadChances.put(block, spreadChance);
 	}

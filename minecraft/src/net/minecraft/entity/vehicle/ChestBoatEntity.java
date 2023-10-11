@@ -35,7 +35,7 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 	}
 
 	public ChestBoatEntity(World world, double d, double e, double f) {
-		this(EntityType.CHEST_BOAT, world);
+		super(EntityType.CHEST_BOAT, world);
 		this.setPosition(d, e, f);
 		this.prevX = d;
 		this.prevY = e;
@@ -65,8 +65,8 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 	}
 
 	@Override
-	public void dropItems(DamageSource source) {
-		super.dropItems(source);
+	public void killAndDropSelf(DamageSource source) {
+		this.killAndDropItem(this.asItem());
 		this.onBroken(source, this.getWorld(), this);
 	}
 

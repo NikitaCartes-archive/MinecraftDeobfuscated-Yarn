@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -36,6 +37,7 @@ import net.minecraft.client.realms.dto.WorldTemplatePaginatedList;
 import net.minecraft.client.realms.exception.RealmsHttpException;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.ResetWorldInfo;
 import org.slf4j.Logger;
 
@@ -58,6 +60,9 @@ public class RealmsClient {
 	private static final String PING_STAT_ENDPOINT = "regions/ping/stat";
 	private static final String TRIAL_ENDPOINT = "trial";
 	private static final String NOTIFICATIONS_ENDPOINT = "notifications";
+	private static final String LIST_USER_WORLDS_OF_TYPE_ANY_ENDPOINT = "/listUserWorldsOfType/any";
+	private static final String CREATE_PRERELEASE_REALM_ENDPOINT = "/$PARENT_WORLD_ID/createPrereleaseRealm";
+	private static final String LIST_PRERELEASE_ELIGIBLE_WORLDS_ENDPOINT = "/listPrereleaseEligibleWorlds";
 	private static final String WORLD_INITIALIZE_ENDPOINT = "/$WORLD_ID/initialize";
 	private static final String WORLD_ENDPOINT = "/$WORLD_ID";
 	private static final String LIVEPLAYERLIST_ENDPOINT = "/liveplayerlist";
@@ -111,8 +116,24 @@ public class RealmsClient {
 
 	public RealmsServerList listWorlds() throws RealmsServiceException {
 		String string = this.url("worlds");
+		if (RealmsMainScreen.isSnapshotRealmsEligible()) {
+			string = string + "/listUserWorldsOfType/any";
+		}
+
 		String string2 = this.execute(Request.get(string));
 		return RealmsServerList.parse(string2);
+	}
+
+	public List<RealmsServer> getPrereleaseEligibleServers() throws RealmsServiceException {
+		String string = this.url("worlds/listPrereleaseEligibleWorlds");
+		String string2 = this.execute(Request.get(string));
+		return RealmsServerList.parse(string2).servers;
+	}
+
+	public RealmsServer createPrereleaseServer(Long parentWorldId) throws RealmsServiceException {
+		String string = String.valueOf(parentWorldId);
+		String string2 = this.url("worlds" + "/$PARENT_WORLD_ID/createPrereleaseRealm".replace("$PARENT_WORLD_ID", string));
+		return RealmsServer.parse(this.execute(Request.post(string2, string)));
 	}
 
 	public List<RealmsNotification> listNotifications() throws RealmsServiceException {
@@ -280,7 +301,7 @@ public class RealmsClient {
 
 	public Boolean resetWorldWithSeed(long worldId, ResetWorldInfo resetWorldInfo) throws RealmsServiceException {
 		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(
-			resetWorldInfo.seed(), -1L, resetWorldInfo.levelType().getId(), resetWorldInfo.generateStructures()
+			resetWorldInfo.seed(), -1L, resetWorldInfo.levelType().getId(), resetWorldInfo.generateStructures(), resetWorldInfo.experiments()
 		);
 		String string = this.url("worlds" + "/$WORLD_ID/reset".replace("$WORLD_ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.post(string, JSON.toJson(realmsWorldResetDto), 30000, 80000));
@@ -288,7 +309,7 @@ public class RealmsClient {
 	}
 
 	public Boolean resetWorldWithTemplate(long worldId, String worldTemplateId) throws RealmsServiceException {
-		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(null, Long.valueOf(worldTemplateId), -1, false);
+		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(null, Long.valueOf(worldTemplateId), -1, false, Set.of());
 		String string = this.url("worlds" + "/$WORLD_ID/reset".replace("$WORLD_ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.post(string, JSON.toJson(realmsWorldResetDto), 30000, 80000));
 		return Boolean.valueOf(string2);
@@ -383,6 +404,7 @@ public class RealmsClient {
 		r.cookie("sid", this.sessionId);
 		r.cookie("user", this.username);
 		r.cookie("version", SharedConstants.getGameVersion().getName());
+		r.prerelease(RealmsMainScreen.isSnapshotRealmsEligible());
 
 		try {
 			int i = r.responseCode();

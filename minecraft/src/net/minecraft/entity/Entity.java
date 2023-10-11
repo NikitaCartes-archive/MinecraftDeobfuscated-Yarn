@@ -3261,7 +3261,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * {@return the scoreboard team the entity belongs to, or {@code null} if there is none}
 	 */
 	@Nullable
-	public AbstractTeam getScoreboardTeam() {
+	public Team getScoreboardTeam() {
 		return this.getWorld().getScoreboard().getPlayerTeam(this.getEntityName());
 	}
 

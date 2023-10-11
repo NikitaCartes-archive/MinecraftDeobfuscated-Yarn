@@ -24,6 +24,7 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -268,6 +269,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		@Override
 		protected void castSpell() {
 			ServerWorld serverWorld = (ServerWorld)EvokerEntity.this.getWorld();
+			Team team = EvokerEntity.this.getScoreboardTeam();
 
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
@@ -278,6 +280,10 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 					vexEntity.setOwner(EvokerEntity.this);
 					vexEntity.setBounds(blockPos);
 					vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
+					if (team != null) {
+						serverWorld.getScoreboard().addPlayerToTeam(vexEntity.getEntityName(), team);
+					}
+
 					serverWorld.spawnEntityAndPassengers(vexEntity);
 					serverWorld.emitGameEvent(GameEvent.ENTITY_PLACE, blockPos, GameEvent.Emitter.of(EvokerEntity.this));
 				}

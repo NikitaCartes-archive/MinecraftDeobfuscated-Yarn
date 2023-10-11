@@ -169,7 +169,7 @@ public enum Formatting implements StringIdentifiable {
 	 */
 	@Nullable
 	public static Formatting byCode(char code) {
-		char c = Character.toString(code).toLowerCase(Locale.ROOT).charAt(0);
+		char c = Character.toLowerCase(code);
 
 		for (Formatting formatting : values()) {
 			if (formatting.code == c) {

@@ -67,7 +67,7 @@ public class BrushableBlockEntity extends BlockEntity {
 				this.finishBrushing(player);
 				return true;
 			} else {
-				this.world.scheduleBlockTick(this.getPos(), this.getCachedState().getBlock(), 40);
+				this.world.scheduleBlockTick(this.getPos(), this.getCachedState().getBlock(), 2);
 				int j = this.getDustedLevel();
 				if (i != j) {
 					BlockState blockState = this.getCachedState();
@@ -164,7 +164,7 @@ public class BrushableBlockEntity extends BlockEntity {
 				this.nextDustTime = 0L;
 				this.nextBrushTime = 0L;
 			} else {
-				this.world.scheduleBlockTick(this.getPos(), this.getCachedState().getBlock(), (int)(this.nextDustTime - this.world.getTime()));
+				this.world.scheduleBlockTick(this.getPos(), this.getCachedState().getBlock(), 2);
 			}
 		}
 	}

@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  * 
  * <p>The objects must be one of: numbers, booleans, string, {@link Map}, {@link List},
  * {@link it.unimi.dsi.fastutil.bytes.ByteList}, {@link
- * it.unimi.dsi.fastutil.bytes.IntList}, or {@link it.unimi.dsi.fastutil.bytes.LongList}.
+ * it.unimi.dsi.fastutil.ints.IntList}, or {@link it.unimi.dsi.fastutil.longs.LongList}.
  * Arrays are not supported.
  * 
  * @see Codecs#BASIC_OBJECT

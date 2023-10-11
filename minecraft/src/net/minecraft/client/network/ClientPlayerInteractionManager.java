@@ -254,7 +254,7 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public float getReachDistance() {
-		return this.gameMode.isCreative() ? 5.0F : 4.5F;
+		return PlayerEntity.getReachDistance(this.gameMode.isCreative());
 	}
 
 	public void tick() {

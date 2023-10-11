@@ -47,8 +47,8 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	public Entity getOwner() {
 		if (this.owner != null && !this.owner.isRemoved()) {
 			return this.owner;
-		} else if (this.ownerUuid != null && this.getWorld() instanceof ServerWorld) {
-			this.owner = ((ServerWorld)this.getWorld()).getEntity(this.ownerUuid);
+		} else if (this.ownerUuid != null && this.getWorld() instanceof ServerWorld serverWorld) {
+			this.owner = serverWorld.getEntity(this.ownerUuid);
 			return this.owner;
 		} else {
 			return null;
@@ -90,6 +90,14 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 
 		this.leftOwner = nbt.getBoolean("LeftOwner");
 		this.shot = nbt.getBoolean("HasBeenShot");
+	}
+
+	@Override
+	public void copyFrom(Entity original) {
+		super.copyFrom(original);
+		if (original instanceof ProjectileEntity projectileEntity) {
+			this.owner = projectileEntity.owner;
+		}
 	}
 
 	@Override

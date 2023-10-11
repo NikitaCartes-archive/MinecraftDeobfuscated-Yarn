@@ -101,7 +101,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	protected Item getItem() {
+	protected Item asItem() {
 		return Items.HOPPER_MINECART;
 	}
 

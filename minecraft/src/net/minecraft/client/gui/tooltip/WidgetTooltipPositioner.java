@@ -2,7 +2,7 @@ package net.minecraft.client.gui.tooltip;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
@@ -13,10 +13,10 @@ public class WidgetTooltipPositioner implements TooltipPositioner {
 	private static final int field_42160 = 12;
 	public static final int field_42157 = 3;
 	public static final int field_42158 = 5;
-	private final ClickableWidget widget;
+	private final ScreenRect focus;
 
-	public WidgetTooltipPositioner(ClickableWidget widget) {
-		this.widget = widget;
+	public WidgetTooltipPositioner(ScreenRect focus) {
+		this.focus = focus;
 	}
 
 	@Override
@@ -28,12 +28,12 @@ public class WidgetTooltipPositioner implements TooltipPositioner {
 
 		vector2i.y += 3;
 		int i = height + 3 + 3;
-		int j = this.widget.getY() + this.widget.getHeight() + 3 + getOffsetY(0, 0, this.widget.getHeight());
+		int j = this.focus.getBottom() + 3 + getOffsetY(0, 0, this.focus.height());
 		int k = screenHeight - 5;
 		if (j + i <= k) {
-			vector2i.y = vector2i.y + getOffsetY(vector2i.y, this.widget.getY(), this.widget.getHeight());
+			vector2i.y = vector2i.y + getOffsetY(vector2i.y, this.focus.getTop(), this.focus.height());
 		} else {
-			vector2i.y = vector2i.y - (i + getOffsetY(vector2i.y, this.widget.getY() + this.widget.getHeight(), this.widget.getHeight()));
+			vector2i.y = vector2i.y - (i + getOffsetY(vector2i.y, this.focus.getBottom(), this.focus.height()));
 		}
 
 		return vector2i;

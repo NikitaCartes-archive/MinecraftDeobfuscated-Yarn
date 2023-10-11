@@ -1,6 +1,8 @@
 package net.minecraft.client.realms.gui.screen;
 
 import com.mojang.logging.LogUtils;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,6 +24,7 @@ import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.client.realms.task.ResettingNormalWorldTask;
 import net.minecraft.client.realms.task.ResettingWorldTemplateTask;
 import net.minecraft.client.realms.task.SwitchSlotTask;
+import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -59,11 +62,27 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 	WorldTemplatePaginatedList experienceWorldTemplates;
 	WorldTemplatePaginatedList inspirationWorldTemplates;
 	public final int slot;
+	@Nullable
+	private final WorldCreationTask creationTask;
 	private final Runnable callback;
 	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 
 	private RealmsCreateWorldScreen(
 		Screen parent, RealmsServer serverData, int slot, Text title, Text subtitle, int subtitleColor, Text taskTitle, Runnable callback
+	) {
+		this(parent, serverData, slot, title, subtitle, subtitleColor, taskTitle, null, callback);
+	}
+
+	public RealmsCreateWorldScreen(
+		Screen parent,
+		RealmsServer serverData,
+		int slot,
+		Text title,
+		Text subtitle,
+		int subtitleColor,
+		Text taskTitle,
+		@Nullable WorldCreationTask creationTask,
+		Runnable callback
 	) {
 		super(title);
 		this.parent = parent;
@@ -72,11 +91,14 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		this.subtitle = subtitle;
 		this.subtitleColor = subtitleColor;
 		this.taskTitle = taskTitle;
+		this.creationTask = creationTask;
 		this.callback = callback;
 	}
 
-	public static RealmsCreateWorldScreen newRealm(Screen parent, RealmsServer serverData, Runnable callback) {
-		return new RealmsCreateWorldScreen(parent, serverData, serverData.activeSlot, CREATE_REALM_TITLE, CREATE_REALM_SUBTITLE, -6250336, CREATING_TEXT, callback);
+	public static RealmsCreateWorldScreen newRealm(Screen parent, RealmsServer serverData, WorldCreationTask creationTask, Runnable callback) {
+		return new RealmsCreateWorldScreen(
+			parent, serverData, serverData.activeSlot, CREATE_REALM_TITLE, CREATE_REALM_SUBTITLE, -6250336, CREATING_TEXT, creationTask, callback
+		);
 	}
 
 	public static RealmsCreateWorldScreen newWorld(Screen parent, int slot, RealmsServer serverData, Runnable callback) {
@@ -199,34 +221,38 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		return this.width / 2 - 130 + (i - 1) * 100;
 	}
 
-	private void executeLongRunningTask(LongRunningTask task) {
-		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, task));
-	}
-
-	public void switchSlot(Runnable callback) {
-		this.executeLongRunningTask(new SwitchSlotTask(this.serverData.id, this.slot, () -> this.client.execute(callback)));
-	}
-
 	private void onSelectWorldTemplate(@Nullable WorldTemplate template) {
 		this.client.setScreen(this);
 		if (template != null) {
-			this.switchSlotAndResetWorld(() -> this.executeLongRunningTask(new ResettingWorldTemplateTask(template, this.serverData.id, this.taskTitle, this.callback)));
+			this.runTasks(new ResettingWorldTemplateTask(template, this.serverData.id, this.taskTitle, this.callback));
 		}
 	}
 
 	private void onResetNormalWorld(@Nullable ResetWorldInfo info) {
 		this.client.setScreen(this);
 		if (info != null) {
-			this.switchSlotAndResetWorld(() -> this.executeLongRunningTask(new ResettingNormalWorldTask(info, this.serverData.id, this.taskTitle, this.callback)));
+			this.runTasks(new ResettingNormalWorldTask(info, this.serverData.id, this.taskTitle, this.callback));
 		}
 	}
 
-	private void switchSlotAndResetWorld(Runnable resetter) {
-		if (this.slot == -1) {
-			resetter.run();
-		} else {
-			this.switchSlot(resetter);
+	private void runTasks(LongRunningTask task) {
+		List<LongRunningTask> list = new ArrayList();
+		if (this.creationTask != null) {
+			list.add(this.creationTask);
 		}
+
+		if (this.slot != this.serverData.activeSlot) {
+			list.add(new SwitchSlotTask(this.serverData.id, this.slot, () -> {
+			}));
+		}
+
+		list.add(task);
+		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, (LongRunningTask[])list.toArray(new LongRunningTask[0])));
+	}
+
+	public void switchSlot(Runnable callback) {
+		this.client
+			.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.serverData.id, this.slot, () -> this.client.execute(callback))));
 	}
 
 	@Environment(EnvType.CLIENT)

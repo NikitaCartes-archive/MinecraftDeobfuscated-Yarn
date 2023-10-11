@@ -15,7 +15,7 @@ import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.function.CommandFunction;
+import net.minecraft.server.function.LazyContainer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -23,13 +23,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class AdvancementRewards {
-	public static final AdvancementRewards NONE = new AdvancementRewards(0, new Identifier[0], new Identifier[0], CommandFunction.LazyContainer.EMPTY);
+	public static final AdvancementRewards NONE = new AdvancementRewards(0, new Identifier[0], new Identifier[0], LazyContainer.EMPTY);
 	private final int experience;
 	private final Identifier[] loot;
 	private final Identifier[] recipes;
-	private final CommandFunction.LazyContainer function;
+	private final LazyContainer function;
 
-	public AdvancementRewards(int experience, Identifier[] loot, Identifier[] recipes, CommandFunction.LazyContainer function) {
+	public AdvancementRewards(int experience, Identifier[] loot, Identifier[] recipes, LazyContainer function) {
 		this.experience = experience;
 		this.loot = loot;
 		this.recipes = recipes;
@@ -152,11 +152,11 @@ public class AdvancementRewards {
 			identifiers2[k] = new Identifier(JsonHelper.asString(jsonArray2.get(k), "recipes[" + k + "]"));
 		}
 
-		CommandFunction.LazyContainer lazyContainer;
+		LazyContainer lazyContainer;
 		if (json.has("function")) {
-			lazyContainer = new CommandFunction.LazyContainer(new Identifier(JsonHelper.getString(json, "function")));
+			lazyContainer = new LazyContainer(new Identifier(JsonHelper.getString(json, "function")));
 		} else {
-			lazyContainer = CommandFunction.LazyContainer.EMPTY;
+			lazyContainer = LazyContainer.EMPTY;
 		}
 
 		return new AdvancementRewards(i, identifiers, identifiers2, lazyContainer);
@@ -210,7 +210,7 @@ public class AdvancementRewards {
 				this.experience,
 				(Identifier[])this.loot.toArray(new Identifier[0]),
 				(Identifier[])this.recipes.toArray(new Identifier[0]),
-				this.function == null ? CommandFunction.LazyContainer.EMPTY : new CommandFunction.LazyContainer(this.function)
+				this.function == null ? LazyContainer.EMPTY : new LazyContainer(this.function)
 			);
 		}
 	}

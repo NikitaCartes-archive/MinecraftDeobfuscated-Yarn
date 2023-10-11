@@ -32,9 +32,9 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public void dropItems(DamageSource damageSource) {
-		super.dropItems(damageSource);
-		this.onBroken(damageSource, this.getWorld(), this);
+	public void killAndDropSelf(DamageSource source) {
+		super.killAndDropSelf(source);
+		this.onBroken(source, this.getWorld(), this);
 	}
 
 	@Override

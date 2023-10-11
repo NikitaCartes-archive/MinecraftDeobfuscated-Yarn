@@ -7,7 +7,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -61,15 +60,8 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!state.isOf(newState.getBlock())) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof Inventory) {
-				ItemScatterer.spawn(world, pos, (Inventory)blockEntity);
-				world.updateComparators(pos, this);
-			}
-
-			super.onStateReplaced(state, world, pos, newState, moved);
-		}
+		ItemScatterer.onStateReplaced(state, newState, world, pos);
+		super.onStateReplaced(state, world, pos, newState, moved);
 	}
 
 	@Override

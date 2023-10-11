@@ -64,6 +64,13 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				Text text2 = Text.translatable("mco.configure.world.delete.question.line2");
 				this.client.setScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
 			}).dimensions(this.width / 2 - 100, row(10), 200, 20).build());
+		} else if (RealmsMainScreen.isSnapshotRealmsEligible() && this.serverData.parentWorldName != null) {
+			this.addDrawableChild(
+				new ScrollableTextWidget(
+						this.width / 2 - 100, row(8), 200, 46, Text.translatable("mco.snapshot.subscription.info", this.serverData.parentWorldName), this.textRenderer
+					)
+					.textColor(-6250336)
+			);
 		} else {
 			this.addDrawableChild(new ScrollableTextWidget(this.width / 2 - 100, row(8), 200, 46, RECURRING_INFO_TEXT, this.textRenderer).textColor(-6250336));
 		}

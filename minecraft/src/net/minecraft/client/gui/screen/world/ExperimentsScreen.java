@@ -34,7 +34,7 @@ public class ExperimentsScreen extends Screen {
 	private final Consumer<ResourcePackManager> applier;
 	private final Object2BooleanMap<ResourcePackProfile> experiments = new Object2BooleanLinkedOpenHashMap<>();
 
-	protected ExperimentsScreen(Screen parent, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> applier) {
+	public ExperimentsScreen(Screen parent, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> applier) {
 		super(Text.translatable("experiments_screen.title"));
 		this.parent = parent;
 		this.resourcePackManager = resourcePackManager;

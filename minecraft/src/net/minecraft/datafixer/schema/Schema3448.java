@@ -15,7 +15,11 @@ public class Schema3448 extends IdentifierNormalizingSchema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerBlockEntities(schema);
-		schema.register(map, "minecraft:decorated_pot", (Supplier<TypeTemplate>)(() -> DSL.optionalFields("sherds", DSL.list(TypeReferences.ITEM_NAME.in(schema)))));
+		schema.register(
+			map,
+			"minecraft:decorated_pot",
+			(Supplier<TypeTemplate>)(() -> DSL.optionalFields("sherds", DSL.list(TypeReferences.ITEM_NAME.in(schema)), "item", TypeReferences.ITEM_STACK.in(schema)))
+		);
 		return map;
 	}
 }

@@ -171,12 +171,12 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		UPGRADE_TO_SNAPSHOT(true, false, "snapshot");
 
 		private final boolean backup;
-		private final boolean boldRedFormatting;
+		private final boolean dangerous;
 		private final String translationKeySuffix;
 
-		private ConversionWarning(boolean backup, boolean boldRedFormatting, String translationKeySuffix) {
+		private ConversionWarning(boolean backup, boolean dangerous, String translationKeySuffix) {
 			this.backup = backup;
-			this.boldRedFormatting = boldRedFormatting;
+			this.dangerous = dangerous;
 			this.translationKeySuffix = translationKeySuffix;
 		}
 
@@ -184,8 +184,8 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			return this.backup;
 		}
 
-		public boolean needsBoldRedFormatting() {
-			return this.boldRedFormatting;
+		public boolean isDangerous() {
+			return this.dangerous;
 		}
 
 		public String getTranslationKeySuffix() {

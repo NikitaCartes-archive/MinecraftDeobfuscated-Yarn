@@ -8,6 +8,7 @@ import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
@@ -24,13 +25,13 @@ public class MinecartItem extends Item {
 		@Override
 		public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 			Direction direction = pointer.state().get(DispenserBlock.FACING);
-			World world = pointer.world();
+			ServerWorld serverWorld = pointer.world();
 			Vec3d vec3d = pointer.centerPos();
 			double d = vec3d.getX() + (double)direction.getOffsetX() * 1.125;
 			double e = Math.floor(vec3d.getY()) + (double)direction.getOffsetY();
 			double f = vec3d.getZ() + (double)direction.getOffsetZ() * 1.125;
 			BlockPos blockPos = pointer.pos().offset(direction);
-			BlockState blockState = world.getBlockState(blockPos);
+			BlockState blockState = serverWorld.getBlockState(blockPos);
 			RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 				? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
 				: RailShape.NORTH_SOUTH;
@@ -42,11 +43,11 @@ public class MinecartItem extends Item {
 					g = 0.1;
 				}
 			} else {
-				if (!blockState.isAir() || !world.getBlockState(blockPos.down()).isIn(BlockTags.RAILS)) {
+				if (!blockState.isAir() || !serverWorld.getBlockState(blockPos.down()).isIn(BlockTags.RAILS)) {
 					return this.defaultBehavior.dispense(pointer, stack);
 				}
 
-				BlockState blockState2 = world.getBlockState(blockPos.down());
+				BlockState blockState2 = serverWorld.getBlockState(blockPos.down());
 				RailShape railShape2 = blockState2.getBlock() instanceof AbstractRailBlock
 					? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty())
 					: RailShape.NORTH_SOUTH;
@@ -57,12 +58,8 @@ public class MinecartItem extends Item {
 				}
 			}
 
-			AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, ((MinecartItem)stack.getItem()).type);
-			if (stack.hasCustomName()) {
-				abstractMinecartEntity.setCustomName(stack.getName());
-			}
-
-			world.spawnEntity(abstractMinecartEntity);
+			AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(serverWorld, d, e + g, f, ((MinecartItem)stack.getItem()).type, stack, null);
+			serverWorld.spawnEntity(abstractMinecartEntity);
 			stack.decrement(1);
 			return stack;
 		}
@@ -89,7 +86,7 @@ public class MinecartItem extends Item {
 			return ActionResult.FAIL;
 		} else {
 			ItemStack itemStack = context.getStack();
-			if (!world.isClient) {
+			if (world instanceof ServerWorld serverWorld) {
 				RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 					? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
 					: RailShape.NORTH_SOUTH;
@@ -99,14 +96,10 @@ public class MinecartItem extends Item {
 				}
 
 				AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(
-					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.0625 + d, (double)blockPos.getZ() + 0.5, this.type
+					serverWorld, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.0625 + d, (double)blockPos.getZ() + 0.5, this.type, itemStack, context.getPlayer()
 				);
-				if (itemStack.hasCustomName()) {
-					abstractMinecartEntity.setCustomName(itemStack.getName());
-				}
-
-				world.spawnEntity(abstractMinecartEntity);
-				world.emitGameEvent(GameEvent.ENTITY_PLACE, blockPos, GameEvent.Emitter.of(context.getPlayer(), world.getBlockState(blockPos.down())));
+				serverWorld.spawnEntity(abstractMinecartEntity);
+				serverWorld.emitGameEvent(GameEvent.ENTITY_PLACE, blockPos, GameEvent.Emitter.of(context.getPlayer(), serverWorld.getBlockState(blockPos.down())));
 			}
 
 			itemStack.decrement(1);

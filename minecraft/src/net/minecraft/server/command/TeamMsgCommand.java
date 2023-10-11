@@ -32,7 +32,7 @@ public class TeamMsgCommand {
 							context -> {
 								ServerCommandSource serverCommandSource = context.getSource();
 								Entity entity = serverCommandSource.getEntityOrThrow();
-								Team team = (Team)entity.getScoreboardTeam();
+								Team team = entity.getScoreboardTeam();
 								if (team == null) {
 									throw NO_TEAM_EXCEPTION.create();
 								} else {

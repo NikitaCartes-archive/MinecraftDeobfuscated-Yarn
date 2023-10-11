@@ -66,7 +66,7 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessages.title, this.width / 2, 80, -1);
-		this.description.drawCenterWithShadow(context, this.width / 2, 100, 9, -65536);
+		this.description.drawCenterWithShadow(context, this.width / 2, 100, 9, -2142128);
 	}
 
 	@Environment(EnvType.CLIENT)

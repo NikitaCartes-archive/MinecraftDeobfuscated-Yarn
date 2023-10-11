@@ -1,47 +1,32 @@
 package net.minecraft.server.function;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.IntConsumer;
-import javax.annotation.Nullable;
-import net.minecraft.nbt.NbtCompound;
+import java.util.function.Supplier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.GameRules;
+import net.minecraft.util.profiler.Profiler;
 
 /**
  * The command function manager implements execution of functions, like that from
  * the {@code function} command.
  */
 public class CommandFunctionManager {
-	/**
-	 * A localized piece of text indicating that calling the debug command to debug
-	 * functions from within a function is not supported.
-	 */
-	private static final Text NO_TRACE_IN_FUNCTION_TEXT = Text.translatable("commands.debug.function.noRecursion");
 	private static final Identifier TICK_TAG_ID = new Identifier("tick");
 	private static final Identifier LOAD_TAG_ID = new Identifier("load");
-	final MinecraftServer server;
-	/**
-	 * The active execution within this manager.
-	 */
-	@Nullable
-	private CommandFunctionManager.Execution execution;
+	private final MinecraftServer server;
 	/**
 	 * A list of {@code minecraft:tick} tag functions to run on every tick. Set up on
 	 * load, this is more efficient than polling the tag from the {@link #loader}
 	 * every tick.
 	 */
-	private List<CommandFunction> tickFunctions = ImmutableList.of();
+	private List<CommandFunction<ServerCommandSource>> tickFunctions = ImmutableList.of();
 	/**
 	 * Whether this command function manager has just {@linkplain #load(FunctionLoader)
 	 * loaded} and should run all functions in the {@code minecraft:load} function tag.
@@ -58,10 +43,6 @@ public class CommandFunctionManager {
 		this.load(loader);
 	}
 
-	public int getMaxCommandChainLength() {
-		return this.server.getGameRules().getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);
-	}
-
 	public CommandDispatcher<ServerCommandSource> getDispatcher() {
 		return this.server.getCommandManager().getDispatcher();
 	}
@@ -69,17 +50,17 @@ public class CommandFunctionManager {
 	public void tick() {
 		if (this.justLoaded) {
 			this.justLoaded = false;
-			Collection<CommandFunction> collection = this.loader.getTagOrEmpty(LOAD_TAG_ID);
+			Collection<CommandFunction<ServerCommandSource>> collection = this.loader.getTagOrEmpty(LOAD_TAG_ID);
 			this.executeAll(collection, LOAD_TAG_ID);
 		}
 
 		this.executeAll(this.tickFunctions, TICK_TAG_ID);
 	}
 
-	private void executeAll(Collection<CommandFunction> functions, Identifier label) {
+	private void executeAll(Collection<CommandFunction<ServerCommandSource>> functions, Identifier label) {
 		this.server.getProfiler().push(label::toString);
 
-		for (CommandFunction commandFunction : functions) {
+		for (CommandFunction<ServerCommandSource> commandFunction : functions) {
 			this.execute(commandFunction, this.getScheduledCommandSource());
 		}
 
@@ -89,63 +70,18 @@ public class CommandFunctionManager {
 	/**
 	 * Executes a function.
 	 * 
-	 * <p>This is same as calling {@link #execute(CommandFunction, ServerCommandSource,
-	 * Tracer, NbtCompound) execute(function, source, null, null)}.
-	 * 
-	 * @return the command output value
-	 * @see #execute(CommandFunction, ServerCommandSource, Tracer, NbtCompound)
-	 * 
 	 * @param function the function
-	 * @param source the command source to execute with
 	 */
-	public int execute(CommandFunction function, ServerCommandSource source) {
+	public void execute(CommandFunction<ServerCommandSource> function, ServerCommandSource source) {
+		Profiler profiler = this.server.getProfiler();
+		profiler.push((Supplier<String>)(() -> "function " + function.id()));
+
 		try {
-			return this.execute(function, source, null, null);
-		} catch (MacroException var4) {
-			return 0;
-		}
-	}
-
-	/**
-	 * Executes a function. This may have two cases: new or recursive.
-	 * 
-	 * <p>In a new execution, the {@link #execution execution == null}, and a custom
-	 * {@code tracer} can be specified. The return value indicates the number of
-	 * commands and nested functions ran.
-	 * 
-	 * <p>In a recursive execution, {@link #execution execution != null}. It is
-	 * required that {@code tracer == null}, or the execution reports an error and is
-	 * skipped. The return value is {@code 0}.
-	 * 
-	 * @return a non-zero value for a new execution, or {@code 0} for a recursive
-	 * execution
-	 * @see #execute(CommandFunction, ServerCommandSource)
-	 * 
-	 * @param function the function
-	 * @param source the command source to execute with
-	 * @param tracer a tracer for a non-recursive function execution
-	 * @param arguments arguments for macro substitution, if any
-	 */
-	public int execute(CommandFunction function, ServerCommandSource source, @Nullable CommandFunctionManager.Tracer tracer, @Nullable NbtCompound arguments) throws MacroException {
-		CommandFunction commandFunction = function.withMacroReplaced(arguments, this.getDispatcher(), source);
-		if (this.execution != null) {
-			if (tracer != null) {
-				this.execution.reportError(NO_TRACE_IN_FUNCTION_TEXT.getString());
-				return 0;
-			} else {
-				this.execution.recursiveRun(commandFunction, source);
-				return 0;
-			}
-		} else {
-			int var6;
-			try {
-				this.execution = new CommandFunctionManager.Execution(tracer);
-				var6 = this.execution.run(commandFunction, source);
-			} finally {
-				this.execution = null;
-			}
-
-			return var6;
+			Procedure<ServerCommandSource> procedure = function.withMacroReplaced(null, this.getDispatcher(), source);
+			CommandManager.callWithContext(source, context -> context.enqueueProcedureCall(procedure, source));
+		} catch (CommandSyntaxException | MacroException var8) {
+		} finally {
+			profiler.pop();
 		}
 	}
 
@@ -178,11 +114,11 @@ public class CommandFunctionManager {
 		return this.server.getCommandSource().withLevel(2).withSilent();
 	}
 
-	public Optional<CommandFunction> getFunction(Identifier id) {
+	public Optional<CommandFunction<ServerCommandSource>> getFunction(Identifier id) {
 		return this.loader.get(id);
 	}
 
-	public Collection<CommandFunction> getTag(Identifier id) {
+	public Collection<CommandFunction<ServerCommandSource>> getTag(Identifier id) {
 		return this.loader.getTagOrEmpty(id);
 	}
 
@@ -192,165 +128,5 @@ public class CommandFunctionManager {
 
 	public Iterable<Identifier> getFunctionTags() {
 		return this.loader.getTags();
-	}
-
-	public static class Entry {
-		private final ServerCommandSource source;
-		final int depth;
-		private final CommandFunction.Element element;
-
-		public Entry(ServerCommandSource source, int depth, CommandFunction.Element element) {
-			this.source = source;
-			this.depth = depth;
-			this.element = element;
-		}
-
-		public void execute(
-			CommandFunctionManager manager, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, @Nullable CommandFunctionManager.Tracer tracer
-		) {
-			try {
-				this.element.execute(manager, this.source, entries, maxChainLength, this.depth, tracer);
-			} catch (CommandSyntaxException var6) {
-				if (tracer != null) {
-					tracer.traceError(this.depth, var6.getRawMessage().getString());
-				}
-			} catch (Exception var7) {
-				if (tracer != null) {
-					tracer.traceError(this.depth, var7.getMessage());
-				}
-			}
-		}
-
-		public String toString() {
-			return this.element.toString();
-		}
-	}
-
-	/**
-	 * An active execution of functions. It uses two deques to simulate a stack for a
-	 * depth-first expansion of functions, as the function call stack depth may exceed
-	 * the allowed JVM stack size.
-	 * 
-	 * @see CommandFunctionManager#execution
-	 */
-	class Execution {
-		private int depth;
-		@Nullable
-		private final CommandFunctionManager.Tracer tracer;
-		private final Deque<CommandFunctionManager.Entry> queue = Queues.<CommandFunctionManager.Entry>newArrayDeque();
-		private final List<CommandFunctionManager.Entry> waitlist = Lists.<CommandFunctionManager.Entry>newArrayList();
-		boolean returned = false;
-
-		Execution(@Nullable CommandFunctionManager.Tracer tracer) {
-			this.tracer = tracer;
-		}
-
-		/**
-		 * Handles a recursive case in {@link CommandFunctionManager#execute(CommandFunction,
-		 * ServerCommandSource, CommandFunctionManager.Tracer, NbtCompound)}.
-		 * 
-		 * <p>This effectively swaps an entry with a command element with {@code /function}
-		 * command at the head of the deque with another entry with a function element
-		 * containing the actual command elements referenced in that function.
-		 * 
-		 * @param source the command source
-		 * @param function the function
-		 */
-		void recursiveRun(CommandFunction function, ServerCommandSource source) {
-			int i = CommandFunctionManager.this.getMaxCommandChainLength();
-			ServerCommandSource serverCommandSource = this.addReturnConsumer(source);
-			if (this.queue.size() + this.waitlist.size() < i) {
-				this.waitlist.add(new CommandFunctionManager.Entry(serverCommandSource, this.depth, new CommandFunction.FunctionElement(function)));
-			}
-		}
-
-		private ServerCommandSource addReturnConsumer(ServerCommandSource source) {
-			IntConsumer intConsumer = source.getReturnValueConsumer();
-			return intConsumer instanceof CommandFunctionManager.Execution.ReturnValueConsumer
-				? source
-				: source.withReturnValueConsumer(new CommandFunctionManager.Execution.ReturnValueConsumer(intConsumer));
-		}
-
-		/**
-		 * Handles a new case in {@link CommandFunctionManager#execute(CommandFunction,
-		 * ServerCommandSource, CommandFunctionManager.Tracer, NbtCompound)}.
-		 * 
-		 * @return a value for the command result
-		 * 
-		 * @param source the command source
-		 * @param function the function
-		 */
-		int run(CommandFunction function, ServerCommandSource source) {
-			int i = CommandFunctionManager.this.getMaxCommandChainLength();
-			ServerCommandSource serverCommandSource = this.addReturnConsumer(source);
-			int j = 0;
-			CommandFunction.Element[] elements = function.getElements();
-
-			for (int k = elements.length - 1; k >= 0; k--) {
-				this.queue.push(new CommandFunctionManager.Entry(serverCommandSource, 0, elements[k]));
-			}
-
-			while (!this.queue.isEmpty()) {
-				try {
-					CommandFunctionManager.Entry entry = (CommandFunctionManager.Entry)this.queue.removeFirst();
-					CommandFunctionManager.this.server.getProfiler().push(entry::toString);
-					this.depth = entry.depth;
-					entry.execute(CommandFunctionManager.this, this.queue, i, this.tracer);
-					if (!this.returned) {
-						if (!this.waitlist.isEmpty()) {
-							Lists.reverse(this.waitlist).forEach(this.queue::addFirst);
-						}
-					} else {
-						while (!this.queue.isEmpty() && ((CommandFunctionManager.Entry)this.queue.peek()).depth >= this.depth) {
-							this.queue.removeFirst();
-						}
-
-						this.returned = false;
-					}
-
-					this.waitlist.clear();
-				} finally {
-					CommandFunctionManager.this.server.getProfiler().pop();
-				}
-
-				if (++j >= i) {
-					return j;
-				}
-			}
-
-			return j;
-		}
-
-		public void reportError(String message) {
-			if (this.tracer != null) {
-				this.tracer.traceError(this.depth, message);
-			}
-		}
-
-		class ReturnValueConsumer implements IntConsumer {
-			private final IntConsumer delegate;
-
-			ReturnValueConsumer(IntConsumer delegate) {
-				this.delegate = delegate;
-			}
-
-			public void accept(int value) {
-				this.delegate.accept(value);
-				Execution.this.returned = true;
-			}
-		}
-	}
-
-	/**
-	 * A tree-visitor-like tracer, useful for gaining insights on function execution.
-	 */
-	public interface Tracer {
-		void traceCommandStart(int depth, String command);
-
-		void traceCommandEnd(int depth, String command, int result);
-
-		void traceError(int depth, String message);
-
-		void traceFunctionCall(int depth, Identifier function, int size);
 	}
 }

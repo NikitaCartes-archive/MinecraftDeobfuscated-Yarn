@@ -4,11 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.RedirectModifier;
-import com.mojang.brigadier.ResultConsumer;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.ContextChain;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -16,6 +16,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -25,16 +26,24 @@ import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.IntPredicate;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.command.CommandFunctionAction;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.DataCommandObject;
+import net.minecraft.command.ExecutionControl;
+import net.minecraft.command.Forkable;
+import net.minecraft.command.ResultStorer;
+import net.minecraft.command.SingleCommandAction;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
+import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -79,6 +88,9 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.server.function.CommandFunction;
+import net.minecraft.server.function.MacroException;
+import net.minecraft.server.function.Procedure;
 import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -89,6 +101,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.WorldChunk;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class ExecuteCommand {
 	private static final int MAX_BLOCKS = 32768;
@@ -101,9 +114,12 @@ public class ExecuteCommand {
 	private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(
 		count -> Text.stringifiedTranslatable("commands.execute.conditional.fail_count", count)
 	);
-	private static final BinaryOperator<ResultConsumer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (consumer, consumer2) -> (context, success, result) -> {
-			consumer.onCommandComplete(context, success, result);
-			consumer2.onCommandComplete(context, success, result);
+	private static final Dynamic2CommandExceptionType INSTANTIATION_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
+		(function, message) -> Text.stringifiedTranslatable("commands.execute.function.instantiationFailure", function, message)
+	);
+	private static final BinaryOperator<ResultStorer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (consumer, consumer2) -> (context, success, result) -> {
+			consumer.storeResult(context, success, result);
+			consumer2.storeResult(context, success, result);
 		};
 	private static final SuggestionProvider<ServerCommandSource> LOOT_CONDITIONS = (context, builder) -> {
 		LootManager lootManager = context.getSource().getServer().getLootManager();
@@ -404,7 +420,7 @@ public class ExecuteCommand {
 		ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, boolean requestResult
 	) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
-		return source.mergeConsumers((context, success, result) -> {
+		return source.mergeStorers((context, success, result) -> {
 			for (String string : targets) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
 				int i = requestResult ? result : (success ? 1 : 0);
@@ -414,7 +430,7 @@ public class ExecuteCommand {
 	}
 
 	private static ServerCommandSource executeStoreBossbar(ServerCommandSource source, CommandBossBar bossBar, boolean storeInValue, boolean requestResult) {
-		return source.mergeConsumers((context, success, result) -> {
+		return source.mergeStorers((context, success, result) -> {
 			int i = requestResult ? result : (success ? 1 : 0);
 			if (storeInValue) {
 				bossBar.setValue(i);
@@ -427,7 +443,7 @@ public class ExecuteCommand {
 	private static ServerCommandSource executeStoreData(
 		ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path, IntFunction<NbtElement> nbtSetter, boolean requestResult
 	) {
-		return source.mergeConsumers((context, success, result) -> {
+		return source.mergeStorers((context, success, result) -> {
 			try {
 				NbtCompound nbtCompound = object.getNbt();
 				int i = requestResult ? result : (success ? 1 : 0);
@@ -629,6 +645,14 @@ public class ExecuteCommand {
 							positive,
 							context -> testLootCondition(context.getSource(), IdentifierArgumentType.getPredicateArgument(context, "predicate"))
 						)
+					)
+			)
+			.then(
+				CommandManager.literal("function")
+					.then(
+						CommandManager.argument("name", CommandFunctionArgumentType.commandFunction())
+							.suggests(FunctionCommand.SUGGESTION_PROVIDER)
+							.fork(root, new ExecuteCommand.IfUnlessRedirector(positive))
 					)
 			);
 
@@ -869,6 +893,64 @@ public class ExecuteCommand {
 		return source.withEntity(entity);
 	}
 
+	public static <T extends AbstractServerCommandSource<T>> void enqueueExecutions(
+		List<T> sources,
+		Function<T, T> sourceTransformer,
+		IntPredicate resultPredicate,
+		ContextChain<T> contextChain,
+		@Nullable NbtCompound arguments,
+		ExecutionControl<T> control,
+		ExecuteCommand.FunctionNamesGetter<T, Collection<CommandFunction<T>>> functionNamesGetter,
+		boolean silent
+	) throws CommandSyntaxException {
+		List<T> list = new ArrayList(sources.size());
+		CommandContext<T> commandContext = contextChain.getTopContext();
+
+		for (T abstractServerCommandSource : sources) {
+			Collection<CommandFunction<T>> collection = functionNamesGetter.get(commandContext.copyFor(abstractServerCommandSource));
+			int i = collection.size();
+			if (i != 0) {
+				T abstractServerCommandSource2 = createExecutionSource(sourceTransformer, resultPredicate, list, abstractServerCommandSource, i == 1);
+
+				for (CommandFunction<T> commandFunction : collection) {
+					Procedure<T> procedure;
+					try {
+						procedure = commandFunction.withMacroReplaced(arguments, abstractServerCommandSource2.getDispatcher(), abstractServerCommandSource2);
+					} catch (MacroException var19) {
+						throw INSTANTIATION_FAILURE_EXCEPTION.create(commandFunction.id(), var19.getMessage());
+					}
+
+					control.enqueueAction(new CommandFunctionAction<>(procedure).bind(abstractServerCommandSource2));
+				}
+			}
+		}
+
+		ContextChain<T> contextChain2 = contextChain.nextStage();
+		String string = commandContext.getInput();
+		control.enqueueAction(new SingleCommandAction.MultiSource<>(string, contextChain2, silent, list));
+	}
+
+	private static <T extends AbstractServerCommandSource<T>> T createExecutionSource(
+		Function<T, T> sourceTransformer, IntPredicate resultPredicate, List<T> successesOut, T currentSource, boolean singleFunction
+	) {
+		T abstractServerCommandSource = (T)((AbstractServerCommandSource)sourceTransformer.apply(currentSource)).withDummyResultStorer();
+		if (singleFunction) {
+			return abstractServerCommandSource.withReturnValueConsumer(result -> {
+				if (resultPredicate.test(result)) {
+					successesOut.add(currentSource);
+				}
+			});
+		} else {
+			MutableBoolean mutableBoolean = new MutableBoolean();
+			return abstractServerCommandSource.withReturnValueConsumer(result -> {
+				if (mutableBoolean.isFalse() && resultPredicate.test(result)) {
+					successesOut.add(currentSource);
+					mutableBoolean.setTrue();
+				}
+			});
+		}
+	}
+
 	@FunctionalInterface
 	interface Condition {
 		boolean test(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
@@ -877,5 +959,34 @@ public class ExecuteCommand {
 	@FunctionalInterface
 	interface ExistsCondition {
 		int test(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
+	}
+
+	@FunctionalInterface
+	public interface FunctionNamesGetter<T, R> {
+		R get(CommandContext<T> context) throws CommandSyntaxException;
+	}
+
+	static class IfUnlessRedirector implements Forkable.RedirectModifier<ServerCommandSource> {
+		private final IntPredicate predicate;
+
+		IfUnlessRedirector(boolean success) {
+			this.predicate = success ? result -> result != 0 : result -> result == 0;
+		}
+
+		@Override
+		public void execute(
+			List<ServerCommandSource> sources, ContextChain<ServerCommandSource> contextChain, boolean forkedMode, ExecutionControl<ServerCommandSource> control
+		) throws CommandSyntaxException {
+			ExecuteCommand.enqueueExecutions(
+				sources,
+				FunctionCommand::createFunctionCommandSource,
+				this.predicate,
+				contextChain,
+				null,
+				control,
+				context -> CommandFunctionArgumentType.getFunctions(context, "name"),
+				forkedMode
+			);
+		}
 	}
 }

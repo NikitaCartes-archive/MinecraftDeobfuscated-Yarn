@@ -9,7 +9,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RealmsServiceException;
-import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
+import net.minecraft.client.realms.task.RealmsPrepareConnectionTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -61,7 +61,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 
 		try {
 			realmsClient.agreeToTos();
-			this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsGetServerDetailsTask(this.parent, this.realmsServer)));
+			this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsPrepareConnectionTask(this.parent, this.realmsServer)));
 		} catch (RealmsServiceException var3) {
 			LOGGER.error("Couldn't agree to TOS", (Throwable)var3);
 		}

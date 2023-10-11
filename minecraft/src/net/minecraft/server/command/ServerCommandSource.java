@@ -1,7 +1,7 @@
 package net.minecraft.server.command;
 
 import com.google.common.collect.Lists;
-import com.mojang.brigadier.ResultConsumer;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.ResultStorer;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.message.MessageType;
@@ -48,9 +49,11 @@ import net.minecraft.world.dimension.DimensionType;
  * @see MinecraftServer#getCommandSource()
  * @see Entity#getCommandSource()
  */
-public class ServerCommandSource implements CommandSource {
+public class ServerCommandSource implements AbstractServerCommandSource<ServerCommandSource>, CommandSource {
 	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("permissions.requires.player"));
 	public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("permissions.requires.entity"));
+	private static final ResultStorer<ServerCommandSource> DUMMY_STORER = (context, success, result) -> {
+	};
 	private final CommandOutput output;
 	private final Vec3d position;
 	private final ServerWorld world;
@@ -61,8 +64,7 @@ public class ServerCommandSource implements CommandSource {
 	private final boolean silent;
 	@Nullable
 	private final Entity entity;
-	@Nullable
-	private final ResultConsumer<ServerCommandSource> resultConsumer;
+	private final ResultStorer<ServerCommandSource> resultStorer;
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
 	private final Vec2f rotation;
 	private final SignedCommandArguments signedArguments;
@@ -72,9 +74,24 @@ public class ServerCommandSource implements CommandSource {
 	public ServerCommandSource(
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
-		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.EMPTY, FutureQueue.immediate(server), i -> {
-		});
+		this(
+			output,
+			pos,
+			rot,
+			world,
+			level,
+			name,
+			displayName,
+			server,
+			entity,
+			false,
+			DUMMY_STORER,
+			EntityAnchorArgumentType.EntityAnchor.FEET,
+			SignedCommandArguments.EMPTY,
+			FutureQueue.immediate(server),
+			returnValue -> {
+			}
+		);
 	}
 
 	protected ServerCommandSource(
@@ -88,7 +105,7 @@ public class ServerCommandSource implements CommandSource {
 		MinecraftServer server,
 		@Nullable Entity entity,
 		boolean silent,
-		@Nullable ResultConsumer<ServerCommandSource> consumer,
+		ResultStorer<ServerCommandSource> resultStorer,
 		EntityAnchorArgumentType.EntityAnchor entityAnchor,
 		SignedCommandArguments signedArguments,
 		FutureQueue messageChainTaskQueue,
@@ -103,7 +120,7 @@ public class ServerCommandSource implements CommandSource {
 		this.name = name;
 		this.displayName = displayName;
 		this.server = server;
-		this.resultConsumer = consumer;
+		this.resultStorer = resultStorer;
 		this.entityAnchor = entityAnchor;
 		this.rotation = rot;
 		this.signedArguments = signedArguments;
@@ -125,7 +142,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -147,7 +164,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -169,7 +186,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -191,7 +208,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -199,8 +216,8 @@ public class ServerCommandSource implements CommandSource {
 			);
 	}
 
-	public ServerCommandSource withConsumer(ResultConsumer<ServerCommandSource> consumer) {
-		return Objects.equals(this.resultConsumer, consumer)
+	public ServerCommandSource withResultStorer(ResultStorer<ServerCommandSource> resultStorer) {
+		return Objects.equals(this.resultStorer, resultStorer)
 			? this
 			: new ServerCommandSource(
 				this.output,
@@ -213,7 +230,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				consumer,
+				resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -221,9 +238,13 @@ public class ServerCommandSource implements CommandSource {
 			);
 	}
 
-	public ServerCommandSource mergeConsumers(ResultConsumer<ServerCommandSource> consumer, BinaryOperator<ResultConsumer<ServerCommandSource>> merger) {
-		ResultConsumer<ServerCommandSource> resultConsumer = (ResultConsumer<ServerCommandSource>)merger.apply(this.resultConsumer, consumer);
-		return this.withConsumer(resultConsumer);
+	public ServerCommandSource withDummyResultStorer() {
+		return this.withResultStorer(DUMMY_STORER);
+	}
+
+	public ServerCommandSource mergeStorers(ResultStorer<ServerCommandSource> resultStorer, BinaryOperator<ResultStorer<ServerCommandSource>> merger) {
+		ResultStorer<ServerCommandSource> resultStorer2 = (ResultStorer<ServerCommandSource>)merger.apply(this.resultStorer, resultStorer);
+		return this.withResultStorer(resultStorer2);
 	}
 
 	public ServerCommandSource withSilent() {
@@ -239,7 +260,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				true,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -262,7 +283,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -284,7 +305,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -306,7 +327,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				anchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -331,7 +352,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -369,7 +390,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				signedArguments,
 				messageChainTaskQueue,
@@ -391,7 +412,7 @@ public class ServerCommandSource implements CommandSource {
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultConsumer,
+				this.resultStorer,
 				this.entityAnchor,
 				this.signedArguments,
 				this.messageChainTaskQueue,
@@ -485,10 +506,6 @@ public class ServerCommandSource implements CommandSource {
 		return this.messageChainTaskQueue;
 	}
 
-	public IntConsumer getReturnValueConsumer() {
-		return this.returnValueConsumer;
-	}
-
 	/**
 	 * {@return whether to filter text sent to {@code recipient}}
 	 * 
@@ -567,10 +584,14 @@ public class ServerCommandSource implements CommandSource {
 		}
 	}
 
-	public void onCommandComplete(CommandContext<ServerCommandSource> context, boolean success, int result) {
-		if (this.resultConsumer != null) {
-			this.resultConsumer.onCommandComplete(context, success, result);
-		}
+	@Override
+	public void consumeResult(boolean success, int result) {
+		this.resultStorer.storeResult(this, success, result);
+	}
+
+	@Override
+	public void consumeResult(int result) {
+		this.returnValueConsumer.accept(result);
 	}
 
 	@Override
@@ -621,5 +642,10 @@ public class ServerCommandSource implements CommandSource {
 	@Override
 	public FeatureSet getEnabledFeatures() {
 		return this.world.getEnabledFeatures();
+	}
+
+	@Override
+	public CommandDispatcher<ServerCommandSource> getDispatcher() {
+		return this.getServer().getCommandFunctionManager().getDispatcher();
 	}
 }

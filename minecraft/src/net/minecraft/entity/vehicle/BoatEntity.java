@@ -16,7 +16,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.VariantHolder;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -54,10 +53,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.joml.Vector3f;
 
-public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type> {
-	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Integer> DAMAGE_WOBBLE_SIDE = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Float> DAMAGE_WOBBLE_STRENGTH = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.FLOAT);
+public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntity.Type> {
 	private static final TrackedData<Integer> BOAT_TYPE = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> LEFT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> RIGHT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -75,7 +71,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	private float velocityDecay;
 	private float ticksUnderwater;
 	private float yawVelocity;
-	private int field_7708;
+	private int lerpTicks;
 	private double x;
 	private double y;
 	private double z;
@@ -121,9 +117,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 	@Override
 	protected void initDataTracker() {
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_TICKS, 0);
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_SIDE, 1);
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_STRENGTH, 0.0F);
+		super.initDataTracker();
 		this.dataTracker.startTracking(BOAT_TYPE, BoatEntity.Type.OAK.ordinal());
 		this.dataTracker.startTracking(LEFT_PADDLE_MOVING, false);
 		this.dataTracker.startTracking(RIGHT_PADDLE_MOVING, false);
@@ -174,35 +168,6 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
-			return false;
-		} else if (!this.getWorld().isClient && !this.isRemoved()) {
-			this.setDamageWobbleSide(-this.getDamageWobbleSide());
-			this.setDamageWobbleTicks(10);
-			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
-			this.scheduleVelocityUpdate();
-			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
-			if (bl || this.getDamageWobbleStrength() > 40.0F) {
-				if (!bl && this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-					this.dropItems(source);
-				}
-
-				this.discard();
-			}
-
-			return true;
-		} else {
-			return true;
-		}
-	}
-
-	protected void dropItems(DamageSource source) {
-		this.dropItem(this.asItem());
-	}
-
-	@Override
 	public void onBubbleColumnSurfaceCollision(boolean drag) {
 		if (!this.getWorld().isClient) {
 			this.onBubbleColumnSurface = true;
@@ -234,6 +199,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		}
 	}
 
+	@Override
 	public Item asItem() {
 		return switch (this.getVariant()) {
 			case SPRUCE -> Items.SPRUCE_BOAT;
@@ -267,32 +233,32 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		this.z = z;
 		this.boatYaw = (double)yaw;
 		this.boatPitch = (double)pitch;
-		this.field_7708 = 10;
+		this.lerpTicks = 10;
 	}
 
 	@Override
 	public double getLerpTargetX() {
-		return this.field_7708 > 0 ? this.x : this.getX();
+		return this.lerpTicks > 0 ? this.x : this.getX();
 	}
 
 	@Override
 	public double getLerpTargetY() {
-		return this.field_7708 > 0 ? this.y : this.getY();
+		return this.lerpTicks > 0 ? this.y : this.getY();
 	}
 
 	@Override
 	public double getLerpTargetZ() {
-		return this.field_7708 > 0 ? this.z : this.getZ();
+		return this.lerpTicks > 0 ? this.z : this.getZ();
 	}
 
 	@Override
 	public float getLerpTargetPitch() {
-		return this.field_7708 > 0 ? (float)this.boatPitch : this.getPitch();
+		return this.lerpTicks > 0 ? (float)this.boatPitch : this.getPitch();
 	}
 
 	@Override
 	public float getLerpTargetYaw() {
-		return this.field_7708 > 0 ? (float)this.boatYaw : this.getYaw();
+		return this.lerpTicks > 0 ? (float)this.boatYaw : this.getYaw();
 	}
 
 	@Override
@@ -440,13 +406,13 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 	private void updatePositionAndRotation() {
 		if (this.isLogicalSideForUpdatingMovement()) {
-			this.field_7708 = 0;
+			this.lerpTicks = 0;
 			this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
 		}
 
-		if (this.field_7708 > 0) {
-			this.lerpPosAndRotation(this.field_7708, this.x, this.y, this.z, this.boatYaw, this.boatPitch);
-			this.field_7708--;
+		if (this.lerpTicks > 0) {
+			this.lerpPosAndRotation(this.lerpTicks, this.x, this.y, this.z, this.boatYaw, this.boatPitch);
+			this.lerpTicks--;
 		}
 	}
 
@@ -817,22 +783,6 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		return this.dataTracker.get(paddle == 0 ? LEFT_PADDLE_MOVING : RIGHT_PADDLE_MOVING) && this.getControllingPassenger() != null;
 	}
 
-	public void setDamageWobbleStrength(float wobbleStrength) {
-		this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, wobbleStrength);
-	}
-
-	public float getDamageWobbleStrength() {
-		return this.dataTracker.get(DAMAGE_WOBBLE_STRENGTH);
-	}
-
-	public void setDamageWobbleTicks(int wobbleTicks) {
-		this.dataTracker.set(DAMAGE_WOBBLE_TICKS, wobbleTicks);
-	}
-
-	public int getDamageWobbleTicks() {
-		return this.dataTracker.get(DAMAGE_WOBBLE_TICKS);
-	}
-
 	private void setBubbleWobbleTicks(int wobbleTicks) {
 		this.dataTracker.set(BUBBLE_WOBBLE_TICKS, wobbleTicks);
 	}
@@ -843,14 +793,6 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 	public float interpolateBubbleWobble(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.lastBubbleWobble, this.bubbleWobble);
-	}
-
-	public void setDamageWobbleSide(int side) {
-		this.dataTracker.set(DAMAGE_WOBBLE_SIDE, side);
-	}
-
-	public int getDamageWobbleSide() {
-		return this.dataTracker.get(DAMAGE_WOBBLE_SIDE);
 	}
 
 	public void setVariant(BoatEntity.Type type) {

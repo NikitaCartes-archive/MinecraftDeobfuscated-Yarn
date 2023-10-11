@@ -49,22 +49,22 @@ import org.slf4j.Logger;
 public class FunctionLoader implements ResourceReloader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final ResourceFinder FINDER = new ResourceFinder("functions", ".mcfunction");
-	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
-	private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader<>(this::get, "tags/functions");
-	private volatile Map<Identifier, Collection<CommandFunction>> tags = Map.of();
+	private volatile Map<Identifier, CommandFunction<ServerCommandSource>> functions = ImmutableMap.of();
+	private final TagGroupLoader<CommandFunction<ServerCommandSource>> tagLoader = new TagGroupLoader<>(this::get, "tags/functions");
+	private volatile Map<Identifier, Collection<CommandFunction<ServerCommandSource>>> tags = Map.of();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;
 
-	public Optional<CommandFunction> get(Identifier id) {
+	public Optional<CommandFunction<ServerCommandSource>> get(Identifier id) {
 		return Optional.ofNullable((CommandFunction)this.functions.get(id));
 	}
 
-	public Map<Identifier, CommandFunction> getFunctions() {
+	public Map<Identifier, CommandFunction<ServerCommandSource>> getFunctions() {
 		return this.functions;
 	}
 
-	public Collection<CommandFunction> getTagOrEmpty(Identifier id) {
-		return (Collection<CommandFunction>)this.tags.getOrDefault(id, List.of());
+	public Collection<CommandFunction<ServerCommandSource>> getTagOrEmpty(Identifier id) {
+		return (Collection<CommandFunction<ServerCommandSource>>)this.tags.getOrDefault(id, List.of());
 	}
 
 	public Iterable<Identifier> getTags() {
@@ -88,12 +88,12 @@ public class FunctionLoader implements ResourceReloader {
 		CompletableFuture<Map<Identifier, List<TagGroupLoader.TrackedEntry>>> completableFuture = CompletableFuture.supplyAsync(
 			() -> this.tagLoader.loadTags(manager), prepareExecutor
 		);
-		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction>>> completableFuture2 = CompletableFuture.supplyAsync(
+		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>>> completableFuture2 = CompletableFuture.supplyAsync(
 				() -> FINDER.findResources(manager), prepareExecutor
 			)
 			.thenCompose(
 				functions -> {
-					Map<Identifier, CompletableFuture<CommandFunction>> map = Maps.<Identifier, CompletableFuture<CommandFunction>>newHashMap();
+					Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>> map = Maps.<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>>newHashMap();
 					ServerCommandSource serverCommandSource = new ServerCommandSource(
 						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.EMPTY, null, null
 					);
@@ -111,21 +111,26 @@ public class FunctionLoader implements ResourceReloader {
 					return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map);
 				}
 			);
-		return completableFuture.thenCombine(completableFuture2, Pair::of).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(intermediate -> {
-			Map<Identifier, CompletableFuture<CommandFunction>> map = (Map<Identifier, CompletableFuture<CommandFunction>>)intermediate.getSecond();
-			Builder<Identifier, CommandFunction> builder = ImmutableMap.builder();
-			map.forEach((id, functionFuture) -> functionFuture.handle((function, ex) -> {
-					if (ex != null) {
-						LOGGER.error("Failed to load function {}", id, ex);
-					} else {
-						builder.put(id, function);
-					}
+		return completableFuture.thenCombine(completableFuture2, Pair::of)
+			.thenCompose(synchronizer::whenPrepared)
+			.thenAcceptAsync(
+				intermediate -> {
+					Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>> map = (Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>>)intermediate.getSecond();
+					Builder<Identifier, CommandFunction<ServerCommandSource>> builder = ImmutableMap.builder();
+					map.forEach((id, functionFuture) -> functionFuture.handle((function, ex) -> {
+							if (ex != null) {
+								LOGGER.error("Failed to load function {}", id, ex);
+							} else {
+								builder.put(id, function);
+							}
 
-					return null;
-				}).join());
-			this.functions = builder.build();
-			this.tags = this.tagLoader.buildGroup((Map<Identifier, List<TagGroupLoader.TrackedEntry>>)intermediate.getFirst());
-		}, applyExecutor);
+							return null;
+						}).join());
+					this.functions = builder.build();
+					this.tags = this.tagLoader.buildGroup((Map<Identifier, List<TagGroupLoader.TrackedEntry>>)intermediate.getFirst());
+				},
+				applyExecutor
+			);
 	}
 
 	private static List<String> readLines(Resource resource) {

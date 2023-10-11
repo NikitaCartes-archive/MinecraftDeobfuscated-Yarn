@@ -12,6 +12,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
@@ -20,16 +21,27 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -37,6 +49,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable {
 	public static final MapCodec<DecoratedPotBlock> CODEC = createCodec(DecoratedPotBlock::new);
@@ -79,6 +92,42 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (!(world.getBlockEntity(pos) instanceof DecoratedPotBlockEntity decoratedPotBlockEntity)) {
+			return ActionResult.PASS;
+		} else {
+			ItemStack var13 = player.getStackInHand(hand);
+			ItemStack itemStack2 = decoratedPotBlockEntity.getStack();
+			if (!var13.isEmpty() && (itemStack2.isEmpty() || ItemStack.canCombine(itemStack2, var13) && itemStack2.getCount() < itemStack2.getMaxCount())) {
+				decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.POSITIVE);
+				player.incrementStat(Stats.USED.getOrCreateStat(var13.getItem()));
+				ItemStack itemStack3 = player.isCreative() ? var13.copyWithCount(1) : var13.split(1);
+				float f;
+				if (decoratedPotBlockEntity.isEmpty()) {
+					decoratedPotBlockEntity.setStack(itemStack3);
+					f = (float)itemStack3.getCount() / (float)itemStack3.getMaxCount();
+				} else {
+					itemStack2.increment(1);
+					f = (float)itemStack2.getCount() / (float)itemStack2.getMaxCount();
+				}
+
+				world.playSound(null, pos, SoundEvents.BLOCK_DECORATED_POT_INSERT, SoundCategory.BLOCKS, 1.0F, 0.7F + 0.5F * f);
+				if (world instanceof ServerWorld serverWorld) {
+					serverWorld.spawnParticles(ParticleTypes.DUST_PLUME, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, 7, 0.0, 0.0, 0.0, 0.0);
+				}
+
+				world.updateComparators(pos, this);
+			} else {
+				world.playSound(null, pos, SoundEvents.BLOCK_DECORATED_POT_INSERT_FAIL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.NEGATIVE);
+			}
+
+			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+			return ActionResult.SUCCESS;
+		}
+	}
+
+	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		if (world.isClient) {
 			world.getBlockEntity(pos, BlockEntityType.DECORATED_POT).ifPresent(blockEntity -> blockEntity.readNbtFromStack(itemStack));
@@ -104,6 +153,12 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new DecoratedPotBlockEntity(pos, state);
+	}
+
+	@Override
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		ItemScatterer.onStateReplaced(state, newState, world, pos);
+		super.onStateReplaced(state, world, pos, newState, moved);
 	}
 
 	@Override
@@ -150,9 +205,28 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+		BlockPos blockPos = hit.getBlockPos();
+		if (!world.isClient && projectile.canModifyAt(world, blockPos) && projectile.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES)) {
+			world.setBlockState(blockPos, state.with(CRACKED, Boolean.valueOf(true)), Block.NO_REDRAW);
+			world.breakBlock(blockPos, true, projectile);
+		}
+	}
+
+	@Override
 	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		return world.getBlockEntity(pos) instanceof DecoratedPotBlockEntity decoratedPotBlockEntity
 			? decoratedPotBlockEntity.asStack()
 			: super.getPickStack(world, pos, state);
+	}
+
+	@Override
+	public boolean hasComparatorOutput(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 }
