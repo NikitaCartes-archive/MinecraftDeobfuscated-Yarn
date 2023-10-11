@@ -150,11 +150,6 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public float getTargetingMargin() {
-		return 0.0F;
-	}
-
-	@Override
 	public void kill() {
 		this.removeFromFrame(this.getHeldItemStack());
 		super.kill();

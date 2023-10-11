@@ -340,6 +340,8 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_DECORATED_POT_BREAK = register("block.decorated_pot.break");
 	public static final SoundEvent BLOCK_DECORATED_POT_FALL = register("block.decorated_pot.fall");
 	public static final SoundEvent BLOCK_DECORATED_POT_HIT = register("block.decorated_pot.hit");
+	public static final SoundEvent BLOCK_DECORATED_POT_INSERT = register("block.decorated_pot.insert");
+	public static final SoundEvent BLOCK_DECORATED_POT_INSERT_FAIL = register("block.decorated_pot.insert_fail");
 	public static final SoundEvent BLOCK_DECORATED_POT_STEP = register("block.decorated_pot.step");
 	public static final SoundEvent BLOCK_DECORATED_POT_PLACE = register("block.decorated_pot.place");
 	public static final SoundEvent BLOCK_DECORATED_POT_SHATTER = register("block.decorated_pot.shatter");
@@ -1403,6 +1405,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_WARDEN_SONIC_CHARGE = register("entity.warden.sonic_charge");
 	public static final SoundEvent ENTITY_WARDEN_STEP = register("entity.warden.step");
 	public static final SoundEvent ENTITY_WARDEN_TENDRIL_CLICKS = register("entity.warden.tendril_clicks");
+	public static final SoundEvent BLOCK_HANGING_SIGN_WAXED_INTERACT_FAIL = register("block.hanging_sign.waxed_interact_fail");
 	public static final SoundEvent BLOCK_SIGN_WAXED_INTERACT_FAIL = register("block.sign.waxed_interact_fail");
 	public static final SoundEvent BLOCK_WATER_AMBIENT = register("block.water.ambient");
 	public static final SoundEvent WEATHER_RAIN = register("weather.rain");

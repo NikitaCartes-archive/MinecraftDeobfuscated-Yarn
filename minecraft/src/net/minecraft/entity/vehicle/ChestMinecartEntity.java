@@ -27,7 +27,7 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	}
 
 	@Override
-	protected Item getItem() {
+	protected Item asItem() {
 		return Items.CHEST_MINECART;
 	}
 

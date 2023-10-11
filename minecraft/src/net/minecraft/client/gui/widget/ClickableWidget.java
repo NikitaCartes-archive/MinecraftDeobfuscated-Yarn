@@ -13,13 +13,9 @@ import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.sound.SoundEvents;
@@ -50,9 +46,6 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	private boolean focused;
 	@Nullable
 	private Tooltip tooltip;
-	private int tooltipDelay;
-	private long lastHoveredTime;
-	private boolean wasHovered;
 
 	public ClickableWidget(int x, int y, int width, int height, Text message) {
 		this.x = x;
@@ -72,34 +65,10 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		if (this.visible) {
 			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 			this.renderButton(context, mouseX, mouseY, delta);
-			this.applyTooltip();
-		}
-	}
-
-	private void applyTooltip() {
-		if (this.tooltip != null) {
-			boolean bl = this.hovered || this.isFocused() && MinecraftClient.getInstance().getNavigationType().isKeyboard();
-			if (bl != this.wasHovered) {
-				if (bl) {
-					this.lastHoveredTime = Util.getMeasuringTimeMs();
-				}
-
-				this.wasHovered = bl;
-			}
-
-			if (bl && Util.getMeasuringTimeMs() - this.lastHoveredTime > (long)this.tooltipDelay) {
-				Screen screen = MinecraftClient.getInstance().currentScreen;
-				if (screen != null) {
-					screen.setTooltip(this.tooltip, this.getTooltipPositioner(), this.isFocused());
-				}
+			if (this.tooltip != null) {
+				this.tooltip.render(this.isHovered(), this.isFocused(), this.getNavigationFocus());
 			}
 		}
-	}
-
-	protected TooltipPositioner getTooltipPositioner() {
-		return (TooltipPositioner)(!this.hovered && this.isFocused() && MinecraftClient.getInstance().getNavigationType().isKeyboard()
-			? new FocusedTooltipPositioner(this)
-			: new WidgetTooltipPositioner(this));
 	}
 
 	public void setTooltip(@Nullable Tooltip tooltip) {
@@ -112,7 +81,9 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	}
 
 	public void setTooltipDelay(int delay) {
-		this.tooltipDelay = delay;
+		if (this.tooltip != null) {
+			this.tooltip.setDelay(delay);
+		}
 	}
 
 	protected MutableText getNarrationMessage() {

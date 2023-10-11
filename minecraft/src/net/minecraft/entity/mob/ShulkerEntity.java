@@ -526,11 +526,6 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	public void pushAwayFrom(Entity entity) {
 	}
 
-	@Override
-	public float getTargetingMargin() {
-		return 0.0F;
-	}
-
 	public Optional<Vec3d> getRenderPositionOffset(float tickDelta) {
 		if (this.prevAttachedBlock != null && this.teleportLerpTimer > 0) {
 			double d = (double)((float)this.teleportLerpTimer - tickDelta) / 6.0;

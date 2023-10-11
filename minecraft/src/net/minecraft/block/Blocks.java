@@ -2184,7 +2184,7 @@ public class Blocks {
 	);
 	public static final Block PUMPKIN = register(
 		BlockKeys.PUMPKIN,
-		new Block(
+		new PumpkinBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.ORANGE)
 				.instrument(Instrument.DIDGERIDOO)

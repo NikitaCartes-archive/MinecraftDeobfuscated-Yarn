@@ -74,7 +74,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected Item getItem() {
+	protected Item asItem() {
 		return Items.FURNACE_MINECART;
 	}
 

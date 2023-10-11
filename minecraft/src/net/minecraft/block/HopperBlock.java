@@ -161,15 +161,8 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!state.isOf(newState.getBlock())) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof HopperBlockEntity) {
-				ItemScatterer.spawn(world, pos, (HopperBlockEntity)blockEntity);
-				world.updateComparators(pos, this);
-			}
-
-			super.onStateReplaced(state, world, pos, newState, moved);
-		}
+		ItemScatterer.onStateReplaced(state, newState, world, pos);
+		super.onStateReplaced(state, world, pos, newState, moved);
 	}
 
 	@Override

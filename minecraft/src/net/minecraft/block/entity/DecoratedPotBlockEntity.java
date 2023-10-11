@@ -3,6 +3,7 @@ package net.minecraft.block.entity;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,24 +19,39 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class DecoratedPotBlockEntity extends BlockEntity {
+public class DecoratedPotBlockEntity extends BlockEntity implements SingleStackInventory {
 	public static final String SHERDS_NBT_KEY = "sherds";
-	private DecoratedPotBlockEntity.Sherds sherds = DecoratedPotBlockEntity.Sherds.DEFAULT;
+	public static final String ITEM_NBT_KEY = "item";
+	public static final int field_46660 = 1;
+	public long lastWobbleTime;
+	@Nullable
+	public DecoratedPotBlockEntity.WobbleType lastWobbleType;
+	private DecoratedPotBlockEntity.Sherds sherds;
+	private ItemStack stack = ItemStack.EMPTY;
 
 	public DecoratedPotBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.DECORATED_POT, pos, state);
+		this.sherds = DecoratedPotBlockEntity.Sherds.DEFAULT;
 	}
 
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		this.sherds.toNbt(nbt);
+		if (!this.stack.isEmpty()) {
+			nbt.put("item", this.stack.writeNbt(new NbtCompound()));
+		}
 	}
 
 	@Override
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		this.sherds = DecoratedPotBlockEntity.Sherds.fromNbt(nbt);
+		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
+			this.stack = ItemStack.fromNbt(nbt.getCompound("item"));
+		} else {
+			this.stack = ItemStack.EMPTY;
+		}
 	}
 
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
@@ -68,6 +84,48 @@ public class DecoratedPotBlockEntity extends BlockEntity {
 		NbtCompound nbtCompound = sherds.toNbt(new NbtCompound());
 		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.DECORATED_POT, nbtCompound);
 		return itemStack;
+	}
+
+	@Override
+	public ItemStack getStack() {
+		return this.stack;
+	}
+
+	@Override
+	public ItemStack decreaseStack(int count) {
+		ItemStack itemStack = this.stack.split(count);
+		if (this.stack.isEmpty()) {
+			this.stack = ItemStack.EMPTY;
+		}
+
+		return itemStack;
+	}
+
+	@Override
+	public void setStack(ItemStack stack) {
+		this.stack = stack;
+	}
+
+	@Override
+	public BlockEntity asBlockEntity() {
+		return this;
+	}
+
+	public void wobble(DecoratedPotBlockEntity.WobbleType wobbleType) {
+		if (this.world != null && !this.world.isClient()) {
+			this.world.addSyncedBlockEvent(this.getPos(), this.getCachedState().getBlock(), 1, wobbleType.ordinal());
+		}
+	}
+
+	@Override
+	public boolean onSyncedBlockEvent(int type, int data) {
+		if (this.world != null && type == 1 && data >= 0 && data < DecoratedPotBlockEntity.WobbleType.values().length) {
+			this.lastWobbleTime = this.world.getTime();
+			this.lastWobbleType = DecoratedPotBlockEntity.WobbleType.values()[data];
+			return true;
+		} else {
+			return super.onSyncedBlockEvent(type, data);
+		}
 	}
 
 	public static record Sherds(Item back, Item left, Item right, Item front) {
@@ -104,6 +162,17 @@ public class DecoratedPotBlockEntity extends BlockEntity {
 				NbtElement nbtElement = list.get(index);
 				return Registries.ITEM.get(Identifier.tryParse(nbtElement.asString()));
 			}
+		}
+	}
+
+	public static enum WobbleType {
+		POSITIVE(7),
+		NEGATIVE(10);
+
+		public final int lengthInTicks;
+
+		private WobbleType(int lengthInTicks) {
+			this.lengthInTicks = lengthInTicks;
 		}
 	}
 }

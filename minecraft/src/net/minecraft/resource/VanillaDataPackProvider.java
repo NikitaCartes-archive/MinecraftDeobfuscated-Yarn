@@ -62,7 +62,7 @@ public class VanillaDataPackProvider extends VanillaResourcePackProvider {
 		);
 	}
 
-	public static ResourcePackManager method_52443() {
+	public static ResourcePackManager createRealmsManager() {
 		return new ResourcePackManager(new VanillaDataPackProvider(new SymlinkFinder(path -> true)));
 	}
 

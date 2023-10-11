@@ -40,7 +40,9 @@ public class ItemEntity extends Entity implements Ownable {
 	private int pickupDelay;
 	private int health = 5;
 	@Nullable
-	private UUID thrower;
+	private UUID throwerUuid;
+	@Nullable
+	private Entity thrower;
 	@Nullable
 	private UUID owner;
 	public final float uniqueOffset;
@@ -78,14 +80,27 @@ public class ItemEntity extends Entity implements Ownable {
 	@Nullable
 	@Override
 	public Entity getOwner() {
-		if (this.thrower != null) {
-			World var2 = this.getWorld();
-			if (var2 instanceof ServerWorld serverWorld) {
-				return serverWorld.getEntity(this.thrower);
+		if (this.thrower != null && !this.thrower.isRemoved()) {
+			return this.thrower;
+		} else {
+			if (this.throwerUuid != null) {
+				World var2 = this.getWorld();
+				if (var2 instanceof ServerWorld serverWorld) {
+					this.thrower = serverWorld.getEntity(this.throwerUuid);
+					return this.thrower;
+				}
 			}
-		}
 
-		return null;
+			return null;
+		}
+	}
+
+	@Override
+	public void copyFrom(Entity original) {
+		super.copyFrom(original);
+		if (original instanceof ItemEntity itemEntity) {
+			this.thrower = itemEntity.thrower;
+		}
 	}
 
 	@Override
@@ -286,8 +301,8 @@ public class ItemEntity extends Entity implements Ownable {
 		nbt.putShort("Health", (short)this.health);
 		nbt.putShort("Age", (short)this.itemAge);
 		nbt.putShort("PickupDelay", (short)this.pickupDelay);
-		if (this.thrower != null) {
-			nbt.putUuid("Thrower", this.thrower);
+		if (this.throwerUuid != null) {
+			nbt.putUuid("Thrower", this.throwerUuid);
 		}
 
 		if (this.owner != null) {
@@ -312,7 +327,8 @@ public class ItemEntity extends Entity implements Ownable {
 		}
 
 		if (nbt.containsUuid("Thrower")) {
-			this.thrower = nbt.getUuid("Thrower");
+			this.throwerUuid = nbt.getUuid("Thrower");
+			this.thrower = null;
 		}
 
 		NbtCompound nbtCompound = nbt.getCompound("Item");
@@ -392,7 +408,8 @@ public class ItemEntity extends Entity implements Ownable {
 	/**
 	 * Sets the thrower of this item entity to {@code thrower}.
 	 */
-	public void setThrower(@Nullable UUID thrower) {
+	public void setThrower(Entity thrower) {
+		this.throwerUuid = thrower.getUuid();
 		this.thrower = thrower;
 	}
 

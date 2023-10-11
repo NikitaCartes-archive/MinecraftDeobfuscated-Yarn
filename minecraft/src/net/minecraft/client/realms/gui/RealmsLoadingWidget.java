@@ -1,13 +1,16 @@
 package net.minecraft.client.realms.gui;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.LoadingDisplay;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
@@ -32,6 +35,20 @@ public class RealmsLoadingWidget extends ClickableWidget {
 
 	@Override
 	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, this.getMessage());
+	}
+
+	@Override
+	public void playDownSound(SoundManager soundManager) {
+	}
+
+	@Override
+	public boolean isNarratable() {
+		return false;
+	}
+
+	@Nullable
+	@Override
+	public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+		return null;
 	}
 }

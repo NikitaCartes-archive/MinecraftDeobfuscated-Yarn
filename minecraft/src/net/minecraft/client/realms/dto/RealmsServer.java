@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsServer extends ValueObject {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final int NO_PARENT = -1;
 	public long id;
 	public String remoteSubscriptionId;
 	public String name;
@@ -47,6 +49,11 @@ public class RealmsServer extends ValueObject {
 	public String minigameName;
 	public int minigameId;
 	public String minigameImage;
+	public long parentWorldId = -1L;
+	@Nullable
+	public String parentWorldName;
+	public String activeVersion = "";
+	public RealmsServer.Compatibility compatibility = RealmsServer.Compatibility.UNVERIFIABLE;
 	public RealmsServerPing serverPing = new RealmsServerPing();
 
 	public String getDescription() {
@@ -125,6 +132,10 @@ public class RealmsServer extends ValueObject {
 			realmsServer.activeSlot = JsonUtils.getIntOr("activeSlot", node, -1);
 			realmsServer.minigameId = JsonUtils.getIntOr("minigameId", node, -1);
 			realmsServer.minigameImage = JsonUtils.getStringOr("minigameImage", node, null);
+			realmsServer.parentWorldId = JsonUtils.getLongOr("parentWorldId", node, -1L);
+			realmsServer.parentWorldName = JsonUtils.getStringOr("parentWorldName", node, null);
+			realmsServer.activeVersion = JsonUtils.getStringOr("activeVersion", node, "");
+			realmsServer.compatibility = getCompatibility(JsonUtils.getStringOr("compatibility", node, RealmsServer.Compatibility.UNVERIFIABLE.name()));
 		} catch (Exception var3) {
 			LOGGER.error("Could not parse McoServer: {}", var3.getMessage());
 		}
@@ -217,12 +228,32 @@ public class RealmsServer extends ValueObject {
 		}
 	}
 
-	private static RealmsServer.WorldType getWorldType(String state) {
+	private static RealmsServer.WorldType getWorldType(String worldType) {
 		try {
-			return RealmsServer.WorldType.valueOf(state);
+			return RealmsServer.WorldType.valueOf(worldType);
 		} catch (Exception var2) {
 			return RealmsServer.WorldType.NORMAL;
 		}
+	}
+
+	private static RealmsServer.Compatibility getCompatibility(@Nullable String compatibility) {
+		try {
+			return RealmsServer.Compatibility.valueOf(compatibility);
+		} catch (Exception var2) {
+			return RealmsServer.Compatibility.UNVERIFIABLE;
+		}
+	}
+
+	public boolean isCompatible() {
+		return this.compatibility == RealmsServer.Compatibility.COMPATIBLE;
+	}
+
+	public boolean needsUpgrade() {
+		return this.compatibility == RealmsServer.Compatibility.NEEDS_UPGRADE;
+	}
+
+	public boolean needsDowngrade() {
+		return this.compatibility == RealmsServer.Compatibility.NEEDS_DOWNGRADE;
 	}
 
 	public int hashCode() {
@@ -272,6 +303,10 @@ public class RealmsServer extends ValueObject {
 		realmsServer.activeSlot = this.activeSlot;
 		realmsServer.minigameId = this.minigameId;
 		realmsServer.minigameImage = this.minigameImage;
+		realmsServer.parentWorldName = this.parentWorldName;
+		realmsServer.parentWorldId = this.parentWorldId;
+		realmsServer.activeVersion = this.activeVersion;
+		realmsServer.compatibility = this.compatibility;
 		return realmsServer;
 	}
 
@@ -285,12 +320,25 @@ public class RealmsServer extends ValueObject {
 		return map;
 	}
 
+	public boolean hasParentWorld() {
+		return this.parentWorldId != -1L;
+	}
+
 	public String getWorldName(int slotId) {
 		return this.name + " (" + ((RealmsWorldOptions)this.slots.get(slotId)).getSlotName(slotId) + ")";
 	}
 
 	public ServerInfo createServerInfo(String address) {
 		return new ServerInfo(this.name, address, ServerInfo.ServerType.REALM);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum Compatibility {
+		UNVERIFIABLE,
+		INCOMPATIBLE,
+		NEEDS_DOWNGRADE,
+		NEEDS_UPGRADE,
+		COMPATIBLE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -303,6 +351,7 @@ public class RealmsServer extends ValueObject {
 
 		public int compare(RealmsServer realmsServer, RealmsServer realmsServer2) {
 			return ComparisonChain.start()
+				.compareTrueFirst(realmsServer.hasParentWorld(), realmsServer2.hasParentWorld())
 				.compareTrueFirst(realmsServer.state == RealmsServer.State.UNINITIALIZED, realmsServer2.state == RealmsServer.State.UNINITIALIZED)
 				.compareTrueFirst(realmsServer.expiredTrial, realmsServer2.expiredTrial)
 				.compareTrueFirst(realmsServer.owner.equals(this.refOwner), realmsServer2.owner.equals(this.refOwner))

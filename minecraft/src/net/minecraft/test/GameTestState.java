@@ -7,9 +7,12 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.Object2LongMap.Entry;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
@@ -181,6 +184,9 @@ public class GameTestState {
 	public void completeIfSuccessful() {
 		if (this.throwable == null) {
 			this.complete();
+			Box box = this.getBoundingBox();
+			List<Entity> list = this.getWorld().getEntitiesByClass(Entity.class, box.expand(1.0), entity -> !(entity instanceof PlayerEntity));
+			list.forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
 		}
 	}
 

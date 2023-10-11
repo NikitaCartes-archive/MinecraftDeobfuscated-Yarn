@@ -94,6 +94,14 @@ public class TntEntity extends Entity implements Ownable {
 	}
 
 	@Override
+	public void copyFrom(Entity original) {
+		super.copyFrom(original);
+		if (original instanceof TntEntity tntEntity) {
+			this.causingEntity = tntEntity.causingEntity;
+		}
+	}
+
+	@Override
 	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.15F;
 	}

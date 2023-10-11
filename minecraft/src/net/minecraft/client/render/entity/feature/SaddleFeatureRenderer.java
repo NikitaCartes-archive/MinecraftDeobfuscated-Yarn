@@ -14,13 +14,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SaddleFeatureRenderer<T extends Entity & Saddleable, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
-	private final Identifier TEXTURE;
+	private final Identifier texture;
 	private final M model;
 
 	public SaddleFeatureRenderer(FeatureRendererContext<T, M> context, M model, Identifier texture) {
 		super(context);
 		this.model = model;
-		this.TEXTURE = texture;
+		this.texture = texture;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class SaddleFeatureRenderer<T extends Entity & Saddleable, M extends Enti
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(entity, limbAngle, limbDistance, tickDelta);
 			this.model.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(this.TEXTURE));
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(this.texture));
 			this.model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}

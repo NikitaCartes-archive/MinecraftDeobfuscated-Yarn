@@ -698,7 +698,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getX(), d, this.getZ(), stack);
 			itemEntity.setPickupDelay(40);
 			if (retainOwnership) {
-				itemEntity.setThrower(this.getUuid());
+				itemEntity.setThrower(this);
 			}
 
 			if (throwRandomly) {
@@ -2236,6 +2236,10 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public static boolean isUsernameValid(String name) {
 		return name.length() > 16 ? false : name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
+	}
+
+	public static float getReachDistance(boolean creative) {
+		return creative ? 5.0F : 4.5F;
 	}
 
 	/**

@@ -18,6 +18,8 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -63,10 +65,6 @@ public class SignBlockEntity extends BlockEntity {
 		} else {
 			return false;
 		}
-	}
-
-	public SignText getTextFacing(PlayerEntity player) {
-		return this.getText(this.isPlayerFacingFront(player));
 	}
 
 	public SignText getText(boolean front) {
@@ -276,5 +274,9 @@ public class SignBlockEntity extends BlockEntity {
 		if (blockEntity.isPlayerTooFarToEdit(uuid)) {
 			blockEntity.setEditor(null);
 		}
+	}
+
+	public SoundEvent getInteractionFailSound() {
+		return SoundEvents.BLOCK_SIGN_WAXED_INTERACT_FAIL;
 	}
 }

@@ -45,6 +45,7 @@ import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -454,8 +455,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						String string = "selectWorld.backupQuestion." + conversionWarning.getTranslationKeySuffix();
 						String string2 = "selectWorld.backupWarning." + conversionWarning.getTranslationKeySuffix();
 						MutableText mutableText = Text.translatable(string);
-						if (conversionWarning.needsBoldRedFormatting()) {
-							mutableText.formatted(Formatting.BOLD, Formatting.RED);
+						if (conversionWarning.isDangerous()) {
+							mutableText.styled(style -> style.withColor(-2142128));
 						}
 
 						Text text = Text.translatable(string2, this.level.getVersion(), SharedConstants.getGameVersion().getName());

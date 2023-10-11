@@ -75,10 +75,10 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public void dropItems(DamageSource damageSource) {
+	public void killAndDropSelf(DamageSource source) {
 		double d = this.getVelocity().horizontalLengthSquared();
-		if (!damageSource.isIn(DamageTypeTags.IS_FIRE) && !damageSource.isIn(DamageTypeTags.IS_EXPLOSION) && !(d >= 0.01F)) {
-			super.dropItems(damageSource);
+		if (!source.isIn(DamageTypeTags.IS_FIRE) && !source.isIn(DamageTypeTags.IS_EXPLOSION) && !(d >= 0.01F)) {
+			this.killAndDropItem(this.asItem());
 		} else {
 			if (this.fuseTicks < 0) {
 				this.prime();
@@ -88,7 +88,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected Item getItem() {
+	protected Item asItem() {
 		return Items.TNT_MINECART;
 	}
 
@@ -181,5 +181,10 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("TNTFuse", this.fuseTicks);
+	}
+
+	@Override
+	boolean shouldAlwaysKill() {
+		return true;
 	}
 }

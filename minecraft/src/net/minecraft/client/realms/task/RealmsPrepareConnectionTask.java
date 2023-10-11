@@ -26,13 +26,13 @@ import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class RealmsGetServerDetailsTask extends LongRunningTask {
+public class RealmsPrepareConnectionTask extends LongRunningTask {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text TITLE = Text.translatable("mco.connect.connecting");
 	private final RealmsServer server;
 	private final Screen lastScreen;
 
-	public RealmsGetServerDetailsTask(Screen lastScreen, RealmsServer server) {
+	public RealmsPrepareConnectionTask(Screen lastScreen, RealmsServer server) {
 		this.lastScreen = lastScreen;
 		this.server = server;
 	}

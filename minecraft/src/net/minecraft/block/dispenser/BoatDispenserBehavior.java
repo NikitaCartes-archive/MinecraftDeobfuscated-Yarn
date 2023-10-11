@@ -6,11 +6,11 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class BoatDispenserBehavior extends ItemDispenserBehavior {
@@ -30,7 +30,7 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 	@Override
 	public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 		Direction direction = pointer.state().get(DispenserBlock.FACING);
-		World world = pointer.world();
+		ServerWorld serverWorld = pointer.world();
 		Vec3d vec3d = pointer.centerPos();
 		double d = 0.5625 + (double)EntityType.BOAT.getWidth() / 2.0;
 		double e = vec3d.getX() + (double)direction.getOffsetX() * d;
@@ -38,20 +38,21 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 		double g = vec3d.getZ() + (double)direction.getOffsetZ() * d;
 		BlockPos blockPos = pointer.pos().offset(direction);
 		double h;
-		if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+		if (serverWorld.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 			h = 1.0;
 		} else {
-			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.down()).isIn(FluidTags.WATER)) {
+			if (!serverWorld.getBlockState(blockPos).isAir() || !serverWorld.getFluidState(blockPos.down()).isIn(FluidTags.WATER)) {
 				return this.itemDispenser.dispense(pointer, stack);
 			}
 
 			h = 0.0;
 		}
 
-		BoatEntity boatEntity = (BoatEntity)(this.chest ? new ChestBoatEntity(world, e, f + h, g) : new BoatEntity(world, e, f + h, g));
+		BoatEntity boatEntity = (BoatEntity)(this.chest ? new ChestBoatEntity(serverWorld, e, f + h, g) : new BoatEntity(serverWorld, e, f + h, g));
+		EntityType.copier(serverWorld, stack, null).accept(boatEntity);
 		boatEntity.setVariant(this.boatType);
 		boatEntity.setYaw(direction.asRotation());
-		world.spawnEntity(boatEntity);
+		serverWorld.spawnEntity(boatEntity);
 		stack.decrement(1);
 		return stack;
 	}

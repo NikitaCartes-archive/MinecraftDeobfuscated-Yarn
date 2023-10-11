@@ -25,6 +25,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
@@ -46,6 +47,7 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 	private final SpriteIdentifier baseTexture = (SpriteIdentifier)Objects.requireNonNull(
 		TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.DECORATED_POT_BASE_KEY)
 	);
+	private static final float field_46728 = 0.125F;
 
 	public DecoratedPotBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 		ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.DECORATED_POT_BASE);
@@ -104,6 +106,25 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 		matrixStack.translate(0.5, 0.0, 0.5);
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - direction.asRotation()));
 		matrixStack.translate(-0.5, 0.0, -0.5);
+		DecoratedPotBlockEntity.WobbleType wobbleType = decoratedPotBlockEntity.lastWobbleType;
+		if (wobbleType != null && decoratedPotBlockEntity.getWorld() != null) {
+			float g = ((float)(decoratedPotBlockEntity.getWorld().getTime() - decoratedPotBlockEntity.lastWobbleTime) + f) / (float)wobbleType.lengthInTicks;
+			if (g >= 0.0F && g <= 1.0F) {
+				if (wobbleType == DecoratedPotBlockEntity.WobbleType.POSITIVE) {
+					float h = 0.015625F;
+					float k = g * (float) (Math.PI * 2);
+					float l = -1.5F * (MathHelper.cos(k) + 0.5F) * MathHelper.sin(k / 2.0F);
+					matrixStack.multiply(RotationAxis.POSITIVE_X.rotation(l * 0.015625F), 0.5F, 0.0F, 0.5F);
+					float m = MathHelper.sin(k);
+					matrixStack.multiply(RotationAxis.POSITIVE_Z.rotation(m * 0.015625F), 0.5F, 0.0F, 0.5F);
+				} else {
+					float h = MathHelper.sin(-g * 3.0F * (float) Math.PI) * 0.125F;
+					float k = 1.0F - g;
+					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(h * k), 0.5F, 0.0F, 0.5F);
+				}
+			}
+		}
+
 		VertexConsumer vertexConsumer = this.baseTexture.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
 		this.neck.render(matrixStack, vertexConsumer, i, j);
 		this.top.render(matrixStack, vertexConsumer, i, j);

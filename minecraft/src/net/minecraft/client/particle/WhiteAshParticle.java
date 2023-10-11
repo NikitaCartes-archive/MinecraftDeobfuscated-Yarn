@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
@@ -14,9 +15,9 @@ public class WhiteAshParticle extends AscendingParticle {
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider
 	) {
 		super(world, x, y, z, 0.1F, -0.1F, 0.1F, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.0F, 20, 0.0125F, false);
-		this.red = 0.7294118F;
-		this.green = 0.69411767F;
-		this.blue = 0.7607843F;
+		this.red = (float)ColorHelper.Argb.getRed(12235202) / 255.0F;
+		this.green = (float)ColorHelper.Argb.getGreen(12235202) / 255.0F;
+		this.blue = (float)ColorHelper.Argb.getBlue(12235202) / 255.0F;
 	}
 
 	@Environment(EnvType.CLIENT)

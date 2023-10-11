@@ -62,6 +62,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	private static final float SPYGLASS_SNEAKING_ARM_PITCH_OFFSET = (float) (Math.PI / 12);
 	private static final float field_46576 = (float) (-Math.PI * 4.0 / 9.0);
 	private static final float field_46577 = 0.43633232F;
+	private static final float field_46724 = (float) (Math.PI / 6);
 	public static final float field_39069 = 1.4835298F;
 	public static final float field_39070 = (float) (Math.PI / 6);
 	public final ModelPart head;
@@ -381,7 +382,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 	private void positionBlockingArm(ModelPart arm, boolean rightArm) {
 		arm.pitch = arm.pitch * 0.5F - 0.9424779F + MathHelper.clamp(this.head.pitch, (float) (-Math.PI * 4.0 / 9.0), 0.43633232F);
-		arm.yaw = (rightArm ? -30.0F : 30.0F) * (float) (Math.PI / 180.0) + this.head.yaw;
+		arm.yaw = (rightArm ? -30.0F : 30.0F) * (float) (Math.PI / 180.0) + MathHelper.clamp(this.head.yaw, (float) (-Math.PI / 6), (float) (Math.PI / 6));
 	}
 
 	protected void animateArms(T entity, float animationProgress) {

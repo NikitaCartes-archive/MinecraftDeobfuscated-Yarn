@@ -36,7 +36,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected Item getItem() {
+	protected Item asItem() {
 		return Items.MINECART;
 	}
 

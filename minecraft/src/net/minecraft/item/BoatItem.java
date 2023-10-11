@@ -3,10 +3,12 @@ package net.minecraft.item;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -50,7 +52,7 @@ public class BoatItem extends Item {
 			}
 
 			if (hitResult.getType() == HitResult.Type.BLOCK) {
-				BoatEntity boatEntity = this.createEntity(world, hitResult);
+				BoatEntity boatEntity = this.createEntity(world, hitResult, itemStack, user);
 				boatEntity.setVariant(this.type);
 				boatEntity.setYaw(user.getYaw());
 				if (!world.isSpaceEmpty(boatEntity, boatEntity.getBoundingBox())) {
@@ -73,9 +75,13 @@ public class BoatItem extends Item {
 		}
 	}
 
-	private BoatEntity createEntity(World world, HitResult hitResult) {
-		return (BoatEntity)(this.chest
-			? new ChestBoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z)
-			: new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z));
+	private BoatEntity createEntity(World world, HitResult hitResult, ItemStack stack, PlayerEntity player) {
+		Vec3d vec3d = hitResult.getPos();
+		BoatEntity boatEntity = (BoatEntity)(this.chest ? new ChestBoatEntity(world, vec3d.x, vec3d.y, vec3d.z) : new BoatEntity(world, vec3d.x, vec3d.y, vec3d.z));
+		if (world instanceof ServerWorld serverWorld) {
+			EntityType.copier(serverWorld, stack, player).accept(boatEntity);
+		}
+
+		return boatEntity;
 	}
 }

@@ -1,6 +1,5 @@
 package net.minecraft.world;
 
-import com.mojang.brigadier.context.CommandContext;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.annotation.Nullable;
@@ -124,7 +123,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			if (minecraftServer.areCommandBlocksEnabled() && !StringHelper.isEmpty(this.command)) {
 				try {
 					this.lastOutput = null;
-					ServerCommandSource serverCommandSource = this.getSource().withConsumer((context, success, result) -> {
+					ServerCommandSource serverCommandSource = this.getSource().withResultStorer((context, success, result) -> {
 						if (success) {
 							++this.successCount;
 						}

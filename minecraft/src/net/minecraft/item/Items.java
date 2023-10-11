@@ -285,7 +285,7 @@ public class Items {
 	public static final Item BRICKS = register(Blocks.BRICKS);
 	public static final Item BOOKSHELF = register(Blocks.BOOKSHELF);
 	public static final Item CHISELED_BOOKSHELF = register(Blocks.CHISELED_BOOKSHELF);
-	public static final Item DECORATED_POT = register(new BlockItem(Blocks.DECORATED_POT, new Item.Settings().maxCount(1)));
+	public static final Item DECORATED_POT = register(Blocks.DECORATED_POT);
 	public static final Item MOSSY_COBBLESTONE = register(Blocks.MOSSY_COBBLESTONE);
 	public static final Item OBSIDIAN = register(Blocks.OBSIDIAN);
 	public static final Item TORCH = register(new VerticallyAttachableBlockItem(Blocks.TORCH, Blocks.WALL_TORCH, new Item.Settings(), Direction.DOWN));
