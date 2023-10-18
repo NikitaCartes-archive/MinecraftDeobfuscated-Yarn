@@ -12,7 +12,10 @@ import net.minecraft.util.StringIdentifiable;
  */
 public interface NbtDataSource {
 	MapCodec<NbtDataSource> CODEC = TextCodecs.dispatchingCodec(
-		new NbtDataSource.Type[]{EntityNbtDataSource.TYPE, BlockNbtDataSource.TYPE, StorageNbtDataSource.TYPE}, NbtDataSource.Type::codec, NbtDataSource::getType
+		new NbtDataSource.Type[]{EntityNbtDataSource.TYPE, BlockNbtDataSource.TYPE, StorageNbtDataSource.TYPE},
+		NbtDataSource.Type::codec,
+		NbtDataSource::getType,
+		"source"
 	);
 
 	Stream<NbtCompound> get(ServerCommandSource source) throws CommandSyntaxException;

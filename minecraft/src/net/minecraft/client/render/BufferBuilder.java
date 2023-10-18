@@ -34,13 +34,10 @@ import org.slf4j.Logger;
  */
 @Environment(EnvType.CLIENT)
 public class BufferBuilder extends FixedColorVertexConsumer implements BufferVertexConsumer {
-	/**
-	 * An integer a size change of a buffer must be a
-	 * multiple of
-	 */
 	private static final int ROUND_SIZE_CHANGE = 2097152;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private ByteBuffer buffer;
+	private boolean closed;
 	private int builtBufferCount;
 	private int batchOffset;
 	private int elementOffset;
@@ -65,7 +62,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private boolean hasNoVertexBuffer;
 
 	public BufferBuilder(int initialCapacity) {
-		this.buffer = GlAllocationUtils.allocateByteBuffer(initialCapacity * 6);
+		this.buffer = GlAllocationUtils.allocateByteBuffer(initialCapacity);
 	}
 
 	private void grow() {
@@ -75,25 +72,13 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private void grow(int size) {
 		if (this.elementOffset + size > this.buffer.capacity()) {
 			int i = this.buffer.capacity();
-			int j = i + roundBufferSize(size);
-			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", i, j);
-			ByteBuffer byteBuffer = GlAllocationUtils.resizeByteBuffer(this.buffer, j);
+			int j = Math.min(i, 2097152);
+			int k = i + size;
+			int l = Math.max(i + j, k);
+			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", i, l);
+			ByteBuffer byteBuffer = GlAllocationUtils.resizeByteBuffer(this.buffer, l);
 			byteBuffer.rewind();
 			this.buffer = byteBuffer;
-		}
-	}
-
-	private static int roundBufferSize(int amount) {
-		int i = 2097152;
-		if (amount == 0) {
-			return i;
-		} else {
-			if (amount < 0) {
-				i *= -1;
-			}
-
-			int j = amount % i;
-			return j == 0 ? amount : amount + i - j;
 		}
 	}
 
@@ -110,7 +95,14 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		return new BufferBuilder.TransparentSortingData(this.drawMode, this.vertexCount, this.sortingPrimitiveCenters, this.sorter);
 	}
 
+	private void ensureNotClosed() {
+		if (this.closed) {
+			throw new IllegalStateException("This BufferBuilder has been closed");
+		}
+	}
+
 	public void beginSortedIndexBuffer(BufferBuilder.TransparentSortingData state) {
+		this.ensureNotClosed();
 		this.buffer.rewind();
 		this.drawMode = state.drawMode;
 		this.vertexCount = state.vertexCount;
@@ -124,6 +116,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		if (this.building) {
 			throw new IllegalStateException("Already building!");
 		} else {
+			this.ensureNotClosed();
 			this.building = true;
 			this.drawMode = drawMode;
 			this.setFormat(format);
@@ -247,7 +240,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private BufferBuilder.BuiltBuffer build() {
 		int i = this.drawMode.getIndexCount(this.vertexCount);
 		int j = !this.hasNoVertexBuffer ? this.vertexCount * this.format.getVertexSizeByte() : 0;
-		VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(i);
+		VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(this.vertexCount);
 		boolean bl;
 		int l;
 		if (this.sortingPrimitiveCenters != null) {
@@ -406,6 +399,17 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		this.builtBufferCount = 0;
 		this.batchOffset = 0;
 		this.elementOffset = 0;
+	}
+
+	public void close() {
+		if (this.builtBufferCount > 0) {
+			throw new IllegalStateException("BufferBuilder closed with unused batches");
+		} else if (this.building) {
+			throw new IllegalStateException("Cannot close BufferBuilder while it is building");
+		} else if (!this.closed) {
+			this.closed = true;
+			GlAllocationUtils.free(this.buffer);
+		}
 	}
 
 	@Override

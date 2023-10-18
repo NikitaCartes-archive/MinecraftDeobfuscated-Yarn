@@ -78,7 +78,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected DefaultedList<ItemStack> getInvStackList() {
+	protected DefaultedList<ItemStack> method_11282() {
 		return this.inventory;
 	}
 

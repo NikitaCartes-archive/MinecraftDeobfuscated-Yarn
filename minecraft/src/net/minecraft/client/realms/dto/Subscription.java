@@ -23,7 +23,7 @@ public class Subscription extends ValueObject {
 			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
 			subscription.startDate = JsonUtils.getLongOr("startDate", jsonObject, 0L);
 			subscription.daysLeft = JsonUtils.getIntOr("daysLeft", jsonObject, 0);
-			subscription.type = typeFrom(JsonUtils.getStringOr("subscriptionType", jsonObject, Subscription.SubscriptionType.NORMAL.name()));
+			subscription.type = typeFrom(JsonUtils.getNullableStringOr("subscriptionType", jsonObject, Subscription.SubscriptionType.NORMAL.name()));
 		} catch (Exception var4) {
 			LOGGER.error("Could not parse Subscription: {}", var4.getMessage());
 		}

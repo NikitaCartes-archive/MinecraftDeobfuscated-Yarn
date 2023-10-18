@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletionException;
+import javax.annotation.Nullable;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
@@ -26,6 +27,7 @@ public class CrashReport {
 	private final String message;
 	private final Throwable cause;
 	private final List<CrashReportSection> otherSections = Lists.<CrashReportSection>newArrayList();
+	@Nullable
 	private File file;
 	private boolean hasStackTrace = true;
 	private StackTraceElement[] stackTrace = new StackTraceElement[0];
@@ -130,6 +132,7 @@ public class CrashReport {
 		return stringBuilder.toString();
 	}
 
+	@Nullable
 	public File getFile() {
 		return this.file;
 	}
@@ -178,7 +181,7 @@ public class CrashReport {
 			StackTraceElement stackTraceElement2 = null;
 			int j = stackTraceElements.length - i;
 			if (j < 0) {
-				LOGGER.error("Negative index in crash report handler ({}/{})", stackTraceElements.length, i, ")");
+				LOGGER.error("Negative index in crash report handler ({}/{})", stackTraceElements.length, i);
 			}
 
 			if (stackTraceElements != null && 0 <= j && j < stackTraceElements.length) {
@@ -252,8 +255,8 @@ public class CrashReport {
 		}
 
 		CrashReport crashReport;
-		if (cause instanceof CrashException) {
-			crashReport = ((CrashException)cause).getReport();
+		if (cause instanceof CrashException crashException) {
+			crashReport = crashException.getReport();
 		} else {
 			crashReport = new CrashReport(title, cause);
 		}

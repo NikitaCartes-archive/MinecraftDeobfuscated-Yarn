@@ -35,11 +35,9 @@ public class CreditsAndAttributionScreen extends Screen {
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
 		directionalLayoutWidget.add(ButtonWidget.builder(CREDITS_TEXT, button -> this.openCredits()).width(210).build());
 		directionalLayoutWidget.add(
-			ButtonWidget.builder(ATTRIBUTION_TEXT, ConfirmLinkScreen.opening("https://aka.ms/MinecraftJavaAttribution", this, true)).width(210).build()
+			ButtonWidget.builder(ATTRIBUTION_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftJavaAttribution")).width(210).build()
 		);
-		directionalLayoutWidget.add(
-			ButtonWidget.builder(LICENSE_TEXT, ConfirmLinkScreen.opening("https://aka.ms/MinecraftJavaLicenses", this, true)).width(210).build()
-		);
+		directionalLayoutWidget.add(ButtonWidget.builder(LICENSE_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftJavaLicenses")).width(210).build());
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).build());
 		this.layout.refreshPositions();
 		this.layout.forEachChild(this::addDrawableChild);

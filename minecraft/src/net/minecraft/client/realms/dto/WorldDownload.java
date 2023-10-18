@@ -21,9 +21,9 @@ public class WorldDownload extends ValueObject {
 		WorldDownload worldDownload = new WorldDownload();
 
 		try {
-			worldDownload.downloadLink = JsonUtils.getStringOr("downloadLink", jsonObject, "");
-			worldDownload.resourcePackUrl = JsonUtils.getStringOr("resourcePackUrl", jsonObject, "");
-			worldDownload.resourcePackHash = JsonUtils.getStringOr("resourcePackHash", jsonObject, "");
+			worldDownload.downloadLink = JsonUtils.getNullableStringOr("downloadLink", jsonObject, "");
+			worldDownload.resourcePackUrl = JsonUtils.getNullableStringOr("resourcePackUrl", jsonObject, "");
+			worldDownload.resourcePackHash = JsonUtils.getNullableStringOr("resourcePackHash", jsonObject, "");
 		} catch (Exception var5) {
 			LOGGER.error("Could not parse WorldDownload: {}", var5.getMessage());
 		}

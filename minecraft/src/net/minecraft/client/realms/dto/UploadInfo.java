@@ -36,13 +36,13 @@ public class UploadInfo extends ValueObject {
 		try {
 			JsonParser jsonParser = new JsonParser();
 			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
-			String string = JsonUtils.getStringOr("uploadEndpoint", jsonObject, null);
+			String string = JsonUtils.getNullableStringOr("uploadEndpoint", jsonObject, null);
 			if (string != null) {
 				int i = JsonUtils.getIntOr("port", jsonObject, -1);
 				URI uRI = getUrl(string, i);
 				if (uRI != null) {
 					boolean bl = JsonUtils.getBooleanOr("worldClosed", jsonObject, false);
-					String string2 = JsonUtils.getStringOr("token", jsonObject, null);
+					String string2 = JsonUtils.getNullableStringOr("token", jsonObject, null);
 					return new UploadInfo(bl, string2, uRI);
 				}
 			}

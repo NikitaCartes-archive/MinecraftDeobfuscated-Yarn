@@ -2,9 +2,8 @@ package net.minecraft.server;
 
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -17,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
+import javax.annotation.Nullable;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -24,13 +24,12 @@ import joptsimple.util.PathConverter;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.Schemas;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtCrashException;
+import net.minecraft.nbt.NbtException;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.VanillaDataPackProvider;
@@ -58,6 +57,7 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
+import net.minecraft.world.level.storage.ParsedSaveProperties;
 import net.minecraft.world.updater.WorldUpdater;
 import org.slf4j.Logger;
 
@@ -124,8 +124,31 @@ public class Main {
 			String string = (String)Optional.ofNullable((String)optionSet.valueOf(optionSpec10)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
-			LevelSummary levelSummary = session.getLevelSummary();
-			if (levelSummary != null) {
+			Dynamic<?> dynamic;
+			if (session.levelDatExists()) {
+				LevelSummary levelSummary;
+				try {
+					dynamic = session.readLevelProperties();
+					levelSummary = session.getLevelSummary(dynamic);
+				} catch (NbtException | NbtCrashException | IOException var39) {
+					LevelStorage.LevelSave levelSave = session.getDirectory();
+					LOGGER.warn("Failed to load world data from {}", levelSave.getLevelDatPath(), var39);
+					LOGGER.info("Attempting to use fallback");
+
+					try {
+						dynamic = session.readOldLevelProperties();
+						levelSummary = session.getLevelSummary(dynamic);
+					} catch (NbtException | NbtCrashException | IOException var38) {
+						LOGGER.error("Failed to load world data from {}", levelSave.getLevelDatOldPath(), var38);
+						LOGGER.error(
+							"Failed to load world data from {} and {}. World files may be corrupted. Shutting down.", levelSave.getLevelDatPath(), levelSave.getLevelDatOldPath()
+						);
+						return;
+					}
+
+					session.tryRestoreBackup();
+				}
+
 				if (levelSummary.requiresConversion()) {
 					LOGGER.info("This world must be opened in an older version (like 1.6.4) to be safely converted");
 					return;
@@ -135,8 +158,11 @@ public class Main {
 					LOGGER.info("This world was created by an incompatible version.");
 					return;
 				}
+			} else {
+				dynamic = null;
 			}
 
+			Dynamic<?> dynamic2 = dynamic;
 			boolean bl = optionSet.has(optionSpec7);
 			if (bl) {
 				LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
@@ -146,19 +172,19 @@ public class Main {
 
 			SaveLoader saveLoader;
 			try {
-				SaveLoading.ServerConfig serverConfig = createServerConfig(serverPropertiesLoader.getPropertiesHandler(), session, bl, resourcePackManager);
+				SaveLoading.ServerConfig serverConfig = createServerConfig(serverPropertiesLoader.getPropertiesHandler(), dynamic2, bl, resourcePackManager);
 				saveLoader = (SaveLoader)Util.waitAndApply(
 						applyExecutor -> SaveLoading.load(
 								serverConfig,
 								context -> {
 									Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(RegistryKeys.DIMENSION);
-									DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.worldGenRegistryManager());
-									Pair<SaveProperties, DimensionOptionsRegistryHolder.DimensionsConfig> pair = session.readLevelProperties(
-										dynamicOps, context.dataConfiguration(), registry, context.worldGenRegistryManager().getRegistryLifecycle()
-									);
-									if (pair != null) {
-										return new SaveLoading.LoadContext<>(pair.getFirst(), ((DimensionOptionsRegistryHolder.DimensionsConfig)pair.getSecond()).toDynamicRegistryManager());
+									if (dynamic2 != null) {
+										ParsedSaveProperties parsedSaveProperties = LevelStorage.parseSaveProperties(
+											dynamic2, context.dataConfiguration(), registry, context.worldGenRegistryManager()
+										);
+										return new SaveLoading.LoadContext<>(parsedSaveProperties.properties(), parsedSaveProperties.dimensions().toDynamicRegistryManager());
 									} else {
+										LOGGER.info("No existing world data, creating new world");
 										LevelInfo levelInfo;
 										GeneratorOptions generatorOptions;
 										DimensionOptionsRegistryHolder dimensionOptionsRegistryHolder;
@@ -196,8 +222,8 @@ public class Main {
 							)
 					)
 					.get();
-			} catch (Exception var36) {
-				LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", var36);
+			} catch (Exception var37) {
+				LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", var37);
 				return;
 			}
 
@@ -231,8 +257,8 @@ public class Main {
 			};
 			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var37) {
-			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", var37);
+		} catch (Exception var40) {
+			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", var40);
 		}
 	}
 
@@ -246,12 +272,12 @@ public class Main {
 	}
 
 	private static SaveLoading.ServerConfig createServerConfig(
-		ServerPropertiesHandler serverPropertiesHandler, LevelStorage.Session session, boolean safeMode, ResourcePackManager dataPackManager
+		ServerPropertiesHandler serverPropertiesHandler, @Nullable Dynamic<?> dynamic, boolean safeMode, ResourcePackManager dataPackManager
 	) {
-		DataConfiguration dataConfiguration = session.getDataPackSettings();
-		DataConfiguration dataConfiguration2;
 		boolean bl;
-		if (dataConfiguration != null) {
+		DataConfiguration dataConfiguration2;
+		if (dynamic != null) {
+			DataConfiguration dataConfiguration = LevelStorage.parseDataPackSettings(dynamic);
 			bl = false;
 			dataConfiguration2 = dataConfiguration;
 		} else {

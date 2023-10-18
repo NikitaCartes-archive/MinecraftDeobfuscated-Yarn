@@ -189,7 +189,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		context.drawTexture(OPTIONS_BACKGROUND, 0, i, 0.0F, 0.0F, this.width, this.height - i, 32, 32);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		String string = this.serverData.players != null ? Integer.toString(this.serverData.players.size()) : "0";
-		context.drawText(this.textRenderer, Text.translatable("mco.configure.world.invited.number", string), this.column1_x, row(0), -6250336, false);
+		context.drawText(this.textRenderer, Text.translatable("mco.configure.world.invited.number", string), this.column1_x, row(0), -1, false);
 	}
 
 	@Environment(EnvType.CLIENT)

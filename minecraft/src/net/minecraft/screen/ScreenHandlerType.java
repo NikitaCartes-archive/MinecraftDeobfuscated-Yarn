@@ -31,6 +31,7 @@ public class ScreenHandlerType<T extends ScreenHandler> implements ToggleableFea
 	public static final ScreenHandlerType<GenericContainerScreenHandler> GENERIC_9X5 = register("generic_9x5", GenericContainerScreenHandler::createGeneric9x5);
 	public static final ScreenHandlerType<GenericContainerScreenHandler> GENERIC_9X6 = register("generic_9x6", GenericContainerScreenHandler::createGeneric9x6);
 	public static final ScreenHandlerType<Generic3x3ContainerScreenHandler> GENERIC_3X3 = register("generic_3x3", Generic3x3ContainerScreenHandler::new);
+	public static final ScreenHandlerType<CrafterScreenHandler> CRAFTER_3X3 = register("crafter_3x3", CrafterScreenHandler::new);
 	public static final ScreenHandlerType<AnvilScreenHandler> ANVIL = register("anvil", AnvilScreenHandler::new);
 	public static final ScreenHandlerType<BeaconScreenHandler> BEACON = register("beacon", BeaconScreenHandler::new);
 	public static final ScreenHandlerType<BlastFurnaceScreenHandler> BLAST_FURNACE = register("blast_furnace", BlastFurnaceScreenHandler::new);

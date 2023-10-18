@@ -134,7 +134,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 	}
 
 	@Override
-	protected DefaultedList<ItemStack> getInvStackList() {
+	protected DefaultedList<ItemStack> method_11282() {
 		return this.inventory;
 	}
 
@@ -161,8 +161,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 	}
 
 	public static void copyInventory(ChestBlockEntity from, ChestBlockEntity to) {
-		DefaultedList<ItemStack> defaultedList = from.getInvStackList();
-		from.setInvStackList(to.getInvStackList());
+		DefaultedList<ItemStack> defaultedList = from.method_11282();
+		from.setInvStackList(to.method_11282());
 		to.setInvStackList(defaultedList);
 	}
 

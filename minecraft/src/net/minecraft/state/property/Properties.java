@@ -514,4 +514,8 @@ public class Properties {
 	 * A property that specifies if a decorated pot is cracked.
 	 */
 	public static final BooleanProperty CRACKED = BooleanProperty.of("cracked");
+	/**
+	 * A property that specifies if a crafter is crafting.
+	 */
+	public static final BooleanProperty CRAFTING = BooleanProperty.of("crafting");
 }

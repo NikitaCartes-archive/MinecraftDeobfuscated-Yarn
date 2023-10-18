@@ -49,7 +49,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 			byte b = input.readByte();
 			int i = input.readInt();
 			if (b == 0 && i > 0) {
-				throw new RuntimeException("Missing type on ListTag");
+				throw new InvalidNbtException("Missing type on ListTag");
 			} else {
 				tracker.add(4L, (long)i);
 				NbtType<?> nbtType = NbtTypes.byId(b);

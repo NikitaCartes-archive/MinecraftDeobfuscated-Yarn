@@ -37,6 +37,7 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 		this.getOrCreateTagBuilder(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
 		this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES)
 			.addTag(EntityTypeTags.ARROWS)
+			.add(EntityType.FIREWORK_ROCKET)
 			.add(
 				EntityType.SNOWBALL,
 				EntityType.FIREBALL,

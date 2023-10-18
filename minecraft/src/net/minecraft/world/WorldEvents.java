@@ -270,6 +270,18 @@ public class WorldEvents {
 	 */
 	public static final int SKELETON_CONVERTS_TO_STRAY = 1048;
 	/**
+	 * A crafter crafts an item.
+	 * <br>Plays the crafter craft sound event.
+	 * <p>Called by {@link net.minecraft.block.CrafterBlock#transferOrSpawnStack(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.entity.CrafterBlockEntity, net.minecraft.item.ItemStack, net.minecraft.block.BlockState) CrafterBlock#transferOrSpawnStack}
+	 */
+	public static final int CRAFTER_CRAFTS = 1049;
+	/**
+	 * A crafter fails to craft.
+	 * <br>Plays the crafter fail sound event.
+	 * <p>Called by {@link net.minecraft.block.CrafterBlock#craft(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos) CrafterBlock#craft}
+	 */
+	public static final int CRAFTER_FAILS = 1050;
+	/**
 	 * An item is composted in a composter.
 	 * <br>Plays the appropriate composting sound event and spawns composter particles.
 	 * <p>A {@code 1} should be passed as extra data if the use of the composter added to the level of compost inside.
@@ -313,7 +325,7 @@ public class WorldEvents {
 	public static final int BONE_MEAL_USED = 1505;
 	/**
 	 * A dispenser is activated.
-	 * <br>Spawns smoke particles.
+	 * <br>Shoots smoke particles.
 	 * <br>The ordinal direction the dispenser is facing must be supplied as extra data.
 	 * <p>Called by {@link net.minecraft.block.dispenser.ItemDispenserBehavior#spawnParticles(net.minecraft.util.math.BlockPointer, net.minecraft.util.math.Direction) ItemDispenserBehavior#spawnParticles}
 	 */
@@ -395,6 +407,13 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.WetSpongeBlock#onBlockAdded(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, boolean) WetSpongeBlock#onBlockAdded}
 	 */
 	public static final int WET_SPONGE_DRIES_OUT = 2009;
+	/**
+	 * A crafter shoots out an item.
+	 * <br>Shoots white smoke particles.
+	 * <p>The ordinal direction the crafter is facing must be supplied as extra data.
+	 * <p>Called by {@link net.minecraft.block.CrafterBlock#transferOrSpawnStack(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.entity.CrafterBlockEntity, net.minecraft.item.ItemStack, net.minecraft.block.BlockState) CrafterBlock#transferOrSpawnStack}
+	 */
+	public static final int CRAFTER_SHOOTS = 2010;
 	/**
 	 * An end gateway spawns.
 	 * <br>Plays the end gateway spawn sound event and spawns an explosion emitter particle.

@@ -2,7 +2,6 @@ package net.minecraft.world.level;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -15,7 +14,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -45,6 +43,7 @@ import org.slf4j.Logger;
 
 public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final String LEVEL_NAME_KEY = "LevelName";
 	protected static final String PLAYER_KEY = "Player";
 	protected static final String WORLD_GEN_SETTINGS_KEY = "WorldGenSettings";
 	private LevelInfo levelInfo;
@@ -58,11 +57,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private long time;
 	private long timeOfDay;
 	@Nullable
-	private final DataFixer dataFixer;
-	private final int dataVersion;
-	private boolean playerDataLoaded;
-	@Nullable
-	private NbtCompound playerData;
+	private final NbtCompound playerData;
 	private final int version;
 	private int clearWeatherTime;
 	private boolean raining;
@@ -85,8 +80,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private final Timer<MinecraftServer> scheduledEvents;
 
 	private LevelProperties(
-		@Nullable DataFixer dataFixer,
-		int dataVersion,
 		@Nullable NbtCompound playerData,
 		boolean modded,
 		int spawnX,
@@ -117,7 +110,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		LevelProperties.SpecialProperty specialProperty,
 		Lifecycle lifecycle
 	) {
-		this.dataFixer = dataFixer;
 		this.modded = modded;
 		this.spawnX = spawnX;
 		this.spawnY = spawnY;
@@ -140,7 +132,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		this.serverBrands = serverBrands;
 		this.removedFeatures = removedFeatures;
 		this.playerData = playerData;
-		this.dataVersion = dataVersion;
 		this.scheduledEvents = scheduledEvents;
 		this.customBossEvents = customBossEvents;
 		this.dragonFight = dragonFight;
@@ -152,8 +143,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 
 	public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, LevelProperties.SpecialProperty specialProperty, Lifecycle lifecycle) {
 		this(
-			null,
-			SharedConstants.getGameVersion().getSaveVersion().getId(),
 			null,
 			false,
 			0,
@@ -187,21 +176,11 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	public static <T> LevelProperties readProperties(
-		Dynamic<T> dynamic,
-		DataFixer dataFixer,
-		int dataVersion,
-		@Nullable NbtCompound playerData,
-		LevelInfo levelInfo,
-		SaveVersionInfo saveVersionInfo,
-		LevelProperties.SpecialProperty specialProperty,
-		GeneratorOptions generatorOptions,
-		Lifecycle lifecycle
+		Dynamic<T> dynamic, LevelInfo info, LevelProperties.SpecialProperty specialProperty, GeneratorOptions generatorOptions, Lifecycle lifecycle
 	) {
 		long l = dynamic.get("Time").asLong(0L);
 		return new LevelProperties(
-			dataFixer,
-			dataVersion,
-			playerData,
+			(NbtCompound)NbtCompound.CODEC.parse(dynamic.get("Player").orElseEmptyMap()).result().orElse(null),
 			dynamic.get("WasModded").asBoolean(false),
 			dynamic.get("SpawnX").asInt(0),
 			dynamic.get("SpawnY").asInt(0),
@@ -209,7 +188,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			dynamic.get("SpawnAngle").asFloat(0.0F),
 			l,
 			dynamic.get("DayTime").asLong(l),
-			saveVersionInfo.getLevelFormatVersion(),
+			SaveVersionInfo.fromDynamic(dynamic).getLevelFormatVersion(),
 			dynamic.get("clearWeatherTime").asInt(0),
 			dynamic.get("rainTime").asInt(0),
 			dynamic.get("raining").asBoolean(false),
@@ -229,7 +208,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			new Timer<>(TimerCallbackSerializer.INSTANCE, dynamic.get("ScheduledEvents").asStream()),
 			(NbtCompound)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(),
 			(EnderDragonFight.Data)dynamic.get("DragonFight").read(EnderDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EnderDragonFight.Data.DEFAULT),
-			levelInfo,
+			info,
 			generatorOptions,
 			specialProperty,
 			lifecycle
@@ -238,7 +217,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 
 	@Override
 	public NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerNbt) {
-		this.loadPlayerData();
 		if (playerNbt == null) {
 			playerNbt = this.playerData;
 		}
@@ -345,23 +323,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		return this.timeOfDay;
 	}
 
-	private void loadPlayerData() {
-		if (!this.playerDataLoaded && this.playerData != null) {
-			if (this.dataVersion < SharedConstants.getGameVersion().getSaveVersion().getId()) {
-				if (this.dataFixer == null) {
-					throw (NullPointerException)Util.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
-				}
-
-				this.playerData = DataFixTypes.PLAYER.update(this.dataFixer, this.playerData, this.dataVersion);
-			}
-
-			this.playerDataLoaded = true;
-		}
-	}
-
+	@Nullable
 	@Override
 	public NbtCompound getPlayerData() {
-		this.loadPlayerData();
 		return this.playerData;
 	}
 

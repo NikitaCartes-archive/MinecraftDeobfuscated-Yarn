@@ -1,6 +1,7 @@
 package net.minecraft.nbt;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
@@ -16,7 +17,6 @@ import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.util.FixedBufferInputStream;
-import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
@@ -33,26 +33,26 @@ public class NbtIo {
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
 	 * @throws NbtSizeValidationException if the NBT is too deep
-	 * @see #readCompressed(InputStream)
+	 * @see #readCompressed(InputStream, NbtTagSizeTracker)
 	 */
-	public static NbtCompound readCompressed(File file) throws IOException {
+	public static NbtCompound readCompressed(File file, NbtTagSizeTracker tagSizeTracker) throws IOException {
 		InputStream inputStream = new FileInputStream(file);
 
-		NbtCompound var2;
+		NbtCompound var3;
 		try {
-			var2 = readCompressed(inputStream);
-		} catch (Throwable var5) {
+			var3 = readCompressed(inputStream, tagSizeTracker);
+		} catch (Throwable var6) {
 			try {
 				inputStream.close();
-			} catch (Throwable var4) {
-				var5.addSuppressed(var4);
+			} catch (Throwable var5) {
+				var6.addSuppressed(var5);
 			}
 
-			throw var5;
+			throw var6;
 		}
 
 		inputStream.close();
-		return var2;
+		return var3;
 	}
 
 	/**
@@ -69,31 +69,31 @@ public class NbtIo {
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
 	 * @throws NbtSizeValidationException if the NBT is too deep
-	 * @see #readCompressed(File)
+	 * @see #readCompressed(File, NbtTagSizeTracker)
 	 */
-	public static NbtCompound readCompressed(InputStream stream) throws IOException {
+	public static NbtCompound readCompressed(InputStream stream, NbtTagSizeTracker tagSizeTracker) throws IOException {
 		DataInputStream dataInputStream = decompress(stream);
 
-		NbtCompound var2;
+		NbtCompound var3;
 		try {
-			var2 = readCompound(dataInputStream, NbtTagSizeTracker.ofUnlimitedBytes());
-		} catch (Throwable var5) {
+			var3 = readCompound(dataInputStream, tagSizeTracker);
+		} catch (Throwable var6) {
 			if (dataInputStream != null) {
 				try {
 					dataInputStream.close();
-				} catch (Throwable var4) {
-					var5.addSuppressed(var4);
+				} catch (Throwable var5) {
+					var6.addSuppressed(var5);
 				}
 			}
 
-			throw var5;
+			throw var6;
 		}
 
 		if (dataInputStream != null) {
 			dataInputStream.close();
 		}
 
-		return var2;
+		return var3;
 	}
 
 	/**
@@ -156,6 +156,52 @@ public class NbtIo {
 		if (dataInputStream != null) {
 			dataInputStream.close();
 		}
+	}
+
+	/**
+	 * {@return the compressed byte array serialization of {@code nbt}}
+	 */
+	public static byte[] toCompressedBytes(NbtCompound nbt) throws IOException {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(byteArrayOutputStream)));
+
+		try {
+			writeCompound(nbt, dataOutputStream);
+		} catch (Throwable var6) {
+			try {
+				dataOutputStream.close();
+			} catch (Throwable var5) {
+				var6.addSuppressed(var5);
+			}
+
+			throw var6;
+		}
+
+		dataOutputStream.close();
+		return byteArrayOutputStream.toByteArray();
+	}
+
+	/**
+	 * {@return the byte array serialization of {@code nbt}}
+	 */
+	public static byte[] toBytes(NbtCompound nbt) throws IOException {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+
+		try {
+			writeCompound(nbt, dataOutputStream);
+		} catch (Throwable var6) {
+			try {
+				dataOutputStream.close();
+			} catch (Throwable var5) {
+				var6.addSuppressed(var5);
+			}
+
+			throw var6;
+		}
+
+		dataOutputStream.close();
+		return byteArrayOutputStream.toByteArray();
 	}
 
 	/**
@@ -426,7 +472,7 @@ public class NbtIo {
 			CrashReport crashReport = CrashReport.create(var6, "Loading NBT data");
 			CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
 			crashReportSection.add("Tag type", typeId);
-			throw new CrashException(crashReport);
+			throw new NbtCrashException(crashReport);
 		}
 	}
 }

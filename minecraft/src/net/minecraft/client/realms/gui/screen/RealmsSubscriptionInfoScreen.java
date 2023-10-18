@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ScrollableTextWidget;
@@ -20,8 +21,6 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Urls;
-import net.minecraft.util.Util;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -53,11 +52,14 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.getSubscription(this.serverData.id);
-		this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.configure.world.subscription.extend"), button -> {
-			String string = Urls.getExtendJavaRealmsUrl(this.serverData.remoteSubscriptionId, this.client.getSession().getUuidOrNull());
-			this.client.keyboard.setClipboard(string);
-			Util.getOperatingSystem().open(string);
-		}).dimensions(this.width / 2 - 100, row(6), 200, 20).build());
+		this.addDrawableChild(
+			ButtonWidget.builder(
+					Text.translatable("mco.configure.world.subscription.extend"),
+					button -> ConfirmLinkScreen.open(this, Urls.getExtendJavaRealmsUrl(this.serverData.remoteSubscriptionId, this.client.getSession().getUuidOrNull()))
+				)
+				.dimensions(this.width / 2 - 100, row(6), 200, 20)
+				.build()
+		);
 		if (this.serverData.expired) {
 			this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.configure.world.delete.button"), button -> {
 				Text text = Text.translatable("mco.configure.world.delete.question.line1");
@@ -75,9 +77,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 			this.addDrawableChild(new ScrollableTextWidget(this.width / 2 - 100, row(8), 200, 46, RECURRING_INFO_TEXT, this.textRenderer).textColor(-6250336));
 		}
 
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, row(12), 200, 20).build()
-		);
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 - 100, row(12), 200, 20).build());
 	}
 
 	@Override
@@ -125,13 +125,8 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.setScreen(this.parent);
-			return true;
-		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	@Override

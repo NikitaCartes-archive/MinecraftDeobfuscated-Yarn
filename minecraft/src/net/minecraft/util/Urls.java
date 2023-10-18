@@ -14,6 +14,7 @@ public class Urls {
 	public static final String SNAPSHOT_FEEDBACK = "https://aka.ms/snapshotfeedback?ref=game";
 	public static final String JAVA_FEEDBACK = "https://aka.ms/javafeedback?ref=game";
 	public static final String SNAPSHOT_BUGS = "https://aka.ms/snapshotbugs?ref=game";
+	public static final String MINECRAFT_SUPPORT = "https://aka.ms/Minecraft-Support";
 	public static final String JAVA_ACCESSIBILITY = "https://aka.ms/MinecraftJavaAccessibility";
 	public static final String ABOUT_JAVA_REPORTING = "https://aka.ms/aboutjavareporting";
 	public static final String JAVA_MODERATION = "https://aka.ms/mcjavamoderation";
@@ -23,7 +24,6 @@ public class Urls {
 	public static final String BUY_JAVA_REALMS = "https://aka.ms/BuyJavaRealms";
 	public static final String REALMS_TERMS = "https://aka.ms/MinecraftRealmsTerms";
 	public static final String REALMS_CONTENT_CREATOR = "https://aka.ms/MinecraftRealmsContentCreator";
-	public static final String UPDATE_MOJANG_ACCOUNT = "https://aka.ms/UpdateMojangAccount";
 
 	public static String getExtendJavaRealmsUrl(String subscriptionId, UUID uuid, boolean trial) {
 		return getExtendJavaRealmsUrl(subscriptionId, uuid) + "&ref=" + (trial ? "expiredTrial" : "expiredRealm");

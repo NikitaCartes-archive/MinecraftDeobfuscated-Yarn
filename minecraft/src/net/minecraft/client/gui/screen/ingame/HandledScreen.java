@@ -186,7 +186,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	protected abstract void drawBackground(DrawContext context, float delta, int mouseX, int mouseY);
 
-	private void drawSlot(DrawContext context, Slot slot) {
+	protected void drawSlot(DrawContext context, Slot slot) {
 		int i = slot.x;
 		int j = slot.y;
 		ItemStack itemStack = slot.getStack();
@@ -552,6 +552,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		}
 
 		this.client.interactionManager.clickSlot(this.handler.syncId, slotId, button, actionType, this.client.player);
+	}
+
+	protected void onSlotChangedState(int slotId, int handlerId, boolean newState) {
+		this.client.interactionManager.slotChangedState(slotId, handlerId, newState);
 	}
 
 	@Override

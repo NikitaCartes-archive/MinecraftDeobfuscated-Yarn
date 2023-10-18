@@ -22,5 +22,5 @@ public interface RecipeInputInventory extends Inventory, RecipeInputProvider {
 	/**
 	 * {@return the stacks held by the inventory}
 	 */
-	List<ItemStack> getInputStacks();
+	List<ItemStack> getHeldStacks();
 }

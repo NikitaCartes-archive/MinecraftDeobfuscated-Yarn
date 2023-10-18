@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	private final VertexConsumerProvider.Immediate parent;
-	private final VertexConsumerProvider.Immediate plainDrawer = VertexConsumerProvider.immediate(new BufferBuilder(256));
+	private final VertexConsumerProvider.Immediate plainDrawer = VertexConsumerProvider.immediate(new BufferBuilder(1536));
 	private int red = 255;
 	private int green = 255;
 	private int blue = 255;

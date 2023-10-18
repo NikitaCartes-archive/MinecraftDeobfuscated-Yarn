@@ -189,8 +189,6 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	private static ShaderProgram renderTypeTranslucentMovingBlockProgram;
 	@Nullable
-	private static ShaderProgram renderTypeTranslucentNoCrumblingProgram;
-	@Nullable
 	private static ShaderProgram renderTypeArmorCutoutNoCullProgram;
 	@Nullable
 	private static ShaderProgram renderTypeEntitySolidProgram;
@@ -545,12 +543,6 @@ public class GameRenderer implements AutoCloseable {
 			);
 			list2.add(
 				Pair.of(
-					new ShaderProgram(factory, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL),
-					(Consumer)program -> renderTypeTranslucentNoCrumblingProgram = program
-				)
-			);
-			list2.add(
-				Pair.of(
 					new ShaderProgram(factory, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
 					(Consumer)program -> renderTypeArmorCutoutNoCullProgram = program
 				)
@@ -582,7 +574,7 @@ public class GameRenderer implements AutoCloseable {
 			list2.add(
 				Pair.of(
 					new ShaderProgram(factory, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
-					(Consumer)program -> renderTypeItemEntityTranslucentCullProgram = program
+					(Consumer)shaderProgram -> renderTypeItemEntityTranslucentCullProgram = shaderProgram
 				)
 			);
 			list2.add(
@@ -1452,11 +1444,6 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	public static ShaderProgram getRenderTypeTranslucentMovingBlockProgram() {
 		return renderTypeTranslucentMovingBlockProgram;
-	}
-
-	@Nullable
-	public static ShaderProgram getRenderTypeTranslucentNoCrumblingProgram() {
-		return renderTypeTranslucentNoCrumblingProgram;
 	}
 
 	@Nullable

@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen.world;
 
 import com.mojang.logging.LogUtils;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -10,6 +11,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.level.storage.LevelSummary;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -37,7 +39,7 @@ public class SelectWorldScreen extends Screen {
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.levelList);
 		this.selectButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectWorld.select"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.WorldEntry::play))
+			ButtonWidget.builder(LevelSummary.SELECT_WORLD_TEXT, button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.WorldEntry::play))
 				.dimensions(this.width / 2 - 154, this.height - 52, 150, 20)
 				.build()
 		);
@@ -68,7 +70,7 @@ public class SelectWorldScreen extends Screen {
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 82, this.height - 28, 72, 20).build()
 		);
-		this.worldSelected(false, false);
+		this.worldSelected(null);
 		this.setInitialFocus(this.searchBox);
 	}
 
@@ -95,11 +97,20 @@ public class SelectWorldScreen extends Screen {
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 	}
 
-	public void worldSelected(boolean buttonsActive, boolean deleteButtonActive) {
-		this.selectButton.active = buttonsActive;
-		this.editButton.active = buttonsActive;
-		this.recreateButton.active = buttonsActive;
-		this.deleteButton.active = deleteButtonActive;
+	public void worldSelected(@Nullable LevelSummary levelSummary) {
+		if (levelSummary == null) {
+			this.selectButton.setMessage(LevelSummary.SELECT_WORLD_TEXT);
+			this.selectButton.active = false;
+			this.editButton.active = false;
+			this.recreateButton.active = false;
+			this.deleteButton.active = false;
+		} else {
+			this.selectButton.setMessage(levelSummary.getSelectWorldText());
+			this.selectButton.active = levelSummary.isSelectable();
+			this.editButton.active = levelSummary.isEditable();
+			this.recreateButton.active = levelSummary.isRecreatable();
+			this.deleteButton.active = levelSummary.isDeletable();
+		}
 	}
 
 	@Override

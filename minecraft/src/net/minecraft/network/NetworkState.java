@@ -62,6 +62,7 @@ import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SlotChangedStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
@@ -346,6 +347,7 @@ public enum NetworkState {
 					.register(ButtonClickC2SPacket.class, ButtonClickC2SPacket::new)
 					.register(ClickSlotC2SPacket.class, ClickSlotC2SPacket::new)
 					.register(CloseHandledScreenC2SPacket.class, CloseHandledScreenC2SPacket::new)
+					.register(SlotChangedStateC2SPacket.class, SlotChangedStateC2SPacket::new)
 					.register(CustomPayloadC2SPacket.class, CustomPayloadC2SPacket::new)
 					.register(BookUpdateC2SPacket.class, BookUpdateC2SPacket::new)
 					.register(QueryEntityNbtC2SPacket.class, QueryEntityNbtC2SPacket::new)

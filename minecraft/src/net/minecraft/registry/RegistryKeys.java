@@ -42,6 +42,7 @@ import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
+import net.minecraft.structure.pool.alias.StructurePoolAliasBinding;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
@@ -149,6 +150,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<StructurePieceType>> STRUCTURE_PIECE = of("worldgen/structure_piece");
 	public static final RegistryKey<Registry<StructurePlacementType<?>>> STRUCTURE_PLACEMENT = of("worldgen/structure_placement");
 	public static final RegistryKey<Registry<StructurePoolElementType<?>>> STRUCTURE_POOL_ELEMENT = of("worldgen/structure_pool_element");
+	public static final RegistryKey<Registry<Codec<? extends StructurePoolAliasBinding>>> POOL_ALIAS_BINDING = of("worldgen/pool_alias_binding");
 	public static final RegistryKey<Registry<StructureProcessorType<?>>> STRUCTURE_PROCESSOR = of("worldgen/structure_processor");
 	public static final RegistryKey<Registry<StructureType<?>>> STRUCTURE_TYPE = of("worldgen/structure_type");
 	public static final RegistryKey<Registry<TreeDecoratorType<?>>> TREE_DECORATOR_TYPE = of("worldgen/tree_decorator_type");

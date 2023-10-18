@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.world;
 
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -22,23 +21,22 @@ public class SymlinkWarningScreen extends Screen {
 	private static final Text PACK_MESSAGE = Text.translatable("symlink_warning.message.pack", "https://aka.ms/MinecraftSymLinks");
 	private final Text message;
 	private final String link;
-	@Nullable
-	private final Screen parent;
+	private final Runnable onClose;
 	private final GridWidget grid = new GridWidget().setRowSpacing(10);
 
-	public SymlinkWarningScreen(Text title, Text message, String link, @Nullable Screen parent) {
+	public SymlinkWarningScreen(Text title, Text message, String link, Runnable onClose) {
 		super(title);
 		this.message = message;
 		this.link = link;
-		this.parent = parent;
+		this.onClose = onClose;
 	}
 
-	public static Screen world(@Nullable Screen parent) {
-		return new SymlinkWarningScreen(WORLD_TITLE, WORLD_MESSAGE, "https://aka.ms/MinecraftSymLinks", parent);
+	public static Screen world(Runnable onClose) {
+		return new SymlinkWarningScreen(WORLD_TITLE, WORLD_MESSAGE, "https://aka.ms/MinecraftSymLinks", onClose);
 	}
 
-	public static Screen pack(@Nullable Screen parent) {
-		return new SymlinkWarningScreen(PACK_TITLE, PACK_MESSAGE, "https://aka.ms/MinecraftSymLinks", parent);
+	public static Screen pack(Runnable onClose) {
+		return new SymlinkWarningScreen(PACK_TITLE, PACK_MESSAGE, "https://aka.ms/MinecraftSymLinks", onClose);
 	}
 
 	@Override
@@ -72,6 +70,6 @@ public class SymlinkWarningScreen extends Screen {
 
 	@Override
 	public void close() {
-		this.client.setScreen(this.parent);
+		this.onClose.run();
 	}
 }

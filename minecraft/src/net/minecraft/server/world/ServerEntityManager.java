@@ -420,6 +420,11 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 			+ this.pendingUnloads.size();
 	}
 
+	@Debug
+	public int getIndexSize() {
+		return this.index.size();
+	}
+
 	class Listener implements EntityChangeListener {
 		private final T entity;
 		private long sectionPos;

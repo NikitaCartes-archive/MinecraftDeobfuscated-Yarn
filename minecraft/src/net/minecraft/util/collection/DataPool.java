@@ -39,6 +39,10 @@ public class DataPool<E> extends Pool<Weighted.Present<E>> {
 	public static class Builder<E> {
 		private final ImmutableList.Builder<Weighted.Present<E>> entries = ImmutableList.builder();
 
+		public DataPool.Builder<E> add(E object) {
+			return this.add(object, 1);
+		}
+
 		public DataPool.Builder<E> add(E object, int weight) {
 			this.entries.add(Weighted.of(object, weight));
 			return this;

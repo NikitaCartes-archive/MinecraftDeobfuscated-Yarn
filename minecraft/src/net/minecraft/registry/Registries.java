@@ -64,6 +64,8 @@ import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.StructurePoolElementType;
+import net.minecraft.structure.pool.alias.StructurePoolAliasBinding;
+import net.minecraft.structure.pool.alias.StructurePoolAliasBindings;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.structure.rule.RuleTestType;
@@ -207,6 +209,9 @@ public class Registries {
 	);
 	public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = create(
 		RegistryKeys.STRUCTURE_POOL_ELEMENT, registry -> StructurePoolElementType.EMPTY_POOL_ELEMENT
+	);
+	public static final Registry<Codec<? extends StructurePoolAliasBinding>> POOL_ALIAS_BINDING = create(
+		RegistryKeys.POOL_ALIAS_BINDING, StructurePoolAliasBindings::registerAndGetDefalt
 	);
 	public static final Registry<CatVariant> CAT_VARIANT = create(RegistryKeys.CAT_VARIANT, CatVariant::registerAndGetDefault);
 	public static final Registry<FrogVariant> FROG_VARIANT = create(RegistryKeys.FROG_VARIANT, registry -> FrogVariant.TEMPERATE);

@@ -10,7 +10,7 @@ public interface Tracer extends AutoCloseable {
 
 	void traceCommandEnd(int depth, String command, int result);
 
-	void traceError(int depth, String message);
+	void traceError(String message);
 
 	void traceFunctionCall(int depth, Identifier function, int size);
 

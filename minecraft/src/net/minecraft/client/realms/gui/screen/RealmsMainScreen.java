@@ -64,7 +64,6 @@ import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -104,8 +103,8 @@ public class RealmsMainScreen extends RealmsScreen {
 	static final Text CLOSED_TEXT = Text.translatable("mco.selectServer.closed");
 	static final Text UNINITIALIZED_BUTTON_NARRATION = Text.translatable("gui.narrate.button", UNINITIALIZED_TEXT);
 	private static final Text NO_REALMS_TEXT = Text.translatable("mco.selectServer.noRealms");
-	private static final Tooltip NO_PENDING_TOOLTIP = Tooltip.of(Text.translatable("mco.invites.nopending"));
-	private static final Tooltip PENDING_TOOLTIP = Tooltip.of(Text.translatable("mco.invites.pending"));
+	private static final Text NO_PENDING_TOOLTIP = Text.translatable("mco.invites.nopending");
+	private static final Text PENDING_TOOLTIP = Text.translatable("mco.invites.pending");
 	private static final int field_42862 = 100;
 	private static final int field_45209 = 3;
 	private static final int field_45210 = 4;
@@ -135,7 +134,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private ButtonWidget renewButton;
 	private ButtonWidget configureButton;
 	private ButtonWidget leaveButton;
-	private RealmsMainScreen.RealmSelectionList realmSelectionList;
+	RealmsMainScreen.RealmSelectionList realmSelectionList;
 	private RealmsServerFilterer serverFilterer;
 	private List<RealmsServer> availableSnapshotServers = List.of();
 	private volatile boolean trialAvailable;
@@ -166,8 +165,9 @@ public class RealmsMainScreen extends RealmsScreen {
 		);
 		Text text2 = Text.translatable("mco.news");
 		this.newsButton = new RealmsMainScreen.NotificationButtonWidget(text2, NEWS_ICON_TEXTURE, button -> {
-			if (this.newsLink != null) {
-				ConfirmLinkScreen.open(this.newsLink, this, true);
+			String string = this.newsLink;
+			if (string != null) {
+				ConfirmLinkScreen.open(this, string);
 				if (this.newsButton.getNotificationCount() != 0) {
 					RealmsPersistence.RealmsPersistenceData realmsPersistenceData = RealmsPersistence.readFile();
 					realmsPersistenceData.hasUnreadNews = false;
@@ -384,7 +384,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		});
 		runnersManager.add(periodicCheckers.pendingInvitesCount, pendingInvitesCount -> {
 			this.inviteButton.setNotificationCount(pendingInvitesCount);
-			this.inviteButton.setTooltip(pendingInvitesCount == 0 ? NO_PENDING_TOOLTIP : PENDING_TOOLTIP);
+			this.inviteButton.setTooltip(pendingInvitesCount == 0 ? Tooltip.of(NO_PENDING_TOOLTIP) : Tooltip.of(PENDING_TOOLTIP));
 			if (pendingInvitesCount > 0 && this.rateLimiter.tryAcquire(1)) {
 				this.client.getNarratorManager().narrate(Text.translatable("mco.configure.world.invite.narration", pendingInvitesCount));
 			}
@@ -589,6 +589,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	public void removeSelection() {
 		this.realmSelectionList.setSelected(null);
+		resetServerList();
 	}
 
 	@Override
@@ -643,7 +644,7 @@ public class RealmsMainScreen extends RealmsScreen {
 					showCompatibilityScreen(
 						serverData,
 						parent,
-						Text.translatable("mco.compatibility.unverifiable.title").formatted(Formatting.YELLOW),
+						Text.translatable("mco.compatibility.unverifiable.title").withColor(-171),
 						Text.translatable("mco.compatibility.unverifiable.message"),
 						ScreenTexts.CONTINUE
 					);
@@ -652,11 +653,11 @@ public class RealmsMainScreen extends RealmsScreen {
 					showCompatibilityScreen(
 						serverData,
 						parent,
-						Text.translatable("selectWorld.backupQuestion.downgrade").styled(style -> style.withColor(-2142128)),
+						Text.translatable("selectWorld.backupQuestion.downgrade").withColor(-2142128),
 						Text.translatable(
 							"mco.compatibility.downgrade.description",
-							Text.literal(serverData.activeVersion).formatted(Formatting.YELLOW),
-							Text.literal(SharedConstants.getGameVersion().getName()).formatted(Formatting.YELLOW)
+							Text.literal(serverData.activeVersion).withColor(-171),
+							Text.literal(SharedConstants.getGameVersion().getName()).withColor(-171)
 						),
 						Text.translatable("mco.compatibility.downgrade")
 					);
@@ -665,11 +666,11 @@ public class RealmsMainScreen extends RealmsScreen {
 					showCompatibilityScreen(
 						serverData,
 						parent,
-						Text.translatable("mco.compatibility.upgrade.title").formatted(Formatting.YELLOW),
+						Text.translatable("mco.compatibility.upgrade.title").withColor(-171),
 						Text.translatable(
 							"mco.compatibility.upgrade.description",
-							Text.literal(serverData.activeVersion).formatted(Formatting.YELLOW),
-							Text.literal(SharedConstants.getGameVersion().getName()).formatted(Formatting.YELLOW)
+							Text.literal(serverData.activeVersion).withColor(-171),
+							Text.literal(SharedConstants.getGameVersion().getName()).withColor(-171)
 						),
 						Text.translatable("mco.compatibility.upgrade")
 					);
@@ -689,6 +690,14 @@ public class RealmsMainScreen extends RealmsScreen {
 
 			MinecraftClient.getInstance().setScreen(screen2);
 		}, title, description, confirmText, ScreenTexts.CANCEL));
+	}
+
+	public static Text getVersionText(String version, boolean compatible) {
+		return getVersionText(version, compatible ? -8355712 : -2142128);
+	}
+
+	public static Text getVersionText(String version, int color) {
+		return (Text)(StringUtils.isBlank(version) ? ScreenTexts.EMPTY : Text.translatable("mco.version", Text.literal(version).withColor(color)));
 	}
 
 	boolean isSelfOwnedServer(RealmsServer server) {
@@ -758,8 +767,24 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		private void drawTextureWithTooltip(DrawContext context, int x, int y, int mouseX, int mouseY, Identifier texture, Supplier<Text> tooltip) {
 			context.drawGuiTexture(texture, x, y, 10, 28);
-			if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < RealmsMainScreen.this.height - 40 && mouseY > 32) {
+			if (RealmsMainScreen.this.realmSelectionList.isMouseOver((double)mouseX, (double)mouseY)
+				&& mouseX >= x
+				&& mouseX <= x + 10
+				&& mouseY >= y
+				&& mouseY <= y + 28) {
 				RealmsMainScreen.this.setTooltip((Text)tooltip.get());
+			}
+		}
+
+		protected void drawOwnerOrExpiredText(DrawContext context, int y, int x, RealmsServer server) {
+			int i = this.getNameX(x);
+			int j = this.getNameY(y);
+			int k = this.getStatusY(j);
+			if (!RealmsMainScreen.this.isSelfOwnedServer(server)) {
+				context.drawText(RealmsMainScreen.this.textRenderer, server.owner, i, this.getStatusY(j), -8355712, false);
+			} else if (server.expired) {
+				Text text = server.expiredTrial ? RealmsMainScreen.EXPIRED_TRIAL_TEXT : RealmsMainScreen.EXPIRED_LIST_TEXT;
+				context.drawText(RealmsMainScreen.this.textRenderer, text, i, k, -2142128, false);
 			}
 		}
 
@@ -771,12 +796,6 @@ public class RealmsMainScreen extends RealmsScreen {
 			} else {
 				context.drawText(RealmsMainScreen.this.textRenderer, string, left, y, color, false);
 			}
-		}
-
-		protected Text getActiveVersion(RealmsServer server, int color) {
-			return (Text)(StringUtils.isBlank(server.activeVersion)
-				? ScreenTexts.EMPTY
-				: Text.translatable("mco.version", Text.literal(server.activeVersion).styled(style -> style.withColor(color))));
 		}
 
 		protected int getVersionRight(int x, int width, Text version) {
@@ -868,10 +887,10 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			RealmsUtil.drawPlayerHead(context, x, y, 32, this.server.ownerUUID);
 			int i = this.getNameX(x);
 			int j = this.getNameY(y);
-			Text text = this.getActiveVersion(this.server, -8355712);
+			RealmsUtil.drawPlayerHead(context, x, y, 32, this.server.ownerUUID);
+			Text text = RealmsMainScreen.getVersionText(this.server.activeVersion, -8355712);
 			int k = this.getVersionRight(x, entryWidth, text);
 			this.drawTrimmedText(context, this.server.getName(), i, j, k, -8355712);
 			if (text != ScreenTexts.EMPTY) {
@@ -879,12 +898,9 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 
 			context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), -8355712, false);
-			if (!RealmsMainScreen.this.isSelfOwnedServer(this.server)) {
-				context.drawText(RealmsMainScreen.this.textRenderer, this.server.owner, i, this.getStatusY(j), -8355712, false);
-			}
-
-			this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
+			this.drawOwnerOrExpiredText(context, y, x, this.server);
 			this.renderStatusIcon(this.server, context, x + entryWidth, y, mouseX, mouseY);
+			this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
 		}
 
 		@Override
@@ -943,38 +959,37 @@ public class RealmsMainScreen extends RealmsScreen {
 				int i = y + entryHeight / 2 - 9 / 2;
 				context.drawTextWithShadow(RealmsMainScreen.this.textRenderer, RealmsMainScreen.UNINITIALIZED_TEXT, x + 40 - 2, i, 8388479);
 			} else {
+				RealmsUtil.drawPlayerHead(context, x, y, 32, this.server.ownerUUID);
+				this.drawServerNameAndVersion(context, y, x, entryWidth);
+				this.drawDescription(context, y, x);
+				this.drawOwnerOrExpiredText(context, y, x, this.server);
 				this.renderStatusIcon(this.server, context, x + entryWidth, y, mouseX, mouseY);
-				int i = this.getNameX(x);
-				int j = this.getNameY(y);
-				int k = this.getDescriptionY(j);
-				int l = this.getStatusY(j);
-				Text text = this.getActiveVersion(this.server, this.server.isCompatible() ? -8355712 : -2142128);
-				int m = this.getVersionRight(x, entryWidth, text);
-				this.drawTrimmedText(context, this.server.getName(), i, j, m, -1);
-				if (RealmsMainScreen.this.isSelfOwnedServer(this.server) && this.server.expired) {
-					Text text2 = this.server.expiredTrial ? RealmsMainScreen.EXPIRED_TRIAL_TEXT : RealmsMainScreen.EXPIRED_LIST_TEXT;
-					context.drawText(RealmsMainScreen.this.textRenderer, text2, i, l, 15553363, false);
-				} else if (this.server.worldType == RealmsServer.WorldType.MINIGAME) {
-					Text text2 = Text.literal(this.server.getMinigameName()).formatted(Formatting.GRAY);
-					context.drawText(
-						RealmsMainScreen.this.textRenderer, Text.translatable("mco.selectServer.minigameName", text2).formatted(Formatting.YELLOW), i, k, 13413468, false
-					);
-				} else {
-					context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, k, -8355712, false);
-					if (text != ScreenTexts.EMPTY) {
-						context.drawText(RealmsMainScreen.this.textRenderer, text, m, j, -8355712, false);
-					}
-
-					if (!RealmsMainScreen.this.isSelfOwnedServer(this.server)) {
-						context.drawText(RealmsMainScreen.this.textRenderer, this.server.owner, i, l, -8355712, false);
-					}
-				}
-
 				if (this.tooltip != null) {
 					this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
 				}
+			}
+		}
 
-				RealmsUtil.drawPlayerHead(context, x, y, 32, this.server.ownerUUID);
+		private void drawServerNameAndVersion(DrawContext context, int y, int x, int width) {
+			int i = this.getNameX(x);
+			int j = this.getNameY(y);
+			Text text = RealmsMainScreen.getVersionText(this.server.activeVersion, this.server.isCompatible());
+			int k = this.getVersionRight(x, width, text);
+			this.drawTrimmedText(context, this.server.getName(), i, j, k, -1);
+			if (text != ScreenTexts.EMPTY) {
+				context.drawText(RealmsMainScreen.this.textRenderer, text, k, j, -8355712, false);
+			}
+		}
+
+		private void drawDescription(DrawContext context, int y, int x) {
+			int i = this.getNameX(x);
+			int j = this.getNameY(y);
+			int k = this.getDescriptionY(j);
+			if (this.server.worldType == RealmsServer.WorldType.MINIGAME) {
+				Text text = Text.literal(this.server.getMinigameName()).formatted(Formatting.GRAY);
+				context.drawText(RealmsMainScreen.this.textRenderer, Text.translatable("mco.selectServer.minigameName", text).withColor(-171), i, k, -1, false);
+			} else {
+				context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), -8355712, false);
 			}
 		}
 

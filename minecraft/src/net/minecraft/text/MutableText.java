@@ -121,6 +121,14 @@ public class MutableText implements Text {
 		return this;
 	}
 
+	/**
+	 * {@return the text with the RGB color {@color}}
+	 */
+	public MutableText withColor(int color) {
+		this.setStyle(this.getStyle().withColor(color));
+		return this;
+	}
+
 	@Override
 	public OrderedText asOrderedText() {
 		Language language = Language.getInstance();

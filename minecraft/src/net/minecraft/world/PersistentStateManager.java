@@ -16,6 +16,7 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import org.slf4j.Logger;
 
 public class PersistentStateManager {
@@ -85,7 +86,7 @@ public class PersistentStateManager {
 			try {
 				NbtCompound nbtCompound;
 				if (this.isCompressed(pushbackInputStream)) {
-					nbtCompound = NbtIo.readCompressed(pushbackInputStream);
+					nbtCompound = NbtIo.readCompressed(pushbackInputStream, NbtTagSizeTracker.ofUnlimitedBytes());
 				} else {
 					DataInputStream dataInputStream = new DataInputStream(pushbackInputStream);
 

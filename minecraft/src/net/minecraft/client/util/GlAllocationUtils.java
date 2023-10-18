@@ -27,4 +27,8 @@ public class GlAllocationUtils {
 			return MemoryUtil.memByteBuffer(l, size);
 		}
 	}
+
+	public static void free(ByteBuffer buf) {
+		ALLOCATOR.free(MemoryUtil.memAddress0(buf));
+	}
 }

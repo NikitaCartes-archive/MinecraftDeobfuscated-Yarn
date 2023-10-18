@@ -26,15 +26,17 @@ public class WorldTemplate extends ValueObject {
 		WorldTemplate worldTemplate = new WorldTemplate();
 
 		try {
-			worldTemplate.id = JsonUtils.getStringOr("id", node, "");
-			worldTemplate.name = JsonUtils.getStringOr("name", node, "");
-			worldTemplate.version = JsonUtils.getStringOr("version", node, "");
-			worldTemplate.author = JsonUtils.getStringOr("author", node, "");
-			worldTemplate.link = JsonUtils.getStringOr("link", node, "");
-			worldTemplate.image = JsonUtils.getStringOr("image", node, null);
-			worldTemplate.trailer = JsonUtils.getStringOr("trailer", node, "");
-			worldTemplate.recommendedPlayers = JsonUtils.getStringOr("recommendedPlayers", node, "");
-			worldTemplate.type = WorldTemplate.WorldTemplateType.valueOf(JsonUtils.getStringOr("type", node, WorldTemplate.WorldTemplateType.WORLD_TEMPLATE.name()));
+			worldTemplate.id = JsonUtils.getNullableStringOr("id", node, "");
+			worldTemplate.name = JsonUtils.getNullableStringOr("name", node, "");
+			worldTemplate.version = JsonUtils.getNullableStringOr("version", node, "");
+			worldTemplate.author = JsonUtils.getNullableStringOr("author", node, "");
+			worldTemplate.link = JsonUtils.getNullableStringOr("link", node, "");
+			worldTemplate.image = JsonUtils.getNullableStringOr("image", node, null);
+			worldTemplate.trailer = JsonUtils.getNullableStringOr("trailer", node, "");
+			worldTemplate.recommendedPlayers = JsonUtils.getNullableStringOr("recommendedPlayers", node, "");
+			worldTemplate.type = WorldTemplate.WorldTemplateType.valueOf(
+				JsonUtils.getNullableStringOr("type", node, WorldTemplate.WorldTemplateType.WORLD_TEMPLATE.name())
+			);
 		} catch (Exception var3) {
 			LOGGER.error("Could not parse WorldTemplate: {}", var3.getMessage());
 		}

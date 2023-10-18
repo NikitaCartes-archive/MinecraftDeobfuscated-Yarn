@@ -25,7 +25,7 @@ public class RealmsServerPlayerList extends ValueObject {
 
 		try {
 			realmsServerPlayerList.serverId = JsonUtils.getLongOr("serverId", node, -1L);
-			String string = JsonUtils.getStringOr("playerList", node, null);
+			String string = JsonUtils.getNullableStringOr("playerList", node, null);
 			if (string != null) {
 				JsonElement jsonElement = JsonParser.parseString(string);
 				if (jsonElement.isJsonArray()) {

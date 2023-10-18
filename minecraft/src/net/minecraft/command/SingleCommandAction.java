@@ -1,5 +1,6 @@
 package net.minecraft.command;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.context.CommandContext;
@@ -8,7 +9,6 @@ import com.mojang.brigadier.context.ContextChain.Stage;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -17,7 +17,8 @@ import net.minecraft.server.function.Tracer;
 import net.minecraft.text.Text;
 
 public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
-	private static final DynamicCommandExceptionType FORK_LIMIT_EXCEPTION = new DynamicCommandExceptionType(
+	@VisibleForTesting
+	public static final DynamicCommandExceptionType FORK_LIMIT_EXCEPTION = new DynamicCommandExceptionType(
 		count -> Text.stringifiedTranslatable("command.forkLimit", count)
 	);
 	private final String command;
@@ -28,7 +29,7 @@ public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
 		this.contextChain = contextChain;
 	}
 
-	protected void execute(List<T> forks, CommandExecutionContext<T> context, int depth, boolean silent) throws CommandSyntaxException {
+	protected void execute(List<T> forks, CommandExecutionContext<T> context, int depth, boolean silent) {
 		ContextChain<T> contextChain = this.contextChain;
 		boolean bl = silent;
 		List<T> list = forks;
@@ -47,17 +48,28 @@ public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
 
 					if (redirectModifier != null) {
 						context.decrementCommandQuota();
-						List<T> list2 = new ArrayList();
+						forkable = new ArrayList();
 
 						for(T abstractServerCommandSource : list) {
-							Collection<T> collection = ContextChain.runModifier(commandContext, abstractServerCommandSource, AbstractServerCommandSource.asResultConsumer(), bl);
-							list2.addAll(collection);
-							if (list2.size() >= i) {
-								throw FORK_LIMIT_EXCEPTION.create(i);
+							try {
+								for(T abstractServerCommandSource2 : ContextChain.runModifier(
+									commandContext, abstractServerCommandSource, AbstractServerCommandSource.asResultConsumer(), bl
+								)) {
+									forkable.add(abstractServerCommandSource2);
+									if (forkable.size() >= i) {
+										abstractServerCommandSource2.handleException(FORK_LIMIT_EXCEPTION.create(i), bl, context.getTracer());
+										return;
+									}
+								}
+							} catch (CommandSyntaxException var20) {
+								abstractServerCommandSource.handleException(var20, bl, context.getTracer());
+								if (!bl) {
+									return;
+								}
 							}
 						}
 
-						list = list2;
+						list = forkable;
 					}
 				}
 			} finally {
@@ -126,7 +138,7 @@ public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
 		}
 
 		@Override
-		public void execute(CommandExecutionContext<T> commandExecutionContext, int i) throws CommandSyntaxException {
+		public void execute(CommandExecutionContext<T> commandExecutionContext, int i) {
 			this.execute(this.sources, commandExecutionContext, i, this.forkedMode);
 		}
 	}
@@ -140,7 +152,7 @@ public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
 		}
 
 		@Override
-		public void execute(CommandExecutionContext<T> commandExecutionContext, int i) throws CommandSyntaxException {
+		public void execute(CommandExecutionContext<T> commandExecutionContext, int i) {
 			this.traceCommandStart(commandExecutionContext, i);
 			this.execute(List.of(this.source), commandExecutionContext, i, false);
 		}
@@ -151,7 +163,7 @@ public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
 			super(string, contextChain);
 		}
 
-		public void execute(T abstractServerCommandSource, CommandExecutionContext<T> commandExecutionContext, int i) throws CommandSyntaxException {
+		public void execute(T abstractServerCommandSource, CommandExecutionContext<T> commandExecutionContext, int i) {
 			this.traceCommandStart(commandExecutionContext, i);
 			this.execute(List.of(abstractServerCommandSource), commandExecutionContext, i, false);
 		}

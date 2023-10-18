@@ -191,6 +191,10 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 		this.soundSystem.stop();
 	}
 
+	public void stopAbruptly() {
+		this.soundSystem.stopAbruptly();
+	}
+
 	public void tick(boolean paused) {
 		this.soundSystem.tick(paused);
 	}

@@ -90,23 +90,11 @@ public class TelemetryInfoScreen extends Screen {
 	}
 
 	private void openPrivacyStatementPage(ButtonWidget button) {
-		this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-			if (confirmed) {
-				Util.getOperatingSystem().open("http://go.microsoft.com/fwlink/?LinkId=521839");
-			}
-
-			this.client.setScreen(this);
-		}, "http://go.microsoft.com/fwlink/?LinkId=521839", true));
+		ConfirmLinkScreen.open(this, "http://go.microsoft.com/fwlink/?LinkId=521839");
 	}
 
 	private void openFeedbackPage(ButtonWidget button) {
-		this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-			if (confirmed) {
-				Util.getOperatingSystem().open("https://aka.ms/javafeedback?ref=game");
-			}
-
-			this.client.setScreen(this);
-		}, "https://aka.ms/javafeedback?ref=game", true));
+		ConfirmLinkScreen.open(this, "https://aka.ms/javafeedback?ref=game");
 	}
 
 	private void openLogDirectory(ButtonWidget button) {

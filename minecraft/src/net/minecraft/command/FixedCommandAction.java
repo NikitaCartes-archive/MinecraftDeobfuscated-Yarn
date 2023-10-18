@@ -18,7 +18,7 @@ public class FixedCommandAction<T extends AbstractServerCommandSource<T>> implem
 		this.context = context;
 	}
 
-	public void execute(T abstractServerCommandSource, CommandExecutionContext<T> commandExecutionContext, int i) throws CommandSyntaxException {
+	public void execute(T abstractServerCommandSource, CommandExecutionContext<T> commandExecutionContext, int i) {
 		commandExecutionContext.getProfiler().push((Supplier<String>)(() -> "execute " + this.command));
 
 		try {
@@ -28,6 +28,8 @@ public class FixedCommandAction<T extends AbstractServerCommandSource<T>> implem
 			if (tracer != null) {
 				tracer.traceCommandEnd(i, this.command, j);
 			}
+		} catch (CommandSyntaxException var9) {
+			abstractServerCommandSource.handleException(var9, this.forkedMode, commandExecutionContext.getTracer());
 		} finally {
 			commandExecutionContext.getProfiler().pop();
 		}

@@ -19,7 +19,6 @@ import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
@@ -143,12 +142,6 @@ public class GameMenuScreen extends Screen {
 	}
 
 	private ButtonWidget createUrlButton(Text text, String url) {
-		return this.createButton(text, () -> new ConfirmLinkScreen(confirmed -> {
-				if (confirmed) {
-					Util.getOperatingSystem().open(url);
-				}
-
-				this.client.setScreen(this);
-			}, url, true));
+		return ButtonWidget.builder(text, ConfirmLinkScreen.opening(this, url)).width(98).build();
 	}
 }

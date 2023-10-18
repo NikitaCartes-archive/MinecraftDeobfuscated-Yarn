@@ -324,6 +324,8 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_COW_HURT = register("entity.cow.hurt");
 	public static final SoundEvent ENTITY_COW_MILK = register("entity.cow.milk");
 	public static final SoundEvent ENTITY_COW_STEP = register("entity.cow.step");
+	public static final SoundEvent BLOCK_CRAFTER_CRAFT = register("block.crafter.craft");
+	public static final SoundEvent BLOCK_CRAFTER_FAIL = register("block.crafter.fail");
 	public static final SoundEvent ENTITY_CREEPER_DEATH = register("entity.creeper.death");
 	public static final SoundEvent ENTITY_CREEPER_HURT = register("entity.creeper.hurt");
 	public static final SoundEvent ENTITY_CREEPER_PRIMED = register("entity.creeper.primed");
