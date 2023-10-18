@@ -371,7 +371,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void clickedHeader(int x, int y) {
+		protected boolean clickedHeader(int x, int y) {
 			this.selectedHeaderColumn = -1;
 
 			for (int i = 0; i < this.headerIconTextures.length; i++) {
@@ -385,6 +385,9 @@ public class StatsScreen extends Screen implements StatsListener {
 			if (this.selectedHeaderColumn >= 0) {
 				this.selectStatType(this.getStatType(this.selectedHeaderColumn));
 				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+				return true;
+			} else {
+				return super.clickedHeader(x, y);
 			}
 		}
 

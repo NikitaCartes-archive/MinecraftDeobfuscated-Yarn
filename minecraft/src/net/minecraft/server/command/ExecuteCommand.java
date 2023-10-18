@@ -1,5 +1,6 @@
 package net.minecraft.server.command;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -114,7 +115,8 @@ public class ExecuteCommand {
 	private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(
 		count -> Text.stringifiedTranslatable("commands.execute.conditional.fail_count", count)
 	);
-	private static final Dynamic2CommandExceptionType INSTANTIATION_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
+	@VisibleForTesting
+	public static final Dynamic2CommandExceptionType INSTANTIATION_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
 		(function, message) -> Text.stringifiedTranslatable("commands.execute.function.instantiationFailure", function, message)
 	);
 	private static final BinaryOperator<ResultStorer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (consumer, consumer2) -> (context, success, result) -> {
@@ -902,26 +904,30 @@ public class ExecuteCommand {
 		ExecutionControl<T> control,
 		ExecuteCommand.FunctionNamesGetter<T, Collection<CommandFunction<T>>> functionNamesGetter,
 		boolean silent
-	) throws CommandSyntaxException {
+	) {
 		List<T> list = new ArrayList(sources.size());
 		CommandContext<T> commandContext = contextChain.getTopContext();
 
 		for (T abstractServerCommandSource : sources) {
-			Collection<CommandFunction<T>> collection = functionNamesGetter.get(commandContext.copyFor(abstractServerCommandSource));
-			int i = collection.size();
-			if (i != 0) {
-				T abstractServerCommandSource2 = createExecutionSource(sourceTransformer, resultPredicate, list, abstractServerCommandSource, i == 1);
+			try {
+				Collection<CommandFunction<T>> collection = functionNamesGetter.get(commandContext.copyFor(abstractServerCommandSource));
+				int i = collection.size();
+				if (i != 0) {
+					T abstractServerCommandSource2 = createExecutionSource(sourceTransformer, resultPredicate, list, abstractServerCommandSource, i == 1);
 
-				for (CommandFunction<T> commandFunction : collection) {
-					Procedure<T> procedure;
-					try {
-						procedure = commandFunction.withMacroReplaced(arguments, abstractServerCommandSource2.getDispatcher(), abstractServerCommandSource2);
-					} catch (MacroException var19) {
-						throw INSTANTIATION_FAILURE_EXCEPTION.create(commandFunction.id(), var19.getMessage());
+					for (CommandFunction<T> commandFunction : collection) {
+						Procedure<T> procedure;
+						try {
+							procedure = commandFunction.withMacroReplaced(arguments, abstractServerCommandSource2.getDispatcher(), abstractServerCommandSource2);
+						} catch (MacroException var19) {
+							throw INSTANTIATION_FAILURE_EXCEPTION.create(commandFunction.id(), var19.getMessage());
+						}
+
+						control.enqueueAction(new CommandFunctionAction<>(procedure).bind(abstractServerCommandSource2));
 					}
-
-					control.enqueueAction(new CommandFunctionAction<>(procedure).bind(abstractServerCommandSource2));
 				}
+			} catch (CommandSyntaxException var20) {
+				abstractServerCommandSource.handleException(var20, silent, control.getTracer());
 			}
 		}
 
@@ -976,7 +982,7 @@ public class ExecuteCommand {
 		@Override
 		public void execute(
 			List<ServerCommandSource> sources, ContextChain<ServerCommandSource> contextChain, boolean forkedMode, ExecutionControl<ServerCommandSource> control
-		) throws CommandSyntaxException {
+		) {
 			ExecuteCommand.enqueueExecutions(
 				sources,
 				FunctionCommand::createFunctionCommandSource,

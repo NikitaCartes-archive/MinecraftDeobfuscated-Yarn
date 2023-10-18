@@ -191,7 +191,7 @@ public class RealmsNotification {
 
 		public ButtonWidget createButton(Screen currentScreen) {
 			Text text = this.buttonText.toText(RealmsNotification.OPEN_LINK_TEXT);
-			return ButtonWidget.builder(text, ConfirmLinkScreen.opening(this.url, currentScreen, true)).build();
+			return ButtonWidget.builder(text, ConfirmLinkScreen.opening(currentScreen, this.url)).build();
 		}
 	}
 }

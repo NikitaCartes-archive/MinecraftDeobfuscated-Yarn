@@ -490,8 +490,17 @@ public class Item implements ToggleableFeature, ItemConvertible {
 
 	/**
 	 * Called when a player acquires the item by crafting, smelting, smithing, etc.
+	 * 
+	 * <p>Not called when the item is automatically created, such as via a crafter.
 	 */
-	public void onCraft(ItemStack stack, World world, PlayerEntity player) {
+	public void onCraftByPlayer(ItemStack stack, World world, PlayerEntity player) {
+		this.onCraft(stack, world);
+	}
+
+	/**
+	 * Called when the item is made by crafting, smelting, smithing, etc.
+	 */
+	public void onCraft(ItemStack stack, World world) {
 	}
 
 	/**

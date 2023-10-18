@@ -5,7 +5,6 @@ import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
 import com.mojang.blaze3d.systems.VertexSorter;
-import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
@@ -14,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
@@ -33,6 +33,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
@@ -55,12 +56,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.chunk.ChunkStatus;
-import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ChunkBuilder {
-	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final int field_32831 = 4;
 	private static final int field_35300 = 2;
 	private final PriorityBlockingQueue<ChunkBuilder.BuiltChunk.Task> prioritizedTaskQueue = Queues.newPriorityBlockingQueue();
 	private final Queue<ChunkBuilder.BuiltChunk.Task> taskQueue = Queues.<ChunkBuilder.BuiltChunk.Task>newLinkedBlockingDeque();
@@ -69,47 +67,22 @@ public class ChunkBuilder {
 	 * before polling from {@link #taskQueue} first instead.
 	 */
 	private int processablePrioritizedTaskCount = 2;
-	private final Queue<BlockBufferBuilderStorage> threadBuffers;
 	private final Queue<Runnable> uploadQueue = Queues.<Runnable>newConcurrentLinkedQueue();
-	private volatile int queuedTaskCount;
-	private volatile int bufferCount;
 	final BlockBufferBuilderStorage buffers;
+	private final BlockBufferBuilderPool buffersPool;
+	private volatile int queuedTaskCount;
+	private volatile boolean stopped;
 	private final TaskExecutor<Runnable> mailbox;
 	private final Executor executor;
 	ClientWorld world;
 	final WorldRenderer worldRenderer;
 	private Vec3d cameraPosition = Vec3d.ZERO;
 
-	public ChunkBuilder(ClientWorld world, WorldRenderer worldRenderer, Executor executor, boolean is64Bits, BlockBufferBuilderStorage buffers) {
+	public ChunkBuilder(ClientWorld world, WorldRenderer worldRenderer, Executor executor, BufferBuilderStorage bufferBuilderStorage) {
 		this.world = world;
 		this.worldRenderer = worldRenderer;
-		int i = Math.max(
-			1,
-			(int)((double)Runtime.getRuntime().maxMemory() * 0.3) / (RenderLayer.getBlockLayers().stream().mapToInt(RenderLayer::getExpectedBufferSize).sum() * 4) - 1
-		);
-		int j = Runtime.getRuntime().availableProcessors();
-		int k = is64Bits ? j : Math.min(j, 4);
-		int l = Math.max(1, Math.min(k, i));
-		this.buffers = buffers;
-		List<BlockBufferBuilderStorage> list = Lists.<BlockBufferBuilderStorage>newArrayListWithExpectedSize(l);
-
-		try {
-			for (int m = 0; m < l; m++) {
-				list.add(new BlockBufferBuilderStorage());
-			}
-		} catch (OutOfMemoryError var14) {
-			LOGGER.warn("Allocated only {}/{} buffers", list.size(), l);
-			int n = Math.min(list.size() * 2 / 3, list.size() - 1);
-
-			for (int o = 0; o < n; o++) {
-				list.remove(list.size() - 1);
-			}
-
-			System.gc();
-		}
-
-		this.threadBuffers = Queues.<BlockBufferBuilderStorage>newArrayDeque(list);
-		this.bufferCount = this.threadBuffers.size();
+		this.buffers = bufferBuilderStorage.getBlockBufferBuilders();
+		this.buffersPool = bufferBuilderStorage.getBlockBufferBuildersPool();
 		this.executor = executor;
 		this.mailbox = TaskExecutor.create(executor, "Section Renderer");
 		this.mailbox.send(this::scheduleRunTasks);
@@ -120,12 +93,11 @@ public class ChunkBuilder {
 	}
 
 	private void scheduleRunTasks() {
-		if (!this.threadBuffers.isEmpty()) {
+		if (!this.stopped && !this.buffersPool.hasNoAvailableBuilder()) {
 			ChunkBuilder.BuiltChunk.Task task = this.pollTask();
 			if (task != null) {
-				BlockBufferBuilderStorage blockBufferBuilderStorage = (BlockBufferBuilderStorage)this.threadBuffers.poll();
+				BlockBufferBuilderStorage blockBufferBuilderStorage = (BlockBufferBuilderStorage)Objects.requireNonNull(this.buffersPool.acquire());
 				this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
-				this.bufferCount = this.threadBuffers.size();
 				CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor)
 					.thenCompose(future -> future)
 					.whenComplete((result, throwable) -> {
@@ -139,8 +111,7 @@ public class ChunkBuilder {
 									blockBufferBuilderStorage.reset();
 								}
 
-								this.threadBuffers.add(blockBufferBuilderStorage);
-								this.bufferCount = this.threadBuffers.size();
+								this.buffersPool.release(blockBufferBuilderStorage);
 								this.scheduleRunTasks();
 							});
 						}
@@ -170,7 +141,7 @@ public class ChunkBuilder {
 	}
 
 	public String getDebugString() {
-		return String.format(Locale.ROOT, "pC: %03d, pU: %02d, aB: %02d", this.queuedTaskCount, this.uploadQueue.size(), this.bufferCount);
+		return String.format(Locale.ROOT, "pC: %03d, pU: %02d, aB: %02d", this.queuedTaskCount, this.uploadQueue.size(), this.buffersPool.getAvailableBuilderCount());
 	}
 
 	public int getToBatchCount() {
@@ -182,7 +153,7 @@ public class ChunkBuilder {
 	}
 
 	public int getFreeBufferCount() {
-		return this.bufferCount;
+		return this.buffersPool.getAvailableBuilderCount();
 	}
 
 	public void setCameraPosition(Vec3d cameraPosition) {
@@ -209,21 +180,27 @@ public class ChunkBuilder {
 	}
 
 	public void send(ChunkBuilder.BuiltChunk.Task task) {
-		this.mailbox.send(() -> {
-			if (task.prioritized) {
-				this.prioritizedTaskQueue.offer(task);
-			} else {
-				this.taskQueue.offer(task);
-			}
+		if (!this.stopped) {
+			this.mailbox.send(() -> {
+				if (!this.stopped) {
+					if (task.prioritized) {
+						this.prioritizedTaskQueue.offer(task);
+					} else {
+						this.taskQueue.offer(task);
+					}
 
-			this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
-			this.scheduleRunTasks();
-		});
+					this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
+					this.scheduleRunTasks();
+				}
+			});
+		}
 	}
 
 	public CompletableFuture<Void> scheduleUpload(BufferBuilder.BuiltBuffer builtBuffer, VertexBuffer glBuffer) {
-		return CompletableFuture.runAsync(() -> {
-			if (!glBuffer.isClosed()) {
+		return this.stopped ? CompletableFuture.completedFuture(null) : CompletableFuture.runAsync(() -> {
+			if (glBuffer.isClosed()) {
+				builtBuffer.release();
+			} else {
 				glBuffer.bind();
 				glBuffer.upload(builtBuffer);
 				VertexBuffer.unbind();
@@ -254,9 +231,9 @@ public class ChunkBuilder {
 	}
 
 	public void stop() {
+		this.stopped = true;
 		this.clear();
-		this.mailbox.close();
-		this.threadBuffers.clear();
+		this.upload();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -664,7 +641,7 @@ public class ChunkBuilder {
 							CompletableFuture<ChunkBuilder.Result> completableFuture = ChunkBuilder.this.scheduleUpload(
 									builtBuffer, BuiltChunk.this.getBuffer(RenderLayer.getTranslucent())
 								)
-								.thenApply(void_ -> ChunkBuilder.Result.CANCELLED);
+								.thenApply(v -> ChunkBuilder.Result.CANCELLED);
 							return completableFuture.handle((result, throwable) -> {
 								if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
 									MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering section"));

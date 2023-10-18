@@ -2,7 +2,6 @@ package net.minecraft.server.function;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +78,7 @@ public class CommandFunctionManager {
 		try {
 			Procedure<ServerCommandSource> procedure = function.withMacroReplaced(null, this.getDispatcher(), source);
 			CommandManager.callWithContext(source, context -> context.enqueueProcedureCall(procedure, source));
-		} catch (CommandSyntaxException | MacroException var8) {
+		} catch (MacroException var8) {
 		} finally {
 			profiler.pop();
 		}

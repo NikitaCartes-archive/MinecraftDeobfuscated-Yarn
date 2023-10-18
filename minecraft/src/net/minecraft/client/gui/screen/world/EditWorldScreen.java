@@ -9,19 +9,27 @@ import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.EmptyWidget;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.nbt.NbtCrashException;
+import net.minecraft.nbt.NbtException;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.path.SymlinkValidationException;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.io.FileUtils;
@@ -30,80 +38,86 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class EditWorldScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text ENTER_NAME_TEXT = Text.translatable("selectWorld.enterName");
-	private ButtonWidget saveButton;
+	private static final Text ENTER_NAME_TEXT = Text.translatable("selectWorld.enterName").formatted(Formatting.GRAY);
+	private static final Text RESET_ICON_TEXT = Text.translatable("selectWorld.edit.resetIcon");
+	private static final Text OPEN_FOLDER_TEXT = Text.translatable("selectWorld.edit.openFolder");
+	private static final Text BACKUP_TEXT = Text.translatable("selectWorld.edit.backup");
+	private static final Text BACKUP_FOLDER_TEXT = Text.translatable("selectWorld.edit.backupFolder");
+	private static final Text OPTIMIZE_TEXT = Text.translatable("selectWorld.edit.optimize");
+	private static final Text CONFIRM_TITLE_TEXT = Text.translatable("optimizeWorld.confirm.title");
+	private static final Text CONFIRM_DESCRIPTION_TEXT = Text.translatable("optimizeWorld.confirm.description");
+	private static final Text SAVE_TEXT = Text.translatable("selectWorld.edit.save");
+	private static final int field_46893 = 200;
+	private static final int field_46894 = 4;
+	private static final int field_46895 = 98;
+	private final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical().spacing(5);
 	private final BooleanConsumer callback;
-	private TextFieldWidget levelNameTextField;
 	private final LevelStorage.Session storageSession;
 
-	public EditWorldScreen(BooleanConsumer callback, LevelStorage.Session storageSession) {
-		super(Text.translatable("selectWorld.edit.title"));
-		this.callback = callback;
-		this.storageSession = storageSession;
+	public static EditWorldScreen create(MinecraftClient client, LevelStorage.Session session, BooleanConsumer callback) throws IOException {
+		LevelSummary levelSummary = session.getLevelSummary(session.readLevelProperties());
+		return new EditWorldScreen(client, session, levelSummary.getDisplayName(), callback);
 	}
 
-	@Override
-	protected void init() {
-		this.saveButton = ButtonWidget.builder(Text.translatable("selectWorld.edit.save"), button -> this.commit())
-			.dimensions(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20)
-			.build();
-		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, Text.translatable("selectWorld.enterName"));
-		LevelSummary levelSummary = this.storageSession.getLevelSummary();
-		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
-		this.levelNameTextField.setText(string);
-		this.levelNameTextField.setChangedListener(levelName -> this.saveButton.active = !Util.isBlank(levelName));
-		this.addSelectableChild(this.levelNameTextField);
-		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.edit.resetIcon"), button -> {
-			this.storageSession.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
-			button.active = false;
-		}).dimensions(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20).build());
-		this.addDrawableChild(
-			ButtonWidget.builder(
-					Text.translatable("selectWorld.edit.openFolder"), button -> Util.getOperatingSystem().open(this.storageSession.getDirectory(WorldSavePath.ROOT).toFile())
-				)
-				.dimensions(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20)
-				.build()
-		);
-		this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.edit.backup"), button -> {
-			boolean bl = backupLevel(this.storageSession);
+	private EditWorldScreen(MinecraftClient client, LevelStorage.Session session, String levelName, BooleanConsumer callback) {
+		super(Text.translatable("selectWorld.edit.title"));
+		this.callback = callback;
+		this.storageSession = session;
+		TextRenderer textRenderer = client.textRenderer;
+		this.layout.add(new EmptyWidget(200, 20));
+		this.layout.add(new TextWidget(ENTER_NAME_TEXT, textRenderer));
+		TextFieldWidget textFieldWidget = this.layout.add(new TextFieldWidget(textRenderer, 200, 20, ENTER_NAME_TEXT));
+		textFieldWidget.setText(levelName);
+		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.horizontal().spacing(4);
+		ButtonWidget buttonWidget = directionalLayoutWidget.add(ButtonWidget.builder(SAVE_TEXT, button -> this.commit(textFieldWidget.getText())).width(98).build());
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).width(98).build());
+		textFieldWidget.setChangedListener(name -> buttonWidget.active = !Util.isBlank(name));
+		this.layout.add(ButtonWidget.builder(RESET_ICON_TEXT, buttonWidgetx -> {
+			session.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
+			buttonWidgetx.active = false;
+		}).width(200).build()).active = session.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])).isPresent();
+		this.layout
+			.add(ButtonWidget.builder(OPEN_FOLDER_TEXT, button -> Util.getOperatingSystem().open(session.getDirectory(WorldSavePath.ROOT).toFile())).width(200).build());
+		this.layout.add(ButtonWidget.builder(BACKUP_TEXT, button -> {
+			boolean bl = backupLevel(session);
 			this.callback.accept(!bl);
-		}).dimensions(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20).build());
-		this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.edit.backupFolder"), button -> {
-			LevelStorage levelStorage = this.client.getLevelStorage();
+		}).width(200).build());
+		this.layout.add(ButtonWidget.builder(BACKUP_FOLDER_TEXT, button -> {
+			LevelStorage levelStorage = client.getLevelStorage();
 			Path path = levelStorage.getBackupsDirectory();
 
 			try {
 				PathUtil.createDirectories(path);
-			} catch (IOException var5) {
-				throw new RuntimeException(var5);
+			} catch (IOException var5x) {
+				throw new RuntimeException(var5x);
 			}
 
 			Util.getOperatingSystem().open(path.toFile());
-		}).dimensions(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20).build());
-		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectWorld.edit.optimize"), button -> this.client.setScreen(new BackupPromptScreen(this, (backup, eraseCache) -> {
-						if (backup) {
-							backupLevel(this.storageSession);
-						}
+		}).width(200).build());
+		this.layout.add(ButtonWidget.builder(OPTIMIZE_TEXT, button -> client.setScreen(new BackupPromptScreen(() -> client.setScreen(this), (backup, eraseCache) -> {
+				if (backup) {
+					backupLevel(session);
+				}
 
-						this.client.setScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
-					}, Text.translatable("optimizeWorld.confirm.title"), Text.translatable("optimizeWorld.confirm.description"), true)))
-				.dimensions(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20)
-				.build()
-		);
-		this.addDrawableChild(this.saveButton);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.callback.accept(false)).dimensions(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20).build()
-		);
-		buttonWidget.active = this.storageSession.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])).isPresent();
-		this.setInitialFocus(this.levelNameTextField);
+				client.setScreen(OptimizeWorldScreen.create(client, this.callback, client.getDataFixer(), session, eraseCache));
+			}, CONFIRM_TITLE_TEXT, CONFIRM_DESCRIPTION_TEXT, true))).width(200).build());
+		this.layout.add(new EmptyWidget(200, 20));
+		this.layout.add(directionalLayoutWidget);
+		this.setInitialFocus(textFieldWidget);
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
 	}
 
 	@Override
-	public void resize(MinecraftClient client, int width, int height) {
-		String string = this.levelNameTextField.getText();
-		this.init(client, width, height);
-		this.levelNameTextField.setText(string);
+	protected void init() {
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		SimplePositioningWidget.setPos(this.layout, this.getNavigationFocus());
 	}
 
 	@Override
@@ -111,33 +125,15 @@ public class EditWorldScreen extends Screen {
 		this.callback.accept(false);
 	}
 
-	private void commit() {
+	private void commit(String levelName) {
 		try {
-			this.storageSession.save(this.levelNameTextField.getText().trim());
-			this.callback.accept(true);
-		} catch (IOException var2) {
-			LOGGER.error("Failed to access world '{}'", this.storageSession.getDirectoryName(), var2);
+			this.storageSession.save(levelName);
+		} catch (NbtException | NbtCrashException | IOException var3) {
+			LOGGER.error("Failed to access world '{}'", this.storageSession.getDirectoryName(), var3);
 			SystemToast.addWorldAccessFailureToast(this.client, this.storageSession.getDirectoryName());
-			this.callback.accept(true);
 		}
-	}
 
-	public static void onBackupConfirm(LevelStorage storage, String levelName) {
-		boolean bl = false;
-
-		try (LevelStorage.Session session = storage.createSession(levelName)) {
-			bl = true;
-			backupLevel(session);
-		} catch (IOException var8) {
-			if (!bl) {
-				SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), levelName);
-			}
-
-			LOGGER.warn("Failed to create backup of level {}", levelName, var8);
-		} catch (SymlinkValidationException var9) {
-			LOGGER.warn("{}", var9.getMessage());
-			SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), levelName);
-		}
+		this.callback.accept(true);
 	}
 
 	public static boolean backupLevel(LevelStorage.Session storageSession) {
@@ -167,7 +163,5 @@ public class EditWorldScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 15, 16777215);
-		context.drawTextWithShadow(this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100 + 1, 24, 10526880);
-		this.levelNameTextField.render(context, mouseX, mouseY, delta);
 	}
 }

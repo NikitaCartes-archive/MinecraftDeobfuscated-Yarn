@@ -70,13 +70,13 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	@Override
 	public ItemStack removeStack(int slot, int amount) {
 		this.checkLootInteraction(null);
-		return Inventories.splitStack(this.getInvStackList(), slot, amount);
+		return Inventories.splitStack(this.method_11282(), slot, amount);
 	}
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		this.checkLootInteraction(null);
-		this.getInvStackList().set(slot, stack);
+		this.method_11282().set(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());
 		}
@@ -389,7 +389,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	protected DefaultedList<ItemStack> getInvStackList() {
+	protected DefaultedList<ItemStack> method_11282() {
 		return this.inventory;
 	}
 

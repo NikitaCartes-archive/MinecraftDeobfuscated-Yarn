@@ -36,7 +36,7 @@ public class JsonUtils {
 	}
 
 	public static String getString(String key, JsonObject node) {
-		String string = getStringOr(key, node, null);
+		String string = getNullableStringOr(key, node, null);
 		if (string == null) {
 			throw new IllegalStateException("Missing required property: " + key);
 		} else {
@@ -44,8 +44,17 @@ public class JsonUtils {
 		}
 	}
 
+	public static String getStringOr(String key, JsonObject node, String defaultValue) {
+		JsonElement jsonElement = node.get(key);
+		if (jsonElement != null) {
+			return jsonElement.isJsonNull() ? defaultValue : jsonElement.getAsString();
+		} else {
+			return defaultValue;
+		}
+	}
+
 	@Nullable
-	public static String getStringOr(String key, JsonObject node, @Nullable String defaultValue) {
+	public static String getNullableStringOr(String key, JsonObject node, @Nullable String defaultValue) {
 		JsonElement jsonElement = node.get(key);
 		if (jsonElement != null) {
 			return jsonElement.isJsonNull() ? defaultValue : jsonElement.getAsString();
@@ -56,7 +65,7 @@ public class JsonUtils {
 
 	@Nullable
 	public static UUID getUuidOr(String key, JsonObject node, @Nullable UUID defaultValue) {
-		String string = getStringOr(key, node, null);
+		String string = getNullableStringOr(key, node, null);
 		return string == null ? defaultValue : UndashedUuid.fromStringLenient(string);
 	}
 

@@ -19,7 +19,6 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class BuyRealmsScreen extends RealmsScreen {
@@ -66,24 +65,16 @@ public class BuyRealmsScreen extends RealmsScreen {
 		this.parent.resize(this.client, this.width, this.height);
 		if (this.trialAvailable) {
 			this.trialButton = this.addDrawableChild(
-				ButtonWidget.builder(Text.translatable("mco.selectServer.trial"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-						if (confirmed) {
-							Util.getOperatingSystem().open("https://aka.ms/startjavarealmstrial");
-						}
-
-						this.client.setScreen(this);
-					}, "https://aka.ms/startjavarealmstrial", true))).dimensions(this.getRight() - 10 - 99, this.getBottom() - 10 - 4 - 40, 99, 20).build()
+				ButtonWidget.builder(Text.translatable("mco.selectServer.trial"), ConfirmLinkScreen.opening(this, "https://aka.ms/startjavarealmstrial"))
+					.dimensions(this.getRight() - 10 - 99, this.getBottom() - 10 - 4 - 40, 99, 20)
+					.build()
 			);
 		}
 
-		this.setFocused(
-			this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.selectServer.buy"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-					if (confirmed) {
-						Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms");
-					}
-
-					this.client.setScreen(this);
-				}, "https://aka.ms/BuyJavaRealms", true))).dimensions(this.getRight() - 10 - 99, this.getBottom() - 10 - 20, 99, 20).build())
+		this.addDrawableChild(
+			ButtonWidget.builder(Text.translatable("mco.selectServer.buy"), ConfirmLinkScreen.opening(this, "https://aka.ms/BuyJavaRealms"))
+				.dimensions(this.getRight() - 10 - 99, this.getBottom() - 10 - 20, 99, 20)
+				.build()
 		);
 		TexturedButtonWidget texturedButtonWidget = this.addDrawableChild(
 			new TexturedButtonWidget(this.getLeft() + 4, this.getTop() + 4, 14, 14, CROSS_BUTTON_TEXTURES, button -> this.close(), CLOSE_TEXT)

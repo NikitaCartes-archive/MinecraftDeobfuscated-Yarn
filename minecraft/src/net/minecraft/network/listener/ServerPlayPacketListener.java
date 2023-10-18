@@ -33,6 +33,7 @@ import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SlotChangedStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
@@ -129,6 +130,8 @@ public interface ServerPlayPacketListener extends ServerQueryPingPacketListener,
 	void onBookUpdate(BookUpdateC2SPacket packet);
 
 	void onQueryEntityNbt(QueryEntityNbtC2SPacket packet);
+
+	void onSlotChangedState(SlotChangedStateC2SPacket packet);
 
 	void onQueryBlockNbt(QueryBlockNbtC2SPacket packet);
 

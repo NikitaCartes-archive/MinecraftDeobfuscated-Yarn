@@ -24,7 +24,6 @@ import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.MacroException;
 import net.minecraft.server.function.Procedure;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Util;
@@ -138,12 +137,6 @@ public class DebugCommand {
 				);
 			}
 		}
-
-		protected void sendError(CommandSyntaxException commandSyntaxException, ServerCommandSource serverCommandSource, boolean bl) {
-			if (!bl) {
-				serverCommandSource.sendError(Texts.toText(commandSyntaxException.getRawMessage()));
-			}
-		}
 	}
 
 	static class Tracer implements CommandOutput, net.minecraft.server.function.Tracer {
@@ -209,9 +202,9 @@ public class DebugCommand {
 		}
 
 		@Override
-		public void traceError(int depth, String message) {
+		public void traceError(String message) {
 			this.writeNewLine();
-			this.writeIndent(depth + 1);
+			this.writeIndent(this.lastIndentWidth + 1);
 			this.writer.print("[E] ");
 			this.writer.print(message);
 		}

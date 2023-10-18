@@ -1,10 +1,10 @@
 package net.minecraft.data.server.advancement.vanilla;
 
+import com.mojang.datafixers.util.Pair;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementEntry;
@@ -727,53 +727,43 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 
 	private static Advancement.Builder requireAllExclusiveTrimmedArmor(Advancement.Builder builder) {
 		builder.criteriaMerger(AdvancementRequirements.CriterionMerger.AND);
-		Map<Item, Identifier> map = VanillaRecipeProvider.getTrimSmithingTemplateMap();
-		Stream.of(
-				Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE,
-				Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE,
-				Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE,
-				Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE,
-				Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE,
-				Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE,
-				Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE,
-				Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE
-			)
-			.forEach(template -> {
-				Identifier identifier = (Identifier)map.get(template);
-				builder.criterion("armor_trimmed_" + identifier, RecipeCraftedCriterion.Conditions.create(identifier));
-			});
+		Set<Item> set = Set.of(
+			Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE,
+			Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE,
+			Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE,
+			Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE,
+			Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE,
+			Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE,
+			Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE,
+			Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE
+		);
+		VanillaRecipeProvider.getTrimSmithingTemplateMap()
+			.filter(template -> set.contains(template.template()))
+			.forEach(templatex -> builder.criterion("armor_trimmed_" + templatex.id(), RecipeCraftedCriterion.Conditions.create(templatex.id())));
 		return builder;
 	}
 
 	private static Advancement.Builder requireTrimmedArmor(Advancement.Builder builder) {
 		builder.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
-
-		for (Identifier identifier : VanillaRecipeProvider.getTrimSmithingTemplateMap().values()) {
-			builder.criterion("armor_trimmed_" + identifier, RecipeCraftedCriterion.Conditions.create(identifier));
-		}
-
+		VanillaRecipeProvider.getTrimSmithingTemplateMap()
+			.map(VanillaRecipeProvider.SmithingTemplate::id)
+			.forEach(template -> builder.criterion("armor_trimmed_" + template, RecipeCraftedCriterion.Conditions.create(template)));
 		return builder;
 	}
 
 	private static Advancement.Builder requireSalvagedSherd(Advancement.Builder builder) {
-		Map<String, AdvancementCriterion<PlayerGeneratesContainerLootCriterion.Conditions>> map = Map.of(
-			"desert_pyramid",
-			PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.DESERT_PYRAMID_ARCHAEOLOGY),
-			"desert_well",
-			PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.DESERT_WELL_ARCHAEOLOGY),
-			"ocean_ruin_cold",
-			PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY),
-			"ocean_ruin_warm",
-			PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY),
-			"trail_ruins_rare",
-			PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.TRAIL_RUINS_RARE_ARCHAEOLOGY),
-			"trail_ruins_common",
-			PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY)
+		List<Pair<String, AdvancementCriterion<PlayerGeneratesContainerLootCriterion.Conditions>>> list = List.of(
+			Pair.of("desert_pyramid", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.DESERT_PYRAMID_ARCHAEOLOGY)),
+			Pair.of("desert_well", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.DESERT_WELL_ARCHAEOLOGY)),
+			Pair.of("ocean_ruin_cold", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY)),
+			Pair.of("ocean_ruin_warm", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY)),
+			Pair.of("trail_ruins_rare", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.TRAIL_RUINS_RARE_ARCHAEOLOGY)),
+			Pair.of("trail_ruins_common", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY))
 		);
-		map.forEach(builder::criterion);
+		list.forEach(pair -> builder.criterion((String)pair.getFirst(), (AdvancementCriterion<?>)pair.getSecond()));
 		String string = "has_sherd";
 		builder.criterion("has_sherd", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS)));
-		builder.requirements(new AdvancementRequirements(new String[][]{(String[])map.keySet().toArray(String[]::new), {"has_sherd"}}));
+		builder.requirements(new AdvancementRequirements(new String[][]{(String[])list.stream().map(Pair::getFirst).toArray(String[]::new), {"has_sherd"}}));
 		return builder;
 	}
 

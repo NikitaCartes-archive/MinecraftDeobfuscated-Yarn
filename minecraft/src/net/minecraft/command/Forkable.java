@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface Forkable<T> {
-	void execute(List<T> sources, ContextChain<T> contextChain, boolean forkedMode, ExecutionControl<T> control) throws CommandSyntaxException;
+	void execute(List<T> sources, ContextChain<T> contextChain, boolean forkedMode, ExecutionControl<T> control);
 
 	public interface RedirectModifier<T> extends com.mojang.brigadier.RedirectModifier<T>, Forkable<T> {
 		@Override

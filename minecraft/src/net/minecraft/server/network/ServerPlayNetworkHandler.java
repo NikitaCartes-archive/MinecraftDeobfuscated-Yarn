@@ -38,6 +38,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
+import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -114,6 +115,7 @@ import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SlotChangedStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
@@ -148,6 +150,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
+import net.minecraft.screen.CrafterScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -806,6 +809,17 @@ public class ServerPlayNetworkHandler
 	}
 
 	@Override
+	public void onSlotChangedState(SlotChangedStateC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (!this.player.isSpectator() && packet.screenHandlerId() == this.player.currentScreenHandler.syncId) {
+			if (this.player.currentScreenHandler instanceof CrafterScreenHandler crafterScreenHandler
+				&& crafterScreenHandler.getInputInventory() instanceof CrafterBlockEntity crafterBlockEntity) {
+				crafterBlockEntity.setSlotEnabled(packet.slotId(), packet.newState());
+			}
+		}
+	}
+
+	@Override
 	public void onQueryBlockNbt(QueryBlockNbtC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.hasPermissionLevel(2)) {
@@ -1167,10 +1181,10 @@ public class ServerPlayNetworkHandler
 
 					CompletableFuture<FilteredMessage> completableFuture = this.filterText(signedMessage.getSignedContent());
 					Text text = this.server.getMessageDecorator().decorate(this.player, signedMessage.getContent());
-					this.messageChainTaskQueue.append(executor -> completableFuture.thenAcceptAsync(filteredMessage -> {
-							SignedMessage signedMessage2 = signedMessage.withUnsignedContent(text).withFilterMask(filteredMessage.mask());
-							this.handleDecoratedMessage(signedMessage2);
-						}, executor));
+					this.messageChainTaskQueue.append(completableFuture, filteredMessage -> {
+						SignedMessage signedMessage2 = signedMessage.withUnsignedContent(text).withFilterMask(filteredMessage.mask());
+						this.handleDecoratedMessage(signedMessage2);
+					});
 				});
 			}
 		}
@@ -1733,10 +1747,9 @@ public class ServerPlayNetworkHandler
 	private void setSession(PublicPlayerSession session) {
 		this.session = session;
 		this.messageUnpacker = session.createUnpacker(this.player.getUuid());
-		this.messageChainTaskQueue.append(executor -> {
+		this.messageChainTaskQueue.append(() -> {
 			this.player.setSession(session);
 			this.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(EnumSet.of(PlayerListS2CPacket.Action.INITIALIZE_CHAT), List.of(this.player)));
-			return CompletableFuture.completedFuture(null);
 		});
 	}
 

@@ -11,10 +11,12 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class DatapackFailureScreen extends Screen {
 	private MultilineText wrappedText = MultilineText.EMPTY;
+	private final Runnable goBack;
 	private final Runnable runServerInSafeMode;
 
-	public DatapackFailureScreen(Runnable runServerInSafeMode) {
+	public DatapackFailureScreen(Runnable goBack, Runnable runServerInSafeMode) {
 		super(Text.translatable("datapackFailure.title"));
+		this.goBack = goBack;
 		this.runServerInSafeMode = runServerInSafeMode;
 	}
 
@@ -28,9 +30,7 @@ public class DatapackFailureScreen extends Screen {
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.TO_TITLE, button -> this.client.setScreen(null))
-				.dimensions(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.goBack.run()).dimensions(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20).build()
 		);
 	}
 

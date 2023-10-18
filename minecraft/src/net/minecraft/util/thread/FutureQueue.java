@@ -3,6 +3,7 @@ package net.minecraft.util.thread;
 import com.mojang.logging.LogUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 /**
@@ -13,18 +14,20 @@ public interface FutureQueue {
 	Logger LOGGER = LogUtils.getLogger();
 
 	static FutureQueue immediate(Executor executor) {
-		return future -> future.submit(executor).exceptionally(throwable -> {
-				LOGGER.error("Task failed", throwable);
-				return null;
-			});
+		return new FutureQueue() {
+			@Override
+			public <T> void append(CompletableFuture<T> completableFuture, Consumer<T> consumer) {
+				completableFuture.thenAcceptAsync(consumer, executor).exceptionally(throwable -> {
+					LOGGER.error("Task failed", throwable);
+					return null;
+				});
+			}
+		};
 	}
 
-	void append(FutureQueue.FutureSupplier future);
-
-	/**
-	 * A functional interface supplying the queued future to {@link FutureQueue}.
-	 */
-	public interface FutureSupplier {
-		CompletableFuture<?> submit(Executor executor);
+	default void append(Runnable callback) {
+		this.append(CompletableFuture.completedFuture(null), current -> callback.run());
 	}
+
+	<T> void append(CompletableFuture<T> future, Consumer<T> callback);
 }

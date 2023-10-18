@@ -23,9 +23,9 @@ public class PendingInvite extends ValueObject {
 		PendingInvite pendingInvite = new PendingInvite();
 
 		try {
-			pendingInvite.invitationId = JsonUtils.getStringOr("invitationId", json, "");
-			pendingInvite.worldName = JsonUtils.getStringOr("worldName", json, "");
-			pendingInvite.worldOwnerName = JsonUtils.getStringOr("worldOwnerName", json, "");
+			pendingInvite.invitationId = JsonUtils.getNullableStringOr("invitationId", json, "");
+			pendingInvite.worldName = JsonUtils.getNullableStringOr("worldName", json, "");
+			pendingInvite.worldOwnerName = JsonUtils.getNullableStringOr("worldOwnerName", json, "");
 			pendingInvite.worldOwnerUuid = JsonUtils.getUuidOr("worldOwnerUuid", json, Util.NIL_UUID);
 			pendingInvite.date = JsonUtils.getDateOr("date", json);
 		} catch (Exception var3) {

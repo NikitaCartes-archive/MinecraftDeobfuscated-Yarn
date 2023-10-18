@@ -625,6 +625,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.MANGROVE_LOG);
 		this.addDrop(Blocks.MUD);
 		this.addDrop(Blocks.PACKED_MUD);
+		this.addDrop(Blocks.CRAFTER, dropsNothing());
 		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
 		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
 		this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);

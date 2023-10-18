@@ -68,6 +68,7 @@ public class HandledScreens {
 		register(ScreenHandlerType.GENERIC_9X5, GenericContainerScreen::new);
 		register(ScreenHandlerType.GENERIC_9X6, GenericContainerScreen::new);
 		register(ScreenHandlerType.GENERIC_3X3, Generic3x3ContainerScreen::new);
+		register(ScreenHandlerType.CRAFTER_3X3, CrafterScreen::new);
 		register(ScreenHandlerType.ANVIL, AnvilScreen::new);
 		register(ScreenHandlerType.BEACON, BeaconScreen::new);
 		register(ScreenHandlerType.BLAST_FURNACE, BlastFurnaceScreen::new);

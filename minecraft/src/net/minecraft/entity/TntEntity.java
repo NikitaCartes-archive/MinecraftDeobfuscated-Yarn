@@ -1,16 +1,24 @@
 package net.minecraft.entity;
 
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.World;
 
 public class TntEntity extends Entity implements Ownable {
 	private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<BlockState> BLOCK_STATE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.BLOCK_STATE);
 	private static final int DEFAULT_FUSE = 80;
+	private static final String BLOCK_STATE_NBT_KEY = "block_state";
+	public static final String FUSE_NBT_KEY = "fuse";
 	@Nullable
 	private LivingEntity causingEntity;
 
@@ -34,6 +42,7 @@ public class TntEntity extends Entity implements Ownable {
 	@Override
 	protected void initDataTracker() {
 		this.dataTracker.startTracking(FUSE, 80);
+		this.dataTracker.startTracking(BLOCK_STATE, Blocks.TNT.getDefaultState());
 	}
 
 	@Override
@@ -80,12 +89,16 @@ public class TntEntity extends Entity implements Ownable {
 
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.putShort("Fuse", (short)this.getFuse());
+		nbt.putShort("fuse", (short)this.getFuse());
+		nbt.put("block_state", NbtHelper.fromBlockState(this.getBlockState()));
 	}
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		this.setFuse(nbt.getShort("Fuse"));
+		this.setFuse(nbt.getShort("fuse"));
+		if (nbt.contains("block_state", NbtElement.COMPOUND_TYPE)) {
+			this.setBlockState(NbtHelper.toBlockState(this.getWorld().createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("block_state")));
+		}
 	}
 
 	@Nullable
@@ -112,5 +125,13 @@ public class TntEntity extends Entity implements Ownable {
 
 	public int getFuse() {
 		return this.dataTracker.get(FUSE);
+	}
+
+	public void setBlockState(BlockState state) {
+		this.dataTracker.set(BLOCK_STATE, state);
+	}
+
+	public BlockState getBlockState() {
+		return this.dataTracker.get(BLOCK_STATE);
 	}
 }

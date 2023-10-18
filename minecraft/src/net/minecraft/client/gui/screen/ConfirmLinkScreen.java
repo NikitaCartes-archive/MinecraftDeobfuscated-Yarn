@@ -23,11 +23,7 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 	}
 
 	public ConfirmLinkScreen(BooleanConsumer callback, Text title, String link, boolean linkTrusted) {
-		this(callback, title, link, linkTrusted ? ScreenTexts.CANCEL : ScreenTexts.NO, linkTrusted);
-	}
-
-	public ConfirmLinkScreen(BooleanConsumer callback, Text title, String link, Text noText, boolean linkTrusted) {
-		this(callback, title, getConfirmText(linkTrusted, link), link, noText, linkTrusted);
+		this(callback, title, getConfirmText(linkTrusted, link), link, linkTrusted ? ScreenTexts.CANCEL : ScreenTexts.NO, linkTrusted);
 	}
 
 	public ConfirmLinkScreen(BooleanConsumer callback, Text title, Text message, String link, Text noText, boolean linkTrusted) {
@@ -70,10 +66,11 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 
 	/**
 	 * Opens the confirmation screen to open {@code url}.
+	 * The link is always trusted.
 	 * 
 	 * @see #opening
 	 */
-	public static void open(String url, Screen parent, boolean linkTrusted) {
+	public static void open(Screen parent, String url) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setScreen(new ConfirmLinkScreen(confirmed -> {
 			if (confirmed) {
@@ -81,15 +78,17 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 			}
 
 			minecraftClient.setScreen(parent);
-		}, url, linkTrusted));
+		}, url, true));
 	}
 
 	/**
 	 * {@return the button press action that opens the confirmation screen to open {@code url}}
 	 * 
+	 * <p>The link is always trusted.
+	 * 
 	 * @see #open
 	 */
-	public static ButtonWidget.PressAction opening(String url, Screen parent, boolean linkTrusted) {
-		return button -> open(url, parent, linkTrusted);
+	public static ButtonWidget.PressAction opening(Screen parent, String url) {
+		return button -> open(parent, url);
 	}
 }

@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
-import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -51,8 +50,7 @@ public class QuickPlay {
 			Screen screen = new SelectWorldScreen(new TitleScreen());
 			client.setScreen(new DisconnectedScreen(screen, ERROR_TITLE, ERROR_INVALID_IDENTIFIER, TO_WORLD));
 		} else {
-			client.setScreenAndRender(new MessageScreen(Text.translatable("selectWorld.data_read")));
-			client.createIntegratedServerLoader().start(new TitleScreen(), levelName);
+			client.createIntegratedServerLoader().start(levelName, () -> client.setScreen(new TitleScreen()));
 		}
 	}
 

@@ -1046,6 +1046,7 @@ public class Items {
 	public static final Item RED_BED = register(new BedItem(Blocks.RED_BED, new Item.Settings().maxCount(1)));
 	public static final Item BLACK_BED = register(new BedItem(Blocks.BLACK_BED, new Item.Settings().maxCount(1)));
 	public static final Item COOKIE = register("cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)));
+	public static final Item field_46791 = register(new BlockItem(Blocks.CRAFTER, new Item.Settings()));
 	public static final Item FILLED_MAP = register("filled_map", new FilledMapItem(new Item.Settings()));
 	public static final Item SHEARS = register("shears", new ShearsItem(new Item.Settings().maxDamage(238)));
 	public static final Item MELON_SLICE = register("melon_slice", new Item(new Item.Settings().food(FoodComponents.MELON_SLICE)));

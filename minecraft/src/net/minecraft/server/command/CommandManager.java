@@ -67,6 +67,7 @@ import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 
 public class CommandManager {
+	private static final ThreadLocal<CommandExecutionContext<ServerCommandSource>> CURRENT_CONTEXT = new ThreadLocal();
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int field_31837 = 0;
 	public static final int field_31838 = 1;
@@ -199,18 +200,52 @@ public class CommandManager {
 	public void execute(ParseResults<ServerCommandSource> parseResults, String command) {
 		ServerCommandSource serverCommandSource = parseResults.getContext().getSource();
 		serverCommandSource.getServer().getProfiler().push((Supplier<String>)(() -> "/" + command));
+		ContextChain<ServerCommandSource> contextChain = checkCommand(parseResults, command, serverCommandSource);
 
 		try {
-			throwException(parseResults);
-			ContextChain<ServerCommandSource> contextChain = (ContextChain<ServerCommandSource>)ContextChain.tryFlatten(parseResults.getContext().build(command))
-				.orElseThrow(() -> CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parseResults.getReader()));
-			callWithContext(serverCommandSource, context -> CommandExecutionContext.enqueueCommand(context, command, contextChain, serverCommandSource));
+			if (contextChain != null) {
+				callWithContext(serverCommandSource, context -> CommandExecutionContext.enqueueCommand(context, command, contextChain, serverCommandSource));
+			}
 		} catch (CommandException var13) {
 			serverCommandSource.sendError(var13.getTextMessage());
-		} catch (CommandSyntaxException var14) {
-			serverCommandSource.sendError(Texts.toText(var14.getRawMessage()));
-			if (var14.getInput() != null && var14.getCursor() >= 0) {
-				int i = Math.min(var14.getInput().length(), var14.getCursor());
+		} catch (Exception var14) {
+			MutableText mutableText = Text.literal(var14.getMessage() == null ? var14.getClass().getName() : var14.getMessage());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.error("Command exception: /{}", command, var14);
+				StackTraceElement[] stackTraceElements = var14.getStackTrace();
+
+				for (int i = 0; i < Math.min(stackTraceElements.length, 3); i++) {
+					mutableText.append("\n\n")
+						.append(stackTraceElements[i].getMethodName())
+						.append("\n ")
+						.append(stackTraceElements[i].getFileName())
+						.append(":")
+						.append(String.valueOf(stackTraceElements[i].getLineNumber()));
+				}
+			}
+
+			serverCommandSource.sendError(
+				Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText)))
+			);
+			if (SharedConstants.isDevelopment) {
+				serverCommandSource.sendError(Text.literal(Util.getInnermostMessage(var14)));
+				LOGGER.error("'/{}' threw an exception", command, var14);
+			}
+		} finally {
+			serverCommandSource.getServer().getProfiler().pop();
+		}
+	}
+
+	@Nullable
+	private static ContextChain<ServerCommandSource> checkCommand(ParseResults<ServerCommandSource> parseResults, String command, ServerCommandSource source) {
+		try {
+			throwException(parseResults);
+			return (ContextChain<ServerCommandSource>)ContextChain.tryFlatten(parseResults.getContext().build(command))
+				.orElseThrow(() -> CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parseResults.getReader()));
+		} catch (CommandSyntaxException var7) {
+			source.sendError(Texts.toText(var7.getRawMessage()));
+			if (var7.getInput() != null && var7.getCursor() >= 0) {
+				int i = Math.min(var7.getInput().length(), var7.getCursor());
 				MutableText mutableText = Text.empty()
 					.formatted(Formatting.GRAY)
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + command)));
@@ -218,51 +253,37 @@ public class CommandManager {
 					mutableText.append(ScreenTexts.ELLIPSIS);
 				}
 
-				mutableText.append(var14.getInput().substring(Math.max(0, i - 10), i));
-				if (i < var14.getInput().length()) {
-					Text text = Text.literal(var14.getInput().substring(i)).formatted(Formatting.RED, Formatting.UNDERLINE);
+				mutableText.append(var7.getInput().substring(Math.max(0, i - 10), i));
+				if (i < var7.getInput().length()) {
+					Text text = Text.literal(var7.getInput().substring(i)).formatted(Formatting.RED, Formatting.UNDERLINE);
 					mutableText.append(text);
 				}
 
 				mutableText.append(Text.translatable("command.context.here").formatted(Formatting.RED, Formatting.ITALIC));
-				serverCommandSource.sendError(mutableText);
-			}
-		} catch (Exception var15) {
-			MutableText mutableText2 = Text.literal(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.error("Command exception: /{}", command, var15);
-				StackTraceElement[] stackTraceElements = var15.getStackTrace();
-
-				for (int j = 0; j < Math.min(stackTraceElements.length, 3); j++) {
-					mutableText2.append("\n\n")
-						.append(stackTraceElements[j].getMethodName())
-						.append("\n ")
-						.append(stackTraceElements[j].getFileName())
-						.append(":")
-						.append(String.valueOf(stackTraceElements[j].getLineNumber()));
-				}
+				source.sendError(mutableText);
 			}
 
-			serverCommandSource.sendError(
-				Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2)))
-			);
-			if (SharedConstants.isDevelopment) {
-				serverCommandSource.sendError(Text.literal(Util.getInnermostMessage(var15)));
-				LOGGER.error("'/{}' threw an exception", command, var15);
-			}
-		} finally {
-			serverCommandSource.getServer().getProfiler().pop();
+			return null;
 		}
 	}
 
-	public static void callWithContext(ServerCommandSource commandSource, Consumer<CommandExecutionContext<ServerCommandSource>> callback) throws CommandSyntaxException {
+	public static void callWithContext(ServerCommandSource commandSource, Consumer<CommandExecutionContext<ServerCommandSource>> callback) {
 		MinecraftServer minecraftServer = commandSource.getServer();
-		int i = minecraftServer.getGameRules().getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);
-		int j = minecraftServer.getGameRules().getInt(GameRules.MAX_COMMAND_FORK_COUNT);
+		CommandExecutionContext<ServerCommandSource> commandExecutionContext = (CommandExecutionContext<ServerCommandSource>)CURRENT_CONTEXT.get();
+		boolean bl = commandExecutionContext == null;
+		if (bl) {
+			int i = Math.max(1, minecraftServer.getGameRules().getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH));
+			int j = minecraftServer.getGameRules().getInt(GameRules.MAX_COMMAND_FORK_COUNT);
 
-		try (CommandExecutionContext<ServerCommandSource> commandExecutionContext = new CommandExecutionContext<>(i, j, minecraftServer.getProfiler())) {
+			try (CommandExecutionContext<ServerCommandSource> commandExecutionContext2 = new CommandExecutionContext<>(i, j, minecraftServer.getProfiler())) {
+				CURRENT_CONTEXT.set(commandExecutionContext2);
+				callback.accept(commandExecutionContext2);
+				commandExecutionContext2.run();
+			} finally {
+				CURRENT_CONTEXT.set(null);
+			}
+		} else {
 			callback.accept(commandExecutionContext);
-			commandExecutionContext.run();
 		}
 	}
 

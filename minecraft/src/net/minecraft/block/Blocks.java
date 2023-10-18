@@ -17,6 +17,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -6091,6 +6092,9 @@ public class Blocks {
 		new DecoratedPotBlock(
 			AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_RED).strength(0.0F, 0.0F).pistonBehavior(PistonBehavior.DESTROY).nonOpaque()
 		)
+	);
+	public static final Block CRAFTER = register(
+		"crafter", new CrafterBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(1.5F, 3.5F).requires(FeatureFlags.UPDATE_1_21))
 	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {

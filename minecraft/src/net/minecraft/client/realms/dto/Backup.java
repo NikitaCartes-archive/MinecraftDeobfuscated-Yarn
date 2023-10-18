@@ -27,7 +27,7 @@ public class Backup extends ValueObject {
 		Backup backup = new Backup();
 
 		try {
-			backup.backupId = JsonUtils.getStringOr("backupId", jsonObject, "");
+			backup.backupId = JsonUtils.getNullableStringOr("backupId", jsonObject, "");
 			backup.lastModifiedDate = JsonUtils.getDateOr("lastModifiedDate", jsonObject);
 			backup.size = JsonUtils.getLongOr("size", jsonObject, 0L);
 			if (jsonObject.has("metadata")) {

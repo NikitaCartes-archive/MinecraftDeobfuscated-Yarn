@@ -21,9 +21,9 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsInviteScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text INVITE_PROFILE_NAME_TEXT = Text.translatable("mco.configure.world.invite.profile.name").styled(style -> style.withColor(-6250336));
-	private static final Text INVITING_TEXT = Text.translatable("mco.configure.world.players.inviting").styled(style -> style.withColor(-6250336));
-	private static final Text PLAYER_ERROR_TEXT = Text.translatable("mco.configure.world.players.error").styled(style -> style.withColor(-65536));
+	private static final Text INVITE_PROFILE_NAME_TEXT = Text.translatable("mco.configure.world.invite.profile.name").withColor(-6250336);
+	private static final Text INVITING_TEXT = Text.translatable("mco.configure.world.players.inviting").withColor(-6250336);
+	private static final Text PLAYER_ERROR_TEXT = Text.translatable("mco.configure.world.players.error").withColor(-65536);
 	private TextFieldWidget nameWidget;
 	private ButtonWidget inviteButton;
 	private final RealmsServer serverData;

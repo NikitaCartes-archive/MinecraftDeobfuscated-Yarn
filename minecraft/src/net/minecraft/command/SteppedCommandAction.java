@@ -1,6 +1,5 @@
 package net.minecraft.command;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
 
 public class SteppedCommandAction<T, P> implements CommandAction<T> {
@@ -16,7 +15,7 @@ public class SteppedCommandAction<T, P> implements CommandAction<T> {
 	}
 
 	@Override
-	public void execute(CommandExecutionContext<T> commandExecutionContext, int i) throws CommandSyntaxException {
+	public void execute(CommandExecutionContext<T> commandExecutionContext, int i) {
 		P object = (P)this.actions.get(this.nextActionIndex);
 		commandExecutionContext.enqueueCommand(this.wrapper.create(i, object));
 		if (++this.nextActionIndex < this.actions.size()) {

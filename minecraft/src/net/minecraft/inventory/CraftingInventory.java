@@ -94,7 +94,7 @@ public class CraftingInventory implements RecipeInputInventory {
 	}
 
 	@Override
-	public List<ItemStack> getInputStacks() {
+	public List<ItemStack> getHeldStacks() {
 		return List.copyOf(this.stacks);
 	}
 

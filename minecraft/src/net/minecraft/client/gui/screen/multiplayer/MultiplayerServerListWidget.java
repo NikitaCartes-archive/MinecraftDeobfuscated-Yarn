@@ -62,8 +62,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	);
 	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	static final Text LAN_SCANNING_TEXT = Text.translatable("lanServer.scanning");
-	static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").styled(style -> style.withColor(-65536));
-	static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").styled(style -> style.withColor(-65536));
+	static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").withColor(-65536);
+	static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(-65536);
 	static final Text INCOMPATIBLE_TEXT = Text.translatable("multiplayer.status.incompatible");
 	static final Text NO_CONNECTION_TEXT = Text.translatable("multiplayer.status.no_connection");
 	static final Text PINGING_TEXT = Text.translatable("multiplayer.status.pinging");

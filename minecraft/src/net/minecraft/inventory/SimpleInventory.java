@@ -34,18 +34,18 @@ import net.minecraft.util.collection.DefaultedList;
  */
 public class SimpleInventory implements Inventory, RecipeInputProvider {
 	private final int size;
-	private final DefaultedList<ItemStack> stacks;
+	private final DefaultedList<ItemStack> heldStacks;
 	@Nullable
 	private List<InventoryChangedListener> listeners;
 
 	public SimpleInventory(int size) {
 		this.size = size;
-		this.stacks = DefaultedList.ofSize(size, ItemStack.EMPTY);
+		this.heldStacks = DefaultedList.ofSize(size, ItemStack.EMPTY);
 	}
 
 	public SimpleInventory(ItemStack... items) {
 		this.size = items.length;
-		this.stacks = DefaultedList.copyOf(ItemStack.EMPTY, items);
+		this.heldStacks = DefaultedList.copyOf(ItemStack.EMPTY, items);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public ItemStack getStack(int slot) {
-		return slot >= 0 && slot < this.stacks.size() ? this.stacks.get(slot) : ItemStack.EMPTY;
+		return slot >= 0 && slot < this.heldStacks.size() ? this.heldStacks.get(slot) : ItemStack.EMPTY;
 	}
 
 	/**
@@ -81,14 +81,14 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	 * @return the non-empty stacks previously in the inventory
 	 */
 	public List<ItemStack> clearToList() {
-		List<ItemStack> list = (List<ItemStack>)this.stacks.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toList());
+		List<ItemStack> list = (List<ItemStack>)this.heldStacks.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toList());
 		this.clear();
 		return list;
 	}
 
 	@Override
 	public ItemStack removeStack(int slot, int amount) {
-		ItemStack itemStack = Inventories.splitStack(this.stacks, slot, amount);
+		ItemStack itemStack = Inventories.splitStack(this.heldStacks, slot, amount);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
@@ -152,7 +152,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	public boolean canInsert(ItemStack stack) {
 		boolean bl = false;
 
-		for (ItemStack itemStack : this.stacks) {
+		for (ItemStack itemStack : this.heldStacks) {
 			if (itemStack.isEmpty() || ItemStack.canCombine(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
 				bl = true;
 				break;
@@ -164,18 +164,18 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public ItemStack removeStack(int slot) {
-		ItemStack itemStack = this.stacks.get(slot);
+		ItemStack itemStack = this.heldStacks.get(slot);
 		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.stacks.set(slot, ItemStack.EMPTY);
+			this.heldStacks.set(slot, ItemStack.EMPTY);
 			return itemStack;
 		}
 	}
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
-		this.stacks.set(slot, stack);
+		this.heldStacks.set(slot, stack);
 		if (!stack.isEmpty() && stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());
 		}
@@ -190,7 +190,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public boolean isEmpty() {
-		for (ItemStack itemStack : this.stacks) {
+		for (ItemStack itemStack : this.heldStacks) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -215,19 +215,19 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public void clear() {
-		this.stacks.clear();
+		this.heldStacks.clear();
 		this.markDirty();
 	}
 
 	@Override
 	public void provideRecipeInputs(RecipeMatcher finder) {
-		for (ItemStack itemStack : this.stacks) {
+		for (ItemStack itemStack : this.heldStacks) {
 			finder.addInput(itemStack);
 		}
 	}
 
 	public String toString() {
-		return ((List)this.stacks.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toList())).toString();
+		return ((List)this.heldStacks.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toList())).toString();
 	}
 
 	private void addToNewSlot(ItemStack stack) {
@@ -297,5 +297,9 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		}
 
 		return nbtList;
+	}
+
+	public DefaultedList<ItemStack> getHeldStacks() {
+		return this.heldStacks;
 	}
 }

@@ -9,7 +9,6 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSettingsScreen extends RealmsScreen {
@@ -18,7 +17,6 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	private static final Text WORLD_DESCRIPTION_TEXT = Text.translatable("mco.configure.world.description");
 	private final RealmsConfigureWorldScreen parent;
 	private final RealmsServer serverData;
-	private ButtonWidget doneButton;
 	private TextFieldWidget descEdit;
 	private TextFieldWidget nameEdit;
 
@@ -29,19 +27,8 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void tick() {
-		this.doneButton.active = !Util.isBlank(this.nameEdit.getText());
-	}
-
-	@Override
 	public void init() {
 		int i = this.width / 2 - 106;
-		this.doneButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.done"), button -> this.save()).dimensions(i - 2, row(12), 106, 20).build()
-		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 2, row(12), 106, 20).build()
-		);
 		String string = this.serverData.state == RealmsServer.State.OPEN ? "mco.configure.world.buttons.close" : "mco.configure.world.buttons.open";
 		ButtonWidget buttonWidget = ButtonWidget.builder(Text.translatable(string), button -> {
 			if (this.serverData.state == RealmsServer.State.OPEN) {
@@ -59,35 +46,33 @@ public class RealmsSettingsScreen extends RealmsScreen {
 			}
 		}).dimensions(this.width / 2 - 53, row(0), 106, 20).build();
 		this.addDrawableChild(buttonWidget);
-		this.nameEdit = new TextFieldWidget(this.client.textRenderer, i, row(4), 212, 20, null, Text.translatable("mco.configure.world.name"));
+		this.nameEdit = new TextFieldWidget(this.client.textRenderer, i, row(4), 212, 20, Text.translatable("mco.configure.world.name"));
 		this.nameEdit.setMaxLength(32);
 		this.nameEdit.setText(this.serverData.getName());
-		this.addSelectableChild(this.nameEdit);
-		this.focusOn(this.nameEdit);
-		this.descEdit = new TextFieldWidget(this.client.textRenderer, i, row(8), 212, 20, null, Text.translatable("mco.configure.world.description"));
+		this.addDrawableChild(this.nameEdit);
+		this.setInitialFocus(this.nameEdit);
+		this.descEdit = new TextFieldWidget(this.client.textRenderer, i, row(8), 212, 20, Text.translatable("mco.configure.world.description"));
 		this.descEdit.setMaxLength(32);
 		this.descEdit.setText(this.serverData.getDescription());
-		this.addSelectableChild(this.descEdit);
+		this.addDrawableChild(this.descEdit);
+		ButtonWidget buttonWidget2 = this.addDrawableChild(
+			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.done"), button -> this.save()).dimensions(i - 2, row(12), 106, 20).build()
+		);
+		this.nameEdit.setChangedListener(name -> buttonWidget2.active = !Util.isBlank(name));
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).dimensions(this.width / 2 + 2, row(12), 106, 20).build());
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.setScreen(this.parent);
-			return true;
-		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
-		context.drawText(this.textRenderer, WORLD_NAME_TEXT, this.width / 2 - 106, row(3), -6250336, false);
-		context.drawText(this.textRenderer, WORLD_DESCRIPTION_TEXT, this.width / 2 - 106, row(7), -6250336, false);
-		this.nameEdit.render(context, mouseX, mouseY, delta);
-		this.descEdit.render(context, mouseX, mouseY, delta);
+		context.drawText(this.textRenderer, WORLD_NAME_TEXT, this.width / 2 - 106, row(3), -1, false);
+		context.drawText(this.textRenderer, WORLD_DESCRIPTION_TEXT, this.width / 2 - 106, row(7), -1, false);
 	}
 
 	public void save() {

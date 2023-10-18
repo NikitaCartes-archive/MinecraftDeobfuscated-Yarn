@@ -315,7 +315,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	@Override
-	public void onCraft(ItemStack stack, World world, PlayerEntity player) {
+	public void onCraft(ItemStack stack, World world) {
 		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null && nbtCompound.contains("map_scale_direction", NbtElement.NUMBER_TYPE)) {
 			scale(stack, world, nbtCompound.getInt("map_scale_direction"));

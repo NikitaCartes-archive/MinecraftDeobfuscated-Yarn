@@ -258,7 +258,7 @@ public class PackScreen extends Screen {
 							}
 
 							if (!list3.isEmpty()) {
-								this.client.setScreen(SymlinkWarningScreen.pack(this));
+								this.client.setScreen(SymlinkWarningScreen.pack(() -> this.client.setScreen(this)));
 								return;
 							}
 

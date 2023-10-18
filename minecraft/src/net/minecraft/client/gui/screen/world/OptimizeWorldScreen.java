@@ -16,8 +16,11 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.SaveLoader;
+import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -46,17 +49,20 @@ public class OptimizeWorldScreen extends Screen {
 		MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache
 	) {
 		try {
-			OptimizeWorldScreen var8;
-			try (SaveLoader saveLoader = client.createIntegratedServerLoader().createSaveLoader(storageSession, false)) {
+			IntegratedServerLoader integratedServerLoader = client.createIntegratedServerLoader();
+			ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(storageSession);
+
+			OptimizeWorldScreen var10;
+			try (SaveLoader saveLoader = integratedServerLoader.load(storageSession.readLevelProperties(), false, resourcePackManager)) {
 				SaveProperties saveProperties = saveLoader.saveProperties();
 				DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
 				storageSession.backupLevelDataFile(immutable, saveProperties);
-				var8 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutable.get(RegistryKeys.DIMENSION));
+				var10 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutable.get(RegistryKeys.DIMENSION));
 			}
 
-			return var8;
-		} catch (Exception var11) {
-			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var11);
+			return var10;
+		} catch (Exception var13) {
+			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var13);
 			return null;
 		}
 	}

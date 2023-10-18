@@ -24,7 +24,6 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -59,7 +58,6 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private ButtonWidget resetWorldButton;
 	private ButtonWidget switchMinigameButton;
 	private boolean stateChanged;
-	private int clicks;
 	private final List<RealmsWorldSlotButton> slotButtons = Lists.<RealmsWorldSlotButton>newArrayList();
 
 	public RealmsConfigureWorldScreen(RealmsMainScreen parent, long serverId) {
@@ -141,9 +139,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 				.dimensions(this.buttonLeft(2), row(13) - 5, 90, 20)
 				.build()
 		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.BACK, button -> this.backButtonClicked()).dimensions(this.right_x - 80 + 8, row(13) - 5, 70, 20).build()
-		);
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.right_x - 80 + 8, row(13) - 5, 70, 20).build());
 		this.backupButton.active = true;
 		if (this.server == null) {
 			this.hideMinigameButtons();
@@ -164,31 +160,33 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private RealmsWorldSlotButton addSlotButton(int slotIndex) {
 		int i = this.frame(slotIndex);
 		int j = row(5) + 5;
-		RealmsWorldSlotButton realmsWorldSlotButton = new RealmsWorldSlotButton(
-			i, j, 80, 80, () -> this.server, tooltip -> this.tooltip = tooltip, slotIndex, button -> {
-				RealmsWorldSlotButton.State state = ((RealmsWorldSlotButton)button).getState();
-				if (state != null) {
-					switch (state.action) {
-						case NOTHING:
-							break;
-						case JOIN:
-							this.joinRealm(this.server);
-							break;
-						case SWITCH_SLOT:
-							if (state.minigame) {
-								this.switchToMinigame();
-							} else if (state.empty) {
-								this.switchToEmptySlot(slotIndex, this.server);
-							} else {
-								this.switchToFullSlot(slotIndex, this.server);
-							}
-							break;
-						default:
-							throw new IllegalStateException("Unknown action " + state.action);
-					}
+		RealmsWorldSlotButton realmsWorldSlotButton = new RealmsWorldSlotButton(i, j, 80, 80, slotIndex, button -> {
+			RealmsWorldSlotButton.State state = ((RealmsWorldSlotButton)button).getState();
+			if (state != null) {
+				switch (state.action) {
+					case NOTHING:
+						break;
+					case JOIN:
+						this.joinRealm(this.server);
+						break;
+					case SWITCH_SLOT:
+						if (state.minigame) {
+							this.switchToMinigame();
+						} else if (state.empty) {
+							this.switchToEmptySlot(slotIndex, this.server);
+						} else {
+							this.switchToFullSlot(slotIndex, this.server);
+						}
+						break;
+					default:
+						throw new IllegalStateException("Unknown action " + state.action);
 				}
 			}
-		);
+		});
+		if (this.server != null) {
+			realmsWorldSlotButton.setServer(this.server);
+		}
+
 		return this.addDrawableChild(realmsWorldSlotButton);
 	}
 
@@ -198,17 +196,6 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	private int buttonCenter(int i, int total) {
 		return this.width / 2 - (total * 105 - 5) / 2 + i * 105;
-	}
-
-	@Override
-	public void tick() {
-		super.tick();
-		this.clicks--;
-		if (this.clicks < 0) {
-			this.clicks = 0;
-		}
-
-		this.slotButtons.forEach(RealmsWorldSlotButton::tick);
 	}
 
 	@Override
@@ -232,10 +219,6 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 					this.textRenderer, Text.translatable("mco.configure.world.minigame", this.server.getMinigameName()), this.left_x + 80 + 20 + 10, row(13), -1, false
 				);
 			}
-
-			if (this.tooltip != null) {
-				context.drawTooltip(this.textRenderer, this.tooltip, mouseX, mouseY);
-			}
 		}
 	}
 
@@ -244,16 +227,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.backButtonClicked();
-			return true;
-		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
-	}
-
-	private void backButtonClicked() {
+	public void close() {
 		if (this.stateChanged) {
 			this.parent.removeSelection();
 		}
@@ -276,6 +250,10 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 						this.addButton(this.optionsButton);
 						this.addButton(this.backupButton);
 						this.addButton(this.resetWorldButton);
+					}
+
+					for (RealmsWorldSlotButton realmsWorldSlotButton : this.slotButtons) {
+						realmsWorldSlotButton.setServer(realmsServer);
 					}
 				});
 			} catch (RealmsServiceException var5) {
@@ -318,6 +296,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 				new RealmsLongConfirmationScreen(
 					confirmed -> {
 						if (confirmed) {
+							this.stateChanged();
 							this.client
 								.setScreen(
 									new RealmsLongRunningMcoTaskScreen(
@@ -344,6 +323,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 				new RealmsLongConfirmationScreen(
 					confirmed -> {
 						if (confirmed) {
+							this.stateChanged();
 							RealmsCreateWorldScreen realmsCreateWorldScreen = RealmsCreateWorldScreen.newWorld(
 								this, selectedSlot, serverData, () -> this.client.execute(() -> this.client.setScreen(this.getNewScreen()))
 							);
@@ -383,7 +363,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private void drawServerState(DrawContext context, int x, int y, int mouseX, int mouseY, Identifier texture, Supplier<Text> tooltipGetter) {
 		context.drawGuiTexture(texture, x, y, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
-			this.tooltip = (Text)tooltipGetter.get();
+			this.setTooltip((Text)tooltipGetter.get());
 		}
 	}
 
@@ -435,6 +415,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			realmsClient.update(this.server.id, name, string);
 			this.server.setName(name);
 			this.server.setDescription(string);
+			this.stateChanged();
 		} catch (RealmsServiceException var6) {
 			LOGGER.error("Couldn't save settings", (Throwable)var6);
 			this.client.setScreen(new RealmsGenericErrorScreen(var6, this));
@@ -458,6 +439,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	private void switchMinigame(@Nullable WorldTemplate template) {
 		if (template != null && WorldTemplate.WorldTemplateType.MINIGAME == template.type) {
+			this.stateChanged();
 			this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchMinigameTask(this.server.id, template, this.getNewScreen())));
 		} else {
 			this.client.setScreen(this);
@@ -465,6 +447,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	public RealmsConfigureWorldScreen getNewScreen() {
-		return new RealmsConfigureWorldScreen(this.parent, this.serverId);
+		RealmsConfigureWorldScreen realmsConfigureWorldScreen = new RealmsConfigureWorldScreen(this.parent, this.serverId);
+		realmsConfigureWorldScreen.stateChanged = this.stateChanged;
+		return realmsConfigureWorldScreen;
 	}
 }

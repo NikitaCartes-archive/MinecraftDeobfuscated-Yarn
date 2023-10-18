@@ -51,10 +51,10 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		MinecraftServer minecraftServer = source.getServer();
 		CompletableFuture<FilteredMessage> completableFuture = filterText(source, message);
 		Text text = minecraftServer.getMessageDecorator().decorate(source.getPlayer(), message.getContent());
-		source.getMessageChainTaskQueue().append(executor -> completableFuture.thenAcceptAsync(filtered -> {
-				SignedMessage signedMessage2 = message.withUnsignedContent(text).withFilterMask(filtered.mask());
-				callback.accept(signedMessage2);
-			}, executor));
+		source.getMessageChainTaskQueue().append(completableFuture, filtered -> {
+			SignedMessage signedMessage2 = message.withUnsignedContent(text).withFilterMask(filtered.mask());
+			callback.accept(signedMessage2);
+		});
 	}
 
 	private static void chainUnsigned(Consumer<SignedMessage> callback, ServerCommandSource source, SignedMessage message) {

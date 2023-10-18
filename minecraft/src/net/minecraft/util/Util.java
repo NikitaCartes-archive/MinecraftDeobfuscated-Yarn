@@ -86,6 +86,7 @@ import org.slf4j.Logger;
 public class Util {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int MAX_PARALLELISM = 255;
+	private static final int BACKUP_ATTEMPTS = 10;
 	private static final String MAX_BG_THREADS_PROPERTY = "max.bg.threads";
 	private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
 	private static final ExecutorService MAIN_WORKER_EXECUTOR = createWorker("Main");
@@ -287,8 +288,8 @@ public class Util {
 			t = t.getCause();
 		}
 
-		if (t instanceof CrashException) {
-			Bootstrap.println(((CrashException)t).getReport().asString());
+		if (t instanceof CrashException crashException) {
+			Bootstrap.println(crashException.getReport().asString());
 			System.exit(-1);
 		}
 
@@ -765,24 +766,17 @@ public class Util {
 	 * 
 	 * @param noRestoreOnFail if {@code true}, does not restore the current file when replacing fails
 	 */
-	public static void backupAndReplace(File current, File newPath, File backup, boolean noRestoreOnFail) {
-		backupAndReplace(current.toPath(), newPath.toPath(), backup.toPath(), noRestoreOnFail);
-	}
-
-	/**
-	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}.
-	 * 
-	 * @param noRestoreOnFail if {@code true}, does not restore the current file when replacing fails
-	 */
-	public static void backupAndReplace(Path current, Path newPath, Path backup, boolean noRestoreOnFail) {
-		int i = 10;
-		if (!Files.exists(current, new LinkOption[0])
-			|| attemptTasks(10, "create backup " + backup, deleteTask(backup), renameTask(current, backup), existenceCheckTask(backup))) {
-			if (attemptTasks(10, "remove old " + current, deleteTask(current), deletionVerifyTask(current))) {
-				if (!attemptTasks(10, "replace " + current + " with " + newPath, renameTask(newPath, current), existenceCheckTask(current)) && !noRestoreOnFail) {
-					attemptTasks(10, "restore " + current + " from " + backup, renameTask(backup, current), existenceCheckTask(current));
-				}
-			}
+	public static boolean backupAndReplace(Path current, Path newPath, Path backup, boolean noRestoreOnFail) {
+		if (Files.exists(current, new LinkOption[0])
+			&& !attemptTasks(10, "create backup " + backup, deleteTask(backup), renameTask(current, backup), existenceCheckTask(backup))) {
+			return false;
+		} else if (!attemptTasks(10, "remove old " + current, deleteTask(current), deletionVerifyTask(current))) {
+			return false;
+		} else if (!attemptTasks(10, "replace " + current + " with " + newPath, renameTask(newPath, current), existenceCheckTask(current)) && !noRestoreOnFail) {
+			attemptTasks(10, "restore " + current + " from " + backup, renameTask(backup, current), existenceCheckTask(current));
+			return false;
+		} else {
+			return true;
 		}
 	}
 

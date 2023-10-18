@@ -55,19 +55,19 @@ public class VertexBuffer implements AutoCloseable {
 	 * buffer before calling this method.
 	 */
 	public void upload(BufferBuilder.BuiltBuffer buffer) {
-		if (!this.isClosed()) {
-			RenderSystem.assertOnRenderThread();
-
-			try {
+		try {
+			if (!this.isClosed()) {
+				RenderSystem.assertOnRenderThread();
 				BufferBuilder.DrawParameters drawParameters = buffer.getParameters();
 				this.vertexFormat = this.uploadVertexBuffer(drawParameters, buffer.getVertexBuffer());
 				this.sharedSequentialIndexBuffer = this.uploadIndexBuffer(drawParameters, buffer.getIndexBuffer());
 				this.indexCount = drawParameters.indexCount();
 				this.indexType = drawParameters.indexType();
 				this.drawMode = drawParameters.mode();
-			} finally {
-				buffer.release();
+				return;
 			}
+		} finally {
+			buffer.release();
 		}
 	}
 

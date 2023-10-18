@@ -33,14 +33,14 @@ public class TextCodecs {
 	}
 
 	public static <T extends StringIdentifiable, E> MapCodec<E> dispatchingCodec(
-		T[] types, Function<T, MapCodec<? extends E>> codecGetter, Function<E, T> typeGetter
+		T[] types, Function<T, MapCodec<? extends E>> typeToCodec, Function<E, T> valueToType, String dispatchingKey
 	) {
 		MapCodec<E> mapCodec = new TextCodecs.FuzzyCodec(
-			Stream.of(types).map(codecGetter).toList(), object -> (MapEncoder)codecGetter.apply((StringIdentifiable)typeGetter.apply(object))
+			Stream.of(types).map(typeToCodec).toList(), object -> (MapEncoder)typeToCodec.apply((StringIdentifiable)valueToType.apply(object))
 		);
 		Codec<T> codec = StringIdentifiable.createBasicCodec(() -> types);
-		MapCodec<E> mapCodec2 = codec.dispatchMap(typeGetter, type -> ((MapCodec)codecGetter.apply(type)).codec());
-		MapCodec<E> mapCodec3 = Codec.mapEither(mapCodec2, mapCodec).xmap(either -> either.map(object -> object, object -> object), Either::right);
+		MapCodec<E> mapCodec2 = codec.dispatchMap(dispatchingKey, valueToType, type -> ((MapCodec)typeToCodec.apply(type)).codec());
+		MapCodec<E> mapCodec3 = new TextCodecs.DispatchingCodec<>(dispatchingKey, mapCodec2, mapCodec);
 		return Codecs.orCompressed(mapCodec3, mapCodec2);
 	}
 
@@ -48,7 +48,7 @@ public class TextCodecs {
 		TextContent.Type<?>[] types = new TextContent.Type[]{
 			PlainTextContent.TYPE, TranslatableTextContent.TYPE, KeybindTextContent.TYPE, ScoreTextContent.TYPE, SelectorTextContent.TYPE, NbtTextContent.TYPE
 		};
-		MapCodec<TextContent> mapCodec = dispatchingCodec(types, TextContent.Type::codec, TextContent::getType);
+		MapCodec<TextContent> mapCodec = dispatchingCodec(types, TextContent.Type::codec, TextContent::getType, "type");
 		Codec<Text> codec = RecordCodecBuilder.create(
 			instance -> instance.group(
 						mapCodec.forGetter(Text::getContent),
@@ -62,6 +62,33 @@ public class TextCodecs {
 				String string = text.getLiteralString();
 				return string != null ? Either.left(Either.left(string)) : Either.right(text);
 			});
+	}
+
+	static class DispatchingCodec<T> extends MapCodec<T> {
+		private final String dispatchingKey;
+		private final MapCodec<T> withKeyCodec;
+		private final MapCodec<T> withoutKeyCodec;
+
+		public DispatchingCodec(String dispatchingKey, MapCodec<T> withKeyCodec, MapCodec<T> withoutKeyCodec) {
+			this.dispatchingKey = dispatchingKey;
+			this.withKeyCodec = withKeyCodec;
+			this.withoutKeyCodec = withoutKeyCodec;
+		}
+
+		@Override
+		public <O> DataResult<T> decode(DynamicOps<O> ops, MapLike<O> input) {
+			return input.get(this.dispatchingKey) != null ? this.withKeyCodec.decode(ops, input) : this.withoutKeyCodec.decode(ops, input);
+		}
+
+		@Override
+		public <O> RecordBuilder<O> encode(T input, DynamicOps<O> ops, RecordBuilder<O> prefix) {
+			return this.withoutKeyCodec.encode(input, ops, prefix);
+		}
+
+		@Override
+		public <T1> Stream<T1> keys(DynamicOps<T1> ops) {
+			return Stream.concat(this.withKeyCodec.keys(ops), this.withoutKeyCodec.keys(ops)).distinct();
+		}
 	}
 
 	static class FuzzyCodec<T> extends MapCodec<T> {

@@ -155,6 +155,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.PORTAL, PortalParticle.Factory::new);
 		this.registerFactory(ParticleTypes.RAIN, RainSplashParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SMOKE, FireSmokeParticle.Factory::new);
+		this.registerFactory(ParticleTypes.WHITE_SMOKE, WhiteSmokeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SNEEZE, CloudParticle.SneezeFactory::new);
 		this.registerFactory(ParticleTypes.SNOWFLAKE, SnowflakeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SPIT, SpitParticle.Factory::new);

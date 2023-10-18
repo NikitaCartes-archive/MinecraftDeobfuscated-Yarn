@@ -105,11 +105,11 @@ public class RealmsServer extends ValueObject {
 
 		try {
 			realmsServer.id = JsonUtils.getLongOr("id", node, -1L);
-			realmsServer.remoteSubscriptionId = JsonUtils.getStringOr("remoteSubscriptionId", node, null);
-			realmsServer.name = JsonUtils.getStringOr("name", node, null);
-			realmsServer.description = JsonUtils.getStringOr("motd", node, null);
-			realmsServer.state = getState(JsonUtils.getStringOr("state", node, RealmsServer.State.CLOSED.name()));
-			realmsServer.owner = JsonUtils.getStringOr("owner", node, null);
+			realmsServer.remoteSubscriptionId = JsonUtils.getNullableStringOr("remoteSubscriptionId", node, null);
+			realmsServer.name = JsonUtils.getNullableStringOr("name", node, null);
+			realmsServer.description = JsonUtils.getNullableStringOr("motd", node, null);
+			realmsServer.state = getState(JsonUtils.getNullableStringOr("state", node, RealmsServer.State.CLOSED.name()));
+			realmsServer.owner = JsonUtils.getNullableStringOr("owner", node, null);
 			if (node.get("players") != null && node.get("players").isJsonArray()) {
 				realmsServer.players = parseInvited(node.get("players").getAsJsonArray());
 				sortInvited(realmsServer);
@@ -120,7 +120,7 @@ public class RealmsServer extends ValueObject {
 			realmsServer.daysLeft = JsonUtils.getIntOr("daysLeft", node, 0);
 			realmsServer.expired = JsonUtils.getBooleanOr("expired", node, false);
 			realmsServer.expiredTrial = JsonUtils.getBooleanOr("expiredTrial", node, false);
-			realmsServer.worldType = getWorldType(JsonUtils.getStringOr("worldType", node, RealmsServer.WorldType.NORMAL.name()));
+			realmsServer.worldType = getWorldType(JsonUtils.getNullableStringOr("worldType", node, RealmsServer.WorldType.NORMAL.name()));
 			realmsServer.ownerUUID = JsonUtils.getUuidOr("ownerUUID", node, Util.NIL_UUID);
 			if (node.get("slots") != null && node.get("slots").isJsonArray()) {
 				realmsServer.slots = parseSlots(node.get("slots").getAsJsonArray());
@@ -128,14 +128,14 @@ public class RealmsServer extends ValueObject {
 				realmsServer.slots = getEmptySlots();
 			}
 
-			realmsServer.minigameName = JsonUtils.getStringOr("minigameName", node, null);
+			realmsServer.minigameName = JsonUtils.getNullableStringOr("minigameName", node, null);
 			realmsServer.activeSlot = JsonUtils.getIntOr("activeSlot", node, -1);
 			realmsServer.minigameId = JsonUtils.getIntOr("minigameId", node, -1);
-			realmsServer.minigameImage = JsonUtils.getStringOr("minigameImage", node, null);
+			realmsServer.minigameImage = JsonUtils.getNullableStringOr("minigameImage", node, null);
 			realmsServer.parentWorldId = JsonUtils.getLongOr("parentWorldId", node, -1L);
-			realmsServer.parentWorldName = JsonUtils.getStringOr("parentWorldName", node, null);
-			realmsServer.activeVersion = JsonUtils.getStringOr("activeVersion", node, "");
-			realmsServer.compatibility = getCompatibility(JsonUtils.getStringOr("compatibility", node, RealmsServer.Compatibility.UNVERIFIABLE.name()));
+			realmsServer.parentWorldName = JsonUtils.getNullableStringOr("parentWorldName", node, null);
+			realmsServer.activeVersion = JsonUtils.getNullableStringOr("activeVersion", node, "");
+			realmsServer.compatibility = getCompatibility(JsonUtils.getNullableStringOr("compatibility", node, RealmsServer.Compatibility.UNVERIFIABLE.name()));
 		} catch (Exception var3) {
 			LOGGER.error("Could not parse McoServer: {}", var3.getMessage());
 		}
@@ -160,7 +160,7 @@ public class RealmsServer extends ValueObject {
 			try {
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				PlayerInfo playerInfo = new PlayerInfo();
-				playerInfo.setName(JsonUtils.getStringOr("name", jsonObject, null));
+				playerInfo.setName(JsonUtils.getNullableStringOr("name", jsonObject, null));
 				playerInfo.setUuid(JsonUtils.getUuidOr("uuid", jsonObject, Util.NIL_UUID));
 				playerInfo.setOperator(JsonUtils.getBooleanOr("operator", jsonObject, false));
 				playerInfo.setAccepted(JsonUtils.getBooleanOr("accepted", jsonObject, false));
@@ -236,7 +236,7 @@ public class RealmsServer extends ValueObject {
 		}
 	}
 
-	private static RealmsServer.Compatibility getCompatibility(@Nullable String compatibility) {
+	public static RealmsServer.Compatibility getCompatibility(@Nullable String compatibility) {
 		try {
 			return RealmsServer.Compatibility.valueOf(compatibility);
 		} catch (Exception var2) {
@@ -245,15 +245,15 @@ public class RealmsServer extends ValueObject {
 	}
 
 	public boolean isCompatible() {
-		return this.compatibility == RealmsServer.Compatibility.COMPATIBLE;
+		return this.compatibility.isCompatible();
 	}
 
 	public boolean needsUpgrade() {
-		return this.compatibility == RealmsServer.Compatibility.NEEDS_UPGRADE;
+		return this.compatibility.needsUpgrade();
 	}
 
 	public boolean needsDowngrade() {
-		return this.compatibility == RealmsServer.Compatibility.NEEDS_DOWNGRADE;
+		return this.compatibility.needsDowngrade();
 	}
 
 	public int hashCode() {
@@ -339,6 +339,18 @@ public class RealmsServer extends ValueObject {
 		NEEDS_DOWNGRADE,
 		NEEDS_UPGRADE,
 		COMPATIBLE;
+
+		public boolean isCompatible() {
+			return this == COMPATIBLE;
+		}
+
+		public boolean needsUpgrade() {
+			return this == NEEDS_UPGRADE;
+		}
+
+		public boolean needsDowngrade() {
+			return this == NEEDS_DOWNGRADE;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -74,6 +74,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType PORTAL = register("portal", false);
 	public static final DefaultParticleType RAIN = register("rain", false);
 	public static final DefaultParticleType SMOKE = register("smoke", false);
+	public static final DefaultParticleType WHITE_SMOKE = register("white_smoke", false);
 	public static final DefaultParticleType SNEEZE = register("sneeze", false);
 	public static final DefaultParticleType SPIT = register("spit", true);
 	public static final DefaultParticleType SQUID_INK = register("squid_ink", true);

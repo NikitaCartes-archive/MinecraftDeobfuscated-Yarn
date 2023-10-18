@@ -8,7 +8,8 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.RenderLayer;
 
 @Environment(EnvType.CLIENT)
-public class BlockBufferBuilderStorage {
+public class BlockBufferBuilderStorage implements AutoCloseable {
+	public static final int EXPECTED_TOTAL_SIZE = RenderLayer.getBlockLayers().stream().mapToInt(RenderLayer::getExpectedBufferSize).sum();
 	private final Map<RenderLayer, BufferBuilder> builders = (Map<RenderLayer, BufferBuilder>)RenderLayer.getBlockLayers()
 		.stream()
 		.collect(Collectors.toMap(renderLayer -> renderLayer, renderLayer -> new BufferBuilder(renderLayer.getExpectedBufferSize())));
@@ -23,5 +24,9 @@ public class BlockBufferBuilderStorage {
 
 	public void reset() {
 		this.builders.values().forEach(BufferBuilder::reset);
+	}
+
+	public void close() {
+		this.builders.values().forEach(BufferBuilder::close);
 	}
 }

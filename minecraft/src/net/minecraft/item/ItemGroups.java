@@ -1092,6 +1092,7 @@ public class ItemGroups {
 					entries.add(Items.HONEY_BLOCK);
 					entries.add(Items.DISPENSER);
 					entries.add(Items.DROPPER);
+					entries.add(Items.field_46791);
 					entries.add(Items.HOPPER);
 					entries.add(Items.CHEST);
 					entries.add(Items.BARREL);
@@ -1099,6 +1100,7 @@ public class ItemGroups {
 					entries.add(Items.FURNACE);
 					entries.add(Items.TRAPPED_CHEST);
 					entries.add(Items.JUKEBOX);
+					entries.add(Items.DECORATED_POT);
 					entries.add(Items.OBSERVER);
 					entries.add(Items.NOTE_BLOCK);
 					entries.add(Items.COMPOSTER);

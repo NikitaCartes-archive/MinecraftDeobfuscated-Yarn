@@ -20,6 +20,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
@@ -101,7 +102,7 @@ public class NbtProvider implements DataProvider {
 			Path var6;
 			try {
 				Path path = outputPath.resolve(filename + ".snbt");
-				writeTo(writer, path, NbtHelper.toNbtProviderString(NbtIo.readCompressed(inputStream)));
+				writeTo(writer, path, NbtHelper.toNbtProviderString(NbtIo.readCompressed(inputStream, NbtTagSizeTracker.ofUnlimitedBytes())));
 				LOGGER.info("Converted {} from NBT to SNBT", filename);
 				var6 = path;
 			} catch (Throwable var8) {

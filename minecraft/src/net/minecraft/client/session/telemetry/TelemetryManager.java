@@ -46,7 +46,7 @@ public class TelemetryManager implements AutoCloseable {
 		builder.put(TelemetryEventProperty.OPERATING_SYSTEM, Util.getOperatingSystem().getName());
 		builder.put(TelemetryEventProperty.PLATFORM, System.getProperty("os.name"));
 		builder.put(TelemetryEventProperty.CLIENT_MODDED, MinecraftClient.getModStatus().isModded());
-		builder.putIfNonNull(TelemetryEventProperty.LAUNCHER_NAME, System.getProperty("minecraft.launcher.brand"));
+		builder.putIfNonNull(TelemetryEventProperty.LAUNCHER_NAME, MinecraftClient.getLauncherBrand());
 		this.propertyMap = builder.build();
 		this.logDirectory = client.runDirectory.toPath().resolve("logs/telemetry");
 		this.logManager = TelemetryLogManager.create(this.logDirectory);

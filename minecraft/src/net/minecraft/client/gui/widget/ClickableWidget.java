@@ -183,8 +183,8 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 			&& this.visible
 			&& mouseX >= (double)this.getX()
 			&& mouseY >= (double)this.getY()
-			&& mouseX < (double)(this.getX() + this.width)
-			&& mouseY < (double)(this.getY() + this.height);
+			&& mouseX < (double)(this.getX() + this.getWidth())
+			&& mouseY < (double)(this.getY() + this.getHeight());
 	}
 
 	@Nullable

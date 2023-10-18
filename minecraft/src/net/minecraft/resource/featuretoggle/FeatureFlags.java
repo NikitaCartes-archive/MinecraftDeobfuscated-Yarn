@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 public class FeatureFlags {
 	public static final FeatureFlag VANILLA;
 	public static final FeatureFlag BUNDLE;
+	public static final FeatureFlag UPDATE_1_21;
 	public static final FeatureFlag TRADE_REBALANCE;
 	public static final FeatureManager FEATURE_MANAGER;
 	public static final Codec<FeatureSet> CODEC;
@@ -33,6 +34,7 @@ public class FeatureFlags {
 		VANILLA = builder.addVanillaFlag("vanilla");
 		BUNDLE = builder.addVanillaFlag("bundle");
 		TRADE_REBALANCE = builder.addVanillaFlag("trade_rebalance");
+		UPDATE_1_21 = builder.addVanillaFlag("update_1_21");
 		FEATURE_MANAGER = builder.build();
 		CODEC = FEATURE_MANAGER.getCodec();
 		VANILLA_FEATURES = FeatureSet.of(VANILLA);

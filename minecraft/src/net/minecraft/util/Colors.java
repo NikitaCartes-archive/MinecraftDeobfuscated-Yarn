@@ -28,4 +28,12 @@ public class Colors {
 	 * Represents the color light red, {@code 0xFFDF5050}.
 	 */
 	public static final int LIGHT_RED = -2142128;
+	/**
+	 * Represents the color yellow, {@code 0xFFFFFF00}.
+	 */
+	public static final int YELLOW = -256;
+	/**
+	 * Represents the color light yellow, {@code 0xFFFFFF55}.
+	 */
+	public static final int LIGHT_YELLOW = -171;
 }

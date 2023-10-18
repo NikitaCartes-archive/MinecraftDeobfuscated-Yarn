@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.util.JsonUtils;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class RealmsWorldOptions extends ValueObject {
@@ -19,8 +20,9 @@ public class RealmsWorldOptions extends ValueObject {
 	public final boolean forceGameMode;
 	public final int difficulty;
 	public final int gameMode;
-	@Nullable
 	private final String slotName;
+	public final String version;
+	public final RealmsServer.Compatibility compatibility;
 	public long templateId;
 	@Nullable
 	public String templateImage;
@@ -35,6 +37,8 @@ public class RealmsWorldOptions extends ValueObject {
 	private static final int DEFAULT_DIFFICULTY = 2;
 	private static final int field_32108 = 0;
 	private static final String DEFAULT_SLOT_NAME = "";
+	private static final String field_46845 = "";
+	private static final RealmsServer.Compatibility DEFAULT_COMPATIBILITY = RealmsServer.Compatibility.UNVERIFIABLE;
 	private static final long DEFAULT_WORLD_TEMPLATE_ID = -1L;
 	private static final String DEFAULT_WORLD_TEMPLATE_IMAGE = null;
 
@@ -48,7 +52,9 @@ public class RealmsWorldOptions extends ValueObject {
 		int difficulty,
 		int gameMode,
 		boolean forceGameMode,
-		@Nullable String slotName
+		String slotName,
+		String version,
+		RealmsServer.Compatibility comptaibility
 	) {
 		this.pvp = pvp;
 		this.spawnAnimals = spawnAnimals;
@@ -60,10 +66,12 @@ public class RealmsWorldOptions extends ValueObject {
 		this.gameMode = gameMode;
 		this.forceGameMode = forceGameMode;
 		this.slotName = slotName;
+		this.version = version;
+		this.compatibility = comptaibility;
 	}
 
 	public static RealmsWorldOptions getDefaults() {
-		return new RealmsWorldOptions(true, true, true, true, 0, false, 2, 0, false, "");
+		return new RealmsWorldOptions(true, true, true, true, 0, false, 2, 0, false, "", "", DEFAULT_COMPATIBILITY);
 	}
 
 	public static RealmsWorldOptions getEmptyDefaults() {
@@ -87,18 +95,20 @@ public class RealmsWorldOptions extends ValueObject {
 			JsonUtils.getIntOr("difficulty", json, 2),
 			JsonUtils.getIntOr("gameMode", json, 0),
 			JsonUtils.getBooleanOr("forceGameMode", json, false),
-			JsonUtils.getStringOr("slotName", json, "")
+			JsonUtils.getStringOr("slotName", json, ""),
+			JsonUtils.getStringOr("version", json, ""),
+			RealmsServer.getCompatibility(JsonUtils.getStringOr("compatibility", json, RealmsServer.Compatibility.UNVERIFIABLE.name()))
 		);
 		realmsWorldOptions.templateId = JsonUtils.getLongOr("worldTemplateId", json, -1L);
-		realmsWorldOptions.templateImage = JsonUtils.getStringOr("worldTemplateImage", json, DEFAULT_WORLD_TEMPLATE_IMAGE);
+		realmsWorldOptions.templateImage = JsonUtils.getNullableStringOr("worldTemplateImage", json, DEFAULT_WORLD_TEMPLATE_IMAGE);
 		return realmsWorldOptions;
 	}
 
 	public String getSlotName(int index) {
-		if (this.slotName != null && !this.slotName.isEmpty()) {
-			return this.slotName;
-		} else {
+		if (Util.isBlank(this.slotName)) {
 			return this.empty ? I18n.translate("mco.configure.world.slot.empty") : this.getDefaultSlotName(index);
+		} else {
+			return this.slotName;
 		}
 	}
 
@@ -148,6 +158,14 @@ public class RealmsWorldOptions extends ValueObject {
 			jsonObject.addProperty("slotName", this.slotName);
 		}
 
+		if (!Objects.equals(this.version, "")) {
+			jsonObject.addProperty("version", this.version);
+		}
+
+		if (this.compatibility != DEFAULT_COMPATIBILITY) {
+			jsonObject.addProperty("compatibility", this.compatibility.name());
+		}
+
 		return jsonObject.toString();
 	}
 
@@ -162,7 +180,9 @@ public class RealmsWorldOptions extends ValueObject {
 			this.difficulty,
 			this.gameMode,
 			this.forceGameMode,
-			this.slotName
+			this.slotName,
+			this.version,
+			this.compatibility
 		);
 	}
 }

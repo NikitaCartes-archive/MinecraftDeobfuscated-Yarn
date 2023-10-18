@@ -45,7 +45,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorage;
-import net.minecraft.world.level.storage.LevelSummary;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -214,11 +213,11 @@ public class TitleScreen extends Screen {
 					Text.translatable("menu.playdemo"),
 					button -> {
 						if (bl) {
-							this.client.createIntegratedServerLoader().start(this, "Demo_World");
+							this.client.createIntegratedServerLoader().start("Demo_World", () -> this.client.setScreen(this));
 						} else {
 							this.client
 								.createIntegratedServerLoader()
-								.createAndStart("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, GeneratorOptions.DEMO_OPTIONS, WorldPresets::createDemoOptions);
+								.createAndStart("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, GeneratorOptions.DEMO_OPTIONS, WorldPresets::createDemoOptions, this);
 						}
 					}
 				)
@@ -232,14 +231,13 @@ public class TitleScreen extends Screen {
 						LevelStorage levelStorage = this.client.getLevelStorage();
 
 						try (LevelStorage.Session session = levelStorage.createSessionWithoutSymlinkCheck("Demo_World")) {
-							LevelSummary levelSummary = session.getLevelSummary();
-							if (levelSummary != null) {
+							if (session.levelDatExists()) {
 								this.client
 									.setScreen(
 										new ConfirmScreen(
 											this::onDemoDeletionConfirmed,
 											Text.translatable("selectWorld.deleteQuestion"),
-											Text.translatable("selectWorld.deleteWarning", levelSummary.getDisplayName()),
+											Text.translatable("selectWorld.deleteWarning", MinecraftServer.DEMO_LEVEL_INFO.getLevelName()),
 											Text.translatable("selectWorld.deleteButton"),
 											ScreenTexts.CANCEL
 										)
@@ -261,7 +259,7 @@ public class TitleScreen extends Screen {
 		try {
 			boolean var2;
 			try (LevelStorage.Session session = this.client.getLevelStorage().createSessionWithoutSymlinkCheck("Demo_World")) {
-				var2 = session.getLevelSummary() != null;
+				var2 = session.levelDatExists();
 			}
 
 			return var2;
@@ -296,7 +294,7 @@ public class TitleScreen extends Screen {
 				this.deprecationNotice.render(context, i);
 			}
 
-			if (this.splashText != null) {
+			if (this.splashText != null && !this.client.options.getHideSplashTexts().getValue()) {
 				this.splashText.render(context, this.width, this.textRenderer, i);
 			}
 

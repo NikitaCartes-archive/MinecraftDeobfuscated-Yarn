@@ -2,7 +2,9 @@ package net.minecraft.server.command;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandExceptionType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -29,10 +31,12 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.function.Tracer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -647,5 +651,16 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 	@Override
 	public CommandDispatcher<ServerCommandSource> getDispatcher() {
 		return this.getServer().getCommandFunctionManager().getDispatcher();
+	}
+
+	@Override
+	public void handleException(CommandExceptionType type, Message message, boolean silent, @Nullable Tracer tracer) {
+		if (tracer != null) {
+			tracer.traceError(message.getString());
+		}
+
+		if (!silent) {
+			this.sendError(Texts.toText(message));
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package net.minecraft.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -12,14 +13,27 @@ import net.fabricmc.api.Environment;
  */
 @Environment(EnvType.CLIENT)
 public class Tessellator {
-	private static final int field_32051 = 8388608;
-	private static final int DEFAULT_BUFFER_CAPACITY = 2097152;
+	private static final int field_46841 = 786432;
 	private final BufferBuilder buffer;
-	private static final Tessellator INSTANCE = new Tessellator();
+	@Nullable
+	private static Tessellator INSTANCE;
+
+	public static void initialize() {
+		RenderSystem.assertOnGameThreadOrInit();
+		if (INSTANCE != null) {
+			throw new IllegalStateException("Tesselator has already been initialized");
+		} else {
+			INSTANCE = new Tessellator();
+		}
+	}
 
 	public static Tessellator getInstance() {
 		RenderSystem.assertOnGameThreadOrInit();
-		return INSTANCE;
+		if (INSTANCE == null) {
+			throw new IllegalStateException("Tesselator has not been initialized");
+		} else {
+			return INSTANCE;
+		}
 	}
 
 	public Tessellator(int bufferCapacity) {
@@ -27,7 +41,7 @@ public class Tessellator {
 	}
 
 	public Tessellator() {
-		this(2097152);
+		this(786432);
 	}
 
 	/**

@@ -11,7 +11,6 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
@@ -38,6 +37,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 			gameOptions.getHideLightningFlashes(),
 			gameOptions.getMonochromeLogo(),
 			gameOptions.getPanoramaSpeed(),
+			gameOptions.getHideSplashTexts(),
 			gameOptions.getNarratorHotkey()
 		};
 	}
@@ -59,13 +59,9 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	@Override
 	protected void initFooter() {
 		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("options.accessibility.link"), button -> this.client.setScreen(new ConfirmLinkScreen(openInBrowser -> {
-					if (openInBrowser) {
-						Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");
-					}
-
-					this.client.setScreen(this);
-				}, "https://aka.ms/MinecraftJavaAccessibility", true))).dimensions(this.width / 2 - 155, this.height - 27, 150, 20).build()
+			ButtonWidget.builder(Text.translatable("options.accessibility.link"), ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftJavaAccessibility"))
+				.dimensions(this.width / 2 - 155, this.height - 27, 150, 20)
+				.build()
 		);
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 27, 150, 20).build()

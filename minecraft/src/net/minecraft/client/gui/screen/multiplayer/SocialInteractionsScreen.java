@@ -23,7 +23,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsScreen extends Screen {
@@ -124,13 +123,9 @@ public class SocialInteractionsScreen extends Screen {
 		this.searchBox.setChangedListener(this::onSearchChange);
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.playerList);
-		this.blockingButton = this.addDrawableChild(ButtonWidget.builder(BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-				if (confirmed) {
-					Util.getOperatingSystem().open("https://aka.ms/javablocking");
-				}
-
-				this.client.setScreen(this);
-			}, "https://aka.ms/javablocking", true))).dimensions(n, m, l, 20).build());
+		this.blockingButton = this.addDrawableChild(
+			ButtonWidget.builder(BLOCKING_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/javablocking")).dimensions(n, m, l, 20).build()
+		);
 		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
 	}

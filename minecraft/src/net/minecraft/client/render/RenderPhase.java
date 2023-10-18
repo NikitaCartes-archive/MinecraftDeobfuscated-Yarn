@@ -93,9 +93,6 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.ShaderProgram TRANSLUCENT_MOVING_BLOCK_PROGRAM = new RenderPhase.ShaderProgram(
 		GameRenderer::getRenderTypeTranslucentMovingBlockProgram
 	);
-	protected static final RenderPhase.ShaderProgram TRANSLUCENT_NO_CRUMBLING_PROGRAM = new RenderPhase.ShaderProgram(
-		GameRenderer::getRenderTypeTranslucentNoCrumblingProgram
-	);
 	protected static final RenderPhase.ShaderProgram ARMOR_CUTOUT_NO_CULL_PROGRAM = new RenderPhase.ShaderProgram(
 		GameRenderer::getRenderTypeArmorCutoutNoCullProgram
 	);

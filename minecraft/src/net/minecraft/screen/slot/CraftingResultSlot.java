@@ -47,11 +47,11 @@ public class CraftingResultSlot extends Slot {
 	@Override
 	protected void onCrafted(ItemStack stack) {
 		if (this.amount > 0) {
-			stack.onCraft(this.player.getWorld(), this.player, this.amount);
+			stack.onCraftByPlayer(this.player.getWorld(), this.player, this.amount);
 		}
 
 		if (this.inventory instanceof RecipeUnlocker recipeUnlocker) {
-			recipeUnlocker.unlockLastRecipe(this.player, this.input.getInputStacks());
+			recipeUnlocker.unlockLastRecipe(this.player, this.input.getHeldStacks());
 		}
 
 		this.amount = 0;

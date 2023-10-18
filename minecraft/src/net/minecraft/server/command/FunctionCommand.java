@@ -1,5 +1,6 @@
 package net.minecraft.server.command;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -39,7 +40,8 @@ public class FunctionCommand {
 	static final DynamicCommandExceptionType NO_FUNCTIONS_EXCEPTION = new DynamicCommandExceptionType(
 		argument -> Text.stringifiedTranslatable("commands.function.scheduled.no_functions", argument)
 	);
-	private static final Dynamic2CommandExceptionType INSTANTIATION_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
+	@VisibleForTesting
+	public static final Dynamic2CommandExceptionType INSTANTIATION_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
 		(argument, argument2) -> Text.stringifiedTranslatable("commands.function.instantiationFailure", argument, argument2)
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
@@ -156,12 +158,6 @@ public class FunctionCommand {
 				}
 
 				FunctionCommand.enqueueAction(collection, nbtCompound, serverCommandSource, serverCommandSource2, executionControl, FunctionCommand.RESULT_REPORTER);
-			}
-		}
-
-		protected void sendError(CommandSyntaxException commandSyntaxException, ServerCommandSource serverCommandSource, boolean bl) {
-			if (!bl) {
-				serverCommandSource.sendError(Texts.toText(commandSyntaxException.getRawMessage()));
 			}
 		}
 	}

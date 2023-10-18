@@ -15,7 +15,7 @@ public class PlayerActivity extends ValueObject {
 		PlayerActivity playerActivity = new PlayerActivity();
 
 		try {
-			playerActivity.profileUuid = JsonUtils.getStringOr("profileUuid", json, null);
+			playerActivity.profileUuid = JsonUtils.getNullableStringOr("profileUuid", json, null);
 			playerActivity.joinTime = JsonUtils.getLongOr("joinTime", json, Long.MIN_VALUE);
 			playerActivity.leaveTime = JsonUtils.getLongOr("leaveTime", json, Long.MIN_VALUE);
 		} catch (Exception var3) {

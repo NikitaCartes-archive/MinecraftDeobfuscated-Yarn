@@ -28,7 +28,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	public static final Text TITLE = Text.translatable("mco.upload.select.world.title");
 	private static final Text LOADING_ERROR_TEXT = Text.translatable("selectWorld.unable_to_load");
 	static final Text WORLD_LANG = Text.translatable("selectWorld.world");
-	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").styled(style -> style.withColor(-65536));
+	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").withColor(-65536);
 	static final Text CHEATS_TEXT = Text.translatable("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private final RealmsCreateWorldScreen parent;

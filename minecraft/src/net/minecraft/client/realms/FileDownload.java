@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Path;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,9 +22,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.realms.exception.RealmsDefaultUncaughtExceptionHandler;
 import net.minecraft.client.realms.gui.screen.RealmsDownloadLatestWorldScreen;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.util.WorldSavePath;
+import net.minecraft.nbt.NbtCrashException;
+import net.minecraft.nbt.NbtException;
 import net.minecraft.util.path.SymlinkValidationException;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -332,29 +330,14 @@ public class FileDownload {
 			}
 
 			try (LevelStorage.Session session2 = storage.createSession(string2)) {
-				session2.save(string2.trim());
-				Path path2 = session2.getDirectory(WorldSavePath.LEVEL_DAT);
-				readNbtFile(path2.toFile());
-			} catch (IOException var39) {
-				LOGGER.error("Failed to rename unpacked realms level {}", string2, var39);
+				session2.removePlayerAndSave(string2);
+			} catch (NbtException | NbtCrashException | IOException var39) {
+				LOGGER.error("Failed to modify unpacked realms level {}", string2, var39);
 			} catch (SymlinkValidationException var40) {
 				LOGGER.warn("{}", var40.getMessage());
 			}
 
 			this.resourcePackPath = new File(file, string2 + File.separator + "resources.zip");
-		}
-	}
-
-	private static void readNbtFile(File file) {
-		if (file.exists()) {
-			try {
-				NbtCompound nbtCompound = NbtIo.readCompressed(file);
-				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
-				nbtCompound2.remove("Player");
-				NbtIo.writeCompressed(nbtCompound, file);
-			} catch (Exception var3) {
-				LOGGER.info("Exception while removing player tag", (Throwable)var3);
-			}
 		}
 	}
 

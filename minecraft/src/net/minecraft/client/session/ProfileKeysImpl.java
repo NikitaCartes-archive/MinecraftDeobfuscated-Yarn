@@ -199,7 +199,7 @@ public class ProfileKeysImpl implements ProfileKeys {
 				throw new NetworkEncryptionException(var5);
 			}
 		} else {
-			throw new NetworkEncryptionException(new MissingException());
+			throw new NetworkEncryptionException(new MissingException("Missing public key"));
 		}
 	}
 }

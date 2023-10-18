@@ -757,9 +757,13 @@ public final class ItemStack {
 		}
 	}
 
-	public void onCraft(World world, PlayerEntity player, int amount) {
+	public void onCraftByPlayer(World world, PlayerEntity player, int amount) {
 		player.increaseStat(Stats.CRAFTED.getOrCreateStat(this.getItem()), amount);
-		this.getItem().onCraft(this, world, player);
+		this.getItem().onCraftByPlayer(this, world, player);
+	}
+
+	public void onCraftByCrafter(World world) {
+		this.getItem().onCraft(this, world);
 	}
 
 	public int getMaxUseTime() {

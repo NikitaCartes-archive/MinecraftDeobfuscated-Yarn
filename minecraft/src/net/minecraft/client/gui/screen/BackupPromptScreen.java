@@ -12,7 +12,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class BackupPromptScreen extends Screen {
-	private final Screen parent;
+	private final Runnable onCancel;
 	protected final BackupPromptScreen.Callback callback;
 	private final Text subtitle;
 	private final boolean showEraseCacheCheckbox;
@@ -20,9 +20,9 @@ public class BackupPromptScreen extends Screen {
 	protected int field_32236;
 	private CheckboxWidget eraseCacheCheckbox;
 
-	public BackupPromptScreen(Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
+	public BackupPromptScreen(Runnable onCancel, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
 		super(title);
-		this.parent = parent;
+		this.onCancel = onCancel;
 		this.callback = callback;
 		this.subtitle = subtitle;
 		this.showEraseCacheCheckbox = showEraseCacheCheckBox;
@@ -43,9 +43,7 @@ public class BackupPromptScreen extends Screen {
 				.dimensions(this.width / 2 - 155 + 160, 100 + i, 150, 20)
 				.build()
 		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 155 + 80, 124 + i, 150, 20).build()
-		);
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel.run()).dimensions(this.width / 2 - 155 + 80, 124 + i, 150, 20).build());
 		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, Text.translatable("selectWorld.backupEraseCache"), false);
 		if (this.showEraseCacheCheckbox) {
 			this.addDrawableChild(this.eraseCacheCheckbox);
@@ -67,7 +65,7 @@ public class BackupPromptScreen extends Screen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.setScreen(this.parent);
+			this.onCancel.run();
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);

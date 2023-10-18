@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 public class RenderSystem {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final ConcurrentLinkedQueue<RenderCall> recordingQueue = Queues.newConcurrentLinkedQueue();
-	private static final Tessellator RENDER_THREAD_TESSELATOR = new Tessellator();
+	private static final Tessellator RENDER_THREAD_TESSELATOR = new Tessellator(1536);
 	private static final int MINIMUM_ATLAS_TEXTURE_SIZE = 1024;
 	private static boolean isReplayingQueue;
 	@Nullable
@@ -1008,9 +1008,11 @@ public class RenderSystem {
 			if (!this.isLargeEnough(requiredSize)) {
 				requiredSize = MathHelper.roundUpToMultiple(requiredSize * 2, this.vertexCountInTriangulated);
 				RenderSystem.LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", this.size, requiredSize);
-				VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(requiredSize);
-				int i = MathHelper.roundUpToMultiple(requiredSize * indexType.size, 4);
-				GlStateManager._glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, (long)i, GlConst.GL_DYNAMIC_DRAW);
+				int i = requiredSize / this.vertexCountInTriangulated;
+				int j = i * this.vertexCountInShape;
+				VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(j);
+				int k = MathHelper.roundUpToMultiple(requiredSize * indexType.size, 4);
+				GlStateManager._glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, (long)k, GlConst.GL_DYNAMIC_DRAW);
 				ByteBuffer byteBuffer = GlStateManager.mapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, GlConst.GL_WRITE_ONLY);
 				if (byteBuffer == null) {
 					throw new RuntimeException("Failed to map GL buffer");
@@ -1018,8 +1020,8 @@ public class RenderSystem {
 					this.indexType = indexType;
 					it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.getIndexConsumer(byteBuffer);
 
-					for (int j = 0; j < requiredSize; j += this.vertexCountInTriangulated) {
-						this.triangulator.accept(intConsumer, j * this.vertexCountInShape / this.vertexCountInTriangulated);
+					for (int l = 0; l < requiredSize; l += this.vertexCountInTriangulated) {
+						this.triangulator.accept(intConsumer, l * this.vertexCountInShape / this.vertexCountInTriangulated);
 					}
 
 					GlStateManager._glUnmapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER);

@@ -125,7 +125,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<RecipeInp
 			ItemStack itemStack2 = slot2.getStack();
 			itemStack = itemStack2.copy();
 			if (slot == 0) {
-				this.context.run((world, pos) -> itemStack2.getItem().onCraft(itemStack2, world, player));
+				this.context.run((world, pos) -> itemStack2.getItem().onCraftByPlayer(itemStack2, world, player));
 				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}

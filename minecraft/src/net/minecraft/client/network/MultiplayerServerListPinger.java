@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class MultiplayerServerListPinger {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").styled(style -> style.withColor(-65536));
+	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(-65536);
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
 	public void add(ServerInfo entry, Runnable saver) throws UnknownHostException {

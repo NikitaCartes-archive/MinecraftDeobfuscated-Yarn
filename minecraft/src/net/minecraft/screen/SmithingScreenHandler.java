@@ -63,7 +63,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
-		stack.onCraft(player.getWorld(), player, stack.getCount());
+		stack.onCraftByPlayer(player.getWorld(), player, stack.getCount());
 		this.output.unlockLastRecipe(player, this.getInputStacks());
 		this.decrementStack(0);
 		this.decrementStack(1);

@@ -336,7 +336,8 @@ public class Structures {
 				ConstantHeightProvider.create(YOffset.fixed(-27)),
 				false,
 				Optional.empty(),
-				116
+				116,
+				List.of()
 			)
 		);
 		structureRegisterable.register(

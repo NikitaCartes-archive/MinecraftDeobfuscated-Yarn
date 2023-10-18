@@ -101,6 +101,10 @@ public class GameOptions {
 	private final SimpleOption<Boolean> hideLightningFlashes = SimpleOption.ofBoolean(
 		"options.hideLightningFlashes", SimpleOption.constantTooltip(HIDE_LIGHTNING_FLASHES_TOOLTIP), false
 	);
+	private static final Text HIDE_SPLASH_TEXTS_TOOLTIP = Text.translatable("options.hideSplashTexts.tooltip");
+	private final SimpleOption<Boolean> hideSplashTexts = SimpleOption.ofBoolean(
+		"options.hideSplashTexts", SimpleOption.constantTooltip(HIDE_SPLASH_TEXTS_TOOLTIP), false
+	);
 	private final SimpleOption<Double> mouseSensitivity = new SimpleOption<>("options.sensitivity", SimpleOption.emptyTooltip(), (optionText, value) -> {
 		if (value == 0.0) {
 			return getGenericValueText(optionText, Text.translatable("options.sensitivity.min"));
@@ -829,6 +833,10 @@ public class GameOptions {
 		return this.hideLightningFlashes;
 	}
 
+	public SimpleOption<Boolean> getHideSplashTexts() {
+		return this.hideSplashTexts;
+	}
+
 	public SimpleOption<Double> getMouseSensitivity() {
 		return this.mouseSensitivity;
 	}
@@ -1207,6 +1215,7 @@ public class GameOptions {
 		visitor.accept("toggleSprint", this.sprintToggled);
 		visitor.accept("darkMojangStudiosBackground", this.monochromeLogo);
 		visitor.accept("hideLightningFlashes", this.hideLightningFlashes);
+		visitor.accept("hideSplashTexts", this.hideSplashTexts);
 		visitor.accept("mouseSensitivity", this.mouseSensitivity);
 		visitor.accept("fov", this.fov);
 		visitor.accept("screenEffectScale", this.distortionEffectScale);

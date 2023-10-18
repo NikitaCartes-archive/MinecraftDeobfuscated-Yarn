@@ -138,6 +138,12 @@ public class SoundSystem {
 		}
 	}
 
+	public void stopAbruptly() {
+		if (this.started) {
+			this.soundEngine.close();
+		}
+	}
+
 	public void stop(SoundInstance sound) {
 		if (this.started) {
 			Channel.SourceManager sourceManager = (Channel.SourceManager)this.sources.get(sound);

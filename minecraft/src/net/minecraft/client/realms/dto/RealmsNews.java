@@ -19,7 +19,7 @@ public class RealmsNews extends ValueObject {
 		try {
 			JsonParser jsonParser = new JsonParser();
 			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
-			realmsNews.newsLink = JsonUtils.getStringOr("newsLink", jsonObject, null);
+			realmsNews.newsLink = JsonUtils.getNullableStringOr("newsLink", jsonObject, null);
 		} catch (Exception var4) {
 			LOGGER.error("Could not parse RealmsNews: {}", var4.getMessage());
 		}

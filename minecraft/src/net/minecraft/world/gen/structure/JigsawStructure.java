@@ -3,10 +3,13 @@ package net.minecraft.world.gen.structure;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
+import net.minecraft.structure.pool.alias.StructurePoolAliasBinding;
+import net.minecraft.structure.pool.alias.StructurePoolAliasLookup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +30,8 @@ public final class JigsawStructure extends Structure {
 							HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
 							Codec.BOOL.fieldOf("use_expansion_hack").forGetter(structure -> structure.useExpansionHack),
 							Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
-							Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
+							Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter),
+							Codec.list(StructurePoolAliasBinding.CODEC).optionalFieldOf("pool_aliases", List.of()).forGetter(structure -> structure.poolAliasBindings)
 						)
 						.apply(instance, JigsawStructure::new)
 			),
@@ -41,6 +45,7 @@ public final class JigsawStructure extends Structure {
 	private final boolean useExpansionHack;
 	private final Optional<Heightmap.Type> projectStartToHeightmap;
 	private final int maxDistanceFromCenter;
+	private final List<StructurePoolAliasBinding> poolAliasBindings;
 
 	private static DataResult<JigsawStructure> validate(JigsawStructure structure) {
 		int i = switch (structure.getTerrainAdaptation()) {
@@ -60,7 +65,8 @@ public final class JigsawStructure extends Structure {
 		HeightProvider startHeight,
 		boolean useExpansionHack,
 		Optional<Heightmap.Type> projectStartToHeightmap,
-		int maxDistanceFromCenter
+		int maxDistanceFromCenter,
+		List<StructurePoolAliasBinding> poolAliasBindings
 	) {
 		super(config);
 		this.startPool = startPool;
@@ -70,6 +76,7 @@ public final class JigsawStructure extends Structure {
 		this.useExpansionHack = useExpansionHack;
 		this.projectStartToHeightmap = projectStartToHeightmap;
 		this.maxDistanceFromCenter = maxDistanceFromCenter;
+		this.poolAliasBindings = poolAliasBindings;
 	}
 
 	public JigsawStructure(
@@ -80,11 +87,11 @@ public final class JigsawStructure extends Structure {
 		boolean useExpansionHack,
 		Heightmap.Type projectStartToHeightmap
 	) {
-		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.of(projectStartToHeightmap), 80);
+		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.of(projectStartToHeightmap), 80, List.of());
 	}
 
 	public JigsawStructure(Structure.Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, boolean useExpansionHack) {
-		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.empty(), 80);
+		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.empty(), 80, List.of());
 	}
 
 	@Override
@@ -93,12 +100,24 @@ public final class JigsawStructure extends Structure {
 		int i = this.startHeight.get(context.random(), new HeightContext(context.chunkGenerator(), context.world()));
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
 		return StructurePoolBasedGenerator.generate(
-			context, this.startPool, this.startJigsawName, this.size, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter
+			context,
+			this.startPool,
+			this.startJigsawName,
+			this.size,
+			blockPos,
+			this.useExpansionHack,
+			this.projectStartToHeightmap,
+			this.maxDistanceFromCenter,
+			StructurePoolAliasLookup.create(this.poolAliasBindings, blockPos, context.seed())
 		);
 	}
 
 	@Override
 	public StructureType<?> getType() {
 		return StructureType.JIGSAW;
+	}
+
+	public List<StructurePoolAliasBinding> getPoolAliasBindings() {
+		return this.poolAliasBindings;
 	}
 }

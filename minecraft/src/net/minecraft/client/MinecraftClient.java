@@ -167,6 +167,7 @@ import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.ClientSamplerSource;
 import net.minecraft.client.util.CommandHistoryManager;
+import net.minecraft.client.util.GlException;
 import net.minecraft.client.util.Icons;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ScreenshotRecorder;
@@ -551,8 +552,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		try {
 			this.window.setIcon(this.defaultResourcePack, SharedConstants.getGameVersion().isStable() ? Icons.RELEASE : Icons.SNAPSHOT);
-		} catch (IOException var12) {
-			LOGGER.error("Couldn't set icon", (Throwable)var12);
+		} catch (IOException var13) {
+			LOGGER.error("Couldn't set icon", (Throwable)var13);
 		}
 
 		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
@@ -603,7 +604,23 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(builtinModelItemRenderer);
 		this.itemRenderer = new ItemRenderer(this, this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
 		this.resourceManager.registerReloader(this.itemRenderer);
-		this.bufferBuilders = new BufferBuilderStorage();
+
+		try {
+			int i = Runtime.getRuntime().availableProcessors();
+			int j = this.is64Bit() ? i : Math.min(i, 4);
+			Tessellator.initialize();
+			this.bufferBuilders = new BufferBuilderStorage(j);
+		} catch (OutOfMemoryError var12) {
+			TinyFileDialogs.tinyfd_messageBox(
+				"Minecraft",
+				"Oh no! The game was unable to allocate memory off-heap while trying to start. You may try to free some memory by closing other applications on your computer, check that your system meets the minimum requirements, and try again. If the problem persists, please visit: https://aka.ms/Minecraft-Support",
+				"ok",
+				"error",
+				true
+			);
+			throw new GlException("Unable to allocate render buffers", var12);
+		}
+
 		this.socialInteractionsManager = new SocialInteractionsManager(this, this.userApiService);
 		this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), builtinModelItemRenderer, this.blockColors);
 		this.resourceManager.registerReloader(this.blockRenderManager);
@@ -850,10 +867,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			boolean bl = false;
 
 			while (this.running) {
-				if (this.crashReportSupplier != null) {
-					printCrashReport((CrashReport)this.crashReportSupplier.get());
-					return;
-				}
+				this.printCrashReport();
 
 				try {
 					TickDurationMonitor tickDurationMonitor = TickDurationMonitor.create("Renderer");
@@ -878,15 +892,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 			}
 		} catch (CrashException var5) {
-			this.addDetailsToCrashReport(var5.getReport());
-			this.cleanUpAfterCrash();
 			LOGGER.error(LogUtils.FATAL_MARKER, "Reported exception thrown!", (Throwable)var5);
-			printCrashReport(var5.getReport());
+			this.printCrashReport(var5.getReport());
 		} catch (Throwable var6) {
-			CrashReport crashReport = this.addDetailsToCrashReport(new CrashReport("Unexpected error", var6));
 			LOGGER.error(LogUtils.FATAL_MARKER, "Unreported exception thrown!", var6);
-			this.cleanUpAfterCrash();
-			printCrashReport(crashReport);
+			this.printCrashReport(new CrashReport("Unexpected error", var6));
 		}
 	}
 
@@ -969,14 +979,30 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.crashReportSupplier = () -> crashReport;
 	}
 
-	public static void printCrashReport(CrashReport report) {
-		File file = new File(getInstance().runDirectory, "crash-reports");
+	private void printCrashReport() {
+		if (this.crashReportSupplier != null) {
+			printCrashReport(this, this.runDirectory, (CrashReport)this.crashReportSupplier.get());
+		}
+	}
+
+	public void printCrashReport(CrashReport crashReport) {
+		CrashReport crashReport2 = this.addDetailsToCrashReport(crashReport);
+		this.cleanUpAfterCrash();
+		printCrashReport(this, this.runDirectory, crashReport2);
+	}
+
+	public static void printCrashReport(@Nullable MinecraftClient client, File runDirectory, CrashReport crashReport) {
+		File file = new File(runDirectory, "crash-reports");
 		File file2 = new File(file, "crash-" + Util.getFormattedCurrentTime() + "-client.txt");
-		Bootstrap.println(report.asString());
-		if (report.getFile() != null) {
-			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + report.getFile());
+		Bootstrap.println(crashReport.asString());
+		if (client != null) {
+			client.soundManager.stopAbruptly();
+		}
+
+		if (crashReport.getFile() != null) {
+			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getFile());
 			System.exit(-1);
-		} else if (report.writeToFile(file2)) {
+		} else if (crashReport.writeToFile(file2)) {
 			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + file2.getAbsolutePath());
 			System.exit(-1);
 		} else {
@@ -1440,7 +1466,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.world != null || this.currentScreen == null && this.overlay == null ? this.window.getFramerateLimit() : 60;
 	}
 
-	public void cleanUpAfterCrash() {
+	private void cleanUpAfterCrash() {
 		try {
 			CrashMemoryReserve.releaseMemory();
 			this.worldRenderer.cleanUp();
@@ -2134,7 +2160,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return new IntegratedServerLoader(this, this.levelStorage);
 	}
 
-	public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, boolean newWorld) {
+	public void startIntegratedServer(LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, boolean newWorld) {
 		this.disconnect();
 		this.worldGenProgressTracker.set(null);
 		Instant instant = Instant.now();
@@ -2154,11 +2180,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			);
 			this.integratedServerRunning = true;
 			this.ensureAbuseReportContext(ReporterEnvironment.ofIntegratedServer());
-			this.quickPlayLogger.setWorld(QuickPlayLogger.WorldType.SINGLEPLAYER, levelName, saveLoader.saveProperties().getLevelName());
-		} catch (Throwable var12) {
-			CrashReport crashReport = CrashReport.create(var12, "Starting integrated server");
+			this.quickPlayLogger.setWorld(QuickPlayLogger.WorldType.SINGLEPLAYER, session.getDirectoryName(), saveLoader.saveProperties().getLevelName());
+		} catch (Throwable var11) {
+			CrashReport crashReport = CrashReport.create(var11, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
-			crashReportSection.add("Level ID", levelName);
+			crashReportSection.add("Level ID", session.getDirectoryName());
 			crashReportSection.add("Level Name", (CrashCallable<String>)(() -> saveLoader.saveProperties().getLevelName()));
 			throw new CrashException(crashReport);
 		}
@@ -2171,18 +2197,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setScreen(levelLoadingScreen);
 		this.profiler.push("waitForServer");
 
-		while (!this.server.isLoading()) {
+		for (; !this.server.isLoading(); this.printCrashReport()) {
 			levelLoadingScreen.tick();
 			this.render(false);
 
 			try {
 				Thread.sleep(16L);
-			} catch (InterruptedException var11) {
-			}
-
-			if (this.crashReportSupplier != null) {
-				printCrashReport((CrashReport)this.crashReportSupplier.get());
-				return;
+			} catch (InterruptedException var10) {
 			}
 		}
 
@@ -2518,9 +2539,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private static SystemDetails addSystemDetailsToCrashReport(
-		SystemDetails systemDetails, @Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, GameOptions options
+		SystemDetails systemDetails, @Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, @Nullable GameOptions options
 	) {
 		systemDetails.addSection("Launched Version", (Supplier<String>)(() -> version));
+		String string = getLauncherBrand();
+		if (string != null) {
+			systemDetails.addSection("Launcher name", string);
+		}
+
 		systemDetails.addSection("Backend library", RenderSystem::getBackendDescription);
 		systemDetails.addSection("Backend API", RenderSystem::getApiDescription);
 		systemDetails.addSection(
@@ -2533,17 +2559,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		);
 		systemDetails.addSection("Using VBOs", (Supplier<String>)(() -> "Yes"));
 		systemDetails.addSection("Is Modded", (Supplier<String>)(() -> getModStatus().getMessage()));
-		systemDetails.addSection("Universe", (Supplier<String>)(() -> Long.toHexString(client.field_46550)));
+		systemDetails.addSection("Universe", (Supplier<String>)(() -> client != null ? Long.toHexString(client.field_46550) : "404"));
 		systemDetails.addSection("Type", "Client (map_client.txt)");
 		if (options != null) {
-			if (instance != null) {
-				String string = instance.getVideoWarningManager().getWarningsAsString();
-				if (string != null) {
-					systemDetails.addSection("GPU Warnings", string);
+			if (client != null) {
+				String string2 = client.getVideoWarningManager().getWarningsAsString();
+				if (string2 != null) {
+					systemDetails.addSection("GPU Warnings", string2);
 				}
 			}
 
 			systemDetails.addSection("Graphics mode", options.getGraphicsMode().getValue().toString());
+			systemDetails.addSection("Render Distance", options.getClampedViewDistance() + "/" + options.getViewDistance().getValue() + " chunks");
 			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
@@ -3060,6 +3087,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public SymlinkFinder getSymlinkFinder() {
 		return this.symlinkFinder;
+	}
+
+	@Nullable
+	public static String getLauncherBrand() {
+		return System.getProperty("minecraft.launcher.brand");
 	}
 
 	/**

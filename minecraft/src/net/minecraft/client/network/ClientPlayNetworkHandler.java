@@ -829,7 +829,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			PlayerListEntry playerListEntry = this.getPlayerListEntry(uUID);
 			if (playerListEntry == null) {
 				LOGGER.error("Received player chat packet for unknown player with ID: {}", uUID);
-				this.connection.disconnect(CHAT_VALIDATION_FAILED_TEXT);
+				this.client.getMessageHandler().onUnverifiedMessage(uUID, (MessageType.Parameters)optional2.get());
 			} else {
 				PublicPlayerSession publicPlayerSession = playerListEntry.getSession();
 				MessageLink messageLink;

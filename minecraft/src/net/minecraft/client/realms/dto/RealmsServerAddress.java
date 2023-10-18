@@ -21,9 +21,9 @@ public class RealmsServerAddress extends ValueObject {
 
 		try {
 			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
-			realmsServerAddress.address = JsonUtils.getStringOr("address", jsonObject, null);
-			realmsServerAddress.resourcePackUrl = JsonUtils.getStringOr("resourcePackUrl", jsonObject, null);
-			realmsServerAddress.resourcePackHash = JsonUtils.getStringOr("resourcePackHash", jsonObject, null);
+			realmsServerAddress.address = JsonUtils.getNullableStringOr("address", jsonObject, null);
+			realmsServerAddress.resourcePackUrl = JsonUtils.getNullableStringOr("resourcePackUrl", jsonObject, null);
+			realmsServerAddress.resourcePackHash = JsonUtils.getNullableStringOr("resourcePackHash", jsonObject, null);
 		} catch (Exception var4) {
 			LOGGER.error("Could not parse RealmsServerAddress: {}", var4.getMessage());
 		}

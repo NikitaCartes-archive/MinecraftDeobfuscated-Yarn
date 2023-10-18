@@ -34,6 +34,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.SlotChangedStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.ScreenHandler;
@@ -491,5 +492,9 @@ public class ClientPlayerInteractionManager {
 
 	public void pickFromInventory(int slot) {
 		this.networkHandler.sendPacket(new PickFromInventoryC2SPacket(slot));
+	}
+
+	public void slotChangedState(int slot, int screenHandlerId, boolean newState) {
+		this.networkHandler.sendPacket(new SlotChangedStateC2SPacket(slot, screenHandlerId, newState));
 	}
 }

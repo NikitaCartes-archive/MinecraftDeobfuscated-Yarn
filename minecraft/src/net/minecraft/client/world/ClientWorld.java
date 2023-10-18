@@ -455,6 +455,7 @@ public class ClientWorld extends World {
 		crashReportSection.add(
 			"Server type", (CrashCallable<String>)(() -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
 		);
+		crashReportSection.add("Tracked entity count", (CrashCallable<String>)(() -> String.valueOf(this.getRegularEntityCount())));
 		return crashReportSection;
 	}
 

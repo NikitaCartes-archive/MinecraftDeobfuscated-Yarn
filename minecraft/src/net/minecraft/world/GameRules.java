@@ -60,6 +60,9 @@ public class GameRules {
 	 * A {@linkplain Rule game rule} which regulates whether mobs should drop loot on death.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_LOOT = register("doMobLoot", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> PROJECTILES_CAN_BREAK_BLOCKS = register(
+		"projectilesCanBreakBlocks", GameRules.Category.DROPS, GameRules.BooleanRule.create(true)
+	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether blocks should drop their items when broken.
 	 */
@@ -169,6 +172,12 @@ public class GameRules {
 				}
 			}
 		)
+	);
+	public static final GameRules.Key<GameRules.IntRule> PLAYERS_NETHER_PORTAL_DEFAULT_DELAY = register(
+		"playersNetherPortalDefaultDelay", GameRules.Category.PLAYER, GameRules.IntRule.create(80)
+	);
+	public static final GameRules.Key<GameRules.IntRule> PLAYERS_NETHER_PORTAL_CREATIVE_DELAY = register(
+		"playersNetherPortalCreativeDelay", GameRules.Category.PLAYER, GameRules.IntRule.create(1)
 	);
 	public static final GameRules.Key<GameRules.BooleanRule> DROWNING_DAMAGE = register(
 		"drowningDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)

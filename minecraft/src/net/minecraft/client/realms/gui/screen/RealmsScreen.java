@@ -19,9 +19,6 @@ public abstract class RealmsScreen extends Screen {
 	protected static final int field_33061 = 5000268;
 	protected static final int field_33062 = 7105644;
 	protected static final int field_33063 = 8388479;
-	protected static final int field_33036 = 15553363;
-	protected static final int field_33038 = 13413468;
-	protected static final int field_33039 = -256;
 	protected static final int field_33040 = 3368635;
 	protected static final int field_33041 = 7107012;
 	protected static final int field_33042 = 8226750;

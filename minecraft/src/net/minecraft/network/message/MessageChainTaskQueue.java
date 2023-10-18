@@ -5,6 +5,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import net.minecraft.util.thread.FutureQueue;
 import org.slf4j.Logger;
 
@@ -18,16 +19,16 @@ public class MessageChainTaskQueue implements FutureQueue, AutoCloseable {
 	private volatile boolean closed;
 
 	public MessageChainTaskQueue(Executor executor) {
-		this.executor = runnable -> {
-			if (!this.closed) {
-				executor.execute(runnable);
-			}
-		};
+		this.executor = executor;
 	}
 
 	@Override
-	public void append(FutureQueue.FutureSupplier futureSupplier) {
-		this.current = this.current.thenComposeAsync(object -> futureSupplier.submit(this.executor), this.executor).exceptionally(throwable -> {
+	public <T> void append(CompletableFuture<T> completableFuture, Consumer<T> consumer) {
+		this.current = this.current.thenCombine(completableFuture, (a, b) -> b).thenAcceptAsync(object -> {
+			if (!this.closed) {
+				consumer.accept(object);
+			}
+		}, this.executor).exceptionally(throwable -> {
 			if (throwable instanceof CompletionException completionException) {
 				throwable = completionException.getCause();
 			}

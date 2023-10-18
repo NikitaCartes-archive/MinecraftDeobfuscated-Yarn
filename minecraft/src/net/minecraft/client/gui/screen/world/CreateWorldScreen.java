@@ -252,7 +252,7 @@ public class CreateWorldScreen extends Screen {
 			SaveProperties saveProperties = new LevelProperties(levelInfo, generatorOptionsHolder.generatorOptions(), specialProperty, lifecycle);
 			this.client
 				.createIntegratedServerLoader()
-				.start((LevelStorage.Session)optional.get(), generatorOptionsHolder.dataPackContents(), combinedDynamicRegistries, saveProperties);
+				.startNewWorld((LevelStorage.Session)optional.get(), generatorOptionsHolder.dataPackContents(), combinedDynamicRegistries, saveProperties);
 		}
 	}
 

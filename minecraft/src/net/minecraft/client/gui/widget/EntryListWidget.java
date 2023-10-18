@@ -175,7 +175,13 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.getEntryCount() * this.itemHeight + this.headerHeight;
 	}
 
-	protected void clickedHeader(int x, int y) {
+	/**
+	 * Called when the header is clicked.
+	 * 
+	 * @return {@code true} to indicate that the event handling is successful/valid
+	 */
+	protected boolean clickedHeader(int x, int y) {
+		return false;
 	}
 
 	protected void renderHeader(DrawContext context, int x, int y) {
@@ -310,15 +316,14 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 						this.setFocused(entry);
 						this.setDragging(true);
 						return true;
-					} else {
-						return this.scrolling;
 					}
-				} else {
-					this.clickedHeader(
-						(int)(mouseX - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.top) + (int)this.getScrollAmount() - 4
-					);
+				} else if (this.clickedHeader(
+					(int)(mouseX - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.top) + (int)this.getScrollAmount() - 4
+				)) {
 					return true;
 				}
+
+				return this.scrolling;
 			}
 		}
 	}

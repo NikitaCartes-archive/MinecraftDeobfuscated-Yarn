@@ -42,7 +42,7 @@ import net.minecraft.util.crash.CrashReportSection;
 public class NbtCompound implements NbtElement {
 	public static final Codec<NbtCompound> CODEC = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
 		NbtElement nbtElement = dynamic.convert(NbtOps.INSTANCE).getValue();
-		return nbtElement instanceof NbtCompound ? DataResult.success((NbtCompound)nbtElement) : DataResult.error(() -> "Not a compound tag: " + nbtElement);
+		return nbtElement instanceof NbtCompound nbtCompound ? DataResult.success(nbtCompound) : DataResult.error(() -> "Not a compound tag: " + nbtElement);
 	}, nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
 	private static final int SIZE = 48;
 	private static final int field_41719 = 32;
@@ -773,15 +773,15 @@ public class NbtCompound implements NbtElement {
 		}
 	}
 
-	static NbtElement read(NbtType<?> reader, String key, DataInput input, NbtTagSizeTracker nbtTagSizeTracker) {
+	static NbtElement read(NbtType<?> reader, String key, DataInput input, NbtTagSizeTracker tracker) {
 		try {
-			return reader.read(input, nbtTagSizeTracker);
+			return reader.read(input, tracker);
 		} catch (IOException var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
 			CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
 			crashReportSection.add("Tag name", key);
 			crashReportSection.add("Tag type", reader.getCrashReportName());
-			throw new CrashException(crashReport);
+			throw new NbtCrashException(crashReport);
 		}
 	}
 

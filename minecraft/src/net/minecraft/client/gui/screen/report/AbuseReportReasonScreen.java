@@ -14,7 +14,6 @@ import net.minecraft.client.session.report.AbuseReportReason;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nullables;
-import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class AbuseReportReasonScreen extends Screen {
@@ -48,13 +47,11 @@ public class AbuseReportReasonScreen extends Screen {
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = Nullables.map(this.reason, this.reasonList::getEntry);
 		this.reasonList.setSelected(reasonEntry);
 		int i = this.width / 2 - 150 - 5;
-		this.addDrawableChild(ButtonWidget.builder(READ_INFO_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-				if (confirmed) {
-					Util.getOperatingSystem().open("https://aka.ms/aboutjavareporting");
-				}
-
-				this.client.setScreen(this);
-			}, "https://aka.ms/aboutjavareporting", true))).dimensions(i, this.getDoneButtonY(), 150, 20).build());
+		this.addDrawableChild(
+			ButtonWidget.builder(READ_INFO_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/aboutjavareporting"))
+				.dimensions(i, this.getDoneButtonY(), 150, 20)
+				.build()
+		);
 		int j = this.width / 2 + 5;
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntryx = this.reasonList.getSelectedOrNull();

@@ -96,7 +96,9 @@ import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.BlockBox;
@@ -1859,6 +1861,13 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public RandomSequencesState getRandomSequences() {
 		return this.randomSequences;
+	}
+
+	@Override
+	public CrashReportSection addDetailsToCrashReport(CrashReport report) {
+		CrashReportSection crashReportSection = super.addDetailsToCrashReport(report);
+		crashReportSection.add("Loaded entity count", (CrashCallable<String>)(() -> String.valueOf(this.entityManager.getIndexSize())));
+		return crashReportSection;
 	}
 
 	final class ServerEntityHandler implements EntityHandler<Entity> {

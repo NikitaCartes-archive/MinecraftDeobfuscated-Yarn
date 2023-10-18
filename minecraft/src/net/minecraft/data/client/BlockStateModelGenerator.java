@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CrafterBlock;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.PitcherCropBlock;
 import net.minecraft.block.PropaguleBlock;
@@ -2198,7 +2199,7 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE.upload(block, textureMap, this.modelCollector)));
 	}
 
-	public void method_51463(Block block) {
+	public void registerGeneric(Block block) {
 		TextureMap textureMap = new TextureMap()
 			.put(TextureKey.PARTICLE, TextureMap.getSubId(block, "_particle"))
 			.put(TextureKey.DOWN, TextureMap.getSubId(block, "_down"))
@@ -2314,6 +2315,27 @@ public class BlockStateModelGenerator {
 		);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.CHORUS_FLOWER).coordinate(createValueFencedModelMap(Properties.AGE_5, 5, identifier2, identifier)));
+	}
+
+	private void registerCrafter() {
+		Identifier identifier = ModelIds.getBlockModelId(Blocks.CRAFTER);
+		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.CRAFTER, "_triggered");
+		Identifier identifier3 = ModelIds.getBlockSubModelId(Blocks.CRAFTER, "_crafting");
+		Identifier identifier4 = ModelIds.getBlockSubModelId(Blocks.CRAFTER, "_crafting_triggered");
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.CRAFTER)
+					.coordinate(
+						BlockStateVariantMap.create(Properties.ORIENTATION).register(orientation -> this.addJigsawOrientationToVariant(orientation, BlockStateVariant.create()))
+					)
+					.coordinate(
+						BlockStateVariantMap.create(Properties.TRIGGERED, CrafterBlock.CRAFTING)
+							.register(false, false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
+							.register(true, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier4))
+							.register(true, false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2))
+							.register(false, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier3))
+					)
+			);
 	}
 
 	private void registerDispenserLikeOrientable(Block block) {
@@ -3652,23 +3674,19 @@ public class BlockStateModelGenerator {
 	private void supplyChiseledBookshelfModels(
 		MultipartBlockStateSupplier blockStateSupplier, When.PropertyCondition facingCondition, VariantSettings.Rotation rotation
 	) {
-		Map.of(
-				Properties.SLOT_0_OCCUPIED,
-				Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_LEFT,
-				Properties.SLOT_1_OCCUPIED,
-				Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_MID,
-				Properties.SLOT_2_OCCUPIED,
-				Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_RIGHT,
-				Properties.SLOT_3_OCCUPIED,
-				Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_LEFT,
-				Properties.SLOT_4_OCCUPIED,
-				Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_MID,
-				Properties.SLOT_5_OCCUPIED,
-				Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_RIGHT
+		List.of(
+				Pair.of(Properties.SLOT_0_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_LEFT),
+				Pair.of(Properties.SLOT_1_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_MID),
+				Pair.of(Properties.SLOT_2_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_RIGHT),
+				Pair.of(Properties.SLOT_3_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_LEFT),
+				Pair.of(Properties.SLOT_4_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_MID),
+				Pair.of(Properties.SLOT_5_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_RIGHT)
 			)
-			.forEach((property, model) -> {
-				this.supplyChiseledBookshelfModel(blockStateSupplier, facingCondition, rotation, property, model, true);
-				this.supplyChiseledBookshelfModel(blockStateSupplier, facingCondition, rotation, property, model, false);
+			.forEach(pair -> {
+				BooleanProperty booleanProperty = (BooleanProperty)pair.getFirst();
+				Model model = (Model)pair.getSecond();
+				this.supplyChiseledBookshelfModel(blockStateSupplier, facingCondition, rotation, booleanProperty, model, true);
+				this.supplyChiseledBookshelfModel(blockStateSupplier, facingCondition, rotation, booleanProperty, model, false);
 			});
 	}
 
@@ -4044,6 +4062,7 @@ public class BlockStateModelGenerator {
 		this.registerNetherrackBottomCustomTop(Blocks.WARPED_NYLIUM);
 		this.registerDispenserLikeOrientable(Blocks.DISPENSER);
 		this.registerDispenserLikeOrientable(Blocks.DROPPER);
+		this.registerCrafter();
 		this.registerLantern(Blocks.LANTERN);
 		this.registerLantern(Blocks.SOUL_LANTERN);
 		this.registerAxisRotated(Blocks.CHAIN, ModelIds.getBlockModelId(Blocks.CHAIN));

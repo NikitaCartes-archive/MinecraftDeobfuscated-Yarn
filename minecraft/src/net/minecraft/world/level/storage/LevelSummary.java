@@ -14,6 +14,7 @@ import net.minecraft.world.level.LevelInfo;
 import org.apache.commons.lang3.StringUtils;
 
 public class LevelSummary implements Comparable<LevelSummary> {
+	public static final Text SELECT_WORLD_TEXT = Text.translatable("selectWorld.select");
 	private final LevelInfo levelInfo;
 	private final SaveVersionInfo versionInfo;
 	private final String name;
@@ -94,12 +95,12 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.versionInfo;
 	}
 
-	public boolean isDifferentVersion() {
-		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.versionInfo.isStable() || this.getConversionWarning().promptsBackup();
+	public boolean shouldPromptBackup() {
+		return this.getConversionWarning().promptsBackup();
 	}
 
-	public boolean isFutureLevel() {
-		return this.versionInfo.getVersion().getId() > SharedConstants.getGameVersion().getSaveVersion().getId();
+	public boolean wouldBeDowngraded() {
+		return this.getConversionWarning() == LevelSummary.ConversionWarning.DOWNGRADE;
 	}
 
 	public LevelSummary.ConversionWarning getConversionWarning() {
@@ -139,10 +140,10 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		} else if (this.requiresConversion()) {
 			return Text.translatable("selectWorld.conversion").formatted(Formatting.RED);
 		} else if (!this.isVersionAvailable()) {
-			return Text.translatable("selectWorld.incompatible_series").formatted(Formatting.RED);
+			return Text.translatable("selectWorld.incompatible.info", this.getVersion()).formatted(Formatting.RED);
 		} else {
 			MutableText mutableText = this.isHardcore()
-				? Text.empty().append(Text.translatable("gameMode.hardcore").styled(style -> style.withColor(-65536)))
+				? Text.empty().append(Text.translatable("gameMode.hardcore").withColor(-65536))
 				: Text.translatable("gameMode." + this.getGameMode().getName());
 			if (this.hasCheats()) {
 				mutableText.append(", ").append(Text.translatable("selectWorld.cheats"));
@@ -154,8 +155,8 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 			MutableText mutableText2 = this.getVersion();
 			MutableText mutableText3 = Text.literal(", ").append(Text.translatable("selectWorld.version")).append(ScreenTexts.SPACE);
-			if (this.isDifferentVersion()) {
-				mutableText3.append(mutableText2.formatted(this.isFutureLevel() ? Formatting.RED : Formatting.ITALIC));
+			if (this.shouldPromptBackup()) {
+				mutableText3.append(mutableText2.formatted(this.wouldBeDowngraded() ? Formatting.RED : Formatting.ITALIC));
 			} else {
 				mutableText3.append(mutableText2);
 			}
@@ -163,6 +164,26 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			mutableText.append(mutableText3);
 			return mutableText;
 		}
+	}
+
+	public Text getSelectWorldText() {
+		return SELECT_WORLD_TEXT;
+	}
+
+	public boolean isSelectable() {
+		return !this.isUnavailable();
+	}
+
+	public boolean isEditable() {
+		return !this.isUnavailable();
+	}
+
+	public boolean isRecreatable() {
+		return !this.isUnavailable();
+	}
+
+	public boolean isDeletable() {
+		return true;
 	}
 
 	public static enum ConversionWarning {
@@ -193,7 +214,61 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		}
 	}
 
+	public static class RecoveryWarning extends LevelSummary {
+		private static final Text WARNING_TEXT = Text.translatable("recover_world.warning").styled(style -> style.withColor(-65536));
+		private static final Text BUTTON_TEXT = Text.translatable("recover_world.button");
+		private final long lastPlayed;
+
+		public RecoveryWarning(String name, Path iconPath, long lastPlayed) {
+			super(null, null, name, false, false, false, iconPath);
+			this.lastPlayed = lastPlayed;
+		}
+
+		@Override
+		public String getDisplayName() {
+			return this.getName();
+		}
+
+		@Override
+		public Text getDetails() {
+			return WARNING_TEXT;
+		}
+
+		@Override
+		public long getLastPlayed() {
+			return this.lastPlayed;
+		}
+
+		@Override
+		public boolean isUnavailable() {
+			return false;
+		}
+
+		@Override
+		public Text getSelectWorldText() {
+			return BUTTON_TEXT;
+		}
+
+		@Override
+		public boolean isSelectable() {
+			return true;
+		}
+
+		@Override
+		public boolean isEditable() {
+			return false;
+		}
+
+		@Override
+		public boolean isRecreatable() {
+			return false;
+		}
+	}
+
 	public static class SymlinkLevelSummary extends LevelSummary {
+		private static final Text MORE_INFO_TEXT = Text.translatable("symlink_warning.more_info");
+		private static final Text TITLE_TEXT = Text.translatable("symlink_warning.title").withColor(-65536);
+
 		public SymlinkLevelSummary(String name, Path iconPath) {
 			super(null, null, name, false, false, false, iconPath);
 		}
@@ -205,7 +280,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 		@Override
 		public Text getDetails() {
-			return Text.translatable("symlink_warning.title").styled(style -> style.withColor(-65536));
+			return TITLE_TEXT;
 		}
 
 		@Override
@@ -215,6 +290,26 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 		@Override
 		public boolean isUnavailable() {
+			return false;
+		}
+
+		@Override
+		public Text getSelectWorldText() {
+			return MORE_INFO_TEXT;
+		}
+
+		@Override
+		public boolean isSelectable() {
+			return true;
+		}
+
+		@Override
+		public boolean isEditable() {
+			return false;
+		}
+
+		@Override
+		public boolean isRecreatable() {
 			return false;
 		}
 	}
