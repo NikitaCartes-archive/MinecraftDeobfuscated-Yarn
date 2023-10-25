@@ -91,11 +91,13 @@ import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.network.packet.s2c.play.TickStepS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateTickRateS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
@@ -233,6 +235,10 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet);
 
 	void onEntityPosition(EntityPositionS2CPacket packet);
+
+	void onUpdateTickRate(UpdateTickRateS2CPacket packet);
+
+	void onTickStep(TickStepS2CPacket packet);
 
 	void onEntityAttributes(EntityAttributesS2CPacket packet);
 

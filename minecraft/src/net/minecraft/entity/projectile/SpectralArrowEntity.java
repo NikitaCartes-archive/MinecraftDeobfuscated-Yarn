@@ -11,18 +11,19 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
 public class SpectralArrowEntity extends PersistentProjectileEntity {
+	private static final ItemStack DEFAULT_STACK = new ItemStack(Items.SPECTRAL_ARROW);
 	private int duration = 200;
 
 	public SpectralArrowEntity(EntityType<? extends SpectralArrowEntity> entityType, World world) {
-		super(entityType, world);
+		super(entityType, world, DEFAULT_STACK);
 	}
 
-	public SpectralArrowEntity(World world, LivingEntity owner) {
-		super(EntityType.SPECTRAL_ARROW, owner, world);
+	public SpectralArrowEntity(World world, LivingEntity owner, ItemStack stack) {
+		super(EntityType.SPECTRAL_ARROW, owner, world, stack);
 	}
 
-	public SpectralArrowEntity(World world, double x, double y, double z) {
-		super(EntityType.SPECTRAL_ARROW, x, y, z, world);
+	public SpectralArrowEntity(World world, double x, double y, double z, ItemStack stack) {
+		super(EntityType.SPECTRAL_ARROW, x, y, z, world, stack);
 	}
 
 	@Override
@@ -31,11 +32,6 @@ public class SpectralArrowEntity extends PersistentProjectileEntity {
 		if (this.getWorld().isClient && !this.inGround) {
 			this.getWorld().addParticle(ParticleTypes.INSTANT_EFFECT, this.getX(), this.getY(), this.getZ(), 0.0, 0.0, 0.0);
 		}
-	}
-
-	@Override
-	protected ItemStack asItemStack() {
-		return new ItemStack(Items.SPECTRAL_ARROW);
 	}
 
 	@Override

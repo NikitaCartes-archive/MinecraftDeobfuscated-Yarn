@@ -45,7 +45,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	private final BlockSetType blockSetType;
 
 	@Override
-	public MapCodec<TrapdoorBlock> getCodec() {
+	public MapCodec<? extends TrapdoorBlock> getCodec() {
 		return CODEC;
 	}
 
@@ -180,5 +180,9 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+	}
+
+	protected BlockSetType getBlockSetType() {
+		return this.blockSetType;
 	}
 }

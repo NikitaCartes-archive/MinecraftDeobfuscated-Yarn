@@ -65,6 +65,9 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 						.map(invite -> new RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry(invite))
 						.toList();
 					this.pendingInvitationSelectionList.replaceEntries(list);
+					if (list.isEmpty()) {
+						this.client.getNarratorManager().narrateSystemMessage(NO_PENDING_TEXT);
+					}
 				},
 				this.executor
 			);

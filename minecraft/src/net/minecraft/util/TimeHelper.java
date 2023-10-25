@@ -15,6 +15,14 @@ public class TimeHelper {
 	 * The equivalent of 1 millisecond, in nanoseconds. Is {@code 1000000}.
 	 */
 	public static final long MILLI_IN_NANOS = TimeUnit.MILLISECONDS.toNanos(1L);
+	/**
+	 * The equivalent of 1 second, in milliseconds. Is {@code 1000}.
+	 */
+	public static final long SECOND_IN_MILLIS = TimeUnit.SECONDS.toMillis(1L);
+	/**
+	 * The equivalent of 1 hour, in seconds. Is {@code 3600}.
+	 */
+	public static final long HOUR_IN_SECONDS = TimeUnit.HOURS.toSeconds(1L);
 
 	/**
 	 * {@return an int provider that provides a time in ticks, between {@code min * 20} and

@@ -134,6 +134,12 @@ public class GameTestState {
 	}
 
 	@Nullable
+	public BlockPos method_54843() {
+		StructureBlockBlockEntity structureBlockBlockEntity = this.getStructureBlockBlockEntity();
+		return structureBlockBlockEntity == null ? null : StructureTestUtil.method_54849(structureBlockBlockEntity);
+	}
+
+	@Nullable
 	public Vec3i getSize() {
 		StructureBlockBlockEntity structureBlockBlockEntity = this.getStructureBlockBlockEntity();
 		return structureBlockBlockEntity == null ? null : structureBlockBlockEntity.getSize();
@@ -208,8 +214,8 @@ public class GameTestState {
 		this.listeners.add(listener);
 	}
 
-	public void init(BlockPos pos, int i) {
-		this.structureBlockEntity = StructureTestUtil.createStructureTemplate(this.getTemplateName(), pos, this.getRotation(), i, this.world, false);
+	public void init(BlockPos pos) {
+		this.structureBlockEntity = StructureTestUtil.createStructureTemplate(this.getTemplateName(), pos, this.getRotation(), this.world, false);
 		this.pos = this.structureBlockEntity.getPos();
 		this.structureBlockEntity.setTemplateName(this.getTemplatePath());
 		StructureTestUtil.placeStartButton(this.pos, new BlockPos(1, 0, -1), this.getRotation(), this.world);
@@ -221,7 +227,7 @@ public class GameTestState {
 			throw new IllegalStateException("Expected structure to be initialized, but it was null");
 		} else {
 			BlockBox blockBox = StructureTestUtil.getStructureBlockBox(this.structureBlockEntity);
-			StructureTestUtil.clearArea(blockBox, this.pos.getY(), this.world);
+			StructureTestUtil.clearArea(blockBox, this.world);
 		}
 	}
 

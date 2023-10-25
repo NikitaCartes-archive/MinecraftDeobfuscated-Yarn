@@ -72,14 +72,14 @@ public final class ServerMBean implements DynamicMBean {
 	 * Returns the server's current average tick time, in milliseconds.
 	 */
 	private float getAverageTickTime() {
-		return this.server.getTickTime();
+		return this.server.getAverageTickTime();
 	}
 
 	/**
 	 * Returns the server's historical tick times, in milliseconds.
 	 */
 	private long[] getTickTimes() {
-		return this.server.lastTickLengths;
+		return this.server.getTickTimes();
 	}
 
 	@Nullable

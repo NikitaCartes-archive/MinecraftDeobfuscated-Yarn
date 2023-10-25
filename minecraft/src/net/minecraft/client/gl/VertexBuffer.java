@@ -71,7 +71,7 @@ public class VertexBuffer implements AutoCloseable {
 		}
 	}
 
-	private VertexFormat uploadVertexBuffer(BufferBuilder.DrawParameters parameters, ByteBuffer vertexBuffer) {
+	private VertexFormat uploadVertexBuffer(BufferBuilder.DrawParameters parameters, @Nullable ByteBuffer vertexBuffer) {
 		boolean bl = false;
 		if (!parameters.format().equals(this.vertexFormat)) {
 			if (this.vertexFormat != null) {
@@ -83,7 +83,7 @@ public class VertexBuffer implements AutoCloseable {
 			bl = true;
 		}
 
-		if (!parameters.indexOnly()) {
+		if (vertexBuffer != null) {
 			if (!bl) {
 				GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, this.vertexBufferId);
 			}
@@ -95,8 +95,8 @@ public class VertexBuffer implements AutoCloseable {
 	}
 
 	@Nullable
-	private RenderSystem.ShapeIndexBuffer uploadIndexBuffer(BufferBuilder.DrawParameters parameters, ByteBuffer indexBuffer) {
-		if (!parameters.sequentialIndex()) {
+	private RenderSystem.ShapeIndexBuffer uploadIndexBuffer(BufferBuilder.DrawParameters parameters, @Nullable ByteBuffer indexBuffer) {
+		if (indexBuffer != null) {
 			GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
 			RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, this.usage.id);
 			return null;

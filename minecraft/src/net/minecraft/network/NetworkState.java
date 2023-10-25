@@ -182,11 +182,13 @@ import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.network.packet.s2c.play.TickStepS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateTickRateS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
@@ -323,6 +325,8 @@ public enum NetworkState {
 					.register(NbtQueryResponseS2CPacket.class, NbtQueryResponseS2CPacket::new)
 					.register(ItemPickupAnimationS2CPacket.class, ItemPickupAnimationS2CPacket::new)
 					.register(EntityPositionS2CPacket.class, EntityPositionS2CPacket::new)
+					.register(UpdateTickRateS2CPacket.class, UpdateTickRateS2CPacket::new)
+					.register(TickStepS2CPacket.class, TickStepS2CPacket::new)
 					.register(AdvancementUpdateS2CPacket.class, AdvancementUpdateS2CPacket::new)
 					.register(EntityAttributesS2CPacket.class, EntityAttributesS2CPacket::new)
 					.register(EntityStatusEffectS2CPacket.class, EntityStatusEffectS2CPacket::new)

@@ -10,6 +10,8 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameRules;
@@ -66,6 +68,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 					entity.onLanding();
 					entity.damage(this.getDamageSources().fall(), 5.0F);
+					this.getWorld().method_54762(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
 				}
 			} else if (entity != null) {
 				entity.requestTeleport(this.getX(), this.getY(), this.getZ());

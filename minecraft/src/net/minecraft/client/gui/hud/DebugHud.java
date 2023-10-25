@@ -44,6 +44,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.ServerTickManager;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerChunkManager;
@@ -72,6 +73,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
+import net.minecraft.world.tick.TickManager;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud {
@@ -116,7 +118,7 @@ public class DebugHud {
 		this.allocationRateCalculator = new DebugHud.AllocationRateCalculator();
 		this.textRenderer = client.textRenderer;
 		this.renderingChart = new RenderingChart(this.textRenderer, this.frameNanosLog);
-		this.tickChart = new TickChart(this.textRenderer, this.tickNanosLog);
+		this.tickChart = new TickChart(this.textRenderer, this.tickNanosLog, () -> client.world.getTickManager().getMillisPerTick());
 		this.pingChart = new PingChart(this.textRenderer, this.pingLog);
 		this.packetSizeChart = new PacketSizeChart(this.textRenderer, this.packetSizeLog);
 	}
@@ -211,11 +213,28 @@ public class DebugHud {
 		ClientConnection clientConnection = clientPlayNetworkHandler.getConnection();
 		float f = clientConnection.getAveragePacketsSent();
 		float g = clientConnection.getAveragePacketsReceived();
+		TickManager tickManager = this.getWorld().getTickManager();
 		String string;
-		if (integratedServer != null) {
-			string = String.format(Locale.ROOT, "Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", integratedServer.getTickTime(), f, g);
+		if (tickManager.isStepping()) {
+			string = " (frozen - stepping)";
+		} else if (tickManager.isFrozen()) {
+			string = " (frozen)";
 		} else {
-			string = String.format(Locale.ROOT, "\"%s\" server, %.0f tx, %.0f rx", clientPlayNetworkHandler.getBrand(), f, g);
+			string = "";
+		}
+
+		String string3;
+		if (integratedServer != null) {
+			ServerTickManager serverTickManager = integratedServer.getTickManager();
+			boolean bl = serverTickManager.isSprinting();
+			if (bl) {
+				string = " (sprinting)";
+			}
+
+			String string2 = bl ? "-" : String.format(Locale.ROOT, "%.1f", tickManager.getMillisPerTick());
+			string3 = String.format(Locale.ROOT, "Integrated server @ %.1f/%s ms%s, %.0f tx, %.0f rx", integratedServer.getAverageTickTime(), string2, string, f, g);
+		} else {
+			string3 = String.format(Locale.ROOT, "\"%s\" server%s, %.0f tx, %.0f rx", clientPlayNetworkHandler.getBrand(), string, f, g);
 		}
 
 		BlockPos blockPos = this.client.getCameraEntity().getBlockPos();
@@ -223,7 +242,7 @@ public class DebugHud {
 			return Lists.newArrayList(
 				"Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")",
 				this.client.fpsDebugString,
-				string,
+				string3,
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
@@ -235,7 +254,7 @@ public class DebugHud {
 			Entity entity = this.client.getCameraEntity();
 			Direction direction = entity.getHorizontalFacing();
 
-			String string2 = switch(direction) {
+			String string4 = switch(direction) {
 				case NORTH -> "Towards negative Z";
 				case SOUTH -> "Towards positive Z";
 				case WEST -> "Towards negative X";
@@ -260,15 +279,15 @@ public class DebugHud {
 					+ ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType())
 					+ ")",
 				this.client.fpsDebugString,
-				string,
+				string3,
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
 				this.client.world.asString()
 			);
-			String string3 = this.getServerWorldDebugString();
-			if (string3 != null) {
-				list.add(string3);
+			String string5 = this.getServerWorldDebugString();
+			if (string5 != null) {
+				list.add(string5);
 			}
 
 			list.add(this.client.world.getRegistryKey().getValue() + " FC: " + longSet.size());
@@ -305,7 +324,7 @@ public class DebugHud {
 			);
 			list.add(
 				String.format(
-					Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, MathHelper.wrapDegrees(entity.getYaw()), MathHelper.wrapDegrees(entity.getPitch())
+					Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string4, MathHelper.wrapDegrees(entity.getYaw()), MathHelper.wrapDegrees(entity.getPitch())
 				)
 			);
 			WorldChunk worldChunk = this.getClientChunk();

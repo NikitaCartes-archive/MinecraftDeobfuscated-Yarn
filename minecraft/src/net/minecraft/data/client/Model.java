@@ -25,6 +25,10 @@ public class Model {
 		this.requiredTextures = ImmutableSet.copyOf(requiredTextureKeys);
 	}
 
+	public Identifier getBlockSubModelId(Block block) {
+		return ModelIds.getBlockSubModelId(block, (String)this.variant.orElse(""));
+	}
+
 	public Identifier upload(Block block, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
 		return this.upload(ModelIds.getBlockSubModelId(block, (String)this.variant.orElse("")), textures, modelCollector);
 	}

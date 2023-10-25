@@ -117,7 +117,7 @@ class StructureTestListener implements TestListener {
 		gameTestState.startCountdown();
 		this.testManager.start(gameTestState);
 		gameTestState.addListener(this);
-		gameTestState.init(this.pos, 2);
+		gameTestState.init(this.pos);
 	}
 
 	protected static void visualizeTest(GameTestState test, Block block) {

@@ -6,7 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.TransparentBlock;
+import net.minecraft.block.TranslucentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -262,7 +262,7 @@ public class FluidRenderer {
 					Sprite sprite2 = sprites[1];
 					if (!bl) {
 						Block block = world.getBlockState(blockPos).getBlock();
-						if (block instanceof TransparentBlock || block instanceof LeavesBlock) {
+						if (block instanceof TranslucentBlock || block instanceof LeavesBlock) {
 							sprite2 = this.waterOverlaySprite;
 						}
 					}

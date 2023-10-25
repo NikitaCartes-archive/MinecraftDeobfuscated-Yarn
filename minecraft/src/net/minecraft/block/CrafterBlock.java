@@ -177,6 +177,7 @@ public class CrafterBlock extends BlockWithEntity {
 						stack.decrement(1);
 					}
 				});
+				crafterBlockEntity.markDirty();
 			}
 		}
 	}

@@ -7,6 +7,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
@@ -28,11 +29,17 @@ public class JigsawBlockScreen extends Screen {
 	private static final Text NAME_TEXT = Text.translatable("jigsaw_block.name");
 	private static final Text TARGET_TEXT = Text.translatable("jigsaw_block.target");
 	private static final Text FINAL_STATE_TEXT = Text.translatable("jigsaw_block.final_state");
+	private static final Text field_47119 = Text.translatable("jigsaw_block.placement_priority");
+	private static final Text field_47120 = Text.translatable("jigsaw_block.placement_priority.tooltip");
+	private static final Text field_47121 = Text.translatable("jigsaw_block.selection_priority");
+	private static final Text field_47122 = Text.translatable("jigsaw_block.selection_priority.tooltip");
 	private final JigsawBlockEntity jigsaw;
 	private TextFieldWidget nameField;
 	private TextFieldWidget targetField;
 	private TextFieldWidget poolField;
 	private TextFieldWidget finalStateField;
+	private TextFieldWidget field_47123;
+	private TextFieldWidget field_47124;
 	int generationDepth;
 	private boolean keepJigsaws = true;
 	private CyclingButtonWidget<JigsawBlockEntity.Joint> jointRotationButton;
@@ -64,9 +71,19 @@ public class JigsawBlockScreen extends Screen {
 					new Identifier(this.targetField.getText()),
 					new Identifier(this.poolField.getText()),
 					this.finalStateField.getText(),
-					this.joint
+					this.joint,
+					this.method_54800(this.field_47123.getText()),
+					this.method_54800(this.field_47124.getText())
 				)
 			);
+	}
+
+	private int method_54800(String string) {
+		try {
+			return Integer.parseInt(string);
+		} catch (NumberFormatException var3) {
+			return 0;
+		}
 	}
 
 	private void generate() {
@@ -80,38 +97,47 @@ public class JigsawBlockScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 20, 300, 20, Text.translatable("jigsaw_block.pool"));
+		this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 20, 300, 20, POOL_TEXT);
 		this.poolField.setMaxLength(128);
 		this.poolField.setText(this.jigsaw.getPool().getValue().toString());
 		this.poolField.setChangedListener(pool -> this.updateDoneButtonState());
 		this.addSelectableChild(this.poolField);
-		this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 55, 300, 20, Text.translatable("jigsaw_block.name"));
+		this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 55, 300, 20, NAME_TEXT);
 		this.nameField.setMaxLength(128);
 		this.nameField.setText(this.jigsaw.getName().toString());
 		this.nameField.setChangedListener(name -> this.updateDoneButtonState());
 		this.addSelectableChild(this.nameField);
-		this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 90, 300, 20, Text.translatable("jigsaw_block.target"));
+		this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 90, 300, 20, TARGET_TEXT);
 		this.targetField.setMaxLength(128);
 		this.targetField.setText(this.jigsaw.getTarget().toString());
 		this.targetField.setChangedListener(target -> this.updateDoneButtonState());
 		this.addSelectableChild(this.targetField);
-		this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 125, 300, 20, Text.translatable("jigsaw_block.final_state"));
+		this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 125, 300, 20, FINAL_STATE_TEXT);
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.addSelectableChild(this.finalStateField);
+		this.field_47123 = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 160, 98, 20, field_47121);
+		this.field_47123.setMaxLength(3);
+		this.field_47123.setText(Integer.toString(this.jigsaw.method_54778()));
+		this.field_47123.setTooltip(Tooltip.of(field_47122));
+		this.addSelectableChild(this.field_47123);
+		this.field_47124 = new TextFieldWidget(this.textRenderer, this.width / 2 - 50, 160, 98, 20, field_47119);
+		this.field_47124.setMaxLength(3);
+		this.field_47124.setText(Integer.toString(this.jigsaw.method_54777()));
+		this.field_47124.setTooltip(Tooltip.of(field_47120));
+		this.addSelectableChild(this.field_47124);
 		this.joint = this.jigsaw.getJoint();
-		int i = this.textRenderer.getWidth(JOINT_LABEL_TEXT) + 10;
 		this.jointRotationButton = this.addDrawableChild(
 			CyclingButtonWidget.<JigsawBlockEntity.Joint>builder(JigsawBlockEntity.Joint::asText)
 				.values(JigsawBlockEntity.Joint.values())
 				.initially(this.joint)
 				.omitKeyText()
-				.build(this.width / 2 - 152 + i, 150, 300 - i, 20, JOINT_LABEL_TEXT, (button, joint) -> this.joint = joint)
+				.build(this.width / 2 + 54, 160, 100, 20, JOINT_LABEL_TEXT, (button, joint) -> this.joint = joint)
 		);
 		boolean bl = JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical();
 		this.jointRotationButton.active = bl;
 		this.jointRotationButton.visible = bl;
-		this.addDrawableChild(new SliderWidget(this.width / 2 - 154, 180, 100, 20, ScreenTexts.EMPTY, 0.0) {
+		this.addDrawableChild(new SliderWidget(this.width / 2 - 154, 185, 100, 20, ScreenTexts.EMPTY, 0.0) {
 			{
 				this.updateMessage();
 			}
@@ -128,12 +154,12 @@ public class JigsawBlockScreen extends Screen {
 		});
 		this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.keepJigsaws)
-				.build(this.width / 2 - 50, 180, 100, 20, Text.translatable("jigsaw_block.keep_jigsaws"), (button, keepJigsaws) -> this.keepJigsaws = keepJigsaws)
+				.build(this.width / 2 - 50, 185, 100, 20, Text.translatable("jigsaw_block.keep_jigsaws"), (button, keepJigsaws) -> this.keepJigsaws = keepJigsaws)
 		);
 		this.generateButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("jigsaw_block.generate"), button -> {
 			this.onDone();
 			this.generate();
-		}).dimensions(this.width / 2 + 54, 180, 100, 20).build());
+		}).dimensions(this.width / 2 + 54, 185, 100, 20).build());
 		this.doneButton = this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.DONE, button -> this.onDone()).dimensions(this.width / 2 - 4 - 150, 210, 150, 20).build()
 		);
@@ -154,6 +180,8 @@ public class JigsawBlockScreen extends Screen {
 		String string2 = this.targetField.getText();
 		String string3 = this.poolField.getText();
 		String string4 = this.finalStateField.getText();
+		String string5 = this.field_47123.getText();
+		String string6 = this.field_47124.getText();
 		int i = this.generationDepth;
 		JigsawBlockEntity.Joint joint = this.joint;
 		this.init(client, width, height);
@@ -164,6 +192,8 @@ public class JigsawBlockScreen extends Screen {
 		this.generationDepth = i;
 		this.joint = joint;
 		this.jointRotationButton.setValue(joint);
+		this.field_47123.setText(string5);
+		this.field_47124.setText(string6);
 	}
 
 	@Override
@@ -189,8 +219,12 @@ public class JigsawBlockScreen extends Screen {
 		this.targetField.render(context, mouseX, mouseY, delta);
 		context.drawTextWithShadow(this.textRenderer, FINAL_STATE_TEXT, this.width / 2 - 153, 115, 10526880);
 		this.finalStateField.render(context, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, field_47121, this.width / 2 - 153, 150, 10526880);
+		this.field_47124.render(context, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, field_47119, this.width / 2 - 50, 150, 10526880);
+		this.field_47123.render(context, mouseX, mouseY, delta);
 		if (JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical()) {
-			context.drawTextWithShadow(this.textRenderer, JOINT_LABEL_TEXT, this.width / 2 - 153, 156, 16777215);
+			context.drawTextWithShadow(this.textRenderer, JOINT_LABEL_TEXT, this.width / 2 + 53, 150, 10526880);
 		}
 	}
 }

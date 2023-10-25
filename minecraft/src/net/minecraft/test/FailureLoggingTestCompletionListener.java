@@ -9,10 +9,11 @@ public class FailureLoggingTestCompletionListener implements TestCompletionListe
 
 	@Override
 	public void onTestFailed(GameTestState test) {
+		String string = test.getPos().toShortString();
 		if (test.isRequired()) {
-			LOGGER.error("{} failed! {}", test.getTemplatePath(), Util.getInnermostMessage(test.getThrowable()));
+			LOGGER.error("{} failed at {}! {}", test.getTemplatePath(), string, Util.getInnermostMessage(test.getThrowable()));
 		} else {
-			LOGGER.warn("(optional) {} failed. {}", test.getTemplatePath(), Util.getInnermostMessage(test.getThrowable()));
+			LOGGER.warn("(optional) {} failed at {}. {}", test.getTemplatePath(), string, Util.getInnermostMessage(test.getThrowable()));
 		}
 	}
 

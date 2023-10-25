@@ -8,7 +8,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class SlimeBlock extends TransparentBlock {
+public class SlimeBlock extends TranslucentBlock {
 	public static final MapCodec<SlimeBlock> CODEC = createCodec(SlimeBlock::new);
 
 	@Override

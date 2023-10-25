@@ -15,13 +15,13 @@ public interface Degradable<T extends Enum<T>> {
 	default void tickDegradation(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		float f = 0.05688889F;
 		if (random.nextFloat() < 0.05688889F) {
-			this.tryDegrade(state, world, pos, random);
+			this.tryDegrade(state, world, pos, random).ifPresent(statex -> world.setBlockState(pos, statex));
 		}
 	}
 
 	T getDegradationLevel();
 
-	default void tryDegrade(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	default Optional<BlockState> tryDegrade(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		int i = this.getDegradationLevel().ordinal();
 		int j = 0;
 		int k = 0;
@@ -33,14 +33,13 @@ public interface Degradable<T extends Enum<T>> {
 			}
 
 			if (!blockPos.equals(pos)) {
-				BlockState blockState = world.getBlockState(blockPos);
-				Block block = blockState.getBlock();
-				if (block instanceof Degradable) {
-					Enum<?> enum_ = ((Degradable)block).getDegradationLevel();
-					if (this.getDegradationLevel().getClass() == enum_.getClass()) {
-						int m = enum_.ordinal();
+				Block enum_ = world.getBlockState(blockPos).getBlock();
+				if (enum_ instanceof Degradable degradable) {
+					Enum<?> enum_x = degradable.getDegradationLevel();
+					if (this.getDegradationLevel().getClass() == enum_x.getClass()) {
+						int m = enum_x.ordinal();
 						if (m < i) {
-							return;
+							return Optional.empty();
 						}
 
 						if (m > i) {
@@ -55,8 +54,6 @@ public interface Degradable<T extends Enum<T>> {
 
 		float f = (float)(k + 1) / (float)(k + j + 1);
 		float g = f * f * this.getDegradationChanceMultiplier();
-		if (random.nextFloat() < g) {
-			this.getDegradationResult(state).ifPresent(statex -> world.setBlockState(pos, statex));
-		}
+		return random.nextFloat() < g ? this.getDegradationResult(state) : Optional.empty();
 	}
 }

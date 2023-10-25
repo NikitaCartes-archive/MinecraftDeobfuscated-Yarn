@@ -20,7 +20,6 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 public class TestUtil {
 	private static final int MAX_BATCH_SIZE = 50;
-	public static final int field_33148 = 2;
 	public static final int field_33149 = 5;
 	public static final int field_33150 = 6;
 	public static final int field_33151 = 8;
@@ -29,7 +28,7 @@ public class TestUtil {
 		test.startCountdown();
 		testManager.start(test);
 		test.addListener(new StructureTestListener(test, testManager, pos));
-		test.init(pos, 2);
+		test.init(pos);
 	}
 
 	public static Collection<GameTestState> runTestBatches(
@@ -74,9 +73,8 @@ public class TestUtil {
 		BlockPos blockPos2 = pos.add(radius, 0, radius);
 		BlockPos.stream(blockPos, blockPos2).filter(posx -> world.getBlockState(posx).isOf(Blocks.STRUCTURE_BLOCK)).forEach(posx -> {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(posx);
-			BlockPos blockPosxx = structureBlockBlockEntity.getPos();
 			BlockBox blockBox = StructureTestUtil.getStructureBlockBox(structureBlockBlockEntity);
-			StructureTestUtil.clearArea(blockBox, blockPosxx.getY(), world);
+			StructureTestUtil.clearArea(blockBox, world);
 		});
 	}
 

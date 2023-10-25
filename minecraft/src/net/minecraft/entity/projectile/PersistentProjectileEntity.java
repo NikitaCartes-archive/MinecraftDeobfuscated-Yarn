@@ -66,18 +66,20 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	private IntOpenHashSet piercedEntities;
 	@Nullable
 	private List<Entity> piercingKilledEntities;
+	private ItemStack stack;
 
-	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
-		super(entityType, world);
+	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, World world, ItemStack stack) {
+		super(type, world);
+		this.stack = stack.copy();
 	}
 
-	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world) {
-		this(type, world);
+	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world, ItemStack stack) {
+		this(type, world, stack);
 		this.setPosition(x, y, z);
 	}
 
-	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, LivingEntity owner, World world) {
-		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world);
+	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, LivingEntity owner, World world, ItemStack stack) {
+		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world, stack);
 		this.setOwner(owner);
 		if (owner instanceof PlayerEntity) {
 			this.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
@@ -455,6 +457,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		nbt.putByte("PierceLevel", this.getPierceLevel());
 		nbt.putString("SoundEvent", Registries.SOUND_EVENT.getId(this.sound).toString());
 		nbt.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
+		nbt.put("item", this.stack.writeNbt(new NbtCompound()));
 	}
 
 	@Override
@@ -479,6 +482,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 
 		this.setShotFromCrossbow(nbt.getBoolean("ShotFromCrossbow"));
+		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
+			this.stack = ItemStack.fromNbt(nbt.getCompound("item"));
+		}
 	}
 
 	@Override
@@ -512,11 +518,17 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 	}
 
-	protected abstract ItemStack asItemStack();
+	protected ItemStack asItemStack() {
+		return this.stack.copy();
+	}
 
 	@Override
 	protected Entity.MoveEffect getMoveEffect() {
 		return Entity.MoveEffect.NONE;
+	}
+
+	public ItemStack getItemStack() {
+		return this.stack;
 	}
 
 	public void setDamage(double damage) {

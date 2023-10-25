@@ -11,6 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -39,7 +40,7 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 		float tickDelta
 	) {
 		float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
-		ArrowEntity arrowEntity = new ArrowEntity(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ());
+		ArrowEntity arrowEntity = new ArrowEntity(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), ItemStack.EMPTY);
 		arrowEntity.setYaw((float)(Math.atan2((double)directionX, (double)directionZ) * 180.0F / (float)Math.PI));
 		arrowEntity.setPitch((float)(Math.atan2((double)directionY, (double)f) * 180.0F / (float)Math.PI));
 		arrowEntity.prevYaw = arrowEntity.getYaw();

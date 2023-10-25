@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.StainedGlassPaneBlock;
-import net.minecraft.block.TransparentBlock;
+import net.minecraft.block.TranslucentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.render.OverlayVertexConsumer;
@@ -123,7 +123,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 				boolean bl2;
 				if (renderMode != ModelTransformationMode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
 					Block block = ((BlockItem)stack.getItem()).getBlock();
-					bl2 = !(block instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock);
+					bl2 = !(block instanceof TranslucentBlock) && !(block instanceof StainedGlassPaneBlock);
 				} else {
 					bl2 = true;
 				}

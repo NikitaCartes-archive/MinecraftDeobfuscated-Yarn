@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
-public class TintedGlassBlock extends AbstractGlassBlock {
+public class TintedGlassBlock extends TransparentBlock {
 	public static final MapCodec<TintedGlassBlock> CODEC = createCodec(TintedGlassBlock::new);
 
 	@Override
