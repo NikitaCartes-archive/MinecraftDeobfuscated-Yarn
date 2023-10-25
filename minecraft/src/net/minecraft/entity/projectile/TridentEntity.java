@@ -14,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -27,17 +26,16 @@ import net.minecraft.world.World;
 public class TridentEntity extends PersistentProjectileEntity {
 	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
+	private static final ItemStack DEFAULT_STACK = new ItemStack(Items.TRIDENT);
 	private boolean dealtDamage;
 	public int returnTimer;
 
 	public TridentEntity(EntityType<? extends TridentEntity> entityType, World world) {
-		super(entityType, world);
+		super(entityType, world, DEFAULT_STACK);
 	}
 
 	public TridentEntity(World world, LivingEntity owner, ItemStack stack) {
-		super(EntityType.TRIDENT, owner, world);
-		this.tridentStack = stack.copy();
+		super(EntityType.TRIDENT, owner, world, stack);
 		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
 		this.dataTracker.set(ENCHANTED, stack.hasGlint());
 	}
@@ -90,11 +88,6 @@ public class TridentEntity extends PersistentProjectileEntity {
 		return entity == null || !entity.isAlive() ? false : !(entity instanceof ServerPlayerEntity) || !entity.isSpectator();
 	}
 
-	@Override
-	protected ItemStack asItemStack() {
-		return this.tridentStack.copy();
-	}
-
 	public boolean isEnchanted() {
 		return this.dataTracker.get(ENCHANTED);
 	}
@@ -110,7 +103,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 		Entity entity = entityHitResult.getEntity();
 		float f = 8.0F;
 		if (entity instanceof LivingEntity livingEntity) {
-			f += EnchantmentHelper.getAttackDamage(this.tridentStack, livingEntity.getGroup());
+			f += EnchantmentHelper.getAttackDamage(this.getItemStack(), livingEntity.getGroup());
 		}
 
 		Entity entity2 = this.getOwner();
@@ -152,7 +145,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 	}
 
 	public boolean hasChanneling() {
-		return EnchantmentHelper.hasChanneling(this.tridentStack);
+		return EnchantmentHelper.hasChanneling(this.getItemStack());
 	}
 
 	@Override
@@ -175,18 +168,13 @@ public class TridentEntity extends PersistentProjectileEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("Trident", NbtElement.COMPOUND_TYPE)) {
-			this.tridentStack = ItemStack.fromNbt(nbt.getCompound("Trident"));
-		}
-
 		this.dealtDamage = nbt.getBoolean("DealtDamage");
-		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
+		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.getItemStack()));
 	}
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.put("Trident", this.tridentStack.writeNbt(new NbtCompound()));
 		nbt.putBoolean("DealtDamage", this.dealtDamage);
 	}
 

@@ -688,6 +688,7 @@ public abstract class PlayerManager {
 		}
 
 		player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.INITIAL_CHUNKS_COMING, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
+		this.server.getTickManager().sendPackets(player);
 	}
 
 	public void sendPlayerStatus(ServerPlayerEntity player) {

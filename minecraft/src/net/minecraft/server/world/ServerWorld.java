@@ -155,6 +155,7 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 import net.minecraft.world.spawner.Spawner;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.EntityChunkDataAccess;
+import net.minecraft.world.tick.TickManager;
 import net.minecraft.world.tick.WorldTickScheduler;
 import org.slf4j.Logger;
 
@@ -327,10 +328,15 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		Profiler profiler = this.getProfiler();
 		this.inBlockTick = true;
-		profiler.push("world border");
-		this.getWorldBorder().tick();
-		profiler.swap("weather");
-		this.tickWeather();
+		TickManager tickManager = this.getTickManager();
+		boolean bl = tickManager.shouldTick();
+		if (bl) {
+			profiler.push("world border");
+			this.getWorldBorder().tick();
+			profiler.swap("weather");
+			this.tickWeather();
+		}
+
 		int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
 		if (this.sleepManager.canSkipNight(i) && this.sleepManager.canResetTime(i, this.players)) {
 			if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
@@ -345,9 +351,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		this.calculateAmbientDarkness();
-		this.tickTime();
+		if (bl) {
+			this.tickTime();
+		}
+
 		profiler.swap("tickPending");
-		if (!this.isDebugWorld()) {
+		if (!this.isDebugWorld() && bl) {
 			long l = this.getTime();
 			profiler.push("blockTicks");
 			this.blockTickScheduler.tick(l, 65536, this::tickBlock);
@@ -357,19 +366,25 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		profiler.swap("raid");
-		this.raidManager.tick();
+		if (bl) {
+			this.raidManager.tick();
+		}
+
 		profiler.swap("chunkSource");
 		this.getChunkManager().tick(shouldKeepTicking, true);
 		profiler.swap("blockEvents");
-		this.processSyncedBlockEvents();
+		if (bl) {
+			this.processSyncedBlockEvents();
+		}
+
 		this.inBlockTick = false;
 		profiler.pop();
-		boolean bl = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
-		if (bl) {
+		boolean bl2 = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
+		if (bl2) {
 			this.resetIdleTimeout();
 		}
 
-		if (bl || this.idleTimeout++ < 300) {
+		if (bl2 || this.idleTimeout++ < 300) {
 			profiler.push("entities");
 			if (this.enderDragonFight != null) {
 				profiler.push("dragonFight");
@@ -381,7 +396,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				if (!entity.isRemoved()) {
 					if (this.shouldCancelSpawn(entity)) {
 						entity.discard();
-					} else {
+					} else if (!tickManager.shouldTick(entity)) {
 						profiler.push("checkDespawn");
 						entity.checkDespawn();
 						profiler.pop();
@@ -582,7 +597,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (optional.isPresent()) {
 			return (BlockPos)optional.get();
 		} else {
-			Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getTopY(), blockPos.getZ())).expand(3.0);
+			Box box = Box.create(blockPos, new BlockPos(blockPos.withY(this.getTopY()))).expand(3.0);
 			List<LivingEntity> list = this.getEntitiesByClass(
 				LivingEntity.class, box, entity -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos())
 			);
@@ -1371,6 +1386,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Override
 	public RecipeManager getRecipeManager() {
 		return this.server.getRecipeManager();
+	}
+
+	@Override
+	public TickManager getTickManager() {
+		return this.server.getTickManager();
 	}
 
 	@Override

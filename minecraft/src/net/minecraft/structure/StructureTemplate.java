@@ -112,7 +112,7 @@ public class StructureTemplate {
 			this.blockInfoLists.clear();
 			this.blockInfoLists.add(new StructureTemplate.PalettedBlockInfoList(list4));
 			if (includeEntities) {
-				this.addEntitiesFromWorld(world, blockPos2, blockPos3.add(1, 1, 1));
+				this.addEntitiesFromWorld(world, blockPos2, blockPos3);
 			} else {
 				this.entities.clear();
 			}
@@ -178,7 +178,7 @@ public class StructureTemplate {
 	}
 
 	private void addEntitiesFromWorld(World world, BlockPos firstCorner, BlockPos secondCorner) {
-		List<Entity> list = world.getEntitiesByClass(Entity.class, new Box(firstCorner, secondCorner), entityx -> !(entityx instanceof PlayerEntity));
+		List<Entity> list = world.getEntitiesByClass(Entity.class, Box.create(firstCorner, secondCorner), entityx -> !(entityx instanceof PlayerEntity));
 		this.entities.clear();
 
 		for (Entity entity : list) {

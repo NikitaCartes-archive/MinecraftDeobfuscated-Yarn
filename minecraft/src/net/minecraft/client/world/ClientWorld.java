@@ -85,6 +85,7 @@ import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.tick.EmptyTickSchedulers;
 import net.minecraft.world.tick.QueryableTickScheduler;
+import net.minecraft.world.tick.TickManager;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -102,6 +103,7 @@ public class ClientWorld extends World {
 	private final WorldRenderer worldRenderer;
 	private final ClientWorld.Properties clientWorldProperties;
 	private final DimensionEffects dimensionEffects;
+	private final TickManager tickManager;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private Scoreboard scoreboard = new Scoreboard();
@@ -174,6 +176,7 @@ public class ClientWorld extends World {
 		super(properties, registryRef, networkHandler.getRegistryManager(), dimensionTypeEntry, profiler, true, debugWorld, seed, 1000000);
 		this.networkHandler = networkHandler;
 		this.chunkManager = new ClientChunkManager(this, loadDistance);
+		this.tickManager = new TickManager();
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
 		this.dimensionEffects = DimensionEffects.byDimensionType(dimensionTypeEntry.value());
@@ -211,7 +214,10 @@ public class ClientWorld extends World {
 
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		this.getWorldBorder().tick();
-		this.tickTime();
+		if (this.getTickManager().shouldTick()) {
+			this.tickTime();
+		}
+
 		if (this.lightningTicksLeft > 0) {
 			this.setLightningTicksLeft(this.lightningTicksLeft - 1);
 		}
@@ -251,7 +257,7 @@ public class ClientWorld extends World {
 		Profiler profiler = this.getProfiler();
 		profiler.push("entities");
 		this.entityList.forEach(entity -> {
-			if (!entity.isRemoved() && !entity.hasVehicle()) {
+			if (!entity.isRemoved() && !entity.hasVehicle() && !this.tickManager.shouldTick(entity)) {
 				this.tickEntity(this::tickEntity, entity);
 			}
 		});
@@ -508,6 +514,11 @@ public class ClientWorld extends World {
 	@Override
 	public RecipeManager getRecipeManager() {
 		return this.networkHandler.getRecipeManager();
+	}
+
+	@Override
+	public TickManager getTickManager() {
+		return this.tickManager;
 	}
 
 	public void setScoreboard(Scoreboard scoreboard) {

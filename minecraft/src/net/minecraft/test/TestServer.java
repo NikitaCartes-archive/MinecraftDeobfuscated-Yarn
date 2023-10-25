@@ -197,7 +197,7 @@ public class TestServer extends MinecraftServer {
 	}
 
 	private void runTestBatches(ServerWorld world) {
-		Collection<GameTestState> collection = TestUtil.runTestBatches(this.batches, new BlockPos(0, -60, 0), BlockRotation.NONE, world, TestManager.INSTANCE, 8);
+		Collection<GameTestState> collection = TestUtil.runTestBatches(this.batches, new BlockPos(0, -59, 0), BlockRotation.NONE, world, TestManager.INSTANCE, 8);
 		this.testSet = new TestSet(collection);
 		LOGGER.info("{} tests are now running!", this.testSet.getTestCount());
 	}

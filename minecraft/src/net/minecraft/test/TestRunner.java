@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import org.slf4j.Logger;
 
 public class TestRunner {
@@ -70,6 +73,8 @@ public class TestRunner {
 				private void onFinished() {
 					if (testSet.isDone()) {
 						gameTestBatch.finishBatch(TestRunner.this.world);
+						LongSet longSet = new LongArraySet(TestRunner.this.world.getForcedChunks());
+						longSet.forEach(l -> TestRunner.this.world.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
 						TestRunner.this.runBatch(index + 1);
 					}
 				}
@@ -101,7 +106,7 @@ public class TestRunner {
 		for (GameTestState gameTestState : gameTests) {
 			BlockPos blockPos = new BlockPos(this.reusablePos);
 			StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.createStructureTemplate(
-				gameTestState.getTemplateName(), blockPos, gameTestState.getRotation(), 2, this.world, true
+				gameTestState.getTemplateName(), blockPos, gameTestState.getRotation(), this.world, true
 			);
 			Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
 			gameTestState.setPos(structureBlockBlockEntity.getPos());

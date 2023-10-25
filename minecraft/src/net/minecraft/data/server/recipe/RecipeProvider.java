@@ -602,6 +602,28 @@ public abstract class RecipeProvider implements DataProvider {
 			);
 	}
 
+	protected static void offerGrateRecipe(RecipeExporter exporter, Block output, Block input) {
+		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, 4)
+			.input('M', input)
+			.pattern(" M ")
+			.pattern("M M")
+			.pattern(" M ")
+			.criterion(hasItem(input), conditionsFromItem(input))
+			.offerTo(exporter);
+	}
+
+	protected static void offerBulbRecipe(RecipeExporter exporter, Block output, Block input) {
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, output, 4)
+			.input('C', input)
+			.input('R', Items.REDSTONE)
+			.input('B', Items.BLAZE_ROD)
+			.pattern(" C ")
+			.pattern("CBC")
+			.pattern(" R ")
+			.criterion(hasItem(input), conditionsFromItem(input))
+			.offerTo(exporter);
+	}
+
 	protected static void generateFamily(RecipeExporter exporter, BlockFamily family) {
 		family.getVariants()
 			.forEach(

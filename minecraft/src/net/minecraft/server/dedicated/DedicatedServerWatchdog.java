@@ -11,6 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 import net.minecraft.Bootstrap;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
@@ -27,20 +28,20 @@ public class DedicatedServerWatchdog implements Runnable {
 
 	public DedicatedServerWatchdog(MinecraftDedicatedServer server) {
 		this.server = server;
-		this.maxTickTime = server.getMaxTickTime();
+		this.maxTickTime = server.getMaxTickTime() * TimeHelper.MILLI_IN_NANOS;
 	}
 
 	public void run() {
 		while (this.server.isRunning()) {
 			long l = this.server.getTimeReference();
-			long m = Util.getMeasuringTimeMs();
+			long m = Util.getMeasuringTimeNano();
 			long n = m - l;
 			if (n > this.maxTickTime) {
 				LOGGER.error(
 					LogUtils.FATAL_MARKER,
 					"A single server tick took {} seconds (should be max {})",
-					String.format(Locale.ROOT, "%.2f", (float)n / 1000.0F),
-					String.format(Locale.ROOT, "%.2f", 0.05F)
+					String.format(Locale.ROOT, "%.2f", (float)n / (float)TimeHelper.SECOND_IN_NANOS),
+					String.format(Locale.ROOT, "%.2f", this.server.getTickManager().getMillisPerTick() / (float)TimeHelper.SECOND_IN_MILLIS)
 				);
 				LOGGER.error(LogUtils.FATAL_MARKER, "Considering it to be crashed, server will forcibly shutdown.");
 				ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
@@ -83,7 +84,7 @@ public class DedicatedServerWatchdog implements Runnable {
 			}
 
 			try {
-				Thread.sleep(l + this.maxTickTime - m);
+				Thread.sleep((l + this.maxTickTime - m) / TimeHelper.MILLI_IN_NANOS);
 			} catch (InterruptedException var15) {
 			}
 		}

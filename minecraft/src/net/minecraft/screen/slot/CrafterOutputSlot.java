@@ -31,12 +31,12 @@ public class CrafterOutputSlot extends Slot {
 
 	@Override
 	public ItemStack insertStack(ItemStack stack) {
-		return ItemStack.EMPTY;
+		return stack;
 	}
 
 	@Override
 	public ItemStack insertStack(ItemStack stack, int count) {
-		return ItemStack.EMPTY;
+		return this.insertStack(stack);
 	}
 
 	@Override

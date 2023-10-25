@@ -69,6 +69,7 @@ import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
+import net.minecraft.world.tick.TickManager;
 
 public abstract class World implements WorldAccess, AutoCloseable {
 	public static final Codec<RegistryKey<World>> CODEC = RegistryKey.createCodec(RegistryKeys.WORLD);
@@ -448,6 +449,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		@Nullable PlayerEntity except, Entity entity, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
 	);
 
+	public void method_54762(@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory) {
+		this.playSound(playerEntity, d, e, f, soundEvent, soundCategory, 1.0F, 1.0F);
+	}
+
 	public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 		this.playSound(except, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
@@ -497,12 +502,13 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 
 		Iterator<BlockEntityTickInvoker> iterator = this.blockEntityTickers.iterator();
+		boolean bl = this.getTickManager().shouldTick();
 
 		while (iterator.hasNext()) {
 			BlockEntityTickInvoker blockEntityTickInvoker = (BlockEntityTickInvoker)iterator.next();
 			if (blockEntityTickInvoker.isRemoved()) {
 				iterator.remove();
-			} else if (this.shouldTickBlockPos(blockEntityTickInvoker.getPos())) {
+			} else if (bl && this.shouldTickBlockPos(blockEntityTickInvoker.getPos())) {
 				blockEntityTickInvoker.tick();
 			}
 		}
@@ -869,6 +875,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public GameRules getGameRules() {
 		return this.properties.getGameRules();
 	}
+
+	public abstract TickManager getTickManager();
 
 	public float getThunderGradient(float delta) {
 		return MathHelper.lerp(delta, this.thunderGradientPrev, this.thunderGradient) * this.getRainGradient(delta);

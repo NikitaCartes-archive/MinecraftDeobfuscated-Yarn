@@ -85,7 +85,7 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.ARROW, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ());
+				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ(), stack.copyWithCount(1));
 				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 				return arrowEntity;
 			}
@@ -93,20 +93,25 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.TIPPED_ARROW, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ());
+				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ(), stack.copyWithCount(1));
 				arrowEntity.initFromStack(stack);
 				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 				return arrowEntity;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.SPECTRAL_ARROW, new ProjectileDispenserBehavior() {
-			@Override
-			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-				PersistentProjectileEntity persistentProjectileEntity = new SpectralArrowEntity(world, position.getX(), position.getY(), position.getZ());
-				persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-				return persistentProjectileEntity;
+		DispenserBlock.registerBehavior(
+			Items.SPECTRAL_ARROW,
+			new ProjectileDispenserBehavior() {
+				@Override
+				protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
+					PersistentProjectileEntity persistentProjectileEntity = new SpectralArrowEntity(
+						world, position.getX(), position.getY(), position.getZ(), stack.copyWithCount(1)
+					);
+					persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
+					return persistentProjectileEntity;
+				}
 			}
-		});
+		);
 		DispenserBlock.registerBehavior(Items.EGG, new ProjectileDispenserBehavior() {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {

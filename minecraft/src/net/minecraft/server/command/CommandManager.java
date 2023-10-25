@@ -132,6 +132,7 @@ public class CommandManager {
 		TeamMsgCommand.register(this.dispatcher);
 		TeleportCommand.register(this.dispatcher);
 		TellRawCommand.register(this.dispatcher);
+		TickCommand.register(this.dispatcher);
 		TimeCommand.register(this.dispatcher);
 		TitleCommand.register(this.dispatcher);
 		TriggerCommand.register(this.dispatcher);
@@ -143,6 +144,11 @@ public class CommandManager {
 
 		if (SharedConstants.isDevelopment) {
 			TestCommand.register(this.dispatcher);
+			ResetChunksCommand.register(this.dispatcher);
+			RaidCommand.register(this.dispatcher);
+			DebugPathCommand.register(this.dispatcher);
+			DebugMobSpawningCommand.register(this.dispatcher);
+			WardenSpawnTrackerCommand.register(this.dispatcher);
 			SpawnArmorTrimsCommand.register(this.dispatcher);
 			if (environment.dedicated) {
 				DebugConfigCommand.register(this.dispatcher);

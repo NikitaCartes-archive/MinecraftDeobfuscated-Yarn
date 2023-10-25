@@ -457,6 +457,24 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup TUFF = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_TUFF_BREAK, SoundEvents.BLOCK_TUFF_STEP, SoundEvents.BLOCK_TUFF_PLACE, SoundEvents.BLOCK_TUFF_HIT, SoundEvents.BLOCK_TUFF_FALL
 	);
+	public static final BlockSoundGroup TUFF_BRICKS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_TUFF_BRICKS_BREAK,
+		SoundEvents.BLOCK_TUFF_BRICKS_STEP,
+		SoundEvents.BLOCK_TUFF_BRICKS_PLACE,
+		SoundEvents.BLOCK_TUFF_BRICKS_HIT,
+		SoundEvents.BLOCK_TUFF_BRICKS_FALL
+	);
+	public static final BlockSoundGroup POLISHED_TUFF = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_POLISHED_TUFF_BREAK,
+		SoundEvents.BLOCK_POLISHED_TUFF_STEP,
+		SoundEvents.BLOCK_POLISHED_TUFF_PLACE,
+		SoundEvents.BLOCK_POLISHED_TUFF_HIT,
+		SoundEvents.BLOCK_POLISHED_TUFF_FALL
+	);
 	public static final BlockSoundGroup CALCITE = new BlockSoundGroup(
 		1.0F,
 		1.0F,
@@ -492,6 +510,24 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_COPPER_PLACE,
 		SoundEvents.BLOCK_COPPER_HIT,
 		SoundEvents.BLOCK_COPPER_FALL
+	);
+	public static final BlockSoundGroup COPPER_BULB = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_COPPER_BULB_BREAK,
+		SoundEvents.BLOCK_COPPER_BULB_STEP,
+		SoundEvents.BLOCK_COPPER_BULB_PLACE,
+		SoundEvents.BLOCK_COPPER_BULB_HIT,
+		SoundEvents.BLOCK_COPPER_BULB_FALL
+	);
+	public static final BlockSoundGroup COPPER_GRATE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_COPPER_GRATE_BREAK,
+		SoundEvents.BLOCK_COPPER_GRATE_STEP,
+		SoundEvents.BLOCK_COPPER_GRATE_PLACE,
+		SoundEvents.BLOCK_COPPER_GRATE_HIT,
+		SoundEvents.BLOCK_COPPER_GRATE_FALL
 	);
 	public static final BlockSoundGroup CAVE_VINES = new BlockSoundGroup(
 		1.0F,

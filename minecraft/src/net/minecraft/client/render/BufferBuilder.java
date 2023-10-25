@@ -445,16 +445,26 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			this.parameters = parameters;
 		}
 
+		@Nullable
 		public ByteBuffer getVertexBuffer() {
-			int i = this.batchOffset + this.parameters.getVertexBufferStart();
-			int j = this.batchOffset + this.parameters.getVertexBufferEnd();
-			return BufferBuilder.this.slice(i, j);
+			if (this.parameters.indexOnly()) {
+				return null;
+			} else {
+				int i = this.batchOffset + this.parameters.getVertexBufferStart();
+				int j = this.batchOffset + this.parameters.getVertexBufferEnd();
+				return BufferBuilder.this.slice(i, j);
+			}
 		}
 
+		@Nullable
 		public ByteBuffer getIndexBuffer() {
-			int i = this.batchOffset + this.parameters.getIndexBufferStart();
-			int j = this.batchOffset + this.parameters.getIndexBufferEnd();
-			return BufferBuilder.this.slice(i, j);
+			if (this.parameters.sequentialIndex()) {
+				return null;
+			} else {
+				int i = this.batchOffset + this.parameters.getIndexBufferStart();
+				int j = this.batchOffset + this.parameters.getIndexBufferEnd();
+				return BufferBuilder.this.slice(i, j);
+			}
 		}
 
 		public BufferBuilder.DrawParameters getParameters() {

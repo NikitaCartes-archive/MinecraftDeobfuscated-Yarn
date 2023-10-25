@@ -27,20 +27,21 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	private static final int NO_POTION_COLOR = -1;
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final byte PARTICLE_EFFECT_STATUS = 0;
+	private static final ItemStack DEFAULT_STACK = new ItemStack(Items.ARROW);
 	private Potion potion = Potions.EMPTY;
 	private final Set<StatusEffectInstance> effects = Sets.<StatusEffectInstance>newHashSet();
 	private boolean colorSet;
 
 	public ArrowEntity(EntityType<? extends ArrowEntity> entityType, World world) {
-		super(entityType, world);
+		super(entityType, world, DEFAULT_STACK);
 	}
 
-	public ArrowEntity(World world, double x, double y, double z) {
-		super(EntityType.ARROW, x, y, z, world);
+	public ArrowEntity(World world, double x, double y, double z, ItemStack stack) {
+		super(EntityType.ARROW, x, y, z, world, stack);
 	}
 
-	public ArrowEntity(World world, LivingEntity owner) {
-		super(EntityType.ARROW, owner, world);
+	public ArrowEntity(World world, LivingEntity owner, ItemStack stack) {
+		super(EntityType.ARROW, owner, world, stack);
 	}
 
 	public void initFromStack(ItemStack stack) {
@@ -199,10 +200,10 @@ public class ArrowEntity extends PersistentProjectileEntity {
 
 	@Override
 	protected ItemStack asItemStack() {
+		ItemStack itemStack = super.asItemStack();
 		if (this.effects.isEmpty() && this.potion == Potions.EMPTY) {
-			return new ItemStack(Items.ARROW);
+			return itemStack;
 		} else {
-			ItemStack itemStack = new ItemStack(Items.TIPPED_ARROW);
 			PotionUtil.setPotion(itemStack, this.potion);
 			PotionUtil.setCustomPotionEffects(itemStack, this.effects);
 			if (this.colorSet) {

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,8 +26,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
@@ -37,9 +36,8 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
@@ -47,7 +45,6 @@ public class StructureTestUtil {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String TEST_STRUCTURES_DIRECTORY_NAME = "gameteststructures";
 	public static String testStructuresDirectoryName = "gameteststructures";
-	private static final int field_33174 = 4;
 
 	public static BlockRotation getRotation(int steps) {
 		switch (steps) {
@@ -80,17 +77,17 @@ public class StructureTestUtil {
 	}
 
 	public static Box getStructureBoundingBox(StructureBlockBlockEntity structureBlockEntity) {
-		BlockPos blockPos = structureBlockEntity.getPos();
-		BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
-		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
-		return new Box(blockPos, blockPos3);
+		return Box.from(getStructureBlockBox(structureBlockEntity));
 	}
 
 	public static BlockBox getStructureBlockBox(StructureBlockBlockEntity structureBlockEntity) {
-		BlockPos blockPos = structureBlockEntity.getPos();
-		BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
-		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
-		return BlockBox.create(blockPos, blockPos3);
+		BlockPos blockPos = method_54849(structureBlockEntity);
+		BlockPos blockPos2 = method_54847(blockPos, structureBlockEntity.getSize(), structureBlockEntity.getRotation());
+		return BlockBox.create(blockPos, blockPos2);
+	}
+
+	public static BlockPos method_54849(StructureBlockBlockEntity structureBlockBlockEntity) {
+		return structureBlockBlockEntity.getPos().add(structureBlockBlockEntity.getOffset());
 	}
 
 	public static void placeStartButton(BlockPos pos, BlockPos relativePos, BlockRotation rotation, ServerWorld world) {
@@ -104,7 +101,7 @@ public class StructureTestUtil {
 
 	public static void createTestArea(String testName, BlockPos pos, Vec3i relativePos, BlockRotation rotation, ServerWorld world) {
 		BlockBox blockBox = getStructureBlockBox(pos, relativePos, rotation);
-		clearArea(blockBox, pos.getY(), world);
+		clearArea(blockBox, world);
 		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setIgnoreEntities(false);
@@ -114,10 +111,8 @@ public class StructureTestUtil {
 		structureBlockBlockEntity.setShowBoundingBox(true);
 	}
 
-	public static StructureBlockBlockEntity createStructureTemplate(
-		String templateName, BlockPos pos, BlockRotation rotation, int i, ServerWorld world, boolean interactive
-	) {
-		Vec3i vec3i = createStructureTemplate(templateName, world).getSize();
+	public static StructureBlockBlockEntity createStructureTemplate(String templateName, BlockPos pos, BlockRotation rotation, ServerWorld serverWorld, boolean bl) {
+		Vec3i vec3i = createStructureTemplate(templateName, serverWorld).getSize();
 		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
 		BlockPos blockPos;
 		if (rotation == BlockRotation.NONE) {
@@ -134,31 +129,33 @@ public class StructureTestUtil {
 			blockPos = pos.add(0, 0, vec3i.getX() - 1);
 		}
 
-		forceLoadNearbyChunks(pos, world);
-		clearArea(blockBox, pos.getY(), world);
-		StructureBlockBlockEntity structureBlockBlockEntity = placeStructureTemplate(templateName, blockPos, rotation, world, interactive);
-		world.getBlockTickScheduler().clearNextTicks(blockBox);
-		world.clearUpdatesInArea(blockBox);
+		forceLoadNearbyChunks(blockBox, serverWorld);
+		clearArea(blockBox, serverWorld);
+		StructureBlockBlockEntity structureBlockBlockEntity = placeStructureTemplate(templateName, blockPos.down(), rotation, serverWorld, bl);
+		serverWorld.getBlockTickScheduler().clearNextTicks(blockBox);
+		serverWorld.clearUpdatesInArea(blockBox);
 		return structureBlockBlockEntity;
 	}
 
-	private static void forceLoadNearbyChunks(BlockPos pos, ServerWorld world) {
-		ChunkPos chunkPos = new ChunkPos(pos);
-
-		for (int i = -1; i < 4; i++) {
-			for (int j = -1; j < 4; j++) {
-				int k = chunkPos.x + i;
-				int l = chunkPos.z + j;
-				world.setChunkForced(k, l, true);
-			}
-		}
+	private static void forceLoadNearbyChunks(BlockBox blockBox, ServerWorld world) {
+		method_54846(blockBox, 0).forEach(chunkPos -> world.setChunkForced(chunkPos.x, chunkPos.z, true));
+		method_54846(blockBox, 3).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z));
 	}
 
-	public static void clearArea(BlockBox area, int altitude, ServerWorld world) {
+	private static Stream<ChunkPos> method_54846(BlockBox blockBox, int i) {
+		int j = ChunkSectionPos.getSectionCoord(blockBox.getMinX()) - i;
+		int k = ChunkSectionPos.getSectionCoord(blockBox.getMinZ()) - i;
+		int l = ChunkSectionPos.getSectionCoord(blockBox.getMaxX()) + i;
+		int m = ChunkSectionPos.getSectionCoord(blockBox.getMaxZ()) + i;
+		return ChunkPos.stream(new ChunkPos(j, k), new ChunkPos(l, m));
+	}
+
+	public static void clearArea(BlockBox area, ServerWorld serverWorld) {
+		int i = area.getMinY() - 1;
 		BlockBox blockBox = new BlockBox(area.getMinX() - 2, area.getMinY() - 3, area.getMinZ() - 3, area.getMaxX() + 3, area.getMaxY() + 20, area.getMaxZ() + 3);
-		BlockPos.stream(blockBox).forEach(pos -> resetBlock(altitude, pos, world));
-		world.getBlockTickScheduler().clearNextTicks(blockBox);
-		world.clearUpdatesInArea(blockBox);
+		BlockPos.stream(blockBox).forEach(pos -> resetBlock(i, pos, serverWorld));
+		serverWorld.getBlockTickScheduler().clearNextTicks(blockBox);
+		serverWorld.clearUpdatesInArea(blockBox);
 		Box box = new Box(
 			(double)blockBox.getMinX(),
 			(double)blockBox.getMinY(),
@@ -167,14 +164,18 @@ public class StructureTestUtil {
 			(double)blockBox.getMaxY(),
 			(double)blockBox.getMaxZ()
 		);
-		List<Entity> list = world.getEntitiesByClass(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
+		List<Entity> list = serverWorld.getEntitiesByClass(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
 		list.forEach(Entity::discard);
 	}
 
+	public static BlockPos method_54847(BlockPos blockPos, Vec3i vec3i, BlockRotation blockRotation) {
+		BlockPos blockPos2 = blockPos.add(vec3i).add(-1, -1, -1);
+		return StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, blockRotation, blockPos);
+	}
+
 	public static BlockBox getStructureBlockBox(BlockPos pos, Vec3i relativePos, BlockRotation rotation) {
-		BlockPos blockPos = pos.add(relativePos).add(-1, -1, -1);
-		BlockPos blockPos2 = StructureTemplate.transformAround(blockPos, BlockMirror.NONE, rotation, pos);
-		BlockBox blockBox = BlockBox.create(pos, blockPos2);
+		BlockPos blockPos = method_54847(pos, relativePos, rotation);
+		BlockBox blockBox = BlockBox.create(pos, blockPos);
 		int i = Math.min(blockBox.getMinX(), blockBox.getMaxX());
 		int j = Math.min(blockBox.getMinZ(), blockBox.getMaxZ());
 		return blockBox.move(pos.getX() - i, 0, pos.getZ() - j);
@@ -194,21 +195,12 @@ public class StructureTestUtil {
 
 	public static Collection<BlockPos> findStructureBlocks(BlockPos pos, int radius, ServerWorld world) {
 		Collection<BlockPos> collection = Lists.<BlockPos>newArrayList();
-		Box box = new Box(pos);
-		box = box.expand((double)radius);
-
-		for (int i = (int)box.minX; i <= (int)box.maxX; i++) {
-			for (int j = (int)box.minY; j <= (int)box.maxY; j++) {
-				for (int k = (int)box.minZ; k <= (int)box.maxZ; k++) {
-					BlockPos blockPos = new BlockPos(i, j, k);
-					BlockState blockState = world.getBlockState(blockPos);
-					if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
-						collection.add(blockPos);
-					}
-				}
+		BlockBox blockBox = new BlockBox(pos).expand(radius);
+		BlockPos.stream(blockBox).forEach(blockPos -> {
+			if (world.getBlockState(blockPos).isOf(Blocks.STRUCTURE_BLOCK)) {
+				collection.add(blockPos.toImmutable());
 			}
-		}
-
+		});
 		return collection;
 	}
 
@@ -264,20 +256,10 @@ public class StructureTestUtil {
 	}
 
 	private static void resetBlock(int altitude, BlockPos pos, ServerWorld world) {
-		BlockState blockState = null;
-		DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(
-			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME),
-			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET),
-			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE)
-		);
-		List<BlockState> list = flatChunkGeneratorConfig.getLayerBlocks();
-		int i = pos.getY() - world.getBottomY();
-		if (pos.getY() < altitude && i > 0 && i <= list.size()) {
-			blockState = (BlockState)list.get(i - 1);
-		}
-
-		if (blockState == null) {
+		BlockState blockState;
+		if (pos.getY() < altitude) {
+			blockState = Blocks.STONE.getDefaultState();
+		} else {
 			blockState = Blocks.AIR.getDefaultState();
 		}
 
@@ -288,7 +270,6 @@ public class StructureTestUtil {
 
 	private static boolean isInStructureBounds(BlockPos structureBlockPos, BlockPos pos, ServerWorld world) {
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(structureBlockPos);
-		Box box = getStructureBoundingBox(structureBlockBlockEntity).expand(1.0);
-		return box.contains(Vec3d.ofCenter(pos));
+		return getStructureBlockBox(structureBlockBlockEntity).contains(pos);
 	}
 }

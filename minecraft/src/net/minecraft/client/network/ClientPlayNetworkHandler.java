@@ -238,11 +238,13 @@ import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.network.packet.s2c.play.TickStepS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateTickRateS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
@@ -296,6 +298,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.tick.TickManager;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -521,6 +524,25 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3);
 				entity.setOnGround(packet.isOnGround());
 			}
+		}
+	}
+
+	@Override
+	public void onUpdateTickRate(UpdateTickRateS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		if (this.client.world != null) {
+			TickManager tickManager = this.client.world.getTickManager();
+			tickManager.setTickRate(packet.tickRate());
+			tickManager.setFrozen(packet.isFrozen());
+		}
+	}
+
+	@Override
+	public void onTickStep(TickStepS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		if (this.client.world != null) {
+			TickManager tickManager = this.client.world.getTickManager();
+			tickManager.setStepTicks(packet.tickSteps());
 		}
 	}
 

@@ -103,6 +103,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -181,20 +182,22 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public static final String VANILLA = "vanilla";
 	private static final float field_33212 = 0.8F;
 	private static final int field_33213 = 100;
-	public static final int field_33206 = 50;
-	private static final int field_33215 = 2000;
-	private static final int field_33216 = 15000;
-	private static final long PLAYER_SAMPLE_UPDATE_INTERVAL = 5000000000L;
+	private static final long OVERLOAD_THRESHOLD_NANOS = 20L * TimeHelper.SECOND_IN_NANOS / 20L;
+	private static final int field_47144 = 20;
+	private static final long OVERLOAD_WARNING_INTERVAL_NANOS = 10L * TimeHelper.SECOND_IN_NANOS;
+	private static final int field_47146 = 100;
+	private static final long field_47147 = 5L * TimeHelper.SECOND_IN_NANOS;
+	private static final long PREPARE_START_REGION_TICK_DELAY_NANOS = 10L * TimeHelper.MILLI_IN_NANOS;
 	private static final int field_33218 = 12;
 	public static final int START_TICKET_CHUNK_RADIUS = 11;
 	private static final int START_TICKET_CHUNKS = 441;
 	private static final int field_33220 = 6000;
+	private static final int field_47149 = 100;
 	private static final int field_33221 = 3;
 	public static final int MAX_WORLD_BORDER_RADIUS = 29999984;
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
 		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataConfiguration.SAFE_MODE
 	);
-	private static final long MILLISECONDS_PER_TICK = 50L;
 	public static final GameProfile ANONYMOUS_PLAYER_PROFILE = new GameProfile(Util.NIL_UUID, "Anonymous Player");
 	protected final LevelStorage.Session session;
 	protected final WorldSaveHandler saveHandler;
@@ -224,6 +227,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private volatile boolean running = true;
 	private boolean stopped;
 	private int ticks;
+	private int ticksUntilAutosave = 6000;
 	protected final Proxy proxy;
 	private boolean onlineMode;
 	private boolean preventProxyConnections;
@@ -232,19 +236,20 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Nullable
 	private String motd;
 	private int playerIdleTimeout;
-	public final long[] lastTickLengths = new long[100];
+	private final long[] tickTimes = new long[100];
+	private long recentTickTimesNanos = 0L;
 	@Nullable
 	private KeyPair keyPair;
 	@Nullable
 	private GameProfile hostProfile;
 	private boolean demo;
 	private volatile boolean loading;
-	private long lastTimeReference;
+	private long lastOverloadWarningNanos;
 	protected final ApiServices apiServices;
 	private long lastPlayerSampleUpdate;
 	private final Thread serverThread;
-	private long timeReference = Util.getMeasuringTimeMs();
-	private long nextTickTimestamp;
+	private long tickStartTimeNanos = Util.getMeasuringTimeNano();
+	private long tickEndTimeNanos;
 	private boolean waitingForNextTick;
 	private final ResourcePackManager dataPackManager;
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
@@ -253,12 +258,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final BossBarManager bossBarManager = new BossBarManager();
 	private final CommandFunctionManager commandFunctionManager;
 	private boolean enforceWhitelist;
-	private float tickTime;
+	private float averageTickTime;
 	private final Executor workerExecutor;
 	@Nullable
 	private String serverId;
 	private MinecraftServer.ResourceManagerHolder resourceManagerHolder;
 	private final StructureTemplateManager structureTemplateManager;
+	private final ServerTickManager tickManager;
 	protected final SaveProperties saveProperties;
 	private volatile boolean saving;
 
@@ -301,6 +307,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			this.networkIo = new ServerNetworkIo(this);
+			this.tickManager = new ServerTickManager(this);
 			this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
 			this.session = session;
 			this.saveHandler = session.createSaveHandler();
@@ -502,15 +509,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
-		this.timeReference = Util.getMeasuringTimeMs();
+		this.tickStartTimeNanos = Util.getMeasuringTimeNano();
 		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
 
 		while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
-			this.timeReference = Util.getMeasuringTimeMs() + 10L;
+			this.tickStartTimeNanos = Util.getMeasuringTimeNano() + PREPARE_START_REGION_TICK_DELAY_NANOS;
 			this.runTasksTillTickEnd();
 		}
 
-		this.timeReference = Util.getMeasuringTimeMs() + 10L;
+		this.tickStartTimeNanos = Util.getMeasuringTimeNano() + PREPARE_START_REGION_TICK_DELAY_NANOS;
 		this.runTasksTillTickEnd();
 
 		for (ServerWorld serverWorld2 : this.worlds.values()) {
@@ -526,7 +533,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 		}
 
-		this.timeReference = Util.getMeasuringTimeMs() + 10L;
+		this.tickStartTimeNanos = Util.getMeasuringTimeMs() + PREPARE_START_REGION_TICK_DELAY_NANOS;
 		this.runTasksTillTickEnd();
 		worldGenerationProgressListener.stop();
 		this.updateMobSpawnOptions();
@@ -625,7 +632,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 
 		while (this.worlds.values().stream().anyMatch(world -> world.getChunkManager().threadedAnvilChunkStorage.shouldDelayShutdown())) {
-			this.timeReference = Util.getMeasuringTimeMs() + 1L;
+			this.tickStartTimeNanos = Util.getMeasuringTimeNano() + TimeHelper.MILLI_IN_NANOS;
 
 			for (ServerWorld serverWorldx : this.getWorlds()) {
 				serverWorldx.getChunkManager().removePersistentTickets();
@@ -695,40 +702,53 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				throw new IllegalStateException("Failed to initialize server");
 			}
 
-			this.timeReference = Util.getMeasuringTimeMs();
+			this.tickStartTimeNanos = Util.getMeasuringTimeNano();
 			this.favicon = (ServerMetadata.Favicon)this.loadFavicon().orElse(null);
 			this.metadata = this.createMetadata();
 
 			while (this.running) {
-				long l = Util.getMeasuringTimeMs() - this.timeReference;
-				if (l > 2000L && this.timeReference - this.lastTimeReference >= 15000L) {
-					long m = l / 50L;
-					LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", l, m);
-					this.timeReference += m * 50L;
-					this.lastTimeReference = this.timeReference;
+				long l;
+				if (!this.isPaused() && this.tickManager.isSprinting() && this.tickManager.sprint()) {
+					l = 0L;
+					this.tickStartTimeNanos = Util.getMeasuringTimeNano();
+					this.lastOverloadWarningNanos = this.tickStartTimeNanos;
+				} else {
+					l = this.tickManager.getNanosPerTick();
+					long m = Util.getMeasuringTimeNano() - this.tickStartTimeNanos;
+					if (m > OVERLOAD_THRESHOLD_NANOS + 20L * l && this.tickStartTimeNanos - this.lastOverloadWarningNanos >= OVERLOAD_WARNING_INTERVAL_NANOS + 100L * l) {
+						long n = m / l;
+						LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", m / TimeHelper.MILLI_IN_NANOS, n);
+						this.tickStartTimeNanos += n * l;
+						this.lastOverloadWarningNanos = this.tickStartTimeNanos;
+					}
 				}
 
+				boolean bl = l == 0L;
 				if (this.needsDebugSetup) {
 					this.needsDebugSetup = false;
 					this.debugStart = new MinecraftServer.DebugStart(Util.getMeasuringTimeNano(), this.ticks);
 				}
 
-				this.timeReference += 50L;
+				this.tickStartTimeNanos += l;
 				this.startTickMetrics();
 				this.profiler.push("tick");
-				this.tick(this::shouldKeepTicking);
+				this.tick(bl ? () -> false : this::shouldKeepTicking);
 				this.profiler.swap("nextTickWait");
 				this.waitingForNextTick = true;
-				this.nextTickTimestamp = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
+				this.tickEndTimeNanos = Math.max(Util.getMeasuringTimeNano() + l, this.tickStartTimeNanos);
 				this.runTasksTillTickEnd();
+				if (bl) {
+					this.tickManager.updateSprintTime();
+				}
+
 				this.profiler.pop();
 				this.endTickMetrics();
 				this.loading = true;
-				FlightProfiler.INSTANCE.onTick(this.tickTime);
+				FlightProfiler.INSTANCE.onTick(this.averageTickTime);
 			}
-		} catch (Throwable var44) {
-			LOGGER.error("Encountered an unexpected exception", var44);
-			CrashReport crashReport = createCrashReport(var44);
+		} catch (Throwable var46) {
+			LOGGER.error("Encountered an unexpected exception", var46);
+			CrashReport crashReport = createCrashReport(var46);
 			this.addSystemDetails(crashReport.getSystemDetailsSection());
 			File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + Util.getFormattedCurrentTime() + "-server.txt");
 			if (crashReport.writeToFile(file)) {
@@ -742,8 +762,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			try {
 				this.stopped = true;
 				this.shutdown();
-			} catch (Throwable var42) {
-				LOGGER.error("Exception stopping the server", var42);
+			} catch (Throwable var44) {
+				LOGGER.error("Exception stopping the server", var44);
 			} finally {
 				if (this.apiServices.userCache() != null) {
 					this.apiServices.userCache().clearExecutor();
@@ -777,7 +797,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private boolean shouldKeepTicking() {
-		return this.hasRunningTasks() || Util.getMeasuringTimeMs() < (this.waitingForNextTick ? this.nextTickTimestamp : this.timeReference);
+		return this.hasRunningTasks() || Util.getMeasuringTimeNano() < (this.waitingForNextTick ? this.tickEndTimeNanos : this.tickStartTimeNanos);
 	}
 
 	protected void runTasksTillTickEnd() {
@@ -804,7 +824,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		if (super.runTask()) {
 			return true;
 		} else {
-			if (this.shouldKeepTicking()) {
+			if (this.tickManager.isSprinting() || this.shouldKeepTicking()) {
 				for (ServerWorld serverWorld : this.getWorlds()) {
 					if (serverWorld.getChunkManager().executeQueuedTasks()) {
 						return true;
@@ -854,16 +874,23 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public void exit() {
 	}
 
+	public boolean isPaused() {
+		return false;
+	}
+
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		long l = Util.getMeasuringTimeNano();
 		this.ticks++;
+		this.tickManager.step();
 		this.tickWorlds(shouldKeepTicking);
-		if (l - this.lastPlayerSampleUpdate >= 5000000000L) {
+		if (l - this.lastPlayerSampleUpdate >= field_47147) {
 			this.lastPlayerSampleUpdate = l;
 			this.metadata = this.createMetadata();
 		}
 
-		if (this.ticks % 6000 == 0) {
+		this.ticksUntilAutosave--;
+		if (this.ticksUntilAutosave <= 0) {
+			this.ticksUntilAutosave = this.getAutosaveInterval();
 			LOGGER.debug("Autosave started");
 			this.profiler.push("save");
 			this.saveAll(true, false, false);
@@ -872,11 +899,35 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 
 		this.profiler.push("tallying");
-		long m = this.lastTickLengths[this.ticks % 100] = Util.getMeasuringTimeNano() - l;
-		this.tickTime = this.tickTime * 0.8F + (float)m / 1000000.0F * 0.19999999F;
+		long m = Util.getMeasuringTimeNano() - l;
+		int i = this.ticks % 100;
+		this.recentTickTimesNanos = this.recentTickTimesNanos - this.tickTimes[i];
+		this.recentTickTimesNanos += m;
+		this.tickTimes[i] = m;
+		this.averageTickTime = this.averageTickTime * 0.8F + (float)m / (float)TimeHelper.MILLI_IN_NANOS * 0.19999999F;
 		long n = Util.getMeasuringTimeNano();
 		this.tickTickLog(n - l);
 		this.profiler.pop();
+	}
+
+	private int getAutosaveInterval() {
+		float f;
+		if (this.tickManager.isSprinting()) {
+			long l = this.getAverageNanosPerTick() + 1L;
+			f = (float)TimeHelper.SECOND_IN_NANOS / (float)l;
+		} else {
+			f = this.tickManager.getTickRate();
+		}
+
+		int i = 300;
+		return Math.max(100, (int)(f * 300.0F));
+	}
+
+	public void updateAutosaveTicks() {
+		int i = this.getAutosaveInterval();
+		if (i < this.ticksUntilAutosave) {
+			this.ticksUntilAutosave = i;
+		}
 	}
 
 	protected void tickTickLog(long nanos) {
@@ -910,7 +961,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public void tickWorlds(BooleanSupplier shouldKeepTicking) {
-		this.getPlayerManager().getPlayerList().forEach(serverPlayerEntityx -> serverPlayerEntityx.networkHandler.disableFlush());
+		this.getPlayerManager().getPlayerList().forEach(player -> player.networkHandler.disableFlush());
 		this.profiler.push("commandFunctions");
 		this.getCommandFunctionManager().tick();
 		this.profiler.swap("levels");
@@ -1410,7 +1461,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public long getTimeReference() {
-		return this.timeReference;
+		return this.tickStartTimeNanos;
 	}
 
 	public DataFixer getDataFixer() {
@@ -1631,8 +1682,20 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.enforceWhitelist = enforceWhitelist;
 	}
 
-	public float getTickTime() {
-		return this.tickTime;
+	public float getAverageTickTime() {
+		return this.averageTickTime;
+	}
+
+	public ServerTickManager getTickManager() {
+		return this.tickManager;
+	}
+
+	public long getAverageNanosPerTick() {
+		return this.recentTickTimesNanos / (long)Math.min(100, Math.max(this.ticks, 1));
+	}
+
+	public long[] getTickTimes() {
+		return this.tickTimes;
 	}
 
 	public int getPermissionLevel(GameProfile profile) {
@@ -1688,8 +1751,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		try {
 			writer.write(String.format(Locale.ROOT, "pending_tasks: %d\n", this.getTaskCount()));
-			writer.write(String.format(Locale.ROOT, "average_tick_time: %f\n", this.getTickTime()));
-			writer.write(String.format(Locale.ROOT, "tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
+			writer.write(String.format(Locale.ROOT, "average_tick_time: %f\n", this.getAverageTickTime()));
+			writer.write(String.format(Locale.ROOT, "tick_times: %s\n", Arrays.toString(this.tickTimes)));
 			writer.write(String.format(Locale.ROOT, "queue: %s\n", Util.getMainWorkerExecutor()));
 		} catch (Throwable var6) {
 			if (writer != null) {

@@ -1,19 +1,23 @@
 package net.minecraft.client.gui.screen.option;
 
 import java.nio.file.Path;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.LayoutWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -27,8 +31,10 @@ public class TelemetryInfoScreen extends Screen {
 	private static final Text PRIVACY_STATEMENT_TEXT = Text.translatable("telemetry_info.button.privacy_statement");
 	private static final Text GIVE_FEEDBACK_TEXT = Text.translatable("telemetry_info.button.give_feedback");
 	private static final Text SHOW_DATA_TEXT = Text.translatable("telemetry_info.button.show_data");
+	private static final Text OPT_IN_DESCRIPTION_TEXT = Text.translatable("telemetry_info.opt_in.description");
 	private final Screen parent;
 	private final GameOptions options;
+	@Nullable
 	private TelemetryEventWidget telemetryEventWidget;
 	private double scroll;
 
@@ -54,22 +60,23 @@ public class TelemetryInfoScreen extends Screen {
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter().marginBottom(8);
 		directionalLayoutWidget.add(new TextWidget(this.getTitle(), this.textRenderer));
 		directionalLayoutWidget.add(new MultilineTextWidget(DESCRIPTION_TEXT, this.textRenderer).setMaxWidth(this.width - 16).setCentered(true));
-		ButtonWidget buttonWidget = ButtonWidget.builder(PRIVACY_STATEMENT_TEXT, this::openPrivacyStatementPage).build();
-		directionalLayoutWidget.add(buttonWidget);
 		GridWidget gridWidget = this.createButtonRow(
-			ButtonWidget.builder(GIVE_FEEDBACK_TEXT, this::openFeedbackPage).build(), ButtonWidget.builder(SHOW_DATA_TEXT, this::openLogDirectory).build()
+			ButtonWidget.builder(PRIVACY_STATEMENT_TEXT, this::openPrivacyStatementPage).build(),
+			ButtonWidget.builder(GIVE_FEEDBACK_TEXT, this::openFeedbackPage).build()
 		);
 		directionalLayoutWidget.add(gridWidget);
-		GridWidget gridWidget2 = this.createButtonRow(this.createOptInButton(), ButtonWidget.builder(ScreenTexts.DONE, this::goBack).build());
-		simplePositioningWidget.add(gridWidget2, simplePositioningWidget.copyPositioner().relative(0.5F, 1.0F));
+		LayoutWidget layoutWidget = this.getLayout();
 		simplePositioningWidget.refreshPositions();
-		this.telemetryEventWidget = new TelemetryEventWidget(
-			0, 0, this.width - 40, gridWidget2.getY() - (gridWidget.getY() + gridWidget.getHeight()) - 16, this.client.textRenderer
-		);
+		layoutWidget.refreshPositions();
+		int i = gridWidget.getY() + gridWidget.getHeight();
+		int j = layoutWidget.getHeight();
+		int k = this.height - i - j - 16;
+		this.telemetryEventWidget = new TelemetryEventWidget(0, 0, this.width - 40, k, this.client.textRenderer);
 		this.telemetryEventWidget.setScrollY(this.scroll);
 		this.telemetryEventWidget.setScrollConsumer(scroll -> this.scroll = scroll);
 		this.setInitialFocus(this.telemetryEventWidget);
 		directionalLayoutWidget.add(this.telemetryEventWidget);
+		directionalLayoutWidget.add(layoutWidget);
 		simplePositioningWidget.refreshPositions();
 		SimplePositioningWidget.setPos(simplePositioningWidget, 0, 0, this.width, this.height, 0.5F, 0.0F);
 		simplePositioningWidget.forEachChild(child -> {
@@ -77,12 +84,33 @@ public class TelemetryInfoScreen extends Screen {
 		});
 	}
 
-	private ClickableWidget createOptInButton() {
-		ClickableWidget clickableWidget = this.options
-			.getTelemetryOptInExtra()
-			.createWidget(this.options, 0, 0, 150, value -> this.telemetryEventWidget.refresh(value));
-		clickableWidget.active = this.client.isOptionalTelemetryEnabledByApi();
-		return clickableWidget;
+	private LayoutWidget getLayout() {
+		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.vertical();
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter().marginBottom(4);
+		if (this.client.isOptionalTelemetryEnabledByApi()) {
+			directionalLayoutWidget.add(this.createOptInCheckbox());
+		}
+
+		directionalLayoutWidget.add(
+			this.createButtonRow(ButtonWidget.builder(SHOW_DATA_TEXT, this::openLogDirectory).build(), ButtonWidget.builder(ScreenTexts.DONE, this::goBack).build())
+		);
+		return directionalLayoutWidget;
+	}
+
+	private ClickableWidget createOptInCheckbox() {
+		SimpleOption<Boolean> simpleOption = this.options.getTelemetryOptInExtra();
+		CheckboxWidget checkboxWidget = CheckboxWidget.builder(OPT_IN_DESCRIPTION_TEXT, this.client.textRenderer)
+			.option(simpleOption)
+			.callback(this::updateOptIn)
+			.build();
+		checkboxWidget.active = this.client.isOptionalTelemetryEnabledByApi();
+		return checkboxWidget;
+	}
+
+	private void updateOptIn(ClickableWidget checkbox, boolean checked) {
+		if (this.telemetryEventWidget != null) {
+			this.telemetryEventWidget.refresh(checked);
+		}
 	}
 
 	private void goBack(ButtonWidget button) {

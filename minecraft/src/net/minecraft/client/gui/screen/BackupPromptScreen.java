@@ -44,7 +44,9 @@ public class BackupPromptScreen extends Screen {
 				.build()
 		);
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel.run()).dimensions(this.width / 2 - 155 + 80, 124 + i, 150, 20).build());
-		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, Text.translatable("selectWorld.backupEraseCache"), false);
+		this.eraseCacheCheckbox = CheckboxWidget.builder(Text.translatable("selectWorld.backupEraseCache"), this.textRenderer)
+			.pos(this.width / 2 - 155 + 80, 76 + i)
+			.build();
 		if (this.showEraseCacheCheckbox) {
 			this.addDrawableChild(this.eraseCacheCheckbox);
 		}

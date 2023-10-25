@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.CrafterScreenHandler;
 import net.minecraft.screen.slot.CrafterInputSlot;
 import net.minecraft.screen.slot.Slot;
@@ -35,29 +36,39 @@ public class CrafterScreen extends HandledScreen<CrafterScreenHandler> {
 
 	@Override
 	protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
-		if (this.player.isSpectator()) {
-			super.onMouseClick(slot, slotId, button, actionType);
-		} else {
-			if (slotId > -1 && slotId < 9 && slot instanceof CrafterInputSlot) {
-				if (slot.hasStack()) {
-					super.onMouseClick(slot, slotId, button, actionType);
-					return;
-				}
-
-				boolean bl = this.handler.isSlotDisabled(slotId);
-				if (bl || this.handler.getCursorStack().isEmpty()) {
-					this.handler.setSlotEnabled(slotId, bl);
-					super.onSlotChangedState(slotId, this.handler.syncId, bl);
-					if (bl) {
-						this.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.4F, 1.0F);
-					} else {
-						this.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.4F, 0.75F);
+		if (slot instanceof CrafterInputSlot && !slot.hasStack() && !this.player.isSpectator()) {
+			switch (actionType) {
+				case PICKUP:
+					if (this.handler.isSlotDisabled(slotId)) {
+						this.method_54797(slotId);
+					} else if (this.handler.getCursorStack().isEmpty()) {
+						this.method_54799(slotId);
 					}
-				}
+					break;
+				case SWAP:
+					ItemStack itemStack = this.player.getInventory().getStack(button);
+					if (this.handler.isSlotDisabled(slotId) && !itemStack.isEmpty()) {
+						this.method_54797(slotId);
+					}
 			}
-
-			super.onMouseClick(slot, slotId, button, actionType);
 		}
+
+		super.onMouseClick(slot, slotId, button, actionType);
+	}
+
+	private void method_54797(int i) {
+		this.method_54798(i, true);
+	}
+
+	private void method_54799(int i) {
+		this.method_54798(i, false);
+	}
+
+	private void method_54798(int i, boolean bl) {
+		this.handler.setSlotEnabled(i, bl);
+		super.onSlotChangedState(i, this.handler.syncId, bl);
+		float f = bl ? 1.0F : 0.75F;
+		this.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.4F, f);
 	}
 
 	@Override

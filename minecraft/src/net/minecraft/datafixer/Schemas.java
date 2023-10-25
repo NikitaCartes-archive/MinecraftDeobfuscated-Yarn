@@ -20,7 +20,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_8876;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementCriteriaRenameFix;
@@ -95,6 +94,7 @@ import net.minecraft.datafixer.fix.EntityWolfColorFix;
 import net.minecraft.datafixer.fix.EntityZombieSplitFix;
 import net.minecraft.datafixer.fix.EntityZombieVillagerTypeFix;
 import net.minecraft.datafixer.fix.EntityZombifiedPiglinRenameFix;
+import net.minecraft.datafixer.fix.FixProjectileItemType;
 import net.minecraft.datafixer.fix.FurnaceRecipesFix;
 import net.minecraft.datafixer.fix.GameEventRenamesFix;
 import net.minecraft.datafixer.fix.GoatHornIdFix;
@@ -125,6 +125,7 @@ import net.minecraft.datafixer.fix.LeavesFix;
 import net.minecraft.datafixer.fix.LegacyDragonFightFix;
 import net.minecraft.datafixer.fix.LevelDataGeneratorOptionsFix;
 import net.minecraft.datafixer.fix.LevelFlatGeneratorInfoFix;
+import net.minecraft.datafixer.fix.LevelLegacyWorldGenSettingsFix;
 import net.minecraft.datafixer.fix.MapIdFix;
 import net.minecraft.datafixer.fix.MemoryExpiryDataFix;
 import net.minecraft.datafixer.fix.MissingDimensionFix;
@@ -261,6 +262,7 @@ import net.minecraft.datafixer.schema.Schema3438;
 import net.minecraft.datafixer.schema.Schema3448;
 import net.minecraft.datafixer.schema.Schema3682;
 import net.minecraft.datafixer.schema.Schema3683;
+import net.minecraft.datafixer.schema.Schema3685;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -765,7 +767,7 @@ public class Schemas {
 		Schema schema118 = builder.addSchema(2535, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new EntityShulkerRotationFix(schema118));
 		Schema schema119 = builder.addSchema(2538, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new class_8876(schema119));
+		builder.addFixer(new LevelLegacyWorldGenSettingsFix(schema119));
 		Schema schema120 = builder.addSchema(2550, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new StructureSeparationDataFix(schema120));
 		Schema schema121 = builder.addSchema(2551, Schema2551::new);
@@ -1161,6 +1163,8 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema194, "Added Crafter", TypeReferences.BLOCK_ENTITY));
 		Schema schema195 = builder.addSchema(3683, Schema3683::new);
 		builder.addFixer(new PrimedTntBlockStateFix(schema195));
+		Schema schema196 = builder.addSchema(3685, Schema3685::new);
+		builder.addFixer(new FixProjectileItemType(schema196));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -555,7 +555,7 @@ public class Blocks {
 	);
 	public static final Block GLASS = register(
 		"glass",
-		new GlassBlock(
+		new TransparentBlock(
 			AbstractBlock.Settings.create()
 				.instrument(Instrument.HAT)
 				.strength(0.3F)
@@ -4817,7 +4817,7 @@ public class Blocks {
 	);
 	public static final Block BLUE_ICE = register(
 		"blue_ice",
-		new TransparentBlock(AbstractBlock.Settings.create().mapColor(MapColor.PALE_PURPLE).strength(2.8F).slipperiness(0.989F).sounds(BlockSoundGroup.GLASS))
+		new TranslucentBlock(AbstractBlock.Settings.create().mapColor(MapColor.PALE_PURPLE).strength(2.8F).slipperiness(0.989F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block CONDUIT = register(
 		"conduit",
@@ -5658,6 +5658,29 @@ public class Blocks {
 				.strength(1.5F, 6.0F)
 		)
 	);
+	public static final Block TUFF_SLAB = register("tuff_slab", new SlabBlock(AbstractBlock.Settings.copy(TUFF).requires(FeatureFlags.UPDATE_1_21)));
+	public static final Block TUFF_STAIRS = register(
+		"tuff_stairs", new StairsBlock(TUFF.getDefaultState(), AbstractBlock.Settings.copy(TUFF).requires(FeatureFlags.UPDATE_1_21))
+	);
+	public static final Block TUFF_WALL = register("tuff_wall", new WallBlock(AbstractBlock.Settings.copy(TUFF).solid().requires(FeatureFlags.UPDATE_1_21)));
+	public static final Block POLISHED_TUFF = register(
+		"polished_tuff", new Block(AbstractBlock.Settings.copy(TUFF).sounds(BlockSoundGroup.POLISHED_TUFF).requires(FeatureFlags.UPDATE_1_21))
+	);
+	public static final Block POLISHED_TUFF_SLAB = register("polished_tuff_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_TUFF)));
+	public static final Block POLISHED_TUFF_STAIRS = register(
+		"polished_tuff_stairs", new StairsBlock(POLISHED_TUFF.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_TUFF))
+	);
+	public static final Block POLISHED_TUFF_WALL = register("polished_tuff_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_TUFF).solid()));
+	public static final Block CHISELED_TUFF = register("chiseled_tuff", new Block(AbstractBlock.Settings.copy(TUFF).requires(FeatureFlags.UPDATE_1_21)));
+	public static final Block TUFF_BRICKS = register(
+		"tuff_bricks", new Block(AbstractBlock.Settings.copy(TUFF).sounds(BlockSoundGroup.TUFF_BRICKS).requires(FeatureFlags.UPDATE_1_21))
+	);
+	public static final Block TUFF_BRICK_SLAB = register("tuff_brick_slab", new SlabBlock(AbstractBlock.Settings.copy(TUFF_BRICKS)));
+	public static final Block TUFF_BRICK_STAIRS = register(
+		"tuff_brick_stairs", new StairsBlock(TUFF_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(TUFF_BRICKS))
+	);
+	public static final Block TUFF_BRICK_WALL = register("tuff_brick_wall", new WallBlock(AbstractBlock.Settings.copy(TUFF_BRICKS).solid()));
+	public static final Block CHISELED_TUFF_BRICKS = register("chiseled_tuff_bricks", new Block(AbstractBlock.Settings.copy(TUFF_BRICKS)));
 	public static final Block CALCITE = register(
 		"calcite",
 		new Block(
@@ -5776,6 +5799,31 @@ public class Blocks {
 	public static final Block CUT_COPPER = register(
 		"cut_copper", new OxidizableBlock(Oxidizable.OxidationLevel.UNAFFECTED, AbstractBlock.Settings.copy(COPPER_BLOCK))
 	);
+	public static final Block OXIDIZED_CHISELED_COPPER = register(
+		"oxidized_chiseled_copper",
+		new OxidizableBlock(Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_COPPER).requires(FeatureFlags.UPDATE_1_21))
+	);
+	public static final Block WEATHERED_CHISELED_COPPER = register(
+		"weathered_chiseled_copper",
+		new OxidizableBlock(Oxidizable.OxidationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_COPPER).requires(FeatureFlags.UPDATE_1_21))
+	);
+	public static final Block EXPOSED_CHISELED_COPPER = register(
+		"exposed_chiseled_copper",
+		new OxidizableBlock(Oxidizable.OxidationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_COPPER).requires(FeatureFlags.UPDATE_1_21))
+	);
+	public static final Block CHISELED_COPPER = register(
+		"chiseled_copper", new OxidizableBlock(Oxidizable.OxidationLevel.UNAFFECTED, AbstractBlock.Settings.copy(COPPER_BLOCK).requires(FeatureFlags.UPDATE_1_21))
+	);
+	public static final Block WAXED_OXIDIZED_CHISELED_COPPER = register(
+		"waxed_oxidized_chiseled_copper", new Block(AbstractBlock.Settings.copy(OXIDIZED_CHISELED_COPPER))
+	);
+	public static final Block WAXED_WEATHERED_CHISELED_COPPER = register(
+		"waxed_weathered_chiseled_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_CHISELED_COPPER))
+	);
+	public static final Block WAXED_EXPOSED_CHISELED_COPPER = register(
+		"waxed_exposed_chiseled_copper", new Block(AbstractBlock.Settings.copy(EXPOSED_CHISELED_COPPER))
+	);
+	public static final Block WAXED_CHISELED_COPPER = register("waxed_chiseled_copper", new Block(AbstractBlock.Settings.copy(CHISELED_COPPER)));
 	public static final Block OXIDIZED_CUT_COPPER_STAIRS = register(
 		"oxidized_cut_copper_stairs",
 		new OxidizableStairsBlock(Oxidizable.OxidationLevel.OXIDIZED, OXIDIZED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER))
@@ -5826,6 +5874,190 @@ public class Blocks {
 	);
 	public static final Block WAXED_CUT_COPPER_SLAB = register(
 		"waxed_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_CUT_COPPER).requiresTool())
+	);
+	public static final Block COPPER_DOOR = register(
+		"copper_door",
+		new OxidizableDoorBlock(
+			BlockSetType.COPPER,
+			Oxidizable.OxidationLevel.UNAFFECTED,
+			AbstractBlock.Settings.create()
+				.mapColor(COPPER_BLOCK.getDefaultMapColor())
+				.strength(3.0F)
+				.nonOpaque()
+				.requiresTool()
+				.pistonBehavior(PistonBehavior.DESTROY)
+				.requires(FeatureFlags.UPDATE_1_21)
+		)
+	);
+	public static final Block EXPOSED_COPPER_DOOR = register(
+		"exposed_copper_door",
+		new OxidizableDoorBlock(
+			BlockSetType.COPPER, Oxidizable.OxidationLevel.EXPOSED, AbstractBlock.Settings.copy(COPPER_DOOR).mapColor(EXPOSED_COPPER.getDefaultMapColor())
+		)
+	);
+	public static final Block OXIDIZED_COPPER_DOOR = register(
+		"oxidized_copper_door",
+		new OxidizableDoorBlock(
+			BlockSetType.COPPER, Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(COPPER_DOOR).mapColor(OXIDIZED_COPPER.getDefaultMapColor())
+		)
+	);
+	public static final Block WEATHERED_COPPER_DOOR = register(
+		"weathered_copper_door",
+		new OxidizableDoorBlock(
+			BlockSetType.COPPER, Oxidizable.OxidationLevel.WEATHERED, AbstractBlock.Settings.copy(COPPER_DOOR).mapColor(WEATHERED_COPPER.getDefaultMapColor())
+		)
+	);
+	public static final Block WAXED_COPPER_DOOR = register("waxed_copper_door", new DoorBlock(BlockSetType.COPPER, AbstractBlock.Settings.copy(COPPER_DOOR)));
+	public static final Block WAXED_EXPOSED_COPPER_DOOR = register(
+		"waxed_exposed_copper_door", new DoorBlock(BlockSetType.COPPER, AbstractBlock.Settings.copy(EXPOSED_COPPER_DOOR))
+	);
+	public static final Block WAXED_OXIDIZED_COPPER_DOOR = register(
+		"waxed_oxidized_copper_door", new DoorBlock(BlockSetType.COPPER, AbstractBlock.Settings.copy(OXIDIZED_COPPER_DOOR))
+	);
+	public static final Block WAXED_WEATHERED_COPPER_DOOR = register(
+		"waxed_weathered_copper_door", new DoorBlock(BlockSetType.COPPER, AbstractBlock.Settings.copy(WEATHERED_COPPER_DOOR))
+	);
+	public static final Block COPPER_TRAPDOOR = register(
+		"copper_trapdoor",
+		new OxidizableTrapdoorBlock(
+			BlockSetType.COPPER,
+			Oxidizable.OxidationLevel.UNAFFECTED,
+			AbstractBlock.Settings.create()
+				.mapColor(COPPER_BLOCK.getDefaultMapColor())
+				.strength(3.0F)
+				.requiresTool()
+				.nonOpaque()
+				.allowsSpawning(Blocks::never)
+				.requires(FeatureFlags.UPDATE_1_21)
+		)
+	);
+	public static final Block EXPOSED_COPPER_TRAPDOOR = register(
+		"exposed_copper_trapdoor",
+		new OxidizableTrapdoorBlock(
+			BlockSetType.COPPER,
+			Oxidizable.OxidationLevel.EXPOSED,
+			AbstractBlock.Settings.copy(COPPER_TRAPDOOR).mapColor(EXPOSED_COPPER.getDefaultMapColor()).allowsSpawning(Blocks::never)
+		)
+	);
+	public static final Block OXIDIZED_COPPER_TRAPDOOR = register(
+		"oxidized_copper_trapdoor",
+		new OxidizableTrapdoorBlock(
+			BlockSetType.COPPER,
+			Oxidizable.OxidationLevel.OXIDIZED,
+			AbstractBlock.Settings.copy(COPPER_TRAPDOOR).mapColor(OXIDIZED_COPPER.getDefaultMapColor()).allowsSpawning(Blocks::never)
+		)
+	);
+	public static final Block WEATHERED_COPPER_TRAPDOOR = register(
+		"weathered_copper_trapdoor",
+		new OxidizableTrapdoorBlock(
+			BlockSetType.COPPER,
+			Oxidizable.OxidationLevel.WEATHERED,
+			AbstractBlock.Settings.copy(COPPER_TRAPDOOR).mapColor(WEATHERED_COPPER.getDefaultMapColor()).allowsSpawning(Blocks::never)
+		)
+	);
+	public static final Block WAXED_COPPER_TRAPDOOR = register(
+		"waxed_copper_trapdoor", new TrapdoorBlock(BlockSetType.COPPER, AbstractBlock.Settings.copy(COPPER_TRAPDOOR).allowsSpawning(Blocks::never))
+	);
+	public static final Block WAXED_EXPOSED_COPPER_TRAPDOOR = register(
+		"waxed_exposed_copper_trapdoor", new TrapdoorBlock(BlockSetType.COPPER, AbstractBlock.Settings.copy(EXPOSED_COPPER_TRAPDOOR).allowsSpawning(Blocks::never))
+	);
+	public static final Block WAXED_OXIDIZED_COPPER_TRAPDOOR = register(
+		"waxed_oxidized_copper_trapdoor", new TrapdoorBlock(BlockSetType.COPPER, AbstractBlock.Settings.copy(OXIDIZED_COPPER_TRAPDOOR).allowsSpawning(Blocks::never))
+	);
+	public static final Block WAXED_WEATHERED_COPPER_TRAPDOOR = register(
+		"waxed_weathered_copper_trapdoor",
+		new TrapdoorBlock(BlockSetType.COPPER, AbstractBlock.Settings.copy(WEATHERED_COPPER_TRAPDOOR).allowsSpawning(Blocks::never))
+	);
+	public static final Block COPPER_GRATE = register(
+		"copper_grate",
+		new CopperGrateBlock(
+			Oxidizable.OxidationLevel.UNAFFECTED,
+			AbstractBlock.Settings.create()
+				.strength(3.0F, 6.0F)
+				.sounds(BlockSoundGroup.COPPER_GRATE)
+				.mapColor(MapColor.ORANGE)
+				.nonOpaque()
+				.requiresTool()
+				.allowsSpawning(Blocks::never)
+				.solidBlock(Blocks::never)
+				.suffocates(Blocks::never)
+				.blockVision(Blocks::never)
+				.requires(FeatureFlags.UPDATE_1_21)
+		)
+	);
+	public static final Block EXPOSED_COPPER_GRATE = register(
+		"exposed_copper_grate",
+		new CopperGrateBlock(
+			Oxidizable.OxidationLevel.EXPOSED, AbstractBlock.Settings.copy(COPPER_GRATE).mapColor(MapColor.TERRACOTTA_LIGHT_GRAY).solidBlock(Blocks::never)
+		)
+	);
+	public static final Block WEATHERED_COPPER_GRATE = register(
+		"weathered_copper_grate",
+		new CopperGrateBlock(Oxidizable.OxidationLevel.WEATHERED, AbstractBlock.Settings.copy(COPPER_GRATE).mapColor(MapColor.DARK_AQUA).solidBlock(Blocks::never))
+	);
+	public static final Block OXIDIZED_COPPER_GRATE = register(
+		"oxidized_copper_grate",
+		new CopperGrateBlock(Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(COPPER_GRATE).mapColor(MapColor.TEAL).solidBlock(Blocks::never))
+	);
+	public static final Block WAXED_COPPER_GRATE = register(
+		"waxed_copper_grate", new TransparentBlock(AbstractBlock.Settings.copy(COPPER_GRATE).solidBlock(Blocks::never))
+	);
+	public static final Block WAXED_EXPOSED_COPPER_GRATE = register(
+		"waxed_exposed_copper_grate", new TransparentBlock(AbstractBlock.Settings.copy(EXPOSED_COPPER_GRATE).solidBlock(Blocks::never))
+	);
+	public static final Block WAXED_WEATHERED_COPPER_GRATE = register(
+		"waxed_weathered_copper_grate", new TransparentBlock(AbstractBlock.Settings.copy(WEATHERED_COPPER_GRATE).solidBlock(Blocks::never))
+	);
+	public static final Block WAXED_OXIDIZED_COPPER_GRATE = register(
+		"waxed_oxidized_copper_grate", new TransparentBlock(AbstractBlock.Settings.copy(OXIDIZED_COPPER_GRATE).solidBlock(Blocks::never))
+	);
+	public static final Block COPPER_BULB = register(
+		"copper_bulb",
+		new OxidizableCopperBulbBlock(
+			Oxidizable.OxidationLevel.UNAFFECTED,
+			AbstractBlock.Settings.create()
+				.mapColor(COPPER_BLOCK.getDefaultMapColor())
+				.strength(3.0F, 6.0F)
+				.sounds(BlockSoundGroup.COPPER_BULB)
+				.nonOpaque()
+				.requiresTool()
+				.solidBlock(Blocks::never)
+				.luminance(createLightLevelFromLitBlockState(15))
+				.requires(FeatureFlags.UPDATE_1_21)
+		)
+	);
+	public static final Block EXPOSED_COPPER_BULB = register(
+		"exposed_copper_bulb",
+		new OxidizableCopperBulbBlock(
+			Oxidizable.OxidationLevel.EXPOSED,
+			AbstractBlock.Settings.copy(COPPER_BULB).mapColor(MapColor.TERRACOTTA_LIGHT_GRAY).solidBlock(Blocks::never).luminance(createLightLevelFromLitBlockState(12))
+		)
+	);
+	public static final Block WEATHERED_COPPER_BULB = register(
+		"weathered_copper_bulb",
+		new OxidizableCopperBulbBlock(
+			Oxidizable.OxidationLevel.WEATHERED,
+			AbstractBlock.Settings.copy(COPPER_BULB).mapColor(MapColor.DARK_AQUA).solidBlock(Blocks::never).luminance(createLightLevelFromLitBlockState(8))
+		)
+	);
+	public static final Block OXIDIZED_COPPER_BULB = register(
+		"oxidized_copper_bulb",
+		new OxidizableCopperBulbBlock(
+			Oxidizable.OxidationLevel.OXIDIZED,
+			AbstractBlock.Settings.copy(COPPER_BULB).mapColor(MapColor.TEAL).solidBlock(Blocks::never).luminance(createLightLevelFromLitBlockState(4))
+		)
+	);
+	public static final Block WAXED_COPPER_BULB = register(
+		"waxed_copper_bulb", new CopperBulbBlock(AbstractBlock.Settings.copy(COPPER_BULB).solidBlock(Blocks::never))
+	);
+	public static final Block WAXED_EXPOSED_COPPER_BULB = register(
+		"waxed_exposed_copper_bulb", new CopperBulbBlock(AbstractBlock.Settings.copy(EXPOSED_COPPER_BULB).solidBlock(Blocks::never))
+	);
+	public static final Block WAXED_WEATHERED_COPPER_BULB = register(
+		"waxed_weathered_copper_bulb", new CopperBulbBlock(AbstractBlock.Settings.copy(WEATHERED_COPPER_BULB).solidBlock(Blocks::never))
+	);
+	public static final Block WAXED_OXIDIZED_COPPER_BULB = register(
+		"waxed_oxidized_copper_bulb", new CopperBulbBlock(AbstractBlock.Settings.copy(OXIDIZED_COPPER_BULB).solidBlock(Blocks::never))
 	);
 	public static final Block LIGHTNING_ROD = register(
 		"lightning_rod",

@@ -7,8 +7,8 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
@@ -38,8 +38,8 @@ public class UnderwaterMagmaFeature extends Feature<UnderwaterMagmaFeatureConfig
 				underwaterMagmaFeatureConfig.placementRadiusAroundFloor,
 				underwaterMagmaFeatureConfig.placementRadiusAroundFloor
 			);
-			Box box = new Box(blockPos2.subtract(vec3i), blockPos2.add(vec3i));
-			return BlockPos.stream(box)
+			BlockBox blockBox = BlockBox.create(blockPos2.subtract(vec3i), blockPos2.add(vec3i));
+			return BlockPos.stream(blockBox)
 					.filter(pos -> random.nextFloat() < underwaterMagmaFeatureConfig.placementProbabilityPerValidPosition)
 					.filter(pos -> this.isValidPosition(structureWorldAccess, pos))
 					.mapToInt(pos -> {

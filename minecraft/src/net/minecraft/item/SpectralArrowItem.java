@@ -12,6 +12,6 @@ public class SpectralArrowItem extends ArrowItem {
 
 	@Override
 	public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
-		return new SpectralArrowEntity(world, shooter);
+		return new SpectralArrowEntity(world, shooter, stack.copyWithCount(1));
 	}
 }

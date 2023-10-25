@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.DyeColor;
 
-public class StainedGlassBlock extends AbstractGlassBlock implements Stainable {
+public class StainedGlassBlock extends TransparentBlock implements Stainable {
 	public static final MapCodec<StainedGlassBlock> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(DyeColor.CODEC.fieldOf("color").forGetter(StainedGlassBlock::getColor), createSettingsCodec())
 				.apply(instance, StainedGlassBlock::new)

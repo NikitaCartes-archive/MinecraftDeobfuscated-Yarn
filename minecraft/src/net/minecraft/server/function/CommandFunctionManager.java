@@ -47,13 +47,15 @@ public class CommandFunctionManager {
 	}
 
 	public void tick() {
-		if (this.justLoaded) {
-			this.justLoaded = false;
-			Collection<CommandFunction<ServerCommandSource>> collection = this.loader.getTagOrEmpty(LOAD_TAG_ID);
-			this.executeAll(collection, LOAD_TAG_ID);
-		}
+		if (this.server.getTickManager().shouldTick()) {
+			if (this.justLoaded) {
+				this.justLoaded = false;
+				Collection<CommandFunction<ServerCommandSource>> collection = this.loader.getTagOrEmpty(LOAD_TAG_ID);
+				this.executeAll(collection, LOAD_TAG_ID);
+			}
 
-		this.executeAll(this.tickFunctions, TICK_TAG_ID);
+			this.executeAll(this.tickFunctions, TICK_TAG_ID);
+		}
 	}
 
 	private void executeAll(Collection<CommandFunction<ServerCommandSource>> functions, Identifier label) {

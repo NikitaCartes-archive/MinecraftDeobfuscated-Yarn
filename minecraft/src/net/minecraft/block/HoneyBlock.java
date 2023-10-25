@@ -18,7 +18,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class HoneyBlock extends TransparentBlock {
+public class HoneyBlock extends TranslucentBlock {
 	public static final MapCodec<HoneyBlock> CODEC = createCodec(HoneyBlock::new);
 	private static final double field_31101 = 0.13;
 	private static final double field_31102 = 0.08;

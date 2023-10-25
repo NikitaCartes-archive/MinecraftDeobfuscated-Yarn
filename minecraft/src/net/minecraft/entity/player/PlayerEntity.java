@@ -50,12 +50,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.ParrotEntity;
-import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
@@ -138,7 +134,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		.put(EntityPose.CROUCHING, EntityDimensions.changing(0.6F, 1.5F))
 		.put(EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F))
 		.build();
-	private static final int field_30652 = 25;
 	private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -501,13 +496,9 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.stopRiding();
 			this.setSneaking(false);
 		} else {
-			double d = this.getX();
-			double e = this.getY();
-			double f = this.getZ();
 			super.tickRiding();
 			this.prevStrideDistance = this.strideDistance;
 			this.strideDistance = 0.0F;
-			this.increaseRidingMotionStats(this.getX() - d, this.getY() - e, this.getZ() - f);
 		}
 	}
 
@@ -1540,32 +1531,27 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		double d = this.getX();
-		double e = this.getY();
-		double f = this.getZ();
 		if (this.isSwimming() && !this.hasVehicle()) {
-			double g = this.getRotationVector().y;
-			double h = g < -0.2 ? 0.085 : 0.06;
-			if (g <= 0.0
+			double d = this.getRotationVector().y;
+			double e = d < -0.2 ? 0.085 : 0.06;
+			if (d <= 0.0
 				|| this.jumping
 				|| !this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() + 1.0 - 0.1, this.getZ())).getFluidState().isEmpty()) {
 				Vec3d vec3d = this.getVelocity();
-				this.setVelocity(vec3d.add(0.0, (g - vec3d.y) * h, 0.0));
+				this.setVelocity(vec3d.add(0.0, (d - vec3d.y) * e, 0.0));
 			}
 		}
 
 		if (this.abilities.flying && !this.hasVehicle()) {
-			double g = this.getVelocity().y;
+			double d = this.getVelocity().y;
 			super.travel(movementInput);
 			Vec3d vec3d2 = this.getVelocity();
-			this.setVelocity(vec3d2.x, g * 0.6, vec3d2.z);
+			this.setVelocity(vec3d2.x, d * 0.6, vec3d2.z);
 			this.onLanding();
 			this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
 		} else {
 			super.travel(movementInput);
 		}
-
-		this.increaseTravelMotionStats(this.getX() - d, this.getY() - e, this.getZ() - f);
 	}
 
 	@Override
@@ -1584,76 +1570,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public float getMovementSpeed() {
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-	}
-
-	public void increaseTravelMotionStats(double dx, double dy, double dz) {
-		if (!this.hasVehicle()) {
-			if (this.isSwimming()) {
-				int i = Math.round((float)Math.sqrt(dx * dx + dy * dy + dz * dz) * 100.0F);
-				if (i > 0) {
-					this.increaseStat(Stats.SWIM_ONE_CM, i);
-					this.addExhaustion(0.01F * (float)i * 0.01F);
-				}
-			} else if (this.isSubmergedIn(FluidTags.WATER)) {
-				int i = Math.round((float)Math.sqrt(dx * dx + dy * dy + dz * dz) * 100.0F);
-				if (i > 0) {
-					this.increaseStat(Stats.WALK_UNDER_WATER_ONE_CM, i);
-					this.addExhaustion(0.01F * (float)i * 0.01F);
-				}
-			} else if (this.isTouchingWater()) {
-				int i = Math.round((float)Math.sqrt(dx * dx + dz * dz) * 100.0F);
-				if (i > 0) {
-					this.increaseStat(Stats.WALK_ON_WATER_ONE_CM, i);
-					this.addExhaustion(0.01F * (float)i * 0.01F);
-				}
-			} else if (this.isClimbing()) {
-				if (dy > 0.0) {
-					this.increaseStat(Stats.CLIMB_ONE_CM, (int)Math.round(dy * 100.0));
-				}
-			} else if (this.isOnGround()) {
-				int i = Math.round((float)Math.sqrt(dx * dx + dz * dz) * 100.0F);
-				if (i > 0) {
-					if (this.isSprinting()) {
-						this.increaseStat(Stats.SPRINT_ONE_CM, i);
-						this.addExhaustion(0.1F * (float)i * 0.01F);
-					} else if (this.isInSneakingPose()) {
-						this.increaseStat(Stats.CROUCH_ONE_CM, i);
-						this.addExhaustion(0.0F * (float)i * 0.01F);
-					} else {
-						this.increaseStat(Stats.WALK_ONE_CM, i);
-						this.addExhaustion(0.0F * (float)i * 0.01F);
-					}
-				}
-			} else if (this.isFallFlying()) {
-				int i = Math.round((float)Math.sqrt(dx * dx + dy * dy + dz * dz) * 100.0F);
-				this.increaseStat(Stats.AVIATE_ONE_CM, i);
-			} else {
-				int i = Math.round((float)Math.sqrt(dx * dx + dz * dz) * 100.0F);
-				if (i > 25) {
-					this.increaseStat(Stats.FLY_ONE_CM, i);
-				}
-			}
-		}
-	}
-
-	private void increaseRidingMotionStats(double dx, double dy, double dz) {
-		if (this.hasVehicle()) {
-			int i = Math.round((float)Math.sqrt(dx * dx + dy * dy + dz * dz) * 100.0F);
-			if (i > 0) {
-				Entity entity = this.getVehicle();
-				if (entity instanceof AbstractMinecartEntity) {
-					this.increaseStat(Stats.MINECART_ONE_CM, i);
-				} else if (entity instanceof BoatEntity) {
-					this.increaseStat(Stats.BOAT_ONE_CM, i);
-				} else if (entity instanceof PigEntity) {
-					this.increaseStat(Stats.PIG_ONE_CM, i);
-				} else if (entity instanceof AbstractHorseEntity) {
-					this.increaseStat(Stats.HORSE_ONE_CM, i);
-				} else if (entity instanceof StriderEntity) {
-					this.increaseStat(Stats.STRIDER_ONE_CM, i);
-				}
-			}
-		}
 	}
 
 	@Override

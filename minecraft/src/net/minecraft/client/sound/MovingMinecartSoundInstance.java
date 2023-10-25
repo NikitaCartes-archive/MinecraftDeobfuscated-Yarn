@@ -50,7 +50,7 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 			this.y = (double)((float)this.minecart.getY());
 			this.z = (double)((float)this.minecart.getZ());
 			float f = (float)this.minecart.getVelocity().horizontalLength();
-			if (f >= 0.01F) {
+			if (f >= 0.01F && this.minecart.getWorld().getTickManager().shouldTick()) {
 				this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);
 				this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0F, 0.5F), 0.0F, 0.7F);
 			} else {

@@ -209,71 +209,107 @@ public class BlockFamilies {
 		.stairs(Blocks.MOSSY_STONE_BRICK_STAIRS)
 		.slab(Blocks.MOSSY_STONE_BRICK_SLAB)
 		.build();
-	public static final BlockFamily COPPER_BLOCK = register(Blocks.COPPER_BLOCK).cut(Blocks.CUT_COPPER).noGenerateModels().build();
+	public static final BlockFamily COPPER_BLOCK = register(Blocks.COPPER_BLOCK)
+		.cut(Blocks.CUT_COPPER)
+		.door(Blocks.COPPER_DOOR)
+		.trapdoor(Blocks.COPPER_TRAPDOOR)
+		.noGenerateModels()
+		.build();
 	public static final BlockFamily CUT_COPPER = register(Blocks.CUT_COPPER)
 		.slab(Blocks.CUT_COPPER_SLAB)
 		.stairs(Blocks.CUT_COPPER_STAIRS)
+		.chiseled(Blocks.CHISELED_COPPER)
 		.noGenerateModels()
 		.build();
 	public static final BlockFamily WAXED_COPPER_BLOCK = register(Blocks.WAXED_COPPER_BLOCK)
 		.cut(Blocks.WAXED_CUT_COPPER)
+		.door(Blocks.WAXED_COPPER_DOOR)
+		.trapdoor(Blocks.WAXED_COPPER_TRAPDOOR)
 		.group("waxed_cut_copper")
 		.noGenerateModels()
 		.build();
 	public static final BlockFamily WAXED_CUT_COPPER = register(Blocks.WAXED_CUT_COPPER)
 		.slab(Blocks.WAXED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WAXED_CUT_COPPER_STAIRS)
+		.chiseled(Blocks.WAXED_CHISELED_COPPER)
 		.group("waxed_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily EXPOSED_COPPER = register(Blocks.EXPOSED_COPPER).cut(Blocks.EXPOSED_CUT_COPPER).noGenerateModels().build();
+	public static final BlockFamily EXPOSED_COPPER = register(Blocks.EXPOSED_COPPER)
+		.cut(Blocks.EXPOSED_CUT_COPPER)
+		.door(Blocks.EXPOSED_COPPER_DOOR)
+		.trapdoor(Blocks.EXPOSED_COPPER_TRAPDOOR)
+		.noGenerateModels()
+		.build();
 	public static final BlockFamily EXPOSED_CUT_COPPER = register(Blocks.EXPOSED_CUT_COPPER)
 		.slab(Blocks.EXPOSED_CUT_COPPER_SLAB)
 		.stairs(Blocks.EXPOSED_CUT_COPPER_STAIRS)
+		.chiseled(Blocks.EXPOSED_CHISELED_COPPER)
 		.noGenerateModels()
 		.build();
 	public static final BlockFamily WAXED_EXPOSED_COPPER = register(Blocks.WAXED_EXPOSED_COPPER)
 		.cut(Blocks.WAXED_EXPOSED_CUT_COPPER)
+		.door(Blocks.WAXED_EXPOSED_COPPER_DOOR)
+		.trapdoor(Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR)
 		.group("waxed_exposed_cut_copper")
 		.noGenerateModels()
 		.build();
 	public static final BlockFamily WAXED_EXPOSED_CUT_COPPER = register(Blocks.WAXED_EXPOSED_CUT_COPPER)
 		.slab(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS)
+		.chiseled(Blocks.WAXED_EXPOSED_CHISELED_COPPER)
 		.group("waxed_exposed_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily WEATHERED_COPPER = register(Blocks.WEATHERED_COPPER).cut(Blocks.WEATHERED_CUT_COPPER).noGenerateModels().build();
+	public static final BlockFamily WEATHERED_COPPER = register(Blocks.WEATHERED_COPPER)
+		.cut(Blocks.WEATHERED_CUT_COPPER)
+		.door(Blocks.WEATHERED_COPPER_DOOR)
+		.trapdoor(Blocks.WEATHERED_COPPER_TRAPDOOR)
+		.noGenerateModels()
+		.build();
 	public static final BlockFamily WEATHERED_CUT_COPPER = register(Blocks.WEATHERED_CUT_COPPER)
 		.slab(Blocks.WEATHERED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WEATHERED_CUT_COPPER_STAIRS)
+		.chiseled(Blocks.WEATHERED_CHISELED_COPPER)
 		.noGenerateModels()
 		.build();
 	public static final BlockFamily WAXED_WEATHERED_COPPER = register(Blocks.WAXED_WEATHERED_COPPER)
 		.cut(Blocks.WAXED_WEATHERED_CUT_COPPER)
+		.door(Blocks.WAXED_WEATHERED_COPPER_DOOR)
+		.trapdoor(Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR)
 		.group("waxed_weathered_cut_copper")
 		.noGenerateModels()
 		.build();
 	public static final BlockFamily WAXED_WEATHERED_CUT_COPPER = register(Blocks.WAXED_WEATHERED_CUT_COPPER)
 		.slab(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS)
+		.chiseled(Blocks.WAXED_WEATHERED_CHISELED_COPPER)
 		.group("waxed_weathered_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily OXIDIZED_COPPER = register(Blocks.OXIDIZED_COPPER).cut(Blocks.OXIDIZED_CUT_COPPER).noGenerateModels().build();
+	public static final BlockFamily OXIDIZED_COPPER = register(Blocks.OXIDIZED_COPPER)
+		.cut(Blocks.OXIDIZED_CUT_COPPER)
+		.door(Blocks.OXIDIZED_COPPER_DOOR)
+		.trapdoor(Blocks.OXIDIZED_COPPER_TRAPDOOR)
+		.noGenerateModels()
+		.build();
 	public static final BlockFamily OXIDIZED_CUT_COPPER = register(Blocks.OXIDIZED_CUT_COPPER)
 		.slab(Blocks.OXIDIZED_CUT_COPPER_SLAB)
 		.stairs(Blocks.OXIDIZED_CUT_COPPER_STAIRS)
+		.chiseled(Blocks.OXIDIZED_CHISELED_COPPER)
 		.noGenerateModels()
 		.build();
 	public static final BlockFamily WAXED_OXIDIZED_COPPER = register(Blocks.WAXED_OXIDIZED_COPPER)
 		.cut(Blocks.WAXED_OXIDIZED_CUT_COPPER)
+		.door(Blocks.WAXED_OXIDIZED_COPPER_DOOR)
+		.trapdoor(Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR)
 		.group("waxed_oxidized_cut_copper")
 		.noGenerateModels()
 		.build();
 	public static final BlockFamily WAXED_OXIDIZED_CUT_COPPER = register(Blocks.WAXED_OXIDIZED_CUT_COPPER)
 		.slab(Blocks.WAXED_OXIDIZED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS)
+		.chiseled(Blocks.WAXED_OXIDIZED_CHISELED_COPPER)
 		.group("waxed_oxidized_cut_copper")
 		.noGenerateModels()
 		.build();
@@ -306,6 +342,25 @@ public class BlockFamilies {
 	public static final BlockFamily POLISHED_GRANITE = register(Blocks.POLISHED_GRANITE)
 		.stairs(Blocks.POLISHED_GRANITE_STAIRS)
 		.slab(Blocks.POLISHED_GRANITE_SLAB)
+		.build();
+	public static final BlockFamily TUFF = register(Blocks.TUFF)
+		.wall(Blocks.TUFF_WALL)
+		.stairs(Blocks.TUFF_STAIRS)
+		.slab(Blocks.TUFF_SLAB)
+		.chiseled(Blocks.CHISELED_TUFF)
+		.polished(Blocks.POLISHED_TUFF)
+		.build();
+	public static final BlockFamily POLISHED_TUFF = register(Blocks.POLISHED_TUFF)
+		.wall(Blocks.POLISHED_TUFF_WALL)
+		.stairs(Blocks.POLISHED_TUFF_STAIRS)
+		.slab(Blocks.POLISHED_TUFF_SLAB)
+		.polished(Blocks.TUFF_BRICKS)
+		.build();
+	public static final BlockFamily TUFF_BRICK = register(Blocks.TUFF_BRICKS)
+		.wall(Blocks.TUFF_BRICK_WALL)
+		.stairs(Blocks.TUFF_BRICK_STAIRS)
+		.slab(Blocks.TUFF_BRICK_SLAB)
+		.chiseled(Blocks.CHISELED_TUFF_BRICKS)
 		.build();
 	public static final BlockFamily NETHER_BRICK = register(Blocks.NETHER_BRICKS)
 		.fence(Blocks.NETHER_BRICK_FENCE)

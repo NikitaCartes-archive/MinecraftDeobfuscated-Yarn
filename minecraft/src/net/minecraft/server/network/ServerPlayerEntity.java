@@ -35,10 +35,14 @@ import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -92,6 +96,7 @@ import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -153,6 +158,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_29769 = 32;
 	private static final int field_29770 = 10;
+	private static final int field_46928 = 25;
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
 	public final ServerPlayerInteractionManager interactionManager;
@@ -966,6 +972,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
+	protected void tickCramming() {
+		if (this.getWorld().getTickManager().shouldTick()) {
+			super.tickCramming();
+		}
+	}
+
+	@Override
 	public void openEditSignScreen(SignBlockEntity sign, boolean front) {
 		this.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.getWorld(), sign.getPos()));
 		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos(), front));
@@ -1060,6 +1073,96 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.jumping = jumping;
 			this.setSneaking(sneaking);
 		}
+	}
+
+	@Override
+	public void travel(Vec3d movementInput) {
+		double d = this.getX();
+		double e = this.getY();
+		double f = this.getZ();
+		super.travel(movementInput);
+		this.method_54720(this.getX() - d, this.getY() - e, this.getZ() - f);
+	}
+
+	@Override
+	public void tickRiding() {
+		double d = this.getX();
+		double e = this.getY();
+		double f = this.getZ();
+		super.tickRiding();
+		this.method_54721(this.getX() - d, this.getY() - e, this.getZ() - f);
+	}
+
+	public void method_54720(double d, double e, double f) {
+		if (!this.hasVehicle() && !method_54722(d, e, f)) {
+			if (this.isSwimming()) {
+				int i = Math.round((float)Math.sqrt(d * d + e * e + f * f) * 100.0F);
+				if (i > 0) {
+					this.increaseStat(Stats.SWIM_ONE_CM, i);
+					this.addExhaustion(0.01F * (float)i * 0.01F);
+				}
+			} else if (this.isSubmergedIn(FluidTags.WATER)) {
+				int i = Math.round((float)Math.sqrt(d * d + e * e + f * f) * 100.0F);
+				if (i > 0) {
+					this.increaseStat(Stats.WALK_UNDER_WATER_ONE_CM, i);
+					this.addExhaustion(0.01F * (float)i * 0.01F);
+				}
+			} else if (this.isTouchingWater()) {
+				int i = Math.round((float)Math.sqrt(d * d + f * f) * 100.0F);
+				if (i > 0) {
+					this.increaseStat(Stats.WALK_ON_WATER_ONE_CM, i);
+					this.addExhaustion(0.01F * (float)i * 0.01F);
+				}
+			} else if (this.isClimbing()) {
+				if (e > 0.0) {
+					this.increaseStat(Stats.CLIMB_ONE_CM, (int)Math.round(e * 100.0));
+				}
+			} else if (this.isOnGround()) {
+				int i = Math.round((float)Math.sqrt(d * d + f * f) * 100.0F);
+				if (i > 0) {
+					if (this.isSprinting()) {
+						this.increaseStat(Stats.SPRINT_ONE_CM, i);
+						this.addExhaustion(0.1F * (float)i * 0.01F);
+					} else if (this.isInSneakingPose()) {
+						this.increaseStat(Stats.CROUCH_ONE_CM, i);
+						this.addExhaustion(0.0F * (float)i * 0.01F);
+					} else {
+						this.increaseStat(Stats.WALK_ONE_CM, i);
+						this.addExhaustion(0.0F * (float)i * 0.01F);
+					}
+				}
+			} else if (this.isFallFlying()) {
+				int i = Math.round((float)Math.sqrt(d * d + e * e + f * f) * 100.0F);
+				this.increaseStat(Stats.AVIATE_ONE_CM, i);
+			} else {
+				int i = Math.round((float)Math.sqrt(d * d + f * f) * 100.0F);
+				if (i > 25) {
+					this.increaseStat(Stats.FLY_ONE_CM, i);
+				}
+			}
+		}
+	}
+
+	private void method_54721(double d, double e, double f) {
+		if (this.hasVehicle() && !method_54722(d, e, f)) {
+			int i = Math.round((float)Math.sqrt(d * d + e * e + f * f) * 100.0F);
+			Entity entity = this.getVehicle();
+			if (entity instanceof AbstractMinecartEntity) {
+				this.increaseStat(Stats.MINECART_ONE_CM, i);
+			} else if (entity instanceof BoatEntity) {
+				this.increaseStat(Stats.BOAT_ONE_CM, i);
+			} else if (entity instanceof PigEntity) {
+				this.increaseStat(Stats.PIG_ONE_CM, i);
+			} else if (entity instanceof AbstractHorseEntity) {
+				this.increaseStat(Stats.HORSE_ONE_CM, i);
+			} else if (entity instanceof StriderEntity) {
+				this.increaseStat(Stats.STRIDER_ONE_CM, i);
+			}
+		}
+	}
+
+	private static boolean method_54722(double d, double e, double f) {
+		return d == 0.0 && e == 0.0 && f == 0.0;
 	}
 
 	@Override

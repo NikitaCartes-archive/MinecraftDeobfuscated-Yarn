@@ -1,5 +1,6 @@
 package net.minecraft.structure.pool;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -7,6 +8,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -23,6 +25,7 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -106,7 +109,16 @@ public class SinglePoolElement extends StructurePoolElement {
 			pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true
 		);
 		Util.shuffle(objectArrayList, random);
+		method_54782(objectArrayList);
 		return objectArrayList;
+	}
+
+	@VisibleForTesting
+	static void method_54782(List<StructureTemplate.StructureBlockInfo> list) {
+		list.sort(
+			Comparator.comparingInt(structureBlockInfo -> Nullables.mapOrElse(structureBlockInfo.nbt(), nbtCompound -> nbtCompound.getInt("selection_priority"), 0))
+				.reversed()
+		);
 	}
 
 	@Override

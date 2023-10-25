@@ -44,13 +44,6 @@ public class Box {
 	/**
 	 * Creates a box of the given positions as corners.
 	 */
-	public Box(BlockPos pos1, BlockPos pos2) {
-		this((double)pos1.getX(), (double)pos1.getY(), (double)pos1.getZ(), (double)pos2.getX(), (double)pos2.getY(), (double)pos2.getZ());
-	}
-
-	/**
-	 * Creates a box of the given positions as corners.
-	 */
 	public Box(Vec3d pos1, Vec3d pos2) {
 		this(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z);
 	}
@@ -68,6 +61,17 @@ public class Box {
 
 	public static Box from(Vec3d pos) {
 		return new Box(pos.x, pos.y, pos.z, pos.x + 1.0, pos.y + 1.0, pos.z + 1.0);
+	}
+
+	public static Box create(BlockPos pos1, BlockPos pos2) {
+		return new Box(
+			(double)Math.min(pos1.getX(), pos2.getX()),
+			(double)Math.min(pos1.getY(), pos2.getY()),
+			(double)Math.min(pos1.getZ(), pos2.getZ()),
+			(double)(Math.max(pos1.getX(), pos2.getX()) + 1),
+			(double)(Math.max(pos1.getY(), pos2.getY()) + 1),
+			(double)(Math.max(pos1.getZ(), pos2.getZ()) + 1)
+		);
 	}
 
 	/**

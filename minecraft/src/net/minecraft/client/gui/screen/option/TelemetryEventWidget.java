@@ -28,6 +28,7 @@ public class TelemetryEventWidget extends ScrollableWidget {
 	private static final int MARGIN_X = 32;
 	private static final String REQUIRED_TRANSLATION_KEY = "telemetry.event.required";
 	private static final String OPTIONAL_TRANSLATION_KEY = "telemetry.event.optional";
+	private static final String DISABLED_TRANSLATION_KEY = "telemetry.event.optional.disabled";
 	private static final Text PROPERTY_TITLE_TEXT = Text.translatable("telemetry_info.property_title").formatted(Formatting.UNDERLINE);
 	private final TextRenderer textRenderer;
 	private TelemetryEventWidget.Contents contents;
@@ -49,13 +50,11 @@ public class TelemetryEventWidget extends ScrollableWidget {
 		TelemetryEventWidget.ContentsBuilder contentsBuilder = new TelemetryEventWidget.ContentsBuilder(this.getGridWidth());
 		List<TelemetryEventType> list = new ArrayList(TelemetryEventType.getTypes());
 		list.sort(Comparator.comparing(TelemetryEventType::isOptional));
-		if (!optionalTelemetryEnabled) {
-			list.removeIf(TelemetryEventType::isOptional);
-		}
 
 		for (int i = 0; i < list.size(); i++) {
 			TelemetryEventType telemetryEventType = (TelemetryEventType)list.get(i);
-			this.appendEventInfo(contentsBuilder, telemetryEventType);
+			boolean bl = telemetryEventType.isOptional() && !optionalTelemetryEnabled;
+			this.appendEventInfo(contentsBuilder, telemetryEventType, bl);
 			if (i < list.size() - 1) {
 				contentsBuilder.appendSpace(9);
 			}
@@ -101,18 +100,22 @@ public class TelemetryEventWidget extends ScrollableWidget {
 		builder.put(NarrationPart.TITLE, this.contents.narration());
 	}
 
-	private void appendEventInfo(TelemetryEventWidget.ContentsBuilder builder, TelemetryEventType eventType) {
-		String string = eventType.isOptional() ? "telemetry.event.optional" : "telemetry.event.required";
-		builder.appendText(this.textRenderer, Text.translatable(string, eventType.getTitle()));
-		builder.appendText(this.textRenderer, eventType.getDescription().formatted(Formatting.GRAY));
-		builder.appendSpace(9 / 2);
-		builder.appendTitle(this.textRenderer, PROPERTY_TITLE_TEXT, 2);
-		this.appendProperties(eventType, builder);
+	private Text formatTitleText(Text title, boolean disabled) {
+		return (Text)(disabled ? title.copy().formatted(Formatting.GRAY) : title);
 	}
 
-	private void appendProperties(TelemetryEventType eventType, TelemetryEventWidget.ContentsBuilder builder) {
+	private void appendEventInfo(TelemetryEventWidget.ContentsBuilder builder, TelemetryEventType eventType, boolean disabled) {
+		String string = eventType.isOptional() ? (disabled ? "telemetry.event.optional.disabled" : "telemetry.event.optional") : "telemetry.event.required";
+		builder.appendText(this.textRenderer, this.formatTitleText(Text.translatable(string, eventType.getTitle()), disabled));
+		builder.appendText(this.textRenderer, eventType.getDescription().formatted(Formatting.GRAY));
+		builder.appendSpace(9 / 2);
+		builder.appendTitle(this.textRenderer, this.formatTitleText(PROPERTY_TITLE_TEXT, disabled), 2);
+		this.appendProperties(eventType, builder, disabled);
+	}
+
+	private void appendProperties(TelemetryEventType eventType, TelemetryEventWidget.ContentsBuilder builder, boolean disabled) {
 		for (TelemetryEventProperty<?> telemetryEventProperty : eventType.getProperties()) {
-			builder.appendTitle(this.textRenderer, telemetryEventProperty.getTitle());
+			builder.appendTitle(this.textRenderer, this.formatTitleText(telemetryEventProperty.getTitle(), disabled));
 		}
 	}
 

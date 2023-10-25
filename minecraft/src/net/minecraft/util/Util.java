@@ -957,7 +957,7 @@ public class Util {
 	/**
 	 * Shuffles {@code list}, modifying the passed list in place.
 	 */
-	public static <T> void shuffle(ObjectArrayList<T> list, Random random) {
+	public static <T> void shuffle(List<T> list, Random random) {
 		int i = list.size();
 
 		for (int j = i; j > 1; j--) {

@@ -51,13 +51,13 @@ public class DoorBlock extends Block {
 	private final BlockSetType blockSetType;
 
 	@Override
-	public MapCodec<DoorBlock> getCodec() {
+	public MapCodec<? extends DoorBlock> getCodec() {
 		return CODEC;
 	}
 
-	protected DoorBlock(BlockSetType blockSetType, AbstractBlock.Settings settings) {
-		super(settings.sounds(blockSetType.soundType()));
-		this.blockSetType = blockSetType;
+	protected DoorBlock(BlockSetType type, AbstractBlock.Settings settings) {
+		super(settings.sounds(type.soundType()));
+		this.blockSetType = type;
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
@@ -78,17 +78,13 @@ public class DoorBlock extends Block {
 		Direction direction = state.get(FACING);
 		boolean bl = !(Boolean)state.get(OPEN);
 		boolean bl2 = state.get(HINGE) == DoorHinge.RIGHT;
-		switch (direction) {
-			case EAST:
-			default:
-				return bl ? WEST_SHAPE : (bl2 ? SOUTH_SHAPE : NORTH_SHAPE);
-			case SOUTH:
-				return bl ? NORTH_SHAPE : (bl2 ? WEST_SHAPE : EAST_SHAPE);
-			case WEST:
-				return bl ? EAST_SHAPE : (bl2 ? NORTH_SHAPE : SOUTH_SHAPE);
-			case NORTH:
-				return bl ? SOUTH_SHAPE : (bl2 ? EAST_SHAPE : WEST_SHAPE);
-		}
+
+		return switch (direction) {
+			case SOUTH -> bl ? NORTH_SHAPE : (bl2 ? WEST_SHAPE : EAST_SHAPE);
+			case WEST -> bl ? EAST_SHAPE : (bl2 ? NORTH_SHAPE : SOUTH_SHAPE);
+			case NORTH -> bl ? SOUTH_SHAPE : (bl2 ? EAST_SHAPE : WEST_SHAPE);
+			default -> bl ? WEST_SHAPE : (bl2 ? SOUTH_SHAPE : NORTH_SHAPE);
+		};
 	}
 
 	@Override
@@ -101,11 +97,8 @@ public class DoorBlock extends Block {
 				? Blocks.AIR.getDefaultState()
 				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		} else {
-			return neighborState.isOf(this) && neighborState.get(HALF) != doubleBlockHalf
-				? state.with(FACING, (Direction)neighborState.get(FACING))
-					.with(OPEN, (Boolean)neighborState.get(OPEN))
-					.with(HINGE, (DoorHinge)neighborState.get(HINGE))
-					.with(POWERED, (Boolean)neighborState.get(POWERED))
+			return neighborState.getBlock() instanceof DoorBlock && neighborState.get(HALF) != doubleBlockHalf
+				? neighborState.with(HALF, doubleBlockHalf)
 				: Blocks.AIR.getDefaultState();
 		}
 	}
@@ -121,16 +114,10 @@ public class DoorBlock extends Block {
 
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-		switch (type) {
-			case LAND:
-				return (Boolean)state.get(OPEN);
-			case WATER:
-				return false;
-			case AIR:
-				return (Boolean)state.get(OPEN);
-			default:
-				return false;
-		}
+		return switch (type) {
+			case LAND, AIR -> state.get(OPEN);
+			case WATER -> false;
+		};
 	}
 
 	@Nullable

@@ -9,6 +9,7 @@ import java.util.Locale;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Util;
 
 public class PlayerStatsGui extends JComponent {
@@ -34,19 +35,9 @@ public class PlayerStatsGui extends JComponent {
 	private void update() {
 		long l = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 		this.lines[0] = "Memory use: " + l / 1024L / 1024L + " mb (" + Runtime.getRuntime().freeMemory() * 100L / Runtime.getRuntime().maxMemory() + "% free)";
-		this.lines[1] = "Avg tick: " + AVG_TICK_FORMAT.format(this.average(this.server.lastTickLengths) * 1.0E-6) + " ms";
+		this.lines[1] = "Avg tick: " + AVG_TICK_FORMAT.format((double)this.server.getAverageNanosPerTick() / (double)TimeHelper.MILLI_IN_NANOS) + " ms";
 		this.memoryUsePercentage[this.memoryUsePercentagePos++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
 		this.repaint();
-	}
-
-	private double average(long[] values) {
-		long l = 0L;
-
-		for (long m : values) {
-			l += m;
-		}
-
-		return (double)l / (double)values.length;
 	}
 
 	public void paint(Graphics graphics) {

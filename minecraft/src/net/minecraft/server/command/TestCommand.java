@@ -46,8 +46,8 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
@@ -228,20 +228,19 @@ public class TestCommand {
 	private static int executeCreate(ServerCommandSource source, String testName, int x, int y, int z) {
 		if (x <= 48 && y <= 48 && z <= 48) {
 			ServerWorld serverWorld = source.getWorld();
-			BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
-			BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
-			StructureTestUtil.createTestArea(testName.toLowerCase(), blockPos2, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
+			BlockPos blockPos = method_54850(source);
+			StructureTestUtil.createTestArea(testName.toLowerCase(), blockPos, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
 
 			for (int i = 0; i < x; i++) {
 				for (int j = 0; j < z; j++) {
-					BlockPos blockPos3 = new BlockPos(blockPos2.getX() + i, blockPos2.getY() + 1, blockPos2.getZ() + j);
+					BlockPos blockPos2 = new BlockPos(blockPos.getX() + i, blockPos.getY() + 1, blockPos.getZ() + j);
 					Block block = Blocks.POLISHED_ANDESITE;
 					BlockStateArgument blockStateArgument = new BlockStateArgument(block.getDefaultState(), Collections.emptySet(), null);
-					blockStateArgument.setBlockState(serverWorld, blockPos3, Block.NOTIFY_LISTENERS);
+					blockStateArgument.setBlockState(serverWorld, blockPos2, Block.NOTIFY_LISTENERS);
 				}
 			}
 
-			StructureTestUtil.placeStartButton(blockPos2, new BlockPos(1, 0, -1), BlockRotation.NONE, serverWorld);
+			StructureTestUtil.placeStartButton(blockPos, new BlockPos(1, 0, -1), BlockRotation.NONE, serverWorld);
 			return 0;
 		} else {
 			throw new IllegalArgumentException("The structure must be less than 48 blocks big in each axis");
@@ -312,18 +311,23 @@ public class TestCommand {
 	private static void run(ServerWorld world, BlockPos pos, @Nullable TestSet tests, boolean rerunUntilFailed) {
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		String string = structureBlockBlockEntity.getStructurePath();
-		TestFunction testFunction = TestFunctions.getTestFunctionOrThrow(string);
-		GameTestState gameTestState = new GameTestState(testFunction, structureBlockBlockEntity.getRotation(), world);
-		gameTestState.setRerunUntilFailed(rerunUntilFailed);
-		if (tests != null) {
-			tests.add(gameTestState);
-			gameTestState.addListener(new TestCommand.Listener(world, tests));
-		}
+		Optional<TestFunction> optional = TestFunctions.getTestFunction(string);
+		if (optional.isEmpty()) {
+			sendMessage(world, "Test function for test " + string + " could not be found", Formatting.RED);
+		} else {
+			TestFunction testFunction = (TestFunction)optional.get();
+			GameTestState gameTestState = new GameTestState(testFunction, structureBlockBlockEntity.getRotation(), world);
+			gameTestState.setRerunUntilFailed(rerunUntilFailed);
+			if (tests != null) {
+				tests.add(gameTestState);
+				gameTestState.addListener(new TestCommand.Listener(world, tests));
+			}
 
-		beforeBatch(testFunction, world);
-		Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
-		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ);
-		TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
+			beforeBatch(testFunction, world);
+			BlockBox blockBox = StructureTestUtil.getStructureBlockBox(structureBlockBlockEntity);
+			BlockPos blockPos = new BlockPos(blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
+			TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
+		}
 	}
 
 	static void onCompletion(ServerWorld world, TestSet tests) {
@@ -355,15 +359,19 @@ public class TestCommand {
 
 	private static int executeRun(ServerCommandSource source, TestFunction testFunction, int rotationSteps) {
 		ServerWorld serverWorld = source.getWorld();
-		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
-		int i = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ() + 3);
+		BlockPos blockPos = method_54850(source);
 		TestUtil.clearDebugMarkers(serverWorld);
 		beforeBatch(testFunction, serverWorld);
 		BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
 		GameTestState gameTestState = new GameTestState(testFunction, blockRotation, serverWorld);
-		TestUtil.startTest(gameTestState, blockPos2, TestManager.INSTANCE);
+		TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
 		return 1;
+	}
+
+	private static BlockPos method_54850(ServerCommandSource serverCommandSource) {
+		BlockPos blockPos = BlockPos.ofFloored(serverCommandSource.getPosition());
+		int i = serverCommandSource.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
+		return new BlockPos(blockPos.getX(), i + 1, blockPos.getZ() + 3);
 	}
 
 	private static void beforeBatch(TestFunction testFunction, ServerWorld world) {
@@ -411,11 +419,10 @@ public class TestCommand {
 	}
 
 	private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int rotationSteps, int i) {
-		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
+		BlockPos blockPos = method_54850(source);
 		ServerWorld serverWorld = source.getWorld();
 		BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
-		Collection<GameTestState> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, i);
+		Collection<GameTestState> collection = TestUtil.runTestFunctions(testFunctions, blockPos, blockRotation, serverWorld, TestManager.INSTANCE, i);
 		TestSet testSet = new TestSet(collection);
 		testSet.addListener(new TestCommand.Listener(serverWorld, testSet));
 		testSet.addListener(test -> TestFunctions.addFailedTestFunction(test.getTestFunction()));

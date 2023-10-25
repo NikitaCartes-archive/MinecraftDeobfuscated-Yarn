@@ -15,12 +15,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public class CrafterScreenHandler extends ScreenHandler implements ScreenHandlerListener {
-	public final CraftingResultInventory resultInventory = new CraftingResultInventory();
 	protected static final int field_46781 = 9;
 	private static final int field_46782 = 9;
 	private static final int field_46783 = 36;
 	private static final int field_46784 = 36;
 	private static final int field_46785 = 45;
+	private final CraftingResultInventory resultInventory = new CraftingResultInventory();
 	private final PropertyDelegate propertyDelegate;
 	private final PlayerEntity player;
 	private final RecipeInputInventory inputInventory;

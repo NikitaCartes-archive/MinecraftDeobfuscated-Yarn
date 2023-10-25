@@ -124,6 +124,7 @@ public class EntityModelPartNames {
 	 * The key of a right front foot model part, whose value is {@value}.
 	 */
 	public static final String RIGHT_FRONT_FOOT = "right_front_foot";
+	public static final String field_47128 = "feet";
 	/**
 	 * The key of a left hind leg tip model part, whose value is {@value}.
 	 */

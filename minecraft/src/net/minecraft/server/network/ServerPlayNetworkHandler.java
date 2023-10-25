@@ -437,7 +437,7 @@ public class ServerPlayNetworkHandler
 				}
 
 				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
-				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
+				this.player.method_54720(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
 				this.vehicleFloating = m >= -0.03125 && !bl2 && !this.server.isFlightEnabled() && !entity.hasNoGravity() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
@@ -695,6 +695,8 @@ public class ServerPlayNetworkHandler
 				jigsawBlockEntity.setPool(RegistryKey.of(RegistryKeys.TEMPLATE_POOL, packet.getPool()));
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.setJoint(packet.getJointType());
+				jigsawBlockEntity.method_54775(packet.method_54669());
+				jigsawBlockEntity.method_54776(packet.method_54668());
 				jigsawBlockEntity.markDirty();
 				this.player.getWorld().updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 			}
@@ -870,20 +872,22 @@ public class ServerPlayNetworkHandler
 								this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), g, h);
 							}
 						} else {
-							this.movePacketsCount++;
-							int q = this.movePacketsCount - this.lastTickMovePacketsCount;
-							if (q > 5) {
-								LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", this.player.getName().getString(), q);
-								q = 1;
-							}
+							if (serverWorld.getTickManager().shouldTick()) {
+								this.movePacketsCount++;
+								int q = this.movePacketsCount - this.lastTickMovePacketsCount;
+								if (q > 5) {
+									LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", this.player.getName().getString(), q);
+									q = 1;
+								}
 
-							if (!this.player.isInTeleportationState()
-								&& (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !this.player.isFallFlying())) {
-								float r = this.player.isFallFlying() ? 300.0F : 100.0F;
-								if (p - o > (double)(r * (float)q) && !this.isHost()) {
-									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), l, m, n);
-									this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYaw(), this.player.getPitch());
-									return;
+								if (!this.player.isInTeleportationState()
+									&& (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !this.player.isFallFlying())) {
+									float r = this.player.isFallFlying() ? 300.0F : 100.0F;
+									if (p - o > (double)(r * (float)q) && !this.isHost()) {
+										LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), l, m, n);
+										this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYaw(), this.player.getPitch());
+										return;
+									}
 								}
 							}
 
@@ -936,7 +940,7 @@ public class ServerPlayNetworkHandler
 									this.player.onLanding();
 								}
 
-								this.player.increaseTravelMotionStats(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
+								this.player.method_54720(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
 								this.updatedX = this.player.getX();
 								this.updatedY = this.player.getY();
 								this.updatedZ = this.player.getZ();

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -30,8 +31,8 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 
 public class BatEntity extends AmbientEntity {
-	public static final float field_30268 = 74.48451F;
-	public static final int field_28637 = MathHelper.ceil(2.4166098F);
+	public static final float field_46966 = 0.5F;
+	public static final float field_46967 = 10.0F;
 	/**
 	 * The tracked flags of bats. Only has the {@code 1} bit for {@linkplain
 	 * #isRoosting() roosting}.
@@ -39,6 +40,8 @@ public class BatEntity extends AmbientEntity {
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int ROOSTING_FLAG = 1;
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(4.0);
+	public final AnimationState flyingAnimationState = new AnimationState();
+	public final AnimationState roostingAnimationState = new AnimationState();
 	@Nullable
 	private BlockPos hangingPosition;
 
@@ -51,7 +54,7 @@ public class BatEntity extends AmbientEntity {
 
 	@Override
 	public boolean isFlappingWings() {
-		return !this.isRoosting() && this.age % field_28637 == 0;
+		return !this.isRoosting() && (float)this.age % 10.0F == 0.0F;
 	}
 
 	@Override
@@ -128,6 +131,8 @@ public class BatEntity extends AmbientEntity {
 		} else {
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
 		}
+
+		this.updateAnimations();
 	}
 
 	@Override
@@ -248,5 +253,15 @@ public class BatEntity extends AmbientEntity {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return dimensions.height / 2.0F;
+	}
+
+	private void updateAnimations() {
+		if (this.isRoosting()) {
+			this.flyingAnimationState.stop();
+			this.roostingAnimationState.startIfNotRunning(this.age);
+		} else {
+			this.roostingAnimationState.stop();
+			this.flyingAnimationState.startIfNotRunning(this.age);
+		}
 	}
 }

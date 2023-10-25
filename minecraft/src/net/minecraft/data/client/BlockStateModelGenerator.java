@@ -10,9 +10,11 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -99,6 +101,8 @@ public class BlockStateModelGenerator {
 			textures.put(TextureKey.END, TextureMap.getSubId(Blocks.RED_SANDSTONE, "_top"));
 			textures.put(TextureKey.SIDE, TextureMap.getId(Blocks.CHISELED_RED_SANDSTONE));
 		}))
+		.put(Blocks.CHISELED_TUFF_BRICKS, TexturedModel.SIDE_END_WALL.get(Blocks.CHISELED_TUFF_BRICKS))
+		.put(Blocks.CHISELED_TUFF, TexturedModel.SIDE_END_WALL.get(Blocks.CHISELED_TUFF))
 		.build();
 	static final Map<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>> VARIANT_POOL_FUNCTIONS = ImmutableMap.<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>>builder()
 		.put(BlockFamily.Variant.BUTTON, BlockStateModelGenerator.BlockTexturePool::button)
@@ -1221,6 +1225,20 @@ public class BlockStateModelGenerator {
 			.accept(createDoorBlockState(doorBlock, identifier, identifier2, identifier3, identifier4, identifier5, identifier6, identifier7, identifier8));
 	}
 
+	private void registerParentedDoor(Block parent, Block doorBlock) {
+		Identifier identifier = Models.DOOR_BOTTOM_LEFT.getBlockSubModelId(parent);
+		Identifier identifier2 = Models.DOOR_BOTTOM_LEFT_OPEN.getBlockSubModelId(parent);
+		Identifier identifier3 = Models.DOOR_BOTTOM_RIGHT.getBlockSubModelId(parent);
+		Identifier identifier4 = Models.DOOR_BOTTOM_RIGHT_OPEN.getBlockSubModelId(parent);
+		Identifier identifier5 = Models.DOOR_TOP_LEFT.getBlockSubModelId(parent);
+		Identifier identifier6 = Models.DOOR_TOP_LEFT_OPEN.getBlockSubModelId(parent);
+		Identifier identifier7 = Models.DOOR_TOP_RIGHT.getBlockSubModelId(parent);
+		Identifier identifier8 = Models.DOOR_TOP_RIGHT_OPEN.getBlockSubModelId(parent);
+		this.registerParentedItemModel(doorBlock, ModelIds.getItemModelId(parent.asItem()));
+		this.blockStateCollector
+			.accept(createDoorBlockState(doorBlock, identifier, identifier2, identifier3, identifier4, identifier5, identifier6, identifier7, identifier8));
+	}
+
 	void registerOrientableTrapdoor(Block trapdoorBlock) {
 		TextureMap textureMap = TextureMap.texture(trapdoorBlock);
 		Identifier identifier = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_TOP.upload(trapdoorBlock, textureMap, this.modelCollector);
@@ -1237,6 +1255,14 @@ public class BlockStateModelGenerator {
 		Identifier identifier3 = Models.TEMPLATE_TRAPDOOR_OPEN.upload(trapdoorBlock, textureMap, this.modelCollector);
 		this.blockStateCollector.accept(createTrapdoorBlockState(trapdoorBlock, identifier, identifier2, identifier3));
 		this.registerParentedItemModel(trapdoorBlock, identifier2);
+	}
+
+	private void registerParentedTrapdoor(Block parent, Block trapdoorBlock) {
+		Identifier identifier = Models.TEMPLATE_TRAPDOOR_TOP.getBlockSubModelId(parent);
+		Identifier identifier2 = Models.TEMPLATE_TRAPDOOR_BOTTOM.getBlockSubModelId(parent);
+		Identifier identifier3 = Models.TEMPLATE_TRAPDOOR_OPEN.getBlockSubModelId(parent);
+		this.registerParentedItemModel(trapdoorBlock, ModelIds.getItemModelId(parent.asItem()));
+		this.blockStateCollector.accept(createTrapdoorBlockState(trapdoorBlock, identifier, identifier2, identifier3));
 	}
 
 	private void registerBigDripleaf() {
@@ -2516,6 +2542,37 @@ public class BlockStateModelGenerator {
 						When.create().set(Properties.LEVEL_8, 8), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents_ready"))
 					)
 			);
+	}
+
+	private void registerCopperBulb(Block copperBulbBlock) {
+		Identifier identifier = Models.CUBE_ALL.upload(copperBulbBlock, TextureMap.all(copperBulbBlock), this.modelCollector);
+		Identifier identifier2 = this.createSubModel(copperBulbBlock, "_powered", Models.CUBE_ALL, TextureMap::all);
+		Identifier identifier3 = this.createSubModel(copperBulbBlock, "_lit", Models.CUBE_ALL, TextureMap::all);
+		Identifier identifier4 = this.createSubModel(copperBulbBlock, "_lit_powered", Models.CUBE_ALL, TextureMap::all);
+		this.blockStateCollector.accept(this.createCopperBulbBlockState(copperBulbBlock, identifier, identifier3, identifier2, identifier4));
+	}
+
+	private BlockStateSupplier createCopperBulbBlockState(
+		Block copperBulbBlock, Identifier modelId, Identifier litModelId, Identifier poweredModelId, Identifier litPoweredModelId
+	) {
+		return VariantsBlockStateSupplier.create(copperBulbBlock)
+			.coordinate(
+				BlockStateVariantMap.create(Properties.LIT, Properties.POWERED)
+					.register(
+						(lit, powered) -> lit
+								? BlockStateVariant.create().put(VariantSettings.MODEL, powered ? litPoweredModelId : litModelId)
+								: BlockStateVariant.create().put(VariantSettings.MODEL, powered ? poweredModelId : modelId)
+					)
+			);
+	}
+
+	private void registerWaxedCopperBulb(Block unwaxedCopperBulbBlock, Block waxedCopperBulbBlock) {
+		Identifier identifier = ModelIds.getBlockModelId(unwaxedCopperBulbBlock);
+		Identifier identifier2 = ModelIds.getBlockSubModelId(unwaxedCopperBulbBlock, "_powered");
+		Identifier identifier3 = ModelIds.getBlockSubModelId(unwaxedCopperBulbBlock, "_lit");
+		Identifier identifier4 = ModelIds.getBlockSubModelId(unwaxedCopperBulbBlock, "_lit_powered");
+		this.registerParentedItemModel(waxedCopperBulbBlock, ModelIds.getItemModelId(unwaxedCopperBulbBlock.asItem()));
+		this.blockStateCollector.accept(this.createCopperBulbBlockState(waxedCopperBulbBlock, identifier, identifier3, identifier2, identifier4));
 	}
 
 	private void registerAmethyst(Block block) {
@@ -3850,19 +3907,34 @@ public class BlockStateModelGenerator {
 		BlockFamilies.getFamilies()
 			.filter(BlockFamily::shouldGenerateModels)
 			.forEach(family -> this.registerCubeAllModelTexturePool(family.getBaseBlock()).family(family));
-		this.registerCubeAllModelTexturePool(Blocks.CUT_COPPER).family(BlockFamilies.CUT_COPPER).same(Blocks.WAXED_CUT_COPPER).family(BlockFamilies.WAXED_CUT_COPPER);
+		this.registerCubeAllModelTexturePool(Blocks.CUT_COPPER)
+			.family(BlockFamilies.CUT_COPPER)
+			.parented(Blocks.CUT_COPPER, Blocks.WAXED_CUT_COPPER)
+			.parented(Blocks.CHISELED_COPPER, Blocks.WAXED_CHISELED_COPPER)
+			.family(BlockFamilies.WAXED_CUT_COPPER);
 		this.registerCubeAllModelTexturePool(Blocks.EXPOSED_CUT_COPPER)
 			.family(BlockFamilies.EXPOSED_CUT_COPPER)
-			.same(Blocks.WAXED_EXPOSED_CUT_COPPER)
+			.parented(Blocks.EXPOSED_CUT_COPPER, Blocks.WAXED_EXPOSED_CUT_COPPER)
+			.parented(Blocks.EXPOSED_CHISELED_COPPER, Blocks.WAXED_EXPOSED_CHISELED_COPPER)
 			.family(BlockFamilies.WAXED_EXPOSED_CUT_COPPER);
 		this.registerCubeAllModelTexturePool(Blocks.WEATHERED_CUT_COPPER)
 			.family(BlockFamilies.WEATHERED_CUT_COPPER)
-			.same(Blocks.WAXED_WEATHERED_CUT_COPPER)
+			.parented(Blocks.WEATHERED_CUT_COPPER, Blocks.WAXED_WEATHERED_CUT_COPPER)
+			.parented(Blocks.WEATHERED_CHISELED_COPPER, Blocks.WAXED_WEATHERED_CHISELED_COPPER)
 			.family(BlockFamilies.WAXED_WEATHERED_CUT_COPPER);
 		this.registerCubeAllModelTexturePool(Blocks.OXIDIZED_CUT_COPPER)
 			.family(BlockFamilies.OXIDIZED_CUT_COPPER)
-			.same(Blocks.WAXED_OXIDIZED_CUT_COPPER)
+			.parented(Blocks.OXIDIZED_CUT_COPPER, Blocks.WAXED_OXIDIZED_CUT_COPPER)
+			.parented(Blocks.OXIDIZED_CHISELED_COPPER, Blocks.WAXED_OXIDIZED_CHISELED_COPPER)
 			.family(BlockFamilies.WAXED_OXIDIZED_CUT_COPPER);
+		this.registerCopperBulb(Blocks.COPPER_BULB);
+		this.registerCopperBulb(Blocks.EXPOSED_COPPER_BULB);
+		this.registerCopperBulb(Blocks.WEATHERED_COPPER_BULB);
+		this.registerCopperBulb(Blocks.OXIDIZED_COPPER_BULB);
+		this.registerWaxedCopperBulb(Blocks.COPPER_BULB, Blocks.WAXED_COPPER_BULB);
+		this.registerWaxedCopperBulb(Blocks.EXPOSED_COPPER_BULB, Blocks.WAXED_EXPOSED_COPPER_BULB);
+		this.registerWaxedCopperBulb(Blocks.WEATHERED_COPPER_BULB, Blocks.WAXED_WEATHERED_COPPER_BULB);
+		this.registerWaxedCopperBulb(Blocks.OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER_BULB);
 		this.registerSimpleState(Blocks.AIR);
 		this.registerStateWithModelReference(Blocks.CAVE_AIR, Blocks.AIR);
 		this.registerStateWithModelReference(Blocks.VOID_AIR, Blocks.AIR);
@@ -3973,7 +4045,6 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.AMETHYST_BLOCK);
 		this.registerSimpleCubeAll(Blocks.BUDDING_AMETHYST);
 		this.registerSimpleCubeAll(Blocks.CALCITE);
-		this.registerSimpleCubeAll(Blocks.TUFF);
 		this.registerSimpleCubeAll(Blocks.DRIPSTONE_BLOCK);
 		this.registerSimpleCubeAll(Blocks.RAW_IRON_BLOCK);
 		this.registerSimpleCubeAll(Blocks.RAW_COPPER_BLOCK);
@@ -3990,6 +4061,30 @@ public class BlockStateModelGenerator {
 		this.registerParented(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER);
 		this.registerParented(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER);
 		this.registerParented(Blocks.OXIDIZED_COPPER, Blocks.WAXED_OXIDIZED_COPPER);
+		this.registerDoor(Blocks.COPPER_DOOR);
+		this.registerDoor(Blocks.EXPOSED_COPPER_DOOR);
+		this.registerDoor(Blocks.WEATHERED_COPPER_DOOR);
+		this.registerDoor(Blocks.OXIDIZED_COPPER_DOOR);
+		this.registerParentedDoor(Blocks.COPPER_DOOR, Blocks.WAXED_COPPER_DOOR);
+		this.registerParentedDoor(Blocks.EXPOSED_COPPER_DOOR, Blocks.WAXED_EXPOSED_COPPER_DOOR);
+		this.registerParentedDoor(Blocks.WEATHERED_COPPER_DOOR, Blocks.WAXED_WEATHERED_COPPER_DOOR);
+		this.registerParentedDoor(Blocks.OXIDIZED_COPPER_DOOR, Blocks.WAXED_OXIDIZED_COPPER_DOOR);
+		this.registerTrapdoor(Blocks.COPPER_TRAPDOOR);
+		this.registerTrapdoor(Blocks.EXPOSED_COPPER_TRAPDOOR);
+		this.registerTrapdoor(Blocks.WEATHERED_COPPER_TRAPDOOR);
+		this.registerTrapdoor(Blocks.OXIDIZED_COPPER_TRAPDOOR);
+		this.registerParentedTrapdoor(Blocks.COPPER_TRAPDOOR, Blocks.WAXED_COPPER_TRAPDOOR);
+		this.registerParentedTrapdoor(Blocks.EXPOSED_COPPER_TRAPDOOR, Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR);
+		this.registerParentedTrapdoor(Blocks.WEATHERED_COPPER_TRAPDOOR, Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR);
+		this.registerParentedTrapdoor(Blocks.OXIDIZED_COPPER_TRAPDOOR, Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR);
+		this.registerSimpleCubeAll(Blocks.COPPER_GRATE);
+		this.registerSimpleCubeAll(Blocks.EXPOSED_COPPER_GRATE);
+		this.registerSimpleCubeAll(Blocks.WEATHERED_COPPER_GRATE);
+		this.registerSimpleCubeAll(Blocks.OXIDIZED_COPPER_GRATE);
+		this.registerParented(Blocks.COPPER_GRATE, Blocks.WAXED_COPPER_GRATE);
+		this.registerParented(Blocks.EXPOSED_COPPER_GRATE, Blocks.WAXED_EXPOSED_COPPER_GRATE);
+		this.registerParented(Blocks.WEATHERED_COPPER_GRATE, Blocks.WAXED_WEATHERED_COPPER_GRATE);
+		this.registerParented(Blocks.OXIDIZED_COPPER_GRATE, Blocks.WAXED_OXIDIZED_COPPER_GRATE);
 		this.registerWeightedPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
 		this.registerWeightedPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
 		this.registerAmethysts();
@@ -4557,6 +4652,7 @@ public class BlockStateModelGenerator {
 		private BlockFamily family;
 		@Nullable
 		private Identifier baseModelId;
+		private final Set<Block> children = new HashSet();
 
 		public BlockTexturePool(TextureMap textures) {
 			this.textures = textures;
@@ -4577,17 +4673,12 @@ public class BlockStateModelGenerator {
 			return this;
 		}
 
-		public BlockStateModelGenerator.BlockTexturePool same(Block... blocks) {
-			if (this.baseModelId == null) {
-				throw new IllegalStateException("Full block not generated yet");
-			} else {
-				for (Block block : blocks) {
-					BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, this.baseModelId));
-					BlockStateModelGenerator.this.registerParentedItemModel(block, this.baseModelId);
-				}
-
-				return this;
-			}
+		public BlockStateModelGenerator.BlockTexturePool parented(Block parent, Block child) {
+			Identifier identifier = ModelIds.getBlockModelId(parent);
+			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(child, identifier));
+			BlockStateModelGenerator.this.registerParentedItemModel(child, identifier);
+			this.children.add(child);
+			return this;
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool button(Block buttonBlock) {
@@ -4698,8 +4789,8 @@ public class BlockStateModelGenerator {
 
 		private BlockStateModelGenerator.BlockTexturePool block(Block block) {
 			TexturedModel texturedModel = (TexturedModel)BlockStateModelGenerator.this.texturedModels.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
-			BlockStateModelGenerator.this.blockStateCollector
-				.accept(BlockStateModelGenerator.createSingletonBlockState(block, texturedModel.upload(block, BlockStateModelGenerator.this.modelCollector)));
+			Identifier identifier = texturedModel.upload(block, BlockStateModelGenerator.this.modelCollector);
+			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, identifier));
 			return this;
 		}
 
@@ -4725,10 +4816,12 @@ public class BlockStateModelGenerator {
 			family.getVariants()
 				.forEach(
 					(variant, block) -> {
-						BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block> biConsumer = (BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>)BlockStateModelGenerator.VARIANT_POOL_FUNCTIONS
-							.get(variant);
-						if (biConsumer != null) {
-							biConsumer.accept(this, block);
+						if (!this.children.contains(block)) {
+							BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block> biConsumer = (BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>)BlockStateModelGenerator.VARIANT_POOL_FUNCTIONS
+								.get(variant);
+							if (biConsumer != null) {
+								biConsumer.accept(this, block);
+							}
 						}
 					}
 				);

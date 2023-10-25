@@ -28,7 +28,13 @@ public class Schema1470 extends IdentifierNormalizingSchema {
 		targetEntityItems(schema, map, "minecraft:phantom");
 		targetEntityItems(schema, map, "minecraft:dolphin");
 		targetEntityItems(schema, map, "minecraft:drowned");
-		schema.register(map, "minecraft:trident", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema))));
+		schema.register(
+			map,
+			"minecraft:trident",
+			(Function<String, TypeTemplate>)(name -> DSL.optionalFields(
+					"inBlockState", TypeReferences.BLOCK_STATE.in(schema), "Trident", TypeReferences.ITEM_STACK.in(schema)
+				))
+		);
 		return map;
 	}
 }

@@ -13,7 +13,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-public class IceBlock extends TransparentBlock {
+public class IceBlock extends TranslucentBlock {
 	public static final MapCodec<IceBlock> CODEC = createCodec(IceBlock::new);
 
 	@Override

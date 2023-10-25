@@ -1,10 +1,12 @@
 package net.minecraft.client.gui.hud.debug;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.profiler.PerformanceLog;
 
 @Environment(EnvType.CLIENT)
@@ -12,15 +14,17 @@ public class TickChart extends DebugChart {
 	private static final int field_45935 = -65536;
 	private static final int field_45936 = -256;
 	private static final int field_45937 = -16711936;
-	private static final int field_45938 = 50;
+	private final Supplier<Float> field_47117;
 
-	public TickChart(TextRenderer textRenderer, PerformanceLog performanceLog) {
+	public TickChart(TextRenderer textRenderer, PerformanceLog performanceLog, Supplier<Float> supplier) {
 		super(textRenderer, performanceLog);
+		this.field_47117 = supplier;
 	}
 
 	@Override
 	protected void renderThresholds(DrawContext context, int x, int width, int height) {
-		this.drawBorderedText(context, "20 TPS", x + 1, height - 60 + 1);
+		float f = (float)TimeHelper.SECOND_IN_MILLIS / (Float)this.field_47117.get();
+		this.drawBorderedText(context, String.format("%.1f TPS", f), x + 1, height - 60 + 1);
 	}
 
 	@Override
@@ -30,12 +34,13 @@ public class TickChart extends DebugChart {
 
 	@Override
 	protected int getHeight(double value) {
-		return (int)Math.round(toMillisecondsPerTick(value) * 60.0 / 50.0);
+		return (int)Math.round(toMillisecondsPerTick(value) * 60.0 / (double)((Float)this.field_47117.get()).floatValue());
 	}
 
 	@Override
 	protected int getColor(long value) {
-		return this.getColor(toMillisecondsPerTick((double)value), 0.0, -16711936, 25.0, -256, 50.0, -65536);
+		float f = (Float)this.field_47117.get();
+		return this.getColor(toMillisecondsPerTick((double)value), 0.0, -16711936, (double)f / 2.0, -256, (double)f, -65536);
 	}
 
 	private static double toMillisecondsPerTick(double nanosecondsPerTick) {

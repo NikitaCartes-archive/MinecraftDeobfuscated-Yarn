@@ -567,39 +567,42 @@ public class LevelStorage {
 				File file3 = this.directory.getLevelDatOldPath().toFile();
 				File file4 = this.directory.getLevelDatPath().toFile();
 				Util.backupAndReplace(file4, file2, file3);
-			} catch (Exception var9) {
-				LevelStorage.LOGGER.error("Failed to save level {}", file, var9);
-				exception = var9;
+			} catch (Exception var10) {
+				LevelStorage.LOGGER.error("Failed to save level {}", file, var10);
+				exception = var10;
 			}
 
-			File file2 = this.directory.getLevelDatPath().toFile();
+			Path path = this.directory.getLevelDatPath();
+			if (Files.exists(path, new LinkOption[0])) {
+				File file3 = path.toFile();
 
-			try {
-				NbtIo.readCompressed(file2, NbtTagSizeTracker.of(104857600L));
-			} catch (Exception var10) {
-				if (LevelStorage.this.handlingError) {
-					LevelStorage.LOGGER.error("Failed to save level {}. Skipping further handling, reported errors earlier already.", file, var10);
-				} else {
-					LevelStorage.this.handlingError = true;
-					CrashReport crashReport = new CrashReport("Won the zlib-lottery?", new IllegalStateException("Failed to read back written world data", exception));
-					CrashReportSection crashReportSection = crashReport.addElement("level.dat");
-					crashReportSection.add("World folder", this.directory.getRootPath());
-					crashReportSection.add("Reading Exception", (var10 instanceof CrashException crashException ? crashException.getCause() : var10).toString());
-					crashReportSection.add("Uncompressed", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(NbtIo.toBytes(nbt))));
-					crashReportSection.add("Compressed saved", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(Files.readAllBytes(file2.toPath()))));
-					crashReportSection.add("Compressed array", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(NbtIo.toCompressedBytes(nbt))));
-					LocalDateTime localDateTime = LocalDateTime.now();
-					crashReportSection.add("Corrupted file", (CrashCallable<String>)(() -> {
-						Path path = this.directory.getCorruptedLevelDatPath(localDateTime);
-						Files.move(file2.toPath(), path);
-						return path.getFileName().toString();
-					}));
-					crashReportSection.add("Raw file", (CrashCallable<String>)(() -> {
-						Path path = this.directory.getRawLevelDatPath(localDateTime);
-						Files.write(path, NbtIo.toBytes(nbt), new OpenOption[0]);
-						return path.getFileName().toString();
-					}));
-					throw new CrashException(crashReport);
+				try {
+					NbtIo.readCompressed(file3, NbtTagSizeTracker.of(104857600L));
+				} catch (Exception var11) {
+					if (LevelStorage.this.handlingError) {
+						LevelStorage.LOGGER.error("Failed to save level {}. Skipping further handling, reported errors earlier already.", file, var11);
+					} else {
+						LevelStorage.this.handlingError = true;
+						CrashReport crashReport = new CrashReport("Won the zlib-lottery?", new IllegalStateException("Failed to read back written world data", exception));
+						CrashReportSection crashReportSection = crashReport.addElement("level.dat");
+						crashReportSection.add("World folder", this.directory.getRootPath());
+						crashReportSection.add("Reading Exception", (var11 instanceof CrashException crashException ? crashException.getCause() : var11).toString());
+						crashReportSection.add("Uncompressed", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(NbtIo.toBytes(nbt))));
+						crashReportSection.add("Compressed saved", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(Files.readAllBytes(file3.toPath()))));
+						crashReportSection.add("Compressed array", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(NbtIo.toCompressedBytes(nbt))));
+						LocalDateTime localDateTime = LocalDateTime.now();
+						crashReportSection.add("Corrupted file", (CrashCallable<String>)(() -> {
+							Path pathx = this.directory.getCorruptedLevelDatPath(localDateTime);
+							Files.move(file3.toPath(), pathx);
+							return pathx.getFileName().toString();
+						}));
+						crashReportSection.add("Raw file", (CrashCallable<String>)(() -> {
+							Path pathx = this.directory.getRawLevelDatPath(localDateTime);
+							Files.write(pathx, NbtIo.toBytes(nbt), new OpenOption[0]);
+							return pathx.getFileName().toString();
+						}));
+						throw new CrashException(crashReport);
+					}
 				}
 			}
 		}

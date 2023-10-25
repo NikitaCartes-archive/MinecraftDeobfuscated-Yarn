@@ -496,7 +496,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * 
 	 * @return whether the command tag was successfully removed
 	 */
-	public boolean removeScoreboardTag(String tag) {
+	public boolean removeCommandTag(String tag) {
 		return this.commandTags.remove(tag);
 	}
 
@@ -4630,6 +4630,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return () -> this.streamIntoPassengers().iterator();
 	}
 
+	public int getPlayerPassengers() {
+		return (int)this.streamIntoPassengers().filter(passenger -> passenger instanceof PlayerEntity).count();
+	}
+
 	/**
 	 * {@return whether a player is riding this entity or any of its passengers}
 	 * 
@@ -4643,7 +4647,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #hasPassengerDeep
 	 */
 	public boolean hasPlayerRider() {
-		return this.streamIntoPassengers().filter(entity -> entity instanceof PlayerEntity).count() == 1L;
+		return this.getPlayerPassengers() == 1;
 	}
 
 	/**

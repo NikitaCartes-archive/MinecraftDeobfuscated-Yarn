@@ -83,7 +83,7 @@ public class TagCommand {
 		int i = 0;
 
 		for (Entity entity : targets) {
-			if (entity.removeScoreboardTag(tag)) {
+			if (entity.removeCommandTag(tag)) {
 				i++;
 			}
 		}
