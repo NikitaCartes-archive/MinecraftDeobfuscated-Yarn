@@ -7,14 +7,14 @@ public enum DoubleBlockHalf implements StringIdentifiable {
 	UPPER(Direction.DOWN),
 	LOWER(Direction.UP);
 
-	private final Direction field_47101;
+	private final Direction oppositeDirection;
 
-	private DoubleBlockHalf(Direction direction) {
-		this.field_47101 = direction;
+	private DoubleBlockHalf(Direction oppositeDirection) {
+		this.oppositeDirection = oppositeDirection;
 	}
 
-	public Direction method_54779() {
-		return this.field_47101;
+	public Direction getOppositeDirection() {
+		return this.oppositeDirection;
 	}
 
 	public String toString() {
@@ -26,7 +26,7 @@ public enum DoubleBlockHalf implements StringIdentifiable {
 		return this == UPPER ? "upper" : "lower";
 	}
 
-	public DoubleBlockHalf method_54780() {
+	public DoubleBlockHalf getOtherHalf() {
 		return this == UPPER ? LOWER : UPPER;
 	}
 }

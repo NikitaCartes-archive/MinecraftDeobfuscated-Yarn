@@ -1,20 +1,21 @@
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.screen.world;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public class DatapackFailureScreen extends Screen {
+public class DataPackFailureScreen extends Screen {
 	private MultilineText wrappedText = MultilineText.EMPTY;
 	private final Runnable goBack;
 	private final Runnable runServerInSafeMode;
 
-	public DatapackFailureScreen(Runnable goBack, Runnable runServerInSafeMode) {
+	public DataPackFailureScreen(Runnable goBack, Runnable runServerInSafeMode) {
 		super(Text.translatable("datapackFailure.title"));
 		this.goBack = goBack;
 		this.runServerInSafeMode = runServerInSafeMode;

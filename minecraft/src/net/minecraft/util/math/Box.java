@@ -63,7 +63,11 @@ public class Box {
 		return new Box(pos.x, pos.y, pos.z, pos.x + 1.0, pos.y + 1.0, pos.z + 1.0);
 	}
 
-	public static Box create(BlockPos pos1, BlockPos pos2) {
+	/**
+	 * {@return a box whose bounds extend to the full block between {@code pos1} and
+	 * {@code pos2}, both inclusive}
+	 */
+	public static Box enclosing(BlockPos pos1, BlockPos pos2) {
 		return new Box(
 			(double)Math.min(pos1.getX(), pos2.getX()),
 			(double)Math.min(pos1.getY(), pos2.getY()),

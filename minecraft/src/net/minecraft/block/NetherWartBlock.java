@@ -15,7 +15,7 @@ import net.minecraft.world.WorldView;
 
 public class NetherWartBlock extends PlantBlock {
 	public static final MapCodec<NetherWartBlock> CODEC = createCodec(NetherWartBlock::new);
-	public static final int field_31199 = 3;
+	public static final int MAX_AGE = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),

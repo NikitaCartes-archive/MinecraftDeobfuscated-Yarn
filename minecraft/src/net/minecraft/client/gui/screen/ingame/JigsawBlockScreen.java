@@ -29,17 +29,17 @@ public class JigsawBlockScreen extends Screen {
 	private static final Text NAME_TEXT = Text.translatable("jigsaw_block.name");
 	private static final Text TARGET_TEXT = Text.translatable("jigsaw_block.target");
 	private static final Text FINAL_STATE_TEXT = Text.translatable("jigsaw_block.final_state");
-	private static final Text field_47119 = Text.translatable("jigsaw_block.placement_priority");
-	private static final Text field_47120 = Text.translatable("jigsaw_block.placement_priority.tooltip");
-	private static final Text field_47121 = Text.translatable("jigsaw_block.selection_priority");
-	private static final Text field_47122 = Text.translatable("jigsaw_block.selection_priority.tooltip");
+	private static final Text PLACEMENT_PRIORITY_TEXT = Text.translatable("jigsaw_block.placement_priority");
+	private static final Text PLACEMENT_PRIORITY_TOOLTIP = Text.translatable("jigsaw_block.placement_priority.tooltip");
+	private static final Text SELECTION_PRIORITY_TEXT = Text.translatable("jigsaw_block.selection_priority");
+	private static final Text SELECTION_PRIORITY_TOOLTIP = Text.translatable("jigsaw_block.selection_priority.tooltip");
 	private final JigsawBlockEntity jigsaw;
 	private TextFieldWidget nameField;
 	private TextFieldWidget targetField;
 	private TextFieldWidget poolField;
 	private TextFieldWidget finalStateField;
-	private TextFieldWidget field_47123;
-	private TextFieldWidget field_47124;
+	private TextFieldWidget selectionPriorityField;
+	private TextFieldWidget placementPriorityField;
 	int generationDepth;
 	private boolean keepJigsaws = true;
 	private CyclingButtonWidget<JigsawBlockEntity.Joint> jointRotationButton;
@@ -72,15 +72,15 @@ public class JigsawBlockScreen extends Screen {
 					new Identifier(this.poolField.getText()),
 					this.finalStateField.getText(),
 					this.joint,
-					this.method_54800(this.field_47123.getText()),
-					this.method_54800(this.field_47124.getText())
+					this.parseInt(this.selectionPriorityField.getText()),
+					this.parseInt(this.placementPriorityField.getText())
 				)
 			);
 	}
 
-	private int method_54800(String string) {
+	private int parseInt(String value) {
 		try {
-			return Integer.parseInt(string);
+			return Integer.parseInt(value);
 		} catch (NumberFormatException var3) {
 			return 0;
 		}
@@ -116,16 +116,16 @@ public class JigsawBlockScreen extends Screen {
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.addSelectableChild(this.finalStateField);
-		this.field_47123 = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 160, 98, 20, field_47121);
-		this.field_47123.setMaxLength(3);
-		this.field_47123.setText(Integer.toString(this.jigsaw.method_54778()));
-		this.field_47123.setTooltip(Tooltip.of(field_47122));
-		this.addSelectableChild(this.field_47123);
-		this.field_47124 = new TextFieldWidget(this.textRenderer, this.width / 2 - 50, 160, 98, 20, field_47119);
-		this.field_47124.setMaxLength(3);
-		this.field_47124.setText(Integer.toString(this.jigsaw.method_54777()));
-		this.field_47124.setTooltip(Tooltip.of(field_47120));
-		this.addSelectableChild(this.field_47124);
+		this.selectionPriorityField = new TextFieldWidget(this.textRenderer, this.width / 2 - 153, 160, 98, 20, SELECTION_PRIORITY_TEXT);
+		this.selectionPriorityField.setMaxLength(3);
+		this.selectionPriorityField.setText(Integer.toString(this.jigsaw.getSelectionPriority()));
+		this.selectionPriorityField.setTooltip(Tooltip.of(SELECTION_PRIORITY_TOOLTIP));
+		this.addSelectableChild(this.selectionPriorityField);
+		this.placementPriorityField = new TextFieldWidget(this.textRenderer, this.width / 2 - 50, 160, 98, 20, PLACEMENT_PRIORITY_TEXT);
+		this.placementPriorityField.setMaxLength(3);
+		this.placementPriorityField.setText(Integer.toString(this.jigsaw.getPlacementPriority()));
+		this.placementPriorityField.setTooltip(Tooltip.of(PLACEMENT_PRIORITY_TOOLTIP));
+		this.addSelectableChild(this.placementPriorityField);
 		this.joint = this.jigsaw.getJoint();
 		this.jointRotationButton = this.addDrawableChild(
 			CyclingButtonWidget.<JigsawBlockEntity.Joint>builder(JigsawBlockEntity.Joint::asText)
@@ -180,8 +180,8 @@ public class JigsawBlockScreen extends Screen {
 		String string2 = this.targetField.getText();
 		String string3 = this.poolField.getText();
 		String string4 = this.finalStateField.getText();
-		String string5 = this.field_47123.getText();
-		String string6 = this.field_47124.getText();
+		String string5 = this.selectionPriorityField.getText();
+		String string6 = this.placementPriorityField.getText();
 		int i = this.generationDepth;
 		JigsawBlockEntity.Joint joint = this.joint;
 		this.init(client, width, height);
@@ -192,8 +192,8 @@ public class JigsawBlockScreen extends Screen {
 		this.generationDepth = i;
 		this.joint = joint;
 		this.jointRotationButton.setValue(joint);
-		this.field_47123.setText(string5);
-		this.field_47124.setText(string6);
+		this.selectionPriorityField.setText(string5);
+		this.placementPriorityField.setText(string6);
 	}
 
 	@Override
@@ -219,10 +219,10 @@ public class JigsawBlockScreen extends Screen {
 		this.targetField.render(context, mouseX, mouseY, delta);
 		context.drawTextWithShadow(this.textRenderer, FINAL_STATE_TEXT, this.width / 2 - 153, 115, 10526880);
 		this.finalStateField.render(context, mouseX, mouseY, delta);
-		context.drawTextWithShadow(this.textRenderer, field_47121, this.width / 2 - 153, 150, 10526880);
-		this.field_47124.render(context, mouseX, mouseY, delta);
-		context.drawTextWithShadow(this.textRenderer, field_47119, this.width / 2 - 50, 150, 10526880);
-		this.field_47123.render(context, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, SELECTION_PRIORITY_TEXT, this.width / 2 - 153, 150, 10526880);
+		this.placementPriorityField.render(context, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, PLACEMENT_PRIORITY_TEXT, this.width / 2 - 50, 150, 10526880);
+		this.selectionPriorityField.render(context, mouseX, mouseY, delta);
 		if (JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical()) {
 			context.drawTextWithShadow(this.textRenderer, JOINT_LABEL_TEXT, this.width / 2 + 53, 150, 10526880);
 		}

@@ -1,4 +1,4 @@
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.screen.world;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -15,6 +15,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;

@@ -13,10 +13,10 @@ import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
 
-public class FixProjectileItemType extends DataFix {
+public class ProjectileItemTypeFix extends DataFix {
 	private static final String EMPTY_ID = "minecraft:empty";
 
-	public FixProjectileItemType(Schema outputSchema) {
+	public ProjectileItemTypeFix(Schema outputSchema) {
 		super(outputSchema, true);
 	}
 
@@ -29,9 +29,9 @@ public class FixProjectileItemType extends DataFix {
 			type,
 			type2,
 			this.applyFixers(
-				this.createFixApplier("minecraft:trident", FixProjectileItemType::fixTrident),
-				this.createFixApplier("minecraft:arrow", FixProjectileItemType::fixArrow),
-				this.createFixApplier("minecraft:spectral_arrow", FixProjectileItemType::fixSpectralArrow)
+				this.createFixApplier("minecraft:trident", ProjectileItemTypeFix::fixTrident),
+				this.createFixApplier("minecraft:arrow", ProjectileItemTypeFix::fixArrow),
+				this.createFixApplier("minecraft:spectral_arrow", ProjectileItemTypeFix::fixSpectralArrow)
 			)
 		);
 	}
@@ -47,13 +47,13 @@ public class FixProjectileItemType extends DataFix {
 		};
 	}
 
-	private Function<Typed<?>, Typed<?>> createFixApplier(String id, FixProjectileItemType.Fixer<?> fixer) {
+	private Function<Typed<?>, Typed<?>> createFixApplier(String id, ProjectileItemTypeFix.Fixer<?> fixer) {
 		Type<?> type = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, id);
 		Type<?> type2 = this.getOutputSchema().getChoiceType(TypeReferences.ENTITY, id);
 		return createFixApplier(id, fixer, type, type2);
 	}
 
-	private static <T> Function<Typed<?>, Typed<?>> createFixApplier(String id, FixProjectileItemType.Fixer<?> fixer, Type<?> inputType, Type<T> outputType) {
+	private static <T> Function<Typed<?>, Typed<?>> createFixApplier(String id, ProjectileItemTypeFix.Fixer<?> fixer, Type<?> inputType, Type<T> outputType) {
 		OpticFinder<?> opticFinder = DSL.namedChoice(id, inputType);
 		return typed -> typed.updateTyped(opticFinder, outputType, typedx -> fixer.fix(typedx, outputType));
 	}

@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.TimeHelper;
 
 public class TickManager {
-	public static final float field_46960 = 1.0F;
+	public static final float MIN_TICK_RATE = 1.0F;
 	protected float tickRate = 20.0F;
 	protected long nanosPerTick = TimeHelper.SECOND_IN_NANOS / 20L;
 	protected int stepTicks = 0;

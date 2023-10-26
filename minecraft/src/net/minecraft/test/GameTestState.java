@@ -134,9 +134,9 @@ public class GameTestState {
 	}
 
 	@Nullable
-	public BlockPos method_54843() {
+	public BlockPos getStructureBlockPos() {
 		StructureBlockBlockEntity structureBlockBlockEntity = this.getStructureBlockBlockEntity();
-		return structureBlockBlockEntity == null ? null : StructureTestUtil.method_54849(structureBlockBlockEntity);
+		return structureBlockBlockEntity == null ? null : StructureTestUtil.getStructureBlockPos(structureBlockBlockEntity);
 	}
 
 	@Nullable

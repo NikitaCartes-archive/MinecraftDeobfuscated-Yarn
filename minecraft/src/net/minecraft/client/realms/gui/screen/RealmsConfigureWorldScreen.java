@@ -228,11 +228,10 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	@Override
 	public void close() {
+		this.client.setScreen(this.parent);
 		if (this.stateChanged) {
 			this.parent.removeSelection();
 		}
-
-		this.client.setScreen(this.parent);
 	}
 
 	private void fetchServerData(long worldId) {

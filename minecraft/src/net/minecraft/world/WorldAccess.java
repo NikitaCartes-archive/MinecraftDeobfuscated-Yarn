@@ -90,7 +90,7 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 		this.playSound(except, pos, sound, category, 1.0F, 1.0F);
 	}
 
-	void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch);
+	void playSound(@Nullable PlayerEntity source, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
 	void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 

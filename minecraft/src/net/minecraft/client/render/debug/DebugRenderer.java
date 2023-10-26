@@ -123,8 +123,8 @@ public class DebugRenderer {
 		}
 	}
 
-	public static void method_54808(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, BlockPos blockPos, float f, float g, float h, float i) {
-		drawBox(matrixStack, vertexConsumerProvider, blockPos, blockPos.add(1, 1, 1), f, g, h, i);
+	public static void drawBlockBox(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BlockPos pos, float red, float green, float blue, float alpha) {
+		drawBox(matrices, vertexConsumers, pos, pos.add(1, 1, 1), red, green, blue, alpha);
 	}
 
 	public static void drawBox(
@@ -133,7 +133,7 @@ public class DebugRenderer {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		if (camera.isReady()) {
 			Vec3d vec3d = camera.getPos().negate();
-			Box box = Box.create(pos1, pos2).offset(vec3d);
+			Box box = Box.enclosing(pos1, pos2).offset(vec3d);
 			drawBox(matrices, vertexConsumers, box, red, green, blue, alpha);
 		}
 	}

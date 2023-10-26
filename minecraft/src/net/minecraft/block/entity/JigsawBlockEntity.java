@@ -23,8 +23,8 @@ public class JigsawBlockEntity extends BlockEntity {
 	public static final String TARGET_KEY = "target";
 	public static final String POOL_KEY = "pool";
 	public static final String JOINT_KEY = "joint";
-	public static final String field_47096 = "placement_priority";
-	public static final String field_47097 = "selection_priority";
+	public static final String PLACEMENT_PRIORITY_KEY = "placement_priority";
+	public static final String SELECTION_PRIORITY_KEY = "selection_priority";
 	public static final String NAME_KEY = "name";
 	public static final String FINAL_STATE_KEY = "final_state";
 	private Identifier name = new Identifier("empty");
@@ -32,8 +32,8 @@ public class JigsawBlockEntity extends BlockEntity {
 	private RegistryKey<StructurePool> pool = RegistryKey.of(RegistryKeys.TEMPLATE_POOL, new Identifier("empty"));
 	private JigsawBlockEntity.Joint joint = JigsawBlockEntity.Joint.ROLLABLE;
 	private String finalState = "minecraft:air";
-	private int field_47098;
-	private int field_47099;
+	private int placementPriority;
+	private int selectionPriority;
 
 	public JigsawBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.JIGSAW, pos, state);
@@ -59,12 +59,12 @@ public class JigsawBlockEntity extends BlockEntity {
 		return this.joint;
 	}
 
-	public int method_54777() {
-		return this.field_47098;
+	public int getPlacementPriority() {
+		return this.placementPriority;
 	}
 
-	public int method_54778() {
-		return this.field_47099;
+	public int getSelectionPriority() {
+		return this.selectionPriority;
 	}
 
 	public void setName(Identifier name) {
@@ -87,12 +87,12 @@ public class JigsawBlockEntity extends BlockEntity {
 		this.joint = joint;
 	}
 
-	public void method_54775(int i) {
-		this.field_47098 = i;
+	public void setPlacementPriority(int placementPriority) {
+		this.placementPriority = placementPriority;
 	}
 
-	public void method_54776(int i) {
-		this.field_47099 = i;
+	public void setSelectionPriority(int selectionPriority) {
+		this.selectionPriority = selectionPriority;
 	}
 
 	@Override
@@ -103,8 +103,8 @@ public class JigsawBlockEntity extends BlockEntity {
 		nbt.putString("pool", this.pool.getValue().toString());
 		nbt.putString("final_state", this.finalState);
 		nbt.putString("joint", this.joint.asString());
-		nbt.putInt("placement_priority", this.field_47098);
-		nbt.putInt("selection_priority", this.field_47099);
+		nbt.putInt("placement_priority", this.placementPriority);
+		nbt.putInt("selection_priority", this.selectionPriority);
 	}
 
 	@Override
@@ -116,8 +116,8 @@ public class JigsawBlockEntity extends BlockEntity {
 		this.finalState = nbt.getString("final_state");
 		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(nbt.getString("joint"))
 			.orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
-		this.field_47098 = nbt.getInt("placement_priority");
-		this.field_47099 = nbt.getInt("selection_priority");
+		this.placementPriority = nbt.getInt("placement_priority");
+		this.selectionPriority = nbt.getInt("selection_priority");
 	}
 
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
