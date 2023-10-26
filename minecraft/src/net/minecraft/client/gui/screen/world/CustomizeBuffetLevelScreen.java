@@ -1,4 +1,4 @@
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.screen.world;
 
 import com.ibm.icu.text.Collator;
 import java.util.Comparator;
@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.world.GeneratorOptionsHolder;

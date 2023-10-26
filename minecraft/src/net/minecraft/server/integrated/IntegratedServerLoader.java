@@ -13,13 +13,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.DatapackFailureScreen;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.world.BackupPromptScreen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
+import net.minecraft.client.gui.screen.world.DataPackFailureScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.gui.screen.world.RecoverWorldScreen;
 import net.minecraft.client.gui.screen.world.SymlinkWarningScreen;
@@ -334,7 +334,7 @@ public class IntegratedServerLoader {
 		} catch (Exception var11) {
 			LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)var11);
 			if (!safeMode) {
-				this.client.setScreen(new DatapackFailureScreen(() -> {
+				this.client.setScreen(new DataPackFailureScreen(() -> {
 					session.tryClose();
 					onCancel.run();
 				}, () -> this.start(session, levelProperties, true, canShowBackupPrompt, onCancel)));

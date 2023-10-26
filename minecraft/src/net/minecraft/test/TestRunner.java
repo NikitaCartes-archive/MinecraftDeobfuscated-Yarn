@@ -74,7 +74,7 @@ public class TestRunner {
 					if (testSet.isDone()) {
 						gameTestBatch.finishBatch(TestRunner.this.world);
 						LongSet longSet = new LongArraySet(TestRunner.this.world.getForcedChunks());
-						longSet.forEach(l -> TestRunner.this.world.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
+						longSet.forEach(chunkPos -> TestRunner.this.world.setChunkForced(ChunkPos.getPackedX(chunkPos), ChunkPos.getPackedZ(chunkPos), false));
 						TestRunner.this.runBatch(index + 1);
 					}
 				}

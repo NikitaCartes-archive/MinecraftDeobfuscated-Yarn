@@ -109,16 +109,13 @@ public class SinglePoolElement extends StructurePoolElement {
 			pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true
 		);
 		Util.shuffle(objectArrayList, random);
-		method_54782(objectArrayList);
+		sort(objectArrayList);
 		return objectArrayList;
 	}
 
 	@VisibleForTesting
-	static void method_54782(List<StructureTemplate.StructureBlockInfo> list) {
-		list.sort(
-			Comparator.comparingInt(structureBlockInfo -> Nullables.mapOrElse(structureBlockInfo.nbt(), nbtCompound -> nbtCompound.getInt("selection_priority"), 0))
-				.reversed()
-		);
+	static void sort(List<StructureTemplate.StructureBlockInfo> blocks) {
+		blocks.sort(Comparator.comparingInt(block -> Nullables.mapOrElse(block.nbt(), nbt -> nbt.getInt("selection_priority"), 0)).reversed());
 	}
 
 	@Override

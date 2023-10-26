@@ -439,9 +439,11 @@ public class GameRules {
 		}
 
 		/**
-		 * Validates that an input is valid for this rule.
+		 * Validates that an input is valid for this rule, and sets the rule's value if successful.
+		 * 
+		 * @return whether the input is valid
 		 */
-		public boolean validate(String input) {
+		public boolean validateAndSet(String input) {
 			try {
 				this.value = Integer.parseInt(input);
 				return true;

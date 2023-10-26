@@ -122,7 +122,7 @@ public class MutableText implements Text {
 	}
 
 	/**
-	 * {@return the text with the RGB color {@color}}
+	 * {@return the text with the RGB color {@code color}}
 	 */
 	public MutableText withColor(int color) {
 		this.setStyle(this.getStyle().withColor(color));

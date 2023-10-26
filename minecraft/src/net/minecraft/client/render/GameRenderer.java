@@ -102,7 +102,7 @@ public class GameRenderer implements AutoCloseable {
 	public final HeldItemRenderer firstPersonRenderer;
 	private final MapRenderer mapRenderer;
 	private final BufferBuilderStorage buffers;
-	private int field_47130;
+	private int ticks;
 	private float fovMultiplier;
 	private float lastFovMultiplier;
 	private float skyDarkness;
@@ -731,7 +731,7 @@ public class GameRenderer implements AutoCloseable {
 
 		this.camera.updateEyeHeight();
 		this.firstPersonRenderer.updateHeldItems();
-		this.field_47130++;
+		this.ticks++;
 		if (this.client.world.getTickManager().shouldTick()) {
 			this.client.worldRenderer.tickRainSplashing(this.camera);
 			this.lastSkyDarkness = this.skyDarkness;
@@ -1191,9 +1191,9 @@ public class GameRenderer implements AutoCloseable {
 			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;
 			h *= h;
 			RotationAxis rotationAxis = RotationAxis.of(new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F));
-			matrixStack.multiply(rotationAxis.rotationDegrees(((float)this.field_47130 + tickDelta) * (float)i));
+			matrixStack.multiply(rotationAxis.rotationDegrees(((float)this.ticks + tickDelta) * (float)i));
 			matrixStack.scale(1.0F / h, 1.0F, 1.0F);
-			float j = -((float)this.field_47130 + tickDelta) * (float)i;
+			float j = -((float)this.ticks + tickDelta) * (float)i;
 			matrixStack.multiply(rotationAxis.rotationDegrees(j));
 		}
 

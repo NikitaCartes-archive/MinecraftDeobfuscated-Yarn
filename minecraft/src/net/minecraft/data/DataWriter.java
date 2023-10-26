@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import net.minecraft.util.PathUtil;
 
 public interface DataWriter {
 	DataWriter UNCACHED = (path, data, hashCode) -> {
-		Files.createDirectories(path.getParent());
+		PathUtil.createDirectories(path.getParent());
 		Files.write(path, data, new OpenOption[0]);
 	};
 

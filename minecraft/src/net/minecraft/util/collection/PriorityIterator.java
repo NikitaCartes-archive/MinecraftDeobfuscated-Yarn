@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.util.collection;
 
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Queues;
@@ -11,17 +11,17 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 
-public final class class_8917<T> extends AbstractIterator<T> {
-	private final Int2ObjectMap<Deque<T>> field_46956 = new Int2ObjectOpenHashMap<>();
+public final class PriorityIterator<T> extends AbstractIterator<T> {
+	private final Int2ObjectMap<Deque<T>> entries = new Int2ObjectOpenHashMap<>();
 
-	public void method_54726(T object, int i) {
-		this.field_46956.computeIfAbsent(i, (Int2ObjectFunction<? extends Deque<T>>)(ix -> Queues.<T>newArrayDeque())).addLast(object);
+	public void enqueue(T value, int priority) {
+		this.entries.computeIfAbsent(priority, (Int2ObjectFunction<? extends Deque<T>>)(p -> Queues.<T>newArrayDeque())).addLast(value);
 	}
 
 	@Nullable
 	@Override
 	protected T computeNext() {
-		Optional<Deque<T>> optional = this.field_46956
+		Optional<Deque<T>> optional = this.entries
 			.int2ObjectEntrySet()
 			.stream()
 			.filter(entry -> !((Deque)entry.getValue()).isEmpty())

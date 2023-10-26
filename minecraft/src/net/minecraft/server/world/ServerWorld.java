@@ -597,7 +597,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (optional.isPresent()) {
 			return (BlockPos)optional.get();
 		} else {
-			Box box = Box.create(blockPos, new BlockPos(blockPos.withY(this.getTopY()))).expand(3.0);
+			Box box = Box.enclosing(blockPos, new BlockPos(blockPos.withY(this.getTopY()))).expand(3.0);
 			List<LivingEntity> list = this.getEntitiesByClass(
 				LivingEntity.class, box, entity -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos())
 			);
@@ -1043,12 +1043,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public void playSound(
-		@Nullable PlayerEntity except, double x, double y, double z, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
+		@Nullable PlayerEntity source, double x, double y, double z, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
 	) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				except,
+				source,
 				x,
 				y,
 				z,
@@ -1060,12 +1060,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public void playSoundFromEntity(
-		@Nullable PlayerEntity except, Entity entity, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
+		@Nullable PlayerEntity source, Entity entity, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
 	) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				except,
+				source,
 				entity.getX(),
 				entity.getY(),
 				entity.getZ(),

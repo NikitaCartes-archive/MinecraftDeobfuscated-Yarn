@@ -14,16 +14,16 @@ public class TickChart extends DebugChart {
 	private static final int field_45935 = -65536;
 	private static final int field_45936 = -256;
 	private static final int field_45937 = -16711936;
-	private final Supplier<Float> field_47117;
+	private final Supplier<Float> millisPerTickSupplier;
 
-	public TickChart(TextRenderer textRenderer, PerformanceLog performanceLog, Supplier<Float> supplier) {
-		super(textRenderer, performanceLog);
-		this.field_47117 = supplier;
+	public TickChart(TextRenderer textRenderer, PerformanceLog log, Supplier<Float> millisPerTickSupplier) {
+		super(textRenderer, log);
+		this.millisPerTickSupplier = millisPerTickSupplier;
 	}
 
 	@Override
 	protected void renderThresholds(DrawContext context, int x, int width, int height) {
-		float f = (float)TimeHelper.SECOND_IN_MILLIS / (Float)this.field_47117.get();
+		float f = (float)TimeHelper.SECOND_IN_MILLIS / (Float)this.millisPerTickSupplier.get();
 		this.drawBorderedText(context, String.format("%.1f TPS", f), x + 1, height - 60 + 1);
 	}
 
@@ -34,12 +34,12 @@ public class TickChart extends DebugChart {
 
 	@Override
 	protected int getHeight(double value) {
-		return (int)Math.round(toMillisecondsPerTick(value) * 60.0 / (double)((Float)this.field_47117.get()).floatValue());
+		return (int)Math.round(toMillisecondsPerTick(value) * 60.0 / (double)((Float)this.millisPerTickSupplier.get()).floatValue());
 	}
 
 	@Override
 	protected int getColor(long value) {
-		float f = (Float)this.field_47117.get();
+		float f = (Float)this.millisPerTickSupplier.get();
 		return this.getColor(toMillisecondsPerTick((double)value), 0.0, -16711936, (double)f / 2.0, -256, (double)f, -65536);
 	}
 

@@ -1081,7 +1081,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		double e = this.getY();
 		double f = this.getZ();
 		super.travel(movementInput);
-		this.method_54720(this.getX() - d, this.getY() - e, this.getZ() - f);
+		this.increaseTravelMotionStats(this.getX() - d, this.getY() - e, this.getZ() - f);
 	}
 
 	@Override
@@ -1090,35 +1090,35 @@ public class ServerPlayerEntity extends PlayerEntity {
 		double e = this.getY();
 		double f = this.getZ();
 		super.tickRiding();
-		this.method_54721(this.getX() - d, this.getY() - e, this.getZ() - f);
+		this.increaseRidingMotionStats(this.getX() - d, this.getY() - e, this.getZ() - f);
 	}
 
-	public void method_54720(double d, double e, double f) {
-		if (!this.hasVehicle() && !method_54722(d, e, f)) {
+	public void increaseTravelMotionStats(double deltaX, double deltaY, double deltaZ) {
+		if (!this.hasVehicle() && !isZero(deltaX, deltaY, deltaZ)) {
 			if (this.isSwimming()) {
-				int i = Math.round((float)Math.sqrt(d * d + e * e + f * f) * 100.0F);
+				int i = Math.round((float)Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 100.0F);
 				if (i > 0) {
 					this.increaseStat(Stats.SWIM_ONE_CM, i);
 					this.addExhaustion(0.01F * (float)i * 0.01F);
 				}
 			} else if (this.isSubmergedIn(FluidTags.WATER)) {
-				int i = Math.round((float)Math.sqrt(d * d + e * e + f * f) * 100.0F);
+				int i = Math.round((float)Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 100.0F);
 				if (i > 0) {
 					this.increaseStat(Stats.WALK_UNDER_WATER_ONE_CM, i);
 					this.addExhaustion(0.01F * (float)i * 0.01F);
 				}
 			} else if (this.isTouchingWater()) {
-				int i = Math.round((float)Math.sqrt(d * d + f * f) * 100.0F);
+				int i = Math.round((float)Math.sqrt(deltaX * deltaX + deltaZ * deltaZ) * 100.0F);
 				if (i > 0) {
 					this.increaseStat(Stats.WALK_ON_WATER_ONE_CM, i);
 					this.addExhaustion(0.01F * (float)i * 0.01F);
 				}
 			} else if (this.isClimbing()) {
-				if (e > 0.0) {
-					this.increaseStat(Stats.CLIMB_ONE_CM, (int)Math.round(e * 100.0));
+				if (deltaY > 0.0) {
+					this.increaseStat(Stats.CLIMB_ONE_CM, (int)Math.round(deltaY * 100.0));
 				}
 			} else if (this.isOnGround()) {
-				int i = Math.round((float)Math.sqrt(d * d + f * f) * 100.0F);
+				int i = Math.round((float)Math.sqrt(deltaX * deltaX + deltaZ * deltaZ) * 100.0F);
 				if (i > 0) {
 					if (this.isSprinting()) {
 						this.increaseStat(Stats.SPRINT_ONE_CM, i);
@@ -1132,10 +1132,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 					}
 				}
 			} else if (this.isFallFlying()) {
-				int i = Math.round((float)Math.sqrt(d * d + e * e + f * f) * 100.0F);
+				int i = Math.round((float)Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 100.0F);
 				this.increaseStat(Stats.AVIATE_ONE_CM, i);
 			} else {
-				int i = Math.round((float)Math.sqrt(d * d + f * f) * 100.0F);
+				int i = Math.round((float)Math.sqrt(deltaX * deltaX + deltaZ * deltaZ) * 100.0F);
 				if (i > 25) {
 					this.increaseStat(Stats.FLY_ONE_CM, i);
 				}
@@ -1143,9 +1143,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	private void method_54721(double d, double e, double f) {
-		if (this.hasVehicle() && !method_54722(d, e, f)) {
-			int i = Math.round((float)Math.sqrt(d * d + e * e + f * f) * 100.0F);
+	private void increaseRidingMotionStats(double deltaX, double deltaY, double deltaZ) {
+		if (this.hasVehicle() && !isZero(deltaX, deltaY, deltaZ)) {
+			int i = Math.round((float)Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 100.0F);
 			Entity entity = this.getVehicle();
 			if (entity instanceof AbstractMinecartEntity) {
 				this.increaseStat(Stats.MINECART_ONE_CM, i);
@@ -1161,8 +1161,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	private static boolean method_54722(double d, double e, double f) {
-		return d == 0.0 && e == 0.0 && f == 0.0;
+	private static boolean isZero(double deltaX, double deltaY, double deltaZ) {
+		return deltaX == 0.0 && deltaY == 0.0 && deltaZ == 0.0;
 	}
 
 	@Override

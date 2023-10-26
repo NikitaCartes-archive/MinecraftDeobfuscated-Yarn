@@ -81,13 +81,13 @@ public class StructureTestUtil {
 	}
 
 	public static BlockBox getStructureBlockBox(StructureBlockBlockEntity structureBlockEntity) {
-		BlockPos blockPos = method_54849(structureBlockEntity);
-		BlockPos blockPos2 = method_54847(blockPos, structureBlockEntity.getSize(), structureBlockEntity.getRotation());
+		BlockPos blockPos = getStructureBlockPos(structureBlockEntity);
+		BlockPos blockPos2 = getStructureBlockBoxCornerPos(blockPos, structureBlockEntity.getSize(), structureBlockEntity.getRotation());
 		return BlockBox.create(blockPos, blockPos2);
 	}
 
-	public static BlockPos method_54849(StructureBlockBlockEntity structureBlockBlockEntity) {
-		return structureBlockBlockEntity.getPos().add(structureBlockBlockEntity.getOffset());
+	public static BlockPos getStructureBlockPos(StructureBlockBlockEntity structureBlockEntity) {
+		return structureBlockEntity.getPos().add(structureBlockEntity.getOffset());
 	}
 
 	public static void placeStartButton(BlockPos pos, BlockPos relativePos, BlockRotation rotation, ServerWorld world) {
@@ -111,8 +111,8 @@ public class StructureTestUtil {
 		structureBlockBlockEntity.setShowBoundingBox(true);
 	}
 
-	public static StructureBlockBlockEntity createStructureTemplate(String templateName, BlockPos pos, BlockRotation rotation, ServerWorld serverWorld, boolean bl) {
-		Vec3i vec3i = createStructureTemplate(templateName, serverWorld).getSize();
+	public static StructureBlockBlockEntity createStructureTemplate(String templateName, BlockPos pos, BlockRotation rotation, ServerWorld world, boolean initOnly) {
+		Vec3i vec3i = createStructureTemplate(templateName, world).getSize();
 		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
 		BlockPos blockPos;
 		if (rotation == BlockRotation.NONE) {
@@ -129,33 +129,33 @@ public class StructureTestUtil {
 			blockPos = pos.add(0, 0, vec3i.getX() - 1);
 		}
 
-		forceLoadNearbyChunks(blockBox, serverWorld);
-		clearArea(blockBox, serverWorld);
-		StructureBlockBlockEntity structureBlockBlockEntity = placeStructureTemplate(templateName, blockPos.down(), rotation, serverWorld, bl);
-		serverWorld.getBlockTickScheduler().clearNextTicks(blockBox);
-		serverWorld.clearUpdatesInArea(blockBox);
+		forceLoadNearbyChunks(blockBox, world);
+		clearArea(blockBox, world);
+		StructureBlockBlockEntity structureBlockBlockEntity = placeStructureTemplate(templateName, blockPos.down(), rotation, world, initOnly);
+		world.getBlockTickScheduler().clearNextTicks(blockBox);
+		world.clearUpdatesInArea(blockBox);
 		return structureBlockBlockEntity;
 	}
 
-	private static void forceLoadNearbyChunks(BlockBox blockBox, ServerWorld world) {
-		method_54846(blockBox, 0).forEach(chunkPos -> world.setChunkForced(chunkPos.x, chunkPos.z, true));
-		method_54846(blockBox, 3).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z));
+	private static void forceLoadNearbyChunks(BlockBox box, ServerWorld world) {
+		streamChunkPos(box, 0).forEach(chunkPos -> world.setChunkForced(chunkPos.x, chunkPos.z, true));
+		streamChunkPos(box, 3).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z));
 	}
 
-	private static Stream<ChunkPos> method_54846(BlockBox blockBox, int i) {
-		int j = ChunkSectionPos.getSectionCoord(blockBox.getMinX()) - i;
-		int k = ChunkSectionPos.getSectionCoord(blockBox.getMinZ()) - i;
-		int l = ChunkSectionPos.getSectionCoord(blockBox.getMaxX()) + i;
-		int m = ChunkSectionPos.getSectionCoord(blockBox.getMaxZ()) + i;
-		return ChunkPos.stream(new ChunkPos(j, k), new ChunkPos(l, m));
+	private static Stream<ChunkPos> streamChunkPos(BlockBox box, int margin) {
+		int i = ChunkSectionPos.getSectionCoord(box.getMinX()) - margin;
+		int j = ChunkSectionPos.getSectionCoord(box.getMinZ()) - margin;
+		int k = ChunkSectionPos.getSectionCoord(box.getMaxX()) + margin;
+		int l = ChunkSectionPos.getSectionCoord(box.getMaxZ()) + margin;
+		return ChunkPos.stream(new ChunkPos(i, j), new ChunkPos(k, l));
 	}
 
-	public static void clearArea(BlockBox area, ServerWorld serverWorld) {
+	public static void clearArea(BlockBox area, ServerWorld world) {
 		int i = area.getMinY() - 1;
 		BlockBox blockBox = new BlockBox(area.getMinX() - 2, area.getMinY() - 3, area.getMinZ() - 3, area.getMaxX() + 3, area.getMaxY() + 20, area.getMaxZ() + 3);
-		BlockPos.stream(blockBox).forEach(pos -> resetBlock(i, pos, serverWorld));
-		serverWorld.getBlockTickScheduler().clearNextTicks(blockBox);
-		serverWorld.clearUpdatesInArea(blockBox);
+		BlockPos.stream(blockBox).forEach(pos -> resetBlock(i, pos, world));
+		world.getBlockTickScheduler().clearNextTicks(blockBox);
+		world.clearUpdatesInArea(blockBox);
 		Box box = new Box(
 			(double)blockBox.getMinX(),
 			(double)blockBox.getMinY(),
@@ -164,17 +164,17 @@ public class StructureTestUtil {
 			(double)blockBox.getMaxY(),
 			(double)blockBox.getMaxZ()
 		);
-		List<Entity> list = serverWorld.getEntitiesByClass(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
+		List<Entity> list = world.getEntitiesByClass(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
 		list.forEach(Entity::discard);
 	}
 
-	public static BlockPos method_54847(BlockPos blockPos, Vec3i vec3i, BlockRotation blockRotation) {
-		BlockPos blockPos2 = blockPos.add(vec3i).add(-1, -1, -1);
-		return StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, blockRotation, blockPos);
+	public static BlockPos getStructureBlockBoxCornerPos(BlockPos pos, Vec3i size, BlockRotation rotation) {
+		BlockPos blockPos = pos.add(size).add(-1, -1, -1);
+		return StructureTemplate.transformAround(blockPos, BlockMirror.NONE, rotation, pos);
 	}
 
 	public static BlockBox getStructureBlockBox(BlockPos pos, Vec3i relativePos, BlockRotation rotation) {
-		BlockPos blockPos = method_54847(pos, relativePos, rotation);
+		BlockPos blockPos = getStructureBlockBoxCornerPos(pos, relativePos, rotation);
 		BlockBox blockBox = BlockBox.create(pos, blockPos);
 		int i = Math.min(blockBox.getMinX(), blockBox.getMaxX());
 		int j = Math.min(blockBox.getMinZ(), blockBox.getMaxZ());
@@ -221,19 +221,19 @@ public class StructureTestUtil {
 		}
 	}
 
-	private static StructureBlockBlockEntity placeStructureTemplate(String name, BlockPos pos, BlockRotation rotation, ServerWorld world, boolean bl) {
+	private static StructureBlockBlockEntity placeStructureTemplate(String name, BlockPos pos, BlockRotation rotation, ServerWorld world, boolean initOnly) {
 		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setMode(StructureBlockMode.LOAD);
 		structureBlockBlockEntity.setRotation(rotation);
 		structureBlockBlockEntity.setIgnoreEntities(false);
 		structureBlockBlockEntity.setTemplateName(new Identifier(name));
-		structureBlockBlockEntity.loadStructure(world, bl);
+		structureBlockBlockEntity.loadStructure(world, initOnly);
 		if (structureBlockBlockEntity.getSize() != Vec3i.ZERO) {
 			return structureBlockBlockEntity;
 		} else {
 			StructureTemplate structureTemplate = createStructureTemplate(name, world);
-			structureBlockBlockEntity.place(world, bl, structureTemplate);
+			structureBlockBlockEntity.place(world, initOnly, structureTemplate);
 			if (structureBlockBlockEntity.getSize() == Vec3i.ZERO) {
 				throw new RuntimeException("Failed to load structure " + name);
 			} else {

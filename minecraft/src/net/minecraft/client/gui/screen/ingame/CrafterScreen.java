@@ -40,15 +40,15 @@ public class CrafterScreen extends HandledScreen<CrafterScreenHandler> {
 			switch (actionType) {
 				case PICKUP:
 					if (this.handler.isSlotDisabled(slotId)) {
-						this.method_54797(slotId);
+						this.enableSlot(slotId);
 					} else if (this.handler.getCursorStack().isEmpty()) {
-						this.method_54799(slotId);
+						this.disableSlot(slotId);
 					}
 					break;
 				case SWAP:
 					ItemStack itemStack = this.player.getInventory().getStack(button);
 					if (this.handler.isSlotDisabled(slotId) && !itemStack.isEmpty()) {
-						this.method_54797(slotId);
+						this.enableSlot(slotId);
 					}
 			}
 		}
@@ -56,18 +56,18 @@ public class CrafterScreen extends HandledScreen<CrafterScreenHandler> {
 		super.onMouseClick(slot, slotId, button, actionType);
 	}
 
-	private void method_54797(int i) {
-		this.method_54798(i, true);
+	private void enableSlot(int slotId) {
+		this.setSlotEnabled(slotId, true);
 	}
 
-	private void method_54799(int i) {
-		this.method_54798(i, false);
+	private void disableSlot(int slotId) {
+		this.setSlotEnabled(slotId, false);
 	}
 
-	private void method_54798(int i, boolean bl) {
-		this.handler.setSlotEnabled(i, bl);
-		super.onSlotChangedState(i, this.handler.syncId, bl);
-		float f = bl ? 1.0F : 0.75F;
+	private void setSlotEnabled(int slotId, boolean enabled) {
+		this.handler.setSlotEnabled(slotId, enabled);
+		super.onSlotChangedState(slotId, this.handler.syncId, enabled);
+		float f = enabled ? 1.0F : 0.75F;
 		this.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.4F, f);
 	}
 

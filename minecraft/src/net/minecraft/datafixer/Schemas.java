@@ -94,7 +94,6 @@ import net.minecraft.datafixer.fix.EntityWolfColorFix;
 import net.minecraft.datafixer.fix.EntityZombieSplitFix;
 import net.minecraft.datafixer.fix.EntityZombieVillagerTypeFix;
 import net.minecraft.datafixer.fix.EntityZombifiedPiglinRenameFix;
-import net.minecraft.datafixer.fix.FixProjectileItemType;
 import net.minecraft.datafixer.fix.FurnaceRecipesFix;
 import net.minecraft.datafixer.fix.GameEventRenamesFix;
 import net.minecraft.datafixer.fix.GoatHornIdFix;
@@ -150,6 +149,7 @@ import net.minecraft.datafixer.fix.PointOfInterestRemoveFix;
 import net.minecraft.datafixer.fix.PointOfInterestRenameFix;
 import net.minecraft.datafixer.fix.PointOfInterestReorganizationFix;
 import net.minecraft.datafixer.fix.PrimedTntBlockStateFix;
+import net.minecraft.datafixer.fix.ProjectileItemTypeFix;
 import net.minecraft.datafixer.fix.ProtoChunkTickListFix;
 import net.minecraft.datafixer.fix.RandomSequenceSettingsFix;
 import net.minecraft.datafixer.fix.RedstoneConnectionsFix;
@@ -1164,7 +1164,7 @@ public class Schemas {
 		Schema schema195 = builder.addSchema(3683, Schema3683::new);
 		builder.addFixer(new PrimedTntBlockStateFix(schema195));
 		Schema schema196 = builder.addSchema(3685, Schema3685::new);
-		builder.addFixer(new FixProjectileItemType(schema196));
+		builder.addFixer(new ProjectileItemTypeFix(schema196));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -1,4 +1,4 @@
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.screen.world;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.world.CreateWorldScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.item.Item;

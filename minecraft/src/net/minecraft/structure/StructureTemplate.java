@@ -178,7 +178,7 @@ public class StructureTemplate {
 	}
 
 	private void addEntitiesFromWorld(World world, BlockPos firstCorner, BlockPos secondCorner) {
-		List<Entity> list = world.getEntitiesByClass(Entity.class, Box.create(firstCorner, secondCorner), entityx -> !(entityx instanceof PlayerEntity));
+		List<Entity> list = world.getEntitiesByClass(Entity.class, Box.enclosing(firstCorner, secondCorner), entityx -> !(entityx instanceof PlayerEntity));
 		this.entities.clear();
 
 		for (Entity entity : list) {

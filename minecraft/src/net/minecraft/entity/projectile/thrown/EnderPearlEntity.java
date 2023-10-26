@@ -68,7 +68,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 					entity.onLanding();
 					entity.damage(this.getDamageSources().fall(), 5.0F);
-					this.getWorld().method_54762(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
+					this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
 				}
 			} else if (entity != null) {
 				entity.requestTeleport(this.getX(), this.getY(), this.getZ());

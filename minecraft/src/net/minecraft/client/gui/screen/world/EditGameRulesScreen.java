@@ -131,7 +131,7 @@ public class EditGameRulesScreen extends Screen {
 			this.valueWidget = new TextFieldWidget(EditGameRulesScreen.this.client.textRenderer, 10, 5, 44, 20, name.copy().append("\n").append(ruleName).append("\n"));
 			this.valueWidget.setText(Integer.toString(rule.get()));
 			this.valueWidget.setChangedListener(value -> {
-				if (rule.validate(value)) {
+				if (rule.validateAndSet(value)) {
 					this.valueWidget.setEditableColor(14737632);
 					EditGameRulesScreen.this.markValid(this);
 				} else {

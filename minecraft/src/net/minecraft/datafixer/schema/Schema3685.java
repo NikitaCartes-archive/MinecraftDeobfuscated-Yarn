@@ -12,16 +12,16 @@ public class Schema3685 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static TypeTemplate method_54742(Schema schema) {
+	protected static TypeTemplate registerFields(Schema schema) {
 		return DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema), "item", TypeReferences.ITEM_STACK.in(schema));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		schema.register(map, "minecraft:trident", (Supplier<TypeTemplate>)(() -> method_54742(schema)));
-		schema.register(map, "minecraft:spectral_arrow", (Supplier<TypeTemplate>)(() -> method_54742(schema)));
-		schema.register(map, "minecraft:arrow", (Supplier<TypeTemplate>)(() -> method_54742(schema)));
+		schema.register(map, "minecraft:trident", (Supplier<TypeTemplate>)(() -> registerFields(schema)));
+		schema.register(map, "minecraft:spectral_arrow", (Supplier<TypeTemplate>)(() -> registerFields(schema)));
+		schema.register(map, "minecraft:arrow", (Supplier<TypeTemplate>)(() -> registerFields(schema)));
 		return map;
 	}
 }

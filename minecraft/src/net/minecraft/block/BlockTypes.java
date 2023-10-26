@@ -232,7 +232,7 @@ public class BlockTypes {
 		Registry.register(registry, "weathering_copper_bulb", OxidizableCopperBulbBlock.CODEC);
 		Registry.register(registry, "weathering_copper_door", OxidizableDoorBlock.CODEC);
 		Registry.register(registry, "weathering_copper_full", OxidizableBlock.CODEC);
-		Registry.register(registry, "weathering_copper_grate", CopperGrateBlock.CODEC);
+		Registry.register(registry, "weathering_copper_grate", OxidizableGrateBlock.CODEC);
 		Registry.register(registry, "weathering_copper_slab", OxidizableSlabBlock.CODEC);
 		Registry.register(registry, "weathering_copper_stair", OxidizableStairsBlock.CODEC);
 		Registry.register(registry, "weathering_copper_trap_door", OxidizableTrapdoorBlock.CODEC);

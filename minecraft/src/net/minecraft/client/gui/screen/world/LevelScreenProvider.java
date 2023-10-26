@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.CustomizeBuffetLevelScreen;
-import net.minecraft.client.gui.screen.CustomizeFlatLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.DynamicRegistryManager;

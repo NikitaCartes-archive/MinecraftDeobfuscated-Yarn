@@ -525,6 +525,13 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		return Entity.MoveEffect.NONE;
 	}
 
+	/**
+	 * {@return the read-only item stack representing the projectile}
+	 * 
+	 * <p>This is the original stack used to spawn the projectile. {@link #asItemStack}
+	 * returns a copy of that stack which can be safely changed. Additionally,
+	 * {@link #asItemStack} reflects changes to the entity data, such as custom potion ID.
+	 */
 	public ItemStack getItemStack() {
 		return this.stack;
 	}

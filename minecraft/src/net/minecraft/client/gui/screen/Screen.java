@@ -66,7 +66,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private final List<Element> children = Lists.<Element>newArrayList();
 	private final List<Selectable> selectables = Lists.<Selectable>newArrayList();
 	@Nullable
-	protected MinecraftClient client;
+	public MinecraftClient client;
 	private boolean screenInitialized;
 	public int width;
 	public int height;

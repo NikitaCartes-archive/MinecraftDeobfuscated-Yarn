@@ -41,6 +41,6 @@ public class VillageSectionsDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private static void drawBoxAtCenterOf(MatrixStack matrices, VertexConsumerProvider vertexConsumers, ChunkSectionPos sectionPos) {
-		DebugRenderer.method_54808(matrices, vertexConsumers, sectionPos.getCenterPos(), 0.2F, 1.0F, 0.2F, 0.15F);
+		DebugRenderer.drawBlockBox(matrices, vertexConsumers, sectionPos.getCenterPos(), 0.2F, 1.0F, 0.2F, 0.15F);
 	}
 }

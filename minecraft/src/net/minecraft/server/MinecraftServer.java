@@ -186,7 +186,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final int field_47144 = 20;
 	private static final long OVERLOAD_WARNING_INTERVAL_NANOS = 10L * TimeHelper.SECOND_IN_NANOS;
 	private static final int field_47146 = 100;
-	private static final long field_47147 = 5L * TimeHelper.SECOND_IN_NANOS;
+	private static final long PLAYER_SAMPLE_UPDATE_INTERVAL_NANOS = 5L * TimeHelper.SECOND_IN_NANOS;
 	private static final long PREPARE_START_REGION_TICK_DELAY_NANOS = 10L * TimeHelper.MILLI_IN_NANOS;
 	private static final int field_33218 = 12;
 	public static final int START_TICKET_CHUNK_RADIUS = 11;
@@ -533,7 +533,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 		}
 
-		this.tickStartTimeNanos = Util.getMeasuringTimeMs() + PREPARE_START_REGION_TICK_DELAY_NANOS;
+		this.tickStartTimeNanos = Util.getMeasuringTimeNano() + PREPARE_START_REGION_TICK_DELAY_NANOS;
 		this.runTasksTillTickEnd();
 		worldGenerationProgressListener.stop();
 		this.updateMobSpawnOptions();
@@ -883,7 +883,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.ticks++;
 		this.tickManager.step();
 		this.tickWorlds(shouldKeepTicking);
-		if (l - this.lastPlayerSampleUpdate >= field_47147) {
+		if (l - this.lastPlayerSampleUpdate >= PLAYER_SAMPLE_UPDATE_INTERVAL_NANOS) {
 			this.lastPlayerSampleUpdate = l;
 			this.metadata = this.createMetadata();
 		}

@@ -424,7 +424,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	public void playSound(@Nullable PlayerEntity source, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 	}
 
 	@Override

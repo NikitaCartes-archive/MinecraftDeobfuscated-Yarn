@@ -45,6 +45,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -228,7 +229,7 @@ public class TestCommand {
 	private static int executeCreate(ServerCommandSource source, String testName, int x, int y, int z) {
 		if (x <= 48 && y <= 48 && z <= 48) {
 			ServerWorld serverWorld = source.getWorld();
-			BlockPos blockPos = method_54850(source);
+			BlockPos blockPos = getStructurePos(source);
 			StructureTestUtil.createTestArea(testName.toLowerCase(), blockPos, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
 
 			for (int i = 0; i < x; i++) {
@@ -359,7 +360,7 @@ public class TestCommand {
 
 	private static int executeRun(ServerCommandSource source, TestFunction testFunction, int rotationSteps) {
 		ServerWorld serverWorld = source.getWorld();
-		BlockPos blockPos = method_54850(source);
+		BlockPos blockPos = getStructurePos(source);
 		TestUtil.clearDebugMarkers(serverWorld);
 		beforeBatch(testFunction, serverWorld);
 		BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
@@ -368,9 +369,9 @@ public class TestCommand {
 		return 1;
 	}
 
-	private static BlockPos method_54850(ServerCommandSource serverCommandSource) {
-		BlockPos blockPos = BlockPos.ofFloored(serverCommandSource.getPosition());
-		int i = serverCommandSource.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
+	private static BlockPos getStructurePos(ServerCommandSource source) {
+		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
+		int i = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
 		return new BlockPos(blockPos.getX(), i + 1, blockPos.getZ() + 3);
 	}
 
@@ -381,25 +382,25 @@ public class TestCommand {
 		}
 	}
 
-	private static int executeRunAll(ServerCommandSource source, int rotationSteps, int sizeZ) {
+	private static int executeRunAll(ServerCommandSource source, int rotationSteps, int testsPerRow) {
 		TestUtil.clearDebugMarkers(source.getWorld());
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions();
 		sendMessage(source, "Running all " + collection.size() + " tests...");
 		TestFunctions.clearFailedTestFunctions();
-		run(source, collection, rotationSteps, sizeZ);
+		run(source, collection, rotationSteps, testsPerRow);
 		return 1;
 	}
 
-	private static int executeRunAll(ServerCommandSource source, String testClass, int rotationSteps, int sizeZ) {
+	private static int executeRunAll(ServerCommandSource source, String testClass, int rotationSteps, int testsPerRow) {
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions(testClass);
 		TestUtil.clearDebugMarkers(source.getWorld());
 		sendMessage(source, "Running " + collection.size() + " tests from " + testClass + "...");
 		TestFunctions.clearFailedTestFunctions();
-		run(source, collection, rotationSteps, sizeZ);
+		run(source, collection, rotationSteps, testsPerRow);
 		return 1;
 	}
 
-	private static int executeRerunFailed(ServerCommandSource source, boolean requiredOnly, int rotationSteps, int sizeZ) {
+	private static int executeRerunFailed(ServerCommandSource source, boolean requiredOnly, int rotationSteps, int testsPerRow) {
 		Collection<TestFunction> collection;
 		if (requiredOnly) {
 			collection = (Collection<TestFunction>)TestFunctions.getFailedTestFunctions().stream().filter(TestFunction::isRequired).collect(Collectors.toList());
@@ -413,16 +414,16 @@ public class TestCommand {
 		} else {
 			TestUtil.clearDebugMarkers(source.getWorld());
 			sendMessage(source, "Rerunning " + collection.size() + " failed tests (" + (requiredOnly ? "only required tests" : "including optional tests") + ")");
-			run(source, collection, rotationSteps, sizeZ);
+			run(source, collection, rotationSteps, testsPerRow);
 			return 1;
 		}
 	}
 
-	private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int rotationSteps, int i) {
-		BlockPos blockPos = method_54850(source);
+	private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int rotationSteps, int testsPerRow) {
+		BlockPos blockPos = getStructurePos(source);
 		ServerWorld serverWorld = source.getWorld();
 		BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
-		Collection<GameTestState> collection = TestUtil.runTestFunctions(testFunctions, blockPos, blockRotation, serverWorld, TestManager.INSTANCE, i);
+		Collection<GameTestState> collection = TestUtil.runTestFunctions(testFunctions, blockPos, blockRotation, serverWorld, TestManager.INSTANCE, testsPerRow);
 		TestSet testSet = new TestSet(collection);
 		testSet.addListener(new TestCommand.Listener(serverWorld, testSet));
 		testSet.addListener(test -> TestFunctions.addFailedTestFunction(test.getTestFunction()));
@@ -478,7 +479,7 @@ public class TestCommand {
 			return 1;
 		} else {
 			try {
-				Files.createDirectories(path3.getParent());
+				PathUtil.createDirectories(path3.getParent());
 			} catch (IOException var7) {
 				sendMessage(source, "Could not create folder " + path3.getParent());
 				LOGGER.error("Could not create export folder", (Throwable)var7);

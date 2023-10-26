@@ -5,7 +5,6 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import net.minecraft.class_8917;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -23,6 +22,7 @@ import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.pool.alias.StructurePoolAliasLookup;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.PriorityIterator;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -242,7 +242,7 @@ public class StructurePoolBasedGenerator {
 		private final StructureTemplateManager structureTemplateManager;
 		private final List<? super PoolStructurePiece> children;
 		private final Random random;
-		final class_8917<StructurePoolBasedGenerator.ShapedPoolStructurePiece> structurePieces = new class_8917<>();
+		final PriorityIterator<StructurePoolBasedGenerator.ShapedPoolStructurePiece> structurePieces = new PriorityIterator<>();
 
 		StructurePoolGenerator(
 			Registry<StructurePool> registry,
@@ -410,7 +410,7 @@ public class StructurePoolBasedGenerator {
 													StructurePoolBasedGenerator.ShapedPoolStructurePiece shapedPoolStructurePiece = new StructurePoolBasedGenerator.ShapedPoolStructurePiece(
 														poolStructurePiece, mutableObject2, minY + 1
 													);
-													this.structurePieces.method_54726(shapedPoolStructurePiece, l);
+													this.structurePieces.enqueue(shapedPoolStructurePiece, l);
 												}
 												continue label134;
 											}

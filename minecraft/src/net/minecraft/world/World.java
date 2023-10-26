@@ -420,45 +420,59 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return !this.getDimension().hasFixedTime() && !this.isDay();
 	}
 
-	public void playSound(@Nullable Entity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSound(except instanceof PlayerEntity playerEntity ? playerEntity : null, pos, sound, category, volume, pitch);
+	public void playSound(@Nullable Entity source, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSound(source instanceof PlayerEntity playerEntity ? playerEntity : null, pos, sound, category, volume, pitch);
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSound(except, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch);
+	public void playSound(@Nullable PlayerEntity source, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSound(source, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch);
 	}
 
 	/**
-	 * @param except the player that should not receive the sound, or {@code null}
+	 * @param source the player that caused the sound and therefore plays the sound directly in
+	 * the client, or {@code null}
 	 */
 	public abstract void playSound(
-		@Nullable PlayerEntity except, double x, double y, double z, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
+		@Nullable PlayerEntity source, double x, double y, double z, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
 	);
 
+	/**
+	 * @param source the player that caused the sound and therefore plays the sound directly in
+	 * the client, or {@code null}
+	 */
 	public void playSound(
-		@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed
+		@Nullable PlayerEntity source, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed
 	) {
-		this.playSound(except, x, y, z, Registries.SOUND_EVENT.getEntry(sound), category, volume, pitch, seed);
+		this.playSound(source, x, y, z, Registries.SOUND_EVENT.getEntry(sound), category, volume, pitch, seed);
 	}
 
 	/**
-	 * @param except the player that should not receive the sound, or {@code null}
+	 * @param source the player that caused the sound and therefore plays the sound directly in
+	 * the client, or {@code null}
 	 */
 	public abstract void playSoundFromEntity(
-		@Nullable PlayerEntity except, Entity entity, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
+		@Nullable PlayerEntity source, Entity entity, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
 	);
 
-	public void method_54762(@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory) {
-		this.playSound(playerEntity, d, e, f, soundEvent, soundCategory, 1.0F, 1.0F);
+	public void playSound(@Nullable PlayerEntity source, double x, double y, double z, SoundEvent sound, SoundCategory category) {
+		this.playSound(source, x, y, z, sound, category, 1.0F, 1.0F);
 	}
 
-	public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSound(except, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
+	/**
+	 * @param source the player that caused the sound and therefore plays the sound directly in
+	 * the client, or {@code null}
+	 */
+	public void playSound(@Nullable PlayerEntity source, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSound(source, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
-	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSoundFromEntity(except, entity, Registries.SOUND_EVENT.getEntry(sound), category, volume, pitch, this.threadSafeRandom.nextLong());
+	/**
+	 * @param source the player that caused the sound and therefore plays the sound directly in
+	 * the client, or {@code null}
+	 */
+	public void playSoundFromEntity(@Nullable PlayerEntity source, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSoundFromEntity(source, entity, Registries.SOUND_EVENT.getEntry(sound), category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
 	public void playSoundAtBlockCenter(BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {

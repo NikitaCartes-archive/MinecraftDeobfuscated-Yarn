@@ -437,7 +437,7 @@ public class ServerPlayNetworkHandler
 				}
 
 				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
-				this.player.method_54720(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
+				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
 				this.vehicleFloating = m >= -0.03125 && !bl2 && !this.server.isFlightEnabled() && !entity.hasNoGravity() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
@@ -695,8 +695,8 @@ public class ServerPlayNetworkHandler
 				jigsawBlockEntity.setPool(RegistryKey.of(RegistryKeys.TEMPLATE_POOL, packet.getPool()));
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.setJoint(packet.getJointType());
-				jigsawBlockEntity.method_54775(packet.method_54669());
-				jigsawBlockEntity.method_54776(packet.method_54668());
+				jigsawBlockEntity.setPlacementPriority(packet.getPlacementPriority());
+				jigsawBlockEntity.setSelectionPriority(packet.getSelectionPriority());
 				jigsawBlockEntity.markDirty();
 				this.player.getWorld().updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 			}
@@ -940,7 +940,7 @@ public class ServerPlayNetworkHandler
 									this.player.onLanding();
 								}
 
-								this.player.method_54720(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
+								this.player.increaseTravelMotionStats(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
 								this.updatedX = this.player.getX();
 								this.updatedY = this.player.getY();
 								this.updatedZ = this.player.getZ();
