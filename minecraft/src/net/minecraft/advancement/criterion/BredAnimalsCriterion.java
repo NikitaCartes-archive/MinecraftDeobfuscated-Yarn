@@ -87,9 +87,9 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.parent.ifPresent(lootContextPredicate -> jsonObject.add("parent", lootContextPredicate.toJson()));
-			this.partner.ifPresent(lootContextPredicate -> jsonObject.add("partner", lootContextPredicate.toJson()));
-			this.child.ifPresent(lootContextPredicate -> jsonObject.add("child", lootContextPredicate.toJson()));
+			this.parent.ifPresent(parent -> jsonObject.add("parent", parent.toJson()));
+			this.partner.ifPresent(partner -> jsonObject.add("partner", partner.toJson()));
+			this.child.ifPresent(child -> jsonObject.add("child", child.toJson()));
 			return jsonObject;
 		}
 	}

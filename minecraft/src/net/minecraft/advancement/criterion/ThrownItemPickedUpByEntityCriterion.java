@@ -31,10 +31,10 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 		private final Optional<ItemPredicate> item;
 		private final Optional<LootContextPredicate> entity;
 
-		public Conditions(Optional<LootContextPredicate> optional, Optional<ItemPredicate> playerPredicate, Optional<LootContextPredicate> item) {
-			super(optional);
-			this.item = playerPredicate;
-			this.entity = item;
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, Optional<LootContextPredicate> entity) {
+			super(playerPredicate);
+			this.item = item;
+			this.entity = entity;
 		}
 
 		public static AdvancementCriterion<ThrownItemPickedUpByEntityCriterion.Conditions> createThrownItemPickedUpByEntity(
@@ -58,8 +58,8 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
-			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
+			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
+			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
 			return jsonObject;
 		}
 	}

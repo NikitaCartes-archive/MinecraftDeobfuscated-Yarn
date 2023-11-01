@@ -229,7 +229,7 @@ public class TestCommand {
 	private static int executeCreate(ServerCommandSource source, String testName, int x, int y, int z) {
 		if (x <= 48 && y <= 48 && z <= 48) {
 			ServerWorld serverWorld = source.getWorld();
-			BlockPos blockPos = getStructurePos(source);
+			BlockPos blockPos = getStructurePos(source).down();
 			StructureTestUtil.createTestArea(testName.toLowerCase(), blockPos, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
 
 			for (int i = 0; i < x; i++) {
@@ -324,10 +324,21 @@ public class TestCommand {
 				gameTestState.addListener(new TestCommand.Listener(world, tests));
 			}
 
-			beforeBatch(testFunction, world);
-			BlockBox blockBox = StructureTestUtil.getStructureBlockBox(structureBlockBlockEntity);
-			BlockPos blockPos = new BlockPos(blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
-			TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
+			if (checkStructure(world, gameTestState)) {
+				beforeBatch(testFunction, world);
+				BlockBox blockBox = StructureTestUtil.getStructureBlockBox(structureBlockBlockEntity);
+				BlockPos blockPos = new BlockPos(blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
+				TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
+			}
+		}
+	}
+
+	private static boolean checkStructure(ServerWorld world, GameTestState state) {
+		if (world.getStructureTemplateManager().getTemplate(new Identifier(state.getTemplateName())).isEmpty()) {
+			sendMessage(world, "Test structure " + state.getTemplateName() + " could not be found", Formatting.RED);
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -365,8 +376,12 @@ public class TestCommand {
 		beforeBatch(testFunction, serverWorld);
 		BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
 		GameTestState gameTestState = new GameTestState(testFunction, blockRotation, serverWorld);
-		TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
-		return 1;
+		if (!checkStructure(serverWorld, gameTestState)) {
+			return 0;
+		} else {
+			TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
+			return 1;
+		}
 	}
 
 	private static BlockPos getStructurePos(ServerCommandSource source) {
@@ -442,8 +457,7 @@ public class TestCommand {
 			return 0;
 		} else {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPos2);
-			String string = structureBlockBlockEntity.getStructurePath();
-			return executeExport(source, string);
+			return export(source, structureBlockBlockEntity);
 		}
 	}
 
@@ -459,14 +473,21 @@ public class TestCommand {
 
 			for (BlockPos blockPos2 : collection) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPos2);
-				String string = structureBlockBlockEntity.getStructurePath();
-				if (executeExport(source, string) != 0) {
+				if (export(source, structureBlockBlockEntity) != 0) {
 					bl = false;
 				}
 			}
 
 			return bl ? 0 : 1;
 		}
+	}
+
+	private static int export(ServerCommandSource source, StructureBlockBlockEntity blockEntity) {
+		if (!blockEntity.saveStructure(true)) {
+			sendMessage(source, "Failed to save structure " + blockEntity.getTemplateName());
+		}
+
+		return executeExport(source, blockEntity.getTemplateName());
 	}
 
 	private static int executeExport(ServerCommandSource source, String testName) {

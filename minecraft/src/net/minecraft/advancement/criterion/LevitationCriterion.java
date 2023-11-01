@@ -47,7 +47,7 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.distance.ifPresent(distancePredicate -> jsonObject.add("distance", distancePredicate.toJson()));
+			this.distance.ifPresent(distance -> jsonObject.add("distance", distance.toJson()));
 			jsonObject.add("duration", this.duration.toJson());
 			return jsonObject;
 		}

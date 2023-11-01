@@ -14,12 +14,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BinaryOperator;
-import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.ResultStorer;
+import net.minecraft.command.ReturnValueConsumer;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.message.MessageType;
@@ -56,8 +55,6 @@ import net.minecraft.world.dimension.DimensionType;
 public class ServerCommandSource implements AbstractServerCommandSource<ServerCommandSource>, CommandSource {
 	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("permissions.requires.player"));
 	public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("permissions.requires.entity"));
-	private static final ResultStorer<ServerCommandSource> DUMMY_STORER = (context, success, result) -> {
-	};
 	private final CommandOutput output;
 	private final Vec3d position;
 	private final ServerWorld world;
@@ -68,12 +65,11 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 	private final boolean silent;
 	@Nullable
 	private final Entity entity;
-	private final ResultStorer<ServerCommandSource> resultStorer;
+	private final ReturnValueConsumer returnValueConsumer;
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
 	private final Vec2f rotation;
 	private final SignedCommandArguments signedArguments;
 	private final FutureQueue messageChainTaskQueue;
-	private final IntConsumer returnValueConsumer;
 
 	public ServerCommandSource(
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
@@ -89,12 +85,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 			server,
 			entity,
 			false,
-			DUMMY_STORER,
+			ReturnValueConsumer.EMPTY,
 			EntityAnchorArgumentType.EntityAnchor.FEET,
 			SignedCommandArguments.EMPTY,
-			FutureQueue.immediate(server),
-			returnValue -> {
-			}
+			FutureQueue.immediate(server)
 		);
 	}
 
@@ -109,11 +103,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 		MinecraftServer server,
 		@Nullable Entity entity,
 		boolean silent,
-		ResultStorer<ServerCommandSource> resultStorer,
+		ReturnValueConsumer resultStorer,
 		EntityAnchorArgumentType.EntityAnchor entityAnchor,
 		SignedCommandArguments signedArguments,
-		FutureQueue messageChainTaskQueue,
-		IntConsumer returnValueConsumer
+		FutureQueue messageChainTaskQueue
 	) {
 		this.output = output;
 		this.position = pos;
@@ -124,12 +117,11 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 		this.name = name;
 		this.displayName = displayName;
 		this.server = server;
-		this.resultStorer = resultStorer;
+		this.returnValueConsumer = resultStorer;
 		this.entityAnchor = entityAnchor;
 		this.rotation = rot;
 		this.signedArguments = signedArguments;
 		this.messageChainTaskQueue = messageChainTaskQueue;
-		this.returnValueConsumer = returnValueConsumer;
 	}
 
 	public ServerCommandSource withOutput(CommandOutput output) {
@@ -146,11 +138,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -168,11 +159,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -190,11 +180,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -212,16 +201,15 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 	}
 
-	public ServerCommandSource withResultStorer(ResultStorer<ServerCommandSource> resultStorer) {
-		return Objects.equals(this.resultStorer, resultStorer)
+	public ServerCommandSource withReturnValueConsumer(ReturnValueConsumer returnValueConsumer) {
+		return Objects.equals(this.returnValueConsumer, returnValueConsumer)
 			? this
 			: new ServerCommandSource(
 				this.output,
@@ -234,21 +222,16 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				resultStorer,
+				returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 	}
 
-	public ServerCommandSource withDummyResultStorer() {
-		return this.withResultStorer(DUMMY_STORER);
-	}
-
-	public ServerCommandSource mergeStorers(ResultStorer<ServerCommandSource> resultStorer, BinaryOperator<ResultStorer<ServerCommandSource>> merger) {
-		ResultStorer<ServerCommandSource> resultStorer2 = (ResultStorer<ServerCommandSource>)merger.apply(this.resultStorer, resultStorer);
-		return this.withResultStorer(resultStorer2);
+	public ServerCommandSource mergeReturnValueConsumers(ReturnValueConsumer returnValueConsumer, BinaryOperator<ReturnValueConsumer> merger) {
+		ReturnValueConsumer returnValueConsumer2 = (ReturnValueConsumer)merger.apply(this.returnValueConsumer, returnValueConsumer);
+		return this.withReturnValueConsumer(returnValueConsumer2);
 	}
 
 	public ServerCommandSource withSilent() {
@@ -264,11 +247,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				true,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			)
 			: this;
 	}
@@ -287,11 +269,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -309,11 +290,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -331,11 +311,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				anchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -356,11 +335,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue,
-				this.returnValueConsumer
+				this.messageChainTaskQueue
 			);
 		}
 	}
@@ -394,33 +372,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 				this.server,
 				this.entity,
 				this.silent,
-				this.resultStorer,
+				this.returnValueConsumer,
 				this.entityAnchor,
 				signedArguments,
-				messageChainTaskQueue,
-				this.returnValueConsumer
-			);
-	}
-
-	public ServerCommandSource withReturnValueConsumer(IntConsumer returnValueConsumer) {
-		return returnValueConsumer == this.returnValueConsumer
-			? this
-			: new ServerCommandSource(
-				this.output,
-				this.position,
-				this.rotation,
-				this.world,
-				this.level,
-				this.name,
-				this.displayName,
-				this.server,
-				this.entity,
-				this.silent,
-				this.resultStorer,
-				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue,
-				returnValueConsumer
+				messageChainTaskQueue
 			);
 	}
 
@@ -589,13 +544,8 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 	}
 
 	@Override
-	public void consumeResult(boolean success, int result) {
-		this.resultStorer.storeResult(this, success, result);
-	}
-
-	@Override
-	public void consumeResult(int result) {
-		this.returnValueConsumer.accept(result);
+	public ReturnValueConsumer getReturnValueConsumer() {
+		return this.returnValueConsumer;
 	}
 
 	@Override
@@ -662,5 +612,10 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 		if (!silent) {
 			this.sendError(Texts.toText(message));
 		}
+	}
+
+	@Override
+	public boolean isSilent() {
+		return this.silent;
 	}
 }

@@ -33,14 +33,22 @@ public class CommandExecutionContext<T> implements AutoCloseable {
 		this.commandsRemaining = maxCommandChainLength;
 	}
 
-	public void enqueueProcedureCall(Procedure<T> procedure, T source) {
-		this.enqueueCommand(new CommandQueueEntry<>(0, new CommandFunctionAction<>(procedure).bind(source)));
+	private static <T extends AbstractServerCommandSource<T>> Frame frame(CommandExecutionContext<T> context, ReturnValueConsumer returnValueConsumer) {
+		return new Frame(0, returnValueConsumer, context.commandQueue::clear);
+	}
+
+	public static <T extends AbstractServerCommandSource<T>> void enqueueProcedureCall(
+		CommandExecutionContext<T> context, Procedure<T> procedure, T source, ReturnValueConsumer returnValueConsumer
+	) {
+		context.enqueueCommand(
+			new CommandQueueEntry<>(frame(context, returnValueConsumer), new CommandFunctionAction<>(procedure, source.getReturnValueConsumer(), false).bind(source))
+		);
 	}
 
 	public static <T extends AbstractServerCommandSource<T>> void enqueueCommand(
-		CommandExecutionContext<T> context, String command, ContextChain<T> contextChain, T source
+		CommandExecutionContext<T> context, String command, ContextChain<T> contextChain, T source, ReturnValueConsumer returnValueConsumer
 	) {
-		context.enqueueCommand(new CommandQueueEntry<>(0, new SingleCommandAction.SingleSource<>(command, contextChain, source)));
+		context.enqueueCommand(new CommandQueueEntry<>(frame(context, returnValueConsumer), new SingleCommandAction.SingleSource<>(command, contextChain, source)));
 	}
 
 	private void markQueueOverflowed() {
@@ -60,9 +68,13 @@ public class CommandExecutionContext<T> implements AutoCloseable {
 	}
 
 	public void escape(int depth) {
-		while (!this.commandQueue.isEmpty() && ((CommandQueueEntry)this.commandQueue.peek()).depth() >= depth) {
+		while (!this.commandQueue.isEmpty() && ((CommandQueueEntry)this.commandQueue.peek()).frame().depth() >= depth) {
 			this.commandQueue.removeFirst();
 		}
+	}
+
+	public Frame.Control getEscapeControl(int depth) {
+		return () -> this.escape(depth);
 	}
 
 	public void run() {

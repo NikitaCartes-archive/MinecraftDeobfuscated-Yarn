@@ -87,8 +87,8 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 				@Override
 				public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 					if (chestBlockEntity.checkUnlocked(playerEntity) && chestBlockEntity2.checkUnlocked(playerEntity)) {
-						chestBlockEntity.checkLootInteraction(playerInventory.player);
-						chestBlockEntity2.checkLootInteraction(playerInventory.player);
+						chestBlockEntity.generateLoot(playerInventory.player);
+						chestBlockEntity2.generateLoot(playerInventory.player);
 						return GenericContainerScreenHandler.createGeneric9x6(i, playerInventory, inventory);
 					} else {
 						return null;

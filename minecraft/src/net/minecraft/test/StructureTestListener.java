@@ -113,7 +113,6 @@ class StructureTestListener implements TestListener {
 		this.test.clearArea();
 		GameTestState gameTestState = new GameTestState(this.test.getTestFunction(), this.test.getRotation(), this.test.getWorld());
 		gameTestState.setRerunUntilFailed(this.test.shouldRerunUntilFailed());
-		gameTestState.startCountdown();
 		this.testManager.start(gameTestState);
 		gameTestState.addListener(this);
 		gameTestState.init(this.pos);

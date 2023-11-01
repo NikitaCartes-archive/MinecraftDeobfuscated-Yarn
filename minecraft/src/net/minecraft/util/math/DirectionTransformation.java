@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.block.enums.JigsawOrientation;
+import net.minecraft.block.enums.Orientation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import org.joml.Matrix3f;
@@ -176,7 +176,7 @@ public enum DirectionTransformation implements StringIdentifiable {
 		}
 	}
 
-	public JigsawOrientation mapJigsawOrientation(JigsawOrientation orientation) {
-		return JigsawOrientation.byDirections(this.map(orientation.getFacing()), this.map(orientation.getRotation()));
+	public Orientation mapJigsawOrientation(Orientation orientation) {
+		return Orientation.byDirections(this.map(orientation.getFacing()), this.map(orientation.getRotation()));
 	}
 }

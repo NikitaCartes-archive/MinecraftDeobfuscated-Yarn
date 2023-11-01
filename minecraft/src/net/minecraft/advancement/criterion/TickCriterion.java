@@ -35,8 +35,8 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 				.create(new TickCriterion.Conditions(Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().location(location)))));
 		}
 
-		public static AdvancementCriterion<TickCriterion.Conditions> method_53788(EntityPredicate.Builder builder) {
-			return Criteria.LOCATION.create(new TickCriterion.Conditions(Optional.of(EntityPredicate.asLootContextPredicate(builder.build()))));
+		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(EntityPredicate.Builder entity) {
+			return Criteria.LOCATION.create(new TickCriterion.Conditions(Optional.of(EntityPredicate.asLootContextPredicate(entity.build()))));
 		}
 
 		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(Optional<EntityPredicate> entity) {
@@ -60,7 +60,7 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 		}
 
 		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(Block block, Item item) {
-			return method_53788(
+			return createLocation(
 				EntityPredicate.Builder.create()
 					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item)))
 					.steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block)))

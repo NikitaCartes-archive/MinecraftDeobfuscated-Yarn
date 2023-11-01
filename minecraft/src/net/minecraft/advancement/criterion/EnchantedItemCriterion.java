@@ -44,7 +44,7 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
+			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
 			jsonObject.add("levels", this.levels.toJson());
 			return jsonObject;
 		}

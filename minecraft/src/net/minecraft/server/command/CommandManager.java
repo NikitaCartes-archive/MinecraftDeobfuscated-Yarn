@@ -28,6 +28,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandExecutionContext;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.ReturnValueConsumer;
 import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
@@ -210,7 +211,9 @@ public class CommandManager {
 
 		try {
 			if (contextChain != null) {
-				callWithContext(serverCommandSource, context -> CommandExecutionContext.enqueueCommand(context, command, contextChain, serverCommandSource));
+				callWithContext(
+					serverCommandSource, context -> CommandExecutionContext.enqueueCommand(context, command, contextChain, serverCommandSource, ReturnValueConsumer.EMPTY)
+				);
 			}
 		} catch (CommandException var13) {
 			serverCommandSource.sendError(var13.getTextMessage());

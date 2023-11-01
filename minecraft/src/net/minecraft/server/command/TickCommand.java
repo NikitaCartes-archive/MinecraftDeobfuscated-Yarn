@@ -29,6 +29,7 @@ public class TickCommand {
 				)
 				.then(
 					CommandManager.literal("step")
+						.executes(context -> executeStep(context.getSource(), 1))
 						.then(CommandManager.literal("stop").executes(context -> executeStopStep(context.getSource())))
 						.then(
 							CommandManager.argument("time", TimeArgumentType.time(1))

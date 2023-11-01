@@ -32,10 +32,10 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		private final Optional<LootContextPredicate> entity;
 		private final Optional<DamageSourcePredicate> killingBlow;
 
-		public Conditions(Optional<LootContextPredicate> optional, Optional<LootContextPredicate> playerPredicate, Optional<DamageSourcePredicate> entity) {
-			super(optional);
-			this.entity = playerPredicate;
-			this.killingBlow = entity;
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> entity, Optional<DamageSourcePredicate> killingBlow) {
+			super(playerPredicate);
+			this.entity = entity;
+			this.killingBlow = killingBlow;
 		}
 
 		public static AdvancementCriterion<OnKilledCriterion.Conditions> createPlayerKilledEntity(Optional<EntityPredicate> entity) {
@@ -169,8 +169,8 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
-			this.killingBlow.ifPresent(damageSourcePredicate -> jsonObject.add("killing_blow", damageSourcePredicate.toJson()));
+			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
+			this.killingBlow.ifPresent(killingBlow -> jsonObject.add("killing_blow", killingBlow.toJson()));
 			return jsonObject;
 		}
 	}

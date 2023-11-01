@@ -21,35 +21,39 @@ public class ChorusFruitItem extends Item {
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		ItemStack itemStack = super.finishUsing(stack, world, user);
 		if (!world.isClient) {
-			double d = user.getX();
-			double e = user.getY();
-			double f = user.getZ();
-
 			for (int i = 0; i < 16; i++) {
-				double g = user.getX() + (user.getRandom().nextDouble() - 0.5) * 16.0;
-				double h = MathHelper.clamp(
+				double d = user.getX() + (user.getRandom().nextDouble() - 0.5) * 16.0;
+				double e = MathHelper.clamp(
 					user.getY() + (double)(user.getRandom().nextInt(16) - 8),
 					(double)world.getBottomY(),
 					(double)(world.getBottomY() + ((ServerWorld)world).getLogicalHeight() - 1)
 				);
-				double j = user.getZ() + (user.getRandom().nextDouble() - 0.5) * 16.0;
+				double f = user.getZ() + (user.getRandom().nextDouble() - 0.5) * 16.0;
 				if (user.hasVehicle()) {
 					user.stopRiding();
 				}
 
 				Vec3d vec3d = user.getPos();
-				if (user.teleport(g, h, j, true)) {
+				if (user.teleport(d, e, f, true)) {
 					world.emitGameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Emitter.of(user));
-					SoundEvent soundEvent = user instanceof FoxEntity ? SoundEvents.ENTITY_FOX_TELEPORT : SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT;
-					world.playSound(null, d, e, f, soundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
-					user.playSound(soundEvent, 1.0F, 1.0F);
+					SoundCategory soundCategory;
+					SoundEvent soundEvent;
+					if (user instanceof FoxEntity) {
+						soundEvent = SoundEvents.ENTITY_FOX_TELEPORT;
+						soundCategory = SoundCategory.NEUTRAL;
+					} else {
+						soundEvent = SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT;
+						soundCategory = SoundCategory.PLAYERS;
+					}
+
+					world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent, soundCategory);
 					user.onLanding();
 					break;
 				}
 			}
 
-			if (user instanceof PlayerEntity) {
-				((PlayerEntity)user).getItemCooldownManager().set(this, 20);
+			if (user instanceof PlayerEntity playerEntity) {
+				playerEntity.getItemCooldownManager().set(this, 20);
 			}
 		}
 

@@ -35,9 +35,9 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 			return Criteria.TAME_ANIMAL.create(new TameAnimalCriterion.Conditions(Optional.empty(), Optional.empty()));
 		}
 
-		public static AdvancementCriterion<TameAnimalCriterion.Conditions> create(EntityPredicate.Builder builder) {
+		public static AdvancementCriterion<TameAnimalCriterion.Conditions> create(EntityPredicate.Builder entity) {
 			return Criteria.TAME_ANIMAL
-				.create(new TameAnimalCriterion.Conditions(Optional.empty(), Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(builder))));
+				.create(new TameAnimalCriterion.Conditions(Optional.empty(), Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(entity))));
 		}
 
 		public boolean matches(LootContext entity) {
@@ -47,7 +47,7 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
+			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
 			return jsonObject;
 		}
 	}

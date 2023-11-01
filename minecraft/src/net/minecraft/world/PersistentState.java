@@ -36,7 +36,7 @@ public abstract class PersistentState {
 			NbtHelper.putDataVersion(nbtCompound);
 
 			try {
-				NbtIo.writeCompressed(nbtCompound, file);
+				NbtIo.writeCompressed(nbtCompound, file.toPath());
 			} catch (IOException var4) {
 				LOGGER.error("Could not save data {}", this, var4);
 			}

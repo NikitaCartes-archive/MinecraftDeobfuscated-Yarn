@@ -30,7 +30,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	public int chooseNonEmptySlot(Random random) {
-		this.checkLootInteraction(null);
+		this.generateLoot(null);
 		int i = -1;
 		int j = 1;
 
@@ -63,7 +63,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(nbt)) {
+		if (!this.readLootTable(nbt)) {
 			Inventories.readNbt(nbt, this.inventory);
 		}
 	}
@@ -71,7 +71,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		if (!this.serializeLootTable(nbt)) {
+		if (!this.writeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory);
 		}
 	}

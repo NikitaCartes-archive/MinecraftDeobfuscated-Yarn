@@ -396,7 +396,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				if (!entity.isRemoved()) {
 					if (this.shouldCancelSpawn(entity)) {
 						entity.discard();
-					} else if (!tickManager.shouldTick(entity)) {
+					} else if (!tickManager.shouldSkipTick(entity)) {
 						profiler.push("checkDespawn");
 						entity.checkDespawn();
 						profiler.pop();

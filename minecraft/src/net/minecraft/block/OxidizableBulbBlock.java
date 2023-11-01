@@ -6,21 +6,21 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
-public class OxidizableCopperBulbBlock extends CopperBulbBlock implements Oxidizable {
-	public static final MapCodec<OxidizableCopperBulbBlock> CODEC = RecordCodecBuilder.mapCodec(
+public class OxidizableBulbBlock extends BulbBlock implements Oxidizable {
+	public static final MapCodec<OxidizableBulbBlock> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Oxidizable.OxidationLevel.CODEC.fieldOf("weathering_state").forGetter(OxidizableCopperBulbBlock::getDegradationLevel), createSettingsCodec()
+					Oxidizable.OxidationLevel.CODEC.fieldOf("weathering_state").forGetter(OxidizableBulbBlock::getDegradationLevel), createSettingsCodec()
 				)
-				.apply(instance, OxidizableCopperBulbBlock::new)
+				.apply(instance, OxidizableBulbBlock::new)
 	);
 	private final Oxidizable.OxidationLevel oxidationLevel;
 
 	@Override
-	protected MapCodec<OxidizableCopperBulbBlock> getCodec() {
+	protected MapCodec<OxidizableBulbBlock> getCodec() {
 		return CODEC;
 	}
 
-	public OxidizableCopperBulbBlock(Oxidizable.OxidationLevel oxidationLevel, AbstractBlock.Settings settings) {
+	public OxidizableBulbBlock(Oxidizable.OxidationLevel oxidationLevel, AbstractBlock.Settings settings) {
 		super(settings);
 		this.oxidationLevel = oxidationLevel;
 	}

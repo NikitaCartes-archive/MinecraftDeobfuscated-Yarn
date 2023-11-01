@@ -61,9 +61,9 @@ public class BatEntityModel extends SinglePartEntityModel<BatEntity> {
 
 	public BatEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityCutout);
-		this.root = root.getChild(EntityModelPartNames.ROOT);
-		this.body = this.root.getChild(EntityModelPartNames.BODY);
-		this.head = this.root.getChild(EntityModelPartNames.HEAD);
+		this.root = root;
+		this.body = root.getChild(EntityModelPartNames.BODY);
+		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
 		this.rightWingTip = this.rightWing.getChild(EntityModelPartNames.RIGHT_WING_TIP);
 		this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
@@ -74,30 +74,33 @@ public class BatEntityModel extends SinglePartEntityModel<BatEntity> {
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.ROOT, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 16.0F, 0.0F));
-		ModelPartData modelPartData3 = modelPartData2.addChild(
-			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-1.5F, 2.0F, -1.0F, 3.0F, 5.0F, 2.0F), ModelTransform.NONE
+		ModelPartData modelPartData2 = modelPartData.addChild(
+			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-1.5F, 0.0F, -1.0F, 3.0F, 5.0F, 2.0F), ModelTransform.pivot(0.0F, 17.0F, 0.0F)
+		);
+		ModelPartData modelPartData3 = modelPartData.addChild(
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 7).cuboid(-2.0F, -3.0F, -1.0F, 4.0F, 3.0F, 2.0F), ModelTransform.pivot(0.0F, 17.0F, 0.0F)
+		);
+		modelPartData3.addChild(
+			EntityModelPartNames.RIGHT_EAR, ModelPartBuilder.create().uv(1, 15).cuboid(-2.5F, -4.0F, 0.0F, 3.0F, 5.0F, 0.0F), ModelTransform.pivot(-1.5F, -2.0F, 0.0F)
+		);
+		modelPartData3.addChild(
+			EntityModelPartNames.LEFT_EAR, ModelPartBuilder.create().uv(8, 15).cuboid(-0.1F, -3.0F, 0.0F, 3.0F, 5.0F, 0.0F), ModelTransform.pivot(1.1F, -3.0F, 0.0F)
 		);
 		ModelPartData modelPartData4 = modelPartData2.addChild(
-			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 7).cuboid(-2.0F, -1.0F, -1.0F, 4.0F, 3.0F, 2.0F), ModelTransform.NONE
+			EntityModelPartNames.RIGHT_WING, ModelPartBuilder.create().uv(12, 0).cuboid(-2.0F, -2.0F, 0.0F, 2.0F, 7.0F, 0.0F), ModelTransform.pivot(-1.5F, 0.0F, 0.0F)
 		);
-		modelPartData4.addChild(EntityModelPartNames.RIGHT_EAR, ModelPartBuilder.create().uv(1, 15).cuboid(-4.0F, -3.0F, 0.0F, 3.0F, 5.0F, 0.0F), ModelTransform.NONE);
-		modelPartData4.addChild(EntityModelPartNames.LEFT_EAR, ModelPartBuilder.create().uv(8, 15).cuboid(1.0F, -3.0F, 0.0F, 3.0F, 5.0F, 0.0F), ModelTransform.NONE);
-		ModelPartData modelPartData5 = modelPartData3.addChild(
-			EntityModelPartNames.RIGHT_WING, ModelPartBuilder.create().uv(12, 0).cuboid(-2.0F, 0.0F, 0.0F, 2.0F, 7.0F, 0.0F), ModelTransform.pivot(-1.5F, 0.0F, 0.0F)
-		);
-		modelPartData5.addChild(
+		modelPartData4.addChild(
 			EntityModelPartNames.RIGHT_WING_TIP,
-			ModelPartBuilder.create().uv(16, 0).cuboid(-6.0F, 0.0F, 0.0F, 6.0F, 8.0F, 0.0F),
+			ModelPartBuilder.create().uv(16, 0).cuboid(-6.0F, -2.0F, 0.0F, 6.0F, 8.0F, 0.0F),
 			ModelTransform.pivot(-2.0F, 0.0F, 0.0F)
 		);
-		ModelPartData modelPartData6 = modelPartData3.addChild(
-			EntityModelPartNames.LEFT_WING, ModelPartBuilder.create().uv(12, 7).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 7.0F, 0.0F), ModelTransform.pivot(1.5F, 0.0F, 0.0F)
+		ModelPartData modelPartData5 = modelPartData2.addChild(
+			EntityModelPartNames.LEFT_WING, ModelPartBuilder.create().uv(12, 7).cuboid(0.0F, -2.0F, 0.0F, 2.0F, 7.0F, 0.0F), ModelTransform.pivot(1.5F, 0.0F, 0.0F)
 		);
-		modelPartData6.addChild(
-			EntityModelPartNames.LEFT_WING_TIP, ModelPartBuilder.create().uv(16, 8).cuboid(0.0F, 0.0F, 0.0F, 6.0F, 8.0F, 0.0F), ModelTransform.pivot(2.0F, 0.0F, 0.0F)
+		modelPartData5.addChild(
+			EntityModelPartNames.LEFT_WING_TIP, ModelPartBuilder.create().uv(16, 8).cuboid(0.0F, -2.0F, 0.0F, 6.0F, 8.0F, 0.0F), ModelTransform.pivot(2.0F, 0.0F, 0.0F)
 		);
-		modelPartData3.addChild("feet", ModelPartBuilder.create().uv(16, 16).cuboid(0.0F, 0.0F, 0.0F, 3.0F, 2.0F, 0.0F), ModelTransform.pivot(-1.5F, 7.0F, 0.0F));
+		modelPartData2.addChild("feet", ModelPartBuilder.create().uv(16, 16).cuboid(-1.5F, 0.0F, 0.0F, 3.0F, 2.0F, 0.0F), ModelTransform.pivot(0.0F, 5.0F, 0.0F));
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
@@ -109,16 +112,14 @@ public class BatEntityModel extends SinglePartEntityModel<BatEntity> {
 	public void setAngles(BatEntity batEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		if (batEntity.isRoosting()) {
-			this.setRoostingHeadAngles(j, i);
+			this.setRoostingHeadAngles(i);
 		}
 
 		this.updateAnimation(batEntity.flyingAnimationState, BatAnimations.FLYING, h, 1.0F);
 		this.updateAnimation(batEntity.roostingAnimationState, BatAnimations.ROOSTING, h, 1.0F);
 	}
 
-	private void setRoostingHeadAngles(float pitch, float yaw) {
-		this.head.pitch = pitch * (float) (Math.PI / 180.0);
-		this.head.yaw = (180.0F - yaw) * (float) (Math.PI / 180.0);
-		this.head.roll = (float) Math.PI;
+	private void setRoostingHeadAngles(float yaw) {
+		this.head.yaw = yaw * (float) (Math.PI / 180.0);
 	}
 }

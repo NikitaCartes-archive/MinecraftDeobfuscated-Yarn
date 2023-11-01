@@ -74,8 +74,8 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.damage.ifPresent(damagePredicate -> jsonObject.add("damage", damagePredicate.toJson()));
-			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
+			this.damage.ifPresent(damage -> jsonObject.add("damage", damage.toJson()));
+			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
 			return jsonObject;
 		}
 	}

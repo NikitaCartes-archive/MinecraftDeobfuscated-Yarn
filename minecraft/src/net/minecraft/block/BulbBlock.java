@@ -11,17 +11,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public class CopperBulbBlock extends Block {
-	public static final MapCodec<CopperBulbBlock> CODEC = createCodec(CopperBulbBlock::new);
+public class BulbBlock extends Block {
+	public static final MapCodec<BulbBlock> CODEC = createCodec(BulbBlock::new);
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty LIT = Properties.LIT;
 
 	@Override
-	protected MapCodec<? extends CopperBulbBlock> getCodec() {
+	protected MapCodec<? extends BulbBlock> getCodec() {
 		return CODEC;
 	}
 
-	public CopperBulbBlock(AbstractBlock.Settings settings) {
+	public BulbBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(LIT, Boolean.valueOf(false)).with(POWERED, Boolean.valueOf(false)));
 	}

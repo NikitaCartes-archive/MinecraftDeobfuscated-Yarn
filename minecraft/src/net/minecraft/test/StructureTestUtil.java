@@ -1,19 +1,12 @@
 package net.minecraft.test;
 
 import com.google.common.collect.Lists;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -24,21 +17,15 @@ import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplate;
-import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3i;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 public class StructureTestUtil {
@@ -100,7 +87,7 @@ public class StructureTestUtil {
 	}
 
 	public static void createTestArea(String testName, BlockPos pos, Vec3i relativePos, BlockRotation rotation, ServerWorld world) {
-		BlockBox blockBox = getStructureBlockBox(pos, relativePos, rotation);
+		BlockBox blockBox = getStructureBlockBox(pos.up(), relativePos, rotation);
 		clearArea(blockBox, world);
 		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
@@ -111,8 +98,11 @@ public class StructureTestUtil {
 		structureBlockBlockEntity.setShowBoundingBox(true);
 	}
 
-	public static StructureBlockBlockEntity createStructureTemplate(String templateName, BlockPos pos, BlockRotation rotation, ServerWorld world, boolean initOnly) {
-		Vec3i vec3i = createStructureTemplate(templateName, world).getSize();
+	public static StructureBlockBlockEntity initStructure(String testName, BlockPos pos, BlockRotation rotation, ServerWorld world) {
+		Vec3i vec3i = ((StructureTemplate)world.getStructureTemplateManager()
+				.getTemplate(new Identifier(testName))
+				.orElseThrow(() -> new IllegalStateException("Missing test structure: " + testName)))
+			.getSize();
 		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
 		BlockPos blockPos;
 		if (rotation == BlockRotation.NONE) {
@@ -131,23 +121,11 @@ public class StructureTestUtil {
 
 		forceLoadNearbyChunks(blockBox, world);
 		clearArea(blockBox, world);
-		StructureBlockBlockEntity structureBlockBlockEntity = placeStructureTemplate(templateName, blockPos.down(), rotation, world, initOnly);
-		world.getBlockTickScheduler().clearNextTicks(blockBox);
-		world.clearUpdatesInArea(blockBox);
-		return structureBlockBlockEntity;
+		return placeStructureTemplate(testName, blockPos.down(), rotation, world);
 	}
 
 	private static void forceLoadNearbyChunks(BlockBox box, ServerWorld world) {
-		streamChunkPos(box, 0).forEach(chunkPos -> world.setChunkForced(chunkPos.x, chunkPos.z, true));
-		streamChunkPos(box, 3).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z));
-	}
-
-	private static Stream<ChunkPos> streamChunkPos(BlockBox box, int margin) {
-		int i = ChunkSectionPos.getSectionCoord(box.getMinX()) - margin;
-		int j = ChunkSectionPos.getSectionCoord(box.getMinZ()) - margin;
-		int k = ChunkSectionPos.getSectionCoord(box.getMaxX()) + margin;
-		int l = ChunkSectionPos.getSectionCoord(box.getMaxZ()) + margin;
-		return ChunkPos.stream(new ChunkPos(i, j), new ChunkPos(k, l));
+		box.streamChunkPos().forEach(chunkPos -> world.setChunkForced(chunkPos.x, chunkPos.z, true));
 	}
 
 	public static void clearArea(BlockBox area, ServerWorld world) {
@@ -204,54 +182,17 @@ public class StructureTestUtil {
 		return collection;
 	}
 
-	private static StructureTemplate createStructureTemplate(String templateId, ServerWorld world) {
-		StructureTemplateManager structureTemplateManager = world.getStructureTemplateManager();
-		Optional<StructureTemplate> optional = structureTemplateManager.getTemplate(new Identifier(templateId));
-		if (optional.isPresent()) {
-			return (StructureTemplate)optional.get();
-		} else {
-			String string = templateId + ".snbt";
-			Path path = Paths.get(testStructuresDirectoryName, string);
-			NbtCompound nbtCompound = loadSnbt(path);
-			if (nbtCompound == null) {
-				throw new RuntimeException("Could not find structure file " + path + ", and the structure is not available in the world structures either.");
-			} else {
-				return structureTemplateManager.createTemplate(nbtCompound);
-			}
-		}
-	}
-
-	private static StructureBlockBlockEntity placeStructureTemplate(String name, BlockPos pos, BlockRotation rotation, ServerWorld world, boolean initOnly) {
+	private static StructureBlockBlockEntity placeStructureTemplate(String name, BlockPos pos, BlockRotation rotation, ServerWorld world) {
 		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setMode(StructureBlockMode.LOAD);
 		structureBlockBlockEntity.setRotation(rotation);
 		structureBlockBlockEntity.setIgnoreEntities(false);
 		structureBlockBlockEntity.setTemplateName(new Identifier(name));
-		structureBlockBlockEntity.loadStructure(world, initOnly);
-		if (structureBlockBlockEntity.getSize() != Vec3i.ZERO) {
-			return structureBlockBlockEntity;
+		if (!structureBlockBlockEntity.loadStructure(world)) {
+			throw new RuntimeException("Failed to load structure info " + name);
 		} else {
-			StructureTemplate structureTemplate = createStructureTemplate(name, world);
-			structureBlockBlockEntity.place(world, initOnly, structureTemplate);
-			if (structureBlockBlockEntity.getSize() == Vec3i.ZERO) {
-				throw new RuntimeException("Failed to load structure " + name);
-			} else {
-				return structureBlockBlockEntity;
-			}
-		}
-	}
-
-	@Nullable
-	private static NbtCompound loadSnbt(Path path) {
-		try {
-			BufferedReader bufferedReader = Files.newBufferedReader(path);
-			String string = IOUtils.toString(bufferedReader);
-			return NbtHelper.fromNbtProviderString(string);
-		} catch (IOException var3) {
-			return null;
-		} catch (CommandSyntaxException var4) {
-			throw new RuntimeException("Error while trying to load structure " + path, var4);
+			return structureBlockBlockEntity;
 		}
 	}
 

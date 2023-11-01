@@ -211,7 +211,7 @@ public interface DispenserBehavior {
 				Direction direction = pointer.state().get(DispenserBlock.FACING);
 				BlockPos blockPos = pointer.pos().offset(direction);
 				ServerWorld serverWorld = pointer.world();
-				Consumer<ArmorStandEntity> consumer = EntityType.copier(armorStandEntityx -> armorStandEntityx.setYaw(direction.asRotation()), serverWorld, stack, null);
+				Consumer<ArmorStandEntity> consumer = EntityType.copier(entity -> entity.setYaw(direction.asRotation()), serverWorld, stack, null);
 				ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.spawn(serverWorld, stack.getNbt(), consumer, blockPos, SpawnReason.DISPENSER, false, false);
 				if (armorStandEntity != null) {
 					stack.decrement(1);

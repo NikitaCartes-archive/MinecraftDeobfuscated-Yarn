@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 public class TestServer extends MinecraftServer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int RESULT_STRING_LOG_INTERVAL = 20;
+	private static final int TEST_POS_XZ_RANGE = 14999992;
 	private static final ApiServices NONE_API_SERVICES = new ApiServices(null, ServicesKeySet.EMPTY, null, null);
 	private final List<GameTestBatch> batches;
 	private final BlockPos pos;
@@ -82,9 +83,9 @@ public class TestServer extends MinecraftServer {
 				SaveLoader saveLoader = (SaveLoader)Util.waitAndApply(
 						executor -> SaveLoading.load(
 								serverConfig,
-								loadContextSupplierContext -> {
+								context -> {
 									Registry<DimensionOptions> registry = new SimpleRegistry<>(RegistryKeys.DIMENSION, Lifecycle.stable()).freeze();
-									DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = loadContextSupplierContext.worldGenRegistryManager()
+									DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = context.worldGenRegistryManager()
 										.get(RegistryKeys.WORLD_PRESET)
 										.entryOf(WorldPresets.FLAT)
 										.value()
@@ -197,9 +198,10 @@ public class TestServer extends MinecraftServer {
 	}
 
 	private void runTestBatches(ServerWorld world) {
-		Collection<GameTestState> collection = TestUtil.runTestBatches(this.batches, new BlockPos(0, -59, 0), BlockRotation.NONE, world, TestManager.INSTANCE, 8);
+		BlockPos blockPos = new BlockPos(world.random.nextBetween(-14999992, 14999992), -59, world.random.nextBetween(-14999992, 14999992));
+		Collection<GameTestState> collection = TestUtil.runTestBatches(this.batches, blockPos, BlockRotation.NONE, world, TestManager.INSTANCE, 8);
 		this.testSet = new TestSet(collection);
-		LOGGER.info("{} tests are now running!", this.testSet.getTestCount());
+		LOGGER.info("{} tests are now running at position {}!", this.testSet.getTestCount(), blockPos.toShortString());
 	}
 
 	private boolean isTesting() {

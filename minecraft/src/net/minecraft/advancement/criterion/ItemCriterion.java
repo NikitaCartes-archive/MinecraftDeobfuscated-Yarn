@@ -54,9 +54,9 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Optional<LootContextPredicate> location;
 
-		public Conditions(Optional<LootContextPredicate> optional, Optional<LootContextPredicate> playerPredicate) {
-			super(optional);
-			this.location = playerPredicate;
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> location) {
+			super(playerPredicate);
+			this.location = location;
 		}
 
 		public static AdvancementCriterion<ItemCriterion.Conditions> createPlacedBlock(Block block) {
@@ -93,7 +93,7 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.location.ifPresent(lootContextPredicate -> jsonObject.add("location", lootContextPredicate.toJson()));
+			this.location.ifPresent(location -> jsonObject.add("location", location.toJson()));
 			return jsonObject;
 		}
 	}

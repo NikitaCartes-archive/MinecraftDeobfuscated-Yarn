@@ -46,7 +46,7 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
+			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
 			return jsonObject;
 		}
 	}

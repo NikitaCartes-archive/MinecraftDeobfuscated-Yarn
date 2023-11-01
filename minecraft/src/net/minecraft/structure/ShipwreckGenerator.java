@@ -1,7 +1,7 @@
 package net.minecraft.structure;
 
 import java.util.Map;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.inventory.LootableInventory;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
@@ -100,7 +100,7 @@ public class ShipwreckGenerator {
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 			Identifier identifier = (Identifier)ShipwreckGenerator.LOOT_TABLES.get(metadata);
 			if (identifier != null) {
-				LootableContainerBlockEntity.setLootTable(world, random, pos.down(), identifier);
+				LootableInventory.setLootTable(world, random, pos.down(), identifier);
 			}
 		}
 

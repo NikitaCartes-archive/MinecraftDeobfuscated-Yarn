@@ -45,7 +45,7 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
+			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
 			return jsonObject;
 		}
 	}

@@ -58,8 +58,8 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
-			this.villager.ifPresent(lootContextPredicate -> jsonObject.add("villager", lootContextPredicate.toJson()));
+			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
+			this.villager.ifPresent(villager -> jsonObject.add("villager", villager.toJson()));
 			return jsonObject;
 		}
 	}

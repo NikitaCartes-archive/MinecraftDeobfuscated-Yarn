@@ -191,10 +191,10 @@ public class SculkSpreadManager {
 	public static class Cursor {
 		private static final ObjectArrayList<Vec3i> OFFSETS = Util.make(
 			new ObjectArrayList<>(18),
-			objectArrayList -> BlockPos.stream(new BlockPos(-1, -1, -1), new BlockPos(1, 1, 1))
+			list -> BlockPos.stream(new BlockPos(-1, -1, -1), new BlockPos(1, 1, 1))
 					.filter(pos -> (pos.getX() == 0 || pos.getY() == 0 || pos.getZ() == 0) && !pos.equals(BlockPos.ORIGIN))
 					.map(BlockPos::toImmutable)
-					.forEach(objectArrayList::add)
+					.forEach(list::add)
 		);
 		public static final int field_37622 = 1;
 		private BlockPos pos;

@@ -55,8 +55,8 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
-			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
+			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
+			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
 			return jsonObject;
 		}
 	}

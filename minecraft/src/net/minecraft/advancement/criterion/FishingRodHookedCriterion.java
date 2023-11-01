@@ -86,9 +86,9 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.rod.ifPresent(itemPredicate -> jsonObject.add("rod", itemPredicate.toJson()));
-			this.hookedEntity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
-			this.caughtItem.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
+			this.rod.ifPresent(rod -> jsonObject.add("rod", rod.toJson()));
+			this.hookedEntity.ifPresent(hookedEntity -> jsonObject.add("entity", hookedEntity.toJson()));
+			this.caughtItem.ifPresent(caughtItem -> jsonObject.add("item", caughtItem.toJson()));
 			return jsonObject;
 		}
 	}

@@ -53,7 +53,7 @@ public class Model {
 
 	public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
 		JsonObject jsonObject = new JsonObject();
-		this.parent.ifPresent(identifier -> jsonObject.addProperty("parent", identifier.toString()));
+		this.parent.ifPresent(parent -> jsonObject.addProperty("parent", parent.toString()));
 		if (!textures.isEmpty()) {
 			JsonObject jsonObject2 = new JsonObject();
 			textures.forEach((textureKey, texture) -> jsonObject2.addProperty(textureKey.getName(), texture.toString()));

@@ -257,7 +257,7 @@ public class ClientWorld extends World {
 		Profiler profiler = this.getProfiler();
 		profiler.push("entities");
 		this.entityList.forEach(entity -> {
-			if (!entity.isRemoved() && !entity.hasVehicle() && !this.tickManager.shouldTick(entity)) {
+			if (!entity.isRemoved() && !entity.hasVehicle() && !this.tickManager.shouldSkipTick(entity)) {
 				this.tickEntity(this::tickEntity, entity);
 			}
 		});

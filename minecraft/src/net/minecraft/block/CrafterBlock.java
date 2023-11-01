@@ -9,7 +9,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.block.entity.HopperBlockEntity;
-import net.minecraft.block.enums.JigsawOrientation;
+import net.minecraft.block.enums.Orientation;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -40,18 +40,14 @@ public class CrafterBlock extends BlockWithEntity {
 	public static final MapCodec<CrafterBlock> CODEC = createCodec(CrafterBlock::new);
 	public static final BooleanProperty CRAFTING = Properties.CRAFTING;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
-	private static final EnumProperty<JigsawOrientation> ORIENTATION = Properties.ORIENTATION;
+	private static final EnumProperty<Orientation> ORIENTATION = Properties.ORIENTATION;
 	private static final int field_46802 = 6;
 	private static final RecipeCache recipeCache = new RecipeCache(10);
 
 	public CrafterBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager
-				.getDefaultState()
-				.with(ORIENTATION, JigsawOrientation.NORTH_UP)
-				.with(TRIGGERED, Boolean.valueOf(false))
-				.with(CRAFTING, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(ORIENTATION, Orientation.NORTH_UP).with(TRIGGERED, Boolean.valueOf(false)).with(CRAFTING, Boolean.valueOf(false))
 		);
 	}
 
@@ -119,7 +115,7 @@ public class CrafterBlock extends BlockWithEntity {
 			case NORTH, SOUTH, WEST, EAST -> Direction.UP;
 		};
 		return this.getDefaultState()
-			.with(ORIENTATION, JigsawOrientation.byDirections(direction, direction2))
+			.with(ORIENTATION, Orientation.byDirections(direction, direction2))
 			.with(TRIGGERED, Boolean.valueOf(ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())));
 	}
 
@@ -182,7 +178,7 @@ public class CrafterBlock extends BlockWithEntity {
 	}
 
 	private void transferOrSpawnStack(World world, BlockPos pos, CrafterBlockEntity blockEntity, ItemStack stack, BlockState state) {
-		Direction direction = ((JigsawOrientation)state.get(ORIENTATION)).getFacing();
+		Direction direction = ((Orientation)state.get(ORIENTATION)).getFacing();
 		Inventory inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
 		ItemStack itemStack = stack.copy();
 		if (inventory instanceof CrafterBlockEntity) {

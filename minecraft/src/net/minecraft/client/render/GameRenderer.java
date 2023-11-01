@@ -1205,7 +1205,7 @@ public class GameRenderer implements AutoCloseable {
 			entity,
 			!this.client.options.getPerspective().isFirstPerson(),
 			this.client.options.getPerspective().isFrontView(),
-			this.client.world.getTickManager().shouldTick(entity) ? 1.0F : tickDelta
+			this.client.world.getTickManager().shouldSkipTick(entity) ? 1.0F : tickDelta
 		);
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));

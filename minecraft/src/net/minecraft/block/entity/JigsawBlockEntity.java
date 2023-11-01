@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
-import net.minecraft.block.enums.JigsawOrientation;
+import net.minecraft.block.enums.Orientation;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.Registry;
@@ -130,7 +130,7 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {
-		BlockPos blockPos = this.getPos().offset(((JigsawOrientation)this.getCachedState().get(JigsawBlock.ORIENTATION)).getFacing());
+		BlockPos blockPos = this.getPos().offset(((Orientation)this.getCachedState().get(JigsawBlock.ORIENTATION)).getFacing());
 		Registry<StructurePool> registry = world.getRegistryManager().get(RegistryKeys.TEMPLATE_POOL);
 		RegistryEntry<StructurePool> registryEntry = registry.entryOf(this.pool);
 		StructurePoolBasedGenerator.generate(world, registryEntry, this.target, maxDepth, blockPos, keepJigsaws);

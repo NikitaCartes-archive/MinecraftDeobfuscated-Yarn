@@ -45,7 +45,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(nbt)) {
+		if (!this.readLootTable(nbt)) {
 			Inventories.readNbt(nbt, this.inventory);
 		}
 
@@ -55,7 +55,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		if (!this.serializeLootTable(nbt)) {
+		if (!this.writeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory);
 		}
 
@@ -69,13 +69,13 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	@Override
 	public ItemStack removeStack(int slot, int amount) {
-		this.checkLootInteraction(null);
+		this.generateLoot(null);
 		return Inventories.splitStack(this.method_11282(), slot, amount);
 	}
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
-		this.checkLootInteraction(null);
+		this.generateLoot(null);
 		this.method_11282().set(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());

@@ -18,8 +18,8 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 		return new RecipeUnlockedCriterion.Conditions(optional, identifier);
 	}
 
-	public void trigger(ServerPlayerEntity player, RecipeEntry<?> recipeEntry) {
-		this.trigger(player, conditions -> conditions.matches(recipeEntry));
+	public void trigger(ServerPlayerEntity player, RecipeEntry<?> recipe) {
+		this.trigger(player, conditions -> conditions.matches(recipe));
 	}
 
 	public static AdvancementCriterion<RecipeUnlockedCriterion.Conditions> create(Identifier id) {
@@ -41,8 +41,8 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 			return jsonObject;
 		}
 
-		public boolean matches(RecipeEntry<?> recipeEntry) {
-			return this.recipe.equals(recipeEntry.id());
+		public boolean matches(RecipeEntry<?> recipe) {
+			return this.recipe.equals(recipe.id());
 		}
 	}
 }

@@ -58,8 +58,8 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.lightning.ifPresent(lootContextPredicate -> jsonObject.add("lightning", lootContextPredicate.toJson()));
-			this.bystander.ifPresent(lootContextPredicate -> jsonObject.add("bystander", lootContextPredicate.toJson()));
+			this.lightning.ifPresent(lightning -> jsonObject.add("lightning", lightning.toJson()));
+			this.bystander.ifPresent(bystander -> jsonObject.add("bystander", bystander.toJson()));
 			return jsonObject;
 		}
 	}

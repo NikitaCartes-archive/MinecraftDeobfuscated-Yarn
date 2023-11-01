@@ -63,7 +63,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	protected void startMovingToTarget() {
 		this.mob
 			.getNavigation()
-			.startMovingTo((double)((float)this.targetPos.getX()) + 0.5, (double)(this.targetPos.getY() + 1), (double)((float)this.targetPos.getZ()) + 0.5, this.speed);
+			.startMovingTo((double)this.targetPos.getX() + 0.5, (double)(this.targetPos.getY() + 1), (double)this.targetPos.getZ() + 0.5, this.speed);
 	}
 
 	public double getDesiredDistanceToTarget() {
@@ -86,7 +86,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 			this.reached = false;
 			this.tryingTime++;
 			if (this.shouldResetPath()) {
-				this.mob.getNavigation().startMovingTo((double)((float)blockPos.getX()) + 0.5, (double)blockPos.getY(), (double)((float)blockPos.getZ()) + 0.5, this.speed);
+				this.mob.getNavigation().startMovingTo((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, this.speed);
 			}
 		} else {
 			this.reached = true;

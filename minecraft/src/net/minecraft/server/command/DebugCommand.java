@@ -18,6 +18,9 @@ import net.minecraft.command.CommandExecutionContext;
 import net.minecraft.command.CommandFunctionAction;
 import net.minecraft.command.ControlFlowAware;
 import net.minecraft.command.ExecutionControl;
+import net.minecraft.command.ExecutionFlags;
+import net.minecraft.command.Frame;
+import net.minecraft.command.ReturnValueConsumer;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
@@ -36,6 +39,7 @@ public class DebugCommand {
 	private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.debug.notRunning"));
 	private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.debug.alreadyRunning"));
 	static final SimpleCommandExceptionType NO_RECURSION_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.debug.function.noRecursion"));
+	static final SimpleCommandExceptionType NO_RETURN_RUN_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.debug.function.noReturnRun"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -84,9 +88,14 @@ public class DebugCommand {
 
 	static class Command extends ControlFlowAware.Helper<ServerCommandSource> implements ControlFlowAware.Command<ServerCommandSource> {
 		public void executeInner(
-			ServerCommandSource serverCommandSource, ContextChain<ServerCommandSource> contextChain, boolean bl, ExecutionControl<ServerCommandSource> executionControl
+			ServerCommandSource serverCommandSource,
+			ContextChain<ServerCommandSource> contextChain,
+			ExecutionFlags executionFlags,
+			ExecutionControl<ServerCommandSource> executionControl
 		) throws CommandSyntaxException {
-			if (executionControl.getTracer() != null) {
+			if (executionFlags.isInsideReturnRun()) {
+				throw DebugCommand.NO_RETURN_RUN_EXCEPTION.create();
+			} else if (executionControl.getTracer() != null) {
 				throw DebugCommand.NO_RECURSION_EXCEPTION.create();
 			} else {
 				CommandContext<ServerCommandSource> commandContext = contextChain.getTopContext();
@@ -107,10 +116,10 @@ public class DebugCommand {
 						try {
 							ServerCommandSource serverCommandSource2 = serverCommandSource.withOutput(tracer).withMaxLevel(2);
 							Procedure<ServerCommandSource> procedure = commandFunction.withMacroReplaced(null, commandDispatcher, serverCommandSource2);
-							executionControl.enqueueAction((new CommandFunctionAction<ServerCommandSource>(procedure) {
-								public void execute(ServerCommandSource serverCommandSource, CommandExecutionContext<ServerCommandSource> commandExecutionContext, int i) {
+							executionControl.enqueueAction((new CommandFunctionAction<ServerCommandSource>(procedure, ReturnValueConsumer.EMPTY, false) {
+								public void execute(ServerCommandSource serverCommandSource, CommandExecutionContext<ServerCommandSource> commandExecutionContext, Frame frame) {
 									printWriter.println(commandFunction.id());
-									super.execute(serverCommandSource, commandExecutionContext, i);
+									super.execute(serverCommandSource, commandExecutionContext, frame);
 								}
 							}).bind(serverCommandSource2));
 							i += procedure.entries().size();
@@ -125,7 +134,7 @@ public class DebugCommand {
 
 				int j = i;
 				executionControl.enqueueAction(
-					(context, depth) -> {
+					(context, frame) -> {
 						if (collection.size() == 1) {
 							serverCommandSource.sendFeedback(
 								() -> Text.translatable("commands.debug.function.success.single", j, Text.of(((CommandFunction)collection.iterator().next()).id()), string), true

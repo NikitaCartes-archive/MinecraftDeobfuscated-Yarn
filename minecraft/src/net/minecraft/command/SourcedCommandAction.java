@@ -2,9 +2,9 @@ package net.minecraft.command;
 
 @FunctionalInterface
 public interface SourcedCommandAction<T> {
-	void execute(T source, CommandExecutionContext<T> context, int depth);
+	void execute(T source, CommandExecutionContext<T> context, Frame frame);
 
 	default CommandAction<T> bind(T source) {
-		return (context, depth) -> this.execute(source, context, depth);
+		return (context, frame) -> this.execute(source, context, frame);
 	}
 }

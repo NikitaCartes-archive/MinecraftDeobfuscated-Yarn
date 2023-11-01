@@ -6,9 +6,9 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.inventory.LootableInventory;
 import net.minecraft.loot.LootTables;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.structure.StructurePiece;
@@ -108,7 +108,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 							this.setBlockStateIf(
 								structureWorldAccess, blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), predicate
 							);
-							LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
+							LootableInventory.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
 							break;
 						}
 					}

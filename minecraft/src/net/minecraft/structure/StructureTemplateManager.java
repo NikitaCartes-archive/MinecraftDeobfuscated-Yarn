@@ -37,6 +37,7 @@ import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.test.StructureTestUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.PathUtil;
@@ -48,7 +49,6 @@ import org.slf4j.Logger;
 public class StructureTemplateManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String STRUCTURES_DIRECTORY = "structures";
-	private static final String GAME_TEST_STRUCTURES_DIRECTORY = "gameteststructures";
 	private static final String NBT_FILE_EXTENSION = ".nbt";
 	private static final String SNBT_FILE_EXTENSION = ".snbt";
 	private final Map<Identifier, Optional<StructureTemplate>> templates = Maps.<Identifier, Optional<StructureTemplate>>newConcurrentMap();
@@ -122,11 +122,11 @@ public class StructureTemplateManager {
 	}
 
 	private Optional<StructureTemplate> loadTemplateFromGameTestFile(Identifier id) {
-		return this.loadTemplateFromSnbt(id, Paths.get("gameteststructures"));
+		return this.loadTemplateFromSnbt(id, Paths.get(StructureTestUtil.testStructuresDirectoryName));
 	}
 
 	private Stream<Identifier> streamTemplatesFromGameTestFile() {
-		return this.streamTemplates(Paths.get("gameteststructures"), "minecraft", ".snbt");
+		return this.streamTemplates(Paths.get(StructureTestUtil.testStructuresDirectoryName), "minecraft", ".snbt");
 	}
 
 	private Optional<StructureTemplate> loadTemplateFromFile(Identifier id) {

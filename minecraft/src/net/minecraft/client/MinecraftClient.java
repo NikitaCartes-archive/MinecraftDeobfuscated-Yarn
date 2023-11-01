@@ -416,7 +416,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 * The client connection to the integrated server.
 	 * This is only used when connecting to the integrated server.
 	 * 
-	 * @see net.minecraft.client.gui.screen.ConnectScreen
+	 * @see net.minecraft.client.gui.screen.multiplayer.ConnectScreen
 	 */
 	@Nullable
 	private ClientConnection integratedServerConnection;
@@ -530,7 +530,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		RenderSystem.setShaderGlintAlpha(this.options.getGlintStrength().getValue());
 		this.running = true;
 		this.tutorialManager = new TutorialManager(this, this.options);
-		this.creativeHotbarStorage = new HotbarStorage(this.runDirectory, this.dataFixer);
+		this.creativeHotbarStorage = new HotbarStorage(path, this.dataFixer);
 		LOGGER.info("Backend library: {}", RenderSystem.getBackendDescription());
 		WindowSettings windowSettings;
 		if (this.options.overrideHeight > 0 && this.options.overrideWidth > 0) {

@@ -30,6 +30,9 @@ public class GameTestState {
 	private final Collection<TimedTaskRunner> timedTaskRunners = Lists.<TimedTaskRunner>newCopyOnWriteArrayList();
 	private final Object2LongMap<Runnable> ticksByRunnables = new Object2LongOpenHashMap<>();
 	private long expectedStopTime;
+	private int initialDelay = 20;
+	private boolean initialized;
+	private boolean tickedOnce;
 	private long tick;
 	private boolean started;
 	private boolean rerunUntilFailed;
@@ -53,18 +56,41 @@ public class GameTestState {
 	}
 
 	void startCountdown() {
-		this.expectedStopTime = this.world.getTime() + 1L + this.testFunction.getDuration();
+		this.expectedStopTime = this.world.getTime() + this.testFunction.getDuration();
 		this.stopwatch.start();
 	}
 
 	public void tick() {
 		if (!this.isCompleted()) {
-			this.tickTests();
-			if (this.isCompleted()) {
-				if (this.throwable != null) {
-					this.listeners.forEach(listener -> listener.onFailed(this));
+			if (this.structureBlockEntity == null) {
+				this.fail(new IllegalStateException("Running test without structure block entity"));
+			}
+
+			if (this.tickedOnce
+				|| StructureTestUtil.getStructureBlockBox(this.structureBlockEntity)
+					.streamChunkPos()
+					.allMatch(chunkPos -> this.world.shouldTickEntity(chunkPos.getStartPos()))) {
+				this.tickedOnce = true;
+				if (this.initialDelay > 0) {
+					this.initialDelay--;
 				} else {
-					this.listeners.forEach(listener -> listener.onPassed(this));
+					if (!this.initialized) {
+						this.initialized = true;
+						this.structureBlockEntity.loadAndPlaceStructure(this.world);
+						BlockBox blockBox = StructureTestUtil.getStructureBlockBox(this.structureBlockEntity);
+						this.world.getBlockTickScheduler().clearNextTicks(blockBox);
+						this.world.clearUpdatesInArea(blockBox);
+						this.startCountdown();
+					}
+
+					this.tickTests();
+					if (this.isCompleted()) {
+						if (this.throwable != null) {
+							this.listeners.forEach(listener -> listener.onFailed(this));
+						} else {
+							this.listeners.forEach(listener -> listener.onPassed(this));
+						}
+					}
 				}
 			}
 		}
@@ -183,7 +209,9 @@ public class GameTestState {
 	private void complete() {
 		if (!this.completed) {
 			this.completed = true;
-			this.stopwatch.stop();
+			if (this.stopwatch.isRunning()) {
+				this.stopwatch.stop();
+			}
 		}
 	}
 
@@ -215,9 +243,9 @@ public class GameTestState {
 	}
 
 	public void init(BlockPos pos) {
-		this.structureBlockEntity = StructureTestUtil.createStructureTemplate(this.getTemplateName(), pos, this.getRotation(), this.world, false);
+		this.structureBlockEntity = StructureTestUtil.initStructure(this.getTemplateName(), pos, this.getRotation(), this.world);
 		this.pos = this.structureBlockEntity.getPos();
-		this.structureBlockEntity.setTemplateName(this.getTemplatePath());
+		this.structureBlockEntity.setTemplateName(this.getTemplateName());
 		StructureTestUtil.placeStartButton(this.pos, new BlockPos(1, 0, -1), this.getRotation(), this.world);
 		this.listeners.forEach(listener -> listener.onStarted(this));
 	}

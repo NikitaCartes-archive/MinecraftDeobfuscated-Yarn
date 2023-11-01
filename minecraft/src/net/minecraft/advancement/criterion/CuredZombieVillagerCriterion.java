@@ -49,8 +49,8 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.zombie.ifPresent(lootContextPredicate -> jsonObject.add("zombie", lootContextPredicate.toJson()));
-			this.villager.ifPresent(lootContextPredicate -> jsonObject.add("villager", lootContextPredicate.toJson()));
+			this.zombie.ifPresent(zombie -> jsonObject.add("zombie", zombie.toJson()));
+			this.villager.ifPresent(villager -> jsonObject.add("villager", villager.toJson()));
 			return jsonObject;
 		}
 	}

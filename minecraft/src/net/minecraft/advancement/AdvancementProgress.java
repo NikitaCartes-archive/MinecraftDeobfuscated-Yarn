@@ -31,7 +31,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 			map -> (Map)map.entrySet()
 					.stream()
 					.filter(entry -> ((CriterionProgress)entry.getValue()).isObtained())
-					.collect(Collectors.toMap(Entry::getKey, entry -> (Instant)Objects.requireNonNull(((CriterionProgress)entry.getValue()).getObtainedDate())))
+					.collect(Collectors.toMap(Entry::getKey, entry -> (Instant)Objects.requireNonNull(((CriterionProgress)entry.getValue()).getObtainedTime())))
 		);
 	public static final Codec<AdvancementProgress> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
@@ -177,7 +177,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return (Instant)this.criteriaProgresses
 			.values()
 			.stream()
-			.map(CriterionProgress::getObtainedDate)
+			.map(CriterionProgress::getObtainedTime)
 			.filter(Objects::nonNull)
 			.min(Comparator.naturalOrder())
 			.orElse(null);

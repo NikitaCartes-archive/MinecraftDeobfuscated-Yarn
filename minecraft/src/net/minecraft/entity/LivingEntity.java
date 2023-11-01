@@ -3294,8 +3294,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				world.sendEntityStatus(this, EntityStatuses.ADD_PORTAL_PARTICLES);
 			}
 
-			if (this instanceof PathAwareEntity) {
-				((PathAwareEntity)this).getNavigation().stop();
+			if (this instanceof PathAwareEntity pathAwareEntity) {
+				pathAwareEntity.getNavigation().stop();
 			}
 
 			return true;

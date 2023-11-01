@@ -2,7 +2,7 @@ package net.minecraft.client.option;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
-import java.io.File;
+import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.datafixer.DataFixTypes;
@@ -16,13 +16,13 @@ import org.slf4j.Logger;
 public class HotbarStorage {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int STORAGE_ENTRY_COUNT = 9;
-	private final File file;
+	private final Path file;
 	private final DataFixer dataFixer;
 	private final HotbarStorageEntry[] entries = new HotbarStorageEntry[9];
 	private boolean loaded;
 
-	public HotbarStorage(File file, DataFixer dataFixer) {
-		this.file = new File(file, "hotbar.nbt");
+	public HotbarStorage(Path directory, DataFixer dataFixer) {
+		this.file = directory.resolve("hotbar.nbt");
 		this.dataFixer = dataFixer;
 
 		for (int i = 0; i < 9; i++) {

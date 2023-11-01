@@ -24,12 +24,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BiPredicate;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8939;
+import net.minecraft.class_8940;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -39,8 +40,9 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.ExecutionControl;
+import net.minecraft.command.ExecutionFlags;
 import net.minecraft.command.Forkable;
-import net.minecraft.command.ResultStorer;
+import net.minecraft.command.ReturnValueConsumer;
 import net.minecraft.command.SingleCommandAction;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
@@ -102,7 +104,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.WorldChunk;
-import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class ExecuteCommand {
 	private static final int MAX_BLOCKS = 32768;
@@ -119,10 +120,6 @@ public class ExecuteCommand {
 	public static final Dynamic2CommandExceptionType INSTANTIATION_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
 		(function, message) -> Text.stringifiedTranslatable("commands.execute.function.instantiationFailure", function, message)
 	);
-	private static final BinaryOperator<ResultStorer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (consumer, consumer2) -> (context, success, result) -> {
-			consumer.storeResult(context, success, result);
-			consumer2.storeResult(context, success, result);
-		};
 	private static final SuggestionProvider<ServerCommandSource> LOOT_CONDITIONS = (context, builder) -> {
 		LootManager lootManager = context.getSource().getServer().getLootManager();
 		return CommandSource.suggestIdentifiers(lootManager.getIds(LootDataType.PREDICATES), builder);
@@ -422,38 +419,38 @@ public class ExecuteCommand {
 		ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, boolean requestResult
 	) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
-		return source.mergeStorers((context, success, result) -> {
+		return source.mergeReturnValueConsumers((successful, returnValue) -> {
 			for (String string : targets) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
-				int i = requestResult ? result : (success ? 1 : 0);
+				int i = requestResult ? returnValue : (successful ? 1 : 0);
 				scoreboardPlayerScore.setScore(i);
 			}
-		}, BINARY_RESULT_CONSUMER);
+		}, ReturnValueConsumer::chain);
 	}
 
 	private static ServerCommandSource executeStoreBossbar(ServerCommandSource source, CommandBossBar bossBar, boolean storeInValue, boolean requestResult) {
-		return source.mergeStorers((context, success, result) -> {
-			int i = requestResult ? result : (success ? 1 : 0);
+		return source.mergeReturnValueConsumers((successful, returnValue) -> {
+			int i = requestResult ? returnValue : (successful ? 1 : 0);
 			if (storeInValue) {
 				bossBar.setValue(i);
 			} else {
 				bossBar.setMaxValue(i);
 			}
-		}, BINARY_RESULT_CONSUMER);
+		}, ReturnValueConsumer::chain);
 	}
 
 	private static ServerCommandSource executeStoreData(
 		ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path, IntFunction<NbtElement> nbtSetter, boolean requestResult
 	) {
-		return source.mergeStorers((context, success, result) -> {
+		return source.mergeReturnValueConsumers((successful, returnValue) -> {
 			try {
 				NbtCompound nbtCompound = object.getNbt();
-				int i = requestResult ? result : (success ? 1 : 0);
+				int i = requestResult ? returnValue : (successful ? 1 : 0);
 				path.put(nbtCompound, (NbtElement)nbtSetter.apply(i));
 				object.setNbt(nbtCompound);
-			} catch (CommandSyntaxException var9) {
+			} catch (CommandSyntaxException var8) {
 			}
-		}, BINARY_RESULT_CONSUMER);
+		}, ReturnValueConsumer::chain);
 	}
 
 	private static boolean isLoaded(ServerWorld world, BlockPos pos) {
@@ -896,64 +893,61 @@ public class ExecuteCommand {
 	}
 
 	public static <T extends AbstractServerCommandSource<T>> void enqueueExecutions(
+		T baseSource,
 		List<T> sources,
-		Function<T, T> sourceTransformer,
-		IntPredicate resultPredicate,
+		Function<T, T> functionSourceGetter,
+		IntPredicate predicate,
 		ContextChain<T> contextChain,
-		@Nullable NbtCompound arguments,
+		@Nullable NbtCompound args,
 		ExecutionControl<T> control,
 		ExecuteCommand.FunctionNamesGetter<T, Collection<CommandFunction<T>>> functionNamesGetter,
-		boolean silent
+		ExecutionFlags flags
 	) {
 		List<T> list = new ArrayList(sources.size());
-		CommandContext<T> commandContext = contextChain.getTopContext();
 
-		for (T abstractServerCommandSource : sources) {
-			try {
-				Collection<CommandFunction<T>> collection = functionNamesGetter.get(commandContext.copyFor(abstractServerCommandSource));
-				int i = collection.size();
-				if (i != 0) {
-					T abstractServerCommandSource2 = createExecutionSource(sourceTransformer, resultPredicate, list, abstractServerCommandSource, i == 1);
-
-					for (CommandFunction<T> commandFunction : collection) {
-						Procedure<T> procedure;
-						try {
-							procedure = commandFunction.withMacroReplaced(arguments, abstractServerCommandSource2.getDispatcher(), abstractServerCommandSource2);
-						} catch (MacroException var19) {
-							throw INSTANTIATION_FAILURE_EXCEPTION.create(commandFunction.id(), var19.getMessage());
-						}
-
-						control.enqueueAction(new CommandFunctionAction<>(procedure).bind(abstractServerCommandSource2));
-					}
-				}
-			} catch (CommandSyntaxException var20) {
-				abstractServerCommandSource.handleException(var20, silent, control.getTracer());
-			}
+		Collection<CommandFunction<T>> collection;
+		try {
+			collection = functionNamesGetter.get(contextChain.getTopContext().copyFor(baseSource));
+		} catch (CommandSyntaxException var18) {
+			baseSource.handleException(var18, flags.isSilent(), control.getTracer());
+			return;
 		}
 
-		ContextChain<T> contextChain2 = contextChain.nextStage();
-		String string = commandContext.getInput();
-		control.enqueueAction(new SingleCommandAction.MultiSource<>(string, contextChain2, silent, list));
-	}
+		int i = collection.size();
+		if (i != 0) {
+			List<Procedure<T>> list2 = new ArrayList(i);
 
-	private static <T extends AbstractServerCommandSource<T>> T createExecutionSource(
-		Function<T, T> sourceTransformer, IntPredicate resultPredicate, List<T> successesOut, T currentSource, boolean singleFunction
-	) {
-		T abstractServerCommandSource = (T)((AbstractServerCommandSource)sourceTransformer.apply(currentSource)).withDummyResultStorer();
-		if (singleFunction) {
-			return abstractServerCommandSource.withReturnValueConsumer(result -> {
-				if (resultPredicate.test(result)) {
-					successesOut.add(currentSource);
+			try {
+				for (CommandFunction<T> commandFunction : collection) {
+					try {
+						list2.add(commandFunction.withMacroReplaced(args, baseSource.getDispatcher(), baseSource));
+					} catch (MacroException var17) {
+						throw INSTANTIATION_FAILURE_EXCEPTION.create(commandFunction.id(), var17.getMessage());
+					}
 				}
-			});
-		} else {
-			MutableBoolean mutableBoolean = new MutableBoolean();
-			return abstractServerCommandSource.withReturnValueConsumer(result -> {
-				if (mutableBoolean.isFalse() && resultPredicate.test(result)) {
-					successesOut.add(currentSource);
-					mutableBoolean.setTrue();
-				}
-			});
+			} catch (CommandSyntaxException var19) {
+				baseSource.handleException(var19, flags.isSilent(), control.getTracer());
+			}
+
+			for (T abstractServerCommandSource : sources) {
+				T abstractServerCommandSource2 = (T)functionSourceGetter.apply(abstractServerCommandSource.withDummyResultStorer());
+				ReturnValueConsumer returnValueConsumer = (successful, returnValue) -> {
+					if (predicate.test(returnValue)) {
+						list.add(abstractServerCommandSource);
+					}
+				};
+				control.enqueueAction(new class_8940<>(newControl -> {
+					for (Procedure<T> procedure : list2) {
+						newControl.enqueueAction(new CommandFunctionAction<>(procedure, newControl.getFrame().returnValueConsumer(), true).bind(abstractServerCommandSource2));
+					}
+
+					newControl.enqueueAction(class_8939.method_54899());
+				}, returnValueConsumer));
+			}
+
+			ContextChain<T> contextChain2 = contextChain.nextStage();
+			String string = contextChain.getTopContext().getInput();
+			control.enqueueAction(new SingleCommandAction.MultiSource<>(string, contextChain2, flags, baseSource, list));
 		}
 	}
 
@@ -979,19 +973,23 @@ public class ExecuteCommand {
 			this.predicate = success ? result -> result != 0 : result -> result == 0;
 		}
 
-		@Override
 		public void execute(
-			List<ServerCommandSource> sources, ContextChain<ServerCommandSource> contextChain, boolean forkedMode, ExecutionControl<ServerCommandSource> control
+			ServerCommandSource serverCommandSource,
+			List<ServerCommandSource> list,
+			ContextChain<ServerCommandSource> contextChain,
+			ExecutionFlags executionFlags,
+			ExecutionControl<ServerCommandSource> executionControl
 		) {
 			ExecuteCommand.enqueueExecutions(
-				sources,
+				serverCommandSource,
+				list,
 				FunctionCommand::createFunctionCommandSource,
 				this.predicate,
 				contextChain,
 				null,
-				control,
+				executionControl,
 				context -> CommandFunctionArgumentType.getFunctions(context, "name"),
-				forkedMode
+				executionFlags
 			);
 		}
 	}

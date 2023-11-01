@@ -2,7 +2,8 @@ package net.minecraft.client.option;
 
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -40,7 +41,7 @@ public class ServerList {
 		try {
 			this.servers.clear();
 			this.hiddenServers.clear();
-			NbtCompound nbtCompound = NbtIo.read(new File(this.client.runDirectory, "servers.dat"));
+			NbtCompound nbtCompound = NbtIo.read(this.client.runDirectory.toPath().resolve("servers.dat"));
 			if (nbtCompound == null) {
 				return;
 			}
@@ -79,13 +80,14 @@ public class ServerList {
 
 			NbtCompound nbtCompound2 = new NbtCompound();
 			nbtCompound2.put("servers", nbtList);
-			File file = File.createTempFile("servers", ".dat", this.client.runDirectory);
-			NbtIo.write(nbtCompound2, file);
-			File file2 = new File(this.client.runDirectory, "servers.dat_old");
-			File file3 = new File(this.client.runDirectory, "servers.dat");
-			Util.backupAndReplace(file3, file, file2);
-		} catch (Exception var6) {
-			LOGGER.error("Couldn't save server list", (Throwable)var6);
+			Path path = this.client.runDirectory.toPath();
+			Path path2 = Files.createTempFile(path, "servers", ".dat");
+			NbtIo.write(nbtCompound2, path2);
+			Path path3 = path.resolve("servers.dat_old");
+			Path path4 = path.resolve("servers.dat");
+			Util.backupAndReplace(path4, path2, path3);
+		} catch (Exception var7) {
+			LOGGER.error("Couldn't save server list", (Throwable)var7);
 		}
 	}
 

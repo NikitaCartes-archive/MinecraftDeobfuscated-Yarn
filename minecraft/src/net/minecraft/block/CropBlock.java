@@ -70,8 +70,8 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		return this.getDefaultState().with(this.getAgeProperty(), Integer.valueOf(age));
 	}
 
-	public final boolean isMature(BlockState blockState) {
-		return this.getAge(blockState) >= this.getMaxAge();
+	public final boolean isMature(BlockState state) {
+		return this.getAge(state) >= this.getMaxAge();
 	}
 
 	@Override

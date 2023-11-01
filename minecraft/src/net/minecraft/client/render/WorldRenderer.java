@@ -1023,7 +1023,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						vertexConsumerProvider = immediate;
 					}
 
-					float j = tickManager.shouldTick(entity) ? f : tickDelta;
+					float j = tickManager.shouldSkipTick(entity) ? f : tickDelta;
 					this.renderEntity(entity, d, e, g, j, matrices, vertexConsumerProvider);
 				}
 			}

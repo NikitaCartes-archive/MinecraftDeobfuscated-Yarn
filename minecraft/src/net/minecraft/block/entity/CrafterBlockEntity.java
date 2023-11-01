@@ -113,7 +113,7 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 		super.readNbt(nbt);
 		this.craftingTicksRemaining = nbt.getInt("crafting_ticks_remaining");
 		this.inputStacks = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(nbt)) {
+		if (!this.readLootTable(nbt)) {
 			Inventories.readNbt(nbt, this.inputStacks);
 		}
 
@@ -136,7 +136,7 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.putInt("crafting_ticks_remaining", this.craftingTicksRemaining);
-		if (!this.serializeLootTable(nbt)) {
+		if (!this.writeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inputStacks);
 		}
 

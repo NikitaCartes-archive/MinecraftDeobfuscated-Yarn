@@ -38,7 +38,7 @@ import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.ComparatorMode;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.enums.JigsawOrientation;
+import net.minecraft.block.enums.Orientation;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.enums.SculkSensorPhase;
@@ -1320,8 +1320,8 @@ public class BlockStateModelGenerator {
 		if (stageProperty.getValues().size() != stages.length) {
 			throw new IllegalArgumentException("missing values for property: " + stageProperty);
 		} else {
-			BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(stageProperty).register(integer -> {
-				String string = "_stage" + stages[integer];
+			BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(stageProperty).register(stage -> {
+				String string = "_stage" + stages[stage];
 				TextureMap textureMap = TextureMap.cross(TextureMap.getSubId(block, string));
 				Identifier identifier = tintType.getCrossModel().upload(block, string, textureMap, this.modelCollector);
 				return BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
@@ -3838,7 +3838,7 @@ public class BlockStateModelGenerator {
 		this.registerParentedItemModel(Items.RESPAWN_ANCHOR, identifiers[0]);
 	}
 
-	private BlockStateVariant addJigsawOrientationToVariant(JigsawOrientation orientation, BlockStateVariant variant) {
+	private BlockStateVariant addJigsawOrientationToVariant(Orientation orientation, BlockStateVariant variant) {
 		switch (orientation) {
 			case DOWN_NORTH:
 				return variant.put(VariantSettings.X, VariantSettings.Rotation.R90);
@@ -3887,8 +3887,7 @@ public class BlockStateModelGenerator {
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.JIGSAW, BlockStateVariant.create().put(VariantSettings.MODEL, identifier5))
 					.coordinate(
-						BlockStateVariantMap.create(Properties.ORIENTATION)
-							.register(jigsawOrientation -> this.addJigsawOrientationToVariant(jigsawOrientation, BlockStateVariant.create()))
+						BlockStateVariantMap.create(Properties.ORIENTATION).register(orientation -> this.addJigsawOrientationToVariant(orientation, BlockStateVariant.create()))
 					)
 			);
 	}

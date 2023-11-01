@@ -11,7 +11,7 @@ import net.minecraft.block.enums.ComparatorMode;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.Instrument;
-import net.minecraft.block.enums.JigsawOrientation;
+import net.minecraft.block.enums.Orientation;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.enums.SculkSensorPhase;
@@ -228,9 +228,9 @@ public class Properties {
 	 */
 	public static final IntProperty FLOWER_AMOUNT = IntProperty.of("flower_amount", 1, 4);
 	/**
-	 * A property that specifies the orientation of a jigsaw.
+	 * A property that specifies the orientation of a jigsaw or crafter.
 	 */
-	public static final EnumProperty<JigsawOrientation> ORIENTATION = EnumProperty.of("orientation", JigsawOrientation.class);
+	public static final EnumProperty<Orientation> ORIENTATION = EnumProperty.of("orientation", Orientation.class);
 	/**
 	 * A property that specifies the block face a block is attached to.
 	 */

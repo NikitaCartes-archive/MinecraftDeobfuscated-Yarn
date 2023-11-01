@@ -44,7 +44,7 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
 			jsonObject.add("signal_strength", this.signalStrength.toJson());
-			this.projectile.ifPresent(lootContextPredicate -> jsonObject.add("projectile", lootContextPredicate.toJson()));
+			this.projectile.ifPresent(projectile -> jsonObject.add("projectile", projectile.toJson()));
 			return jsonObject;
 		}
 

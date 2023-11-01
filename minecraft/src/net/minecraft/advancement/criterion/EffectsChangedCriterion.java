@@ -41,9 +41,9 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 			return Criteria.EFFECTS_CHANGED.create(new EffectsChangedCriterion.Conditions(Optional.empty(), effects.build(), Optional.empty()));
 		}
 
-		public static AdvancementCriterion<EffectsChangedCriterion.Conditions> create(EntityPredicate.Builder builder) {
+		public static AdvancementCriterion<EffectsChangedCriterion.Conditions> create(EntityPredicate.Builder source) {
 			return Criteria.EFFECTS_CHANGED
-				.create(new EffectsChangedCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.of(EntityPredicate.asLootContextPredicate(builder.build()))));
+				.create(new EffectsChangedCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.of(EntityPredicate.asLootContextPredicate(source.build()))));
 		}
 
 		public boolean matches(ServerPlayerEntity player, @Nullable LootContext context) {
@@ -55,8 +55,8 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.effects.ifPresent(entityEffectPredicate -> jsonObject.add("effects", entityEffectPredicate.toJson()));
-			this.source.ifPresent(lootContextPredicate -> jsonObject.add("source", lootContextPredicate.toJson()));
+			this.effects.ifPresent(effects -> jsonObject.add("effects", effects.toJson()));
+			this.source.ifPresent(source -> jsonObject.add("source", source.toJson()));
 			return jsonObject;
 		}
 	}

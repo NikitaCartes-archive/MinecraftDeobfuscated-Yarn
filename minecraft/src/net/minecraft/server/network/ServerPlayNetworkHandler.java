@@ -661,7 +661,7 @@ public class ServerPlayNetworkHandler
 					} else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
 						if (!structureBlockBlockEntity.isStructureAvailable()) {
 							this.player.sendMessage(Text.translatable("structure_block.load_not_found", string), false);
-						} else if (structureBlockBlockEntity.loadStructure(this.player.getServerWorld())) {
+						} else if (structureBlockBlockEntity.loadAndTryPlaceStructure(this.player.getServerWorld())) {
 							this.player.sendMessage(Text.translatable("structure_block.load_success", string), false);
 						} else {
 							this.player.sendMessage(Text.translatable("structure_block.load_prepare", string), false);

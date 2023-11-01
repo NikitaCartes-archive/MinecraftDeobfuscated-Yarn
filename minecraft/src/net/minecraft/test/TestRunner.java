@@ -105,8 +105,8 @@ public class TestRunner {
 
 		for (GameTestState gameTestState : gameTests) {
 			BlockPos blockPos = new BlockPos(this.reusablePos);
-			StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.createStructureTemplate(
-				gameTestState.getTemplateName(), blockPos, gameTestState.getRotation(), this.world, true
+			StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.initStructure(
+				gameTestState.getTemplateName(), blockPos, gameTestState.getRotation(), this.world
 			);
 			Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
 			gameTestState.setPos(structureBlockBlockEntity.getPos());

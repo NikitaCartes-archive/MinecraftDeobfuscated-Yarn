@@ -6,12 +6,13 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ import net.minecraft.util.crash.CrashReportSection;
  */
 public class NbtIo {
 	/**
-	 * Reads an NBT compound from Gzip-compressed {@code file}.
+	 * Reads an NBT compound from Gzip-compressed file at {@code path}.
 	 * 
 	 * @return the NBT compound from the file
 	 * @throws IOException if the IO operation fails or if the root NBT element is
@@ -35,23 +36,28 @@ public class NbtIo {
 	 * @throws NbtSizeValidationException if the NBT is too deep
 	 * @see #readCompressed(InputStream, NbtTagSizeTracker)
 	 */
-	public static NbtCompound readCompressed(File file, NbtTagSizeTracker tagSizeTracker) throws IOException {
-		InputStream inputStream = new FileInputStream(file);
+	public static NbtCompound readCompressed(Path path, NbtTagSizeTracker tagSizeTracker) throws IOException {
+		InputStream inputStream = Files.newInputStream(path);
 
 		NbtCompound var3;
 		try {
 			var3 = readCompressed(inputStream, tagSizeTracker);
 		} catch (Throwable var6) {
-			try {
-				inputStream.close();
-			} catch (Throwable var5) {
-				var6.addSuppressed(var5);
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (Throwable var5) {
+					var6.addSuppressed(var5);
+				}
 			}
 
 			throw var6;
 		}
 
-		inputStream.close();
+		if (inputStream != null) {
+			inputStream.close();
+		}
+
 		return var3;
 	}
 
@@ -63,13 +69,20 @@ public class NbtIo {
 	}
 
 	/**
+	 * {@return a new output stream that compresses the input {@code stream}}
+	 */
+	private static DataOutputStream compress(OutputStream stream) throws IOException {
+		return new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(stream)));
+	}
+
+	/**
 	 * Reads an NBT compound from Gzip-compressed {@code stream}.
 	 * 
 	 * @return the NBT compound from the stream
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
 	 * @throws NbtSizeValidationException if the NBT is too deep
-	 * @see #readCompressed(File, NbtTagSizeTracker)
+	 * @see #readCompressed(Path, NbtTagSizeTracker)
 	 */
 	public static NbtCompound readCompressed(InputStream stream, NbtTagSizeTracker tagSizeTracker) throws IOException {
 		DataInputStream dataInputStream = decompress(stream);
@@ -107,22 +120,26 @@ public class NbtIo {
 	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
 	 * @see #scanCompressed(InputStream, NbtScanner, NbtTagSizeTracker)
 	 */
-	public static void scanCompressed(File file, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
-		InputStream inputStream = new FileInputStream(file);
+	public static void scanCompressed(Path path, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
+		InputStream inputStream = Files.newInputStream(path);
 
 		try {
 			scanCompressed(inputStream, scanner, tracker);
 		} catch (Throwable var7) {
-			try {
-				inputStream.close();
-			} catch (Throwable var6) {
-				var7.addSuppressed(var6);
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (Throwable var6) {
+					var7.addSuppressed(var6);
+				}
 			}
 
 			throw var7;
 		}
 
-		inputStream.close();
+		if (inputStream != null) {
+			inputStream.close();
+		}
 	}
 
 	/**
@@ -134,7 +151,7 @@ public class NbtIo {
 	 * 
 	 * @throws IOException if the IO operation fails
 	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
-	 * @see #scanCompressed(File, NbtScanner, NbtTagSizeTracker)
+	 * @see #scanCompressed(Path, NbtScanner, NbtTagSizeTracker)
 	 */
 	public static void scanCompressed(InputStream stream, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
 		DataInputStream dataInputStream = decompress(stream);
@@ -163,21 +180,26 @@ public class NbtIo {
 	 */
 	public static byte[] toCompressedBytes(NbtCompound nbt) throws IOException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(byteArrayOutputStream)));
+		DataOutputStream dataOutputStream = compress(byteArrayOutputStream);
 
 		try {
 			writeCompound(nbt, dataOutputStream);
 		} catch (Throwable var6) {
-			try {
-				dataOutputStream.close();
-			} catch (Throwable var5) {
-				var6.addSuppressed(var5);
+			if (dataOutputStream != null) {
+				try {
+					dataOutputStream.close();
+				} catch (Throwable var5) {
+					var6.addSuppressed(var5);
+				}
 			}
 
 			throw var6;
 		}
 
-		dataOutputStream.close();
+		if (dataOutputStream != null) {
+			dataOutputStream.close();
+		}
+
 		return byteArrayOutputStream.toByteArray();
 	}
 
@@ -205,70 +227,22 @@ public class NbtIo {
 	}
 
 	/**
-	 * Writes the Gzip-compressed {@code nbt} to {@code file}.
+	 * Writes the Gzip-compressed {@code nbt} to the file at {@code path}.
 	 * 
 	 * @throws IOException if the IO operation fails
 	 * @see #writeCompressed(NbtCompound, OutputStream)
 	 */
-	public static void writeCompressed(NbtCompound nbt, File file) throws IOException {
-		OutputStream outputStream = new FileOutputStream(file);
+	public static void writeCompressed(NbtCompound nbt, Path path) throws IOException {
+		OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.SYNC);
 
 		try {
-			writeCompressed(nbt, outputStream);
-		} catch (Throwable var6) {
-			try {
-				outputStream.close();
-			} catch (Throwable var5) {
-				var6.addSuppressed(var5);
-			}
-
-			throw var6;
-		}
-
-		outputStream.close();
-	}
-
-	/**
-	 * Writes the Gzip-compressed {@code nbt} to {@code stream}.
-	 * 
-	 * @throws IOException if the IO operation fails
-	 * @see #writeCompressed(NbtCompound, File)
-	 */
-	public static void writeCompressed(NbtCompound nbt, OutputStream stream) throws IOException {
-		DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(stream)));
-
-		try {
-			writeCompound(nbt, dataOutputStream);
-		} catch (Throwable var6) {
-			try {
-				dataOutputStream.close();
-			} catch (Throwable var5) {
-				var6.addSuppressed(var5);
-			}
-
-			throw var6;
-		}
-
-		dataOutputStream.close();
-	}
-
-	/**
-	 * Writes the {@code nbt} to {@code file}.
-	 * 
-	 * @throws IOException if the IO operation fails
-	 * @see #write(NbtCompound, DataOutput)
-	 */
-	public static void write(NbtCompound nbt, File file) throws IOException {
-		FileOutputStream fileOutputStream = new FileOutputStream(file);
-
-		try {
-			DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+			OutputStream outputStream2 = new BufferedOutputStream(outputStream);
 
 			try {
-				writeCompound(nbt, dataOutputStream);
+				writeCompressed(nbt, outputStream2);
 			} catch (Throwable var8) {
 				try {
-					dataOutputStream.close();
+					outputStream2.close();
 				} catch (Throwable var7) {
 					var8.addSuppressed(var7);
 				}
@@ -276,22 +250,110 @@ public class NbtIo {
 				throw var8;
 			}
 
-			dataOutputStream.close();
+			outputStream2.close();
 		} catch (Throwable var9) {
-			try {
-				fileOutputStream.close();
-			} catch (Throwable var6) {
-				var9.addSuppressed(var6);
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (Throwable var6) {
+					var9.addSuppressed(var6);
+				}
 			}
 
 			throw var9;
 		}
 
-		fileOutputStream.close();
+		if (outputStream != null) {
+			outputStream.close();
+		}
 	}
 
 	/**
-	 * Reads an NBT compound from {@code file}.
+	 * Writes the Gzip-compressed {@code nbt} to {@code stream}.
+	 * 
+	 * @throws IOException if the IO operation fails
+	 * @see #writeCompressed(NbtCompound, Path)
+	 */
+	public static void writeCompressed(NbtCompound nbt, OutputStream stream) throws IOException {
+		DataOutputStream dataOutputStream = compress(stream);
+
+		try {
+			writeCompound(nbt, dataOutputStream);
+		} catch (Throwable var6) {
+			if (dataOutputStream != null) {
+				try {
+					dataOutputStream.close();
+				} catch (Throwable var5) {
+					var6.addSuppressed(var5);
+				}
+			}
+
+			throw var6;
+		}
+
+		if (dataOutputStream != null) {
+			dataOutputStream.close();
+		}
+	}
+
+	/**
+	 * Writes the {@code nbt} to the file at {@code path}.
+	 * 
+	 * @throws IOException if the IO operation fails
+	 * @see #write(NbtCompound, DataOutput)
+	 */
+	public static void write(NbtCompound nbt, Path path) throws IOException {
+		OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.SYNC);
+
+		try {
+			OutputStream outputStream2 = new BufferedOutputStream(outputStream);
+
+			try {
+				DataOutputStream dataOutputStream = new DataOutputStream(outputStream2);
+
+				try {
+					writeCompound(nbt, dataOutputStream);
+				} catch (Throwable var10) {
+					try {
+						dataOutputStream.close();
+					} catch (Throwable var9) {
+						var10.addSuppressed(var9);
+					}
+
+					throw var10;
+				}
+
+				dataOutputStream.close();
+			} catch (Throwable var11) {
+				try {
+					outputStream2.close();
+				} catch (Throwable var8) {
+					var11.addSuppressed(var8);
+				}
+
+				throw var11;
+			}
+
+			outputStream2.close();
+		} catch (Throwable var12) {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (Throwable var7) {
+					var12.addSuppressed(var7);
+				}
+			}
+
+			throw var12;
+		}
+
+		if (outputStream != null) {
+			outputStream.close();
+		}
+	}
+
+	/**
+	 * Reads an NBT compound from the file at{@code path}.
 	 * 
 	 * @return the NBT compound from the file, or {@code null} if the file does not exist
 	 * @throws IOException if the IO operation fails or if the root NBT element is
@@ -299,15 +361,15 @@ public class NbtIo {
 	 * @throws NbtSizeValidationException if the NBT is too deep
 	 */
 	@Nullable
-	public static NbtCompound read(File file) throws IOException {
-		if (!file.exists()) {
+	public static NbtCompound read(Path path) throws IOException {
+		if (Files.exists(path, new LinkOption[0])) {
 			return null;
 		} else {
-			FileInputStream fileInputStream = new FileInputStream(file);
+			InputStream inputStream = Files.newInputStream(path);
 
 			NbtCompound var3;
 			try {
-				DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+				DataInputStream dataInputStream = new DataInputStream(inputStream);
 
 				try {
 					var3 = readCompound(dataInputStream, NbtTagSizeTracker.ofUnlimitedBytes());
@@ -323,16 +385,21 @@ public class NbtIo {
 
 				dataInputStream.close();
 			} catch (Throwable var8) {
-				try {
-					fileInputStream.close();
-				} catch (Throwable var5) {
-					var8.addSuppressed(var5);
+				if (inputStream != null) {
+					try {
+						inputStream.close();
+					} catch (Throwable var5) {
+						var8.addSuppressed(var5);
+					}
 				}
 
 				throw var8;
 			}
 
-			fileInputStream.close();
+			if (inputStream != null) {
+				inputStream.close();
+			}
+
 			return var3;
 		}
 	}
@@ -370,7 +437,7 @@ public class NbtIo {
 	 * Writes the {@code nbt} to {@code output}.
 	 * 
 	 * @throws IOException if the IO operation fails
-	 * @see #write(NbtCompound, File)
+	 * @see #write(NbtCompound, Path)
 	 */
 	public static void writeCompound(NbtCompound nbt, DataOutput output) throws IOException {
 		write(nbt, output);

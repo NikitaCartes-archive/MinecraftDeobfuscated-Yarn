@@ -12,9 +12,9 @@ import net.minecraft.world.World;
 
 public class SpongeBlock extends Block {
 	public static final MapCodec<SpongeBlock> CODEC = createCodec(SpongeBlock::new);
-	public static final int field_31250 = 6;
-	public static final int field_31251 = 64;
-	private static final Direction[] field_43257 = Direction.values();
+	public static final int ABSORB_RADIUS = 6;
+	public static final int ABSORB_LIMIT = 64;
+	private static final Direction[] DIRECTIONS = Direction.values();
 
 	@Override
 	public MapCodec<SpongeBlock> getCodec() {
@@ -47,7 +47,7 @@ public class SpongeBlock extends Block {
 
 	private boolean absorbWater(World world, BlockPos pos) {
 		return BlockPos.iterateRecursively(pos, 6, 65, (currentPos, queuer) -> {
-			for (Direction direction : field_43257) {
+			for (Direction direction : DIRECTIONS) {
 				queuer.accept(currentPos.offset(direction));
 			}
 		}, currentPos -> {

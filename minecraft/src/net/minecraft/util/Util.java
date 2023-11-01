@@ -750,13 +750,6 @@ public class Util {
 	/**
 	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}.
 	 */
-	public static void backupAndReplace(File current, File newFile, File backup) {
-		backupAndReplace(current.toPath(), newFile.toPath(), backup.toPath());
-	}
-
-	/**
-	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}.
-	 */
 	public static void backupAndReplace(Path current, Path newPath, Path backup) {
 		backupAndReplace(current, newPath, backup, false);
 	}

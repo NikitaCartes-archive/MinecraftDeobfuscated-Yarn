@@ -3,6 +3,8 @@ package net.minecraft.world;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,12 +31,13 @@ public class WorldSaveHandler {
 	public void savePlayerData(PlayerEntity player) {
 		try {
 			NbtCompound nbtCompound = player.writeNbt(new NbtCompound());
-			File file = File.createTempFile(player.getUuidAsString() + "-", ".dat", this.playerDataDir);
-			NbtIo.writeCompressed(nbtCompound, file);
-			File file2 = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
-			File file3 = new File(this.playerDataDir, player.getUuidAsString() + ".dat_old");
-			Util.backupAndReplace(file2, file, file3);
-		} catch (Exception var6) {
+			Path path = this.playerDataDir.toPath();
+			Path path2 = Files.createTempFile(path, player.getUuidAsString() + "-", ".dat");
+			NbtIo.writeCompressed(nbtCompound, path2);
+			Path path3 = path.resolve(player.getUuidAsString() + ".dat");
+			Path path4 = path.resolve(player.getUuidAsString() + ".dat_old");
+			Util.backupAndReplace(path3, path2, path4);
+		} catch (Exception var7) {
 			LOGGER.warn("Failed to save player data for {}", player.getName().getString());
 		}
 	}
@@ -46,7 +49,7 @@ public class WorldSaveHandler {
 		try {
 			File file = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
 			if (file.exists() && file.isFile()) {
-				nbtCompound = NbtIo.readCompressed(file, NbtTagSizeTracker.ofUnlimitedBytes());
+				nbtCompound = NbtIo.readCompressed(file.toPath(), NbtTagSizeTracker.ofUnlimitedBytes());
 			}
 		} catch (Exception var4) {
 			LOGGER.warn("Failed to load player data for {}", player.getName().getString());

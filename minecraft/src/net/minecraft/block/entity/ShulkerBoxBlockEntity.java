@@ -201,14 +201,14 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		if (!this.serializeLootTable(nbt)) {
+		if (!this.writeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory, false);
 		}
 	}
 
 	public void readInventoryNbt(NbtCompound nbt) {
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(nbt) && nbt.contains("Items", NbtElement.LIST_TYPE)) {
+		if (!this.readLootTable(nbt) && nbt.contains("Items", NbtElement.LIST_TYPE)) {
 			Inventories.readNbt(nbt, this.inventory);
 		}
 	}
