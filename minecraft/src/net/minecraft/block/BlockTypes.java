@@ -15,7 +15,7 @@ public class BlockTypes {
 		Registry.register(registry, "anvil", AnvilBlock.CODEC);
 		Registry.register(registry, "attached_stem", AttachedStemBlock.CODEC);
 		Registry.register(registry, "azalea", AzaleaBlock.CODEC);
-		Registry.register(registry, "bamboo_sapling", BambooSaplingBlock.CODEC);
+		Registry.register(registry, "bamboo_sapling", BambooShootBlock.CODEC);
 		Registry.register(registry, "bamboo_stalk", BambooBlock.CODEC);
 		Registry.register(registry, "banner", BannerBlock.CODEC);
 		Registry.register(registry, "barrel", BarrelBlock.CODEC);
@@ -63,7 +63,7 @@ public class BlockTypes {
 		Registry.register(registry, "composter", ComposterBlock.CODEC);
 		Registry.register(registry, "concrete_powder", ConcretePowderBlock.CODEC);
 		Registry.register(registry, "conduit", ConduitBlock.CODEC);
-		Registry.register(registry, "copper_bulb_block", CopperBulbBlock.CODEC);
+		Registry.register(registry, "copper_bulb_block", BulbBlock.CODEC);
 		Registry.register(registry, "coral", CoralBlockBlock.CODEC);
 		Registry.register(registry, "coral_fan", CoralFanBlock.CODEC);
 		Registry.register(registry, "coral_plant", CoralBlock.CODEC);
@@ -229,7 +229,7 @@ public class BlockTypes {
 		Registry.register(registry, "wall_torch", WallTorchBlock.CODEC);
 		Registry.register(registry, "wall", WallBlock.CODEC);
 		Registry.register(registry, "waterlily", LilyPadBlock.CODEC);
-		Registry.register(registry, "weathering_copper_bulb", OxidizableCopperBulbBlock.CODEC);
+		Registry.register(registry, "weathering_copper_bulb", OxidizableBulbBlock.CODEC);
 		Registry.register(registry, "weathering_copper_door", OxidizableDoorBlock.CODEC);
 		Registry.register(registry, "weathering_copper_full", OxidizableBlock.CODEC);
 		Registry.register(registry, "weathering_copper_grate", OxidizableGrateBlock.CODEC);

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,7 +26,6 @@ public class TestUtil {
 	public static final int field_33151 = 8;
 
 	public static void startTest(GameTestState test, BlockPos pos, TestManager testManager) {
-		test.startCountdown();
 		testManager.start(test);
 		test.addListener(new StructureTestListener(test, testManager, pos));
 		test.init(pos);
@@ -46,7 +46,8 @@ public class TestUtil {
 	}
 
 	public static Collection<GameTestBatch> createBatches(Collection<TestFunction> testFunctions) {
-		Map<String, List<TestFunction>> map = (Map)testFunctions.stream().collect(Collectors.groupingBy(TestFunction::getBatchId));
+		Map<String, List<TestFunction>> map = (Map)testFunctions.stream()
+			.collect(Collectors.groupingBy(TestFunction::getBatchId, LinkedHashMap::new, Collectors.toList()));
 		return (Collection<GameTestBatch>)map.entrySet()
 			.stream()
 			.flatMap(

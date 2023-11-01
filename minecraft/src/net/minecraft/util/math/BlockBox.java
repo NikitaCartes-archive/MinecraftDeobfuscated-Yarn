@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
@@ -105,6 +106,14 @@ public class BlockBox {
 			case EAST:
 				return new BlockBox(x + offsetZ, y + offsetY, z + offsetX, x + sizeZ - 1 + offsetZ, y + sizeY - 1 + offsetY, z + sizeX - 1 + offsetX);
 		}
+	}
+
+	public Stream<ChunkPos> streamChunkPos() {
+		int i = ChunkSectionPos.getSectionCoord(this.getMinX());
+		int j = ChunkSectionPos.getSectionCoord(this.getMinZ());
+		int k = ChunkSectionPos.getSectionCoord(this.getMaxX());
+		int l = ChunkSectionPos.getSectionCoord(this.getMaxZ());
+		return ChunkPos.stream(new ChunkPos(i, j), new ChunkPos(k, l));
 	}
 
 	/**

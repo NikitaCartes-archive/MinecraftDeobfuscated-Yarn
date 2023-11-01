@@ -66,7 +66,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 				jsonObject.addProperty("block", Registries.BLOCK.getId(this.block).toString());
 			}
 
-			this.state.ifPresent(statePredicate -> jsonObject.add("state", statePredicate.toJson()));
+			this.state.ifPresent(state -> jsonObject.add("state", state.toJson()));
 			return jsonObject;
 		}
 

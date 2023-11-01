@@ -13,7 +13,7 @@ public class DoubleBlockProperties {
 	public static <S extends BlockEntity> DoubleBlockProperties.PropertySource<S> toPropertySource(
 		BlockEntityType<S> blockEntityType,
 		Function<BlockState, DoubleBlockProperties.Type> typeMapper,
-		Function<BlockState, Direction> function,
+		Function<BlockState, Direction> directionMapper,
 		DirectionProperty directionProperty,
 		BlockState state,
 		WorldAccess world,
@@ -32,7 +32,7 @@ public class DoubleBlockProperties {
 			if (bl) {
 				return new DoubleBlockProperties.PropertySource.Single<>(blockEntity);
 			} else {
-				BlockPos blockPos = pos.offset((Direction)function.apply(state));
+				BlockPos blockPos = pos.offset((Direction)directionMapper.apply(state));
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(state.getBlock())) {
 					DoubleBlockProperties.Type type2 = (DoubleBlockProperties.Type)typeMapper.apply(blockState);

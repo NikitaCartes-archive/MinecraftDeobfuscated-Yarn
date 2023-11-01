@@ -93,7 +93,7 @@ public class StructureBlock extends BlockWithEntity implements OperatorBlock {
 				blockEntity.saveStructure(false);
 				break;
 			case LOAD:
-				blockEntity.loadStructure(world, false);
+				blockEntity.loadAndPlaceStructure(world);
 				break;
 			case CORNER:
 				blockEntity.unloadStructure();

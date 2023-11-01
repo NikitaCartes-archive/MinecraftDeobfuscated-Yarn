@@ -161,7 +161,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
 			} else {
-				shulkerBoxBlockEntity.checkLootInteraction(player);
+				shulkerBoxBlockEntity.generateLoot(player);
 			}
 		}
 

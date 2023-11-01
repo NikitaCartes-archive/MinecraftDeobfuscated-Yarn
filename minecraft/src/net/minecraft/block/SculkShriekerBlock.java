@@ -149,9 +149,7 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 			? BlockWithEntity.validateTicker(
 				type,
 				BlockEntityType.SCULK_SHRIEKER,
-				(worldx, pos, statex, sculkShriekerBlockEntity) -> Vibrations.Ticker.tick(
-						worldx, sculkShriekerBlockEntity.getVibrationListenerData(), sculkShriekerBlockEntity.getVibrationCallback()
-					)
+				(worldx, pos, statex, blockEntity) -> Vibrations.Ticker.tick(worldx, blockEntity.getVibrationListenerData(), blockEntity.getVibrationCallback())
 			)
 			: null;
 	}

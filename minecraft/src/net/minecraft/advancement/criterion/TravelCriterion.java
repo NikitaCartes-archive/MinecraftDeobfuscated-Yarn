@@ -30,19 +30,19 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 		private final Optional<LocationPredicate> startPos;
 		private final Optional<DistancePredicate> distance;
 
-		public Conditions(Optional<LootContextPredicate> optional, Optional<LocationPredicate> playerPredicate, Optional<DistancePredicate> startPos) {
-			super(optional);
-			this.startPos = playerPredicate;
-			this.distance = startPos;
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LocationPredicate> startPos, Optional<DistancePredicate> distance) {
+			super(playerPredicate);
+			this.startPos = startPos;
+			this.distance = distance;
 		}
 
 		public static AdvancementCriterion<TravelCriterion.Conditions> fallFromHeight(
-			EntityPredicate.Builder entity, DistancePredicate distance, LocationPredicate.Builder builder
+			EntityPredicate.Builder entity, DistancePredicate distance, LocationPredicate.Builder startPos
 		) {
 			return Criteria.FALL_FROM_HEIGHT
 				.create(
 					new TravelCriterion.Conditions(
-						Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(entity)), Optional.of(builder.build()), Optional.of(distance)
+						Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(entity)), Optional.of(startPos.build()), Optional.of(distance)
 					)
 				);
 		}
@@ -59,8 +59,8 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.startPos.ifPresent(locationPredicate -> jsonObject.add("start_position", locationPredicate.toJson()));
-			this.distance.ifPresent(distancePredicate -> jsonObject.add("distance", distancePredicate.toJson()));
+			this.startPos.ifPresent(startPos -> jsonObject.add("start_position", startPos.toJson()));
+			this.distance.ifPresent(distance -> jsonObject.add("distance", distance.toJson()));
 			return jsonObject;
 		}
 

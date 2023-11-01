@@ -60,7 +60,7 @@ public class TickManager {
 		}
 	}
 
-	public boolean shouldTick(Entity entity) {
+	public boolean shouldSkipTick(Entity entity) {
 		return !this.shouldTick() && !(entity instanceof PlayerEntity) && entity.getPlayerPassengers() <= 0;
 	}
 }

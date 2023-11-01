@@ -10,7 +10,13 @@ public class BatAnimations {
 		.addBoneAnimation(
 			"head",
 			new Transformation(
-				Transformation.Targets.TRANSLATE, new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, -2.5F, 0.0F), Transformation.Interpolations.LINEAR)
+				Transformation.Targets.ROTATE, new Keyframe(0.0F, AnimationHelper.createRotationalVector(180.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"head",
+			new Transformation(
+				Transformation.Targets.TRANSLATE, new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.5F, 0.0F), Transformation.Interpolations.LINEAR)
 			)
 		)
 		.addBoneAnimation(
@@ -22,7 +28,7 @@ public class BatAnimations {
 		.addBoneAnimation(
 			"body",
 			new Transformation(
-				Transformation.Targets.TRANSLATE, new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, -2.5F, 0.0F), Transformation.Interpolations.LINEAR)
+				Transformation.Targets.TRANSLATE, new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.5F, 0.0F), Transformation.Interpolations.LINEAR)
 			)
 		)
 		.addBoneAnimation(

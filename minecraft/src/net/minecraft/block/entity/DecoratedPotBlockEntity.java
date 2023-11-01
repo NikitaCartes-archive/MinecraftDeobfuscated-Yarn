@@ -3,6 +3,7 @@ package net.minecraft.block.entity;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.inventory.LootableInventory;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -19,7 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class DecoratedPotBlockEntity extends BlockEntity implements SingleStackInventory {
+public class DecoratedPotBlockEntity extends BlockEntity implements LootableInventory, SingleStackInventory {
 	public static final String SHERDS_NBT_KEY = "sherds";
 	public static final String ITEM_NBT_KEY = "item";
 	public static final int field_46660 = 1;
@@ -28,6 +29,9 @@ public class DecoratedPotBlockEntity extends BlockEntity implements SingleStackI
 	public DecoratedPotBlockEntity.WobbleType lastWobbleType;
 	private DecoratedPotBlockEntity.Sherds sherds;
 	private ItemStack stack = ItemStack.EMPTY;
+	@Nullable
+	protected Identifier lootTableId;
+	protected long lootTableSeed;
 
 	public DecoratedPotBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.DECORATED_POT, pos, state);
@@ -38,7 +42,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements SingleStackI
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		this.sherds.toNbt(nbt);
-		if (!this.stack.isEmpty()) {
+		if (!this.writeLootTable(nbt) && !this.stack.isEmpty()) {
 			nbt.put("item", this.stack.writeNbt(new NbtCompound()));
 		}
 	}
@@ -47,10 +51,12 @@ public class DecoratedPotBlockEntity extends BlockEntity implements SingleStackI
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		this.sherds = DecoratedPotBlockEntity.Sherds.fromNbt(nbt);
-		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
-			this.stack = ItemStack.fromNbt(nbt.getCompound("item"));
-		} else {
-			this.stack = ItemStack.EMPTY;
+		if (!this.readLootTable(nbt)) {
+			if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
+				this.stack = ItemStack.fromNbt(nbt.getCompound("item"));
+			} else {
+				this.stack = ItemStack.EMPTY;
+			}
 		}
 	}
 
@@ -86,13 +92,36 @@ public class DecoratedPotBlockEntity extends BlockEntity implements SingleStackI
 		return itemStack;
 	}
 
+	@Nullable
+	@Override
+	public Identifier getLootTableId() {
+		return this.lootTableId;
+	}
+
+	@Override
+	public void setLootTableId(@Nullable Identifier lootTableId) {
+		this.lootTableId = lootTableId;
+	}
+
+	@Override
+	public long getLootTableSeed() {
+		return this.lootTableSeed;
+	}
+
+	@Override
+	public void setLootTableSeed(long lootTableSeed) {
+		this.lootTableSeed = lootTableSeed;
+	}
+
 	@Override
 	public ItemStack getStack() {
+		this.generateLoot(null);
 		return this.stack;
 	}
 
 	@Override
 	public ItemStack decreaseStack(int count) {
+		this.generateLoot(null);
 		ItemStack itemStack = this.stack.split(count);
 		if (this.stack.isEmpty()) {
 			this.stack = ItemStack.EMPTY;
@@ -103,6 +132,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements SingleStackI
 
 	@Override
 	public void setStack(ItemStack stack) {
+		this.generateLoot(null);
 		this.stack = stack;
 	}
 

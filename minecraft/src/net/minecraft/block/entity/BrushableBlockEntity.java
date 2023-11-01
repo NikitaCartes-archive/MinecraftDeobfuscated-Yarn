@@ -31,7 +31,7 @@ import net.minecraft.world.WorldEvents;
 import org.slf4j.Logger;
 
 public class BrushableBlockEntity extends BlockEntity {
-	private static final Logger field_42801 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String LOOT_TABLE_NBT_KEY = "LootTable";
 	private static final String LOOT_TABLE_SEED_NBT_KEY = "LootTableSeed";
 	private static final String HIT_DIRECTION_NBT_KEY = "hit_direction";
@@ -100,7 +100,7 @@ public class BrushableBlockEntity extends BlockEntity {
 				case 0 -> ItemStack.EMPTY;
 				case 1 -> (ItemStack)objectArrayList.get(0);
 				default -> {
-					field_42801.warn("Expected max 1 loot from loot table " + this.lootTable + " got " + objectArrayList.size());
+					LOGGER.warn("Expected max 1 loot from loot table " + this.lootTable + " got " + objectArrayList.size());
 					yield objectArrayList.get(0);
 				}
 			};

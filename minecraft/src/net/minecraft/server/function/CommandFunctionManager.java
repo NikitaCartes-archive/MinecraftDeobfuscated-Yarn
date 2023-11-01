@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import net.minecraft.command.CommandExecutionContext;
+import net.minecraft.command.ReturnValueConsumer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -80,7 +81,7 @@ public class CommandFunctionManager {
 
 		try {
 			Procedure<ServerCommandSource> procedure = function.withMacroReplaced(null, this.getDispatcher(), source);
-			CommandManager.callWithContext(source, context -> context.enqueueProcedureCall(procedure, source));
+			CommandManager.callWithContext(source, context -> CommandExecutionContext.enqueueProcedureCall(context, procedure, source, ReturnValueConsumer.EMPTY));
 		} catch (MacroException var8) {
 		} finally {
 			profiler.pop();

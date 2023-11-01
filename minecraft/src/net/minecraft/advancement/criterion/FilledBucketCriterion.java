@@ -29,8 +29,8 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 			this.item = item;
 		}
 
-		public static AdvancementCriterion<FilledBucketCriterion.Conditions> create(ItemPredicate.Builder builder) {
-			return Criteria.FILLED_BUCKET.create(new FilledBucketCriterion.Conditions(Optional.empty(), Optional.of(builder.build())));
+		public static AdvancementCriterion<FilledBucketCriterion.Conditions> create(ItemPredicate.Builder item) {
+			return Criteria.FILLED_BUCKET.create(new FilledBucketCriterion.Conditions(Optional.empty(), Optional.of(item.build())));
 		}
 
 		public boolean matches(ItemStack stack) {
@@ -40,7 +40,7 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
+			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
 			return jsonObject;
 		}
 	}

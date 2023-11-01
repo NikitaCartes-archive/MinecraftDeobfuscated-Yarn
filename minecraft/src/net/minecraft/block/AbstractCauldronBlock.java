@@ -58,9 +58,9 @@ public abstract class AbstractCauldronBlock extends Block {
 	 * <p>The behavior map must match {@link CauldronBehavior#createMap} by providing
 	 * a nonnull value for <em>all</em> items.
 	 */
-	public AbstractCauldronBlock(AbstractBlock.Settings settings, CauldronBehavior.CauldronBehaviorMap cauldronBehaviorMap) {
+	public AbstractCauldronBlock(AbstractBlock.Settings settings, CauldronBehavior.CauldronBehaviorMap behaviorMap) {
 		super(settings);
-		this.behaviorMap = cauldronBehaviorMap;
+		this.behaviorMap = behaviorMap;
 	}
 
 	protected double getFluidHeight(BlockState state) {

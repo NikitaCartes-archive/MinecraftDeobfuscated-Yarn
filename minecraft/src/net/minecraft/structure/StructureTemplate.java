@@ -19,7 +19,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -27,6 +26,7 @@ import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.LootableInventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
 import net.minecraft.nbt.NbtElement;
@@ -273,7 +273,7 @@ public class StructureTemplate {
 							if (structureBlockInfo.nbt != null) {
 								BlockEntity blockEntity = world.getBlockEntity(blockPos);
 								if (blockEntity != null) {
-									if (blockEntity instanceof LootableContainerBlockEntity) {
+									if (blockEntity instanceof LootableInventory) {
 										structureBlockInfo.nbt.putLong("LootTableSeed", random.nextLong());
 									}
 

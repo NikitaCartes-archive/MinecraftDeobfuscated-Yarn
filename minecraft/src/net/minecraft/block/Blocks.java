@@ -395,7 +395,7 @@ public class Blocks {
 	public static final Block JUNGLE_LOG = register("jungle_log", createLogBlock(MapColor.DIRT_BROWN, MapColor.SPRUCE_BROWN));
 	public static final Block ACACIA_LOG = register("acacia_log", createLogBlock(MapColor.ORANGE, MapColor.STONE_GRAY));
 	public static final Block CHERRY_LOG = register(
-		"cherry_log", createBambooBlock(MapColor.TERRACOTTA_WHITE, MapColor.TERRACOTTA_GRAY, BlockSoundGroup.CHERRY_WOOD)
+		"cherry_log", createLogBlock(MapColor.TERRACOTTA_WHITE, MapColor.TERRACOTTA_GRAY, BlockSoundGroup.CHERRY_WOOD)
 	);
 	public static final Block DARK_OAK_LOG = register("dark_oak_log", createLogBlock(MapColor.BROWN, MapColor.BROWN));
 	public static final Block MANGROVE_LOG = register("mangrove_log", createLogBlock(MapColor.RED, MapColor.SPRUCE_BROWN));
@@ -418,19 +418,19 @@ public class Blocks {
 		"muddy_mangrove_roots",
 		new PillarBlock(AbstractBlock.Settings.create().mapColor(MapColor.SPRUCE_BROWN).strength(0.7F).sounds(BlockSoundGroup.MUDDY_MANGROVE_ROOTS))
 	);
-	public static final Block BAMBOO_BLOCK = register("bamboo_block", createBambooBlock(MapColor.YELLOW, MapColor.DARK_GREEN, BlockSoundGroup.BAMBOO_WOOD));
+	public static final Block BAMBOO_BLOCK = register("bamboo_block", createLogBlock(MapColor.YELLOW, MapColor.DARK_GREEN, BlockSoundGroup.BAMBOO_WOOD));
 	public static final Block STRIPPED_SPRUCE_LOG = register("stripped_spruce_log", createLogBlock(MapColor.SPRUCE_BROWN, MapColor.SPRUCE_BROWN));
 	public static final Block STRIPPED_BIRCH_LOG = register("stripped_birch_log", createLogBlock(MapColor.PALE_YELLOW, MapColor.PALE_YELLOW));
 	public static final Block STRIPPED_JUNGLE_LOG = register("stripped_jungle_log", createLogBlock(MapColor.DIRT_BROWN, MapColor.DIRT_BROWN));
 	public static final Block STRIPPED_ACACIA_LOG = register("stripped_acacia_log", createLogBlock(MapColor.ORANGE, MapColor.ORANGE));
 	public static final Block STRIPPED_CHERRY_LOG = register(
-		"stripped_cherry_log", createBambooBlock(MapColor.TERRACOTTA_WHITE, MapColor.TERRACOTTA_PINK, BlockSoundGroup.CHERRY_WOOD)
+		"stripped_cherry_log", createLogBlock(MapColor.TERRACOTTA_WHITE, MapColor.TERRACOTTA_PINK, BlockSoundGroup.CHERRY_WOOD)
 	);
 	public static final Block STRIPPED_DARK_OAK_LOG = register("stripped_dark_oak_log", createLogBlock(MapColor.BROWN, MapColor.BROWN));
 	public static final Block STRIPPED_OAK_LOG = register("stripped_oak_log", createLogBlock(MapColor.OAK_TAN, MapColor.OAK_TAN));
 	public static final Block STRIPPED_MANGROVE_LOG = register("stripped_mangrove_log", createLogBlock(MapColor.RED, MapColor.RED));
 	public static final Block STRIPPED_BAMBOO_BLOCK = register(
-		"stripped_bamboo_block", createBambooBlock(MapColor.YELLOW, MapColor.YELLOW, BlockSoundGroup.BAMBOO_WOOD)
+		"stripped_bamboo_block", createLogBlock(MapColor.YELLOW, MapColor.YELLOW, BlockSoundGroup.BAMBOO_WOOD)
 	);
 	public static final Block OAK_WOOD = register(
 		"oak_wood",
@@ -4902,7 +4902,7 @@ public class Blocks {
 	);
 	public static final Block BAMBOO_SAPLING = register(
 		"bamboo_sapling",
-		new BambooSaplingBlock(
+		new BambooShootBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.OAK_TAN)
 				.solid()
@@ -6101,7 +6101,7 @@ public class Blocks {
 	);
 	public static final Block COPPER_BULB = register(
 		"copper_bulb",
-		new OxidizableCopperBulbBlock(
+		new OxidizableBulbBlock(
 			Oxidizable.OxidationLevel.UNAFFECTED,
 			AbstractBlock.Settings.create()
 				.mapColor(COPPER_BLOCK.getDefaultMapColor())
@@ -6116,7 +6116,7 @@ public class Blocks {
 	);
 	public static final Block EXPOSED_COPPER_BULB = register(
 		"exposed_copper_bulb",
-		new OxidizableCopperBulbBlock(
+		new OxidizableBulbBlock(
 			Oxidizable.OxidationLevel.EXPOSED,
 			AbstractBlock.Settings.copy(COPPER_BULB)
 				.mapColor(MapColor.TERRACOTTA_LIGHT_GRAY)
@@ -6126,29 +6126,27 @@ public class Blocks {
 	);
 	public static final Block WEATHERED_COPPER_BULB = register(
 		"weathered_copper_bulb",
-		new OxidizableCopperBulbBlock(
+		new OxidizableBulbBlock(
 			Oxidizable.OxidationLevel.WEATHERED,
 			AbstractBlock.Settings.copy(COPPER_BULB).mapColor(MapColor.DARK_AQUA).solidBlock(Blocks::never).luminance(createLightLevelFromLitBlockState(8))
 		)
 	);
 	public static final Block OXIDIZED_COPPER_BULB = register(
 		"oxidized_copper_bulb",
-		new OxidizableCopperBulbBlock(
+		new OxidizableBulbBlock(
 			Oxidizable.OxidationLevel.OXIDIZED,
 			AbstractBlock.Settings.copy(COPPER_BULB).mapColor(MapColor.TEAL).solidBlock(Blocks::never).luminance(createLightLevelFromLitBlockState(4))
 		)
 	);
-	public static final Block WAXED_COPPER_BULB = register(
-		"waxed_copper_bulb", new CopperBulbBlock(AbstractBlock.Settings.copy(COPPER_BULB).solidBlock(Blocks::never))
-	);
+	public static final Block WAXED_COPPER_BULB = register("waxed_copper_bulb", new BulbBlock(AbstractBlock.Settings.copy(COPPER_BULB).solidBlock(Blocks::never)));
 	public static final Block WAXED_EXPOSED_COPPER_BULB = register(
-		"waxed_exposed_copper_bulb", new CopperBulbBlock(AbstractBlock.Settings.copy(EXPOSED_COPPER_BULB).solidBlock(Blocks::never))
+		"waxed_exposed_copper_bulb", new BulbBlock(AbstractBlock.Settings.copy(EXPOSED_COPPER_BULB).solidBlock(Blocks::never))
 	);
 	public static final Block WAXED_WEATHERED_COPPER_BULB = register(
-		"waxed_weathered_copper_bulb", new CopperBulbBlock(AbstractBlock.Settings.copy(WEATHERED_COPPER_BULB).solidBlock(Blocks::never))
+		"waxed_weathered_copper_bulb", new BulbBlock(AbstractBlock.Settings.copy(WEATHERED_COPPER_BULB).solidBlock(Blocks::never))
 	);
 	public static final Block WAXED_OXIDIZED_COPPER_BULB = register(
-		"waxed_oxidized_copper_bulb", new CopperBulbBlock(AbstractBlock.Settings.copy(OXIDIZED_COPPER_BULB).solidBlock(Blocks::never))
+		"waxed_oxidized_copper_bulb", new BulbBlock(AbstractBlock.Settings.copy(OXIDIZED_COPPER_BULB).solidBlock(Blocks::never))
 	);
 	public static final Block LIGHTNING_ROD = register(
 		"lightning_rod",
@@ -6474,7 +6472,7 @@ public class Blocks {
 		);
 	}
 
-	private static Block createBambooBlock(MapColor topMapColor, MapColor sideMapColor, BlockSoundGroup soundGroup) {
+	private static Block createLogBlock(MapColor topMapColor, MapColor sideMapColor, BlockSoundGroup soundGroup) {
 		return new PillarBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor)

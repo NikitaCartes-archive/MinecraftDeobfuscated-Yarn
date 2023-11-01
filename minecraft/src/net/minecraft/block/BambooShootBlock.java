@@ -18,17 +18,17 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class BambooSaplingBlock extends Block implements Fertilizable {
-	public static final MapCodec<BambooSaplingBlock> CODEC = createCodec(BambooSaplingBlock::new);
+public class BambooShootBlock extends Block implements Fertilizable {
+	public static final MapCodec<BambooShootBlock> CODEC = createCodec(BambooShootBlock::new);
 	protected static final float field_31005 = 4.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
 
 	@Override
-	public MapCodec<BambooSaplingBlock> getCodec() {
+	public MapCodec<BambooShootBlock> getCodec() {
 		return CODEC;
 	}
 
-	public BambooSaplingBlock(AbstractBlock.Settings settings) {
+	public BambooShootBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

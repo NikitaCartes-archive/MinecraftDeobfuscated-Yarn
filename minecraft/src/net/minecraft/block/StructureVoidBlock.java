@@ -7,7 +7,7 @@ import net.minecraft.world.BlockView;
 
 public class StructureVoidBlock extends Block {
 	public static final MapCodec<StructureVoidBlock> CODEC = createCodec(StructureVoidBlock::new);
-	private static final double field_31257 = 5.0;
+	private static final double SHAPE_MARGIN = 5.0;
 	private static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
 
 	@Override

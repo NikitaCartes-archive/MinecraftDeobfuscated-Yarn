@@ -3,7 +3,7 @@ package net.minecraft.block;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
-import net.minecraft.block.enums.JigsawOrientation;
+import net.minecraft.block.enums.Orientation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class JigsawBlock extends Block implements BlockEntityProvider, OperatorBlock {
 	public static final MapCodec<JigsawBlock> CODEC = createCodec(JigsawBlock::new);
-	public static final EnumProperty<JigsawOrientation> ORIENTATION = Properties.ORIENTATION;
+	public static final EnumProperty<Orientation> ORIENTATION = Properties.ORIENTATION;
 
 	@Override
 	public MapCodec<JigsawBlock> getCodec() {
@@ -30,7 +30,7 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 
 	protected JigsawBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(ORIENTATION, JigsawOrientation.NORTH_UP));
+		this.setDefaultState(this.stateManager.getDefaultState().with(ORIENTATION, Orientation.NORTH_UP));
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 			direction2 = Direction.UP;
 		}
 
-		return this.getDefaultState().with(ORIENTATION, JigsawOrientation.byDirections(direction, direction2));
+		return this.getDefaultState().with(ORIENTATION, Orientation.byDirections(direction, direction2));
 	}
 
 	@Override
@@ -89,10 +89,10 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 	}
 
 	public static Direction getFacing(BlockState state) {
-		return ((JigsawOrientation)state.get(ORIENTATION)).getFacing();
+		return ((Orientation)state.get(ORIENTATION)).getFacing();
 	}
 
 	public static Direction getRotation(BlockState state) {
-		return ((JigsawOrientation)state.get(ORIENTATION)).getRotation();
+		return ((Orientation)state.get(ORIENTATION)).getRotation();
 	}
 }

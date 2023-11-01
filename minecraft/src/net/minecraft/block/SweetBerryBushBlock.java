@@ -27,7 +27,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	public static final MapCodec<SweetBerryBushBlock> CODEC = createCodec(SweetBerryBushBlock::new);
-	private static final float field_31260 = 0.003F;
+	private static final float MIN_MOVEMENT_FOR_DAMAGE = 0.003F;
 	public static final int MAX_AGE = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
 	private static final VoxelShape SMALL_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 8.0, 13.0);

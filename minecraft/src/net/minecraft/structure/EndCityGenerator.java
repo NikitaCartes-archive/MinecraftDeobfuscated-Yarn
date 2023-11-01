@@ -2,10 +2,10 @@ package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.inventory.LootableInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
@@ -305,7 +305,7 @@ public class EndCityGenerator {
 			if (metadata.startsWith("Chest")) {
 				BlockPos blockPos = pos.down();
 				if (boundingBox.contains(blockPos)) {
-					LootableContainerBlockEntity.setLootTable(world, random, blockPos, LootTables.END_CITY_TREASURE_CHEST);
+					LootableInventory.setLootTable(world, random, blockPos, LootTables.END_CITY_TREASURE_CHEST);
 				}
 			} else if (boundingBox.contains(pos) && World.isValid(pos)) {
 				if (metadata.startsWith("Sentry")) {
