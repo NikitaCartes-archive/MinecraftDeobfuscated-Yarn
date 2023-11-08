@@ -264,7 +264,7 @@ public class TestCommand {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity((BlockPos)optional.get());
 			BlockPos blockPos2 = blockPos.subtract((Vec3i)optional.get());
 			String string = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
-			String string2 = structureBlockBlockEntity.getStructurePath();
+			String string2 = structureBlockBlockEntity.getMetadata();
 			Text text = Text.literal(string)
 				.setStyle(
 					Style.EMPTY
@@ -311,7 +311,7 @@ public class TestCommand {
 
 	private static void run(ServerWorld world, BlockPos pos, @Nullable TestSet tests, boolean rerunUntilFailed) {
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
-		String string = structureBlockBlockEntity.getStructurePath();
+		String string = structureBlockBlockEntity.getMetadata();
 		Optional<TestFunction> optional = TestFunctions.getTestFunction(string);
 		if (optional.isEmpty()) {
 			sendMessage(world, "Test function for test " + string + " could not be found", Formatting.RED);
@@ -483,11 +483,12 @@ public class TestCommand {
 	}
 
 	private static int export(ServerCommandSource source, StructureBlockBlockEntity blockEntity) {
+		String string = blockEntity.getTemplateName();
 		if (!blockEntity.saveStructure(true)) {
-			sendMessage(source, "Failed to save structure " + blockEntity.getTemplateName());
+			sendMessage(source, "Failed to save structure " + string);
 		}
 
-		return executeExport(source, blockEntity.getTemplateName());
+		return executeExport(source, string);
 	}
 
 	private static int executeExport(ServerCommandSource source, String testName) {

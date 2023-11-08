@@ -13,10 +13,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.spawner.Spawner;
+import net.minecraft.world.spawner.SpecialSpawner;
 import org.slf4j.Logger;
 
-public class ZombieSiegeManager implements Spawner {
+public class ZombieSiegeManager implements SpecialSpawner {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private boolean spawned;
 	private ZombieSiegeManager.State state = ZombieSiegeManager.State.SIEGE_DONE;

@@ -17,7 +17,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
 
-public class PhantomSpawner implements Spawner {
+public class PhantomSpawner implements SpecialSpawner {
 	private int cooldown;
 
 	@Override

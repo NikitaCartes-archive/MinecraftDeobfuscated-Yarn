@@ -9,10 +9,10 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.dynamic.Codecs;
 
 public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
-	private final CookingRecipeSerializer.RecipeFactory<T> recipeFactory;
+	private final AbstractCookingRecipe.RecipeFactory<T> recipeFactory;
 	private final Codec<T> codec;
 
-	public CookingRecipeSerializer(CookingRecipeSerializer.RecipeFactory<T> recipeFactory, int cookingTime) {
+	public CookingRecipeSerializer(AbstractCookingRecipe.RecipeFactory<T> recipeFactory, int cookingTime) {
 		this.recipeFactory = recipeFactory;
 		this.codec = RecordCodecBuilder.create(
 			instance -> instance.group(
@@ -51,7 +51,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		packetByteBuf.writeVarInt(abstractCookingRecipe.cookingTime);
 	}
 
-	interface RecipeFactory<T extends AbstractCookingRecipe> {
-		T create(String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime);
+	public AbstractCookingRecipe create(String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
+		return this.recipeFactory.create(group, category, ingredient, result, experience, cookingTime);
 	}
 }

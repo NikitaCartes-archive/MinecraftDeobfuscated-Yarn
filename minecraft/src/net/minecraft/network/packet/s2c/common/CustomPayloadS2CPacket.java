@@ -10,6 +10,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.UnknownCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugBeeCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugBrainCustomPayload;
+import net.minecraft.network.packet.s2c.custom.DebugBreezeCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugGameEventCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugGameEventListenersCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugGameTestAddMarkerCustomPayload;
@@ -33,6 +34,7 @@ public record CustomPayloadS2CPacket(CustomPayload payload) implements Packet<Cl
 		.put(BrandCustomPayload.ID, BrandCustomPayload::new)
 		.put(DebugBeeCustomPayload.ID, DebugBeeCustomPayload::new)
 		.put(DebugBrainCustomPayload.ID, DebugBrainCustomPayload::new)
+		.put(DebugBreezeCustomPayload.ID, DebugBreezeCustomPayload::new)
 		.put(DebugGameEventCustomPayload.ID, DebugGameEventCustomPayload::new)
 		.put(DebugGameEventListenersCustomPayload.ID, DebugGameEventListenersCustomPayload::new)
 		.put(DebugGameTestAddMarkerCustomPayload.ID, DebugGameTestAddMarkerCustomPayload::new)

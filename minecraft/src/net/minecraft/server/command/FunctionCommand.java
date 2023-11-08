@@ -14,13 +14,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_8939;
 import net.minecraft.command.CommandFunctionAction;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ControlFlowAware;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.ExecutionControl;
 import net.minecraft.command.ExecutionFlags;
+import net.minecraft.command.FallthroughCommandAction;
 import net.minecraft.command.ReturnValueConsumer;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.NbtCompoundArgumentType;
@@ -167,7 +167,7 @@ public class FunctionCommand {
 		}
 
 		if (returnValueConsumer != ReturnValueConsumer.EMPTY) {
-			control.enqueueAction(class_8939.method_54899());
+			control.enqueueAction(FallthroughCommandAction.getInstance());
 		}
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.recipe;
 
+import java.util.Map;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -7,7 +8,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class MapExtendingRecipe extends ShapedRecipe {
@@ -15,20 +15,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 		super(
 			"",
 			category,
-			3,
-			3,
-			DefaultedList.copyOf(
-				Ingredient.EMPTY,
-				Ingredient.ofItems(Items.PAPER),
-				Ingredient.ofItems(Items.PAPER),
-				Ingredient.ofItems(Items.PAPER),
-				Ingredient.ofItems(Items.PAPER),
-				Ingredient.ofItems(Items.FILLED_MAP),
-				Ingredient.ofItems(Items.PAPER),
-				Ingredient.ofItems(Items.PAPER),
-				Ingredient.ofItems(Items.PAPER),
-				Ingredient.ofItems(Items.PAPER)
-			),
+			RawShapedRecipe.create(Map.of('#', Ingredient.ofItems(Items.PAPER), 'x', Ingredient.ofItems(Items.FILLED_MAP)), "###", "#x#", "###"),
 			new ItemStack(Items.MAP)
 		);
 	}

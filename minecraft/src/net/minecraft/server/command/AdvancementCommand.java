@@ -3,6 +3,9 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +15,6 @@ import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlacedAdvancement;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -20,6 +22,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 public class AdvancementCommand {
+	private static final DynamicCommandExceptionType GENERIC_EXCEPTION = new DynamicCommandExceptionType(message -> (Text)message);
+	private static final Dynamic2CommandExceptionType CRITERION_NOT_FOUND_EXCEPTION = new Dynamic2CommandExceptionType(
+		(advancement, criterion) -> Text.translatable("commands.advancement.criterionNotFound", advancement, criterion)
+	);
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
 		Collection<AdvancementEntry> collection = context.getSource().getServer().getAdvancementLoader().getAdvancements();
 		return CommandSource.suggestIdentifiers(collection.stream().map(AdvancementEntry::id), builder);
@@ -222,7 +228,7 @@ public class AdvancementCommand {
 
 	private static int executeAdvancement(
 		ServerCommandSource source, Collection<ServerPlayerEntity> targets, AdvancementCommand.Operation operation, Collection<AdvancementEntry> selection
-	) {
+	) throws CommandSyntaxException {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
@@ -232,7 +238,7 @@ public class AdvancementCommand {
 		if (i == 0) {
 			if (selection.size() == 1) {
 				if (targets.size() == 1) {
-					throw new CommandException(
+					throw GENERIC_EXCEPTION.create(
 						Text.translatable(
 							operation.getCommandPrefix() + ".one.to.one.failure",
 							Advancement.getNameFromIdentity((AdvancementEntry)selection.iterator().next()),
@@ -240,20 +246,20 @@ public class AdvancementCommand {
 						)
 					);
 				} else {
-					throw new CommandException(
+					throw GENERIC_EXCEPTION.create(
 						Text.translatable(
 							operation.getCommandPrefix() + ".one.to.many.failure", Advancement.getNameFromIdentity((AdvancementEntry)selection.iterator().next()), targets.size()
 						)
 					);
 				}
 			} else if (targets.size() == 1) {
-				throw new CommandException(
+				throw GENERIC_EXCEPTION.create(
 					Text.translatable(
 						operation.getCommandPrefix() + ".many.to.one.failure", selection.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 					)
 				);
 			} else {
-				throw new CommandException(Text.translatable(operation.getCommandPrefix() + ".many.to.many.failure", selection.size(), targets.size()));
+				throw GENERIC_EXCEPTION.create(Text.translatable(operation.getCommandPrefix() + ".many.to.many.failure", selection.size(), targets.size()));
 			}
 		} else {
 			if (selection.size() == 1) {
@@ -291,11 +297,11 @@ public class AdvancementCommand {
 
 	private static int executeCriterion(
 		ServerCommandSource source, Collection<ServerPlayerEntity> targets, AdvancementCommand.Operation operation, AdvancementEntry advancement, String criterion
-	) {
+	) throws CommandSyntaxException {
 		int i = 0;
 		Advancement advancement2 = advancement.value();
 		if (!advancement2.criteria().containsKey(criterion)) {
-			throw new CommandException(Text.translatable("commands.advancement.criterionNotFound", Advancement.getNameFromIdentity(advancement), criterion));
+			throw CRITERION_NOT_FOUND_EXCEPTION.create(Advancement.getNameFromIdentity(advancement), criterion);
 		} else {
 			for (ServerPlayerEntity serverPlayerEntity : targets) {
 				if (operation.processEachCriterion(serverPlayerEntity, advancement, criterion)) {
@@ -305,7 +311,7 @@ public class AdvancementCommand {
 
 			if (i == 0) {
 				if (targets.size() == 1) {
-					throw new CommandException(
+					throw GENERIC_EXCEPTION.create(
 						Text.translatable(
 							operation.getCommandPrefix() + ".criterion.to.one.failure",
 							criterion,
@@ -314,7 +320,7 @@ public class AdvancementCommand {
 						)
 					);
 				} else {
-					throw new CommandException(
+					throw GENERIC_EXCEPTION.create(
 						Text.translatable(operation.getCommandPrefix() + ".criterion.to.many.failure", criterion, Advancement.getNameFromIdentity(advancement), targets.size())
 					);
 				}

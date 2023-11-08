@@ -7,6 +7,9 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.Bootstrap;
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockTypes;
 import net.minecraft.block.Blocks;
@@ -107,8 +110,7 @@ import org.slf4j.Logger;
 public class Registries {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<Identifier, Supplier<?>> DEFAULT_ENTRIES = Maps.<Identifier, Supplier<?>>newLinkedHashMap();
-	public static final Identifier ROOT_KEY = new Identifier("root");
-	private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry<>(RegistryKey.ofRegistry(ROOT_KEY), Lifecycle.stable());
+	private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry<>(RegistryKey.ofRegistry(RegistryKeys.ROOT), Lifecycle.stable());
 	public static final DefaultedRegistry<GameEvent> GAME_EVENT = createIntrusive(RegistryKeys.GAME_EVENT, "step", registry -> GameEvent.STEP);
 	public static final Registry<SoundEvent> SOUND_EVENT = create(RegistryKeys.SOUND_EVENT, registry -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = createIntrusive(RegistryKeys.FLUID, "empty", registry -> Fluids.EMPTY);
@@ -219,6 +221,7 @@ public class Registries {
 	public static final Registry<Instrument> INSTRUMENT = create(RegistryKeys.INSTRUMENT, Instruments::registerAndGetDefault);
 	public static final Registry<String> DECORATED_POT_PATTERN = create(RegistryKeys.DECORATED_POT_PATTERN, DecoratedPotPatterns::registerAndGetDefault);
 	public static final Registry<ItemGroup> ITEM_GROUP = create(RegistryKeys.ITEM_GROUP, ItemGroups::registerAndGetDefault);
+	public static final Registry<Criterion<?>> CRITERION = create(RegistryKeys.CRITERION, Criteria::getDefault);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {
@@ -256,6 +259,7 @@ public class Registries {
 	private static <T, R extends MutableRegistry<T>> R create(
 		RegistryKey<? extends Registry<T>> key, R registry, Registries.Initializer<T> initializer, Lifecycle lifecycle
 	) {
+		Bootstrap.ensureBootstrapped(() -> "registry " + key);
 		Identifier identifier = key.getValue();
 		DEFAULT_ENTRIES.put(identifier, (Supplier)() -> initializer.run(registry));
 		ROOT.add((RegistryKey<MutableRegistry<?>>)key, registry, lifecycle);

@@ -4,17 +4,17 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.spawner.MobSpawnerEntry;
+import net.minecraft.block.spawner.MobSpawnerLogic;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.MobSpawnerEntry;
-import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
 
-public class MobSpawnerBlockEntity extends BlockEntity {
+public class MobSpawnerBlockEntity extends BlockEntity implements Spawner {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void sendStatus(World world, BlockPos pos, int status) {
@@ -76,8 +76,10 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 		return true;
 	}
 
-	public void setEntityType(EntityType<?> entityType, Random random) {
-		this.logic.setEntityId(entityType, this.world, random, this.pos);
+	@Override
+	public void setEntityType(EntityType<?> type, Random random) {
+		this.logic.setEntityId(type, this.world, random, this.pos);
+		this.markDirty();
 	}
 
 	public MobSpawnerLogic getLogic() {

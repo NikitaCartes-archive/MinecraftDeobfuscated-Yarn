@@ -1,4 +1,4 @@
-package net.minecraft.world;
+package net.minecraft.block.spawner;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;

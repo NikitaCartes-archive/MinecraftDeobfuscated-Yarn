@@ -12,6 +12,7 @@ public class Models {
 		"cube_directional", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN
 	);
 	public static final Model CUBE_ALL = block("cube_all", TextureKey.ALL);
+	public static final Model CUBE_ALL_INNER_FACES = block("cube_all_inner_faces", TextureKey.ALL);
 	public static final Model CUBE_MIRRORED_ALL = block("cube_mirrored_all", "_mirrored", TextureKey.ALL);
 	public static final Model CUBE_NORTH_WEST_MIRRORED_ALL = block("cube_north_west_mirrored_all", "_north_west_mirrored", TextureKey.ALL);
 	public static final Model CUBE_COLUMN_UV_LOCKED_X = block("cube_column_uv_locked_x", "_x", TextureKey.END, TextureKey.SIDE);
@@ -22,6 +23,7 @@ public class Models {
 	public static final Model CUBE_COLUMN_MIRRORED = block("cube_column_mirrored", "_mirrored", TextureKey.END, TextureKey.SIDE);
 	public static final Model CUBE_TOP = block("cube_top", TextureKey.TOP, TextureKey.SIDE);
 	public static final Model CUBE_BOTTOM_TOP = block("cube_bottom_top", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE);
+	public static final Model CUBE_BOTTOM_TOP_INNER_FACES = block("cube_bottom_top_inner_faces", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE);
 	public static final Model ORIENTABLE = block("orientable", TextureKey.TOP, TextureKey.FRONT, TextureKey.SIDE);
 	public static final Model ORIENTABLE_WITH_BOTTOM = block("orientable_with_bottom", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.FRONT);
 	public static final Model ORIENTABLE_VERTICAL = block("orientable_vertical", "_vertical", TextureKey.FRONT, TextureKey.SIDE);

@@ -163,12 +163,10 @@ public class GameRules {
 		GameRules.Category.PLAYER,
 		GameRules.BooleanRule.create(
 			false,
-			(minecraftServer, booleanRule) -> {
-				for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
+			(server, rule) -> {
+				for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
 					serverPlayerEntity.networkHandler
-						.sendPacket(
-							new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, booleanRule.get() ? 1.0F : GameStateChangeS2CPacket.DEMO_OPEN_SCREEN)
-						);
+						.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, rule.get() ? 1.0F : GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 				}
 			}
 		)

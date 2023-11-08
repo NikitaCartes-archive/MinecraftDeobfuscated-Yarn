@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.Bootstrap;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.entry.RegistryEntryOwner;
@@ -95,7 +94,6 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	}
 
 	public SimpleRegistry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, boolean intrusive) {
-		Bootstrap.ensureBootstrapped(() -> "registry " + key);
 		this.key = key;
 		this.lifecycle = lifecycle;
 		if (intrusive) {

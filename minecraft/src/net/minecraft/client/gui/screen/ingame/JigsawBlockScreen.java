@@ -23,7 +23,6 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class JigsawBlockScreen extends Screen {
-	private static final int MAX_GENERATION_DEPTH = 7;
 	private static final Text JOINT_LABEL_TEXT = Text.translatable("jigsaw_block.joint_label");
 	private static final Text POOL_TEXT = Text.translatable("jigsaw_block.pool");
 	private static final Text NAME_TEXT = Text.translatable("jigsaw_block.name");
@@ -149,7 +148,7 @@ public class JigsawBlockScreen extends Screen {
 
 			@Override
 			protected void applyValue() {
-				JigsawBlockScreen.this.generationDepth = MathHelper.floor(MathHelper.clampedLerp(0.0, 7.0, this.value));
+				JigsawBlockScreen.this.generationDepth = MathHelper.floor(MathHelper.clampedLerp(0.0, 20.0, this.value));
 			}
 		});
 		this.addDrawableChild(

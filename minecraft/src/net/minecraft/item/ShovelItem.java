@@ -59,7 +59,7 @@ public class ShovelItem extends MiningToolItem {
 
 			if (blockState3 != null) {
 				if (!world.isClient) {
-					world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+					world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL_AND_REDRAW);
 					world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, blockState3));
 					if (playerEntity != null) {
 						context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));

@@ -22,6 +22,8 @@ public final class EntityTypeTags {
 	public static final TagKey<EntityType<?>> FALL_DAMAGE_IMMUNE = of("fall_damage_immune");
 	public static final TagKey<EntityType<?>> DISMOUNTS_UNDERWATER = of("dismounts_underwater");
 	public static final TagKey<EntityType<?>> NON_CONTROLLING_RIDER = of("non_controlling_rider");
+	public static final TagKey<EntityType<?>> DEFLECTS_ARROWS = of("deflects_arrows");
+	public static final TagKey<EntityType<?>> DEFLECTS_TRIDENTS = of("deflects_tridents");
 
 	private EntityTypeTags() {
 	}

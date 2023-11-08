@@ -119,7 +119,7 @@ public class ClientPlayerInteractionManager {
 				} else {
 					block.onBreak(world, pos, blockState, this.client.player);
 					FluidState fluidState = world.getFluidState(pos);
-					boolean bl = world.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+					boolean bl = world.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL_AND_REDRAW);
 					if (bl) {
 						block.onBroken(world, pos, blockState);
 					}

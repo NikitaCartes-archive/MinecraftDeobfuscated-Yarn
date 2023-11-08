@@ -1,24 +1,23 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCriterion.Conditions> {
-	public VillagerTradeCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<LootContextPredicate> optional2 = EntityPredicate.contextPredicateFromJson(jsonObject, "villager", advancementEntityPredicateDeserializer);
-		Optional<ItemPredicate> optional3 = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new VillagerTradeCriterion.Conditions(optional, optional2, optional3);
+	@Override
+	public Codec<VillagerTradeCriterion.Conditions> getConditionsCodec() {
+		return VillagerTradeCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, MerchantEntity merchant, ItemStack stack) {
@@ -26,15 +25,17 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		this.trigger(player, conditions -> conditions.matches(lootContext, stack));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<LootContextPredicate> villager;
-		private final Optional<ItemPredicate> item;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> villager, Optional<ItemPredicate> item) {
-			super(playerPredicate);
-			this.villager = villager;
-			this.item = item;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> villager, Optional<ItemPredicate> item)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<VillagerTradeCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(VillagerTradeCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "villager").forGetter(VillagerTradeCriterion.Conditions::villager),
+						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(VillagerTradeCriterion.Conditions::item)
+					)
+					.apply(instance, VillagerTradeCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<VillagerTradeCriterion.Conditions> any() {
 			return Criteria.VILLAGER_TRADE.create(new VillagerTradeCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.empty()));
@@ -56,11 +57,14 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
-			this.villager.ifPresent(villager -> jsonObject.add("villager", villager.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.villager, ".villager");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

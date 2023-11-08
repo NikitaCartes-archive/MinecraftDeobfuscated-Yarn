@@ -20,13 +20,14 @@ import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public final class JigsawStructure extends Structure {
 	public static final int MAX_SIZE = 128;
+	public static final int MAX_GENERATION_DEPTH = 20;
 	public static final Codec<JigsawStructure> CODEC = Codecs.validate(
 			RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
 							configCodecBuilder(instance),
 							StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
 							Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
-							Codec.intRange(0, 7).fieldOf("size").forGetter(structure -> structure.size),
+							Codec.intRange(0, 20).fieldOf("size").forGetter(structure -> structure.size),
 							HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
 							Codec.BOOL.fieldOf("use_expansion_hack").forGetter(structure -> structure.useExpansionHack),
 							Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),

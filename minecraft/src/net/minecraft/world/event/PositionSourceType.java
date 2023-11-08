@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 
 public interface PositionSourceType<T extends PositionSource> {
 	PositionSourceType<BlockPositionSource> BLOCK = register("block", new BlockPositionSource.Type());
@@ -21,15 +20,16 @@ public interface PositionSourceType<T extends PositionSource> {
 	}
 
 	static PositionSource read(PacketByteBuf buf) {
-		Identifier identifier = buf.readIdentifier();
-		return ((PositionSourceType)Registries.POSITION_SOURCE_TYPE
-				.getOrEmpty(identifier)
-				.orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier)))
-			.readFromBuf(buf);
+		PositionSourceType<?> positionSourceType = buf.readRegistryValue(Registries.POSITION_SOURCE_TYPE);
+		if (positionSourceType == null) {
+			throw new IllegalArgumentException("Unknown position source type");
+		} else {
+			return positionSourceType.readFromBuf(buf);
+		}
 	}
 
 	static <T extends PositionSource> void write(T positionSource, PacketByteBuf buf) {
-		buf.writeIdentifier(Registries.POSITION_SOURCE_TYPE.getId(positionSource.getType()));
+		buf.writeRegistryValue(Registries.POSITION_SOURCE_TYPE, positionSource.getType());
 		((PositionSourceType<T>)positionSource.getType()).writeToBuf(buf, positionSource);
 	}
 }

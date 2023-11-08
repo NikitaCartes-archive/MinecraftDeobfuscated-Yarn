@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -72,6 +73,7 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.explosion.Explosion;
 
 /**
  * An abstract class that defines some logic for {@link Block blocks}.
@@ -511,6 +513,31 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (state.hasBlockEntity() && !state.isOf(newState.getBlock())) {
 			world.removeBlockEntity(pos);
+		}
+	}
+
+	@Deprecated
+	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		if (!state.isAir() && explosion.getDestructionType() != Explosion.DestructionType.TRIGGER_BLOCK) {
+			Block block = state.getBlock();
+			boolean bl = explosion.getCausingEntity() instanceof PlayerEntity;
+			if (block.shouldDropItemsOnExplosion(explosion) && world instanceof ServerWorld serverWorld) {
+				BlockEntity blockEntity = state.hasBlockEntity() ? world.getBlockEntity(pos) : null;
+				LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(serverWorld)
+					.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+					.add(LootContextParameters.TOOL, ItemStack.EMPTY)
+					.addOptional(LootContextParameters.BLOCK_ENTITY, blockEntity)
+					.addOptional(LootContextParameters.THIS_ENTITY, explosion.getEntity());
+				if (explosion.getDestructionType() == Explosion.DestructionType.DESTROY_WITH_DECAY) {
+					builder.add(LootContextParameters.EXPLOSION_RADIUS, explosion.getPower());
+				}
+
+				state.onStacksDropped(serverWorld, pos, ItemStack.EMPTY, bl);
+				state.getDroppedStacks(builder).forEach(stack -> stackMerger.accept(stack, pos));
+			}
+
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+			block.onDestroyedByExplosion(world, pos, explosion);
 		}
 	}
 
@@ -1430,6 +1457,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.getBlock().onStateReplaced(this.asBlockState(), world, pos, state, moved);
 		}
 
+		public void onExploded(World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+			this.getBlock().onExploded(this.asBlockState(), world, pos, explosion, stackMerger);
+		}
+
 		public void scheduledTick(ServerWorld world, BlockPos pos, Random random) {
 			this.getBlock().scheduledTick(this.asBlockState(), world, pos, random);
 		}
@@ -1715,31 +1746,46 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public static AbstractBlock.Settings copy(AbstractBlock block) {
+			AbstractBlock.Settings settings = copyShallow(block);
+			AbstractBlock.Settings settings2 = block.settings;
+			settings.jumpVelocityMultiplier = settings2.jumpVelocityMultiplier;
+			settings.solidBlockPredicate = settings2.solidBlockPredicate;
+			settings.allowsSpawningPredicate = settings2.allowsSpawningPredicate;
+			settings.postProcessPredicate = settings2.postProcessPredicate;
+			settings.suffocationPredicate = settings2.suffocationPredicate;
+			settings.blockVisionPredicate = settings2.blockVisionPredicate;
+			settings.lootTableId = settings2.lootTableId;
+			return settings;
+		}
+
+		@Deprecated
+		public static AbstractBlock.Settings copyShallow(AbstractBlock block) {
 			AbstractBlock.Settings settings = new AbstractBlock.Settings();
-			settings.hardness = block.settings.hardness;
-			settings.resistance = block.settings.resistance;
-			settings.collidable = block.settings.collidable;
-			settings.randomTicks = block.settings.randomTicks;
-			settings.luminance = block.settings.luminance;
-			settings.mapColorProvider = block.settings.mapColorProvider;
-			settings.soundGroup = block.settings.soundGroup;
-			settings.slipperiness = block.settings.slipperiness;
-			settings.velocityMultiplier = block.settings.velocityMultiplier;
-			settings.dynamicBounds = block.settings.dynamicBounds;
-			settings.opaque = block.settings.opaque;
-			settings.isAir = block.settings.isAir;
-			settings.burnable = block.settings.burnable;
-			settings.liquid = block.settings.liquid;
-			settings.forceNotSolid = block.settings.forceNotSolid;
-			settings.forceSolid = block.settings.forceSolid;
-			settings.pistonBehavior = block.settings.pistonBehavior;
-			settings.toolRequired = block.settings.toolRequired;
-			settings.offsetter = block.settings.offsetter;
-			settings.blockBreakParticles = block.settings.blockBreakParticles;
-			settings.requiredFeatures = block.settings.requiredFeatures;
-			settings.emissiveLightingPredicate = block.settings.emissiveLightingPredicate;
-			settings.instrument = block.settings.instrument;
-			settings.replaceable = block.settings.replaceable;
+			AbstractBlock.Settings settings2 = block.settings;
+			settings.hardness = settings2.hardness;
+			settings.resistance = settings2.resistance;
+			settings.collidable = settings2.collidable;
+			settings.randomTicks = settings2.randomTicks;
+			settings.luminance = settings2.luminance;
+			settings.mapColorProvider = settings2.mapColorProvider;
+			settings.soundGroup = settings2.soundGroup;
+			settings.slipperiness = settings2.slipperiness;
+			settings.velocityMultiplier = settings2.velocityMultiplier;
+			settings.dynamicBounds = settings2.dynamicBounds;
+			settings.opaque = settings2.opaque;
+			settings.isAir = settings2.isAir;
+			settings.burnable = settings2.burnable;
+			settings.liquid = settings2.liquid;
+			settings.forceNotSolid = settings2.forceNotSolid;
+			settings.forceSolid = settings2.forceSolid;
+			settings.pistonBehavior = settings2.pistonBehavior;
+			settings.toolRequired = settings2.toolRequired;
+			settings.offsetter = settings2.offsetter;
+			settings.blockBreakParticles = settings2.blockBreakParticles;
+			settings.requiredFeatures = settings2.requiredFeatures;
+			settings.emissiveLightingPredicate = settings2.emissiveLightingPredicate;
+			settings.instrument = settings2.instrument;
+			settings.replaceable = settings2.replaceable;
 			return settings;
 		}
 

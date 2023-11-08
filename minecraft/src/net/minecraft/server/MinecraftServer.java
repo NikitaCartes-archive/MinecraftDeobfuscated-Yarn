@@ -156,7 +156,7 @@ import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.spawner.CatSpawner;
 import net.minecraft.world.spawner.PatrolSpawner;
 import net.minecraft.world.spawner.PhantomSpawner;
-import net.minecraft.world.spawner.Spawner;
+import net.minecraft.world.spawner.SpecialSpawner;
 import org.slf4j.Logger;
 
 /**
@@ -370,7 +370,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		GeneratorOptions generatorOptions = this.saveProperties.getGeneratorOptions();
 		long l = generatorOptions.getSeed();
 		long m = BiomeAccess.hashSeed(l);
-		List<Spawner> list = ImmutableList.of(
+		List<SpecialSpawner> list = ImmutableList.of(
 			new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties)
 		);
 		DimensionOptions dimensionOptions = registry.get(DimensionOptions.OVERWORLD);
@@ -992,7 +992,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.getNetworkIo().tick();
 		this.profiler.swap("players");
 		this.playerManager.updatePlayerLatency();
-		if (SharedConstants.isDevelopment) {
+		if (SharedConstants.isDevelopment && this.tickManager.shouldTick()) {
 			TestManager.INSTANCE.tick();
 		}
 

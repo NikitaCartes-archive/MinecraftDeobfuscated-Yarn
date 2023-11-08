@@ -12,13 +12,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.entry.RegistryEntryOwner;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 public class RegistryBuilder {
 	private final List<RegistryBuilder.RegistryInfo<?>> registries = new ArrayList();
@@ -28,6 +31,42 @@ public class RegistryBuilder {
 			@Override
 			public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
 				return wrapper.getOptional(key);
+			}
+		};
+	}
+
+	static <T> RegistryWrapper.Impl<T> createWrapper(
+		RegistryKey<? extends Registry<? extends T>> registryRef, Lifecycle lifecycle, Map<RegistryKey<T>, RegistryEntry.Reference<T>> entries
+	) {
+		return new RegistryWrapper.Impl<T>() {
+			@Override
+			public RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
+				return registryRef;
+			}
+
+			@Override
+			public Lifecycle getLifecycle() {
+				return lifecycle;
+			}
+
+			@Override
+			public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
+				return Optional.ofNullable((RegistryEntry.Reference)entries.get(key));
+			}
+
+			@Override
+			public Stream<RegistryEntry.Reference<T>> streamEntries() {
+				return entries.values().stream();
+			}
+
+			@Override
+			public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+				return Optional.empty();
+			}
+
+			@Override
+			public Stream<RegistryEntryList.Named<T>> streamTags() {
+				return Stream.empty();
 			}
 		};
 	}
@@ -49,29 +88,91 @@ public class RegistryBuilder {
 		return registries;
 	}
 
-	public RegistryWrapper.WrapperLookup createWrapperLookup(DynamicRegistryManager baseRegistryManager) {
-		RegistryBuilder.Registries registries = this.createBootstrappedRegistries(baseRegistryManager);
-		Stream<RegistryWrapper.Impl<?>> stream = baseRegistryManager.streamAllRegistries().map(entry -> entry.value().getReadOnlyWrapper());
-		Stream<RegistryWrapper.Impl<?>> stream2 = this.registries.stream().map(info -> info.init(registries).toWrapper());
-		RegistryWrapper.WrapperLookup wrapperLookup = RegistryWrapper.WrapperLookup.of(Stream.concat(stream, stream2.peek(registries::addOwner)));
-		registries.validateReferences();
+	private static RegistryWrapper.WrapperLookup createWrapperLookup(DynamicRegistryManager registryManager, Stream<RegistryWrapper.Impl<?>> additionalRegistries) {
+		Stream<RegistryWrapper.Impl<?>> stream = registryManager.streamAllRegistries().map(entry -> entry.value().getReadOnlyWrapper());
+		return RegistryWrapper.WrapperLookup.of(Stream.concat(stream, additionalRegistries));
+	}
+
+	public RegistryWrapper.WrapperLookup createWrapperLookup(DynamicRegistryManager registryManager) {
+		RegistryBuilder.Registries registries = this.createBootstrappedRegistries(registryManager);
+		Stream<RegistryWrapper.Impl<?>> stream = this.registries.stream().map(info -> info.init(registries).toWrapper(registries.owner));
+		RegistryWrapper.WrapperLookup wrapperLookup = createWrapperLookup(registryManager, stream);
+		registries.checkUnreferencedKeys();
+		registries.checkOrphanedValues();
 		registries.throwErrors();
 		return wrapperLookup;
 	}
 
-	public RegistryWrapper.WrapperLookup createWrapperLookup(DynamicRegistryManager baseRegistryManager, RegistryWrapper.WrapperLookup wrapperLookup) {
+	private RegistryWrapper.WrapperLookup createFullWrapperLookup(
+		DynamicRegistryManager registryManager,
+		RegistryWrapper.WrapperLookup base,
+		RegistryCloner.CloneableRegistries cloneableRegistries,
+		Map<RegistryKey<? extends Registry<?>>, RegistryBuilder.InitializedRegistry<?>> initializedRegistries,
+		RegistryWrapper.WrapperLookup patches
+	) {
+		RegistryBuilder.AnyOwner anyOwner = new RegistryBuilder.AnyOwner();
+		MutableObject<RegistryWrapper.WrapperLookup> mutableObject = new MutableObject<>();
+		List<RegistryWrapper.Impl<?>> list = (List<RegistryWrapper.Impl<?>>)initializedRegistries.keySet()
+			.stream()
+			.map(registryRef -> this.applyPatches(anyOwner, cloneableRegistries, registryRef, patches, base, mutableObject))
+			.peek(anyOwner::addOwner)
+			.collect(Collectors.toUnmodifiableList());
+		RegistryWrapper.WrapperLookup wrapperLookup = createWrapperLookup(registryManager, list.stream());
+		mutableObject.setValue(wrapperLookup);
+		return wrapperLookup;
+	}
+
+	private <T> RegistryWrapper.Impl<T> applyPatches(
+		RegistryEntryOwner<T> owner,
+		RegistryCloner.CloneableRegistries cloneableRegistries,
+		RegistryKey<? extends Registry<? extends T>> registryRef,
+		RegistryWrapper.WrapperLookup patches,
+		RegistryWrapper.WrapperLookup base,
+		MutableObject<RegistryWrapper.WrapperLookup> lazyWrapper
+	) {
+		RegistryCloner<T> registryCloner = cloneableRegistries.get(registryRef);
+		if (registryCloner == null) {
+			throw new NullPointerException("No cloner for " + registryRef.getValue());
+		} else {
+			Map<RegistryKey<T>, RegistryEntry.Reference<T>> map = new HashMap();
+			RegistryWrapper.Impl<T> impl = patches.getWrapperOrThrow(registryRef);
+			impl.streamEntries().forEach(entry -> {
+				RegistryKey<T> registryKey = entry.registryKey();
+				RegistryBuilder.LazyReferenceEntry<T> lazyReferenceEntry = new RegistryBuilder.LazyReferenceEntry<>(owner, registryKey);
+				lazyReferenceEntry.supplier = () -> registryCloner.clone((T)entry.value(), patches, lazyWrapper.getValue());
+				map.put(registryKey, lazyReferenceEntry);
+			});
+			RegistryWrapper.Impl<T> impl2 = base.getWrapperOrThrow(registryRef);
+			impl2.streamEntries().forEach(entry -> {
+				RegistryKey<T> registryKey = entry.registryKey();
+				map.computeIfAbsent(registryKey, key -> {
+					RegistryBuilder.LazyReferenceEntry<T> lazyReferenceEntry = new RegistryBuilder.LazyReferenceEntry<>(owner, registryKey);
+					lazyReferenceEntry.supplier = () -> registryCloner.clone((T)entry.value(), base, lazyWrapper.getValue());
+					return lazyReferenceEntry;
+				});
+			});
+			Lifecycle lifecycle = impl.getLifecycle().add(impl2.getLifecycle());
+			return createWrapper(registryRef, lifecycle, map);
+		}
+	}
+
+	public RegistryBuilder.FullPatchesRegistriesPair createWrapperLookup(
+		DynamicRegistryManager baseRegistryManager, RegistryWrapper.WrapperLookup wrapperLookup, RegistryCloner.CloneableRegistries cloneableRegistries
+	) {
 		RegistryBuilder.Registries registries = this.createBootstrappedRegistries(baseRegistryManager);
 		Map<RegistryKey<? extends Registry<?>>, RegistryBuilder.InitializedRegistry<?>> map = new HashMap();
-		registries.streamRegistries().forEach(registry -> map.put(registry.key, registry));
 		this.registries.stream().map(info -> info.init(registries)).forEach(registry -> map.put(registry.key, registry));
-		Stream<RegistryWrapper.Impl<?>> stream = baseRegistryManager.streamAllRegistries().map(entry -> entry.value().getReadOnlyWrapper());
-		RegistryWrapper.WrapperLookup wrapperLookup2 = RegistryWrapper.WrapperLookup.of(
-			Stream.concat(stream, map.values().stream().map(RegistryBuilder.InitializedRegistry::toWrapper).peek(registries::addOwner))
-		);
-		registries.setReferenceEntryValues(wrapperLookup);
-		registries.validateReferences();
+		Set<RegistryKey<? extends Registry<?>>> set = (Set<RegistryKey<? extends Registry<?>>>)baseRegistryManager.streamAllRegistryKeys()
+			.collect(Collectors.toUnmodifiableSet());
+		wrapperLookup.streamAllRegistryKeys()
+			.filter(key -> !set.contains(key))
+			.forEach(key -> map.putIfAbsent(key, new RegistryBuilder.InitializedRegistry(key, Lifecycle.stable(), Map.of())));
+		Stream<RegistryWrapper.Impl<?>> stream = map.values().stream().map(registry -> registry.toWrapper(registries.owner));
+		RegistryWrapper.WrapperLookup wrapperLookup2 = createWrapperLookup(baseRegistryManager, stream);
+		registries.checkOrphanedValues();
 		registries.throwErrors();
-		return wrapperLookup2;
+		RegistryWrapper.WrapperLookup wrapperLookup3 = this.createFullWrapperLookup(baseRegistryManager, wrapperLookup, cloneableRegistries, map, wrapperLookup2);
+		return new RegistryBuilder.FullPatchesRegistriesPair(wrapperLookup3, wrapperLookup2);
 	}
 
 	/**
@@ -89,6 +190,10 @@ public class RegistryBuilder {
 
 		public void addOwner(RegistryEntryOwner<?> owner) {
 			this.owners.add(owner);
+		}
+
+		public <T> RegistryEntryOwner<T> downcast() {
+			return this;
 		}
 	}
 
@@ -113,58 +218,56 @@ public class RegistryBuilder {
 		}
 	}
 
+	public static record FullPatchesRegistriesPair(RegistryWrapper.WrapperLookup full, RegistryWrapper.WrapperLookup patches) {
+	}
+
 	static record InitializedRegistry<T>(
 		RegistryKey<? extends Registry<? extends T>> key, Lifecycle lifecycle, Map<RegistryKey<T>, RegistryBuilder.EntryAssociatedValue<T>> values
 	) {
 
-		public RegistryWrapper.Impl<T> toWrapper() {
-			return new RegistryWrapper.Impl<T>() {
-				private final Map<RegistryKey<T>, RegistryEntry.Reference<T>> keysToEntries = (Map<RegistryKey<T>, RegistryEntry.Reference<T>>)InitializedRegistry.this.values
-					.entrySet()
-					.stream()
-					.collect(
-						Collectors.toUnmodifiableMap(
-							Entry::getKey,
-							entry -> {
-								RegistryBuilder.EntryAssociatedValue<T> entryAssociatedValue = (RegistryBuilder.EntryAssociatedValue<T>)entry.getValue();
-								RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)entryAssociatedValue.entry()
-									.orElseGet(() -> RegistryEntry.Reference.standAlone(this, (RegistryKey<T>)entry.getKey()));
-								reference.setValue(entryAssociatedValue.value().value());
-								return reference;
-							}
-						)
-					);
+		public RegistryWrapper.Impl<T> toWrapper(RegistryBuilder.AnyOwner anyOwner) {
+			Map<RegistryKey<T>, RegistryEntry.Reference<T>> map = (Map<RegistryKey<T>, RegistryEntry.Reference<T>>)this.values
+				.entrySet()
+				.stream()
+				.collect(
+					Collectors.toUnmodifiableMap(
+						Entry::getKey,
+						entry -> {
+							RegistryBuilder.EntryAssociatedValue<T> entryAssociatedValue = (RegistryBuilder.EntryAssociatedValue<T>)entry.getValue();
+							RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)entryAssociatedValue.entry()
+								.orElseGet(() -> RegistryEntry.Reference.standAlone(anyOwner.downcast(), (RegistryKey<T>)entry.getKey()));
+							reference.setValue(entryAssociatedValue.value().value());
+							return reference;
+						}
+					)
+				);
+			RegistryWrapper.Impl<T> impl = RegistryBuilder.createWrapper(this.key, this.lifecycle, map);
+			anyOwner.addOwner(impl);
+			return impl;
+		}
+	}
 
-				@Override
-				public RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
-					return InitializedRegistry.this.key;
-				}
+	static class LazyReferenceEntry<T> extends RegistryEntry.Reference<T> {
+		@Nullable
+		Supplier<T> supplier;
 
-				@Override
-				public Lifecycle getLifecycle() {
-					return InitializedRegistry.this.lifecycle;
-				}
+		protected LazyReferenceEntry(RegistryEntryOwner<T> owner, @Nullable RegistryKey<T> key) {
+			super(RegistryEntry.Reference.Type.STAND_ALONE, owner, key, null);
+		}
 
-				@Override
-				public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
-					return Optional.ofNullable((RegistryEntry.Reference)this.keysToEntries.get(key));
-				}
+		@Override
+		protected void setValue(T value) {
+			super.setValue(value);
+			this.supplier = null;
+		}
 
-				@Override
-				public Stream<RegistryEntry.Reference<T>> streamEntries() {
-					return this.keysToEntries.values().stream();
-				}
+		@Override
+		public T value() {
+			if (this.supplier != null) {
+				this.setValue((T)this.supplier.get());
+			}
 
-				@Override
-				public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
-					return Optional.empty();
-				}
-
-				@Override
-				public Stream<RegistryEntryList.Named<T>> streamTags() {
-					return Stream.empty();
-				}
-			};
+			return super.value();
 		}
 	}
 
@@ -210,12 +313,14 @@ public class RegistryBuilder {
 			};
 		}
 
-		public void validateReferences() {
+		public void checkOrphanedValues() {
+			this.registeredValues.forEach((key, value) -> this.errors.add(new IllegalStateException("Orpaned value " + value.value + " for key " + key)));
+		}
+
+		public void checkUnreferencedKeys() {
 			for (RegistryKey<Object> registryKey : this.lookup.keysToEntries.keySet()) {
 				this.errors.add(new IllegalStateException("Unreferenced key: " + registryKey));
 			}
-
-			this.registeredValues.forEach((key, value) -> this.errors.add(new IllegalStateException("Orpaned value " + value.value + " for key " + key)));
 		}
 
 		public void throwErrors() {
@@ -228,37 +333,6 @@ public class RegistryBuilder {
 
 				throw illegalStateException;
 			}
-		}
-
-		public void addOwner(RegistryEntryOwner<?> owner) {
-			this.owner.addOwner(owner);
-		}
-
-		public void setReferenceEntryValues(RegistryWrapper.WrapperLookup lookup) {
-			Map<Identifier, Optional<? extends RegistryWrapper<Object>>> map = new HashMap();
-			Iterator<Entry<RegistryKey<Object>, RegistryEntry.Reference<Object>>> iterator = this.lookup.keysToEntries.entrySet().iterator();
-
-			while (iterator.hasNext()) {
-				Entry<RegistryKey<Object>, RegistryEntry.Reference<Object>> entry = (Entry<RegistryKey<Object>, RegistryEntry.Reference<Object>>)iterator.next();
-				RegistryKey<Object> registryKey = (RegistryKey<Object>)entry.getKey();
-				RegistryEntry.Reference<Object> reference = (RegistryEntry.Reference<Object>)entry.getValue();
-				((Optional)map.computeIfAbsent(registryKey.getRegistry(), registryId -> lookup.getOptionalWrapper(RegistryKey.ofRegistry(registryId))))
-					.flatMap(entryLookup -> entryLookup.getOptional(registryKey))
-					.ifPresent(entryx -> {
-						reference.setValue(entryx.value());
-						iterator.remove();
-					});
-			}
-		}
-
-		public Stream<RegistryBuilder.InitializedRegistry<?>> streamRegistries() {
-			return this.lookup
-				.keysToEntries
-				.keySet()
-				.stream()
-				.map(RegistryKey::getRegistry)
-				.distinct()
-				.map(registry -> new RegistryBuilder.InitializedRegistry(RegistryKey.ofRegistry(registry), Lifecycle.stable(), Map.of()));
 		}
 	}
 

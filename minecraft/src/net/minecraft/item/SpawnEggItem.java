@@ -8,10 +8,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.block.entity.Spawner;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -59,42 +57,38 @@ public class SpawnEggItem extends Item {
 			BlockPos blockPos = context.getBlockPos();
 			Direction direction = context.getSide();
 			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.isOf(Blocks.SPAWNER)) {
-				BlockEntity blockEntity = world.getBlockEntity(blockPos);
-				if (blockEntity instanceof MobSpawnerBlockEntity mobSpawnerBlockEntity) {
-					EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
-					mobSpawnerBlockEntity.setEntityType(entityType, world.getRandom());
-					blockEntity.markDirty();
-					world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
-					world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
-					itemStack.decrement(1);
-					return ActionResult.CONSUME;
-				}
-			}
-
-			BlockPos blockPos2;
-			if (blockState.getCollisionShape(world, blockPos).isEmpty()) {
-				blockPos2 = blockPos;
-			} else {
-				blockPos2 = blockPos.offset(direction);
-			}
-
-			EntityType<?> entityType2 = this.getEntityType(itemStack.getNbt());
-			if (entityType2.spawnFromItemStack(
-					(ServerWorld)world,
-					itemStack,
-					context.getPlayer(),
-					blockPos2,
-					SpawnReason.SPAWN_EGG,
-					true,
-					!Objects.equals(blockPos, blockPos2) && direction == Direction.UP
-				)
-				!= null) {
+			if (world.getBlockEntity(blockPos) instanceof Spawner spawner) {
+				EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
+				spawner.setEntityType(entityType, world.getRandom());
+				world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
+				world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
 				itemStack.decrement(1);
-				world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
-			}
+				return ActionResult.CONSUME;
+			} else {
+				BlockPos blockPos2;
+				if (blockState.getCollisionShape(world, blockPos).isEmpty()) {
+					blockPos2 = blockPos;
+				} else {
+					blockPos2 = blockPos.offset(direction);
+				}
 
-			return ActionResult.CONSUME;
+				EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
+				if (entityType.spawnFromItemStack(
+						(ServerWorld)world,
+						itemStack,
+						context.getPlayer(),
+						blockPos2,
+						SpawnReason.SPAWN_EGG,
+						true,
+						!Objects.equals(blockPos, blockPos2) && direction == Direction.UP
+					)
+					!= null) {
+					itemStack.decrement(1);
+					world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
+				}
+
+				return ActionResult.CONSUME;
+			}
 		}
 	}
 

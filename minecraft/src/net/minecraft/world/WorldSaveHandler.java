@@ -57,7 +57,8 @@ public class WorldSaveHandler {
 
 		if (nbtCompound != null) {
 			int i = NbtHelper.getDataVersion(nbtCompound, -1);
-			player.readNbt(DataFixTypes.PLAYER.update(this.dataFixer, nbtCompound, i));
+			nbtCompound = DataFixTypes.PLAYER.update(this.dataFixer, nbtCompound, i);
+			player.readNbt(nbtCompound);
 		}
 
 		return nbtCompound;

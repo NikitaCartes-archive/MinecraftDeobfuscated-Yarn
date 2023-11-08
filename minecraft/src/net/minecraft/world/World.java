@@ -27,6 +27,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
@@ -38,6 +39,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.crash.CrashCallable;
@@ -479,6 +481,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch, useDistance);
 	}
 
+	public void playSoundFromEntity(Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	}
+
 	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
 	}
 
@@ -563,7 +568,20 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
 	 */
 	public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, World.ExplosionSourceType explosionSourceType) {
-		return this.createExplosion(entity, null, null, x, y, z, power, false, explosionSourceType);
+		return this.createExplosion(
+			entity,
+			Explosion.createDamageSource(this, entity),
+			null,
+			x,
+			y,
+			z,
+			power,
+			false,
+			explosionSourceType,
+			ParticleTypes.EXPLOSION,
+			ParticleTypes.EXPLOSION_EMITTER,
+			SoundEvents.ENTITY_GENERIC_EXPLODE
+		);
 	}
 
 	/**
@@ -574,7 +592,20 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public Explosion createExplosion(
 		@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, World.ExplosionSourceType explosionSourceType
 	) {
-		return this.createExplosion(entity, null, null, x, y, z, power, createFire, explosionSourceType);
+		return this.createExplosion(
+			entity,
+			Explosion.createDamageSource(this, entity),
+			null,
+			x,
+			y,
+			z,
+			power,
+			createFire,
+			explosionSourceType,
+			ParticleTypes.EXPLOSION,
+			ParticleTypes.EXPLOSION_EMITTER,
+			SoundEvents.ENTITY_GENERIC_EXPLODE
+		);
 	}
 
 	/**
@@ -591,18 +622,22 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		boolean createFire,
 		World.ExplosionSourceType explosionSourceType
 	) {
-		return this.createExplosion(entity, damageSource, behavior, pos.getX(), pos.getY(), pos.getZ(), power, createFire, explosionSourceType);
+		return this.createExplosion(
+			entity,
+			damageSource,
+			behavior,
+			pos.getX(),
+			pos.getY(),
+			pos.getZ(),
+			power,
+			createFire,
+			explosionSourceType,
+			ParticleTypes.EXPLOSION,
+			ParticleTypes.EXPLOSION_EMITTER,
+			SoundEvents.ENTITY_GENERIC_EXPLODE
+		);
 	}
 
-	/**
-	 * Creates an explosion.
-	 * 
-	 * @param behavior the explosion behavior, or {@code null} to use the default
-	 * @param damageSource the custom damage source, or {@code null} to use the default
-	 * ({@link net.minecraft.entity.damage.DamageSources#explosion(Explosion)})
-	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
-	 * @param createFire whether the explosion should create fire
-	 */
 	public Explosion createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
@@ -614,7 +649,46 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		boolean createFire,
 		World.ExplosionSourceType explosionSourceType
 	) {
-		return this.createExplosion(entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, true);
+		return this.createExplosion(
+			entity,
+			damageSource,
+			behavior,
+			x,
+			y,
+			z,
+			power,
+			createFire,
+			explosionSourceType,
+			ParticleTypes.EXPLOSION,
+			ParticleTypes.EXPLOSION_EMITTER,
+			SoundEvents.ENTITY_GENERIC_EXPLODE
+		);
+	}
+
+	/**
+	 * Creates an explosion.
+	 * 
+	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
+	 * @param createFire whether the explosion should create fire
+	 * @param behavior the explosion behavior, or {@code null} to use the default
+	 * @param damageSource the custom damage source, or {@code null} to use the default
+	 * ({@link net.minecraft.entity.damage.DamageSources#explosion(Explosion)})
+	 */
+	public Explosion createExplosion(
+		@Nullable Entity entity,
+		@Nullable DamageSource damageSource,
+		@Nullable ExplosionBehavior behavior,
+		double x,
+		double y,
+		double z,
+		float power,
+		boolean createFire,
+		World.ExplosionSourceType explosionSourceType,
+		ParticleEffect particle,
+		ParticleEffect emitterParticle,
+		SoundEvent soundEvent
+	) {
+		return this.createExplosion(entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, true, particle, emitterParticle, soundEvent);
 	}
 
 	public Explosion createExplosion(
@@ -627,7 +701,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		float power,
 		boolean createFire,
 		World.ExplosionSourceType explosionSourceType,
-		boolean particles
+		boolean particles,
+		ParticleEffect particle,
+		ParticleEffect emitterParticle,
+		SoundEvent soundEvent
 	) {
 		Explosion.DestructionType destructionType = switch (explosionSourceType) {
 			case NONE -> Explosion.DestructionType.KEEP;
@@ -636,8 +713,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY)
 			: Explosion.DestructionType.KEEP;
 			case TNT -> this.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
+			case BLOW -> Explosion.DestructionType.TRIGGER_BLOCK;
 		};
-		Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
+		Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType, particle, emitterParticle, soundEvent);
 		explosion.collectBlocksAndDamageEntities();
 		explosion.affectWorld(particles);
 		return explosion;
@@ -1115,6 +1193,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		NONE,
 		BLOCK,
 		MOB,
-		TNT;
+		TNT,
+		BLOW;
 	}
 }

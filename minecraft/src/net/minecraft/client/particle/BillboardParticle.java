@@ -15,14 +15,21 @@ import org.joml.Vector3f;
  */
 @Environment(EnvType.CLIENT)
 public abstract class BillboardParticle extends Particle {
-	protected float scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
+	protected float scale;
+	private final Quaternionf rotation = new Quaternionf();
 
 	protected BillboardParticle(ClientWorld clientWorld, double d, double e, double f) {
 		super(clientWorld, d, e, f);
+		this.scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
 	}
 
 	protected BillboardParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 		super(clientWorld, d, e, f, g, h, i);
+		this.scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
+	}
+
+	public BillboardParticle.Rotator getRotator() {
+		return BillboardParticle.Rotator.ALL_AXIS;
 	}
 
 	@Override
@@ -31,12 +38,9 @@ public abstract class BillboardParticle extends Particle {
 		float f = (float)(MathHelper.lerp((double)tickDelta, this.prevPosX, this.x) - vec3d.getX());
 		float g = (float)(MathHelper.lerp((double)tickDelta, this.prevPosY, this.y) - vec3d.getY());
 		float h = (float)(MathHelper.lerp((double)tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
-		Quaternionf quaternionf;
-		if (this.angle == 0.0F) {
-			quaternionf = camera.getRotation();
-		} else {
-			quaternionf = new Quaternionf(camera.getRotation());
-			quaternionf.rotateZ(MathHelper.lerp(tickDelta, this.prevAngle, this.angle));
+		this.getRotator().setRotation(this.rotation, camera, tickDelta);
+		if (this.angle != 0.0F) {
+			this.rotation.rotateZ(MathHelper.lerp(tickDelta, this.prevAngle, this.angle));
 		}
 
 		Vector3f[] vector3fs = new Vector3f[]{
@@ -46,7 +50,7 @@ public abstract class BillboardParticle extends Particle {
 
 		for (int j = 0; j < 4; j++) {
 			Vector3f vector3f = vector3fs[j];
-			vector3f.rotate(quaternionf);
+			vector3f.rotate(this.rotation);
 			vector3f.mul(i);
 			vector3f.add(f, g, h);
 		}
@@ -110,4 +114,12 @@ public abstract class BillboardParticle extends Particle {
 	 * {@return the upper V coordinate of the UV coordinates used to draw this particle}
 	 */
 	protected abstract float getMaxV();
+
+	@Environment(EnvType.CLIENT)
+	public interface Rotator {
+		BillboardParticle.Rotator ALL_AXIS = (quaternion, camera, tickDelta) -> quaternion.set(camera.getRotation());
+		BillboardParticle.Rotator Y_AND_W_ONLY = (quaternion, camera, tickDelta) -> quaternion.set(0.0F, camera.getRotation().y, 0.0F, camera.getRotation().w);
+
+		void setRotation(Quaternionf quaternion, Camera camera, float tickDelta);
+	}
 }

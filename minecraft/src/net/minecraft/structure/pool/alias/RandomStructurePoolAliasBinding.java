@@ -11,7 +11,8 @@ import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.random.Random;
 
-record RandomStructurePoolAliasBinding(RegistryKey<StructurePool> alias, DataPool<RegistryKey<StructurePool>> targets) implements StructurePoolAliasBinding {
+public record RandomStructurePoolAliasBinding(RegistryKey<StructurePool> alias, DataPool<RegistryKey<StructurePool>> targets)
+	implements StructurePoolAliasBinding {
 	static Codec<RandomStructurePoolAliasBinding> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					RegistryKey.createCodec(RegistryKeys.TEMPLATE_POOL).fieldOf("alias").forGetter(RandomStructurePoolAliasBinding::alias),

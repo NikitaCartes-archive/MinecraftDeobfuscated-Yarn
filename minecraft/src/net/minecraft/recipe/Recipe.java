@@ -1,10 +1,12 @@
 package net.minecraft.recipe;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -22,6 +24,8 @@ import net.minecraft.world.World;
  * those functionalities.
  */
 public interface Recipe<C extends Inventory> {
+	Codec<Recipe<?>> CODEC = Registries.RECIPE_SERIALIZER.getCodec().dispatch(Recipe::getSerializer, RecipeSerializer::codec);
+
 	/**
 	 * {@return whether this recipe matches the contents inside the
 	 * {@code inventory} in the given {@code world}}

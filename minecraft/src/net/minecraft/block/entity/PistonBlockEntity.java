@@ -299,7 +299,7 @@ public class PistonBlockEntity extends BlockEntity {
 					BlockState blockState = Block.postProcessState(blockEntity.pushedBlock, world, pos);
 					if (blockState.isAir()) {
 						world.setBlockState(pos, blockEntity.pushedBlock, Block.NO_REDRAW | Block.FORCE_STATE | Block.MOVED);
-						Block.replace(blockEntity.pushedBlock, blockState, world, pos, 3);
+						Block.replace(blockEntity.pushedBlock, blockState, world, pos, Block.NOTIFY_ALL);
 					} else {
 						if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
 							blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));

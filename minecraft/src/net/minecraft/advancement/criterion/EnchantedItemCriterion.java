@@ -1,37 +1,39 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCriterion.Conditions> {
-	public EnchantedItemCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("item"));
-		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("levels"));
-		return new EnchantedItemCriterion.Conditions(optional, optional2, intRange);
+	@Override
+	public Codec<EnchantedItemCriterion.Conditions> getConditionsCodec() {
+		return EnchantedItemCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack, int levels) {
 		this.trigger(player, conditions -> conditions.matches(stack, levels));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<ItemPredicate> item;
-		private final NumberRange.IntRange levels;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, NumberRange.IntRange levels) {
-			super(playerPredicate);
-			this.item = item;
-			this.levels = levels;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<ItemPredicate> item, NumberRange.IntRange levels)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<EnchantedItemCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(EnchantedItemCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(EnchantedItemCriterion.Conditions::item),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "levels", NumberRange.IntRange.ANY)
+							.forGetter(EnchantedItemCriterion.Conditions::levels)
+					)
+					.apply(instance, EnchantedItemCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<EnchantedItemCriterion.Conditions> any() {
 			return Criteria.ENCHANTED_ITEM.create(new EnchantedItemCriterion.Conditions(Optional.empty(), Optional.empty(), NumberRange.IntRange.ANY));
@@ -42,11 +44,8 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
-			jsonObject.add("levels", this.levels.toJson());
-			return jsonObject;
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

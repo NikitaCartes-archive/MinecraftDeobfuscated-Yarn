@@ -22,7 +22,7 @@ import net.minecraft.world.poi.PointOfInterestTypes;
  * @implNote Cats in swamp huts are also spawned in
  * {@link net.minecraft.world.gen.chunk.ChunkGenerator#getEntitySpawnList}.
  */
-public class CatSpawner implements Spawner {
+public class CatSpawner implements SpecialSpawner {
 	private static final int SPAWN_INTERVAL = 1200;
 	private int cooldown;
 

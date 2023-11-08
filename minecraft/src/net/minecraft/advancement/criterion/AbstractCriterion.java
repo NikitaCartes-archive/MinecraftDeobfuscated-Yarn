@@ -3,7 +3,6 @@ package net.minecraft.advancement.criterion;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,9 +10,9 @@ import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public abstract class AbstractCriterion<T extends AbstractCriterion.Conditions> implements Criterion<T> {
@@ -38,13 +37,6 @@ public abstract class AbstractCriterion<T extends AbstractCriterion.Conditions> 
 	@Override
 	public final void endTracking(PlayerAdvancementTracker tracker) {
 		this.progressions.remove(tracker);
-	}
-
-	protected abstract T conditionsFromJson(JsonObject obj, Optional<LootContextPredicate> predicate, AdvancementEntityPredicateDeserializer predicateDeserializer);
-
-	public final T conditionsFromJson(JsonObject jsonObject, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
-		Optional<LootContextPredicate> optional = EntityPredicate.contextPredicateFromJson(jsonObject, "player", advancementEntityPredicateDeserializer);
-		return this.conditionsFromJson(jsonObject, optional, advancementEntityPredicateDeserializer);
 	}
 
 	protected void trigger(ServerPlayerEntity player, Predicate<T> predicate) {
@@ -77,6 +69,11 @@ public abstract class AbstractCriterion<T extends AbstractCriterion.Conditions> 
 	}
 
 	public interface Conditions extends CriterionConditions {
+		@Override
+		default void validate(LootContextPredicateValidator validator) {
+			validator.validateEntityPredicate(this.getPlayerPredicate(), ".player");
+		}
+
 		Optional<LootContextPredicate> getPlayerPredicate();
 	}
 }

@@ -4,7 +4,6 @@ import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
-import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
@@ -31,17 +30,7 @@ public abstract class ChoiceWriteReadFix extends DataFix {
 		Type<?> type4 = this.getOutputSchema().getChoiceType(this.type, this.choiceName);
 		OpticFinder<?> opticFinder = DSL.namedChoice(this.choiceName, type2);
 		return this.fixTypeEverywhereTyped(
-			this.name,
-			type,
-			type3,
-			typed -> typed.updateTyped(
-					opticFinder,
-					type4,
-					typedx -> (Typed)Util.getResult(
-								typedx.write().map(this::transform).flatMap(type4::readTyped), string -> new IllegalStateException("Could not parse the value " + string)
-							)
-							.getFirst()
-				)
+			this.name, type, type3, typed -> typed.updateTyped(opticFinder, type4, typedx -> Util.apply(typedx, type4, this::transform))
 		);
 	}
 

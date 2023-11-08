@@ -20,7 +20,7 @@ public record BlockPredicate(Optional<TagKey<Block>> tag, Optional<RegistryEntry
 	private static final Codec<RegistryEntryList<Block>> BLOCK_ENTRY_LIST_CODEC = Registries.BLOCK
 		.createEntryCodec()
 		.listOf()
-		.xmap(RegistryEntryList::of, registryEntryList -> registryEntryList.stream().toList());
+		.xmap(RegistryEntryList::of, blocks -> blocks.stream().toList());
 	public static final Codec<BlockPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.BLOCK), "tag").forGetter(BlockPredicate::tag),

@@ -42,6 +42,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public class ArmorStandEntity extends LivingEntity {
 	public static final int field_30443 = 5;
@@ -608,7 +609,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean isImmuneToExplosion() {
+	public boolean isImmuneToExplosion(Explosion explosion) {
 		return this.isInvisible();
 	}
 

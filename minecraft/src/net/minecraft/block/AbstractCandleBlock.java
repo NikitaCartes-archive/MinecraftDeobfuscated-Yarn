@@ -1,9 +1,11 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
@@ -17,6 +19,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public abstract class AbstractCandleBlock extends Block {
 	public static final int field_30987 = 3;
@@ -92,6 +95,15 @@ public abstract class AbstractCandleBlock extends Block {
 	}
 
 	private static void setLit(WorldAccess world, BlockState state, BlockPos pos, boolean lit) {
-		world.setBlockState(pos, state.with(LIT, Boolean.valueOf(lit)), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+		world.setBlockState(pos, state.with(LIT, Boolean.valueOf(lit)), Block.NOTIFY_ALL_AND_REDRAW);
+	}
+
+	@Override
+	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && (Boolean)state.get(LIT)) {
+			extinguish(null, state, world, pos);
+		}
+
+		super.onExploded(state, world, pos, explosion, stackMerger);
 	}
 }

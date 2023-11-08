@@ -622,6 +622,22 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.GOLD_BLOCK).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 				)
 		);
+		exporter.accept(LootTables.TRIAL_CHAMBERS_REWARD_CHEST, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_SUPPLY_CHEST, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_CHEST, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_ENTRANCE_CHEST, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_INTERSECTION_CHEST, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_INTERSECTION_BARREL_CHEST, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_CHAMBER_DISPENSER, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_DISPENSER, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_WATER_DISPENSER, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_POT, LootTable.builder());
+		acceptTrialSpawnerTables(exporter);
+	}
+
+	public static void acceptTrialSpawnerTables(BiConsumer<Identifier, LootTable.Builder> exporter) {
+		exporter.accept(LootTables.TRIAL_CHAMBER_KEY_SPAWNER, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBER_CONSUMABLES_SPAWNER, LootTable.builder());
 	}
 
 	public static LootTable.Builder createShipwreckSupplyChestTableBuilder() {

@@ -95,6 +95,7 @@ public class RenderLayers {
 		map.put(Blocks.FIRE, renderLayer3);
 		map.put(Blocks.SOUL_FIRE, renderLayer3);
 		map.put(Blocks.SPAWNER, renderLayer3);
+		map.put(Blocks.TRIAL_SPAWNER, renderLayer3);
 		map.put(Blocks.REDSTONE_WIRE, renderLayer3);
 		map.put(Blocks.WHEAT, renderLayer3);
 		map.put(Blocks.OAK_DOOR, renderLayer3);

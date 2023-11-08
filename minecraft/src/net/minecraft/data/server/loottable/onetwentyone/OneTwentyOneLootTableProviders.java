@@ -9,7 +9,12 @@ import net.minecraft.loot.context.LootContextTypes;
 public class OneTwentyOneLootTableProviders {
 	public static LootTableProvider createOneTwentyOneProvider(DataOutput output) {
 		return new LootTableProvider(
-			output, Set.of(), List.of(new LootTableProvider.LootTypeGenerator(OneTwentyOneBlockLootTableProvider::new, LootContextTypes.BLOCK))
+			output,
+			Set.of(),
+			List.of(
+				new LootTableProvider.LootTypeGenerator(OneTwentyOneBlockLootTableGenerator::new, LootContextTypes.BLOCK),
+				new LootTableProvider.LootTypeGenerator(OneTwentyOneChestLootTableGenerator::new, LootContextTypes.CHEST)
+			)
 		);
 	}
 }

@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -32,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public class DoorBlock extends Block {
 	public static final MapCodec<DoorBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -101,6 +103,19 @@ public class DoorBlock extends Block {
 				? neighborState.with(HALF, doubleBlockHalf)
 				: Blocks.AIR.getDefaultState();
 		}
+	}
+
+	@Override
+	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK
+			&& state.get(HALF) == DoubleBlockHalf.LOWER
+			&& !world.isClient()
+			&& this.blockSetType.canOpenByWindCharge()
+			&& !(Boolean)state.get(POWERED)) {
+			this.setOpen(null, world, state, pos, !this.isOpen(state));
+		}
+
+		super.onExploded(state, world, pos, explosion, stackMerger);
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import com.google.common.collect.Multimap;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -46,6 +48,7 @@ import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -72,6 +75,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -163,9 +167,33 @@ import org.slf4j.Logger;
 public final class ItemStack {
 	public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.ITEM.getCodec().fieldOf("id").forGetter(ItemStack::getItem),
+					Registries.ITEM.createEntryCodec().fieldOf("id").forGetter(ItemStack::getRegistryEntry),
 					Codec.INT.fieldOf("Count").forGetter(ItemStack::getCount),
 					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.getNbt()))
+				)
+				.apply(instance, ItemStack::new)
+	);
+	private static final Codec<Item> ITEM_CODEC = Codecs.validate(
+		Registries.ITEM.getCodec(), item -> item == Items.AIR ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(item)
+	);
+	public static final Codec<ItemStack> ADVANCEMENT_DISPLAY_CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Registries.ITEM.createEntryCodec().fieldOf("item").forGetter(ItemStack::getRegistryEntry),
+					Codecs.createStrictOptionalFieldCodec(StringNbtReader.STRINGIFIED_CODEC, "nbt").forGetter(stack -> Optional.ofNullable(stack.getNbt()))
+				)
+				.apply(instance, (itemEntry, nbt) -> new ItemStack(itemEntry, 1, nbt))
+	);
+	public static final Codec<ItemStack> RECIPE_RESULT_CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					ITEM_CODEC.fieldOf("item").forGetter(ItemStack::getItem),
+					Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount)
+				)
+				.apply(instance, ItemStack::new)
+	);
+	public static final Codec<ItemStack> INGREDIENT_ENTRY_CODEC = ITEM_CODEC.xmap(ItemStack::new, ItemStack::getItem);
+	public static final MapCodec<ItemStack> CUTTING_RECIPE_RESULT_CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Registries.ITEM.getCodec().fieldOf("result").forGetter(ItemStack::getItem), Codec.INT.fieldOf("count").forGetter(ItemStack::getCount)
 				)
 				.apply(instance, ItemStack::new)
 	);
@@ -252,7 +280,7 @@ public final class ItemStack {
 		this(entry.value(), 1);
 	}
 
-	private ItemStack(ItemConvertible item, int count, Optional<NbtCompound> nbt) {
+	public ItemStack(RegistryEntry<Item> item, int count, Optional<NbtCompound> nbt) {
 		this(item, count);
 		nbt.ifPresent(this::setNbt);
 	}
@@ -269,7 +297,7 @@ public final class ItemStack {
 		}
 	}
 
-	private ItemStack(@Nullable Void void_) {
+	private ItemStack(@Nullable Void v) {
 		this.item = null;
 	}
 
@@ -277,7 +305,7 @@ public final class ItemStack {
 		this.item = Registries.ITEM.get(new Identifier(nbt.getString("id")));
 		this.count = nbt.getByte("Count");
 		if (nbt.contains("tag", NbtElement.COMPOUND_TYPE)) {
-			this.nbt = nbt.getCompound("tag");
+			this.nbt = nbt.getCompound("tag").copy();
 			this.getItem().postProcessNbt(this.nbt);
 		}
 

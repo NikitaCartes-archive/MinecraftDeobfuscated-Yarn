@@ -243,9 +243,8 @@ public class GameTestState {
 	}
 
 	public void init(BlockPos pos) {
-		this.structureBlockEntity = StructureTestUtil.initStructure(this.getTemplateName(), pos, this.getRotation(), this.world);
+		this.structureBlockEntity = StructureTestUtil.initStructure(this, pos, this.getRotation(), this.world);
 		this.pos = this.structureBlockEntity.getPos();
-		this.structureBlockEntity.setTemplateName(this.getTemplateName());
 		StructureTestUtil.placeStartButton(this.pos, new BlockPos(1, 0, -1), this.getRotation(), this.world);
 		this.listeners.forEach(listener -> listener.onStarted(this));
 	}

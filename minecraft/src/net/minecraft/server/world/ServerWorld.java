@@ -152,7 +152,7 @@ import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
-import net.minecraft.world.spawner.Spawner;
+import net.minecraft.world.spawner.SpecialSpawner;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.EntityChunkDataAccess;
 import net.minecraft.world.tick.TickManager;
@@ -191,7 +191,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet<>();
 	private final List<BlockEvent> blockEventQueue = new ArrayList(64);
 	private boolean inBlockTick;
-	private final List<Spawner> spawners;
+	private final List<SpecialSpawner> spawners;
 	@Nullable
 	private EnderDragonFight enderDragonFight;
 	final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
@@ -210,7 +210,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		boolean debugWorld,
 		long seed,
-		List<Spawner> spawners,
+		List<SpecialSpawner> spawners,
 		boolean shouldTickTime,
 		@Nullable RandomSequencesState randomSequencesState
 	) {
@@ -458,8 +458,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void tickSpawners(boolean spawnMonsters, boolean spawnAnimals) {
-		for (Spawner spawner : this.spawners) {
-			spawner.spawn(this, spawnMonsters, spawnAnimals);
+		for (SpecialSpawner specialSpawner : this.spawners) {
+			specialSpawner.spawn(this, spawnMonsters, spawnAnimals);
 		}
 	}
 
@@ -1178,9 +1178,14 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		double z,
 		float power,
 		boolean createFire,
-		World.ExplosionSourceType explosionSourceType
+		World.ExplosionSourceType explosionSourceType,
+		ParticleEffect particle,
+		ParticleEffect emitterParticle,
+		SoundEvent soundEvent
 	) {
-		Explosion explosion = this.createExplosion(entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, false);
+		Explosion explosion = this.createExplosion(
+			entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, false, particle, emitterParticle, soundEvent
+		);
 		if (!explosion.shouldDestroy()) {
 			explosion.clearAffectedBlocks();
 		}
@@ -1188,7 +1193,20 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			if (serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0) {
 				serverPlayerEntity.networkHandler
-					.sendPacket(new ExplosionS2CPacket(x, y, z, power, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
+					.sendPacket(
+						new ExplosionS2CPacket(
+							x,
+							y,
+							z,
+							power,
+							explosion.getAffectedBlocks(),
+							(Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity),
+							explosion.getDestructionType(),
+							explosion.getParticle(),
+							explosion.getEmitterParticle(),
+							explosion.getSoundEvent()
+						)
+					);
 			}
 		}
 

@@ -97,16 +97,20 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		if (!world.getFluidState(pos.down()).isIn(FluidTags.WATER)) {
+		if (!world.getFluidState(pos.down()).isIn(FluidTags.WATER) && !SpawnReason.isAnySpawner(spawnReason)) {
 			return false;
 		} else {
 			RegistryEntry<Biome> registryEntry = world.getBiome(pos);
 			boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
-				&& isSpawnDark(world, pos, random)
-				&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
-			return registryEntry.isIn(BiomeTags.MORE_FREQUENT_DROWNED_SPAWNS)
-				? random.nextInt(15) == 0 && bl
-				: random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl;
+				&& (SpawnReason.isTrialSpawner(spawnReason) || isSpawnDark(world, pos, random))
+				&& (SpawnReason.isAnySpawner(spawnReason) || world.getFluidState(pos).isIn(FluidTags.WATER));
+			if (bl && SpawnReason.isAnySpawner(spawnReason)) {
+				return true;
+			} else {
+				return registryEntry.isIn(BiomeTags.MORE_FREQUENT_DROWNED_SPAWNS)
+					? random.nextInt(15) == 0 && bl
+					: random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl;
+			}
 		}
 	}
 

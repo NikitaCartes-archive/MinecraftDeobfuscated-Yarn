@@ -1,37 +1,39 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.DistancePredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.Conditions> {
-	public LevitationCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<DistancePredicate> optional2 = DistancePredicate.fromJson(jsonObject.get("distance"));
-		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("duration"));
-		return new LevitationCriterion.Conditions(optional, optional2, intRange);
+	@Override
+	public Codec<LevitationCriterion.Conditions> getConditionsCodec() {
+		return LevitationCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, Vec3d startPos, int duration) {
 		this.trigger(player, conditions -> conditions.matches(player, startPos, duration));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<DistancePredicate> distance;
-		private final NumberRange.IntRange duration;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<DistancePredicate> distance, NumberRange.IntRange duration) {
-			super(playerPredicate);
-			this.distance = distance;
-			this.duration = duration;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<DistancePredicate> distance, NumberRange.IntRange duration)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<LevitationCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(LevitationCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(LevitationCriterion.Conditions::distance),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "duration", NumberRange.IntRange.ANY)
+							.forGetter(LevitationCriterion.Conditions::duration)
+					)
+					.apply(instance, LevitationCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<LevitationCriterion.Conditions> create(DistancePredicate distance) {
 			return Criteria.LEVITATION.create(new LevitationCriterion.Conditions(Optional.empty(), Optional.of(distance), NumberRange.IntRange.ANY));
@@ -45,11 +47,8 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.distance.ifPresent(distance -> jsonObject.add("distance", distance.toJson()));
-			jsonObject.add("duration", this.duration.toJson());
-			return jsonObject;
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

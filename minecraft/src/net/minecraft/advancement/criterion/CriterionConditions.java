@@ -1,7 +1,7 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 
 public interface CriterionConditions {
-	JsonObject toJson();
+	void validate(LootContextPredicateValidator validator);
 }

@@ -1,33 +1,35 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriterion.Conditions> {
-	public FilledBucketCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new FilledBucketCriterion.Conditions(optional, optional2);
+	@Override
+	public Codec<FilledBucketCriterion.Conditions> getConditionsCodec() {
+		return FilledBucketCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
 		this.trigger(player, conditions -> conditions.matches(stack));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<ItemPredicate> item;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item) {
-			super(playerPredicate);
-			this.item = item;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<ItemPredicate> item) implements AbstractCriterion.Conditions {
+		public static final Codec<FilledBucketCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(FilledBucketCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(FilledBucketCriterion.Conditions::item)
+					)
+					.apply(instance, FilledBucketCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<FilledBucketCriterion.Conditions> create(ItemPredicate.Builder item) {
 			return Criteria.FILLED_BUCKET.create(new FilledBucketCriterion.Conditions(Optional.empty(), Optional.of(item.build())));
@@ -38,10 +40,8 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
-			return jsonObject;
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

@@ -17,8 +17,24 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.recipe.ArmorDyeRecipe;
+import net.minecraft.recipe.BannerDuplicateRecipe;
+import net.minecraft.recipe.BookCloningRecipe;
+import net.minecraft.recipe.CampfireCookingRecipe;
+import net.minecraft.recipe.CraftingDecoratedPotRecipe;
+import net.minecraft.recipe.FireworkRocketRecipe;
+import net.minecraft.recipe.FireworkStarFadeRecipe;
+import net.minecraft.recipe.FireworkStarRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.MapCloningRecipe;
+import net.minecraft.recipe.MapExtendingRecipe;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.RepairItemRecipe;
+import net.minecraft.recipe.ShieldDecorationRecipe;
+import net.minecraft.recipe.ShulkerBoxColoringRecipe;
+import net.minecraft.recipe.SmokingRecipe;
+import net.minecraft.recipe.SuspiciousStewRecipe;
+import net.minecraft.recipe.TippedArrowRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -547,7 +563,9 @@ public class VanillaRecipeProvider extends RecipeProvider {
 				Criteria.INVENTORY_CHANGED
 					.create(
 						new InventoryChangedCriterion.Conditions(
-							Optional.empty(), NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, List.of()
+							Optional.empty(),
+							new InventoryChangedCriterion.Conditions.Slots(NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY),
+							List.of()
 						)
 					)
 			)
@@ -2001,19 +2019,19 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_amethyst_shard", conditionsFromItem(Items.AMETHYST_SHARD))
 			.offerTo(exporter);
 		offerCompactingRecipe(exporter, RecipeCategory.MISC, Items.MUSIC_DISC_5, Items.DISC_FRAGMENT_5);
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.ARMOR_DYE).offerTo(exporter, "armor_dye");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(exporter, "banner_duplicate");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.BOOK_CLONING).offerTo(exporter, "book_cloning");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.FIREWORK_ROCKET).offerTo(exporter, "firework_rocket");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.FIREWORK_STAR).offerTo(exporter, "firework_star");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.FIREWORK_STAR_FADE).offerTo(exporter, "firework_star_fade");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.MAP_CLONING).offerTo(exporter, "map_cloning");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.MAP_EXTENDING).offerTo(exporter, "map_extending");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.REPAIR_ITEM).offerTo(exporter, "repair_item");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.SHIELD_DECORATION).offerTo(exporter, "shield_decoration");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.SHULKER_BOX).offerTo(exporter, "shulker_box_coloring");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.TIPPED_ARROW).offerTo(exporter, "tipped_arrow");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.SUSPICIOUS_STEW).offerTo(exporter, "suspicious_stew");
+		ComplexRecipeJsonBuilder.create(ArmorDyeRecipe::new).offerTo(exporter, "armor_dye");
+		ComplexRecipeJsonBuilder.create(BannerDuplicateRecipe::new).offerTo(exporter, "banner_duplicate");
+		ComplexRecipeJsonBuilder.create(BookCloningRecipe::new).offerTo(exporter, "book_cloning");
+		ComplexRecipeJsonBuilder.create(FireworkRocketRecipe::new).offerTo(exporter, "firework_rocket");
+		ComplexRecipeJsonBuilder.create(FireworkStarRecipe::new).offerTo(exporter, "firework_star");
+		ComplexRecipeJsonBuilder.create(FireworkStarFadeRecipe::new).offerTo(exporter, "firework_star_fade");
+		ComplexRecipeJsonBuilder.create(MapCloningRecipe::new).offerTo(exporter, "map_cloning");
+		ComplexRecipeJsonBuilder.create(MapExtendingRecipe::new).offerTo(exporter, "map_extending");
+		ComplexRecipeJsonBuilder.create(RepairItemRecipe::new).offerTo(exporter, "repair_item");
+		ComplexRecipeJsonBuilder.create(ShieldDecorationRecipe::new).offerTo(exporter, "shield_decoration");
+		ComplexRecipeJsonBuilder.create(ShulkerBoxColoringRecipe::new).offerTo(exporter, "shulker_box_coloring");
+		ComplexRecipeJsonBuilder.create(TippedArrowRecipe::new).offerTo(exporter, "tipped_arrow");
+		ComplexRecipeJsonBuilder.create(SuspiciousStewRecipe::new).offerTo(exporter, "suspicious_stew");
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.POTATO), RecipeCategory.FOOD, Items.BAKED_POTATO, 0.35F, 200)
 			.criterion("has_potato", conditionsFromItem(Items.POTATO))
 			.offerTo(exporter);
@@ -2339,8 +2357,8 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		CookingRecipeJsonBuilder.createBlasting(Ingredient.ofItems(Blocks.ANCIENT_DEBRIS), RecipeCategory.MISC, Items.NETHERITE_SCRAP, 2.0F, 100)
 			.criterion("has_ancient_debris", conditionsFromItem(Blocks.ANCIENT_DEBRIS))
 			.offerTo(exporter, getBlastingItemPath(Items.NETHERITE_SCRAP));
-		generateCookingRecipes(exporter, "smoking", RecipeSerializer.SMOKING, 100);
-		generateCookingRecipes(exporter, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, 600);
+		generateCookingRecipes(exporter, "smoking", RecipeSerializer.SMOKING, SmokingRecipe::new, 100);
+		generateCookingRecipes(exporter, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, CampfireCookingRecipe::new, 600);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_SLAB, Blocks.STONE, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_STAIRS, Blocks.STONE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_BRICKS, Blocks.STONE);
@@ -2643,7 +2661,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern(" # ")
 			.criterion("has_brick", conditionsFromTag(ItemTags.DECORATED_POT_INGREDIENTS))
 			.offerTo(exporter, "decorated_pot_simple");
-		ComplexRecipeJsonBuilder.create(RecipeSerializer.CRAFTING_DECORATED_POT).offerTo(exporter, "decorated_pot");
+		ComplexRecipeJsonBuilder.create(CraftingDecoratedPotRecipe::new).offerTo(exporter, "decorated_pot");
 	}
 
 	public static Stream<VanillaRecipeProvider.SmithingTemplate> getTrimSmithingTemplateMap() {

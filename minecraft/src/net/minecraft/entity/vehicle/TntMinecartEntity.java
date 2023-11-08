@@ -75,7 +75,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void killAndDropSelf(DamageSource source) {
 		double d = this.getVelocity().horizontalLengthSquared();
-		if (!source.isIn(DamageTypeTags.IS_FIRE) && !source.isIn(DamageTypeTags.IS_EXPLOSION) && !(d >= 0.01F)) {
+		if (!shouldDetonate(source) && !(d >= 0.01F)) {
 			this.killAndDropItem(this.asItem());
 		} else {
 			if (this.fuseTicks < 0) {
@@ -182,7 +182,11 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	boolean shouldAlwaysKill() {
-		return true;
+	boolean shouldAlwaysKill(DamageSource source) {
+		return shouldDetonate(source);
+	}
+
+	private static boolean shouldDetonate(DamageSource source) {
+		return source.isIn(DamageTypeTags.IS_FIRE) || source.isIn(DamageTypeTags.IS_EXPLOSION);
 	}
 }

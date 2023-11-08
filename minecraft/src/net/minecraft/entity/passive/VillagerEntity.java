@@ -787,7 +787,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
 		}
 
-		if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
+		if (spawnReason == SpawnReason.COMMAND
+			|| spawnReason == SpawnReason.SPAWN_EGG
+			|| SpawnReason.isAnySpawner(spawnReason)
+			|| spawnReason == SpawnReason.DISPENSER) {
 			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
 		}
 

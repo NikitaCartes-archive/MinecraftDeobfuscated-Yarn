@@ -28,7 +28,7 @@ public class StrayEntity extends AbstractSkeletonEntity {
 			blockPos = blockPos.up();
 		} while (world.getBlockState(blockPos).isOf(Blocks.POWDER_SNOW));
 
-		return canSpawnInDark(type, world, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.isSkyVisible(blockPos.down()));
+		return canSpawnInDark(type, world, spawnReason, pos, random) && (SpawnReason.isAnySpawner(spawnReason) || world.isSkyVisible(blockPos.down()));
 	}
 
 	@Override

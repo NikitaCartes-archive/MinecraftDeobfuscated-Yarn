@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -9,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -24,6 +26,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
 	public static final MapCodec<TrapdoorBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -100,15 +103,31 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		if (!this.blockSetType.canOpenByHand()) {
 			return ActionResult.PASS;
 		} else {
-			state = state.cycle(OPEN);
-			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
-			if ((Boolean)state.get(WATERLOGGED)) {
-				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
-			}
-
-			this.playToggleSound(player, world, pos, (Boolean)state.get(OPEN));
+			this.flip(state, world, pos, player);
 			return ActionResult.success(world.isClient);
 		}
+	}
+
+	@Override
+	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK
+			&& !world.isClient()
+			&& this.blockSetType.canOpenByWindCharge()
+			&& !(Boolean)state.get(POWERED)) {
+			this.flip(state, world, pos, null);
+		}
+
+		super.onExploded(state, world, pos, explosion, stackMerger);
+	}
+
+	private void flip(BlockState state, World world, BlockPos pos, @Nullable PlayerEntity player) {
+		BlockState blockState = state.cycle(OPEN);
+		world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+		}
+
+		this.playToggleSound(player, world, pos, (Boolean)blockState.get(OPEN));
 	}
 
 	protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {

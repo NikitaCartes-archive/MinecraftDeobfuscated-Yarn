@@ -30,6 +30,7 @@ import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -383,6 +384,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			if (this.getPierceLevel() <= 0) {
 				this.discard();
 			}
+		} else if (entity.getType().isIn(EntityTypeTags.DEFLECTS_ARROWS)) {
+			this.deflect();
 		} else {
 			entity.setFireTicks(j);
 			this.setVelocity(this.getVelocity().multiply(-0.1));
@@ -396,6 +399,13 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				this.discard();
 			}
 		}
+	}
+
+	public void deflect() {
+		float f = this.random.nextFloat() * 360.0F;
+		this.setVelocity(this.getVelocity().rotateY(f * (float) (Math.PI / 180.0)).multiply(0.5));
+		this.setYaw(this.getYaw() + f);
+		this.prevYaw += f;
 	}
 
 	@Override

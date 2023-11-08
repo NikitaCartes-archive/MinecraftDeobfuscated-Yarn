@@ -1,19 +1,19 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 
 public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriterion.Conditions> {
-	public UsedEnderEyeCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		NumberRange.DoubleRange doubleRange = NumberRange.DoubleRange.fromJson(jsonObject.get("distance"));
-		return new UsedEnderEyeCriterion.Conditions(optional, doubleRange);
+	@Override
+	public Codec<UsedEnderEyeCriterion.Conditions> getConditionsCodec() {
+		return UsedEnderEyeCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, BlockPos strongholdPos) {
@@ -23,16 +23,24 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 		this.trigger(player, conditions -> conditions.matches(f));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.DoubleRange distance;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, NumberRange.DoubleRange distance) {
-			super(playerPredicate);
-			this.distance = distance;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, NumberRange.DoubleRange distance) implements AbstractCriterion.Conditions {
+		public static final Codec<UsedEnderEyeCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(UsedEnderEyeCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "distance", NumberRange.DoubleRange.ANY)
+							.forGetter(UsedEnderEyeCriterion.Conditions::distance)
+					)
+					.apply(instance, UsedEnderEyeCriterion.Conditions::new)
+		);
 
 		public boolean matches(double distance) {
 			return this.distance.testSqrt(distance);
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

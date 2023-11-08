@@ -1511,7 +1511,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void onRecipeCrafted(RecipeEntry<?> recipe, List<ItemStack> ingredients) {
 	}
 
-	public void unlockRecipes(Identifier[] ids) {
+	public void unlockRecipes(List<Identifier> recipes) {
 	}
 
 	public int lockRecipes(Collection<RecipeEntry<?>> recipes) {

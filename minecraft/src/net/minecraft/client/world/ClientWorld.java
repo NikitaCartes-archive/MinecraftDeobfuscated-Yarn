@@ -484,6 +484,11 @@ public class ClientWorld extends World {
 	}
 
 	@Override
+	public void playSoundFromEntity(Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, volume, pitch, entity, this.random.nextLong()));
+	}
+
+	@Override
 	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
 		this.playSound(x, y, z, sound, category, volume, pitch, useDistance, this.random.nextLong());
 	}

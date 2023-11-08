@@ -2,6 +2,7 @@ package net.minecraft.server.function;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -13,12 +14,14 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import org.slf4j.Logger;
 
 /**
  * The command function manager implements execution of functions, like that from
  * the {@code function} command.
  */
 public class CommandFunctionManager {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Identifier TICK_TAG_ID = new Identifier("tick");
 	private static final Identifier LOAD_TAG_ID = new Identifier("load");
 	private final MinecraftServer server;
@@ -82,7 +85,9 @@ public class CommandFunctionManager {
 		try {
 			Procedure<ServerCommandSource> procedure = function.withMacroReplaced(null, this.getDispatcher(), source);
 			CommandManager.callWithContext(source, context -> CommandExecutionContext.enqueueProcedureCall(context, procedure, source, ReturnValueConsumer.EMPTY));
-		} catch (MacroException var8) {
+		} catch (MacroException var9) {
+		} catch (Exception var10) {
+			LOGGER.warn("Failed to execute function {}", function.id(), var10);
 		} finally {
 			profiler.pop();
 		}

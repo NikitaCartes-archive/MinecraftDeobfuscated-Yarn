@@ -27,6 +27,7 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.mob.BlazeEntity;
+import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.DrownedEntity;
@@ -116,6 +117,7 @@ import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.entity.projectile.TridentEntity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
@@ -201,6 +203,9 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoatEntity> BOAT = register(
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
+	);
+	public static final EntityType<BreezeEntity> BREEZE = register(
+		"breeze", EntityType.Builder.create(BreezeEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.7F).maxTrackingRange(10).requires(FeatureFlags.UPDATE_1_21)
 	);
 	public static final EntityType<CamelEntity> CAMEL = register(
 		"camel", EntityType.Builder.create(CamelEntity::new, SpawnGroup.CREATURE).setDimensions(1.7F, 2.375F).maxTrackingRange(10)
@@ -585,6 +590,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<WardenEntity> WARDEN = register(
 		"warden", EntityType.Builder.create(WardenEntity::new, SpawnGroup.MONSTER).setDimensions(0.9F, 2.9F).maxTrackingRange(16).makeFireImmune()
+	);
+	public static final EntityType<WindChargeEntity> WIND_CHARGE = register(
+		"wind_charge",
+		EntityType.Builder.<WindChargeEntity>create(WindChargeEntity::new, SpawnGroup.MISC)
+			.setDimensions(0.3125F, 0.3125F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
 	public static final EntityType<WitchEntity> WITCH = register(
 		"witch", EntityType.Builder.create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)

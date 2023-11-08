@@ -16,9 +16,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestTypes;
-import net.minecraft.world.spawner.Spawner;
+import net.minecraft.world.spawner.SpecialSpawner;
 
-public class WanderingTraderManager implements Spawner {
+public class WanderingTraderManager implements SpecialSpawner {
 	private static final int DEFAULT_SPAWN_TIMER = 1200;
 	public static final int DEFAULT_SPAWN_DELAY = 24000;
 	private static final int MIN_SPAWN_CHANCE = 25;

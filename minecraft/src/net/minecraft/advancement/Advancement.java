@@ -1,25 +1,26 @@
 package net.minecraft.advancement;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootDataLookup;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public record Advancement(
 	Optional<Identifier> parent,
@@ -30,6 +31,28 @@ public record Advancement(
 	boolean sendsTelemetryEvent,
 	Optional<Text> name
 ) {
+	private static final Codec<Map<String, AdvancementCriterion<?>>> CRITERIA_CODEC = Codecs.validate(
+		Codec.unboundedMap(Codec.STRING, AdvancementCriterion.CODEC),
+		criteria -> criteria.isEmpty() ? DataResult.error(() -> "Advancement criteria cannot be empty") : DataResult.success(criteria)
+	);
+	public static final Codec<Advancement> CODEC = Codecs.validate(
+		RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "parent").forGetter(Advancement::parent),
+						Codecs.createStrictOptionalFieldCodec(AdvancementDisplay.CODEC, "display").forGetter(Advancement::display),
+						Codecs.createStrictOptionalFieldCodec(AdvancementRewards.CODEC, "rewards", AdvancementRewards.NONE).forGetter(Advancement::rewards),
+						CRITERIA_CODEC.fieldOf("criteria").forGetter(Advancement::criteria),
+						Codecs.createStrictOptionalFieldCodec(AdvancementRequirements.CODEC, "requirements").forGetter(advancement -> Optional.of(advancement.requirements())),
+						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "sends_telemetry_event", false).forGetter(Advancement::sendsTelemetryEvent)
+					)
+					.apply(instance, (parent, display, rewards, criteria, requirements, sendsTelemetryEvent) -> {
+						AdvancementRequirements advancementRequirements = (AdvancementRequirements)requirements.orElseGet(() -> AdvancementRequirements.allOf(criteria.keySet()));
+						return new Advancement(parent, display, rewards, criteria, advancementRequirements, sendsTelemetryEvent);
+					})
+		),
+		Advancement::validate
+	);
+
 	public Advancement(
 		Optional<Identifier> parent,
 		Optional<AdvancementDisplay> display,
@@ -39,6 +62,10 @@ public record Advancement(
 		boolean sendsTelemetryEvent
 	) {
 		this(parent, display, rewards, Map.copyOf(criteria), requirements, sendsTelemetryEvent, display.map(Advancement::createNameFromDisplay));
+	}
+
+	private static DataResult<Advancement> validate(Advancement advancement) {
+		return advancement.requirements().validate(advancement.criteria().keySet()).map(validated -> advancement);
 	}
 
 	private static Text createNameFromDisplay(AdvancementDisplay display) {
@@ -51,46 +78,6 @@ public record Advancement(
 
 	public static Text getNameFromIdentity(AdvancementEntry identifiedAdvancement) {
 		return (Text)identifiedAdvancement.value().name().orElseGet(() -> Text.literal(identifiedAdvancement.id().toString()));
-	}
-
-	public JsonObject toJson() {
-		JsonObject jsonObject = new JsonObject();
-		this.parent.ifPresent(parent -> jsonObject.addProperty("parent", parent.toString()));
-		this.display.ifPresent(display -> jsonObject.add("display", display.toJson()));
-		jsonObject.add("rewards", this.rewards.toJson());
-		JsonObject jsonObject2 = new JsonObject();
-
-		for (Entry<String, AdvancementCriterion<?>> entry : this.criteria.entrySet()) {
-			jsonObject2.add((String)entry.getKey(), ((AdvancementCriterion)entry.getValue()).toJson());
-		}
-
-		jsonObject.add("criteria", jsonObject2);
-		jsonObject.add("requirements", this.requirements.toJson());
-		jsonObject.addProperty("sends_telemetry_event", this.sendsTelemetryEvent);
-		return jsonObject;
-	}
-
-	public static Advancement fromJson(JsonObject json, AdvancementEntityPredicateDeserializer predicateDeserializer) {
-		Optional<Identifier> optional = json.has("parent") ? Optional.of(new Identifier(JsonHelper.getString(json, "parent"))) : Optional.empty();
-		Optional<AdvancementDisplay> optional2 = json.has("display")
-			? Optional.of(AdvancementDisplay.fromJson(JsonHelper.getObject(json, "display")))
-			: Optional.empty();
-		AdvancementRewards advancementRewards = json.has("rewards") ? AdvancementRewards.fromJson(JsonHelper.getObject(json, "rewards")) : AdvancementRewards.NONE;
-		Map<String, AdvancementCriterion<?>> map = AdvancementCriterion.criteriaFromJson(JsonHelper.getObject(json, "criteria"), predicateDeserializer);
-		if (map.isEmpty()) {
-			throw new JsonSyntaxException("Advancement criteria cannot be empty");
-		} else {
-			JsonArray jsonArray = JsonHelper.getArray(json, "requirements", new JsonArray());
-			AdvancementRequirements advancementRequirements;
-			if (jsonArray.isEmpty()) {
-				advancementRequirements = AdvancementRequirements.allOf(map.keySet());
-			} else {
-				advancementRequirements = AdvancementRequirements.fromJson(jsonArray, map.keySet());
-			}
-
-			boolean bl = JsonHelper.getBoolean(json, "sends_telemetry_event", false);
-			return new Advancement(optional, optional2, advancementRewards, map, advancementRequirements, bl);
-		}
 	}
 
 	public void write(PacketByteBuf buf) {
@@ -113,6 +100,13 @@ public record Advancement(
 
 	public boolean isRoot() {
 		return this.parent.isEmpty();
+	}
+
+	public void validate(ErrorReporter errorReporter, LootDataLookup conditionsLookup) {
+		this.criteria.forEach((name, criterion) -> {
+			LootContextPredicateValidator lootContextPredicateValidator = new LootContextPredicateValidator(errorReporter.makeChild(name), conditionsLookup);
+			criterion.conditions().validate(lootContextPredicateValidator);
+		});
 	}
 
 	public static class Builder {
@@ -155,7 +149,7 @@ public record Advancement(
 			boolean announceToChat,
 			boolean hidden
 		) {
-			return this.display(new AdvancementDisplay(icon, title, description, background, frame, showToast, announceToChat, hidden));
+			return this.display(new AdvancementDisplay(icon, title, description, Optional.ofNullable(background), frame, showToast, announceToChat, hidden));
 		}
 
 		public Advancement.Builder display(
@@ -168,7 +162,9 @@ public record Advancement(
 			boolean announceToChat,
 			boolean hidden
 		) {
-			return this.display(new AdvancementDisplay(new ItemStack(icon.asItem()), title, description, background, frame, showToast, announceToChat, hidden));
+			return this.display(
+				new AdvancementDisplay(new ItemStack(icon.asItem()), title, description, Optional.ofNullable(background), frame, showToast, announceToChat, hidden)
+			);
 		}
 
 		public Advancement.Builder display(AdvancementDisplay display) {

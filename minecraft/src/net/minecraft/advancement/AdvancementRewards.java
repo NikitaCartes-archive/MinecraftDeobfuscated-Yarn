@@ -1,14 +1,10 @@
 package net.minecraft.advancement;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import java.util.Arrays;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.Optional;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
@@ -20,25 +16,19 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
-public class AdvancementRewards {
-	public static final AdvancementRewards NONE = new AdvancementRewards(0, new Identifier[0], new Identifier[0], LazyContainer.EMPTY);
-	private final int experience;
-	private final Identifier[] loot;
-	private final Identifier[] recipes;
-	private final LazyContainer function;
-
-	public AdvancementRewards(int experience, Identifier[] loot, Identifier[] recipes, LazyContainer function) {
-		this.experience = experience;
-		this.loot = loot;
-		this.recipes = recipes;
-		this.function = function;
-	}
-
-	public Identifier[] getRecipes() {
-		return this.recipes;
-	}
+public record AdvancementRewards(int experience, List<Identifier> loot, List<Identifier> recipes, Optional<LazyContainer> function) {
+	public static final Codec<AdvancementRewards> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(Codec.INT, "experience", 0).forGetter(AdvancementRewards::experience),
+					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC.listOf(), "loot", List.of()).forGetter(AdvancementRewards::loot),
+					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC.listOf(), "recipes", List.of()).forGetter(AdvancementRewards::recipes),
+					Codecs.createStrictOptionalFieldCodec(LazyContainer.CODEC, "function").forGetter(AdvancementRewards::function)
+				)
+				.apply(instance, AdvancementRewards::new)
+	);
+	public static final AdvancementRewards NONE = new AdvancementRewards(0, List.of(), List.of(), Optional.empty());
 
 	public void apply(ServerPlayerEntity player) {
 		player.addExperience(this.experience);
@@ -77,97 +67,21 @@ public class AdvancementRewards {
 			player.currentScreenHandler.sendContentUpdates();
 		}
 
-		if (this.recipes.length > 0) {
+		if (!this.recipes.isEmpty()) {
 			player.unlockRecipes(this.recipes);
 		}
 
 		MinecraftServer minecraftServer = player.server;
 		this.function
-			.get(minecraftServer.getCommandFunctionManager())
+			.flatMap(function -> function.get(minecraftServer.getCommandFunctionManager()))
 			.ifPresent(function -> minecraftServer.getCommandFunctionManager().execute(function, player.getCommandSource().withSilent().withLevel(2)));
-	}
-
-	public String toString() {
-		return "AdvancementRewards{experience="
-			+ this.experience
-			+ ", loot="
-			+ Arrays.toString(this.loot)
-			+ ", recipes="
-			+ Arrays.toString(this.recipes)
-			+ ", function="
-			+ this.function
-			+ "}";
-	}
-
-	public JsonElement toJson() {
-		if (this == NONE) {
-			return JsonNull.INSTANCE;
-		} else {
-			JsonObject jsonObject = new JsonObject();
-			if (this.experience != 0) {
-				jsonObject.addProperty("experience", this.experience);
-			}
-
-			if (this.loot.length > 0) {
-				JsonArray jsonArray = new JsonArray();
-
-				for (Identifier identifier : this.loot) {
-					jsonArray.add(identifier.toString());
-				}
-
-				jsonObject.add("loot", jsonArray);
-			}
-
-			if (this.recipes.length > 0) {
-				JsonArray jsonArray = new JsonArray();
-
-				for (Identifier identifier : this.recipes) {
-					jsonArray.add(identifier.toString());
-				}
-
-				jsonObject.add("recipes", jsonArray);
-			}
-
-			if (this.function.getId() != null) {
-				jsonObject.addProperty("function", this.function.getId().toString());
-			}
-
-			return jsonObject;
-		}
-	}
-
-	public static AdvancementRewards fromJson(JsonObject json) throws JsonParseException {
-		int i = JsonHelper.getInt(json, "experience", 0);
-		JsonArray jsonArray = JsonHelper.getArray(json, "loot", new JsonArray());
-		Identifier[] identifiers = new Identifier[jsonArray.size()];
-
-		for (int j = 0; j < identifiers.length; j++) {
-			identifiers[j] = new Identifier(JsonHelper.asString(jsonArray.get(j), "loot[" + j + "]"));
-		}
-
-		JsonArray jsonArray2 = JsonHelper.getArray(json, "recipes", new JsonArray());
-		Identifier[] identifiers2 = new Identifier[jsonArray2.size()];
-
-		for (int k = 0; k < identifiers2.length; k++) {
-			identifiers2[k] = new Identifier(JsonHelper.asString(jsonArray2.get(k), "recipes[" + k + "]"));
-		}
-
-		LazyContainer lazyContainer;
-		if (json.has("function")) {
-			lazyContainer = new LazyContainer(new Identifier(JsonHelper.getString(json, "function")));
-		} else {
-			lazyContainer = LazyContainer.EMPTY;
-		}
-
-		return new AdvancementRewards(i, identifiers, identifiers2, lazyContainer);
 	}
 
 	public static class Builder {
 		private int experience;
-		private final List<Identifier> loot = Lists.<Identifier>newArrayList();
-		private final List<Identifier> recipes = Lists.<Identifier>newArrayList();
-		@Nullable
-		private Identifier function;
+		private final ImmutableList.Builder<Identifier> loot = ImmutableList.builder();
+		private final ImmutableList.Builder<Identifier> recipes = ImmutableList.builder();
+		private Optional<Identifier> function = Optional.empty();
 
 		public static AdvancementRewards.Builder experience(int experience) {
 			return new AdvancementRewards.Builder().setExperience(experience);
@@ -201,17 +115,12 @@ public class AdvancementRewards {
 		}
 
 		public AdvancementRewards.Builder setFunction(Identifier function) {
-			this.function = function;
+			this.function = Optional.of(function);
 			return this;
 		}
 
 		public AdvancementRewards build() {
-			return new AdvancementRewards(
-				this.experience,
-				(Identifier[])this.loot.toArray(new Identifier[0]),
-				(Identifier[])this.recipes.toArray(new Identifier[0]),
-				this.function == null ? LazyContainer.EMPTY : new LazyContainer(this.function)
-			);
+			return new AdvancementRewards(this.experience, this.loot.build(), this.recipes.build(), this.function.map(LazyContainer::new));
 		}
 	}
 }

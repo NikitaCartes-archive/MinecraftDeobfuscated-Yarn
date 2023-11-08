@@ -43,6 +43,7 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<TemptationsSensor> SNIFFER_TEMPTATIONS = register(
 		"sniffer_temptations", () -> new TemptationsSensor(SnifferBrain.getTemptItems())
 	);
+	public static final SensorType<BreezeAttackablesSensor> BREEZE_ATTACK_ENTITY_SENSOR = register("breeze_attack_entity_sensor", BreezeAttackablesSensor::new);
 	private final Supplier<U> factory;
 
 	private SensorType(Supplier<U> factory) {

@@ -3142,6 +3142,25 @@ public class BlockStateModelGenerator {
 			);
 	}
 
+	private void registerTrialSpawner() {
+		Block block = Blocks.TRIAL_SPAWNER;
+		TextureMap textureMap = TextureMap.trialSpawner(block, "_side_inactive", "_top_inactive");
+		TextureMap textureMap2 = TextureMap.trialSpawner(block, "_side_active", "_top_active");
+		TextureMap textureMap3 = TextureMap.trialSpawner(block, "_side_active", "_top_ejecting_reward");
+		Identifier identifier = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, "_active", textureMap2, this.modelCollector);
+		Identifier identifier3 = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, "_ejecting_reward", textureMap3, this.modelCollector);
+		this.registerParentedItemModel(block, identifier);
+		this.blockStateCollector
+			.accept(VariantsBlockStateSupplier.create(block).coordinate(BlockStateVariantMap.create(Properties.TRIAL_SPAWNER_STATE).register(state -> {
+				return switch (state) {
+					case INACTIVE, COOLDOWN -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
+					case WAITING_FOR_PLAYERS, ACTIVE, WAITING_FOR_REWARD_EJECTION -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier2);
+					case EJECTING_REWARD -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier3);
+				};
+			})));
+	}
+
 	private void registerSculkSensor() {
 		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_inactive");
 		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_active");
@@ -4033,7 +4052,7 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.SHROOMLIGHT);
 		this.registerSimpleCubeAll(Blocks.SOUL_SAND);
 		this.registerSimpleCubeAll(Blocks.SOUL_SOIL);
-		this.registerSimpleCubeAll(Blocks.SPAWNER);
+		this.registerSingleton(Blocks.SPAWNER, TexturedModel.CUBE_ALL_INNER_FACES);
 		this.registerSimpleCubeAll(Blocks.SPONGE);
 		this.registerSingleton(Blocks.SEAGRASS, TexturedModel.TEMPLATE_SEAGRASS);
 		this.registerItemModel(Items.SEAGRASS);
@@ -4143,6 +4162,7 @@ public class BlockStateModelGenerator {
 		this.registerFrogspawn();
 		this.registerMangrovePropagule();
 		this.registerMuddyMangroveRoots();
+		this.registerTrialSpawner();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);

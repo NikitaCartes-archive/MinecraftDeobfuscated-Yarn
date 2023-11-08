@@ -10,8 +10,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -25,6 +23,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.LongJumpUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -184,86 +183,18 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 	}
 
 	@Nullable
-	protected Vec3d getJumpingVelocity(MobEntity entity, Vec3d pos) {
+	protected Vec3d getJumpingVelocity(MobEntity entity, Vec3d targetPos) {
 		List<Integer> list = Lists.<Integer>newArrayList(RAM_RANGES);
 		Collections.shuffle(list);
 
 		for (int i : list) {
-			Vec3d vec3d = this.getJumpingVelocity(entity, pos, i);
-			if (vec3d != null) {
-				return vec3d;
+			Optional<Vec3d> optional = LongJumpUtil.getJumpingVelocity(entity, targetPos, this.maxRange, i, true);
+			if (optional.isPresent()) {
+				return (Vec3d)optional.get();
 			}
 		}
 
 		return null;
-	}
-
-	@Nullable
-	private Vec3d getJumpingVelocity(MobEntity entity, Vec3d pos, int range) {
-		Vec3d vec3d = entity.getPos();
-		Vec3d vec3d2 = new Vec3d(pos.x - vec3d.x, 0.0, pos.z - vec3d.z).normalize().multiply(0.5);
-		pos = pos.subtract(vec3d2);
-		Vec3d vec3d3 = pos.subtract(vec3d);
-		float f = (float)range * (float) Math.PI / 180.0F;
-		double d = Math.atan2(vec3d3.z, vec3d3.x);
-		double e = vec3d3.subtract(0.0, vec3d3.y, 0.0).lengthSquared();
-		double g = Math.sqrt(e);
-		double h = vec3d3.y;
-		double i = Math.sin((double)(2.0F * f));
-		double j = 0.08;
-		double k = Math.pow(Math.cos((double)f), 2.0);
-		double l = Math.sin((double)f);
-		double m = Math.cos((double)f);
-		double n = Math.sin(d);
-		double o = Math.cos(d);
-		double p = e * 0.08 / (g * i - 2.0 * h * k);
-		if (p < 0.0) {
-			return null;
-		} else {
-			double q = Math.sqrt(p);
-			if (q > (double)this.maxRange) {
-				return null;
-			} else {
-				double r = q * m;
-				double s = q * l;
-				int t = MathHelper.ceil(g / r) * 2;
-				double u = 0.0;
-				Vec3d vec3d4 = null;
-				EntityDimensions entityDimensions = entity.getDimensions(EntityPose.LONG_JUMPING);
-
-				for (int v = 0; v < t - 1; v++) {
-					u += g / (double)t;
-					double w = l / m * u - Math.pow(u, 2.0) * 0.08 / (2.0 * p * Math.pow(m, 2.0));
-					double x = u * o;
-					double y = u * n;
-					Vec3d vec3d5 = new Vec3d(vec3d.x + x, vec3d.y + w, vec3d.z + y);
-					if (vec3d4 != null && !this.canReach(entity, entityDimensions, vec3d4, vec3d5)) {
-						return null;
-					}
-
-					vec3d4 = vec3d5;
-				}
-
-				return new Vec3d(r * o, s, r * n).multiply(0.95F);
-			}
-		}
-	}
-
-	private boolean canReach(MobEntity entity, EntityDimensions dimensions, Vec3d vec3d, Vec3d vec3d2) {
-		Vec3d vec3d3 = vec3d2.subtract(vec3d);
-		double d = (double)Math.min(dimensions.width, dimensions.height);
-		int i = MathHelper.ceil(vec3d3.length() / d);
-		Vec3d vec3d4 = vec3d3.normalize();
-		Vec3d vec3d5 = vec3d;
-
-		for (int j = 0; j < i; j++) {
-			vec3d5 = j == i - 1 ? vec3d2 : vec3d5.add(vec3d4.multiply(d * 0.9F));
-			if (!entity.getWorld().isSpaceEmpty(entity, dimensions.getBoxAt(vec3d5))) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	public static class Target extends Weighted.Absent {

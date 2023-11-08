@@ -1,5 +1,7 @@
 package net.minecraft.util;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -11,11 +13,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.UUID;
 
 public final class Uuids {
 	public static final Codec<UUID> INT_STREAM_CODEC = Codec.INT_STREAM
 		.comapFlatMap(uuidStream -> Util.decodeFixedLengthArray(uuidStream, 4).map(Uuids::toUuid), uuid -> Arrays.stream(toIntArray(uuid)));
+	public static final Codec<Set<UUID>> SET_CODEC = Codec.list(INT_STREAM_CODEC).xmap(Sets::newHashSet, Lists::newArrayList);
 	public static final Codec<UUID> STRING_CODEC = Codec.STRING.comapFlatMap(string -> {
 		try {
 			return DataResult.success(UUID.fromString(string), Lifecycle.stable());

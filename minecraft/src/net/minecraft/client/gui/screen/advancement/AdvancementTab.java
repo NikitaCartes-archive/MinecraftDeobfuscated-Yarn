@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen.advancement;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -92,7 +91,7 @@ public class AdvancementTab {
 		context.enableScissor(x, y, x + 234, y + 113);
 		context.getMatrices().push();
 		context.getMatrices().translate((float)x, (float)y, 0.0F);
-		Identifier identifier = (Identifier)Objects.requireNonNullElse(this.display.getBackground(), TextureManager.MISSING_IDENTIFIER);
+		Identifier identifier = (Identifier)this.display.getBackground().orElse(TextureManager.MISSING_IDENTIFIER);
 		int i = MathHelper.floor(this.originX);
 		int j = MathHelper.floor(this.originY);
 		int k = i % 16;

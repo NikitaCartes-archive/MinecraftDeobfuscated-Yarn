@@ -2,7 +2,8 @@ package net.minecraft.advancement.criterion;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -13,18 +14,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbowCriterion.Conditions> {
-	public KilledByCrossbowCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		List<LootContextPredicate> list = EntityPredicate.contextPredicateArrayFromJson(jsonObject, "victims", advancementEntityPredicateDeserializer);
-		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("unique_entity_types"));
-		return new KilledByCrossbowCriterion.Conditions(optional, list, intRange);
+	@Override
+	public Codec<KilledByCrossbowCriterion.Conditions> getConditionsCodec() {
+		return KilledByCrossbowCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, Collection<Entity> piercingKilledEntities) {
@@ -39,15 +38,19 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		this.trigger(player, conditions -> conditions.matches(list, set.size()));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final List<LootContextPredicate> victims;
-		private final NumberRange.IntRange uniqueEntityTypes;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, List<LootContextPredicate> victims, NumberRange.IntRange uniqueEntityTypes) {
-			super(playerPredicate);
-			this.victims = victims;
-			this.uniqueEntityTypes = uniqueEntityTypes;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, List<LootContextPredicate> victims, NumberRange.IntRange uniqueEntityTypes)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<KilledByCrossbowCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(KilledByCrossbowCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.listOf(), "victims", List.of())
+							.forGetter(KilledByCrossbowCriterion.Conditions::victims),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "unique_entity_types", NumberRange.IntRange.ANY)
+							.forGetter(KilledByCrossbowCriterion.Conditions::uniqueEntityTypes)
+					)
+					.apply(instance, KilledByCrossbowCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<KilledByCrossbowCriterion.Conditions> create(EntityPredicate.Builder... victimPredicates) {
 			return Criteria.KILLED_BY_CROSSBOW
@@ -89,11 +92,14 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			jsonObject.add("victims", LootContextPredicate.toPredicatesJsonArray(this.victims));
-			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.toJson());
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicates(this.victims, ".victims");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

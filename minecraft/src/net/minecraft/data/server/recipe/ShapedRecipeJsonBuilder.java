@@ -2,32 +2,27 @@ package net.minecraft.data.server.recipe;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.RawShapedRecipe;
+import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
-public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+public class ShapedRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final RecipeCategory category;
 	private final Item output;
 	private final int count;
@@ -102,131 +97,27 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 
 	@Override
 	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
-		this.validate(recipeId);
+		RawShapedRecipe rawShapedRecipe = this.validate(recipeId);
 		Advancement.Builder builder = exporter.getAdvancementBuilder()
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.criteria.forEach(builder::criterion);
-		exporter.accept(
-			new ShapedRecipeJsonBuilder.ShapedRecipeJsonProvider(
-				recipeId,
-				this.output,
-				this.count,
-				this.group == null ? "" : this.group,
-				getCraftingCategory(this.category),
-				this.pattern,
-				this.inputs,
-				builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")),
-				this.showNotification
-			)
+		ShapedRecipe shapedRecipe = new ShapedRecipe(
+			(String)Objects.requireNonNullElse(this.group, ""),
+			CraftingRecipeJsonBuilder.toCraftingCategory(this.category),
+			rawShapedRecipe,
+			new ItemStack(this.output, this.count),
+			this.showNotification
 		);
+		exporter.accept(recipeId, shapedRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}
 
-	private void validate(Identifier recipeId) {
-		if (this.pattern.isEmpty()) {
-			throw new IllegalStateException("No pattern is defined for shaped recipe " + recipeId + "!");
+	private RawShapedRecipe validate(Identifier recipeId) {
+		if (this.criteria.isEmpty()) {
+			throw new IllegalStateException("No way of obtaining recipe " + recipeId);
 		} else {
-			Set<Character> set = Sets.<Character>newHashSet(this.inputs.keySet());
-			set.remove(' ');
-
-			for (String string : this.pattern) {
-				for (int i = 0; i < string.length(); i++) {
-					char c = string.charAt(i);
-					if (!this.inputs.containsKey(c) && c != ' ') {
-						throw new IllegalStateException("Pattern in recipe " + recipeId + " uses undefined symbol '" + c + "'");
-					}
-
-					set.remove(c);
-				}
-			}
-
-			if (!set.isEmpty()) {
-				throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + recipeId);
-			} else if (this.pattern.size() == 1 && ((String)this.pattern.get(0)).length() == 1) {
-				throw new IllegalStateException("Shaped recipe " + recipeId + " only takes in a single item - should it be a shapeless recipe instead?");
-			} else if (this.criteria.isEmpty()) {
-				throw new IllegalStateException("No way of obtaining recipe " + recipeId);
-			}
-		}
-	}
-
-	static class ShapedRecipeJsonProvider extends RecipeJsonBuilder.CraftingRecipeJsonProvider {
-		private final Identifier id;
-		private final Item output;
-		private final int resultCount;
-		private final String group;
-		private final List<String> pattern;
-		private final Map<Character, Ingredient> inputs;
-		private final AdvancementEntry advancement;
-		private final boolean showNotification;
-
-		public ShapedRecipeJsonProvider(
-			Identifier id,
-			Item output,
-			int resultCount,
-			String group,
-			CraftingRecipeCategory craftingCategory,
-			List<String> pattern,
-			Map<Character, Ingredient> inputs,
-			AdvancementEntry advancement,
-			boolean showNotification
-		) {
-			super(craftingCategory);
-			this.id = id;
-			this.output = output;
-			this.resultCount = resultCount;
-			this.group = group;
-			this.pattern = pattern;
-			this.inputs = inputs;
-			this.advancement = advancement;
-			this.showNotification = showNotification;
-		}
-
-		@Override
-		public void serialize(JsonObject json) {
-			super.serialize(json);
-			if (!this.group.isEmpty()) {
-				json.addProperty("group", this.group);
-			}
-
-			JsonArray jsonArray = new JsonArray();
-
-			for (String string : this.pattern) {
-				jsonArray.add(string);
-			}
-
-			json.add("pattern", jsonArray);
-			JsonObject jsonObject = new JsonObject();
-
-			for (Entry<Character, Ingredient> entry : this.inputs.entrySet()) {
-				jsonObject.add(String.valueOf(entry.getKey()), ((Ingredient)entry.getValue()).toJson(false));
-			}
-
-			json.add("key", jsonObject);
-			JsonObject jsonObject2 = new JsonObject();
-			jsonObject2.addProperty("item", Registries.ITEM.getId(this.output).toString());
-			if (this.resultCount > 1) {
-				jsonObject2.addProperty("count", this.resultCount);
-			}
-
-			json.add("result", jsonObject2);
-			json.addProperty("show_notification", this.showNotification);
-		}
-
-		@Override
-		public RecipeSerializer<?> serializer() {
-			return RecipeSerializer.SHAPED;
-		}
-
-		@Override
-		public Identifier id() {
-			return this.id;
-		}
-
-		@Override
-		public AdvancementEntry advancement() {
-			return this.advancement;
+			return RawShapedRecipe.create(this.inputs, this.pattern);
 		}
 	}
 }

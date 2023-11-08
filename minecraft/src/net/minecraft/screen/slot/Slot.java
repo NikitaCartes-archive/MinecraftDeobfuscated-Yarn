@@ -167,4 +167,11 @@ public class Slot {
 	public boolean canBeHighlighted() {
 		return true;
 	}
+
+	/**
+	 * {@return {@code true} to disable dynamic display for clocks and compasses}
+	 */
+	public boolean disablesDynamicDisplay() {
+		return false;
+	}
 }

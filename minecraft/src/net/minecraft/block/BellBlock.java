@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -12,6 +13,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -34,6 +36,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public class BellBlock extends BlockWithEntity {
 	public static final MapCodec<BellBlock> CODEC = createCodec(BellBlock::new);
@@ -213,6 +216,15 @@ public class BellBlock extends BlockWithEntity {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient()) {
+			this.ring(world, pos, null);
+		}
+
+		super.onExploded(state, world, pos, explosion, stackMerger);
 	}
 
 	@Override

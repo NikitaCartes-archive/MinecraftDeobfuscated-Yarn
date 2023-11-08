@@ -1,21 +1,20 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCriterion.Conditions> {
-	public RecipeUnlockedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe"));
-		return new RecipeUnlockedCriterion.Conditions(optional, identifier);
+	@Override
+	public Codec<RecipeUnlockedCriterion.Conditions> getConditionsCodec() {
+		return RecipeUnlockedCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, RecipeEntry<?> recipe) {
@@ -26,23 +25,23 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 		return Criteria.RECIPE_UNLOCKED.create(new RecipeUnlockedCriterion.Conditions(Optional.empty(), id));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Identifier recipe;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Identifier recipe) {
-			super(playerPredicate);
-			this.recipe = recipe;
-		}
-
-		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			jsonObject.addProperty("recipe", this.recipe.toString());
-			return jsonObject;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Identifier recipe) implements AbstractCriterion.Conditions {
+		public static final Codec<RecipeUnlockedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(RecipeUnlockedCriterion.Conditions::getPlayerPredicate),
+						Identifier.CODEC.fieldOf("recipe").forGetter(RecipeUnlockedCriterion.Conditions::recipe)
+					)
+					.apply(instance, RecipeUnlockedCriterion.Conditions::new)
+		);
 
 		public boolean matches(RecipeEntry<?> recipe) {
 			return this.recipe.equals(recipe.id());
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

@@ -160,6 +160,7 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.ShaderProgram GUI_GHOST_RECIPE_OVERLAY_PROGRAM = new RenderPhase.ShaderProgram(
 		GameRenderer::getRenderTypeGuiGhostRecipeOverlayProgram
 	);
+	protected static final RenderPhase.ShaderProgram BREEZE_WIND_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeBreezeWindProgram);
 	protected static final RenderPhase.Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, true);
 	protected static final RenderPhase.Texture BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false);
 	protected static final RenderPhase.TextureBase NO_TEXTURE = new RenderPhase.TextureBase();

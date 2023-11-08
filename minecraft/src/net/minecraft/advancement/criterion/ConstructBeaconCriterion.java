@@ -1,32 +1,35 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconCriterion.Conditions> {
-	public ConstructBeaconCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));
-		return new ConstructBeaconCriterion.Conditions(optional, intRange);
+	@Override
+	public Codec<ConstructBeaconCriterion.Conditions> getConditionsCodec() {
+		return ConstructBeaconCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, int level) {
 		this.trigger(player, conditions -> conditions.matches(level));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.IntRange level;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, NumberRange.IntRange level) {
-			super(playerPredicate);
-			this.level = level;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, NumberRange.IntRange level) implements AbstractCriterion.Conditions {
+		public static final Codec<ConstructBeaconCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(ConstructBeaconCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "level", NumberRange.IntRange.ANY)
+							.forGetter(ConstructBeaconCriterion.Conditions::level)
+					)
+					.apply(instance, ConstructBeaconCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<ConstructBeaconCriterion.Conditions> create() {
 			return Criteria.CONSTRUCT_BEACON.create(new ConstructBeaconCriterion.Conditions(Optional.empty(), NumberRange.IntRange.ANY));
@@ -41,10 +44,8 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			jsonObject.add("level", this.level.toJson());
-			return jsonObject;
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

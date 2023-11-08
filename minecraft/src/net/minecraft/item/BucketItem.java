@@ -149,8 +149,7 @@ public class BucketItem extends Item implements FluidModificationItem {
 					world.breakBlock(pos, true);
 				}
 
-				if (!world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD)
-					&& !blockState.getFluidState().isStill()) {
+				if (!world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), Block.NOTIFY_ALL_AND_REDRAW) && !blockState.getFluidState().isStill()) {
 					return false;
 				} else {
 					this.playEmptyingSound(player, world, pos);

@@ -14,11 +14,10 @@ public record EntityTypePredicate(RegistryEntryList<EntityType<?>> types) {
 	public static final Codec<EntityTypePredicate> CODEC = Codec.either(TagKey.codec(RegistryKeys.ENTITY_TYPE), Registries.ENTITY_TYPE.createEntryCodec())
 		.flatComapMap(
 			either -> either.map(
-					tagKey -> new EntityTypePredicate(Registries.ENTITY_TYPE.getOrCreateEntryList(tagKey)),
-					registryEntry -> new EntityTypePredicate(RegistryEntryList.of(registryEntry))
+					tag -> new EntityTypePredicate(Registries.ENTITY_TYPE.getOrCreateEntryList(tag)), type -> new EntityTypePredicate(RegistryEntryList.of(type))
 				),
-			entityTypePredicate -> {
-				RegistryEntryList<EntityType<?>> registryEntryList = entityTypePredicate.types();
+			predicate -> {
+				RegistryEntryList<EntityType<?>> registryEntryList = predicate.types();
 				Optional<TagKey<EntityType<?>>> optional = registryEntryList.getTagKey();
 				if (optional.isPresent()) {
 					return DataResult.success(Either.left((TagKey)optional.get()));

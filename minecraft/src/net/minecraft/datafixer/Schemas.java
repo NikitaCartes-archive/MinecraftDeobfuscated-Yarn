@@ -263,6 +263,7 @@ import net.minecraft.datafixer.schema.Schema3448;
 import net.minecraft.datafixer.schema.Schema3682;
 import net.minecraft.datafixer.schema.Schema3683;
 import net.minecraft.datafixer.schema.Schema3685;
+import net.minecraft.datafixer.schema.Schema3689;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1165,6 +1166,9 @@ public class Schemas {
 		builder.addFixer(new PrimedTntBlockStateFix(schema195));
 		Schema schema196 = builder.addSchema(3685, Schema3685::new);
 		builder.addFixer(new ProjectileItemTypeFix(schema196));
+		Schema schema197 = builder.addSchema(3689, Schema3689::new);
+		builder.addFixer(new ChoiceTypesFix(schema197, "Added Breeze", TypeReferences.ENTITY));
+		builder.addFixer(new ChoiceTypesFix(schema197, "Added Trial Spawner", TypeReferences.BLOCK_ENTITY));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -1,24 +1,23 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<PlayerInteractedWithEntityCriterion.Conditions> {
-	protected PlayerInteractedWithEntityCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("item"));
-		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new PlayerInteractedWithEntityCriterion.Conditions(optional, optional2, optional3);
+	@Override
+	public Codec<PlayerInteractedWithEntityCriterion.Conditions> getConditionsCodec() {
+		return PlayerInteractedWithEntityCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack, Entity entity) {
@@ -26,15 +25,18 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		this.trigger(player, conditions -> conditions.test(stack, lootContext));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<ItemPredicate> item;
-		private final Optional<LootContextPredicate> entity;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, Optional<LootContextPredicate> entity) {
-			super(playerPredicate);
-			this.item = item;
-			this.entity = entity;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<ItemPredicate> item, Optional<LootContextPredicate> entity)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<PlayerInteractedWithEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(PlayerInteractedWithEntityCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(PlayerInteractedWithEntityCriterion.Conditions::item),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity")
+							.forGetter(PlayerInteractedWithEntityCriterion.Conditions::entity)
+					)
+					.apply(instance, PlayerInteractedWithEntityCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<PlayerInteractedWithEntityCriterion.Conditions> create(
 			Optional<LootContextPredicate> playerPredicate, ItemPredicate.Builder item, Optional<LootContextPredicate> entity
@@ -53,11 +55,14 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.item.ifPresent(item -> jsonObject.add("item", item.toJson()));
-			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.entity, ".entity");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

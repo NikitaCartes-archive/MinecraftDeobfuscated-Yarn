@@ -1,60 +1,48 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.potion.Potion;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriterion.Conditions> {
-	public BrewedPotionCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Potion potion = null;
-		if (jsonObject.has("potion")) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "potion"));
-			potion = (Potion)Registries.POTION.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
-		}
-
-		return new BrewedPotionCriterion.Conditions(optional, potion);
+	@Override
+	public Codec<BrewedPotionCriterion.Conditions> getConditionsCodec() {
+		return BrewedPotionCriterion.Conditions.CODEC;
 	}
 
-	public void trigger(ServerPlayerEntity player, Potion potion) {
+	public void trigger(ServerPlayerEntity player, RegistryEntry<Potion> potion) {
 		this.trigger(player, conditions -> conditions.matches(potion));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		@Nullable
-		private final Potion potion;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, @Nullable Potion potion) {
-			super(playerPredicate);
-			this.potion = potion;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<RegistryEntry<Potion>> potion) implements AbstractCriterion.Conditions {
+		public static final Codec<BrewedPotionCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(BrewedPotionCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(Registries.POTION.createEntryCodec(), "potion").forGetter(BrewedPotionCriterion.Conditions::potion)
+					)
+					.apply(instance, BrewedPotionCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<BrewedPotionCriterion.Conditions> any() {
-			return Criteria.BREWED_POTION.create(new BrewedPotionCriterion.Conditions(Optional.empty(), null));
+			return Criteria.BREWED_POTION.create(new BrewedPotionCriterion.Conditions(Optional.empty(), Optional.empty()));
 		}
 
-		public boolean matches(Potion potion) {
-			return this.potion == null || this.potion == potion;
+		public boolean matches(RegistryEntry<Potion> potion) {
+			return !this.potion.isPresent() || ((RegistryEntry)this.potion.get()).equals(potion);
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			if (this.potion != null) {
-				jsonObject.addProperty("potion", Registries.POTION.getId(this.potion).toString());
-			}
-
-			return jsonObject;
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

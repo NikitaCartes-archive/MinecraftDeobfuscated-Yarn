@@ -5,10 +5,12 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.mojang.datafixers.DataFixUtils;
+import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.types.Type;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DataResult.PartialResult;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -63,6 +65,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -74,6 +77,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.function.CharPredicate;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
@@ -1067,6 +1072,25 @@ public class Util {
 			throw (Throwable)exceptionGetter.apply(((PartialResult)optional.get()).message());
 		} else {
 			return (T)result.result().orElseThrow();
+		}
+	}
+
+	public static <A, B> Typed<B> apply(Typed<A> typed, Type<B> type, UnaryOperator<Dynamic<?>> modifier) {
+		Dynamic<?> dynamic = getResult((DataResult<Dynamic<?>>)typed.write(), IllegalStateException::new);
+		return readTyped(type, (Dynamic<?>)modifier.apply(dynamic));
+	}
+
+	public static <T> Typed<T> readTyped(Type<T> type, Dynamic<?> value) {
+		DataResult<Typed<T>> dataResult = type.readTyped(value).map(com.mojang.datafixers.util.Pair::getFirst);
+		Optional<PartialResult<Typed<T>>> optional = dataResult.error();
+		if (optional.isPresent()) {
+			CrashReport crashReport = CrashReport.create(new IllegalStateException(((PartialResult)optional.get()).message()), "Reading type");
+			CrashReportSection crashReportSection = crashReport.addElement("Info");
+			crashReportSection.add("Data", value);
+			crashReportSection.add("Type", type);
+			throw new CrashException(crashReport);
+		} else {
+			return (Typed<T>)dataResult.result().orElseThrow();
 		}
 	}
 

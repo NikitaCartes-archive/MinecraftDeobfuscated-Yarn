@@ -164,7 +164,7 @@ public class BlockItem extends Item {
 	}
 
 	protected boolean place(ItemPlacementContext context, BlockState state) {
-		return context.getWorld().setBlockState(context.getBlockPos(), state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+		return context.getWorld().setBlockState(context.getBlockPos(), state, Block.NOTIFY_ALL_AND_REDRAW);
 	}
 
 	public static boolean writeNbtToBlockEntity(World world, @Nullable PlayerEntity player, BlockPos pos, ItemStack stack) {

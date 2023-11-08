@@ -2,23 +2,16 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import java.util.List;
-import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.block.entity.Spawner;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -63,26 +56,6 @@ public class SpawnerBlock extends BlockWithEntity {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 		super.appendTooltip(stack, world, tooltip, options);
-		Optional<Text> optional = this.getEntityNameForTooltip(stack);
-		if (optional.isPresent()) {
-			tooltip.add((Text)optional.get());
-		} else {
-			tooltip.add(ScreenTexts.EMPTY);
-			tooltip.add(Text.translatable("block.minecraft.spawner.desc1").formatted(Formatting.GRAY));
-			tooltip.add(ScreenTexts.space().append(Text.translatable("block.minecraft.spawner.desc2").formatted(Formatting.BLUE)));
-		}
-	}
-
-	private Optional<Text> getEntityNameForTooltip(ItemStack stack) {
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-		if (nbtCompound != null && nbtCompound.contains("SpawnData", NbtElement.COMPOUND_TYPE)) {
-			String string = nbtCompound.getCompound("SpawnData").getCompound("entity").getString("id");
-			Identifier identifier = Identifier.tryParse(string);
-			if (identifier != null) {
-				return Registries.ENTITY_TYPE.getOrEmpty(identifier).map(entityType -> Text.translatable(entityType.getTranslationKey()).formatted(Formatting.GRAY));
-			}
-		}
-
-		return Optional.empty();
+		Spawner.appendSpawnDataToTooltip(stack, tooltip, "SpawnData");
 	}
 }

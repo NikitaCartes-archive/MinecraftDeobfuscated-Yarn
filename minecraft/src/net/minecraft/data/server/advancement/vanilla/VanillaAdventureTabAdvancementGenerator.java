@@ -763,7 +763,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		list.forEach(pair -> builder.criterion((String)pair.getFirst(), (AdvancementCriterion<?>)pair.getSecond()));
 		String string = "has_sherd";
 		builder.criterion("has_sherd", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS)));
-		builder.requirements(new AdvancementRequirements(new String[][]{(String[])list.stream().map(Pair::getFirst).toArray(String[]::new), {"has_sherd"}}));
+		builder.requirements(new AdvancementRequirements(List.of(list.stream().map(Pair::getFirst).toList(), List.of("has_sherd"))));
 		return builder;
 	}
 

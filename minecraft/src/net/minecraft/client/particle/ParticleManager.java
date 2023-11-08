@@ -131,6 +131,8 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.EXPLOSION, ExplosionLargeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SONIC_BOOM, SonicBoomParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FALLING_DUST, BlockFallingDustParticle.Factory::new);
+		this.registerFactory(ParticleTypes.GUST, GustParticle.Factory::new);
+		this.registerFactory(ParticleTypes.GUST_EMITTER, new GustEmitterParticle.Factory());
 		this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
 		this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);
@@ -198,6 +200,8 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.SHRIEK, ShriekParticle.Factory::new);
 		this.registerFactory(ParticleTypes.EGG_CRACK, SuspendParticle.EggCrackFactory::new);
 		this.registerFactory(ParticleTypes.DUST_PLUME, DustPlumeParticle.Factory::new);
+		this.registerFactory(ParticleTypes.GUST_DUST, GustDustParticle.Factory::new);
+		this.registerFactory(ParticleTypes.TRIAL_SPAWNER_DETECTION, TrialSpawnerDetectionParticle.Factory::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

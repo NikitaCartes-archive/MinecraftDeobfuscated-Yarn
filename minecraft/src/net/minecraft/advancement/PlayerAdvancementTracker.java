@@ -24,17 +24,16 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
@@ -74,7 +73,7 @@ public class PlayerAdvancementTracker {
 	}
 
 	public void clearCriteria() {
-		for (Criterion<?> criterion : Criteria.getCriteria()) {
+		for (Criterion<?> criterion : Registries.CRITERION) {
 			criterion.endTracking(this);
 		}
 	}
@@ -201,19 +200,11 @@ public class PlayerAdvancementTracker {
 			bl = true;
 			if (!bl2 && advancementProgress.isDone()) {
 				advancement.value().rewards().apply(this.owner);
-				advancement.value()
-					.display()
-					.ifPresent(
-						display -> {
-							if (display.shouldAnnounceToChat() && this.owner.getWorld().getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
-								this.playerManager
-									.broadcast(
-										Text.translatable("chat.type.advancement." + display.getFrame().getId(), this.owner.getDisplayName(), Advancement.getNameFromIdentity(advancement)),
-										false
-									);
-							}
-						}
-					);
+				advancement.value().display().ifPresent(display -> {
+					if (display.shouldAnnounceToChat() && this.owner.getWorld().getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
+						this.playerManager.broadcast(display.getFrame().getChatAnnouncementText(advancement, this.owner), false);
+					}
+				});
 			}
 		}
 

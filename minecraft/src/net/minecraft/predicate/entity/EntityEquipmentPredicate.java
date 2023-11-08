@@ -67,33 +67,33 @@ public record EntityEquipmentPredicate(
 			return new EntityEquipmentPredicate.Builder();
 		}
 
-		public EntityEquipmentPredicate.Builder head(ItemPredicate.Builder builder) {
-			this.head = Optional.of(builder.build());
+		public EntityEquipmentPredicate.Builder head(ItemPredicate.Builder item) {
+			this.head = Optional.of(item.build());
 			return this;
 		}
 
-		public EntityEquipmentPredicate.Builder chest(ItemPredicate.Builder builder) {
-			this.chest = Optional.of(builder.build());
+		public EntityEquipmentPredicate.Builder chest(ItemPredicate.Builder item) {
+			this.chest = Optional.of(item.build());
 			return this;
 		}
 
-		public EntityEquipmentPredicate.Builder legs(ItemPredicate.Builder builder) {
-			this.legs = Optional.of(builder.build());
+		public EntityEquipmentPredicate.Builder legs(ItemPredicate.Builder item) {
+			this.legs = Optional.of(item.build());
 			return this;
 		}
 
-		public EntityEquipmentPredicate.Builder feet(ItemPredicate.Builder builder) {
-			this.feet = Optional.of(builder.build());
+		public EntityEquipmentPredicate.Builder feet(ItemPredicate.Builder item) {
+			this.feet = Optional.of(item.build());
 			return this;
 		}
 
-		public EntityEquipmentPredicate.Builder mainhand(ItemPredicate.Builder builder) {
-			this.mainhand = Optional.of(builder.build());
+		public EntityEquipmentPredicate.Builder mainhand(ItemPredicate.Builder item) {
+			this.mainhand = Optional.of(item.build());
 			return this;
 		}
 
-		public EntityEquipmentPredicate.Builder offhand(ItemPredicate.Builder builder) {
-			this.offhand = Optional.of(builder.build());
+		public EntityEquipmentPredicate.Builder offhand(ItemPredicate.Builder item) {
+			this.offhand = Optional.of(item.build());
 			return this;
 		}
 

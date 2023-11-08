@@ -62,4 +62,9 @@ public class CrafterOutputSlot extends Slot {
 	public boolean canBeHighlighted() {
 		return false;
 	}
+
+	@Override
+	public boolean disablesDynamicDisplay() {
+		return true;
+	}
 }

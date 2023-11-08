@@ -1606,6 +1606,7 @@ public class ItemGroups {
 					entries.add(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE);
 					entries.add(Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE);
 					entries.add(Items.EXPERIENCE_BOTTLE);
+					entries.add(Items.TRIAL_KEY);
 					Set<EnchantmentTarget> set = EnumSet.allOf(EnchantmentTarget.class);
 					displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(wrapper -> {
 						addMaxLevelEnchantedBooks(entries, wrapper, set, ItemGroup.StackVisibility.PARENT_TAB_ONLY);
@@ -1622,6 +1623,7 @@ public class ItemGroups {
 				.icon(() -> new ItemStack(Items.PIG_SPAWN_EGG))
 				.entries((displayContext, entries) -> {
 					entries.add(Items.SPAWNER);
+					entries.add(Items.TRIAL_SPAWNER);
 					entries.add(Items.ALLAY_SPAWN_EGG);
 					entries.add(Items.AXOLOTL_SPAWN_EGG);
 					entries.add(Items.BAT_SPAWN_EGG);
@@ -1641,6 +1643,7 @@ public class ItemGroups {
 					entries.add(Items.ENDERMAN_SPAWN_EGG);
 					entries.add(Items.ENDERMITE_SPAWN_EGG);
 					entries.add(Items.EVOKER_SPAWN_EGG);
+					entries.add(Items.BREEZE_SPAWN_EGG);
 					entries.add(Items.FOX_SPAWN_EGG);
 					entries.add(Items.FROG_SPAWN_EGG);
 					entries.add(Items.GHAST_SPAWN_EGG);

@@ -1,22 +1,16 @@
 package net.minecraft.predicate;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonParseException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 
 public interface NumberRange<T extends Number> {
@@ -37,18 +31,18 @@ public interface NumberRange<T extends Number> {
 		return optional.equals(optional2) ? optional : Optional.empty();
 	}
 
-	static <T extends Number, R extends NumberRange<T>> Codec<R> method_53191(Codec<T> codec, NumberRange.Factory<T, R> factory) {
-		Codec<R> codec2 = RecordCodecBuilder.create(
+	static <T extends Number, R extends NumberRange<T>> Codec<R> createCodec(Codec<T> valueCodec, NumberRange.Factory<T, R> rangeFactory) {
+		Codec<R> codec = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(codec, "min").forGetter(NumberRange::min),
-						Codecs.createStrictOptionalFieldCodec(codec, "max").forGetter(NumberRange::max)
+						Codecs.createStrictOptionalFieldCodec(valueCodec, "min").forGetter(NumberRange::min),
+						Codecs.createStrictOptionalFieldCodec(valueCodec, "max").forGetter(NumberRange::max)
 					)
-					.apply(instance, factory::create)
+					.apply(instance, rangeFactory::create)
 		);
-		return Codec.either(codec2, codec)
-			.xmap(either -> either.map(numberRange -> numberRange, number -> factory.create(Optional.of(number), Optional.of(number))), numberRange -> {
-				Optional<T> optional = numberRange.getConstantValue();
-				return optional.isPresent() ? Either.right((Number)optional.get()) : Either.left(numberRange);
+		return Codec.either(codec, valueCodec)
+			.xmap(either -> either.map(range -> range, value -> rangeFactory.create(Optional.of(value), Optional.of(value))), range -> {
+				Optional<T> optional = range.getConstantValue();
+				return optional.isPresent() ? Either.right((Number)optional.get()) : Either.left(range);
 			});
 	}
 
@@ -122,28 +116,28 @@ public interface NumberRange<T extends Number> {
 
 	@FunctionalInterface
 	public interface CommandFactory<T extends Number, R extends NumberRange<T>> {
-		R create(StringReader reader, Optional<T> optional, Optional<T> optional2) throws CommandSyntaxException;
+		R create(StringReader reader, Optional<T> min, Optional<T> max) throws CommandSyntaxException;
 	}
 
 	public static record DoubleRange(Optional<Double> min, Optional<Double> max, Optional<Double> squaredMin, Optional<Double> squaredMax)
 		implements NumberRange<Double> {
 		public static final NumberRange.DoubleRange ANY = new NumberRange.DoubleRange(Optional.empty(), Optional.empty());
-		public static final Codec<NumberRange.DoubleRange> CODEC = NumberRange.method_53191((Codec<T>)Codec.DOUBLE, NumberRange.DoubleRange::new);
+		public static final Codec<NumberRange.DoubleRange> CODEC = NumberRange.createCodec((Codec<T>)Codec.DOUBLE, NumberRange.DoubleRange::new);
 
-		private DoubleRange(Optional<Double> optional, Optional<Double> optional2) {
-			this(optional, optional2, square(optional), square(optional2));
+		private DoubleRange(Optional<Double> min, Optional<Double> max) {
+			this(min, max, square(min), square(max));
 		}
 
-		private static NumberRange.DoubleRange create(StringReader reader, Optional<Double> optional, Optional<Double> optional2) throws CommandSyntaxException {
-			if (optional.isPresent() && optional2.isPresent() && (Double)optional.get() > (Double)optional2.get()) {
+		private static NumberRange.DoubleRange create(StringReader reader, Optional<Double> min, Optional<Double> max) throws CommandSyntaxException {
+			if (min.isPresent() && max.isPresent() && (Double)min.get() > (Double)max.get()) {
 				throw EXCEPTION_SWAPPED.createWithContext(reader);
 			} else {
-				return new NumberRange.DoubleRange(optional, optional2);
+				return new NumberRange.DoubleRange(min, max);
 			}
 		}
 
-		private static Optional<Double> square(Optional<Double> optional) {
-			return optional.map(double_ -> double_ * double_);
+		private static Optional<Double> square(Optional<Double> value) {
+			return value.map(d -> d * d);
 		}
 
 		public static NumberRange.DoubleRange exactly(double value) {
@@ -170,14 +164,6 @@ public interface NumberRange<T extends Number> {
 			return this.squaredMin.isPresent() && this.squaredMin.get() > value ? false : this.squaredMax.isEmpty() || !((Double)this.squaredMax.get() < value);
 		}
 
-		public static NumberRange.DoubleRange fromJson(@Nullable JsonElement element) {
-			return element != null && !element.isJsonNull() ? Util.getResult(CODEC.parse(JsonOps.INSTANCE, element), JsonParseException::new) : ANY;
-		}
-
-		public JsonElement toJson() {
-			return (JsonElement)(this.isDummy() ? JsonNull.INSTANCE : Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new));
-		}
-
 		public static NumberRange.DoubleRange parse(StringReader reader) throws CommandSyntaxException {
 			return parse(reader, value -> value);
 		}
@@ -191,28 +177,28 @@ public interface NumberRange<T extends Number> {
 
 	@FunctionalInterface
 	public interface Factory<T extends Number, R extends NumberRange<T>> {
-		R create(Optional<T> optional, Optional<T> optional2);
+		R create(Optional<T> min, Optional<T> max);
 	}
 
 	public static record IntRange(Optional<Integer> min, Optional<Integer> max, Optional<Long> minSquared, Optional<Long> maxSquared)
 		implements NumberRange<Integer> {
 		public static final NumberRange.IntRange ANY = new NumberRange.IntRange(Optional.empty(), Optional.empty());
-		public static final Codec<NumberRange.IntRange> CODEC = NumberRange.method_53191((Codec<T>)Codec.INT, NumberRange.IntRange::new);
+		public static final Codec<NumberRange.IntRange> CODEC = NumberRange.createCodec((Codec<T>)Codec.INT, NumberRange.IntRange::new);
 
-		private IntRange(Optional<Integer> optional, Optional<Integer> optional2) {
-			this(optional, optional2, optional.map(integer -> integer.longValue() * integer.longValue()), squared(optional2));
+		private IntRange(Optional<Integer> min, Optional<Integer> max) {
+			this(min, max, min.map(i -> i.longValue() * i.longValue()), square(max));
 		}
 
-		private static NumberRange.IntRange parse(StringReader reader, Optional<Integer> optional, Optional<Integer> optional2) throws CommandSyntaxException {
-			if (optional.isPresent() && optional2.isPresent() && (Integer)optional.get() > (Integer)optional2.get()) {
+		private static NumberRange.IntRange parse(StringReader reader, Optional<Integer> min, Optional<Integer> max) throws CommandSyntaxException {
+			if (min.isPresent() && max.isPresent() && (Integer)min.get() > (Integer)max.get()) {
 				throw EXCEPTION_SWAPPED.createWithContext(reader);
 			} else {
-				return new NumberRange.IntRange(optional, optional2);
+				return new NumberRange.IntRange(min, max);
 			}
 		}
 
-		private static Optional<Long> squared(Optional<Integer> optional) {
-			return optional.map(integer -> integer.longValue() * integer.longValue());
+		private static Optional<Long> square(Optional<Integer> value) {
+			return value.map(i -> i.longValue() * i.longValue());
 		}
 
 		public static NumberRange.IntRange exactly(int value) {
@@ -237,14 +223,6 @@ public interface NumberRange<T extends Number> {
 
 		public boolean testSqrt(long value) {
 			return this.minSquared.isPresent() && this.minSquared.get() > value ? false : this.maxSquared.isEmpty() || (Long)this.maxSquared.get() >= value;
-		}
-
-		public static NumberRange.IntRange fromJson(@Nullable JsonElement element) {
-			return element != null && !element.isJsonNull() ? Util.getResult(CODEC.parse(JsonOps.INSTANCE, element), JsonParseException::new) : ANY;
-		}
-
-		public JsonElement toJson() {
-			return (JsonElement)(this.isDummy() ? JsonNull.INSTANCE : Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new));
 		}
 
 		public static NumberRange.IntRange parse(StringReader reader) throws CommandSyntaxException {

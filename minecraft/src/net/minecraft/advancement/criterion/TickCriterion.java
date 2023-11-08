@@ -1,34 +1,37 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.predicate.BlockPredicate;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
-	public TickCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		return new TickCriterion.Conditions(optional);
+	@Override
+	public Codec<TickCriterion.Conditions> getConditionsCodec() {
+		return TickCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player) {
 		this.trigger(player, conditions -> true);
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		public Conditions(Optional<LootContextPredicate> optional) {
-			super(optional);
-		}
+	public static record Conditions(Optional<LootContextPredicate> player) implements AbstractCriterion.Conditions {
+		public static final Codec<TickCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TickCriterion.Conditions::getPlayerPredicate)
+					)
+					.apply(instance, TickCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(LocationPredicate.Builder location) {
 			return Criteria.LOCATION
@@ -65,6 +68,11 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item)))
 					.steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block)))
 			);
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

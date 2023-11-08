@@ -6,8 +6,8 @@ import net.minecraft.data.server.loottable.BlockLootTableGenerator;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 
-public class OneTwentyOneBlockLootTableProvider extends BlockLootTableGenerator {
-	protected OneTwentyOneBlockLootTableProvider() {
+public class OneTwentyOneBlockLootTableGenerator extends BlockLootTableGenerator {
+	protected OneTwentyOneBlockLootTableGenerator() {
 		super(Set.of(), FeatureSet.of(FeatureFlags.UPDATE_1_21));
 	}
 
@@ -67,5 +67,6 @@ public class OneTwentyOneBlockLootTableProvider extends BlockLootTableGenerator 
 		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_BULB);
 		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_BULB);
 		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_BULB);
+		this.addDrop(Blocks.TRIAL_SPAWNER, dropsNothing());
 	}
 }

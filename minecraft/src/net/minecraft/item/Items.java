@@ -12,6 +12,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BannerPatternTags;
 import net.minecraft.registry.tag.InstrumentTags;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -1115,6 +1116,7 @@ public class Items {
 	public static final Item BAT_SPAWN_EGG = register("bat_spawn_egg", new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings()));
 	public static final Item BEE_SPAWN_EGG = register("bee_spawn_egg", new SpawnEggItem(EntityType.BEE, 15582019, 4400155, new Item.Settings()));
 	public static final Item BLAZE_SPAWN_EGG = register("blaze_spawn_egg", new SpawnEggItem(EntityType.BLAZE, 16167425, 16775294, new Item.Settings()));
+	public static final Item BREEZE_SPAWN_EGG = register("breeze_spawn_egg", new SpawnEggItem(EntityType.BREEZE, 11506911, 9529055, new Item.Settings()));
 	public static final Item CAT_SPAWN_EGG = register("cat_spawn_egg", new SpawnEggItem(EntityType.CAT, 15714446, 9794134, new Item.Settings()));
 	public static final Item CAMEL_SPAWN_EGG = register("camel_spawn_egg", new SpawnEggItem(EntityType.CAMEL, 16565097, 13341495, new Item.Settings()));
 	public static final Item CAVE_SPIDER_SPAWN_EGG = register(
@@ -1550,6 +1552,8 @@ public class Items {
 	public static final Item WAXED_EXPOSED_COPPER_BULB = register(Blocks.WAXED_EXPOSED_COPPER_BULB);
 	public static final Item WAXED_WEATHERED_COPPER_BULB = register(Blocks.WAXED_WEATHERED_COPPER_BULB);
 	public static final Item WAXED_OXIDIZED_COPPER_BULB = register(Blocks.WAXED_OXIDIZED_COPPER_BULB);
+	public static final Item TRIAL_SPAWNER = register(Blocks.TRIAL_SPAWNER);
+	public static final Item TRIAL_KEY = register("trial_key", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
 
 	public static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

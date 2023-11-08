@@ -1,6 +1,7 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,23 +11,17 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class InventoryChangedCriterion extends AbstractCriterion<InventoryChangedCriterion.Conditions> {
-	public InventoryChangedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "slots", new JsonObject());
-		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject2.get("occupied"));
-		NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject2.get("full"));
-		NumberRange.IntRange intRange3 = NumberRange.IntRange.fromJson(jsonObject2.get("empty"));
-		List<ItemPredicate> list = ItemPredicate.deserializeAll(jsonObject.get("items"));
-		return new InventoryChangedCriterion.Conditions(optional, intRange, intRange2, intRange3, list);
+	@Override
+	public Codec<InventoryChangedCriterion.Conditions> getConditionsCodec() {
+		return InventoryChangedCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, PlayerInventory inventory, ItemStack stack) {
@@ -53,25 +48,18 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		this.trigger(player, conditions -> conditions.matches(inventory, stack, full, empty, occupied));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.IntRange occupied;
-		private final NumberRange.IntRange full;
-		private final NumberRange.IntRange empty;
-		private final List<ItemPredicate> items;
-
-		public Conditions(
-			Optional<LootContextPredicate> playerPredicate,
-			NumberRange.IntRange occupied,
-			NumberRange.IntRange full,
-			NumberRange.IntRange empty,
-			List<ItemPredicate> items
-		) {
-			super(playerPredicate);
-			this.occupied = occupied;
-			this.full = full;
-			this.empty = empty;
-			this.items = items;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, InventoryChangedCriterion.Conditions.Slots slots, List<ItemPredicate> items)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<InventoryChangedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(InventoryChangedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(InventoryChangedCriterion.Conditions.Slots.CODEC, "slots", InventoryChangedCriterion.Conditions.Slots.ANY)
+							.forGetter(InventoryChangedCriterion.Conditions::slots),
+						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC.listOf(), "items", List.of()).forGetter(InventoryChangedCriterion.Conditions::items)
+					)
+					.apply(instance, InventoryChangedCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<InventoryChangedCriterion.Conditions> items(ItemPredicate.Builder... items) {
 			return items((ItemPredicate[])Stream.of(items).map(ItemPredicate.Builder::build).toArray(ItemPredicate[]::new));
@@ -79,9 +67,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 
 		public static AdvancementCriterion<InventoryChangedCriterion.Conditions> items(ItemPredicate... items) {
 			return Criteria.INVENTORY_CHANGED
-				.create(
-					new InventoryChangedCriterion.Conditions(Optional.empty(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, List.of(items))
-				);
+				.create(new InventoryChangedCriterion.Conditions(Optional.empty(), InventoryChangedCriterion.Conditions.Slots.ANY, List.of(items)));
 		}
 
 		public static AdvancementCriterion<InventoryChangedCriterion.Conditions> items(ItemConvertible... items) {
@@ -103,30 +89,8 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 			return items(itemPredicates);
 		}
 
-		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			if (!this.occupied.isDummy() || !this.full.isDummy() || !this.empty.isDummy()) {
-				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.add("occupied", this.occupied.toJson());
-				jsonObject2.add("full", this.full.toJson());
-				jsonObject2.add("empty", this.empty.toJson());
-				jsonObject.add("slots", jsonObject2);
-			}
-
-			if (!this.items.isEmpty()) {
-				jsonObject.add("items", ItemPredicate.toJson(this.items));
-			}
-
-			return jsonObject;
-		}
-
 		public boolean matches(PlayerInventory inventory, ItemStack stack, int full, int empty, int occupied) {
-			if (!this.full.test(full)) {
-				return false;
-			} else if (!this.empty.test(empty)) {
-				return false;
-			} else if (!this.occupied.test(occupied)) {
+			if (!this.slots.test(full, empty, occupied)) {
 				return false;
 			} else if (this.items.isEmpty()) {
 				return true;
@@ -148,6 +112,36 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 				return list.isEmpty();
 			} else {
 				return !stack.isEmpty() && ((ItemPredicate)this.items.get(0)).test(stack);
+			}
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
+		}
+
+		public static record Slots(NumberRange.IntRange occupied, NumberRange.IntRange full, NumberRange.IntRange empty) {
+			public static final Codec<InventoryChangedCriterion.Conditions.Slots> CODEC = RecordCodecBuilder.create(
+				instance -> instance.group(
+							Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "occupied", NumberRange.IntRange.ANY)
+								.forGetter(InventoryChangedCriterion.Conditions.Slots::occupied),
+							Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "full", NumberRange.IntRange.ANY)
+								.forGetter(InventoryChangedCriterion.Conditions.Slots::full),
+							Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "empty", NumberRange.IntRange.ANY)
+								.forGetter(InventoryChangedCriterion.Conditions.Slots::empty)
+						)
+						.apply(instance, InventoryChangedCriterion.Conditions.Slots::new)
+			);
+			public static final InventoryChangedCriterion.Conditions.Slots ANY = new InventoryChangedCriterion.Conditions.Slots(
+				NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY
+			);
+
+			public boolean test(int full, int empty, int occupied) {
+				if (!this.full.test(full)) {
+					return false;
+				} else {
+					return !this.empty.test(empty) ? false : this.occupied.test(occupied);
+				}
 			}
 		}
 	}

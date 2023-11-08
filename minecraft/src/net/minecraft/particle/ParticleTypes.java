@@ -38,6 +38,8 @@ public class ParticleTypes {
 	public static final DefaultParticleType ENTITY_EFFECT = register("entity_effect", false);
 	public static final DefaultParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final DefaultParticleType EXPLOSION = register("explosion", true);
+	public static final DefaultParticleType GUST = register("gust", true);
+	public static final DefaultParticleType GUST_EMITTER = register("gust_emitter", true);
 	public static final DefaultParticleType SONIC_BOOM = register("sonic_boom", true);
 	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = register(
 		"falling_dust", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
@@ -119,6 +121,8 @@ public class ParticleTypes {
 	public static final ParticleType<ShriekParticleEffect> SHRIEK = register("shriek", false, ShriekParticleEffect.FACTORY, type -> ShriekParticleEffect.CODEC);
 	public static final DefaultParticleType EGG_CRACK = register("egg_crack", false);
 	public static final DefaultParticleType DUST_PLUME = register("dust_plume", false);
+	public static final DefaultParticleType GUST_DUST = register("gust_dust", false);
+	public static final DefaultParticleType TRIAL_SPAWNER_DETECTION = register("trial_spawner_detection", true);
 	public static final Codec<ParticleEffect> TYPE_CODEC = Registries.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
 	private static DefaultParticleType register(String name, boolean alwaysShow) {

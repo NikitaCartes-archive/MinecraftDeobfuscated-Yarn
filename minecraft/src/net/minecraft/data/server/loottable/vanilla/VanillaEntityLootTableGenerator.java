@@ -253,6 +253,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
+		this.register(EntityType.BREEZE, LootTable.builder());
 		this.register(EntityType.FOX, LootTable.builder());
 		this.register(EntityType.FROG, LootTable.builder());
 		this.register(

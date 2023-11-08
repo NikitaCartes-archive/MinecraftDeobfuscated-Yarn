@@ -29,8 +29,6 @@ import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_8939;
-import net.minecraft.class_8940;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -41,7 +39,9 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.ExecutionControl;
 import net.minecraft.command.ExecutionFlags;
+import net.minecraft.command.FallthroughCommandAction;
 import net.minecraft.command.Forkable;
+import net.minecraft.command.IsolatedCommandAction;
 import net.minecraft.command.ReturnValueConsumer;
 import net.minecraft.command.SingleCommandAction;
 import net.minecraft.command.argument.BlockPosArgumentType;
@@ -936,12 +936,12 @@ public class ExecuteCommand {
 						list.add(abstractServerCommandSource);
 					}
 				};
-				control.enqueueAction(new class_8940<>(newControl -> {
+				control.enqueueAction(new IsolatedCommandAction<>(newControl -> {
 					for (Procedure<T> procedure : list2) {
 						newControl.enqueueAction(new CommandFunctionAction<>(procedure, newControl.getFrame().returnValueConsumer(), true).bind(abstractServerCommandSource2));
 					}
 
-					newControl.enqueueAction(class_8939.method_54899());
+					newControl.enqueueAction(FallthroughCommandAction.getInstance());
 				}, returnValueConsumer));
 			}
 

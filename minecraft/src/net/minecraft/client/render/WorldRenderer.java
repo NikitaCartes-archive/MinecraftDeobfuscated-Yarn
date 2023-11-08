@@ -39,6 +39,7 @@ import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.spawner.TrialSpawnerLogic;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlUniform;
@@ -3060,6 +3061,33 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				break;
 			case 3009:
 				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.EGG_CRACK, UniformIntProvider.create(3, 6));
+				break;
+			case 3010:
+				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.GUST_DUST, UniformIntProvider.create(3, 6));
+				break;
+			case 3011:
+				TrialSpawnerLogic.addMobSpawnParticles(this.world, pos, random);
+				break;
+			case 3012:
+				this.world
+					.playSoundAtBlockCenter(
+						pos, SoundEvents.BLOCK_TRIAL_SPAWNER_SPAWN_MOB, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true
+					);
+				TrialSpawnerLogic.addMobSpawnParticles(this.world, pos, random);
+				break;
+			case 3013:
+				this.world
+					.playSoundAtBlockCenter(
+						pos, SoundEvents.BLOCK_TRIAL_SPAWNER_DETECT_PLAYER, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true
+					);
+				TrialSpawnerLogic.addDetectionParticles(this.world, pos, random, data);
+				break;
+			case 3014:
+				this.world
+					.playSoundAtBlockCenter(
+						pos, SoundEvents.BLOCK_TRIAL_SPAWNER_EJECT_ITEM, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true
+					);
+				TrialSpawnerLogic.addEjectItemParticles(this.world, pos, random);
 		}
 	}
 

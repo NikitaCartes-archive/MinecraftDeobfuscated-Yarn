@@ -66,7 +66,7 @@ public class AxeItem extends MiningToolItem {
 				Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
 			}
 
-			world.setBlockState(blockPos, (BlockState)optional.get(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(blockPos, (BlockState)optional.get(), Block.NOTIFY_ALL_AND_REDRAW);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, (BlockState)optional.get()));
 			if (playerEntity != null) {
 				itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));

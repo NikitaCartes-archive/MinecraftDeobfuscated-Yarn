@@ -1,28 +1,33 @@
 package net.minecraft.advancement;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import javax.annotation.Nullable;
-import net.minecraft.item.Item;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class AdvancementDisplay {
+	public static final Codec<AdvancementDisplay> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					ItemStack.ADVANCEMENT_DISPLAY_CODEC.fieldOf("icon").forGetter(AdvancementDisplay::getIcon),
+					TextCodecs.CODEC.fieldOf("title").forGetter(AdvancementDisplay::getTitle),
+					TextCodecs.CODEC.fieldOf("description").forGetter(AdvancementDisplay::getDescription),
+					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "background").forGetter(AdvancementDisplay::getBackground),
+					Codecs.createStrictOptionalFieldCodec(AdvancementFrame.CODEC, "frame", AdvancementFrame.TASK).forGetter(AdvancementDisplay::getFrame),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_toast", true).forGetter(AdvancementDisplay::shouldShowToast),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "announce_to_chat", true).forGetter(AdvancementDisplay::shouldAnnounceToChat),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "hidden", false).forGetter(AdvancementDisplay::isHidden)
+				)
+				.apply(instance, AdvancementDisplay::new)
+	);
 	private final Text title;
 	private final Text description;
 	private final ItemStack icon;
-	@Nullable
-	private final Identifier background;
+	private final Optional<Identifier> background;
 	private final AdvancementFrame frame;
 	private final boolean showToast;
 	private final boolean announceToChat;
@@ -34,7 +39,7 @@ public class AdvancementDisplay {
 		ItemStack icon,
 		Text title,
 		Text description,
-		@Nullable Identifier background,
+		Optional<Identifier> background,
 		AdvancementFrame frame,
 		boolean showToast,
 		boolean announceToChat,
@@ -67,8 +72,7 @@ public class AdvancementDisplay {
 		return this.icon;
 	}
 
-	@Nullable
-	public Identifier getBackground() {
+	public Optional<Identifier> getBackground() {
 		return this.background;
 	}
 
@@ -96,52 +100,13 @@ public class AdvancementDisplay {
 		return this.hidden;
 	}
 
-	public static AdvancementDisplay fromJson(JsonObject obj) {
-		Text text = Text.Serialization.fromJsonTree(obj.get("title"));
-		Text text2 = Text.Serialization.fromJsonTree(obj.get("description"));
-		if (text != null && text2 != null) {
-			ItemStack itemStack = iconFromJson(JsonHelper.getObject(obj, "icon"));
-			Identifier identifier = obj.has("background") ? new Identifier(JsonHelper.getString(obj, "background")) : null;
-			AdvancementFrame advancementFrame = obj.has("frame") ? AdvancementFrame.forName(JsonHelper.getString(obj, "frame")) : AdvancementFrame.TASK;
-			boolean bl = JsonHelper.getBoolean(obj, "show_toast", true);
-			boolean bl2 = JsonHelper.getBoolean(obj, "announce_to_chat", true);
-			boolean bl3 = JsonHelper.getBoolean(obj, "hidden", false);
-			return new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, bl2, bl3);
-		} else {
-			throw new JsonSyntaxException("Both title and description must be set");
-		}
-	}
-
-	private static ItemStack iconFromJson(JsonObject json) {
-		if (!json.has("item")) {
-			throw new JsonSyntaxException("Unsupported icon type, currently only items are supported (add 'item' key)");
-		} else {
-			RegistryEntry<Item> registryEntry = JsonHelper.getItem(json, "item");
-			if (json.has("data")) {
-				throw new JsonParseException("Disallowed data tag found");
-			} else {
-				ItemStack itemStack = new ItemStack(registryEntry);
-				if (json.has("nbt")) {
-					try {
-						NbtCompound nbtCompound = StringNbtReader.parse(JsonHelper.asString(json.get("nbt"), "nbt"));
-						itemStack.setNbt(nbtCompound);
-					} catch (CommandSyntaxException var4) {
-						throw new JsonSyntaxException("Invalid nbt tag: " + var4.getMessage());
-					}
-				}
-
-				return itemStack;
-			}
-		}
-	}
-
 	public void toPacket(PacketByteBuf buf) {
 		buf.writeText(this.title);
 		buf.writeText(this.description);
 		buf.writeItemStack(this.icon);
 		buf.writeEnumConstant(this.frame);
 		int i = 0;
-		if (this.background != null) {
+		if (this.background.isPresent()) {
 			i |= 1;
 		}
 
@@ -154,10 +119,7 @@ public class AdvancementDisplay {
 		}
 
 		buf.writeInt(i);
-		if (this.background != null) {
-			buf.writeIdentifier(this.background);
-		}
-
+		this.background.ifPresent(buf::writeIdentifier);
 		buf.writeFloat(this.x);
 		buf.writeFloat(this.y);
 	}
@@ -168,37 +130,11 @@ public class AdvancementDisplay {
 		ItemStack itemStack = buf.readItemStack();
 		AdvancementFrame advancementFrame = buf.readEnumConstant(AdvancementFrame.class);
 		int i = buf.readInt();
-		Identifier identifier = (i & 1) != 0 ? buf.readIdentifier() : null;
+		Optional<Identifier> optional = (i & 1) != 0 ? Optional.of(buf.readIdentifier()) : Optional.empty();
 		boolean bl = (i & 2) != 0;
 		boolean bl2 = (i & 4) != 0;
-		AdvancementDisplay advancementDisplay = new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, false, bl2);
+		AdvancementDisplay advancementDisplay = new AdvancementDisplay(itemStack, text, text2, optional, advancementFrame, bl, false, bl2);
 		advancementDisplay.setPos(buf.readFloat(), buf.readFloat());
 		return advancementDisplay;
-	}
-
-	public JsonElement toJson() {
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.add("icon", this.iconToJson());
-		jsonObject.add("title", Text.Serialization.toJsonTree(this.title));
-		jsonObject.add("description", Text.Serialization.toJsonTree(this.description));
-		jsonObject.addProperty("frame", this.frame.getId());
-		jsonObject.addProperty("show_toast", this.showToast);
-		jsonObject.addProperty("announce_to_chat", this.announceToChat);
-		jsonObject.addProperty("hidden", this.hidden);
-		if (this.background != null) {
-			jsonObject.addProperty("background", this.background.toString());
-		}
-
-		return jsonObject;
-	}
-
-	private JsonObject iconToJson() {
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("item", Registries.ITEM.getId(this.icon.getItem()).toString());
-		if (this.icon.hasNbt()) {
-			jsonObject.addProperty("nbt", this.icon.getNbt().toString());
-		}
-
-		return jsonObject;
 	}
 }

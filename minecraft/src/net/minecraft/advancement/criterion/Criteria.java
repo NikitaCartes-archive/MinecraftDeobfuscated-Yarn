@@ -1,12 +1,11 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import javax.annotation.Nullable;
-import net.minecraft.util.Identifier;
+import com.mojang.serialization.Codec;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class Criteria {
-	private static final BiMap<Identifier, Criterion<?>> VALUES = HashBiMap.create();
+	public static final Codec<Criterion<?>> CODEC = Registries.CRITERION.getCodec();
 	public static final ImpossibleCriterion IMPOSSIBLE = register("impossible", new ImpossibleCriterion());
 	public static final OnKilledCriterion PLAYER_KILLED_ENTITY = register("player_killed_entity", new OnKilledCriterion());
 	public static final OnKilledCriterion ENTITY_KILLED_PLAYER = register("entity_killed_player", new OnKilledCriterion());
@@ -69,25 +68,10 @@ public class Criteria {
 	public static final RecipeCraftedCriterion RECIPE_CRAFTED = register("recipe_crafted", new RecipeCraftedCriterion());
 
 	private static <T extends Criterion<?>> T register(String id, T criterion) {
-		Identifier identifier = new Identifier(id);
-		if (VALUES.putIfAbsent(identifier, criterion) != null) {
-			throw new IllegalArgumentException("Duplicate criterion id " + identifier);
-		} else {
-			return criterion;
-		}
+		return Registry.register(Registries.CRITERION, id, criterion);
 	}
 
-	@Nullable
-	public static <T extends CriterionConditions> Criterion<T> getById(Identifier id) {
-		return (Criterion<T>)VALUES.get(id);
-	}
-
-	@Nullable
-	public static Identifier getId(Criterion<?> criterion) {
-		return (Identifier)VALUES.inverse().get(criterion);
-	}
-
-	public static Iterable<? extends Criterion<?>> getCriteria() {
-		return VALUES.values();
+	public static Criterion<?> getDefault(Registry<Criterion<?>> registry) {
+		return IMPOSSIBLE;
 	}
 }

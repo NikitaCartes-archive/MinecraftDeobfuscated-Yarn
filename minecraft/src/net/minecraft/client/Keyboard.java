@@ -385,6 +385,7 @@ public class Keyboard {
 				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl2) {
 					boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
 					this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));
+					this.client.options.write();
 					if (screen instanceof SimpleOptionsScreen) {
 						((SimpleOptionsScreen)screen).updateNarratorButtonText();
 					}

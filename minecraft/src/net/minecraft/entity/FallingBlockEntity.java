@@ -288,7 +288,7 @@ public class FallingBlockEntity extends Entity {
 		}
 
 		if (nbt.contains("TileEntityData", NbtElement.COMPOUND_TYPE)) {
-			this.blockEntityData = nbt.getCompound("TileEntityData");
+			this.blockEntityData = nbt.getCompound("TileEntityData").copy();
 		}
 
 		this.destroyedOnLanding = nbt.getBoolean("CancelDrop");

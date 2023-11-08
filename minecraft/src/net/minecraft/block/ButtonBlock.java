@@ -3,11 +3,13 @@ package net.minecraft.block;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -25,6 +27,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public class ButtonBlock extends WallMountedBlock {
 	public static final MapCodec<ButtonBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -109,6 +112,15 @@ public class ButtonBlock extends WallMountedBlock {
 			world.emitGameEvent(player, GameEvent.BLOCK_ACTIVATE, pos);
 			return ActionResult.success(world.isClient);
 		}
+	}
+
+	@Override
+	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && !(Boolean)state.get(POWERED)) {
+			this.powerOn(state, world, pos);
+		}
+
+		super.onExploded(state, world, pos, explosion, stackMerger);
 	}
 
 	public void powerOn(BlockState state, World world, BlockPos pos) {

@@ -26,6 +26,9 @@ public class EntityModelLayers {
 	public static final EntityModelLayer BELL = registerMain("bell");
 	public static final EntityModelLayer BLAZE = registerMain("blaze");
 	public static final EntityModelLayer BOOK = registerMain("book");
+	public static final EntityModelLayer BREEZE = registerMain("breeze");
+	public static final EntityModelLayer BREEZE_WIND = register("breeze", "wind");
+	public static final EntityModelLayer BREEZE_EYES = register("breeze", "eyes");
 	public static final EntityModelLayer CAT = registerMain("cat");
 	public static final EntityModelLayer CAT_COLLAR = register("cat", "collar");
 	public static final EntityModelLayer CAMEL = registerMain("camel");
@@ -156,6 +159,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer VINDICATOR = registerMain("vindicator");
 	public static final EntityModelLayer WARDEN = registerMain("warden");
 	public static final EntityModelLayer WANDERING_TRADER = registerMain("wandering_trader");
+	public static final EntityModelLayer WIND_CHARGE = registerMain("wind_charge");
 	public static final EntityModelLayer WITCH = registerMain("witch");
 	public static final EntityModelLayer WITHER = registerMain("wither");
 	public static final EntityModelLayer WITHER_ARMOR = register("wither", "armor");

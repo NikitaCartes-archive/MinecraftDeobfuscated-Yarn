@@ -24,7 +24,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandExecutionContext;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -215,13 +214,11 @@ public class CommandManager {
 					serverCommandSource, context -> CommandExecutionContext.enqueueCommand(context, command, contextChain, serverCommandSource, ReturnValueConsumer.EMPTY)
 				);
 			}
-		} catch (CommandException var13) {
-			serverCommandSource.sendError(var13.getTextMessage());
-		} catch (Exception var14) {
-			MutableText mutableText = Text.literal(var14.getMessage() == null ? var14.getClass().getName() : var14.getMessage());
+		} catch (Exception var12) {
+			MutableText mutableText = Text.literal(var12.getMessage() == null ? var12.getClass().getName() : var12.getMessage());
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.error("Command exception: /{}", command, var14);
-				StackTraceElement[] stackTraceElements = var14.getStackTrace();
+				LOGGER.error("Command exception: /{}", command, var12);
+				StackTraceElement[] stackTraceElements = var12.getStackTrace();
 
 				for (int i = 0; i < Math.min(stackTraceElements.length, 3); i++) {
 					mutableText.append("\n\n")
@@ -237,8 +234,8 @@ public class CommandManager {
 				Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText)))
 			);
 			if (SharedConstants.isDevelopment) {
-				serverCommandSource.sendError(Text.literal(Util.getInnermostMessage(var14)));
-				LOGGER.error("'/{}' threw an exception", command, var14);
+				serverCommandSource.sendError(Text.literal(Util.getInnermostMessage(var12)));
+				LOGGER.error("'/{}' threw an exception", command, var12);
 			}
 		} finally {
 			serverCommandSource.getServer().getProfiler().pop();

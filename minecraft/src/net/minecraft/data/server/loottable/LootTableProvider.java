@@ -22,6 +22,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.RandomSeed;
@@ -55,7 +56,8 @@ public class LootTableProvider implements DataProvider {
 					throw new IllegalStateException("Duplicate loot table " + id);
 				}
 			}));
-		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, new LootDataLookup() {
+		ErrorReporter.Impl impl = new ErrorReporter.Impl();
+		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, new LootDataLookup() {
 			@Nullable
 			@Override
 			public <T> T getElement(LootDataKey<T> lootDataKey) {
@@ -64,13 +66,13 @@ public class LootTableProvider implements DataProvider {
 		});
 
 		for (Identifier identifier : Sets.difference(this.lootTableIds, map.keySet())) {
-			lootTableReporter.report("Missing built-in table: " + identifier);
+			impl.report("Missing built-in table: " + identifier);
 		}
 
 		map.forEach(
 			(id, table) -> table.validate(lootTableReporter.withContextType(table.getType()).makeChild("{" + id + "}", new LootDataKey<>(LootDataType.LOOT_TABLES, id)))
 		);
-		Multimap<String, String> multimap = lootTableReporter.getMessages();
+		Multimap<String, String> multimap = impl.getErrors();
 		if (!multimap.isEmpty()) {
 			multimap.forEach((name, message) -> LOGGER.warn("Found validation problem in {}: {}", name, message));
 			throw new IllegalStateException("Failed to validate loot tables, see logs");

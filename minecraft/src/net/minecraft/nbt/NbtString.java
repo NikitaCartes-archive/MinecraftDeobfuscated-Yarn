@@ -3,11 +3,9 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.UTFDataFormatException;
 import java.util.Objects;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
-import net.minecraft.util.Util;
 
 /**
  * Represents an NBT string. Its type is {@value NbtElement#STRING_TYPE}.
@@ -77,12 +75,7 @@ public class NbtString implements NbtElement {
 
 	@Override
 	public void write(DataOutput output) throws IOException {
-		try {
-			output.writeUTF(this.value);
-		} catch (UTFDataFormatException var3) {
-			Util.error("Failed to write NBT String", var3);
-			output.writeUTF("");
-		}
+		output.writeUTF(this.value);
 	}
 
 	@Override

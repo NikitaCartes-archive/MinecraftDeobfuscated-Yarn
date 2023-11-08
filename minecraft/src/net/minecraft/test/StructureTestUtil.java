@@ -98,10 +98,10 @@ public class StructureTestUtil {
 		structureBlockBlockEntity.setShowBoundingBox(true);
 	}
 
-	public static StructureBlockBlockEntity initStructure(String testName, BlockPos pos, BlockRotation rotation, ServerWorld world) {
+	public static StructureBlockBlockEntity initStructure(GameTestState state, BlockPos pos, BlockRotation rotation, ServerWorld world) {
 		Vec3i vec3i = ((StructureTemplate)world.getStructureTemplateManager()
-				.getTemplate(new Identifier(testName))
-				.orElseThrow(() -> new IllegalStateException("Missing test structure: " + testName)))
+				.getTemplate(new Identifier(state.getTemplateName()))
+				.orElseThrow(() -> new IllegalStateException("Missing test structure: " + state.getTemplateName())))
 			.getSize();
 		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
 		BlockPos blockPos;
@@ -121,7 +121,7 @@ public class StructureTestUtil {
 
 		forceLoadNearbyChunks(blockBox, world);
 		clearArea(blockBox, world);
-		return placeStructureTemplate(testName, blockPos.down(), rotation, world);
+		return placeStructureTemplate(state, blockPos.down(), rotation, world);
 	}
 
 	private static void forceLoadNearbyChunks(BlockBox box, ServerWorld world) {
@@ -182,15 +182,16 @@ public class StructureTestUtil {
 		return collection;
 	}
 
-	private static StructureBlockBlockEntity placeStructureTemplate(String name, BlockPos pos, BlockRotation rotation, ServerWorld world) {
+	private static StructureBlockBlockEntity placeStructureTemplate(GameTestState state, BlockPos pos, BlockRotation rotation, ServerWorld world) {
 		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setMode(StructureBlockMode.LOAD);
 		structureBlockBlockEntity.setRotation(rotation);
 		structureBlockBlockEntity.setIgnoreEntities(false);
-		structureBlockBlockEntity.setTemplateName(new Identifier(name));
+		structureBlockBlockEntity.setTemplateName(new Identifier(state.getTemplateName()));
+		structureBlockBlockEntity.setMetadata(state.getTemplatePath());
 		if (!structureBlockBlockEntity.loadStructure(world)) {
-			throw new RuntimeException("Failed to load structure info " + name);
+			throw new RuntimeException("Failed to load structure info for test: " + state.getTemplatePath() + ". Structure name: " + state.getTemplateName());
 		} else {
 			return structureBlockBlockEntity;
 		}

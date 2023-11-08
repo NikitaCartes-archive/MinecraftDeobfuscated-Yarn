@@ -1398,6 +1398,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.BLACK_CANDLE_CAKE, candleCakeDrops(Blocks.BLACK_CANDLE));
 		this.addDrop(Blocks.FROSTED_ICE, dropsNothing());
 		this.addDrop(Blocks.SPAWNER, dropsNothing());
+		this.addDrop(Blocks.TRIAL_SPAWNER, dropsNothing());
 		this.addDrop(Blocks.FIRE, dropsNothing());
 		this.addDrop(Blocks.SOUL_FIRE, dropsNothing());
 		this.addDrop(Blocks.NETHER_PORTAL, dropsNothing());

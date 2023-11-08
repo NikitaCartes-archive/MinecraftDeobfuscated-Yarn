@@ -82,4 +82,9 @@ public class CraftingResultSlot extends Slot {
 			}
 		}
 	}
+
+	@Override
+	public boolean disablesDynamicDisplay() {
+		return true;
+	}
 }

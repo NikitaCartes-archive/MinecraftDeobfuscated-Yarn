@@ -21,7 +21,7 @@ import net.minecraft.world.biome.Biome;
  * <p>Pillager spawns in pillager outposts are controlled at
  * {@link net.minecraft.world.gen.chunk.ChunkGenerator#getEntitySpawnList}.
  */
-public class PatrolSpawner implements Spawner {
+public class PatrolSpawner implements SpecialSpawner {
 	private int cooldown;
 
 	@Override

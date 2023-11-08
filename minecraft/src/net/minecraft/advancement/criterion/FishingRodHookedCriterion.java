@@ -1,6 +1,7 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Collection;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
@@ -10,20 +11,17 @@ import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHookedCriterion.Conditions> {
-	public FishingRodHookedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("rod"));
-		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		Optional<ItemPredicate> optional4 = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new FishingRodHookedCriterion.Conditions(optional, optional2, optional3, optional4);
+	@Override
+	public Codec<FishingRodHookedCriterion.Conditions> getConditionsCodec() {
+		return FishingRodHookedCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack rod, FishingBobberEntity bobber, Collection<ItemStack> fishingLoots) {
@@ -33,19 +31,19 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		this.trigger(player, conditions -> conditions.matches(rod, lootContext, fishingLoots));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<ItemPredicate> rod;
-		private final Optional<LootContextPredicate> hookedEntity;
-		private final Optional<ItemPredicate> caughtItem;
-
-		public Conditions(
-			Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> rod, Optional<LootContextPredicate> hookedEntity, Optional<ItemPredicate> caughtItem
-		) {
-			super(playerPredicate);
-			this.rod = rod;
-			this.hookedEntity = hookedEntity;
-			this.caughtItem = caughtItem;
-		}
+	public static record Conditions(
+		Optional<LootContextPredicate> player, Optional<ItemPredicate> rod, Optional<LootContextPredicate> entity, Optional<ItemPredicate> item
+	) implements AbstractCriterion.Conditions {
+		public static final Codec<FishingRodHookedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(FishingRodHookedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "rod").forGetter(FishingRodHookedCriterion.Conditions::rod),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(FishingRodHookedCriterion.Conditions::entity),
+						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(FishingRodHookedCriterion.Conditions::item)
+					)
+					.apply(instance, FishingRodHookedCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<FishingRodHookedCriterion.Conditions> create(
 			Optional<ItemPredicate> rod, Optional<EntityPredicate> hookedEntity, Optional<ItemPredicate> caughtItem
@@ -57,18 +55,18 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		public boolean matches(ItemStack rodStack, LootContext hookedEntity, Collection<ItemStack> fishingLoots) {
 			if (this.rod.isPresent() && !((ItemPredicate)this.rod.get()).test(rodStack)) {
 				return false;
-			} else if (this.hookedEntity.isPresent() && !((LootContextPredicate)this.hookedEntity.get()).test(hookedEntity)) {
+			} else if (this.entity.isPresent() && !((LootContextPredicate)this.entity.get()).test(hookedEntity)) {
 				return false;
 			} else {
-				if (this.caughtItem.isPresent()) {
+				if (this.item.isPresent()) {
 					boolean bl = false;
 					Entity entity = hookedEntity.get(LootContextParameters.THIS_ENTITY);
-					if (entity instanceof ItemEntity itemEntity && ((ItemPredicate)this.caughtItem.get()).test(itemEntity.getStack())) {
+					if (entity instanceof ItemEntity itemEntity && ((ItemPredicate)this.item.get()).test(itemEntity.getStack())) {
 						bl = true;
 					}
 
 					for (ItemStack itemStack : fishingLoots) {
-						if (((ItemPredicate)this.caughtItem.get()).test(itemStack)) {
+						if (((ItemPredicate)this.item.get()).test(itemStack)) {
 							bl = true;
 							break;
 						}
@@ -84,12 +82,14 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.rod.ifPresent(rod -> jsonObject.add("rod", rod.toJson()));
-			this.hookedEntity.ifPresent(hookedEntity -> jsonObject.add("entity", hookedEntity.toJson()));
-			this.caughtItem.ifPresent(caughtItem -> jsonObject.add("item", caughtItem.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.entity, ".entity");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

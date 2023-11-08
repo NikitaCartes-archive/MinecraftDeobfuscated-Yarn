@@ -25,19 +25,28 @@ public final class ProjectileUtil {
 		Vec3d vec3d = entity.getVelocity();
 		World world = entity.getWorld();
 		Vec3d vec3d2 = entity.getPos();
-		return getCollision(vec3d2, entity, predicate, vec3d, world, 0.3F);
+		return getCollision(vec3d2, entity, predicate, vec3d, world, 0.3F, RaycastContext.ShapeType.COLLIDER);
+	}
+
+	public static HitResult getCollision(Entity entity, Predicate<Entity> predicate, RaycastContext.ShapeType raycastShapeType) {
+		Vec3d vec3d = entity.getVelocity();
+		World world = entity.getWorld();
+		Vec3d vec3d2 = entity.getPos();
+		return getCollision(vec3d2, entity, predicate, vec3d, world, 0.3F, raycastShapeType);
 	}
 
 	public static HitResult getCollision(Entity entity, Predicate<Entity> predicate, double range) {
 		Vec3d vec3d = entity.getRotationVec(0.0F).multiply(range);
 		World world = entity.getWorld();
 		Vec3d vec3d2 = entity.getEyePos();
-		return getCollision(vec3d2, entity, predicate, vec3d, world, 0.0F);
+		return getCollision(vec3d2, entity, predicate, vec3d, world, 0.0F, RaycastContext.ShapeType.COLLIDER);
 	}
 
-	private static HitResult getCollision(Vec3d pos, Entity entity, Predicate<Entity> predicate, Vec3d velocity, World world, float margin) {
+	private static HitResult getCollision(
+		Vec3d pos, Entity entity, Predicate<Entity> predicate, Vec3d velocity, World world, float margin, RaycastContext.ShapeType raycastShapeType
+	) {
 		Vec3d vec3d = pos.add(velocity);
-		HitResult hitResult = world.raycast(new RaycastContext(pos, vec3d, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity));
+		HitResult hitResult = world.raycast(new RaycastContext(pos, vec3d, raycastShapeType, RaycastContext.FluidHandling.NONE, entity));
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			vec3d = hitResult.getPos();
 		}

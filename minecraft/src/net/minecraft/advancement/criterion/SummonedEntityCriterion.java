@@ -1,21 +1,21 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCriterion.Conditions> {
-	public SummonedEntityCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<LootContextPredicate> optional2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new SummonedEntityCriterion.Conditions(optional, optional2);
+	@Override
+	public Codec<SummonedEntityCriterion.Conditions> getConditionsCodec() {
+		return SummonedEntityCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity) {
@@ -23,13 +23,15 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 		this.trigger(player, conditions -> conditions.matches(lootContext));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<LootContextPredicate> entity;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> entity) {
-			super(playerPredicate);
-			this.entity = entity;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> entity) implements AbstractCriterion.Conditions {
+		public static final Codec<SummonedEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(SummonedEntityCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(SummonedEntityCriterion.Conditions::entity)
+					)
+					.apply(instance, SummonedEntityCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<SummonedEntityCriterion.Conditions> create(EntityPredicate.Builder summonedEntityPredicateBuilder) {
 			return Criteria.SUMMONED_ENTITY
@@ -43,10 +45,14 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.entity, ".entity");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

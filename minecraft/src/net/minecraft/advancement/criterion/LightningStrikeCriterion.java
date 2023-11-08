@@ -1,6 +1,7 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,18 +9,16 @@ import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeCriterion.Conditions> {
-	public LightningStrikeCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<LootContextPredicate> optional2 = EntityPredicate.contextPredicateFromJson(jsonObject, "lightning", advancementEntityPredicateDeserializer);
-		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "bystander", advancementEntityPredicateDeserializer);
-		return new LightningStrikeCriterion.Conditions(optional, optional2, optional3);
+	@Override
+	public Codec<LightningStrikeCriterion.Conditions> getConditionsCodec() {
+		return LightningStrikeCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, LightningEntity lightning, List<Entity> bystanders) {
@@ -30,15 +29,19 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 		this.trigger(player, conditions -> conditions.test(lootContext, list));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<LootContextPredicate> lightning;
-		private final Optional<LootContextPredicate> bystander;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> lightning, Optional<LootContextPredicate> bystander) {
-			super(playerPredicate);
-			this.lightning = lightning;
-			this.bystander = bystander;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> lightning, Optional<LootContextPredicate> bystander)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<LightningStrikeCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(LightningStrikeCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "lightning")
+							.forGetter(LightningStrikeCriterion.Conditions::lightning),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "bystander")
+							.forGetter(LightningStrikeCriterion.Conditions::bystander)
+					)
+					.apply(instance, LightningStrikeCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<LightningStrikeCriterion.Conditions> create(Optional<EntityPredicate> lightning, Optional<EntityPredicate> bystander) {
 			return Criteria.LIGHTNING_STRIKE
@@ -56,11 +59,15 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.lightning.ifPresent(lightning -> jsonObject.add("lightning", lightning.toJson()));
-			this.bystander.ifPresent(bystander -> jsonObject.add("bystander", bystander.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.lightning, ".lightning");
+			validator.validateEntityPredicate(this.bystander, ".bystander");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

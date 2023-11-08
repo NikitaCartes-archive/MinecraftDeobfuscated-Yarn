@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
@@ -34,5 +36,14 @@ public interface CraftingRecipeJsonBuilder {
 
 	static Identifier getItemId(ItemConvertible item) {
 		return Registries.ITEM.getId(item.asItem());
+	}
+
+	static CraftingRecipeCategory toCraftingCategory(RecipeCategory category) {
+		return switch (category) {
+			case BUILDING_BLOCKS -> CraftingRecipeCategory.BUILDING;
+			case TOOLS, COMBAT -> CraftingRecipeCategory.EQUIPMENT;
+			case REDSTONE -> CraftingRecipeCategory.REDSTONE;
+			default -> CraftingRecipeCategory.MISC;
+		};
 	}
 }

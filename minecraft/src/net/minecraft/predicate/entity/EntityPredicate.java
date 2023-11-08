@@ -1,13 +1,7 @@
 package net.minecraft.predicate.entity;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -26,8 +20,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
@@ -47,6 +39,7 @@ public record EntityPredicate(
 	Optional<String> team
 ) {
 	public static final Codec<EntityPredicate> CODEC = Codecs.createRecursive(
+		"EntityPredicate",
 		entityPredicateCodec -> RecordCodecBuilder.create(
 				instance -> instance.group(
 							Codecs.createStrictOptionalFieldCodec(EntityTypePredicate.CODEC, "type").forGetter(EntityPredicate::type),
@@ -66,43 +59,9 @@ public record EntityPredicate(
 						.apply(instance, EntityPredicate::new)
 			)
 	);
-
-	public static Optional<LootContextPredicate> contextPredicateFromJson(
-		JsonObject json, String key, AdvancementEntityPredicateDeserializer predicateDeserializer
-	) {
-		JsonElement jsonElement = json.get(key);
-		return contextPredicateFromJsonElement(key, predicateDeserializer, jsonElement);
-	}
-
-	public static List<LootContextPredicate> contextPredicateArrayFromJson(
-		JsonObject json, String key, AdvancementEntityPredicateDeserializer predicateDeserializer
-	) {
-		JsonElement jsonElement = json.get(key);
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonArray jsonArray = JsonHelper.asArray(jsonElement, key);
-			List<LootContextPredicate> list = new ArrayList(jsonArray.size());
-
-			for (int i = 0; i < jsonArray.size(); i++) {
-				contextPredicateFromJsonElement(key + "[" + i + "]", predicateDeserializer, jsonArray.get(i)).ifPresent(list::add);
-			}
-
-			return List.copyOf(list);
-		} else {
-			return List.of();
-		}
-	}
-
-	private static Optional<LootContextPredicate> contextPredicateFromJsonElement(
-		String key, AdvancementEntityPredicateDeserializer predicateDeserializer, @Nullable JsonElement json
-	) {
-		Optional<Optional<LootContextPredicate>> optional = LootContextPredicate.fromJson(key, predicateDeserializer, json, LootContextTypes.ADVANCEMENT_ENTITY);
-		if (optional.isPresent()) {
-			return (Optional<LootContextPredicate>)optional.get();
-		} else {
-			Optional<EntityPredicate> optional2 = fromJson(json);
-			return contextPredicateFromEntityPredicate(optional2);
-		}
-	}
+	public static final Codec<LootContextPredicate> LOOT_CONTEXT_PREDICATE_CODEC = Codecs.either(
+		LootContextPredicate.CODEC, CODEC, EntityPredicate::asLootContextPredicate
+	);
 
 	public static LootContextPredicate contextPredicateFromEntityPredicate(EntityPredicate.Builder builder) {
 		return asLootContextPredicate(builder.build());
@@ -179,14 +138,6 @@ public record EntityPredicate(
 				}
 			}
 		}
-	}
-
-	public static Optional<EntityPredicate> fromJson(@Nullable JsonElement json) {
-		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
-	}
-
-	public JsonElement toJson() {
-		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 
 	public static LootContext createAdvancementEntityLootContext(ServerPlayerEntity player, Entity target) {

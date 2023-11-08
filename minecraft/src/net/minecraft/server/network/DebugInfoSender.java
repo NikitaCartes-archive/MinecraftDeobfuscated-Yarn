@@ -21,6 +21,7 @@ import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.network.packet.CustomPayload;
@@ -92,6 +93,9 @@ public class DebugInfoSender {
 	}
 
 	public static void sendBeeDebugData(BeeEntity bee) {
+	}
+
+	public static void sendBreezeDebugData(BreezeEntity breeze) {
 	}
 
 	public static void sendGameEvent(World world, GameEvent event, Vec3d pos) {

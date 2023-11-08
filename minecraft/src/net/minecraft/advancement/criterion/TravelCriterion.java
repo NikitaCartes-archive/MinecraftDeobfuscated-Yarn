@@ -1,24 +1,22 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public class TravelCriterion extends AbstractCriterion<TravelCriterion.Conditions> {
-	public TravelCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<LocationPredicate> optional2 = LocationPredicate.fromJson(jsonObject.get("start_position"));
-		Optional<DistancePredicate> optional3 = DistancePredicate.fromJson(jsonObject.get("distance"));
-		return new TravelCriterion.Conditions(optional, optional2, optional3);
+	@Override
+	public Codec<TravelCriterion.Conditions> getConditionsCodec() {
+		return TravelCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, Vec3d startPos) {
@@ -26,15 +24,16 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 		this.trigger(player, conditions -> conditions.matches(player.getServerWorld(), startPos, vec3d));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<LocationPredicate> startPos;
-		private final Optional<DistancePredicate> distance;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LocationPredicate> startPos, Optional<DistancePredicate> distance) {
-			super(playerPredicate);
-			this.startPos = startPos;
-			this.distance = distance;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<LocationPredicate> startPosition, Optional<DistancePredicate> distance)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<TravelCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TravelCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "start_position").forGetter(TravelCriterion.Conditions::startPosition),
+						Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(TravelCriterion.Conditions::distance)
+					)
+					.apply(instance, TravelCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<TravelCriterion.Conditions> fallFromHeight(
 			EntityPredicate.Builder entity, DistancePredicate distance, LocationPredicate.Builder startPos
@@ -56,18 +55,15 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 			return Criteria.NETHER_TRAVEL.create(new TravelCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.of(distance)));
 		}
 
-		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.startPos.ifPresent(startPos -> jsonObject.add("start_position", startPos.toJson()));
-			this.distance.ifPresent(distance -> jsonObject.add("distance", distance.toJson()));
-			return jsonObject;
-		}
-
 		public boolean matches(ServerWorld world, Vec3d pos, Vec3d endPos) {
-			return this.startPos.isPresent() && !((LocationPredicate)this.startPos.get()).test(world, pos.x, pos.y, pos.z)
+			return this.startPosition.isPresent() && !((LocationPredicate)this.startPosition.get()).test(world, pos.x, pos.y, pos.z)
 				? false
 				: !this.distance.isPresent() || ((DistancePredicate)this.distance.get()).test(pos.x, pos.y, pos.z, endPos.x, endPos.y, endPos.z);
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

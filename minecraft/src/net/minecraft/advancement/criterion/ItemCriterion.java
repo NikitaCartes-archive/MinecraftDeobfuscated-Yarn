@@ -1,7 +1,7 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
@@ -16,26 +16,20 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 
 public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
-	public ItemCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<Optional<LootContextPredicate>> optional2 = LootContextPredicate.fromJson(
-			"location", advancementEntityPredicateDeserializer, jsonObject.get("location"), LootContextTypes.ADVANCEMENT_LOCATION
-		);
-		if (optional2.isEmpty()) {
-			throw new JsonParseException("Failed to parse 'location' field");
-		} else {
-			return new ItemCriterion.Conditions(optional, (Optional<LootContextPredicate>)optional2.get());
-		}
+	@Override
+	public Codec<ItemCriterion.Conditions> getConditionsCodec() {
+		return ItemCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
@@ -51,13 +45,14 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 		this.trigger(player, conditions -> conditions.test(lootContext));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<LootContextPredicate> location;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> location) {
-			super(playerPredicate);
-			this.location = location;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> location) implements AbstractCriterion.Conditions {
+		public static final Codec<ItemCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ItemCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(LootContextPredicate.CODEC, "location").forGetter(ItemCriterion.Conditions::location)
+					)
+					.apply(instance, ItemCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<ItemCriterion.Conditions> createPlacedBlock(Block block) {
 			LootContextPredicate lootContextPredicate = LootContextPredicate.create(BlockStatePropertyLootCondition.builder(block).build());
@@ -91,10 +86,14 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.location.ifPresent(location -> jsonObject.add("location", location.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			this.location.ifPresent(location -> validator.validate(location, LootContextTypes.ADVANCEMENT_LOCATION, ".location"));
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

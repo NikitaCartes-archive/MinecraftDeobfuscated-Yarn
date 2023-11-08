@@ -193,7 +193,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	public ItemStack tryDrainFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, BlockState state) {
-		world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+		world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL_AND_REDRAW);
 		return new ItemStack(Items.WATER_BUCKET);
 	}
 

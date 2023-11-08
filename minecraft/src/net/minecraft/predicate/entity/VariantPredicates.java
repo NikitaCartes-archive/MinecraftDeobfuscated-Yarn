@@ -42,7 +42,7 @@ public class VariantPredicates<V> {
 	public static record Predicate<V>(TypeSpecificPredicate.Type type, Function<Entity, Optional<V>> getter, V variant) implements TypeSpecificPredicate {
 		@Override
 		public boolean test(Entity entity, ServerWorld world, @Nullable Vec3d pos) {
-			return ((Optional)this.getter.apply(entity)).filter(object -> object.equals(this.variant)).isPresent();
+			return ((Optional)this.getter.apply(entity)).filter(variant -> variant.equals(this.variant)).isPresent();
 		}
 	}
 }

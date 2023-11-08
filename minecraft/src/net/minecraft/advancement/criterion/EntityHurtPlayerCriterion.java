@@ -1,33 +1,35 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.DamagePredicate;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlayerCriterion.Conditions> {
-	public EntityHurtPlayerCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<DamagePredicate> optional2 = DamagePredicate.fromJson(jsonObject.get("damage"));
-		return new EntityHurtPlayerCriterion.Conditions(optional, optional2);
+	@Override
+	public Codec<EntityHurtPlayerCriterion.Conditions> getConditionsCodec() {
+		return EntityHurtPlayerCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
 		this.trigger(player, conditions -> conditions.matches(player, source, dealt, taken, blocked));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<DamagePredicate> damage;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<DamagePredicate> damage) {
-			super(playerPredicate);
-			this.damage = damage;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<DamagePredicate> damage) implements AbstractCriterion.Conditions {
+		public static final Codec<EntityHurtPlayerCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(EntityHurtPlayerCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(DamagePredicate.CODEC, "damage").forGetter(EntityHurtPlayerCriterion.Conditions::damage)
+					)
+					.apply(instance, EntityHurtPlayerCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<EntityHurtPlayerCriterion.Conditions> create() {
 			return Criteria.ENTITY_HURT_PLAYER.create(new EntityHurtPlayerCriterion.Conditions(Optional.empty(), Optional.empty()));
@@ -46,10 +48,8 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.damage.ifPresent(damage -> jsonObject.add("damage", damage.toJson()));
-			return jsonObject;
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

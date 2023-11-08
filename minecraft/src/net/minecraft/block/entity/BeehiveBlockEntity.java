@@ -319,7 +319,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		for (int i = 0; i < nbtList.size(); i++) {
 			NbtCompound nbtCompound = nbtList.getCompound(i);
 			BeehiveBlockEntity.Bee bee = new BeehiveBlockEntity.Bee(
-				nbtCompound.getCompound("EntityData"), nbtCompound.getInt("TicksInHive"), nbtCompound.getInt("MinOccupationTicks")
+				nbtCompound.getCompound("EntityData").copy(), nbtCompound.getInt("TicksInHive"), nbtCompound.getInt("MinOccupationTicks")
 			);
 			this.bees.add(bee);
 		}

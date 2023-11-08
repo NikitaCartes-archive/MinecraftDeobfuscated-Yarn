@@ -1,11 +1,9 @@
 package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
@@ -25,7 +23,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 
 public final class Ingredient implements Predicate<ItemStack> {
@@ -87,11 +84,6 @@ public final class Ingredient implements Predicate<ItemStack> {
 
 	public void write(PacketByteBuf buf) {
 		buf.writeCollection(Arrays.asList(this.getMatchingStacks()), PacketByteBuf::writeItemStack);
-	}
-
-	public JsonElement toJson(boolean allowEmpty) {
-		Codec<Ingredient> codec = allowEmpty ? ALLOW_EMPTY_CODEC : DISALLOW_EMPTY_CODEC;
-		return Util.getResult(codec.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 
 	public boolean isEmpty() {
@@ -171,7 +163,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 
 	static record StackEntry(ItemStack stack) implements Ingredient.Entry {
 		static final Codec<Ingredient.StackEntry> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(RecipeCodecs.INGREDIENT.fieldOf("item").forGetter(entry -> entry.stack)).apply(instance, Ingredient.StackEntry::new)
+			instance -> instance.group(ItemStack.INGREDIENT_ENTRY_CODEC.fieldOf("item").forGetter(entry -> entry.stack)).apply(instance, Ingredient.StackEntry::new)
 		);
 
 		public boolean equals(Object o) {

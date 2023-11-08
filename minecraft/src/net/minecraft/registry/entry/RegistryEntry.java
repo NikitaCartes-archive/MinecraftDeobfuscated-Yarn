@@ -207,7 +207,7 @@ public interface RegistryEntry<T> {
 		@Nullable
 		private T value;
 
-		private Reference(RegistryEntry.Reference.Type referenceType, RegistryEntryOwner<T> owner, @Nullable RegistryKey<T> registryKey, @Nullable T value) {
+		protected Reference(RegistryEntry.Reference.Type referenceType, RegistryEntryOwner<T> owner, @Nullable RegistryKey<T> registryKey, @Nullable T value) {
 			this.owner = owner;
 			this.referenceType = referenceType;
 			this.registryKey = registryKey;
@@ -344,7 +344,7 @@ public interface RegistryEntry<T> {
 		 * 
 		 * @see RegistryEntry.Reference
 		 */
-		static enum Type {
+		protected static enum Type {
 			STAND_ALONE,
 			INTRUSIVE;
 		}

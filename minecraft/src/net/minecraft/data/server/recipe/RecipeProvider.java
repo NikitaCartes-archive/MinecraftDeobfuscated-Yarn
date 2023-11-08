@@ -3,7 +3,6 @@ package net.minecraft.data.server.recipe;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,8 +33,11 @@ import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.AbstractCookingRecipe;
+import net.minecraft.recipe.BlastingRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
@@ -49,16 +51,11 @@ public abstract class RecipeProvider implements DataProvider {
 	private static final Map<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>> VARIANT_FACTORIES = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>>builder()
 		.put(BlockFamily.Variant.BUTTON, (output, input) -> createTransmutationRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.CHISELED, (output, input) -> createChiseledBlockRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input)))
-		.put(
-			BlockFamily.Variant.CUT,
-			(itemConvertible, itemConvertible2) -> createCutCopperRecipe(RecipeCategory.BUILDING_BLOCKS, itemConvertible, Ingredient.ofItems(itemConvertible2))
-		)
+		.put(BlockFamily.Variant.CUT, (output, input) -> createCutCopperRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.DOOR, (output, input) -> createDoorRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.CUSTOM_FENCE, (output, input) -> createFenceRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.FENCE, (output, input) -> createFenceRecipe(output, Ingredient.ofItems(input)))
-		.put(
-			BlockFamily.Variant.CUSTOM_FENCE_GATE, (itemConvertible, itemConvertible2) -> createFenceGateRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2))
-		)
+		.put(BlockFamily.Variant.CUSTOM_FENCE_GATE, (output, input) -> createFenceGateRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.FENCE_GATE, (output, input) -> createFenceGateRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.SIGN, (output, input) -> createSignRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.SLAB, (output, input) -> createSlabRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input)))
@@ -78,31 +75,35 @@ public abstract class RecipeProvider implements DataProvider {
 	public CompletableFuture<?> run(DataWriter writer) {
 		final Set<Identifier> set = Sets.<Identifier>newHashSet();
 		final List<CompletableFuture<?>> list = new ArrayList();
-		this.generate(new RecipeExporter() {
-			@Override
-			public void accept(RecipeJsonProvider recipeJsonProvider) {
-				if (!set.add(recipeJsonProvider.id())) {
-					throw new IllegalStateException("Duplicate recipe " + recipeJsonProvider.id());
-				} else {
-					list.add(DataProvider.writeToPath(writer, recipeJsonProvider.toJson(), RecipeProvider.this.recipesPathResolver.resolveJson(recipeJsonProvider.id())));
-					AdvancementEntry advancementEntry = recipeJsonProvider.advancement();
-					if (advancementEntry != null) {
-						JsonObject jsonObject = advancementEntry.value().toJson();
-						list.add(DataProvider.writeToPath(writer, jsonObject, RecipeProvider.this.advancementsPathResolver.resolveJson(advancementEntry.id())));
+		this.generate(
+			new RecipeExporter() {
+				@Override
+				public void accept(Identifier recipeId, Recipe<?> recipe, @Nullable AdvancementEntry advancement) {
+					if (!set.add(recipeId)) {
+						throw new IllegalStateException("Duplicate recipe " + recipeId);
+					} else {
+						list.add(DataProvider.writeCodecToPath(writer, Recipe.CODEC, recipe, RecipeProvider.this.recipesPathResolver.resolveJson(recipeId)));
+						if (advancement != null) {
+							list.add(
+								DataProvider.writeCodecToPath(
+									writer, Advancement.CODEC, advancement.value(), RecipeProvider.this.advancementsPathResolver.resolveJson(advancement.id())
+								)
+							);
+						}
 					}
 				}
-			}
 
-			@Override
-			public Advancement.Builder getAdvancementBuilder() {
-				return Advancement.Builder.createUntelemetered().parent(CraftingRecipeJsonBuilder.ROOT);
+				@Override
+				public Advancement.Builder getAdvancementBuilder() {
+					return Advancement.Builder.createUntelemetered().parent(CraftingRecipeJsonBuilder.ROOT);
+				}
 			}
-		});
+		);
 		return CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new));
 	}
 
 	protected CompletableFuture<?> saveRecipeAdvancement(DataWriter cache, AdvancementEntry advancement) {
-		return DataProvider.writeToPath(cache, advancement.value().toJson(), this.advancementsPathResolver.resolveJson(advancement.id()));
+		return DataProvider.writeCodecToPath(cache, Advancement.CODEC, advancement.value(), this.advancementsPathResolver.resolveJson(advancement.id()));
 	}
 
 	protected abstract void generate(RecipeExporter exporter);
@@ -126,31 +127,32 @@ public abstract class RecipeProvider implements DataProvider {
 	protected static void offerSmelting(
 		RecipeExporter exporter, List<ItemConvertible> inputs, RecipeCategory category, ItemConvertible output, float experience, int cookingTime, String group
 	) {
-		offerMultipleOptions(exporter, RecipeSerializer.SMELTING, inputs, category, output, experience, cookingTime, group, "_from_smelting");
+		offerMultipleOptions(exporter, RecipeSerializer.SMELTING, SmeltingRecipe::new, inputs, category, output, experience, cookingTime, group, "_from_smelting");
 	}
 
 	protected static void offerBlasting(
 		RecipeExporter exporter, List<ItemConvertible> inputs, RecipeCategory category, ItemConvertible output, float experience, int cookingTime, String group
 	) {
-		offerMultipleOptions(exporter, RecipeSerializer.BLASTING, inputs, category, output, experience, cookingTime, group, "_from_blasting");
+		offerMultipleOptions(exporter, RecipeSerializer.BLASTING, BlastingRecipe::new, inputs, category, output, experience, cookingTime, group, "_from_blasting");
 	}
 
-	private static void offerMultipleOptions(
+	private static <T extends AbstractCookingRecipe> void offerMultipleOptions(
 		RecipeExporter exporter,
-		RecipeSerializer<? extends AbstractCookingRecipe> serializer,
+		RecipeSerializer<T> serializer,
+		AbstractCookingRecipe.RecipeFactory<T> recipeFactory,
 		List<ItemConvertible> inputs,
 		RecipeCategory category,
 		ItemConvertible output,
 		float experience,
 		int cookingTime,
 		String group,
-		String method
+		String suffix
 	) {
 		for (ItemConvertible itemConvertible : inputs) {
-			CookingRecipeJsonBuilder.create(Ingredient.ofItems(itemConvertible), category, output, experience, cookingTime, serializer)
+			CookingRecipeJsonBuilder.create(Ingredient.ofItems(itemConvertible), category, output, experience, cookingTime, serializer, recipeFactory)
 				.group(group)
 				.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
-				.offerTo(exporter, getItemPath(output) + method + "_" + getItemPath(itemConvertible));
+				.offerTo(exporter, getItemPath(output) + suffix + "_" + getItemPath(itemConvertible));
 		}
 	}
 
@@ -562,31 +564,32 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter);
 	}
 
-	protected static void generateCookingRecipes(
-		RecipeExporter exporter, String cooker, RecipeSerializer<? extends AbstractCookingRecipe> serializer, int cookingTime
+	protected static <T extends AbstractCookingRecipe> void generateCookingRecipes(
+		RecipeExporter exporter, String cooker, RecipeSerializer<T> serializer, AbstractCookingRecipe.RecipeFactory<T> recipeFactory, int cookingTime
 	) {
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.BEEF, Items.COOKED_BEEF, 0.35F);
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.CHICKEN, Items.COOKED_CHICKEN, 0.35F);
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.COD, Items.COOKED_COD, 0.35F);
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.KELP, Items.DRIED_KELP, 0.1F);
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.SALMON, Items.COOKED_SALMON, 0.35F);
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.MUTTON, Items.COOKED_MUTTON, 0.35F);
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.PORKCHOP, Items.COOKED_PORKCHOP, 0.35F);
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.POTATO, Items.BAKED_POTATO, 0.35F);
-		offerFoodCookingRecipe(exporter, cooker, serializer, cookingTime, Items.RABBIT, Items.COOKED_RABBIT, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.BEEF, Items.COOKED_BEEF, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.CHICKEN, Items.COOKED_CHICKEN, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.COD, Items.COOKED_COD, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.KELP, Items.DRIED_KELP, 0.1F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.SALMON, Items.COOKED_SALMON, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.MUTTON, Items.COOKED_MUTTON, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.PORKCHOP, Items.COOKED_PORKCHOP, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.POTATO, Items.BAKED_POTATO, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.RABBIT, Items.COOKED_RABBIT, 0.35F);
 	}
 
-	private static void offerFoodCookingRecipe(
+	private static <T extends AbstractCookingRecipe> void offerFoodCookingRecipe(
 		RecipeExporter exporter,
 		String cooker,
-		RecipeSerializer<? extends AbstractCookingRecipe> serializer,
+		RecipeSerializer<T> serializer,
+		AbstractCookingRecipe.RecipeFactory<T> recipeFactory,
 		int cookingTime,
-		ItemConvertible input,
+		ItemConvertible items,
 		ItemConvertible output,
 		float experience
 	) {
-		CookingRecipeJsonBuilder.create(Ingredient.ofItems(input), RecipeCategory.FOOD, output, experience, cookingTime, serializer)
-			.criterion(hasItem(input), conditionsFromItem(input))
+		CookingRecipeJsonBuilder.create(Ingredient.ofItems(items), RecipeCategory.FOOD, output, experience, cookingTime, serializer, recipeFactory)
+			.criterion(hasItem(items), conditionsFromItem(items))
 			.offerTo(exporter, getItemPath(output) + "_from_" + cooker);
 	}
 
@@ -669,7 +672,7 @@ public abstract class RecipeProvider implements DataProvider {
 	}
 
 	private static AdvancementCriterion<EnterBlockCriterion.Conditions> requireEnteringFluid(Block block) {
-		return Criteria.ENTER_BLOCK.create(new EnterBlockCriterion.Conditions(Optional.empty(), block, Optional.empty()));
+		return Criteria.ENTER_BLOCK.create(new EnterBlockCriterion.Conditions(Optional.empty(), Optional.of(block.getRegistryEntry()), Optional.empty()));
 	}
 
 	private static AdvancementCriterion<InventoryChangedCriterion.Conditions> conditionsFromItem(NumberRange.IntRange count, ItemConvertible item) {
@@ -690,11 +693,7 @@ public abstract class RecipeProvider implements DataProvider {
 
 	private static AdvancementCriterion<InventoryChangedCriterion.Conditions> conditionsFromItemPredicates(ItemPredicate... predicates) {
 		return Criteria.INVENTORY_CHANGED
-			.create(
-				new InventoryChangedCriterion.Conditions(
-					Optional.empty(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, List.of(predicates)
-				)
-			);
+			.create(new InventoryChangedCriterion.Conditions(Optional.empty(), InventoryChangedCriterion.Conditions.Slots.ANY, List.of(predicates)));
 	}
 
 	protected static String hasItem(ItemConvertible item) {

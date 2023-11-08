@@ -1,5 +1,6 @@
 package net.minecraft.recipe.book;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 public enum CraftingRecipeCategory implements StringIdentifiable {
@@ -8,7 +9,7 @@ public enum CraftingRecipeCategory implements StringIdentifiable {
 	EQUIPMENT("equipment"),
 	MISC("misc");
 
-	public static final StringIdentifiable.EnumCodec<CraftingRecipeCategory> CODEC = StringIdentifiable.createCodec(CraftingRecipeCategory::values);
+	public static final Codec<CraftingRecipeCategory> CODEC = StringIdentifiable.createCodec(CraftingRecipeCategory::values);
 	private final String id;
 
 	private CraftingRecipeCategory(String id) {

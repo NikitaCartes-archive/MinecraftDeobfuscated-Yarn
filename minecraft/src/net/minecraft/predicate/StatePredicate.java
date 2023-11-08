@@ -1,32 +1,29 @@
 package net.minecraft.predicate;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 
 public record StatePredicate(List<StatePredicate.Condition> conditions) {
 	private static final Codec<List<StatePredicate.Condition>> CONDITION_LIST_CODEC = Codec.unboundedMap(Codec.STRING, StatePredicate.ValueMatcher.CODEC)
 		.xmap(
-			map -> map.entrySet().stream().map(entry -> new StatePredicate.Condition((String)entry.getKey(), (StatePredicate.ValueMatcher)entry.getValue())).toList(),
-			list -> (Map)list.stream().collect(Collectors.toMap(StatePredicate.Condition::key, StatePredicate.Condition::valueMatcher))
+			states -> states.entrySet()
+					.stream()
+					.map(state -> new StatePredicate.Condition((String)state.getKey(), (StatePredicate.ValueMatcher)state.getValue()))
+					.toList(),
+			conditions -> (Map)conditions.stream().collect(Collectors.toMap(StatePredicate.Condition::key, StatePredicate.Condition::valueMatcher))
 		);
 	public static final Codec<StatePredicate> CODEC = CONDITION_LIST_CODEC.xmap(StatePredicate::new, StatePredicate::conditions);
 
@@ -57,18 +54,6 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 		}
 
 		return Optional.empty();
-	}
-
-	public void check(StateManager<?, ?> factory, Consumer<String> reporter) {
-		this.conditions.forEach(condition -> condition.reportMissing(factory).ifPresent(reporter));
-	}
-
-	public static Optional<StatePredicate> fromJson(@Nullable JsonElement json) {
-		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
-	}
-
-	public JsonElement toJson() {
-		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 
 	public static class Builder {

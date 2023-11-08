@@ -46,7 +46,7 @@ public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntit
 			ModelTransform.pivot(-7.5F, 10.0F, -15.0F)
 		);
 		modelPartData2.addChild(
-			"right_mid_leg",
+			EntityModelPartNames.RIGHT_MID_LEG,
 			ModelPartBuilder.create().uv(32, 105).cuboid(-3.5F, -1.0F, -4.0F, 7.0F, 10.0F, 8.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(-7.5F, 10.0F, 0.0F)
 		);
@@ -61,7 +61,7 @@ public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntit
 			ModelTransform.pivot(7.5F, 10.0F, -15.0F)
 		);
 		modelPartData2.addChild(
-			"left_mid_leg",
+			EntityModelPartNames.LEFT_MID_LEG,
 			ModelPartBuilder.create().uv(0, 105).cuboid(-3.5F, -1.0F, -4.0F, 7.0F, 10.0F, 8.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(7.5F, 10.0F, 0.0F)
 		);

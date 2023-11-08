@@ -25,7 +25,8 @@ public enum PathNodeType {
 	LEAVES(-1.0F),
 	STICKY_HONEY(8.0F),
 	COCOA(0.0F),
-	DAMAGE_CAUTIOUS(0.0F);
+	DAMAGE_CAUTIOUS(0.0F),
+	DANGER_TRAPDOOR(0.0F);
 
 	private final float defaultPenalty;
 

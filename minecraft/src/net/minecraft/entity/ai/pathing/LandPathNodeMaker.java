@@ -447,39 +447,19 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		int k = pos.getZ();
 		PathNodeType pathNodeType = getCommonNodeType(world, pos);
 		if (pathNodeType == PathNodeType.OPEN && j >= world.getBottomY() + 1) {
-			PathNodeType pathNodeType2 = getCommonNodeType(world, pos.set(i, j - 1, k));
-			pathNodeType = pathNodeType2 != PathNodeType.WALKABLE
-					&& pathNodeType2 != PathNodeType.OPEN
-					&& pathNodeType2 != PathNodeType.WATER
-					&& pathNodeType2 != PathNodeType.LAVA
-				? PathNodeType.WALKABLE
-				: PathNodeType.OPEN;
-			if (pathNodeType2 == PathNodeType.DAMAGE_FIRE) {
-				pathNodeType = PathNodeType.DAMAGE_FIRE;
-			}
-
-			if (pathNodeType2 == PathNodeType.DAMAGE_OTHER) {
-				pathNodeType = PathNodeType.DAMAGE_OTHER;
-			}
-
-			if (pathNodeType2 == PathNodeType.STICKY_HONEY) {
-				pathNodeType = PathNodeType.STICKY_HONEY;
-			}
-
-			if (pathNodeType2 == PathNodeType.POWDER_SNOW) {
-				pathNodeType = PathNodeType.DANGER_POWDER_SNOW;
-			}
-
-			if (pathNodeType2 == PathNodeType.DAMAGE_CAUTIOUS) {
-				pathNodeType = PathNodeType.DAMAGE_CAUTIOUS;
-			}
+			return switch (getCommonNodeType(world, pos.set(i, j - 1, k))) {
+				case OPEN, WATER, LAVA, WALKABLE -> PathNodeType.OPEN;
+				case DAMAGE_FIRE -> PathNodeType.DAMAGE_FIRE;
+				case DAMAGE_OTHER -> PathNodeType.DAMAGE_OTHER;
+				case STICKY_HONEY -> PathNodeType.STICKY_HONEY;
+				case POWDER_SNOW -> PathNodeType.DANGER_POWDER_SNOW;
+				case DAMAGE_CAUTIOUS -> PathNodeType.DAMAGE_CAUTIOUS;
+				case TRAPDOOR -> PathNodeType.DANGER_TRAPDOOR;
+				default -> getNodeTypeFromNeighbors(world, pos.set(i, j, k), PathNodeType.WALKABLE);
+			};
+		} else {
+			return pathNodeType;
 		}
-
-		if (pathNodeType == PathNodeType.WALKABLE) {
-			pathNodeType = getNodeTypeFromNeighbors(world, pos.set(i, j, k), pathNodeType);
-		}
-
-		return pathNodeType;
 	}
 
 	public static PathNodeType getNodeTypeFromNeighbors(BlockView world, BlockPos.Mutable pos, PathNodeType nodeType) {

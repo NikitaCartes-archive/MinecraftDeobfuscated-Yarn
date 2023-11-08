@@ -1,14 +1,8 @@
 package net.minecraft.predicate.entity;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
@@ -47,13 +41,5 @@ public record DistancePredicate(
 		} else {
 			return !this.horizontal.testSqrt((double)(f * f + h * h)) ? false : this.absolute.testSqrt((double)(f * f + g * g + h * h));
 		}
-	}
-
-	public static Optional<DistancePredicate> fromJson(@Nullable JsonElement json) {
-		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
-	}
-
-	public JsonElement toJson() {
-		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 }

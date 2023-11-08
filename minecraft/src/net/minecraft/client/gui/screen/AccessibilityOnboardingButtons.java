@@ -17,9 +17,7 @@ public class AccessibilityOnboardingButtons {
 	}
 
 	public static TextIconButtonWidget createAccessibilityButton(int width, ButtonWidget.PressAction onPress, boolean hideText) {
-		return TextIconButtonWidget.builder(Text.translatable("options.accessibility"), onPress, hideText)
-			.width(width)
-			.texture(new Identifier("icon/accessibility"), 15, 15)
-			.build();
+		Text text = hideText ? Text.translatable("options.accessibility") : Text.translatable("accessibility.onboarding.accessibility.button");
+		return TextIconButtonWidget.builder(text, onPress, hideText).width(width).texture(new Identifier("icon/accessibility"), 15, 15).build();
 	}
 }

@@ -20,6 +20,7 @@ import net.minecraft.block.enums.StairShape;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.enums.Tilt;
+import net.minecraft.block.enums.TrialSpawnerState;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.util.math.Direction;
@@ -518,4 +519,8 @@ public class Properties {
 	 * A property that specifies if a crafter is crafting.
 	 */
 	public static final BooleanProperty CRAFTING = BooleanProperty.of("crafting");
+	/**
+	 * A property that specifies the state of a trial spawner.
+	 */
+	public static final EnumProperty<TrialSpawnerState> TRIAL_SPAWNER_STATE = EnumProperty.of("trial_spawner_state", TrialSpawnerState.class);
 }

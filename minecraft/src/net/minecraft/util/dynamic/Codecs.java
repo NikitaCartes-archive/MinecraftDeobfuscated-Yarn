@@ -420,12 +420,12 @@ public class Codecs {
 		);
 	}
 
-	public static <T> Codec<T> createRecursive(Function<Codec<T>, Codec<T>> codecFunction) {
-		return new Codecs.Recursive<>(codecFunction);
+	public static <T> Codec<T> createRecursive(String name, Function<Codec<T>, Codec<T>> codecFunction) {
+		return new Codecs.Recursive<>(name, codecFunction);
 	}
 
 	public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
-		return new Codecs.Recursive<>(codec -> (Codec)supplier.get());
+		return new Codecs.Recursive<>(supplier.toString(), codec -> (Codec)supplier.get());
 	}
 
 	public static <A> MapCodec<Optional<A>> createStrictOptionalFieldCodec(Codec<A> codec, String field) {
@@ -536,6 +536,47 @@ public class Codecs {
 		return Codec.unboundedMap(keyCodec, Codec.BOOL).xmap(Object2BooleanOpenHashMap::new, Object2ObjectOpenHashMap::new);
 	}
 
+	@Deprecated
+	public static <K, V> MapCodec<V> parameters(
+		String typeKey,
+		String parametersKey,
+		Codec<K> typeCodec,
+		Function<? super V, ? extends K> typeGetter,
+		Function<? super K, ? extends Codec<? extends V>> parametersCodecGetter
+	) {
+		return new MapCodec<V>() {
+			@Override
+			public <T> Stream<T> keys(DynamicOps<T> ops) {
+				return Stream.of(ops.createString(typeKey), ops.createString(parametersKey));
+			}
+
+			@Override
+			public <T> DataResult<V> decode(DynamicOps<T> ops, MapLike<T> input) {
+				T object = input.get(typeKey);
+				return object == null ? DataResult.error(() -> "Missing \"" + typeKey + "\" in: " + input) : typeCodec.decode(ops, object).flatMap(pair -> {
+					T objectx = (T)Objects.requireNonNullElseGet(input.get(parametersKey), ops::emptyMap);
+					return ((Codec)parametersCodecGetter.apply(pair.getFirst())).decode(ops, objectx).map(Pair::getFirst);
+				});
+			}
+
+			@Override
+			public <T> RecordBuilder<T> encode(V input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+				K object = (K)typeGetter.apply(input);
+				prefix.add(typeKey, typeCodec.encodeStart(ops, object));
+				DataResult<T> dataResult = this.encode((Codec)parametersCodecGetter.apply(object), input, ops);
+				if (dataResult.result().isEmpty() || !Objects.equals(dataResult.result().get(), ops.emptyMap())) {
+					prefix.add(parametersKey, dataResult);
+				}
+
+				return prefix;
+			}
+
+			private <T, V2 extends V> DataResult<T> encode(Codec<V2> codec, V value, DynamicOps<T> ops) {
+				return codec.encodeStart(ops, (V2)value);
+			}
+		};
+	}
+
 	public static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {
 		private final Codec<F> first;
 		private final Codec<S> second;
@@ -585,9 +626,11 @@ public class Codecs {
 	}
 
 	static class Recursive<T> implements Codec<T> {
+		private final String name;
 		private final Supplier<Codec<T>> supplier;
 
-		Recursive(Function<Codec<T>, Codec<T>> codecFunction) {
+		Recursive(String name, Function<Codec<T>, Codec<T>> codecFunction) {
+			this.name = name;
 			this.supplier = Suppliers.memoize(() -> (Codec<T>)codecFunction.apply(this));
 		}
 
@@ -602,7 +645,7 @@ public class Codecs {
 		}
 
 		public String toString() {
-			return "RecursiveCodec[" + this.supplier + "]";
+			return "RecursiveCodec[" + this.name + "]";
 		}
 	}
 
@@ -734,7 +777,7 @@ public class Codecs {
 			} else if (optional.isPresent()) {
 				return dataResult;
 			} else {
-				return optional2.isPresent() ? dataResult2 : dataResult.apply2((pair, pair2) -> pair2, dataResult2);
+				return optional2.isPresent() ? dataResult2 : dataResult.apply2((a, b) -> b, dataResult2);
 			}
 		}
 

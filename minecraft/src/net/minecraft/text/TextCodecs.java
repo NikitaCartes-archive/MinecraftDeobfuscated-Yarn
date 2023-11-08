@@ -18,7 +18,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.Codecs;
 
 public class TextCodecs {
-	public static final Codec<Text> CODEC = Codecs.createRecursive(TextCodecs::createCodec);
+	public static final Codec<Text> CODEC = Codecs.createRecursive("Component", TextCodecs::createCodec);
 	public static final Codec<Text> STRINGIFIED_CODEC = Codecs.STRINGIFIED_TEXT
 		.flatXmap(json -> CODEC.parse(JsonOps.INSTANCE, json), text -> CODEC.encodeStart(JsonOps.INSTANCE, text));
 

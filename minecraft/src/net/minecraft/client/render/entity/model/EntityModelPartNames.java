@@ -125,7 +125,7 @@ public class EntityModelPartNames {
 	 */
 	public static final String RIGHT_FRONT_FOOT = "right_front_foot";
 	/**
-	 * The key of a feet part, whose value is {@value}.
+	 * The key of a feet model part, whose value is {@value}.
 	 */
 	public static final String FEET = "feet";
 	/**
@@ -300,6 +300,26 @@ public class EntityModelPartNames {
 	 * The key of a left ribcage model part, whose value is {@value}.
 	 */
 	public static final String LEFT_RIBCAGE = "left_ribcage";
+	/**
+	 * The key of a wind body model part, whose value is {@value}.
+	 */
+	public static final String WIND_BODY = "wind_body";
+	/**
+	 * The key of a wind top model part, whose value is {@value}.
+	 */
+	public static final String WIND_TOP = "wind_top";
+	/**
+	 * The key of a wind mid model part, whose value is {@value}.
+	 */
+	public static final String WIND_MID = "wind_mid";
+	/**
+	 * The key of a wind bottom model part, whose value is {@value}.
+	 */
+	public static final String WIND_BOTTOM = "wind_bottom";
+	/**
+	 * The key of a rods model part, whose value is {@value}.
+	 */
+	public static final String RODS = "rods";
 	/**
 	 * The key of a bone model part, whose value is {@value}.
 	 */

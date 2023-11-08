@@ -1,41 +1,41 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCriterion.Conditions> {
-	protected RecipeCraftedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe_id"));
-		List<ItemPredicate> list = ItemPredicate.deserializeAll(jsonObject.get("ingredients"));
-		return new RecipeCraftedCriterion.Conditions(optional, identifier, list);
+	@Override
+	public Codec<RecipeCraftedCriterion.Conditions> getConditionsCodec() {
+		return RecipeCraftedCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, Identifier recipeId, List<ItemStack> ingredients) {
 		this.trigger(player, conditions -> conditions.matches(recipeId, ingredients));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Identifier recipeId;
-		private final List<ItemPredicate> ingredients;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Identifier recipeId, List<ItemPredicate> ingredients) {
-			super(playerPredicate);
-			this.recipeId = recipeId;
-			this.ingredients = ingredients;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Identifier recipeId, List<ItemPredicate> ingredients)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<RecipeCraftedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(RecipeCraftedCriterion.Conditions::getPlayerPredicate),
+						Identifier.CODEC.fieldOf("recipe_id").forGetter(RecipeCraftedCriterion.Conditions::recipeId),
+						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC.listOf(), "ingredients", List.of()).forGetter(RecipeCraftedCriterion.Conditions::ingredients)
+					)
+					.apply(instance, RecipeCraftedCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<RecipeCraftedCriterion.Conditions> create(Identifier recipeId, List<ItemPredicate.Builder> ingredients) {
 			return Criteria.RECIPE_CRAFTED
@@ -74,14 +74,8 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			jsonObject.addProperty("recipe_id", this.recipeId.toString());
-			if (!this.ingredients.isEmpty()) {
-				jsonObject.add("ingredients", ItemPredicate.toJson(this.ingredients));
-			}
-
-			return jsonObject;
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

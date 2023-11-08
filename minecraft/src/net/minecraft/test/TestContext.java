@@ -398,6 +398,13 @@ public class TestContext {
 		}
 	}
 
+	public void expectEntities(EntityType<?> type, int amount) {
+		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, this.getTestBox(), Entity::isAlive);
+		if (list.size() != amount) {
+			throw new GameTestException("Expected " + amount + " of type " + type.getUntranslatedName() + " to exist, found " + list.size());
+		}
+	}
+
 	public void expectEntitiesAround(EntityType<?> type, BlockPos pos, int amount, double radius) {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		List<? extends Entity> list = this.getEntitiesAround((EntityType<? extends Entity>)type, pos, radius);

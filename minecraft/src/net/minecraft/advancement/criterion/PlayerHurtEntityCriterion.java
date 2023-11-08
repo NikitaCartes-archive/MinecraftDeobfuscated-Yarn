@@ -1,24 +1,23 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.DamagePredicate;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntityCriterion.Conditions> {
-	public PlayerHurtEntityCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<DamagePredicate> optional2 = DamagePredicate.fromJson(jsonObject.get("damage"));
-		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new PlayerHurtEntityCriterion.Conditions(optional, optional2, optional3);
+	@Override
+	public Codec<PlayerHurtEntityCriterion.Conditions> getConditionsCodec() {
+		return PlayerHurtEntityCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource damage, float dealt, float taken, boolean blocked) {
@@ -26,29 +25,31 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 		this.trigger(player, conditions -> conditions.matches(player, lootContext, damage, dealt, taken, blocked));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<DamagePredicate> damage;
-		private final Optional<LootContextPredicate> entity;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<DamagePredicate> damage, Optional<LootContextPredicate> entity) {
-			super(playerPredicate);
-			this.damage = damage;
-			this.entity = entity;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<DamagePredicate> damage, Optional<LootContextPredicate> entity)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<PlayerHurtEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(PlayerHurtEntityCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(DamagePredicate.CODEC, "damage").forGetter(PlayerHurtEntityCriterion.Conditions::damage),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(PlayerHurtEntityCriterion.Conditions::entity)
+					)
+					.apply(instance, PlayerHurtEntityCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<PlayerHurtEntityCriterion.Conditions> create() {
 			return Criteria.PLAYER_HURT_ENTITY.create(new PlayerHurtEntityCriterion.Conditions(Optional.empty(), Optional.empty(), Optional.empty()));
 		}
 
-		public static AdvancementCriterion<PlayerHurtEntityCriterion.Conditions> method_35296(Optional<DamagePredicate> optional) {
-			return Criteria.PLAYER_HURT_ENTITY.create(new PlayerHurtEntityCriterion.Conditions(Optional.empty(), optional, Optional.empty()));
+		public static AdvancementCriterion<PlayerHurtEntityCriterion.Conditions> createDamage(Optional<DamagePredicate> damage) {
+			return Criteria.PLAYER_HURT_ENTITY.create(new PlayerHurtEntityCriterion.Conditions(Optional.empty(), damage, Optional.empty()));
 		}
 
 		public static AdvancementCriterion<PlayerHurtEntityCriterion.Conditions> create(DamagePredicate.Builder damage) {
 			return Criteria.PLAYER_HURT_ENTITY.create(new PlayerHurtEntityCriterion.Conditions(Optional.empty(), Optional.of(damage.build()), Optional.empty()));
 		}
 
-		public static AdvancementCriterion<PlayerHurtEntityCriterion.Conditions> create(Optional<EntityPredicate> entity) {
+		public static AdvancementCriterion<PlayerHurtEntityCriterion.Conditions> createEntity(Optional<EntityPredicate> entity) {
 			return Criteria.PLAYER_HURT_ENTITY
 				.create(new PlayerHurtEntityCriterion.Conditions(Optional.empty(), Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity)));
 		}
@@ -72,11 +73,14 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.damage.ifPresent(damage -> jsonObject.add("damage", damage.toJson()));
-			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.entity, ".entity");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

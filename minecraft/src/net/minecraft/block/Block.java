@@ -133,7 +133,10 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * The default setBlockState behavior. Same as {@code NOTIFY_NEIGHBORS | NOTIFY_LISTENERS}.
 	 */
 	public static final int NOTIFY_ALL = 3;
-	public static final int field_31022 = 11;
+	/**
+	 * Notifies neighbors and listeners, and forces a redraw on clients. Same as {@code NOTIFY_ALL | REDRAW_ON_MAIN_THREAD}
+	 */
+	public static final int NOTIFY_ALL_AND_REDRAW = 11;
 	public static final float field_31023 = -1.0F;
 	public static final float field_31024 = 0.0F;
 	public static final int field_31025 = 512;

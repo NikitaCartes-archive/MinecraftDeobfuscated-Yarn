@@ -1,13 +1,11 @@
 package net.minecraft.recipe;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -67,23 +65,21 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 		return this.result.copy();
 	}
 
+	public interface RecipeFactory<T extends CuttingRecipe> {
+		T create(String group, Ingredient ingredient, ItemStack result);
+	}
+
 	public static class Serializer<T extends CuttingRecipe> implements RecipeSerializer<T> {
-		private static final MapCodec<ItemStack> RESULT_STACK_CODEC = RecordCodecBuilder.mapCodec(
-			instance -> instance.group(
-						Registries.ITEM.getCodec().fieldOf("result").forGetter(ItemStack::getItem), Codec.INT.fieldOf("count").forGetter(ItemStack::getCount)
-					)
-					.apply(instance, ItemStack::new)
-		);
-		final CuttingRecipe.Serializer.RecipeFactory<T> recipeFactory;
+		final CuttingRecipe.RecipeFactory<T> recipeFactory;
 		private final Codec<T> codec;
 
-		protected Serializer(CuttingRecipe.Serializer.RecipeFactory<T> recipeFactory) {
+		protected Serializer(CuttingRecipe.RecipeFactory<T> recipeFactory) {
 			this.recipeFactory = recipeFactory;
 			this.codec = RecordCodecBuilder.create(
 				instance -> instance.group(
 							Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
 							Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
-							RESULT_STACK_CODEC.forGetter(recipe -> recipe.result)
+							ItemStack.CUTTING_RECIPE_RESULT_CODEC.forGetter(recipe -> recipe.result)
 						)
 						.apply(instance, recipeFactory::create)
 			);
@@ -105,10 +101,6 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 			packetByteBuf.writeString(cuttingRecipe.group);
 			cuttingRecipe.ingredient.write(packetByteBuf);
 			packetByteBuf.writeItemStack(cuttingRecipe.result);
-		}
-
-		interface RecipeFactory<T extends CuttingRecipe> {
-			T create(String group, Ingredient ingredient, ItemStack result);
 		}
 	}
 }

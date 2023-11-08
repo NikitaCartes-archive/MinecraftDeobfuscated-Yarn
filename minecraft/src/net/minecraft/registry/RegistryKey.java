@@ -60,7 +60,7 @@ public class RegistryKey<T> {
 	 * @param registry the identifier of the registry
 	 */
 	public static <T> RegistryKey<Registry<T>> ofRegistry(Identifier registry) {
-		return of(Registries.ROOT_KEY, registry);
+		return of(RegistryKeys.ROOT, registry);
 	}
 
 	private static <T> RegistryKey<T> of(Identifier registry, Identifier value) {

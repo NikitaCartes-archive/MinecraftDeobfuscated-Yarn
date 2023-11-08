@@ -1,8 +1,10 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import java.util.function.BiConsumer;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -20,6 +22,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public class LeverBlock extends WallMountedBlock {
 	public static final MapCodec<LeverBlock> CODEC = createCodec(LeverBlock::new);
@@ -97,6 +100,15 @@ public class LeverBlock extends WallMountedBlock {
 			world.emitGameEvent(player, blockState.get(POWERED) ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, pos);
 			return ActionResult.CONSUME;
 		}
+	}
+
+	@Override
+	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && !(Boolean)state.get(POWERED)) {
+			this.togglePower(state, world, pos);
+		}
+
+		super.onExploded(state, world, pos, explosion, stackMerger);
 	}
 
 	public BlockState togglePower(BlockState state, World world, BlockPos pos) {

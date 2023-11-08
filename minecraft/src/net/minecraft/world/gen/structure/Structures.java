@@ -36,7 +36,7 @@ import net.minecraft.world.gen.heightprovider.ConstantHeightProvider;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class Structures {
-	private static Structure.Config createConfig(
+	public static Structure.Config createConfig(
 		RegistryEntryList<Biome> biomes, Map<SpawnGroup, StructureSpawns> spawns, GenerationStep.Feature featureStep, StructureTerrainAdaptation terrainAdaptation
 	) {
 		return new Structure.Config(biomes, spawns, featureStep, terrainAdaptation);

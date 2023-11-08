@@ -16,5 +16,14 @@ public enum SpawnReason {
 	SPAWN_EGG,
 	COMMAND,
 	DISPENSER,
-	PATROL;
+	PATROL,
+	TRIAL_SPAWNER;
+
+	public static boolean isAnySpawner(SpawnReason reason) {
+		return reason == SPAWNER || reason == TRIAL_SPAWNER;
+	}
+
+	public static boolean isTrialSpawner(SpawnReason reason) {
+		return reason == TRIAL_SPAWNER;
+	}
 }

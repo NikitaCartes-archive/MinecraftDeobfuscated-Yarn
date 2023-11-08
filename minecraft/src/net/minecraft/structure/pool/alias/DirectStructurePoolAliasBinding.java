@@ -9,7 +9,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.math.random.Random;
 
-record DirectStructurePoolAliasBinding(RegistryKey<StructurePool> alias, RegistryKey<StructurePool> target) implements StructurePoolAliasBinding {
+public record DirectStructurePoolAliasBinding(RegistryKey<StructurePool> alias, RegistryKey<StructurePool> target) implements StructurePoolAliasBinding {
 	static Codec<DirectStructurePoolAliasBinding> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					RegistryKey.createCodec(RegistryKeys.TEMPLATE_POOL).fieldOf("alias").forGetter(DirectStructurePoolAliasBinding::alias),

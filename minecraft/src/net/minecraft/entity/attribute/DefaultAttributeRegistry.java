@@ -10,6 +10,7 @@ import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.BlazeEntity;
+import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.ElderGuardianEntity;
@@ -102,6 +103,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.ENDERMITE, EndermiteEntity.createEndermiteAttributes().build())
 		.put(EntityType.ENDER_DRAGON, EnderDragonEntity.createEnderDragonAttributes().build())
 		.put(EntityType.EVOKER, EvokerEntity.createEvokerAttributes().build())
+		.put(EntityType.BREEZE, BreezeEntity.createBreezeAttributes().build())
 		.put(EntityType.FOX, FoxEntity.createFoxAttributes().build())
 		.put(EntityType.FROG, FrogEntity.createFrogAttributes().build())
 		.put(EntityType.GHAST, GhastEntity.createGhastAttributes().build())

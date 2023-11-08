@@ -1,22 +1,32 @@
 package net.minecraft.predicate;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public record DamagePredicate(
 	NumberRange.DoubleRange dealt,
 	NumberRange.DoubleRange taken,
 	Optional<EntityPredicate> sourceEntity,
 	Optional<Boolean> blocked,
-	Optional<DamageSourcePredicate> source
+	Optional<DamageSourcePredicate> type
 ) {
+	public static final Codec<DamagePredicate> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "dealt", NumberRange.DoubleRange.ANY).forGetter(DamagePredicate::dealt),
+					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "taken", NumberRange.DoubleRange.ANY).forGetter(DamagePredicate::taken),
+					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "source_entity").forGetter(DamagePredicate::sourceEntity),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "blocked").forGetter(DamagePredicate::blocked),
+					Codecs.createStrictOptionalFieldCodec(DamageSourcePredicate.CODEC, "type").forGetter(DamagePredicate::type)
+				)
+				.apply(instance, DamagePredicate::new)
+	);
+
 	public boolean test(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
 		if (!this.dealt.test((double)dealt)) {
 			return false;
@@ -27,34 +37,8 @@ public record DamagePredicate(
 		} else {
 			return this.blocked.isPresent() && this.blocked.get() != blocked
 				? false
-				: !this.source.isPresent() || ((DamageSourcePredicate)this.source.get()).test(player, source);
+				: !this.type.isPresent() || ((DamageSourcePredicate)this.type.get()).test(player, source);
 		}
-	}
-
-	public static Optional<DamagePredicate> fromJson(@Nullable JsonElement json) {
-		if (json != null && !json.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(json, "damage");
-			NumberRange.DoubleRange doubleRange = NumberRange.DoubleRange.fromJson(jsonObject.get("dealt"));
-			NumberRange.DoubleRange doubleRange2 = NumberRange.DoubleRange.fromJson(jsonObject.get("taken"));
-			Optional<Boolean> optional = jsonObject.has("blocked") ? Optional.of(JsonHelper.getBoolean(jsonObject, "blocked")) : Optional.empty();
-			Optional<EntityPredicate> optional2 = EntityPredicate.fromJson(jsonObject.get("source_entity"));
-			Optional<DamageSourcePredicate> optional3 = DamageSourcePredicate.fromJson(jsonObject.get("type"));
-			return doubleRange.isDummy() && doubleRange2.isDummy() && optional2.isEmpty() && optional.isEmpty() && optional3.isEmpty()
-				? Optional.empty()
-				: Optional.of(new DamagePredicate(doubleRange, doubleRange2, optional2, optional, optional3));
-		} else {
-			return Optional.empty();
-		}
-	}
-
-	public JsonElement toJson() {
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.add("dealt", this.dealt.toJson());
-		jsonObject.add("taken", this.taken.toJson());
-		this.sourceEntity.ifPresent(entityPredicate -> jsonObject.add("source_entity", entityPredicate.toJson()));
-		this.source.ifPresent(damageSourcePredicate -> jsonObject.add("type", damageSourcePredicate.toJson()));
-		this.blocked.ifPresent(boolean_ -> jsonObject.addProperty("blocked", boolean_));
-		return jsonObject;
 	}
 
 	public static class Builder {

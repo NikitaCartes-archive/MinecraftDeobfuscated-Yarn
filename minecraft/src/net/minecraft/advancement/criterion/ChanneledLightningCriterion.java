@@ -1,6 +1,7 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -8,17 +9,16 @@ import java.util.stream.Collectors;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLightningCriterion.Conditions> {
-	public ChanneledLightningCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		List<LootContextPredicate> list = EntityPredicate.contextPredicateArrayFromJson(jsonObject, "victims", advancementEntityPredicateDeserializer);
-		return new ChanneledLightningCriterion.Conditions(optional, list);
+	@Override
+	public Codec<ChanneledLightningCriterion.Conditions> getConditionsCodec() {
+		return ChanneledLightningCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, Collection<? extends Entity> victims) {
@@ -28,13 +28,16 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 		this.trigger(player, conditions -> conditions.matches(list));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final List<LootContextPredicate> victims;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, List<LootContextPredicate> victims) {
-			super(playerPredicate);
-			this.victims = victims;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, List<LootContextPredicate> victims) implements AbstractCriterion.Conditions {
+		public static final Codec<ChanneledLightningCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(ChanneledLightningCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.listOf(), "victims", List.of())
+							.forGetter(ChanneledLightningCriterion.Conditions::victims)
+					)
+					.apply(instance, ChanneledLightningCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<ChanneledLightningCriterion.Conditions> create(EntityPredicate.Builder... victims) {
 			return Criteria.CHANNELED_LIGHTNING
@@ -61,10 +64,14 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			jsonObject.add("victims", LootContextPredicate.toPredicatesJsonArray(this.victims));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicates(this.victims, ".victims");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

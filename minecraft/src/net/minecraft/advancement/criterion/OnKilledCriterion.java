@@ -1,26 +1,23 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Conditions> {
-	public OnKilledCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		return new OnKilledCriterion.Conditions(
-			optional,
-			EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer),
-			DamageSourcePredicate.fromJson(jsonObject.get("killing_blow"))
-		);
+	@Override
+	public Codec<OnKilledCriterion.Conditions> getConditionsCodec() {
+		return OnKilledCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource killingDamage) {
@@ -28,15 +25,16 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		this.trigger(player, conditions -> conditions.test(player, lootContext, killingDamage));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<LootContextPredicate> entity;
-		private final Optional<DamageSourcePredicate> killingBlow;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> entity, Optional<DamageSourcePredicate> killingBlow) {
-			super(playerPredicate);
-			this.entity = entity;
-			this.killingBlow = killingBlow;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> entity, Optional<DamageSourcePredicate> killingBlow)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<OnKilledCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(OnKilledCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(OnKilledCriterion.Conditions::entity),
+						Codecs.createStrictOptionalFieldCodec(DamageSourcePredicate.CODEC, "killing_blow").forGetter(OnKilledCriterion.Conditions::killingBlow)
+					)
+					.apply(instance, OnKilledCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<OnKilledCriterion.Conditions> createPlayerKilledEntity(Optional<EntityPredicate> entity) {
 			return Criteria.PLAYER_KILLED_ENTITY
@@ -167,11 +165,14 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
-			this.killingBlow.ifPresent(killingBlow -> jsonObject.add("killing_blow", killingBlow.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.entity, ".entity");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

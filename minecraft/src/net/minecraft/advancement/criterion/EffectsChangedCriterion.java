@@ -1,25 +1,24 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCriterion.Conditions> {
-	public EffectsChangedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<EntityEffectPredicate> optional2 = EntityEffectPredicate.fromJson(jsonObject.get("effects"));
-		Optional<LootContextPredicate> optional3 = EntityPredicate.contextPredicateFromJson(jsonObject, "source", advancementEntityPredicateDeserializer);
-		return new EffectsChangedCriterion.Conditions(optional, optional2, optional3);
+	@Override
+	public Codec<EffectsChangedCriterion.Conditions> getConditionsCodec() {
+		return EffectsChangedCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, @Nullable Entity source) {
@@ -27,15 +26,17 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		this.trigger(player, conditions -> conditions.matches(player, lootContext));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<EntityEffectPredicate> effects;
-		private final Optional<LootContextPredicate> source;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<EntityEffectPredicate> effects, Optional<LootContextPredicate> source) {
-			super(playerPredicate);
-			this.effects = effects;
-			this.source = source;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<EntityEffectPredicate> effects, Optional<LootContextPredicate> source)
+		implements AbstractCriterion.Conditions {
+		public static final Codec<EffectsChangedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(EffectsChangedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityEffectPredicate.CODEC, "effects").forGetter(EffectsChangedCriterion.Conditions::effects),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "source").forGetter(EffectsChangedCriterion.Conditions::source)
+					)
+					.apply(instance, EffectsChangedCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<EffectsChangedCriterion.Conditions> create(EntityEffectPredicate.Builder effects) {
 			return Criteria.EFFECTS_CHANGED.create(new EffectsChangedCriterion.Conditions(Optional.empty(), effects.build(), Optional.empty()));
@@ -53,11 +54,14 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.effects.ifPresent(effects -> jsonObject.add("effects", effects.toJson()));
-			this.source.ifPresent(source -> jsonObject.add("source", source.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.source, ".source");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

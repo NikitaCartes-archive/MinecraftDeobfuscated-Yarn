@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.trim.ArmorTrimMaterial;
@@ -196,6 +197,10 @@ public class RegistryLoader {
 					registryInfoGetter, resourceManager, this.key, mutableRegistry, this.elementCodec, exceptions
 				);
 			return Pair.of(mutableRegistry, registryLoadable);
+		}
+
+		public void addToCloner(BiConsumer<RegistryKey<? extends Registry<T>>, Codec<T>> callback) {
+			callback.accept(this.key, this.elementCodec);
 		}
 	}
 

@@ -1,21 +1,21 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.Conditions> {
-	public TameAnimalCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
-	) {
-		Optional<LootContextPredicate> optional2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new TameAnimalCriterion.Conditions(optional, optional2);
+	@Override
+	public Codec<TameAnimalCriterion.Conditions> getConditionsCodec() {
+		return TameAnimalCriterion.Conditions.CODEC;
 	}
 
 	public void trigger(ServerPlayerEntity player, AnimalEntity entity) {
@@ -23,13 +23,15 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		this.trigger(player, conditions -> conditions.matches(lootContext));
 	}
 
-	public static class Conditions extends AbstractCriterionConditions {
-		private final Optional<LootContextPredicate> entity;
-
-		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> entity) {
-			super(playerPredicate);
-			this.entity = entity;
-		}
+	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> entity) implements AbstractCriterion.Conditions {
+		public static final Codec<TameAnimalCriterion.Conditions> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+							.forGetter(TameAnimalCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(TameAnimalCriterion.Conditions::entity)
+					)
+					.apply(instance, TameAnimalCriterion.Conditions::new)
+		);
 
 		public static AdvancementCriterion<TameAnimalCriterion.Conditions> any() {
 			return Criteria.TAME_ANIMAL.create(new TameAnimalCriterion.Conditions(Optional.empty(), Optional.empty()));
@@ -45,10 +47,14 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		}
 
 		@Override
-		public JsonObject toJson() {
-			JsonObject jsonObject = super.toJson();
-			this.entity.ifPresent(entity -> jsonObject.add("entity", entity.toJson()));
-			return jsonObject;
+		public void validate(LootContextPredicateValidator validator) {
+			AbstractCriterion.Conditions.super.validate(validator);
+			validator.validateEntityPredicate(this.entity, ".entity");
+		}
+
+		@Override
+		public Optional<LootContextPredicate> getPlayerPredicate() {
+			return this.player;
 		}
 	}
 }

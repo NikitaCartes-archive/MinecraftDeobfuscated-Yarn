@@ -1,29 +1,24 @@
 package net.minecraft.predicate.entity;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.predicate.TagPredicate;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
-public record DamageSourcePredicate(List<TagPredicate<DamageType>> tagPredicates, Optional<EntityPredicate> directEntity, Optional<EntityPredicate> sourceEntity) {
+public record DamageSourcePredicate(List<TagPredicate<DamageType>> tags, Optional<EntityPredicate> directEntity, Optional<EntityPredicate> sourceEntity) {
 	public static final Codec<DamageSourcePredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(TagPredicate.createCodec(RegistryKeys.DAMAGE_TYPE).listOf(), "tags", List.of())
-						.forGetter(DamageSourcePredicate::tagPredicates),
+						.forGetter(DamageSourcePredicate::tags),
 					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "direct_entity").forGetter(DamageSourcePredicate::directEntity),
 					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "source_entity").forGetter(DamageSourcePredicate::sourceEntity)
 				)
@@ -35,7 +30,7 @@ public record DamageSourcePredicate(List<TagPredicate<DamageType>> tagPredicates
 	}
 
 	public boolean test(ServerWorld world, Vec3d pos, DamageSource damageSource) {
-		for (TagPredicate<DamageType> tagPredicate : this.tagPredicates) {
+		for (TagPredicate<DamageType> tagPredicate : this.tags) {
 			if (!tagPredicate.test(damageSource.getTypeRegistryEntry())) {
 				return false;
 			}
@@ -44,14 +39,6 @@ public record DamageSourcePredicate(List<TagPredicate<DamageType>> tagPredicates
 		return this.directEntity.isPresent() && !((EntityPredicate)this.directEntity.get()).test(world, pos, damageSource.getSource())
 			? false
 			: !this.sourceEntity.isPresent() || ((EntityPredicate)this.sourceEntity.get()).test(world, pos, damageSource.getAttacker());
-	}
-
-	public static Optional<DamageSourcePredicate> fromJson(@Nullable JsonElement json) {
-		return json != null && !json.isJsonNull() ? Optional.of(Util.getResult(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new)) : Optional.empty();
-	}
-
-	public JsonElement toJson() {
-		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
 	}
 
 	public static class Builder {

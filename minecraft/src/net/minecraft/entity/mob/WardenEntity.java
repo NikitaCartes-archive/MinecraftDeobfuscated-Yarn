@@ -68,6 +68,7 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.Vibrations;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Contract;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
@@ -357,7 +358,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	public boolean isImmuneToExplosion() {
+	public boolean isImmuneToExplosion(Explosion explosion) {
 		return this.isDiggingOrEmerging();
 	}
 

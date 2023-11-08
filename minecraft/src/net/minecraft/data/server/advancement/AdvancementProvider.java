@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
@@ -37,7 +38,7 @@ public class AdvancementProvider implements DataProvider {
 					throw new IllegalStateException("Duplicate advancement " + advancement.id());
 				} else {
 					Path path = this.pathResolver.resolveJson(advancement.id());
-					list.add(DataProvider.writeToPath(writer, advancement.value().toJson(), path));
+					list.add(DataProvider.writeCodecToPath(writer, Advancement.CODEC, advancement.value(), path));
 				}
 			};
 
