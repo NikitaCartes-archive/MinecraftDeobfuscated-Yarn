@@ -235,6 +235,13 @@ public class TextureMap {
 		return new TextureMap().put(TextureKey.TORCH, id);
 	}
 
+	public static TextureMap trialSpawner(Block block, String side, String top) {
+		return new TextureMap()
+			.put(TextureKey.SIDE, getSubId(block, side))
+			.put(TextureKey.TOP, getSubId(block, top))
+			.put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
+	}
+
 	public static TextureMap particle(Item item) {
 		return new TextureMap().put(TextureKey.PARTICLE, getId(item));
 	}

@@ -6,10 +6,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.ContextChain;
 import java.util.List;
-import net.minecraft.class_8939;
 import net.minecraft.command.ControlFlowAware;
 import net.minecraft.command.ExecutionControl;
 import net.minecraft.command.ExecutionFlags;
+import net.minecraft.command.FallthroughCommandAction;
 import net.minecraft.command.Forkable;
 import net.minecraft.command.Frame;
 import net.minecraft.command.SingleCommandAction;
@@ -39,7 +39,7 @@ public class ReturnCommand {
 		) {
 			if (list.isEmpty()) {
 				if (executionFlags.isInsideReturnRun()) {
-					executionControl.enqueueAction(class_8939.method_54899());
+					executionControl.enqueueAction(FallthroughCommandAction.getInstance());
 				}
 			} else {
 				executionControl.getFrame().doReturn();

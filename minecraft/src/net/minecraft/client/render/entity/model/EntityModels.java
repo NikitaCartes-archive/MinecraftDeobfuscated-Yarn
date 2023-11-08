@@ -64,6 +64,9 @@ public class EntityModels {
 		builder.put(EntityModelLayers.BELL, BellBlockEntityRenderer.getTexturedModelData());
 		builder.put(EntityModelLayers.BLAZE, BlazeEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.BOOK, BookModel.getTexturedModelData());
+		builder.put(EntityModelLayers.BREEZE, BreezeEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.BREEZE_EYES, BreezeEntityModel.getEyesTexturedModelData());
+		builder.put(EntityModelLayers.BREEZE_WIND, BreezeEntityModel.getWindTexturedModelData());
 		builder.put(EntityModelLayers.CAT, texturedModelData10);
 		builder.put(EntityModelLayers.CAT_COLLAR, TexturedModelData.of(OcelotEntityModel.getModelData(new Dilation(0.01F)), 64, 32));
 		builder.put(EntityModelLayers.CAMEL, CamelEntityModel.getTexturedModelData());
@@ -194,6 +197,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.VINDICATOR, texturedModelData8);
 		builder.put(EntityModelLayers.WARDEN, WardenEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.WANDERING_TRADER, texturedModelData18);
+		builder.put(EntityModelLayers.WIND_CHARGE, WindChargeEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.WITCH, WitchEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.WITHER, WitherEntityModel.getTexturedModelData(Dilation.NONE));
 		builder.put(EntityModelLayers.WITHER_ARMOR, WitherEntityModel.getTexturedModelData(HAT_DILATION));

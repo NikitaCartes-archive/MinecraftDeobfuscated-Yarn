@@ -24,6 +24,7 @@ public interface StructureSetKeys {
 	RegistryKey<StructureSet> ANCIENT_CITIES = of("ancient_cities");
 	RegistryKey<StructureSet> STRONGHOLDS = of("strongholds");
 	RegistryKey<StructureSet> TRAIL_RUINS = of("trail_ruins");
+	RegistryKey<StructureSet> TRIAL_CHAMBERS = of("trial_chambers");
 
 	private static RegistryKey<StructureSet> of(String id) {
 		return RegistryKey.of(RegistryKeys.STRUCTURE_SET, new Identifier(id));

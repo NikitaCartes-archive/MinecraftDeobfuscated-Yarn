@@ -126,6 +126,8 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 	}
 
 	public interface WrapperLookup {
+		Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys();
+
 		<T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef);
 
 		default <T> RegistryWrapper.Impl<T> getWrapperOrThrow(RegistryKey<? extends Registry<? extends T>> registryRef) {
@@ -147,6 +149,11 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 				Collectors.toUnmodifiableMap(RegistryWrapper.Impl::getRegistryKey, wrapper -> wrapper)
 			);
 			return new RegistryWrapper.WrapperLookup() {
+				@Override
+				public Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
+					return map.keySet().stream();
+				}
+
 				@Override
 				public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
 					return Optional.ofNullable((RegistryWrapper.Impl)map.get(registryRef));

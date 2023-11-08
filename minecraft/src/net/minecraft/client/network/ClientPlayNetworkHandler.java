@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -133,6 +134,7 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.custom.DebugBeeCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugBrainCustomPayload;
+import net.minecraft.network.packet.s2c.custom.DebugBreezeCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugGameEventCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugGameEventListenersCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugGameTestAddMarkerCustomPayload;
@@ -677,7 +679,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		packet.visitUpdates((pos, state) -> this.world.handleBlockUpdate(pos, state, 19));
+		packet.visitUpdates((pos, state) -> this.world.handleBlockUpdate(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE));
 	}
 
 	@Override
@@ -764,7 +766,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onBlockUpdate(BlockUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.world.handleBlockUpdate(packet.getPos(), packet.getState(), 19);
+		this.world.handleBlockUpdate(packet.getPos(), packet.getState(), Block.NOTIFY_ALL | Block.FORCE_STATE);
 	}
 
 	@Override
@@ -1137,7 +1139,19 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onExplosion(ExplosionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Explosion explosion = new Explosion(this.client.world, null, packet.getX(), packet.getY(), packet.getZ(), packet.getRadius(), packet.getAffectedBlocks());
+		Explosion explosion = new Explosion(
+			this.client.world,
+			null,
+			packet.getX(),
+			packet.getY(),
+			packet.getZ(),
+			packet.getRadius(),
+			packet.getAffectedBlocks(),
+			packet.getDestructionType(),
+			packet.getParticle(),
+			packet.getEmitterParticle(),
+			packet.getSoundEvent()
+		);
 		explosion.affectWorld(true);
 		this.client
 			.player
@@ -1942,6 +1956,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				.debugRenderer
 				.gameEventDebugRenderer
 				.addListener(debugGameEventListenersCustomPayload.listenerPos(), debugGameEventListenersCustomPayload.listenerRange());
+		} else if (payload instanceof DebugBreezeCustomPayload debugBreezeCustomPayload) {
+			this.client.debugRenderer.breezeDebugRenderer.addBreezeDebugInfo(debugBreezeCustomPayload.breezeInfo());
 		} else {
 			this.warnOnUnknownPayload(payload);
 		}

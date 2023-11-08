@@ -95,7 +95,7 @@ public class TntBlock extends Block {
 			return super.onUse(state, world, pos, player, hand, hit);
 		} else {
 			primeTnt(world, pos, player);
-			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL_AND_REDRAW);
 			Item item = itemStack.getItem();
 			if (!player.isCreative()) {
 				if (itemStack.isOf(Items.FLINT_AND_STEEL)) {

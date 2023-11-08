@@ -904,6 +904,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_DECORATED_POT_HIT,
 		SoundEvents.BLOCK_DECORATED_POT_FALL
 	);
+	public static final BlockSoundGroup TRIAL_SPAWNER = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_TRIAL_SPAWNER_BREAK,
+		SoundEvents.BLOCK_TRIAL_SPAWNER_STEP,
+		SoundEvents.BLOCK_TRIAL_SPAWNER_PLACE,
+		SoundEvents.BLOCK_TRIAL_SPAWNER_HIT,
+		SoundEvents.BLOCK_TRIAL_SPAWNER_FALL
+	);
 	public static final BlockSoundGroup SPONGE = new BlockSoundGroup(
 		1.0F,
 		1.0F,

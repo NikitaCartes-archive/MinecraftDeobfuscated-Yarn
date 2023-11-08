@@ -41,6 +41,11 @@ public interface DynamicRegistryManager extends RegistryWrapper.WrapperLookup {
 
 	Stream<DynamicRegistryManager.Entry<?>> streamAllRegistries();
 
+	@Override
+	default Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
+		return this.streamAllRegistries().map(DynamicRegistryManager.Entry::key);
+	}
+
 	static DynamicRegistryManager.Immutable of(Registry<? extends Registry<?>> registries) {
 		return new DynamicRegistryManager.Immutable() {
 			@Override

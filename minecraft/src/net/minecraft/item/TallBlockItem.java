@@ -16,7 +16,7 @@ public class TallBlockItem extends BlockItem {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos().up();
 		BlockState blockState = world.isWater(blockPos) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
-		world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD | Block.FORCE_STATE);
+		world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL_AND_REDRAW | Block.FORCE_STATE);
 		return super.place(context, state);
 	}
 }

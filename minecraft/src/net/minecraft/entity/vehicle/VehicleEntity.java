@@ -35,7 +35,7 @@ public abstract class VehicleEntity extends Entity {
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
 			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
 			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
-			if ((bl || !(this.getDamageWobbleStrength() > 40.0F)) && (!bl || !this.shouldAlwaysKill())) {
+			if ((bl || !(this.getDamageWobbleStrength() > 40.0F)) && !this.shouldAlwaysKill(source)) {
 				if (bl) {
 					this.discard();
 				}
@@ -47,7 +47,7 @@ public abstract class VehicleEntity extends Entity {
 		}
 	}
 
-	boolean shouldAlwaysKill() {
+	boolean shouldAlwaysKill(DamageSource source) {
 		return false;
 	}
 

@@ -1,7 +1,7 @@
 package net.minecraft.server.function;
 
+import com.mojang.serialization.Codec;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 
@@ -12,30 +12,37 @@ import net.minecraft.util.Identifier;
  * invalid.
  */
 public class LazyContainer {
-	public static final LazyContainer EMPTY = new LazyContainer(null);
-	@Nullable
+	public static final Codec<LazyContainer> CODEC = Identifier.CODEC.xmap(LazyContainer::new, LazyContainer::getId);
 	private final Identifier id;
 	private boolean initialized;
 	private Optional<CommandFunction<ServerCommandSource>> function = Optional.empty();
 
-	public LazyContainer(@Nullable Identifier id) {
+	public LazyContainer(Identifier id) {
 		this.id = id;
 	}
 
-	public Optional<CommandFunction<ServerCommandSource>> get(CommandFunctionManager manager) {
+	public Optional<CommandFunction<ServerCommandSource>> get(CommandFunctionManager commandFunctionManager) {
 		if (!this.initialized) {
-			if (this.id != null) {
-				this.function = manager.getFunction(this.id);
-			}
-
+			this.function = commandFunctionManager.getFunction(this.id);
 			this.initialized = true;
 		}
 
 		return this.function;
 	}
 
-	@Nullable
 	public Identifier getId() {
-		return (Identifier)this.function.map(CommandFunction::id).orElse(this.id);
+		return this.id;
+	}
+
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		} else {
+			if (o instanceof LazyContainer lazyContainer && this.getId().equals(lazyContainer.getId())) {
+				return true;
+			}
+
+			return false;
+		}
 	}
 }

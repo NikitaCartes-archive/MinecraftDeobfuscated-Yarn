@@ -223,6 +223,8 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	private static ShaderProgram renderTypeEnergySwirlProgram;
 	@Nullable
+	private static ShaderProgram renderTypeBreezeWindProgram;
+	@Nullable
 	private static ShaderProgram renderTypeLeashProgram;
 	@Nullable
 	private static ShaderProgram renderTypeWaterMaskProgram;
@@ -743,6 +745,12 @@ public class GameRenderer implements AutoCloseable {
 				Pair.of(
 					new ShaderProgram(factory, "rendertype_gui_ghost_recipe_overlay", VertexFormats.POSITION_COLOR),
 					(Consumer)program -> renderTypeGuiGhostRecipeOverlayProgram = program
+				)
+			);
+			list2.add(
+				Pair.of(
+					new ShaderProgram(factory, "rendertype_breeze_wind", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					(Consumer)program -> renderTypeBreezeWindProgram = program
 				)
 			);
 		} catch (IOException var5) {
@@ -1533,6 +1541,11 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	public static ShaderProgram getRenderTypeEnergySwirlProgram() {
 		return renderTypeEnergySwirlProgram;
+	}
+
+	@Nullable
+	public static ShaderProgram getRenderTypeBreezeWindProgram() {
+		return renderTypeBreezeWindProgram;
 	}
 
 	@Nullable

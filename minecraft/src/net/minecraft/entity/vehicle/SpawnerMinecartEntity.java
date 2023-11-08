@@ -2,13 +2,13 @@ package net.minecraft.entity.vehicle;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.spawner.MobSpawnerLogic;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
 
 public class SpawnerMinecartEntity extends AbstractMinecartEntity {

@@ -1,4 +1,4 @@
-package net.minecraft.world;
+package net.minecraft.block.spawner;
 
 import com.mojang.logging.LogUtils;
 import java.util.Optional;
@@ -21,6 +21,10 @@ import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.LightType;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 
@@ -237,9 +241,9 @@ public abstract class MobSpawnerLogic {
 	}
 
 	@Nullable
-	public Entity getRenderedEntity(World world, Random random, BlockPos pos) {
+	public Entity getRenderedEntity(World world, BlockPos pos) {
 		if (this.renderedEntity == null) {
-			NbtCompound nbtCompound = this.getSpawnEntry(world, random, pos).getNbt();
+			NbtCompound nbtCompound = this.getSpawnEntry(world, world.getRandom(), pos).getNbt();
 			if (!nbtCompound.contains("id", NbtElement.STRING_TYPE)) {
 				return null;
 			}

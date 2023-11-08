@@ -1,8 +1,8 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.LootContextPredicateValidator;
 
 public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Conditions> {
 	@Override
@@ -17,14 +17,16 @@ public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Condit
 	public void endTracking(PlayerAdvancementTracker tracker) {
 	}
 
-	public ImpossibleCriterion.Conditions conditionsFromJson(JsonObject jsonObject, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
-		return new ImpossibleCriterion.Conditions();
+	@Override
+	public Codec<ImpossibleCriterion.Conditions> getConditionsCodec() {
+		return ImpossibleCriterion.Conditions.CODEC;
 	}
 
-	public static class Conditions implements CriterionConditions {
+	public static record Conditions() implements CriterionConditions {
+		public static final Codec<ImpossibleCriterion.Conditions> CODEC = Codec.unit(new ImpossibleCriterion.Conditions());
+
 		@Override
-		public JsonObject toJson() {
-			return new JsonObject();
+		public void validate(LootContextPredicateValidator validator) {
 		}
 	}
 }

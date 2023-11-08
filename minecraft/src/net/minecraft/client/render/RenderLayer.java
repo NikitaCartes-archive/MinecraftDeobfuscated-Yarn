@@ -280,8 +280,8 @@ public abstract class RenderLayer extends RenderPhase {
 			return of("entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 1536, multiPhaseParameters);
 		})
 	);
-	private static final Function<Identifier, RenderLayer> EYES = Util.memoize(
-		(Function<Identifier, RenderLayer>)(texture -> {
+	private static final BiFunction<Identifier, RenderPhase.Transparency, RenderLayer> EYES = Util.memoize(
+		(BiFunction<Identifier, RenderPhase.Transparency, RenderLayer>)((texture, transparency) -> {
 			RenderPhase.Texture texture2 = new RenderPhase.Texture(texture, false, false);
 			return of(
 				"eyes",
@@ -290,12 +290,7 @@ public abstract class RenderLayer extends RenderPhase {
 				1536,
 				false,
 				true,
-				RenderLayer.MultiPhaseParameters.builder()
-					.program(EYES_PROGRAM)
-					.texture(texture2)
-					.transparency(ADDITIVE_TRANSPARENCY)
-					.writeMaskState(COLOR_MASK)
-					.build(false)
+				RenderLayer.MultiPhaseParameters.builder().program(EYES_PROGRAM).texture(texture2).transparency(transparency).writeMaskState(COLOR_MASK).build(false)
 			);
 		})
 	);
@@ -887,7 +882,31 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getEyes(Identifier texture) {
-		return (RenderLayer)EYES.apply(texture);
+		return (RenderLayer)EYES.apply(texture, ADDITIVE_TRANSPARENCY);
+	}
+
+	public static RenderLayer getEntityTranslucentEmissiveNoOutline(Identifier texture) {
+		return (RenderLayer)ENTITY_TRANSLUCENT_EMISSIVE.apply(texture, false);
+	}
+
+	public static RenderLayer getBreezeWind(Identifier texture, float x, float y) {
+		return of(
+			"breeze_wind",
+			VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+			VertexFormat.DrawMode.QUADS,
+			1536,
+			false,
+			true,
+			RenderLayer.MultiPhaseParameters.builder()
+				.program(BREEZE_WIND_PROGRAM)
+				.texture(new RenderPhase.Texture(texture, false, false))
+				.texturing(new RenderPhase.OffsetTexturing(x, y))
+				.transparency(TRANSLUCENT_TRANSPARENCY)
+				.cull(DISABLE_CULLING)
+				.lightmap(ENABLE_LIGHTMAP)
+				.overlay(DISABLE_OVERLAY_COLOR)
+				.build(false)
+		);
 	}
 
 	public static RenderLayer getEnergySwirl(Identifier texture, float x, float y) {

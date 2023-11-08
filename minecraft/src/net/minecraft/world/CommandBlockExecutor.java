@@ -25,8 +25,6 @@ import net.minecraft.util.math.Vec3d;
  * {@linkplain net.minecraft.block.entity.CommandBlockBlockEntity
  * command blocks} and {@linkplain net.minecraft.entity.vehicle.CommandBlockMinecartEntity
  * command block minecarts}.
- * 
- * @see MobSpawnerLogic
  */
 public abstract class CommandBlockExecutor implements CommandOutput {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");

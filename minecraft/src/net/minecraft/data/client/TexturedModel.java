@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
  */
 public class TexturedModel {
 	public static final TexturedModel.Factory CUBE_ALL = makeFactory(TextureMap::all, Models.CUBE_ALL);
+	public static final TexturedModel.Factory CUBE_ALL_INNER_FACES = makeFactory(TextureMap::all, Models.CUBE_ALL_INNER_FACES);
 	public static final TexturedModel.Factory CUBE_MIRRORED_ALL = makeFactory(TextureMap::all, Models.CUBE_MIRRORED_ALL);
 	public static final TexturedModel.Factory CUBE_COLUMN = makeFactory(TextureMap::sideEnd, Models.CUBE_COLUMN);
 	public static final TexturedModel.Factory CUBE_COLUMN_HORIZONTAL = makeFactory(TextureMap::sideEnd, Models.CUBE_COLUMN_HORIZONTAL);

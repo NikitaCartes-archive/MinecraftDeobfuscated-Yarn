@@ -281,32 +281,36 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (spawnReason == SpawnReason.SPAWNER) {
-				return canMobSpawn(type, world, spawnReason, pos, random);
+		if (SpawnReason.isAnySpawner(spawnReason)) {
+			return canMobSpawn(type, world, spawnReason, pos, random);
+		} else {
+			if (world.getDifficulty() != Difficulty.PEACEFUL) {
+				if (spawnReason == SpawnReason.SPAWNER) {
+					return canMobSpawn(type, world, spawnReason, pos, random);
+				}
+
+				if (world.getBiome(pos).isIn(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)
+					&& pos.getY() > 50
+					&& pos.getY() < 70
+					&& random.nextFloat() < 0.5F
+					&& random.nextFloat() < world.getMoonSize()
+					&& world.getLightLevel(pos) <= random.nextInt(8)) {
+					return canMobSpawn(type, world, spawnReason, pos, random);
+				}
+
+				if (!(world instanceof StructureWorldAccess)) {
+					return false;
+				}
+
+				ChunkPos chunkPos = new ChunkPos(pos);
+				boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((StructureWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
+				if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
+					return canMobSpawn(type, world, spawnReason, pos, random);
+				}
 			}
 
-			if (world.getBiome(pos).isIn(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)
-				&& pos.getY() > 50
-				&& pos.getY() < 70
-				&& random.nextFloat() < 0.5F
-				&& random.nextFloat() < world.getMoonSize()
-				&& world.getLightLevel(pos) <= random.nextInt(8)) {
-				return canMobSpawn(type, world, spawnReason, pos, random);
-			}
-
-			if (!(world instanceof StructureWorldAccess)) {
-				return false;
-			}
-
-			ChunkPos chunkPos = new ChunkPos(pos);
-			boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((StructureWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
-			if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
-				return canMobSpawn(type, world, spawnReason, pos, random);
-			}
+			return false;
 		}
-
-		return false;
 	}
 
 	@Override

@@ -36,9 +36,7 @@ public class PumpkinBlock extends Block {
 				Direction direction = hit.getSide();
 				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? player.getHorizontalFacing().getOpposite() : direction;
 				world.playSound(null, pos, SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				world.setBlockState(
-					pos, Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD
-				);
+				world.setBlockState(pos, Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), Block.NOTIFY_ALL_AND_REDRAW);
 				ItemEntity itemEntity = new ItemEntity(
 					world,
 					(double)pos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65,

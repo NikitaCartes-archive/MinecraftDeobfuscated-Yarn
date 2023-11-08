@@ -18,6 +18,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.slf4j.Logger;
@@ -70,8 +71,9 @@ public class LootManager implements ResourceReloader, LootDataLookup {
 				builder2.put(type, id);
 			}));
 		builder.put(EMPTY_LOOT_TABLE, LootTable.EMPTY);
+		ErrorReporter.Impl impl = new ErrorReporter.Impl();
 		final Map<LootDataKey<?>, ?> map = builder.build();
-		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, new LootDataLookup() {
+		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, new LootDataLookup() {
 			@Nullable
 			@Override
 			public <T> T getElement(LootDataKey<T> lootDataKey) {
@@ -79,7 +81,7 @@ public class LootManager implements ResourceReloader, LootDataLookup {
 			}
 		});
 		map.forEach((key, value) -> validate(lootTableReporter, key, value));
-		lootTableReporter.getMessages().forEach((name, message) -> LOGGER.warn("Found loot table element validation problem in {}: {}", name, message));
+		impl.getErrors().forEach((name, message) -> LOGGER.warn("Found loot table element validation problem in {}: {}", name, message));
 		this.keyToValue = map;
 		this.typeToIds = builder2.build();
 	}

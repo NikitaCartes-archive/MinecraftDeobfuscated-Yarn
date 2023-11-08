@@ -2,6 +2,7 @@ package net.minecraft.registry;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntityType;
@@ -89,6 +90,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class RegistryKeys {
+	public static final Identifier ROOT = new Identifier("root");
 	public static final RegistryKey<Registry<Activity>> ACTIVITY = of("activity");
 	public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTE = of("attribute");
 	public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN = of("banner_pattern");
@@ -172,6 +174,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<StructureProcessorList>> PROCESSOR_LIST = of("worldgen/processor_list");
 	public static final RegistryKey<Registry<StructureSet>> STRUCTURE_SET = of("worldgen/structure_set");
 	public static final RegistryKey<Registry<StructurePool>> TEMPLATE_POOL = of("worldgen/template_pool");
+	public static final RegistryKey<Registry<Criterion<?>>> CRITERION = of("trigger_type");
 	public static final RegistryKey<Registry<ArmorTrimMaterial>> TRIM_MATERIAL = of("trim_material");
 	public static final RegistryKey<Registry<ArmorTrimPattern>> TRIM_PATTERN = of("trim_pattern");
 	public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET = of("worldgen/world_preset");

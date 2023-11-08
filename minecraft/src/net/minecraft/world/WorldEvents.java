@@ -368,7 +368,7 @@ public class WorldEvents {
 	/**
 	 * A spawner spawns a mob.
 	 * <br>Spawns smoke and flame particles.
-	 * <p>Called by {@link net.minecraft.world.MobSpawnerLogic#serverTick(net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos) MobSpawnerLogic#serverTick}
+	 * <p>Called by {@link net.minecraft.block.spawner.MobSpawnerLogic#serverTick(net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos) MobSpawnerLogic#serverTick}
 	 */
 	public static final int SPAWNER_SPAWNS_MOB = 2004;
 	/**
@@ -479,4 +479,33 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.SnifferEggBlock#onBlockAdded(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, boolean) SnifferEggBlock#onBlockAdded}
 	 */
 	public static final int SNIFFER_EGG_CRACKS = 3009;
+	/**
+	 * A gust dust particle is spawned.
+	 */
+	public static final int GUST_DUST = 3010;
+	/**
+	 * A trial spawner spawns a mob. Triggered at the position of the spawner.
+	 * <br>Spawns mob spawn particles.
+	 * <p>Called by {@link net.minecraft.block.spawner.TrialSpawnerLogic#trySpawnMob}.
+	 */
+	public static final int TRIAL_SPAWNER_SPAWNS_MOB = 3011;
+	/**
+	 * A trial spawner spawns a mob. Triggered at the position of the spawned mob.
+	 * <br>Plays the spawn sound and spawns mob spawn particles.
+	 * <p>Called by {@link net.minecraft.block.spawner.TrialSpawnerLogic#trySpawnMob}.
+	 */
+	public static final int TRIAL_SPAWNER_SPAWNS_MOB_AT_SPAWN_POS = 3012;
+	/**
+	 * A trial spawner detects survival-mode players.
+	 * <br>Plays the detection sound and spawns detection particles.
+	 * <p>The extra data denotes the number of players.
+	 * <p>Called by {@link net.minecraft.block.spawner.TrialSpawnerData#updatePlayers}.
+	 */
+	public static final int TRIAL_SPAWNER_DETECTS_PLAYER = 3013;
+	/**
+	 * A trial spawner ejects loot.
+	 * <br>Plays the ejection sound and spawns ejection particles.
+	 * <p>Called by {@link net.minecraft.block.spawner.TrialSpawnerLogic#ejectLootTable}.
+	 */
+	public static final int TRIAL_SPAWNER_EJECTS_ITEM = 3014;
 }

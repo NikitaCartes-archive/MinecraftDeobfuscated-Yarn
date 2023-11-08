@@ -114,21 +114,18 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 	protected TypeRewriteRule makeRule() {
 		Type<?> type = this.getOutputSchema().getType(TypeReferences.LEVEL);
 		return this.fixTypeEverywhereTyped(
-			"LevelDataGeneratorOptionsFix", this.getInputSchema().getType(TypeReferences.LEVEL), type, typed -> (Typed)typed.write().flatMap(dynamic -> {
+			"LevelDataGeneratorOptionsFix", this.getInputSchema().getType(TypeReferences.LEVEL), type, typed -> Util.apply(typed, type, dynamic -> {
 					Optional<String> optional = dynamic.get("generatorOptions").asString().result();
-					Dynamic<?> dynamic2;
 					if ("flat".equalsIgnoreCase(dynamic.get("generatorName").asString(""))) {
 						String string = (String)optional.orElse("");
-						dynamic2 = dynamic.set("generatorOptions", fixGeneratorOptions(string, dynamic.getOps()));
+						return dynamic.set("generatorOptions", fixGeneratorOptions(string, dynamic.getOps()));
 					} else if ("buffet".equalsIgnoreCase(dynamic.get("generatorName").asString("")) && optional.isPresent()) {
-						Dynamic<JsonElement> dynamic3 = new Dynamic<>(JsonOps.INSTANCE, JsonHelper.deserialize((String)optional.get(), true));
-						dynamic2 = dynamic.set("generatorOptions", dynamic3.convert(dynamic.getOps()));
+						Dynamic<JsonElement> dynamic2 = new Dynamic<>(JsonOps.INSTANCE, JsonHelper.deserialize((String)optional.get(), true));
+						return dynamic.set("generatorOptions", dynamic2.convert(dynamic.getOps()));
 					} else {
-						dynamic2 = dynamic;
+						return dynamic;
 					}
-	
-					return type.readTyped(dynamic2);
-				}).map(Pair::getFirst).result().orElseThrow(() -> new IllegalStateException("Could not read new level type."))
+				})
 		);
 	}
 

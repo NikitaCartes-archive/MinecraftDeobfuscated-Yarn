@@ -162,10 +162,6 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.templateName == null ? "" : this.templateName.toString();
 	}
 
-	public String getStructurePath() {
-		return this.templateName == null ? "" : this.templateName.getPath();
-	}
-
 	public boolean hasStructureName() {
 		return this.templateName != null;
 	}

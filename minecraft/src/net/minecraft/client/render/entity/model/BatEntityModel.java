@@ -68,7 +68,7 @@ public class BatEntityModel extends SinglePartEntityModel<BatEntity> {
 		this.rightWingTip = this.rightWing.getChild(EntityModelPartNames.RIGHT_WING_TIP);
 		this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
 		this.leftWingTip = this.leftWing.getChild(EntityModelPartNames.LEFT_WING_TIP);
-		this.feet = this.body.getChild("feet");
+		this.feet = this.body.getChild(EntityModelPartNames.FEET);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -100,7 +100,9 @@ public class BatEntityModel extends SinglePartEntityModel<BatEntity> {
 		modelPartData5.addChild(
 			EntityModelPartNames.LEFT_WING_TIP, ModelPartBuilder.create().uv(16, 8).cuboid(0.0F, -2.0F, 0.0F, 6.0F, 8.0F, 0.0F), ModelTransform.pivot(2.0F, 0.0F, 0.0F)
 		);
-		modelPartData2.addChild("feet", ModelPartBuilder.create().uv(16, 16).cuboid(-1.5F, 0.0F, 0.0F, 3.0F, 2.0F, 0.0F), ModelTransform.pivot(0.0F, 5.0F, 0.0F));
+		modelPartData2.addChild(
+			EntityModelPartNames.FEET, ModelPartBuilder.create().uv(16, 16).cuboid(-1.5F, 0.0F, 0.0F, 3.0F, 2.0F, 0.0F), ModelTransform.pivot(0.0F, 5.0F, 0.0F)
+		);
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 

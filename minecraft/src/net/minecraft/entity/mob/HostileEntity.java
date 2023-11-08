@@ -100,7 +100,9 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	}
 
 	public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getDifficulty() != Difficulty.PEACEFUL && isSpawnDark(world, pos, random) && canMobSpawn(type, world, spawnReason, pos, random);
+		return world.getDifficulty() != Difficulty.PEACEFUL
+			&& (SpawnReason.isTrialSpawner(spawnReason) || isSpawnDark(world, pos, random))
+			&& canMobSpawn(type, world, spawnReason, pos, random);
 	}
 
 	public static boolean canSpawnIgnoreLightLevel(

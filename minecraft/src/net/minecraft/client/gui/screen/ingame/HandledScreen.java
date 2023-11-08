@@ -234,7 +234,13 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				context.fill(i, j, i + 16, j + 16, -2130706433);
 			}
 
-			context.drawItem(itemStack, i, j, slot.x + slot.y * this.backgroundWidth);
+			int k = slot.x + slot.y * this.backgroundWidth;
+			if (slot.disablesDynamicDisplay()) {
+				context.drawItemWithoutEntity(itemStack, i, j, k);
+			} else {
+				context.drawItem(itemStack, i, j, k);
+			}
+
 			context.drawItemInSlot(this.textRenderer, itemStack, i, j, string);
 		}
 

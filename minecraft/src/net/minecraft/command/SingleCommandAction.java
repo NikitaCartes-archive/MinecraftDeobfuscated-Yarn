@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
-import net.minecraft.class_8939;
 import net.minecraft.server.command.AbstractServerCommandSource;
 import net.minecraft.server.function.Tracer;
 import net.minecraft.text.Text;
@@ -57,7 +56,7 @@ public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
 
 						for(T abstractServerCommandSource : list) {
 							try {
-								Collection<T> collection = ContextChain.runModifier(commandContext, abstractServerCommandSource, (commandContext, bl, i) -> {
+								Collection<T> collection = ContextChain.runModifier(commandContext, abstractServerCommandSource, (contextx, successful, returnValue) -> {
 								}, (boolean)forkable);
 								if (list2.size() + collection.size() >= i) {
 									baseSource.handleException(FORK_LIMIT_EXCEPTION.create(i), (boolean)forkable, context.getTracer());
@@ -83,7 +82,7 @@ public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
 
 		if (list.isEmpty()) {
 			if (executionFlags.isInsideReturnRun()) {
-				context.enqueueCommand(new CommandQueueEntry<>(frame, class_8939.method_54899()));
+				context.enqueueCommand(new CommandQueueEntry<>(frame, FallthroughCommandAction.getInstance()));
 			}
 		} else {
 			CommandContext<T> commandContext2 = contextChain.getTopContext();

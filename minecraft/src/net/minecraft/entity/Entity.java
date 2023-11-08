@@ -4417,7 +4417,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * emerging or digging {@link net.minecraft.entity.mob.WardenEntity} are
 	 * immune from explosions.
 	 */
-	public boolean isImmuneToExplosion() {
+	public boolean isImmuneToExplosion(Explosion explosion) {
 		return false;
 	}
 

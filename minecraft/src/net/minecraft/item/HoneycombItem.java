@@ -79,7 +79,7 @@ public class HoneycombItem extends Item implements SignChangingItem {
 			}
 
 			itemStack.decrement(1);
-			world.setBlockState(blockPos, state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+			world.setBlockState(blockPos, state, Block.NOTIFY_ALL_AND_REDRAW);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, state));
 			world.syncWorldEvent(playerEntity, WorldEvents.BLOCK_WAXED, blockPos, 0);
 			return ActionResult.success(world.isClient);

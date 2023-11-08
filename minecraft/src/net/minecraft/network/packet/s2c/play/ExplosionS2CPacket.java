@@ -6,9 +6,14 @@ import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleType;
+import net.minecraft.registry.Registries;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.explosion.Explosion;
 
 /**
  * Sent when an explosion occurs in the world.
@@ -28,13 +33,29 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final float playerVelocityX;
 	private final float playerVelocityY;
 	private final float playerVelocityZ;
+	private final ParticleEffect particle;
+	private final ParticleEffect emitterParticle;
+	private final Explosion.DestructionType destructionType;
+	private final SoundEvent soundEvent;
 
-	public ExplosionS2CPacket(double x, double y, double z, float radius, List<BlockPos> affectedBlocks, @Nullable Vec3d playerVelocity) {
+	public ExplosionS2CPacket(
+		double x,
+		double y,
+		double z,
+		float radius,
+		List<BlockPos> affectedBlocks,
+		@Nullable Vec3d playerVelocity,
+		Explosion.DestructionType destructionType,
+		ParticleEffect particle,
+		ParticleEffect emitterParticle,
+		SoundEvent soundEvent
+	) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.radius = radius;
 		this.affectedBlocks = Lists.<BlockPos>newArrayList(affectedBlocks);
+		this.soundEvent = soundEvent;
 		if (playerVelocity != null) {
 			this.playerVelocityX = (float)playerVelocity.x;
 			this.playerVelocityY = (float)playerVelocity.y;
@@ -44,6 +65,10 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.playerVelocityY = 0.0F;
 			this.playerVelocityZ = 0.0F;
 		}
+
+		this.destructionType = destructionType;
+		this.particle = particle;
+		this.emitterParticle = emitterParticle;
 	}
 
 	public ExplosionS2CPacket(PacketByteBuf buf) {
@@ -63,6 +88,14 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.playerVelocityX = buf.readFloat();
 		this.playerVelocityY = buf.readFloat();
 		this.playerVelocityZ = buf.readFloat();
+		this.destructionType = buf.readEnumConstant(Explosion.DestructionType.class);
+		this.particle = readParticleEffect(buf, buf.readRegistryValue(Registries.PARTICLE_TYPE));
+		this.emitterParticle = readParticleEffect(buf, buf.readRegistryValue(Registries.PARTICLE_TYPE));
+		this.soundEvent = SoundEvent.fromBuf(buf);
+	}
+
+	private static <T extends ParticleEffect> T readParticleEffect(PacketByteBuf buf, ParticleType<T> particleType) {
+		return particleType.getParametersFactory().read(particleType, buf);
 	}
 
 	@Override
@@ -85,6 +118,10 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeFloat(this.playerVelocityX);
 		buf.writeFloat(this.playerVelocityY);
 		buf.writeFloat(this.playerVelocityZ);
+		buf.writeEnumConstant(this.destructionType);
+		buf.writeRegistryValue(Registries.PARTICLE_TYPE, this.particle.getType());
+		buf.writeRegistryValue(Registries.PARTICLE_TYPE, this.emitterParticle.getType());
+		this.soundEvent.writeBuf(buf);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -121,5 +158,21 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public List<BlockPos> getAffectedBlocks() {
 		return this.affectedBlocks;
+	}
+
+	public Explosion.DestructionType getDestructionType() {
+		return this.destructionType;
+	}
+
+	public ParticleEffect getParticle() {
+		return this.particle;
+	}
+
+	public ParticleEffect getEmitterParticle() {
+		return this.emitterParticle;
+	}
+
+	public SoundEvent getSoundEvent() {
+		return this.soundEvent;
 	}
 }

@@ -538,7 +538,11 @@ public class DrawContext {
 	}
 
 	public void drawItemWithoutEntity(ItemStack stack, int x, int y) {
-		this.drawItem(null, this.client.world, stack, x, y, 0);
+		this.drawItemWithoutEntity(stack, x, y, 0);
+	}
+
+	public void drawItemWithoutEntity(ItemStack stack, int x, int y, int seed) {
+		this.drawItem(null, this.client.world, stack, x, y, seed);
 	}
 
 	public void drawItem(LivingEntity entity, ItemStack stack, int x, int y, int seed) {

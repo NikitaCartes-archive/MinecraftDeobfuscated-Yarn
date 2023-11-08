@@ -52,6 +52,16 @@ public class LootTables {
 	public static final Identifier ANCIENT_CITY_CHEST = register("chests/ancient_city");
 	public static final Identifier ANCIENT_CITY_ICE_BOX_CHEST = register("chests/ancient_city_ice_box");
 	public static final Identifier RUINED_PORTAL_CHEST = register("chests/ruined_portal");
+	public static final Identifier TRIAL_CHAMBERS_REWARD_CHEST = register("chests/trial_chambers/reward");
+	public static final Identifier TRIAL_CHAMBERS_SUPPLY_CHEST = register("chests/trial_chambers/supply");
+	public static final Identifier TRIAL_CHAMBERS_CORRIDOR_CHEST = register("chests/trial_chambers/corridor");
+	public static final Identifier TRIAL_CHAMBERS_INTERSECTION_CHEST = register("chests/trial_chambers/intersection");
+	public static final Identifier TRIAL_CHAMBERS_INTERSECTION_BARREL_CHEST = register("chests/trial_chambers/intersection_barrel");
+	public static final Identifier TRIAL_CHAMBERS_ENTRANCE_CHEST = register("chests/trial_chambers/entrance");
+	public static final Identifier TRIAL_CHAMBERS_CORRIDOR_DISPENSER = register("dispensers/trial_chambers/corridor");
+	public static final Identifier TRIAL_CHAMBERS_CHAMBER_DISPENSER = register("dispensers/trial_chambers/chamber");
+	public static final Identifier TRIAL_CHAMBERS_WATER_DISPENSER = register("dispensers/trial_chambers/water");
+	public static final Identifier TRIAL_CHAMBERS_CORRIDOR_POT = register("pots/trial_chambers/corridor");
 	public static final Identifier WHITE_SHEEP_ENTITY = register("entities/sheep/white");
 	public static final Identifier ORANGE_SHEEP_ENTITY = register("entities/sheep/orange");
 	public static final Identifier MAGENTA_SHEEP_ENTITY = register("entities/sheep/magenta");
@@ -88,6 +98,8 @@ public class LootTables {
 	public static final Identifier HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/weaponsmith_gift");
 	public static final Identifier SNIFFER_DIGGING_GAMEPLAY = register("gameplay/sniffer_digging");
 	public static final Identifier PIGLIN_BARTERING_GAMEPLAY = register("gameplay/piglin_bartering");
+	public static final Identifier TRIAL_CHAMBER_KEY_SPAWNER = register("spawners/trial_chamber/key");
+	public static final Identifier TRIAL_CHAMBER_CONSUMABLES_SPAWNER = register("spawners/trial_chamber/consumables");
 	public static final Identifier DESERT_WELL_ARCHAEOLOGY = register("archaeology/desert_well");
 	public static final Identifier DESERT_PYRAMID_ARCHAEOLOGY = register("archaeology/desert_pyramid");
 	public static final Identifier TRAIL_RUINS_COMMON_ARCHAEOLOGY = register("archaeology/trail_ruins_common");

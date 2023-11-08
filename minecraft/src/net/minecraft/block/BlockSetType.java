@@ -12,6 +12,7 @@ import net.minecraft.util.dynamic.Codecs;
 public record BlockSetType(
 	String name,
 	boolean canOpenByHand,
+	boolean canOpenByWindCharge,
 	boolean canButtonBeActivatedByArrows,
 	BlockSetType.ActivationRule pressurePlateSensitivity,
 	BlockSoundGroup soundType,
@@ -31,6 +32,7 @@ public record BlockSetType(
 			"iron",
 			false,
 			false,
+			false,
 			BlockSetType.ActivationRule.EVERYTHING,
 			BlockSoundGroup.METAL,
 			SoundEvents.BLOCK_IRON_DOOR_CLOSE,
@@ -47,9 +49,10 @@ public record BlockSetType(
 		new BlockSetType(
 			"copper",
 			true,
+			true,
 			false,
 			BlockSetType.ActivationRule.EVERYTHING,
-			BlockSoundGroup.METAL,
+			BlockSoundGroup.COPPER,
 			SoundEvents.BLOCK_COPPER_DOOR_CLOSE,
 			SoundEvents.BLOCK_COPPER_DOOR_OPEN,
 			SoundEvents.BLOCK_COPPER_TRAPDOOR_CLOSE,
@@ -64,6 +67,7 @@ public record BlockSetType(
 		new BlockSetType(
 			"gold",
 			false,
+			true,
 			false,
 			BlockSetType.ActivationRule.EVERYTHING,
 			BlockSoundGroup.METAL,
@@ -81,6 +85,7 @@ public record BlockSetType(
 		new BlockSetType(
 			"stone",
 			true,
+			true,
 			false,
 			BlockSetType.ActivationRule.MOBS,
 			BlockSoundGroup.STONE,
@@ -97,6 +102,7 @@ public record BlockSetType(
 	public static final BlockSetType POLISHED_BLACKSTONE = register(
 		new BlockSetType(
 			"polished_blackstone",
+			true,
 			true,
 			false,
 			BlockSetType.ActivationRule.MOBS,
@@ -120,6 +126,7 @@ public record BlockSetType(
 			"cherry",
 			true,
 			true,
+			true,
 			BlockSetType.ActivationRule.EVERYTHING,
 			BlockSoundGroup.CHERRY_WOOD,
 			SoundEvents.BLOCK_CHERRY_WOOD_DOOR_CLOSE,
@@ -139,6 +146,7 @@ public record BlockSetType(
 			"crimson",
 			true,
 			true,
+			true,
 			BlockSetType.ActivationRule.EVERYTHING,
 			BlockSoundGroup.NETHER_WOOD,
 			SoundEvents.BLOCK_NETHER_WOOD_DOOR_CLOSE,
@@ -154,6 +162,7 @@ public record BlockSetType(
 	public static final BlockSetType WARPED = register(
 		new BlockSetType(
 			"warped",
+			true,
 			true,
 			true,
 			BlockSetType.ActivationRule.EVERYTHING,
@@ -174,6 +183,7 @@ public record BlockSetType(
 			"bamboo",
 			true,
 			true,
+			true,
 			BlockSetType.ActivationRule.EVERYTHING,
 			BlockSoundGroup.BAMBOO_WOOD,
 			SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_CLOSE,
@@ -190,6 +200,7 @@ public record BlockSetType(
 	public BlockSetType(String name) {
 		this(
 			name,
+			true,
 			true,
 			true,
 			BlockSetType.ActivationRule.EVERYTHING,

@@ -247,6 +247,13 @@ public class Vec3d implements Position {
 		return d * d + e * e + f * f;
 	}
 
+	public boolean isWithinRangeOf(Vec3d vec, double horizontalRange, double verticalRange) {
+		double d = vec.getX() - this.x;
+		double e = vec.getY() - this.y;
+		double f = vec.getZ() - this.z;
+		return MathHelper.squaredHypot(d, f) < MathHelper.square(horizontalRange) && Math.abs(e) < verticalRange;
+	}
+
 	/**
 	 * Return a vector whose coordinates are the coordinates of this vector
 	 * each multiplied by the given scalar value.

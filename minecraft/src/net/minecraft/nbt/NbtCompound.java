@@ -40,10 +40,16 @@ import net.minecraft.util.crash.CrashReportSection;
  * value for that type instead of throwing or returning {@code null}.
  */
 public class NbtCompound implements NbtElement {
-	public static final Codec<NbtCompound> CODEC = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
-		NbtElement nbtElement = dynamic.convert(NbtOps.INSTANCE).getValue();
-		return nbtElement instanceof NbtCompound nbtCompound ? DataResult.success(nbtCompound) : DataResult.error(() -> "Not a compound tag: " + nbtElement);
-	}, nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
+	public static final Codec<NbtCompound> CODEC = Codec.PASSTHROUGH
+		.comapFlatMap(
+			dynamic -> {
+				NbtElement nbtElement = dynamic.convert(NbtOps.INSTANCE).getValue();
+				return nbtElement instanceof NbtCompound nbtCompound
+					? DataResult.success(nbtCompound == dynamic.getValue() ? nbtCompound.copy() : nbtCompound)
+					: DataResult.error(() -> "Not a compound tag: " + nbtElement);
+			},
+			nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt.copy())
+		);
 	private static final int SIZE = 48;
 	private static final int field_41719 = 32;
 	public static final NbtType<NbtCompound> TYPE = new NbtType.OfVariableSize<NbtCompound>() {

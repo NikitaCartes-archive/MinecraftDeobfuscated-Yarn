@@ -1,21 +1,19 @@
 package net.minecraft.data.server.recipe;
 
-import javax.annotation.Nullable;
-import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.recipe.CraftingRecipe;
-import net.minecraft.recipe.RecipeSerializer;
+import java.util.function.Function;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 
-public class ComplexRecipeJsonBuilder extends RecipeJsonBuilder {
-	final RecipeSerializer<?> serializer;
+public class ComplexRecipeJsonBuilder {
+	private final Function<CraftingRecipeCategory, Recipe<?>> recipeFactory;
 
-	public ComplexRecipeJsonBuilder(RecipeSerializer<?> serializer) {
-		this.serializer = serializer;
+	public ComplexRecipeJsonBuilder(Function<CraftingRecipeCategory, Recipe<?>> recipeFactory) {
+		this.recipeFactory = recipeFactory;
 	}
 
-	public static ComplexRecipeJsonBuilder create(RecipeSerializer<? extends CraftingRecipe> serializer) {
-		return new ComplexRecipeJsonBuilder(serializer);
+	public static ComplexRecipeJsonBuilder create(Function<CraftingRecipeCategory, Recipe<?>> recipeFactory) {
+		return new ComplexRecipeJsonBuilder(recipeFactory);
 	}
 
 	public void offerTo(RecipeExporter exporter, String id) {
@@ -23,22 +21,6 @@ public class ComplexRecipeJsonBuilder extends RecipeJsonBuilder {
 	}
 
 	public void offerTo(RecipeExporter exporter, Identifier id) {
-		exporter.accept(new RecipeJsonBuilder.CraftingRecipeJsonProvider(CraftingRecipeCategory.MISC) {
-			@Override
-			public RecipeSerializer<?> serializer() {
-				return ComplexRecipeJsonBuilder.this.serializer;
-			}
-
-			@Override
-			public Identifier id() {
-				return id;
-			}
-
-			@Nullable
-			@Override
-			public AdvancementEntry advancement() {
-				return null;
-			}
-		});
+		exporter.accept(id, (Recipe<?>)this.recipeFactory.apply(CraftingRecipeCategory.MISC), null);
 	}
 }

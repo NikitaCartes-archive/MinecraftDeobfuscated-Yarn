@@ -9,15 +9,19 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UTFDataFormatException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.scanner.NbtScanner;
+import net.minecraft.util.DelegatingDataOutput;
 import net.minecraft.util.FixedBufferInputStream;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
@@ -25,8 +29,16 @@ import net.minecraft.util.crash.CrashReportSection;
  * A set of utility functions for reading, writing, and scanning NBT files.
  * Methods that do not require {@link NbtTagSizeTracker} accept any bytes of data,
  * provided that its depth does not exceed {@value NbtTagSizeTracker#DEFAULT_MAX_DEPTH}.
+ * 
+ * <p>When {@linkplain DataOutput#writeUTF writing an invalid string, methods in
+ * this class will write an empty string instead of crashing, with the exception of
+ * {@link #writeUnsafe} which throws instead.
  */
 public class NbtIo {
+	private static final OpenOption[] OPEN_OPTIONS = new OpenOption[]{
+		StandardOpenOption.SYNC, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+	};
+
 	/**
 	 * Reads an NBT compound from Gzip-compressed file at {@code path}.
 	 * 
@@ -233,7 +245,7 @@ public class NbtIo {
 	 * @see #writeCompressed(NbtCompound, OutputStream)
 	 */
 	public static void writeCompressed(NbtCompound nbt, Path path) throws IOException {
-		OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.SYNC);
+		OutputStream outputStream = Files.newOutputStream(path, OPEN_OPTIONS);
 
 		try {
 			OutputStream outputStream2 = new BufferedOutputStream(outputStream);
@@ -303,7 +315,7 @@ public class NbtIo {
 	 * @see #write(NbtCompound, DataOutput)
 	 */
 	public static void write(NbtCompound nbt, Path path) throws IOException {
-		OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.SYNC);
+		OutputStream outputStream = Files.newOutputStream(path, OPEN_OPTIONS);
 
 		try {
 			OutputStream outputStream2 = new BufferedOutputStream(outputStream);
@@ -362,7 +374,7 @@ public class NbtIo {
 	 */
 	@Nullable
 	public static NbtCompound read(Path path) throws IOException {
-		if (Files.exists(path, new LinkOption[0])) {
+		if (!Files.exists(path, new LinkOption[0])) {
 			return null;
 		} else {
 			InputStream inputStream = Files.newInputStream(path);
@@ -510,16 +522,37 @@ public class NbtIo {
 	 * the element type, followed by {@linkplain DataOutput#writeUTF an empty string}
 	 * and the NBT data.
 	 * 
+	 * <p>When {@linkplain DataOutput#writeUTF writing an invalid string}, this
+	 * method will <strong>throw an error</strong>, unlike other methods.
+	 * 
 	 * @throws IOException if the IO operation fails
 	 * @see #read(DataInput, NbtTagSizeTracker)
 	 * @see #writeForPacket(NbtElement, DataOutput)
+	 * @see #write(NbtElement, DataOutput)
 	 */
-	public static void write(NbtElement nbt, DataOutput output) throws IOException {
+	public static void writeUnsafe(NbtElement nbt, DataOutput output) throws IOException {
 		output.writeByte(nbt.getType());
 		if (nbt.getType() != 0) {
 			output.writeUTF("");
 			nbt.write(output);
 		}
+	}
+
+	/**
+	 * Writes the {@code nbt} to {@code output}. The output is the byte indicating
+	 * the element type, followed by {@linkplain DataOutput#writeUTF an empty string}
+	 * and the NBT data.
+	 * 
+	 * <p>When {@linkplain DataOutput#writeUTF writing an invalid string}, this
+	 * method will write an empty string instead of crashing.
+	 * 
+	 * @throws IOException if the IO operation fails
+	 * @see #read(DataInput, NbtTagSizeTracker)
+	 * @see #writeForPacket(NbtElement, DataOutput)
+	 * @see #writeUnsafe(NbtElement, DataOutput)
+	 */
+	public static void write(NbtElement nbt, DataOutput output) throws IOException {
+		writeUnsafe(nbt, new NbtIo.InvalidUtfSkippingDataOutput(output));
 	}
 
 	private static NbtElement readElement(DataInput input, NbtTagSizeTracker tracker) throws IOException {
@@ -540,6 +573,22 @@ public class NbtIo {
 			CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
 			crashReportSection.add("Tag type", typeId);
 			throw new NbtCrashException(crashReport);
+		}
+	}
+
+	public static class InvalidUtfSkippingDataOutput extends DelegatingDataOutput {
+		public InvalidUtfSkippingDataOutput(DataOutput dataOutput) {
+			super(dataOutput);
+		}
+
+		@Override
+		public void writeUTF(String string) throws IOException {
+			try {
+				super.writeUTF(string);
+			} catch (UTFDataFormatException var3) {
+				Util.error("Failed to write NBT String", var3);
+				super.writeUTF("");
+			}
 		}
 	}
 }

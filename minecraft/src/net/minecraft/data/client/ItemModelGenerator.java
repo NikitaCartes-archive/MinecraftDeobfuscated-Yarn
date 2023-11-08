@@ -392,6 +392,7 @@ public class ItemModelGenerator {
 		this.register(Items.SHELTER_POTTERY_SHERD, Models.GENERATED);
 		this.register(Items.SKULL_POTTERY_SHERD, Models.GENERATED);
 		this.register(Items.SNORT_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.TRIAL_KEY, Models.GENERATED);
 	}
 
 	static record TrimMaterial(String name, float itemModelIndex, Map<ArmorMaterial, String> overrideArmorMaterials) {

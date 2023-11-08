@@ -18,14 +18,18 @@ public class RaycastContext {
 	private final Vec3d end;
 	private final RaycastContext.ShapeType shapeType;
 	private final RaycastContext.FluidHandling fluid;
-	private final ShapeContext entityPosition;
+	private final ShapeContext shapeContext;
 
 	public RaycastContext(Vec3d start, Vec3d end, RaycastContext.ShapeType shapeType, RaycastContext.FluidHandling fluidHandling, Entity entity) {
+		this(start, end, shapeType, fluidHandling, ShapeContext.of(entity));
+	}
+
+	public RaycastContext(Vec3d start, Vec3d end, RaycastContext.ShapeType shapeType, RaycastContext.FluidHandling fluidHandling, ShapeContext shapeContext) {
 		this.start = start;
 		this.end = end;
 		this.shapeType = shapeType;
 		this.fluid = fluidHandling;
-		this.entityPosition = ShapeContext.of(entity);
+		this.shapeContext = shapeContext;
 	}
 
 	public Vec3d getEnd() {
@@ -37,7 +41,7 @@ public class RaycastContext {
 	}
 
 	public VoxelShape getBlockShape(BlockState state, BlockView world, BlockPos pos) {
-		return this.shapeType.get(state, world, pos, this.entityPosition);
+		return this.shapeType.get(state, world, pos, this.shapeContext);
 	}
 
 	public VoxelShape getFluidShape(FluidState state, BlockView world, BlockPos pos) {

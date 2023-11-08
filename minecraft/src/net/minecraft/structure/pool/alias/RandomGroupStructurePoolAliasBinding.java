@@ -12,7 +12,7 @@ import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.random.Random;
 
-record RandomGroupStructurePoolAliasBinding(DataPool<List<StructurePoolAliasBinding>> groups) implements StructurePoolAliasBinding {
+public record RandomGroupStructurePoolAliasBinding(DataPool<List<StructurePoolAliasBinding>> groups) implements StructurePoolAliasBinding {
 	static Codec<RandomGroupStructurePoolAliasBinding> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					DataPool.createCodec(Codec.list(StructurePoolAliasBinding.CODEC)).fieldOf("groups").forGetter(RandomGroupStructurePoolAliasBinding::groups)

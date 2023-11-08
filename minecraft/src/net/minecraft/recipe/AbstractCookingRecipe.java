@@ -76,4 +76,8 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	public CookingRecipeCategory getCategory() {
 		return this.category;
 	}
+
+	public interface RecipeFactory<T extends AbstractCookingRecipe> {
+		T create(String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime);
+	}
 }

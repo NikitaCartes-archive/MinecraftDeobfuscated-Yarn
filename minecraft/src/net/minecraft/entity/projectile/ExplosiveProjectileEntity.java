@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +15,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
@@ -23,6 +25,11 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 
 	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
 		super(entityType, world);
+	}
+
+	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, World world) {
+		this(type, world);
+		this.setPosition(x, y, z);
 	}
 
 	public ExplosiveProjectileEntity(
@@ -62,6 +69,10 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		return distance < d * d;
 	}
 
+	protected RaycastContext.ShapeType getRaycastShapeType() {
+		return RaycastContext.ShapeType.COLLIDER;
+	}
+
 	@Override
 	public void tick() {
 		Entity entity = this.getOwner();
@@ -71,7 +82,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				this.setOnFireFor(1);
 			}
 
-			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
+			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit, this.getRaycastShapeType());
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.onCollision(hitResult);
 			}
@@ -93,7 +104,11 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			}
 
 			this.setVelocity(vec3d.add(this.powerX, this.powerY, this.powerZ).multiply((double)g));
-			this.getWorld().addParticle(this.getParticleType(), d, e + 0.5, f, 0.0, 0.0, 0.0);
+			ParticleEffect particleEffect = this.getParticleType();
+			if (particleEffect != null) {
+				this.getWorld().addParticle(particleEffect, d, e + 0.5, f, 0.0, 0.0, 0.0);
+			}
+
 			this.setPosition(d, e, f);
 		} else {
 			this.discard();
@@ -109,6 +124,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		return true;
 	}
 
+	@Nullable
 	protected ParticleEffect getParticleType() {
 		return ParticleTypes.SMOKE;
 	}

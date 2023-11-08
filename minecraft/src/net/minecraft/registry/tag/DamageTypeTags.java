@@ -6,6 +6,7 @@ import net.minecraft.util.Identifier;
 
 public interface DamageTypeTags {
 	TagKey<DamageType> DAMAGES_HELMET = of("damages_helmet");
+	TagKey<DamageType> BREEZE_IMMUNE_TO = of("breeze_immune_to");
 	TagKey<DamageType> BYPASSES_ARMOR = of("bypasses_armor");
 	TagKey<DamageType> BYPASSES_SHIELD = of("bypasses_shield");
 	TagKey<DamageType> BYPASSES_INVULNERABILITY = of("bypasses_invulnerability");

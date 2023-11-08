@@ -1,16 +1,12 @@
 package net.minecraft.predicate.item;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.EnchantedBookItem;
@@ -27,7 +23,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 
 public record ItemPredicate(
@@ -43,7 +38,7 @@ public record ItemPredicate(
 	private static final Codec<RegistryEntryList<Item>> ITEM_ENTRY_LIST_CODEC = Registries.ITEM
 		.createEntryCodec()
 		.listOf()
-		.xmap(RegistryEntryList::of, registryEntryList -> registryEntryList.stream().toList());
+		.xmap(RegistryEntryList::of, items -> items.stream().toList());
 	public static final Codec<ItemPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.ITEM), "tag").forGetter(ItemPredicate::tag),
@@ -94,24 +89,6 @@ public record ItemPredicate(
 
 			return !this.potion.isPresent() || ((RegistryEntry)this.potion.get()).value() == PotionUtil.getPotion(stack);
 		}
-	}
-
-	public static Optional<ItemPredicate> fromJson(@Nullable JsonElement el) {
-		return el != null && !el.isJsonNull()
-			? Optional.of((ItemPredicate)Util.getResult(CODEC.parse(JsonOps.INSTANCE, el), JsonParseException::new))
-			: Optional.empty();
-	}
-
-	public JsonElement toJson() {
-		return Util.getResult(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
-	}
-
-	public static JsonElement toJson(List<ItemPredicate> predicates) {
-		return Util.getResult(CODEC.listOf().encodeStart(JsonOps.INSTANCE, predicates), IllegalStateException::new);
-	}
-
-	public static List<ItemPredicate> deserializeAll(@Nullable JsonElement el) {
-		return el != null && !el.isJsonNull() ? Util.getResult(CODEC.listOf().parse(JsonOps.INSTANCE, el), JsonParseException::new) : List.of();
 	}
 
 	public static class Builder {

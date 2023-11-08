@@ -1,6 +1,5 @@
 package net.minecraft.server.network;
 
-import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
@@ -1191,13 +1191,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void unlockRecipes(Identifier[] ids) {
-		List<RecipeEntry<?>> list = Lists.newArrayList();
-
-		for(Identifier identifier : ids) {
-			this.server.getRecipeManager().get(identifier).ifPresent(list::add);
-		}
-
+	public void unlockRecipes(List<Identifier> recipes) {
+		List<RecipeEntry<?>> list = (List)recipes.stream().flatMap(recipe -> this.server.getRecipeManager().get(recipe).stream()).collect(Collectors.toList());
 		this.unlockRecipes(list);
 	}
 
