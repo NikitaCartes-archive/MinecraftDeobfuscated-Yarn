@@ -4,7 +4,10 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.scoreboard.number.NumberFormat;
+import net.minecraft.scoreboard.number.NumberFormatTypes;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.PersistentState;
@@ -96,7 +99,7 @@ public class ScoreboardState extends PersistentState {
 
 	private void readTeamPlayersNbt(Team team, NbtList nbt) {
 		for (int i = 0; i < nbt.size(); i++) {
-			this.scoreboard.addPlayerToTeam(nbt.getString(i), team);
+			this.scoreboard.addScoreHolderToTeam(nbt.getString(i), team);
 		}
 	}
 
@@ -122,7 +125,9 @@ public class ScoreboardState extends PersistentState {
 			String string2 = nbtCompound.getString("Name");
 			Text text = Text.Serialization.fromJson(nbtCompound.getString("DisplayName"));
 			ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(nbtCompound.getString("RenderType"));
-			this.scoreboard.addObjective(string2, scoreboardCriterion, text, renderType);
+			boolean bl = nbtCompound.getBoolean("display_auto_update");
+			NumberFormat numberFormat = (NumberFormat)NumberFormatTypes.CODEC.parse(NbtOps.INSTANCE, nbtCompound.get("format")).result().orElse(null);
+			this.scoreboard.addObjective(string2, scoreboardCriterion, text, renderType, bl, numberFormat);
 		}
 	}
 
@@ -190,6 +195,12 @@ public class ScoreboardState extends PersistentState {
 			nbtCompound.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
 			nbtCompound.putString("DisplayName", Text.Serialization.toJsonString(scoreboardObjective.getDisplayName()));
 			nbtCompound.putString("RenderType", scoreboardObjective.getRenderType().getName());
+			nbtCompound.putBoolean("display_auto_update", scoreboardObjective.shouldDisplayAutoUpdate());
+			NumberFormat numberFormat = scoreboardObjective.getNumberFormat();
+			if (numberFormat != null) {
+				NumberFormatTypes.CODEC.encodeStart(NbtOps.INSTANCE, numberFormat).result().ifPresent(nbtElement -> nbtCompound.put("format", nbtElement));
+			}
+
 			nbtList.add(nbtCompound);
 		}
 

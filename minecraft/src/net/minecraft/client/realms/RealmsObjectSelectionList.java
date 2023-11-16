@@ -8,8 +8,8 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsObjectSelectionList<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends AlwaysSelectedEntryListWidget<E> {
-	protected RealmsObjectSelectionList(int width, int height, int top, int bottom, int itemHeight) {
-		super(MinecraftClient.getInstance(), width, height, top, bottom, itemHeight);
+	protected RealmsObjectSelectionList(int width, int height, int top, int bottom) {
+		super(MinecraftClient.getInstance(), width, height, top, bottom);
 	}
 
 	public void setSelectedItem(int index) {

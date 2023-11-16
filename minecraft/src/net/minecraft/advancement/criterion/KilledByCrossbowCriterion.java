@@ -42,8 +42,7 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		implements AbstractCriterion.Conditions {
 		public static final Codec<KilledByCrossbowCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(KilledByCrossbowCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(KilledByCrossbowCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.listOf(), "victims", List.of())
 							.forGetter(KilledByCrossbowCriterion.Conditions::victims),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "unique_entity_types", NumberRange.IntRange.ANY)
@@ -95,11 +94,6 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicates(this.victims, ".victims");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

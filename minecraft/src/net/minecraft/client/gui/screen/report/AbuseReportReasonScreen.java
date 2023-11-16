@@ -42,8 +42,7 @@ public class AbuseReportReasonScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.reasonList = new AbuseReportReasonScreen.ReasonListWidget(this.client);
-		this.addSelectableChild(this.reasonList);
+		this.reasonList = this.addDrawableChild(new AbuseReportReasonScreen.ReasonListWidget(this.client));
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = Nullables.map(this.reason, this.reasonList::getEntry);
 		this.reasonList.setSelected(reasonEntry);
 		int i = this.width / 2 - 150 - 5;
@@ -67,7 +66,6 @@ public class AbuseReportReasonScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.reasonList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		context.fill(this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), 2130706432);
 		context.drawTextWithShadow(this.textRenderer, DESCRIPTION_TEXT, this.getLeft() + 4, this.getTop() + 4, -8421505);
@@ -117,7 +115,7 @@ public class AbuseReportReasonScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	public class ReasonListWidget extends AlwaysSelectedEntryListWidget<AbuseReportReasonScreen.ReasonListWidget.ReasonEntry> {
 		public ReasonListWidget(MinecraftClient client) {
-			super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height, 40, AbuseReportReasonScreen.this.height - 95, 18);
+			super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height - 95 - 40, 40, 18);
 
 			for (AbuseReportReason abuseReportReason : AbuseReportReason.values()) {
 				this.addEntry(new AbuseReportReasonScreen.ReasonListWidget.ReasonEntry(abuseReportReason));

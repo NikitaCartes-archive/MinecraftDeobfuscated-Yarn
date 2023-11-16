@@ -29,8 +29,7 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		implements AbstractCriterion.Conditions {
 		public static final Codec<VillagerTradeCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(VillagerTradeCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(VillagerTradeCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "villager").forGetter(VillagerTradeCriterion.Conditions::villager),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(VillagerTradeCriterion.Conditions::item)
 					)
@@ -60,11 +59,6 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.villager, ".villager");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

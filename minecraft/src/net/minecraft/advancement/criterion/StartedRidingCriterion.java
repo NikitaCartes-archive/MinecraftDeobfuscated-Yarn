@@ -22,19 +22,13 @@ public class StartedRidingCriterion extends AbstractCriterion<StartedRidingCrite
 	public static record Conditions(Optional<LootContextPredicate> player) implements AbstractCriterion.Conditions {
 		public static final Codec<StartedRidingCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(StartedRidingCriterion.Conditions::getPlayerPredicate)
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(StartedRidingCriterion.Conditions::player)
 					)
 					.apply(instance, StartedRidingCriterion.Conditions::new)
 		);
 
 		public static AdvancementCriterion<StartedRidingCriterion.Conditions> create(EntityPredicate.Builder player) {
 			return Criteria.STARTED_RIDING.create(new StartedRidingCriterion.Conditions(Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(player))));
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

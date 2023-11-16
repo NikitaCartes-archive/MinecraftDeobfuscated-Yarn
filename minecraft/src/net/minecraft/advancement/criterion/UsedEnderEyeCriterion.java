@@ -26,8 +26,7 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 	public static record Conditions(Optional<LootContextPredicate> player, NumberRange.DoubleRange distance) implements AbstractCriterion.Conditions {
 		public static final Codec<UsedEnderEyeCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(UsedEnderEyeCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(UsedEnderEyeCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "distance", NumberRange.DoubleRange.ANY)
 							.forGetter(UsedEnderEyeCriterion.Conditions::distance)
 					)
@@ -36,11 +35,6 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 
 		public boolean matches(double distance) {
 			return this.distance.testSqrt(distance);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

@@ -33,8 +33,7 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 		implements AbstractCriterion.Conditions {
 		public static final Codec<LightningStrikeCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(LightningStrikeCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(LightningStrikeCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "lightning")
 							.forGetter(LightningStrikeCriterion.Conditions::lightning),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "bystander")
@@ -63,11 +62,6 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.lightning, ".lightning");
 			validator.validateEntityPredicate(this.bystander, ".bystander");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

@@ -10,7 +10,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreResetS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,29 +27,39 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	@Override
-	public void updateScore(ScoreboardPlayerScore score) {
-		super.updateScore(score);
-		if (this.objectives.contains(score.getObjective())) {
+	protected void updateScore(ScoreHolder scoreHolder, ScoreboardObjective objective, ScoreboardScore score) {
+		super.updateScore(scoreHolder, objective, score);
+		if (this.objectives.contains(objective)) {
 			this.server
 				.getPlayerManager()
-				.sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.CHANGE, score.getObjective().getName(), score.getPlayerName(), score.getScore()));
+				.sendToAll(
+					new ScoreboardScoreUpdateS2CPacket(
+						scoreHolder.getNameForScoreboard(), objective.getName(), score.getScore(), score.getDisplayText(), score.getNumberFormat()
+					)
+				);
 		}
 
 		this.runUpdateListeners();
 	}
 
 	@Override
-	public void updatePlayerScore(String playerName) {
-		super.updatePlayerScore(playerName);
-		this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.REMOVE, null, playerName, 0));
+	protected void resetScore(ScoreHolder scoreHolder, ScoreboardObjective objective) {
+		super.resetScore(scoreHolder, objective);
 		this.runUpdateListeners();
 	}
 
 	@Override
-	public void updatePlayerScore(String playerName, ScoreboardObjective objective) {
-		super.updatePlayerScore(playerName, objective);
+	public void onScoreHolderRemoved(ScoreHolder scoreHolder) {
+		super.onScoreHolderRemoved(scoreHolder);
+		this.server.getPlayerManager().sendToAll(new ScoreboardScoreResetS2CPacket(scoreHolder.getNameForScoreboard(), null));
+		this.runUpdateListeners();
+	}
+
+	@Override
+	public void onScoreRemoved(ScoreHolder scoreHolder, ScoreboardObjective objective) {
+		super.onScoreRemoved(scoreHolder, objective);
 		if (this.objectives.contains(objective)) {
-			this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.REMOVE, objective.getName(), playerName, 0));
+			this.server.getPlayerManager().sendToAll(new ScoreboardScoreResetS2CPacket(scoreHolder.getNameForScoreboard(), objective.getName()));
 		}
 
 		this.runUpdateListeners();
@@ -78,9 +89,9 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	@Override
-	public boolean addPlayerToTeam(String playerName, Team team) {
-		if (super.addPlayerToTeam(playerName, team)) {
-			this.server.getPlayerManager().sendToAll(TeamS2CPacket.changePlayerTeam(team, playerName, TeamS2CPacket.Operation.ADD));
+	public boolean addScoreHolderToTeam(String scoreHolderName, Team team) {
+		if (super.addScoreHolderToTeam(scoreHolderName, team)) {
+			this.server.getPlayerManager().sendToAll(TeamS2CPacket.changePlayerTeam(team, scoreHolderName, TeamS2CPacket.Operation.ADD));
 			this.runUpdateListeners();
 			return true;
 		} else {
@@ -89,9 +100,9 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	@Override
-	public void removePlayerFromTeam(String playerName, Team team) {
-		super.removePlayerFromTeam(playerName, team);
-		this.server.getPlayerManager().sendToAll(TeamS2CPacket.changePlayerTeam(team, playerName, TeamS2CPacket.Operation.REMOVE));
+	public void removeScoreHolderFromTeam(String scoreHolderName, Team team) {
+		super.removeScoreHolderFromTeam(scoreHolderName, team);
+		this.server.getPlayerManager().sendToAll(TeamS2CPacket.changePlayerTeam(team, scoreHolderName, TeamS2CPacket.Operation.REMOVE));
 		this.runUpdateListeners();
 	}
 
@@ -162,13 +173,10 @@ public class ServerScoreboard extends Scoreboard {
 			}
 		}
 
-		for (ScoreboardPlayerScore scoreboardPlayerScore : this.getAllPlayerScores(objective)) {
+		for (ScoreboardEntry scoreboardEntry : this.getScoreboardEntries(objective)) {
 			list.add(
-				new ScoreboardPlayerUpdateS2CPacket(
-					ServerScoreboard.UpdateMode.CHANGE,
-					scoreboardPlayerScore.getObjective().getName(),
-					scoreboardPlayerScore.getPlayerName(),
-					scoreboardPlayerScore.getScore()
+				new ScoreboardScoreUpdateS2CPacket(
+					scoreboardEntry.owner(), objective.getName(), scoreboardEntry.value(), scoreboardEntry.display(), scoreboardEntry.numberFormatOverride()
 				)
 			);
 		}

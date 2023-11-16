@@ -36,6 +36,7 @@ public class Camera {
 	private boolean thirdPerson;
 	private float cameraY;
 	private float lastCameraY;
+	private float lastTickDelta;
 	public static final float field_32133 = 0.083333336F;
 
 	public void update(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
@@ -43,6 +44,7 @@ public class Camera {
 		this.area = area;
 		this.focusedEntity = focusedEntity;
 		this.thirdPerson = thirdPerson;
+		this.lastTickDelta = tickDelta;
 		this.setRotation(focusedEntity.getYaw(tickDelta), focusedEntity.getPitch(tickDelta));
 		this.setPos(
 			MathHelper.lerp((double)tickDelta, focusedEntity.prevX, focusedEntity.getX()),
@@ -218,6 +220,10 @@ public class Camera {
 		this.area = null;
 		this.focusedEntity = null;
 		this.ready = false;
+	}
+
+	public float getLastTickDelta() {
+		return this.lastTickDelta;
 	}
 
 	/**

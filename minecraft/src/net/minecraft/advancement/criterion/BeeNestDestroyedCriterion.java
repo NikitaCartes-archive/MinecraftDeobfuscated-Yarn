@@ -31,8 +31,7 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 	) implements AbstractCriterion.Conditions {
 		public static final Codec<BeeNestDestroyedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(BeeNestDestroyedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(BeeNestDestroyedCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.createEntryCodec(), "block").forGetter(BeeNestDestroyedCriterion.Conditions::block),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(BeeNestDestroyedCriterion.Conditions::item),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "num_bees_inside", NumberRange.IntRange.ANY)
@@ -56,11 +55,6 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 			} else {
 				return this.item.isPresent() && !((ItemPredicate)this.item.get()).test(stack) ? false : this.beesInside.test(count);
 			}
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

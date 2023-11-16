@@ -91,17 +91,9 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	private final WorldListWidget.LoadingEntry loadingEntry;
 
 	public WorldListWidget(
-		SelectWorldScreen parent,
-		MinecraftClient client,
-		int width,
-		int height,
-		int top,
-		int bottom,
-		int itemHeight,
-		String search,
-		@Nullable WorldListWidget oldWidget
+		SelectWorldScreen parent, MinecraftClient client, int width, int height, int y, int itemHeight, String search, @Nullable WorldListWidget oldWidget
 	) {
-		super(client, width, height, top, bottom, itemHeight);
+		super(client, width, height, y, itemHeight);
 		this.parent = parent;
 		this.loadingEntry = new WorldListWidget.LoadingEntry(client);
 		this.search = search;
@@ -151,13 +143,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		List<LevelSummary> list = this.tryGet();
 		if (list != this.levels) {
 			this.show(list);
 		}
 
-		super.render(context, mouseX, mouseY, delta);
+		super.renderButton(context, mouseX, mouseY, delta);
 	}
 
 	private void show(@Nullable List<LevelSummary> levels) {
@@ -256,11 +248,11 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 		if (this.children().contains(this.loadingEntry)) {
 			this.loadingEntry.appendNarrations(builder);
 		} else {
-			super.appendNarrations(builder);
+			super.appendClickableNarrations(builder);
 		}
 	}
 

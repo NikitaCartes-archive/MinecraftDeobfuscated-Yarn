@@ -775,7 +775,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (nbt.contains("Team", NbtElement.STRING_TYPE)) {
 			String string = nbt.getString("Team");
 			Team team = this.getWorld().getScoreboard().getTeam(string);
-			boolean bl = team != null && this.getWorld().getScoreboard().addPlayerToTeam(this.getUuidAsString(), team);
+			boolean bl = team != null && this.getWorld().getScoreboard().addScoreHolderToTeam(this.getUuidAsString(), team);
 			if (!bl) {
 				LOGGER.warn("Unable to add mob to team \"{}\" (that team probably doesn't exist)", string);
 			}

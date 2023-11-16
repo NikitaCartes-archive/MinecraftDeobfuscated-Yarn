@@ -6,7 +6,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
-public class OxidizableGrateBlock extends TransparentBlock implements Oxidizable {
+public class OxidizableGrateBlock extends GrateBlock implements Oxidizable {
 	public static final MapCodec<OxidizableGrateBlock> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Oxidizable.OxidationLevel.CODEC.fieldOf("weathering_state").forGetter(OxidizableGrateBlock::getDegradationLevel), createSettingsCodec()

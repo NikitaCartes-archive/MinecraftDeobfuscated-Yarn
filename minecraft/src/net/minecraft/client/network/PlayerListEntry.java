@@ -102,7 +102,7 @@ public class PlayerListEntry {
 
 	@Nullable
 	public Team getScoreboardTeam() {
-		return MinecraftClient.getInstance().world.getScoreboard().getPlayerTeam(this.getProfile().getName());
+		return MinecraftClient.getInstance().world.getScoreboard().getScoreHolderTeam(this.getProfile().getName());
 	}
 
 	public void setDisplayName(@Nullable Text displayName) {

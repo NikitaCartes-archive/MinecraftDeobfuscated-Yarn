@@ -2,31 +2,43 @@ package net.minecraft.server.command;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.OperationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.command.argument.ScoreboardCriterionArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.command.argument.ScoreboardSlotArgumentType;
+import net.minecraft.command.argument.StyleArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
+import net.minecraft.scoreboard.ScoreAccess;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.scoreboard.number.BlankNumberFormat;
+import net.minecraft.scoreboard.number.FixedNumberFormat;
+import net.minecraft.scoreboard.number.NumberFormat;
+import net.minecraft.scoreboard.number.StyledNumberFormat;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
@@ -103,6 +115,27 @@ public class ScoreboardCommand {
 												)
 										)
 										.then(makeRenderTypeArguments())
+										.then(
+											CommandManager.literal("displayautoupdate")
+												.then(
+													CommandManager.argument("value", BoolArgumentType.bool())
+														.executes(
+															commandContext -> executeModifyDisplayAutoUpdate(
+																	commandContext.getSource(),
+																	ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"),
+																	BoolArgumentType.getBool(commandContext, "value")
+																)
+														)
+												)
+										)
+										.then(
+											makeNumberFormatArguments(
+												CommandManager.literal("numberformat"),
+												(commandContext, numberFormat) -> executeModifyObjectiveFormat(
+														commandContext.getSource(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"), numberFormat
+													)
+											)
+										)
 								)
 						)
 						.then(
@@ -260,6 +293,56 @@ public class ScoreboardCommand {
 								)
 						)
 						.then(
+							CommandManager.literal("display")
+								.then(
+									CommandManager.literal("name")
+										.then(
+											CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
+												.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
+												.then(
+													CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
+														.then(
+															CommandManager.argument("name", TextArgumentType.text())
+																.executes(
+																	commandContext -> executeSetDisplayName(
+																			commandContext.getSource(),
+																			ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
+																			ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"),
+																			TextArgumentType.getTextArgument(commandContext, "name")
+																		)
+																)
+														)
+														.executes(
+															commandContext -> executeSetDisplayName(
+																	commandContext.getSource(),
+																	ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
+																	ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"),
+																	null
+																)
+														)
+												)
+										)
+								)
+								.then(
+									CommandManager.literal("numberformat")
+										.then(
+											CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
+												.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
+												.then(
+													makeNumberFormatArguments(
+														CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
+														(commandContext, numberFormat) -> executeSetNumberFormat(
+																commandContext.getSource(),
+																ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
+																ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"),
+																numberFormat
+															)
+													)
+												)
+										)
+								)
+						)
+						.then(
 							CommandManager.literal("operation")
 								.then(
 									CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
@@ -293,6 +376,21 @@ public class ScoreboardCommand {
 		);
 	}
 
+	private static ArgumentBuilder<ServerCommandSource, ?> makeNumberFormatArguments(
+		ArgumentBuilder<ServerCommandSource, ?> argumentBuilder, ScoreboardCommand.NumberFormatCommandExecutor executor
+	) {
+		return argumentBuilder.then(CommandManager.literal("blank").executes(commandContext -> executor.run(commandContext, BlankNumberFormat.INSTANCE)))
+			.then(CommandManager.literal("fixed").then(CommandManager.argument("contents", TextArgumentType.text()).executes(commandContext -> {
+				Text text = TextArgumentType.getTextArgument(commandContext, "contents");
+				return executor.run(commandContext, new FixedNumberFormat(text));
+			})))
+			.then(CommandManager.literal("styled").then(CommandManager.argument("style", StyleArgumentType.style()).executes(commandContext -> {
+				Style style = StyleArgumentType.getStyle(commandContext, "style");
+				return executor.run(commandContext, new StyledNumberFormat(style));
+			})))
+			.executes(commandContext -> executor.run(commandContext, null));
+	}
+
 	private static LiteralArgumentBuilder<ServerCommandSource> makeRenderTypeArguments() {
 		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("rendertype");
 
@@ -306,7 +404,7 @@ public class ScoreboardCommand {
 		return literalArgumentBuilder;
 	}
 
-	private static CompletableFuture<Suggestions> suggestDisabled(ServerCommandSource source, Collection<String> targets, SuggestionsBuilder builder) {
+	private static CompletableFuture<Suggestions> suggestDisabled(ServerCommandSource source, Collection<ScoreHolder> targets, SuggestionsBuilder builder) {
 		List<String> list = Lists.<String>newArrayList();
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 
@@ -314,8 +412,9 @@ public class ScoreboardCommand {
 			if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER) {
 				boolean bl = false;
 
-				for (String string : targets) {
-					if (!scoreboard.playerHasObjective(string, scoreboardObjective) || scoreboard.getPlayerScore(string, scoreboardObjective).isLocked()) {
+				for (ScoreHolder scoreHolder : targets) {
+					ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, scoreboardObjective);
+					if (readableScoreboardScore == null || readableScoreboardScore.isLocked()) {
 						bl = true;
 						break;
 					}
@@ -330,45 +429,52 @@ public class ScoreboardCommand {
 		return CommandSource.suggestMatching(list, builder);
 	}
 
-	private static int executeGet(ServerCommandSource source, String target, ScoreboardObjective objective) throws CommandSyntaxException {
+	private static int executeGet(ServerCommandSource source, ScoreHolder scoreHolder, ScoreboardObjective objective) throws CommandSyntaxException {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
-		if (!scoreboard.playerHasObjective(target, objective)) {
-			throw PLAYERS_GET_NULL_EXCEPTION.create(objective.getName(), target);
+		ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, objective);
+		if (readableScoreboardScore == null) {
+			throw PLAYERS_GET_NULL_EXCEPTION.create(objective.getName(), scoreHolder);
 		} else {
-			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(target, objective);
 			source.sendFeedback(
-				() -> Text.translatable("commands.scoreboard.players.get.success", target, scoreboardPlayerScore.getScore(), objective.toHoverableText()), false
+				() -> Text.translatable(
+						"commands.scoreboard.players.get.success", scoreHolder.getStyledDisplayName(), readableScoreboardScore.getScore(), objective.toHoverableText()
+					),
+				false
 			);
-			return scoreboardPlayerScore.getScore();
+			return readableScoreboardScore.getScore();
 		}
+	}
+
+	private static Text getNextDisplayName(Collection<ScoreHolder> targets) {
+		return ((ScoreHolder)targets.iterator().next()).getStyledDisplayName();
 	}
 
 	private static int executeOperation(
 		ServerCommandSource source,
-		Collection<String> targets,
+		Collection<ScoreHolder> targets,
 		ScoreboardObjective targetObjective,
 		OperationArgumentType.Operation operation,
-		Collection<String> sources,
+		Collection<ScoreHolder> sources,
 		ScoreboardObjective sourceObjectives
 	) throws CommandSyntaxException {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		int i = 0;
 
-		for (String string : targets) {
-			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, targetObjective);
+		for (ScoreHolder scoreHolder : targets) {
+			ScoreAccess scoreAccess = scoreboard.getOrCreateScore(scoreHolder, targetObjective);
 
-			for (String string2 : sources) {
-				ScoreboardPlayerScore scoreboardPlayerScore2 = scoreboard.getPlayerScore(string2, sourceObjectives);
-				operation.apply(scoreboardPlayerScore, scoreboardPlayerScore2);
+			for (ScoreHolder scoreHolder2 : sources) {
+				ScoreAccess scoreAccess2 = scoreboard.getOrCreateScore(scoreHolder2, sourceObjectives);
+				operation.apply(scoreAccess, scoreAccess2);
 			}
 
-			i += scoreboardPlayerScore.getScore();
+			i += scoreAccess.getScore();
 		}
 
 		if (targets.size() == 1) {
 			int j = i;
 			source.sendFeedback(
-				() -> Text.translatable("commands.scoreboard.players.operation.success.single", targetObjective.toHoverableText(), targets.iterator().next(), j), true
+				() -> Text.translatable("commands.scoreboard.players.operation.success.single", targetObjective.toHoverableText(), getNextDisplayName(targets), j), true
 			);
 		} else {
 			source.sendFeedback(
@@ -379,17 +485,17 @@ public class ScoreboardCommand {
 		return i;
 	}
 
-	private static int executeEnable(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective) throws CommandSyntaxException {
+	private static int executeEnable(ServerCommandSource source, Collection<ScoreHolder> targets, ScoreboardObjective objective) throws CommandSyntaxException {
 		if (objective.getCriterion() != ScoreboardCriterion.TRIGGER) {
 			throw PLAYERS_ENABLE_INVALID_EXCEPTION.create();
 		} else {
 			Scoreboard scoreboard = source.getServer().getScoreboard();
 			int i = 0;
 
-			for (String string : targets) {
-				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
-				if (scoreboardPlayerScore.isLocked()) {
-					scoreboardPlayerScore.setLocked(false);
+			for (ScoreHolder scoreHolder : targets) {
+				ScoreAccess scoreAccess = scoreboard.getOrCreateScore(scoreHolder, objective);
+				if (scoreAccess.isLocked()) {
+					scoreAccess.unlock();
 					i++;
 				}
 			}
@@ -399,7 +505,7 @@ public class ScoreboardCommand {
 			} else {
 				if (targets.size() == 1) {
 					source.sendFeedback(
-						() -> Text.translatable("commands.scoreboard.players.enable.success.single", objective.toHoverableText(), targets.iterator().next()), true
+						() -> Text.translatable("commands.scoreboard.players.enable.success.single", objective.toHoverableText(), getNextDisplayName(targets)), true
 					);
 				} else {
 					source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.enable.success.multiple", objective.toHoverableText(), targets.size()), true);
@@ -410,15 +516,15 @@ public class ScoreboardCommand {
 		}
 	}
 
-	private static int executeReset(ServerCommandSource source, Collection<String> targets) {
+	private static int executeReset(ServerCommandSource source, Collection<ScoreHolder> targets) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 
-		for (String string : targets) {
-			scoreboard.resetPlayerScore(string, null);
+		for (ScoreHolder scoreHolder : targets) {
+			scoreboard.removeScores(scoreHolder);
 		}
 
 		if (targets.size() == 1) {
-			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.reset.all.single", targets.iterator().next()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.reset.all.single", getNextDisplayName(targets)), true);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.reset.all.multiple", targets.size()), true);
 		}
@@ -426,16 +532,16 @@ public class ScoreboardCommand {
 		return targets.size();
 	}
 
-	private static int executeReset(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective) {
+	private static int executeReset(ServerCommandSource source, Collection<ScoreHolder> targets, ScoreboardObjective objective) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 
-		for (String string : targets) {
-			scoreboard.resetPlayerScore(string, objective);
+		for (ScoreHolder scoreHolder : targets) {
+			scoreboard.removeScore(scoreHolder, objective);
 		}
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				() -> Text.translatable("commands.scoreboard.players.reset.specific.single", objective.toHoverableText(), targets.iterator().next()), true
+				() -> Text.translatable("commands.scoreboard.players.reset.specific.single", objective.toHoverableText(), getNextDisplayName(targets)), true
 			);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.reset.specific.multiple", objective.toHoverableText(), targets.size()), true);
@@ -444,17 +550,16 @@ public class ScoreboardCommand {
 		return targets.size();
 	}
 
-	private static int executeSet(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, int score) {
+	private static int executeSet(ServerCommandSource source, Collection<ScoreHolder> targets, ScoreboardObjective objective, int score) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 
-		for (String string : targets) {
-			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
-			scoreboardPlayerScore.setScore(score);
+		for (ScoreHolder scoreHolder : targets) {
+			scoreboard.getOrCreateScore(scoreHolder, objective).setScore(score);
 		}
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				() -> Text.translatable("commands.scoreboard.players.set.success.single", objective.toHoverableText(), targets.iterator().next(), score), true
+				() -> Text.translatable("commands.scoreboard.players.set.success.single", objective.toHoverableText(), getNextDisplayName(targets), score), true
 			);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.set.success.multiple", objective.toHoverableText(), targets.size(), score), true);
@@ -463,20 +568,89 @@ public class ScoreboardCommand {
 		return score * targets.size();
 	}
 
-	private static int executeAdd(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, int score) {
+	private static int executeSetDisplayName(
+		ServerCommandSource source, Collection<ScoreHolder> targets, ScoreboardObjective objective, @Nullable Text displayName
+	) {
+		Scoreboard scoreboard = source.getServer().getScoreboard();
+
+		for (ScoreHolder scoreHolder : targets) {
+			scoreboard.getOrCreateScore(scoreHolder, objective).setDisplayText(displayName);
+		}
+
+		if (displayName == null) {
+			if (targets.size() == 1) {
+				source.sendFeedback(
+					() -> Text.translatable("commands.scoreboard.players.display.name.clear.success.single", getNextDisplayName(targets), objective.toHoverableText()), true
+				);
+			} else {
+				source.sendFeedback(
+					() -> Text.translatable("commands.scoreboard.players.display.name.clear.success.multiple", targets.size(), objective.toHoverableText()), true
+				);
+			}
+		} else if (targets.size() == 1) {
+			source.sendFeedback(
+				() -> Text.translatable(
+						"commands.scoreboard.players.display.name.set.success.single", displayName, getNextDisplayName(targets), objective.toHoverableText()
+					),
+				true
+			);
+		} else {
+			source.sendFeedback(
+				() -> Text.translatable("commands.scoreboard.players.display.name.set.success.multiple", displayName, targets.size(), objective.toHoverableText()), true
+			);
+		}
+
+		return targets.size();
+	}
+
+	private static int executeSetNumberFormat(
+		ServerCommandSource source, Collection<ScoreHolder> targets, ScoreboardObjective objective, @Nullable NumberFormat numberFormat
+	) {
+		Scoreboard scoreboard = source.getServer().getScoreboard();
+
+		for (ScoreHolder scoreHolder : targets) {
+			scoreboard.getOrCreateScore(scoreHolder, objective).setNumberFormat(numberFormat);
+		}
+
+		if (numberFormat == null) {
+			if (targets.size() == 1) {
+				source.sendFeedback(
+					() -> Text.translatable("commands.scoreboard.players.display.numberFormat.clear.success.single", getNextDisplayName(targets), objective.toHoverableText()),
+					true
+				);
+			} else {
+				source.sendFeedback(
+					() -> Text.translatable("commands.scoreboard.players.display.numberFormat.clear.success.multiple", targets.size(), objective.toHoverableText()), true
+				);
+			}
+		} else if (targets.size() == 1) {
+			source.sendFeedback(
+				() -> Text.translatable("commands.scoreboard.players.display.numberFormat.set.success.single", getNextDisplayName(targets), objective.toHoverableText()),
+				true
+			);
+		} else {
+			source.sendFeedback(
+				() -> Text.translatable("commands.scoreboard.players.display.numberFormat.set.success.multiple", targets.size(), objective.toHoverableText()), true
+			);
+		}
+
+		return targets.size();
+	}
+
+	private static int executeAdd(ServerCommandSource source, Collection<ScoreHolder> targets, ScoreboardObjective objective, int score) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		int i = 0;
 
-		for (String string : targets) {
-			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
-			scoreboardPlayerScore.setScore(scoreboardPlayerScore.getScore() + score);
-			i += scoreboardPlayerScore.getScore();
+		for (ScoreHolder scoreHolder : targets) {
+			ScoreAccess scoreAccess = scoreboard.getOrCreateScore(scoreHolder, objective);
+			scoreAccess.setScore(scoreAccess.getScore() + score);
+			i += scoreAccess.getScore();
 		}
 
 		if (targets.size() == 1) {
 			int j = i;
 			source.sendFeedback(
-				() -> Text.translatable("commands.scoreboard.players.add.success.single", score, objective.toHoverableText(), targets.iterator().next(), j), true
+				() -> Text.translatable("commands.scoreboard.players.add.success.single", score, objective.toHoverableText(), getNextDisplayName(targets), j), true
 			);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.add.success.multiple", score, objective.toHoverableText(), targets.size()), true);
@@ -485,20 +659,20 @@ public class ScoreboardCommand {
 		return i;
 	}
 
-	private static int executeRemove(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, int score) {
+	private static int executeRemove(ServerCommandSource source, Collection<ScoreHolder> targets, ScoreboardObjective objective, int score) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		int i = 0;
 
-		for (String string : targets) {
-			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
-			scoreboardPlayerScore.setScore(scoreboardPlayerScore.getScore() - score);
-			i += scoreboardPlayerScore.getScore();
+		for (ScoreHolder scoreHolder : targets) {
+			ScoreAccess scoreAccess = scoreboard.getOrCreateScore(scoreHolder, objective);
+			scoreAccess.setScore(scoreAccess.getScore() - score);
+			i += scoreAccess.getScore();
 		}
 
 		if (targets.size() == 1) {
 			int j = i;
 			source.sendFeedback(
-				() -> Text.translatable("commands.scoreboard.players.remove.success.single", score, objective.toHoverableText(), targets.iterator().next(), j), true
+				() -> Text.translatable("commands.scoreboard.players.remove.success.single", score, objective.toHoverableText(), getNextDisplayName(targets), j), true
 			);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.remove.success.multiple", score, objective.toHoverableText(), targets.size()), true);
@@ -508,36 +682,36 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeListPlayers(ServerCommandSource source) {
-		Collection<String> collection = source.getServer().getScoreboard().getKnownPlayers();
+		Collection<ScoreHolder> collection = source.getServer().getScoreboard().getKnownScoreHolders();
 		if (collection.isEmpty()) {
 			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.empty"), false);
 		} else {
-			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.success", collection.size(), Texts.joinOrdered(collection)), false);
+			source.sendFeedback(
+				() -> Text.translatable("commands.scoreboard.players.list.success", collection.size(), Texts.join(collection, ScoreHolder::getStyledDisplayName)), false
+			);
 		}
 
 		return collection.size();
 	}
 
-	private static int executeListScores(ServerCommandSource source, String target) {
-		Map<ScoreboardObjective, ScoreboardPlayerScore> map = source.getServer().getScoreboard().getPlayerObjectives(target);
-		if (map.isEmpty()) {
-			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.entity.empty", target), false);
+	private static int executeListScores(ServerCommandSource source, ScoreHolder scoreHolder) {
+		Object2IntMap<ScoreboardObjective> object2IntMap = source.getServer().getScoreboard().getScoreHolderObjectives(scoreHolder);
+		if (object2IntMap.isEmpty()) {
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.entity.empty", scoreHolder.getStyledDisplayName()), false);
 		} else {
-			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.entity.success", target, map.size()), false);
-
-			for (Entry<ScoreboardObjective, ScoreboardPlayerScore> entry : map.entrySet()) {
-				source.sendFeedback(
-					() -> Text.translatable(
-							"commands.scoreboard.players.list.entity.entry",
-							((ScoreboardObjective)entry.getKey()).toHoverableText(),
-							((ScoreboardPlayerScore)entry.getValue()).getScore()
-						),
-					false
-				);
-			}
+			source.sendFeedback(
+				() -> Text.translatable("commands.scoreboard.players.list.entity.success", scoreHolder.getStyledDisplayName(), object2IntMap.size()), false
+			);
+			Object2IntMaps.fastForEach(
+				object2IntMap,
+				entry -> source.sendFeedback(
+						() -> Text.translatable("commands.scoreboard.players.list.entity.entry", ((ScoreboardObjective)entry.getKey()).toHoverableText(), entry.getIntValue()),
+						false
+					)
+			);
 		}
 
-		return map.size();
+		return object2IntMap.size();
 	}
 
 	private static int executeClearDisplay(ServerCommandSource source, ScoreboardDisplaySlot slot) throws CommandSyntaxException {
@@ -571,6 +745,34 @@ public class ScoreboardCommand {
 		return 0;
 	}
 
+	private static int executeModifyDisplayAutoUpdate(ServerCommandSource source, ScoreboardObjective objective, boolean enable) {
+		if (objective.shouldDisplayAutoUpdate() != enable) {
+			objective.setDisplayAutoUpdate(enable);
+			if (enable) {
+				source.sendFeedback(
+					() -> Text.translatable("commands.scoreboard.objectives.modify.displayAutoUpdate.enable", objective.getName(), objective.toHoverableText()), true
+				);
+			} else {
+				source.sendFeedback(
+					() -> Text.translatable("commands.scoreboard.objectives.modify.displayAutoUpdate.disable", objective.getName(), objective.toHoverableText()), true
+				);
+			}
+		}
+
+		return 0;
+	}
+
+	private static int executeModifyObjectiveFormat(ServerCommandSource source, ScoreboardObjective objective, @Nullable NumberFormat format) {
+		objective.setNumberFormat(format);
+		if (format != null) {
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.modify.objectiveFormat.set", objective.getName()), true);
+		} else {
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.modify.objectiveFormat.clear", objective.getName()), true);
+		}
+
+		return 0;
+	}
+
 	private static int executeModifyRenderType(ServerCommandSource source, ScoreboardObjective objective, ScoreboardCriterion.RenderType type) {
 		if (objective.getRenderType() != type) {
 			objective.setRenderType(type);
@@ -592,7 +794,7 @@ public class ScoreboardCommand {
 		if (scoreboard.getNullableObjective(objective) != null) {
 			throw OBJECTIVES_ADD_DUPLICATE_EXCEPTION.create();
 		} else {
-			scoreboard.addObjective(objective, criteria, displayName, criteria.getDefaultRenderType());
+			scoreboard.addObjective(objective, criteria, displayName, criteria.getDefaultRenderType(), false, null);
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
 			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);
 			return scoreboard.getObjectives().size();
@@ -611,5 +813,10 @@ public class ScoreboardCommand {
 		}
 
 		return collection.size();
+	}
+
+	@FunctionalInterface
+	public interface NumberFormatCommandExecutor {
+		int run(CommandContext<ServerCommandSource> context, @Nullable NumberFormat numberFormat) throws CommandSyntaxException;
 	}
 }

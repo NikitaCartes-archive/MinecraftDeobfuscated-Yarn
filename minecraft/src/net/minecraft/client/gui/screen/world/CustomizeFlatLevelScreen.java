@@ -56,8 +56,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	protected void init() {
 		this.tileText = Text.translatable("createWorld.customize.flat.tile");
 		this.heightText = Text.translatable("createWorld.customize.flat.height");
-		this.layers = new CustomizeFlatLevelScreen.SuperflatLayersListWidget();
-		this.addSelectableChild(this.layers);
+		this.layers = this.addDrawableChild(new CustomizeFlatLevelScreen.SuperflatLayersListWidget());
 		this.widgetButtonRemoveLayer = this.addDrawableChild(
 			ButtonWidget.builder(
 					Text.translatable("createWorld.customize.flat.removeLayer"),
@@ -116,7 +115,6 @@ public class CustomizeFlatLevelScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.layers.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		int i = this.width / 2 - 92 - 16;
 		context.drawTextWithShadow(this.textRenderer, this.tileText, i, 32, 16777215);
@@ -125,17 +123,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class SuperflatLayersListWidget extends AlwaysSelectedEntryListWidget<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerEntry> {
-		private static final Identifier STATS_ICONS_TEXTURE = new Identifier("textures/gui/container/stats_icons.png");
-
 		public SuperflatLayersListWidget() {
-			super(
-				CustomizeFlatLevelScreen.this.client,
-				CustomizeFlatLevelScreen.this.width,
-				CustomizeFlatLevelScreen.this.height,
-				43,
-				CustomizeFlatLevelScreen.this.height - 60,
-				24
-			);
+			super(CustomizeFlatLevelScreen.this.client, CustomizeFlatLevelScreen.this.width, CustomizeFlatLevelScreen.this.height - 103, 43, 24);
 
 			for (int i = 0; i < CustomizeFlatLevelScreen.this.config.getLayers().size(); i++) {
 				this.addEntry(new CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerEntry());

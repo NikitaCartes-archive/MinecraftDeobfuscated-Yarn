@@ -98,8 +98,9 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.ScoreAccess;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardCriterion;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -594,7 +595,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	private void updateScores(ScoreboardCriterion criterion, int score) {
-		this.getScoreboard().forEachScore(criterion, this.getEntityName(), innerScore -> innerScore.setScore(score));
+		this.getScoreboard().forEachScore(criterion, this, innerScore -> innerScore.setScore(score));
 	}
 
 	@Override
@@ -638,7 +639,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.drop(damageSource);
 		}
 
-		this.getScoreboard().forEachScore(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
+		this.getScoreboard().forEachScore(ScoreboardCriterion.DEATH_COUNT, this, ScoreAccess::incrementScore);
 		LivingEntity livingEntity = this.getPrimeAdversary();
 		if (livingEntity != null) {
 			this.incrementStat(Stats.KILLED_BY.getOrCreateStat(livingEntity.getType()));
@@ -671,28 +672,26 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (entityKilled != this) {
 			super.updateKilledAdvancementCriterion(entityKilled, score, damageSource);
 			this.addScore(score);
-			String string = this.getEntityName();
-			String string2 = entityKilled.getEntityName();
-			this.getScoreboard().forEachScore(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
+			this.getScoreboard().forEachScore(ScoreboardCriterion.TOTAL_KILL_COUNT, this, ScoreAccess::incrementScore);
 			if (entityKilled instanceof PlayerEntity) {
 				this.incrementStat(Stats.PLAYER_KILLS);
-				this.getScoreboard().forEachScore(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
+				this.getScoreboard().forEachScore(ScoreboardCriterion.PLAYER_KILL_COUNT, this, ScoreAccess::incrementScore);
 			} else {
 				this.incrementStat(Stats.MOB_KILLS);
 			}
 
-			this.updateScoreboardScore(string, string2, ScoreboardCriterion.TEAM_KILLS);
-			this.updateScoreboardScore(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
+			this.updateScoreboardScore(this, entityKilled, ScoreboardCriterion.TEAM_KILLS);
+			this.updateScoreboardScore(entityKilled, this, ScoreboardCriterion.KILLED_BY_TEAMS);
 			Criteria.PLAYER_KILLED_ENTITY.trigger(this, entityKilled, damageSource);
 		}
 	}
 
-	private void updateScoreboardScore(String playerName, String team, ScoreboardCriterion[] criterions) {
-		Team team2 = this.getScoreboard().getPlayerTeam(team);
-		if (team2 != null) {
-			int i = team2.getColor().getColorIndex();
+	private void updateScoreboardScore(ScoreHolder targetScoreHolder, ScoreHolder aboutScoreHolder, ScoreboardCriterion[] criterions) {
+		Team team = this.getScoreboard().getScoreHolderTeam(aboutScoreHolder.getNameForScoreboard());
+		if (team != null) {
+			int i = team.getColor().getColorIndex();
 			if (i >= 0 && i < criterions.length) {
-				this.getScoreboard().forEachScore(criterions[i], playerName, ScoreboardPlayerScore::incrementScore);
+				this.getScoreboard().forEachScore(criterions[i], targetScoreHolder, ScoreAccess::incrementScore);
 			}
 		}
 	}
@@ -1168,13 +1167,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void increaseStat(Stat<?> stat, int amount) {
 		this.statHandler.increaseStat(this, stat, amount);
-		this.getScoreboard().forEachScore(stat, this.getEntityName(), score -> score.incrementScore(amount));
+		this.getScoreboard().forEachScore(stat, this, score -> score.incrementScore(amount));
 	}
 
 	@Override
 	public void resetStat(Stat<?> stat) {
 		this.statHandler.setStat(this, stat, 0);
-		this.getScoreboard().forEachScore(stat, this.getEntityName(), ScoreboardPlayerScore::clearScore);
+		this.getScoreboard().forEachScore(stat, this, ScoreAccess::resetScore);
 	}
 
 	@Override

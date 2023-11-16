@@ -24,8 +24,7 @@ public class UsingItemCriterion extends AbstractCriterion<UsingItemCriterion.Con
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<ItemPredicate> item) implements AbstractCriterion.Conditions {
 		public static final Codec<UsingItemCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(UsingItemCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(UsingItemCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(UsingItemCriterion.Conditions::item)
 					)
 					.apply(instance, UsingItemCriterion.Conditions::new)
@@ -38,11 +37,6 @@ public class UsingItemCriterion extends AbstractCriterion<UsingItemCriterion.Con
 
 		public boolean test(ItemStack stack) {
 			return !this.item.isPresent() || ((ItemPredicate)this.item.get()).test(stack);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

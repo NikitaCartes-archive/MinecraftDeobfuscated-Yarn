@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
@@ -88,9 +87,11 @@ import net.minecraft.nbt.NbtShort;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
+import net.minecraft.scoreboard.ScoreAccess;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.MacroException;
 import net.minecraft.server.function.Procedure;
@@ -416,14 +417,14 @@ public class ExecuteCommand {
 	}
 
 	private static ServerCommandSource executeStoreScore(
-		ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, boolean requestResult
+		ServerCommandSource source, Collection<ScoreHolder> targets, ScoreboardObjective objective, boolean requestResult
 	) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		return source.mergeReturnValueConsumers((successful, returnValue) -> {
-			for (String string : targets) {
-				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
+			for (ScoreHolder scoreHolder : targets) {
+				ScoreAccess scoreAccess = scoreboard.getOrCreateScore(scoreHolder, objective);
 				int i = requestResult ? returnValue : (successful ? 1 : 0);
-				scoreboardPlayerScore.setScore(i);
+				scoreAccess.setScore(i);
 			}
 		}, ReturnValueConsumer::chain);
 	}
@@ -534,7 +535,7 @@ public class ExecuteCommand {
 															root,
 															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
-															context -> testScoreCondition(context, Integer::equals)
+															context -> testScoreCondition(context, (targetScore, sourceScore) -> targetScore == sourceScore)
 														)
 													)
 											)
@@ -549,7 +550,7 @@ public class ExecuteCommand {
 															root,
 															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
-															context -> testScoreCondition(context, (a, b) -> a < b)
+															context -> testScoreCondition(context, (targetScore, sourceScore) -> targetScore < sourceScore)
 														)
 													)
 											)
@@ -564,7 +565,7 @@ public class ExecuteCommand {
 															root,
 															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
-															context -> testScoreCondition(context, (a, b) -> a <= b)
+															context -> testScoreCondition(context, (targetScore, sourceScore) -> targetScore <= sourceScore)
 														)
 													)
 											)
@@ -579,7 +580,7 @@ public class ExecuteCommand {
 															root,
 															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
-															context -> testScoreCondition(context, (a, b) -> a > b)
+															context -> testScoreCondition(context, (targetScore, sourceScore) -> targetScore > sourceScore)
 														)
 													)
 											)
@@ -594,7 +595,7 @@ public class ExecuteCommand {
 															root,
 															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
-															context -> testScoreCondition(context, (a, b) -> a >= b)
+															context -> testScoreCondition(context, (targetScore, sourceScore) -> targetScore >= sourceScore)
 														)
 													)
 											)
@@ -702,26 +703,25 @@ public class ExecuteCommand {
 		return path.count(object.getNbt());
 	}
 
-	private static boolean testScoreCondition(CommandContext<ServerCommandSource> context, BiPredicate<Integer, Integer> condition) throws CommandSyntaxException {
-		String string = ScoreHolderArgumentType.getScoreHolder(context, "target");
+	private static boolean testScoreCondition(CommandContext<ServerCommandSource> context, ExecuteCommand.ScoreComparisonPredicate predicate) throws CommandSyntaxException {
+		ScoreHolder scoreHolder = ScoreHolderArgumentType.getScoreHolder(context, "target");
 		ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
-		String string2 = ScoreHolderArgumentType.getScoreHolder(context, "source");
+		ScoreHolder scoreHolder2 = ScoreHolderArgumentType.getScoreHolder(context, "source");
 		ScoreboardObjective scoreboardObjective2 = ScoreboardObjectiveArgumentType.getObjective(context, "sourceObjective");
 		Scoreboard scoreboard = context.getSource().getServer().getScoreboard();
-		if (scoreboard.playerHasObjective(string, scoreboardObjective) && scoreboard.playerHasObjective(string2, scoreboardObjective2)) {
-			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
-			ScoreboardPlayerScore scoreboardPlayerScore2 = scoreboard.getPlayerScore(string2, scoreboardObjective2);
-			return condition.test(scoreboardPlayerScore.getScore(), scoreboardPlayerScore2.getScore());
-		} else {
-			return false;
-		}
+		ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, scoreboardObjective);
+		ReadableScoreboardScore readableScoreboardScore2 = scoreboard.getScore(scoreHolder2, scoreboardObjective2);
+		return readableScoreboardScore != null && readableScoreboardScore2 != null
+			? predicate.test(readableScoreboardScore.getScore(), readableScoreboardScore2.getScore())
+			: false;
 	}
 
 	private static boolean testScoreMatch(CommandContext<ServerCommandSource> context, NumberRange.IntRange range) throws CommandSyntaxException {
-		String string = ScoreHolderArgumentType.getScoreHolder(context, "target");
+		ScoreHolder scoreHolder = ScoreHolderArgumentType.getScoreHolder(context, "target");
 		ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
 		Scoreboard scoreboard = context.getSource().getServer().getScoreboard();
-		return !scoreboard.playerHasObjective(string, scoreboardObjective) ? false : range.test(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
+		ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, scoreboardObjective);
+		return readableScoreboardScore == null ? false : range.test(readableScoreboardScore.getScore());
 	}
 
 	private static boolean testLootCondition(ServerCommandSource source, LootCondition condition) {
@@ -992,5 +992,10 @@ public class ExecuteCommand {
 				executionFlags
 			);
 		}
+	}
+
+	@FunctionalInterface
+	interface ScoreComparisonPredicate {
+		boolean test(int targetScore, int sourceScore);
 	}
 }

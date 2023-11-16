@@ -58,8 +58,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
-		this.addSelectableChild(this.biomeSelectionList);
+		this.biomeSelectionList = this.addDrawableChild(new CustomizeBuffetLevelScreen.BuffetBiomesListWidget());
 		this.confirmButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.onDone.accept(this.biome);
 			this.client.setScreen(this.parent);
@@ -85,7 +84,6 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.biomeSelectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		context.drawCenteredTextWithShadow(this.textRenderer, BUFFET_BIOME_TEXT, this.width / 2, 28, 10526880);
 	}
@@ -98,14 +96,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	class BuffetBiomesListWidget extends AlwaysSelectedEntryListWidget<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
 		BuffetBiomesListWidget() {
-			super(
-				CustomizeBuffetLevelScreen.this.client,
-				CustomizeBuffetLevelScreen.this.width,
-				CustomizeBuffetLevelScreen.this.height,
-				40,
-				CustomizeBuffetLevelScreen.this.height - 37,
-				16
-			);
+			super(CustomizeBuffetLevelScreen.this.client, CustomizeBuffetLevelScreen.this.width, CustomizeBuffetLevelScreen.this.height - 77, 40, 16);
 			Collator collator = Collator.getInstance(Locale.getDefault());
 			CustomizeBuffetLevelScreen.this.biomeRegistry
 				.streamEntries()

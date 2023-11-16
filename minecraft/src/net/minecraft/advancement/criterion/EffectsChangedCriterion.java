@@ -30,8 +30,7 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		implements AbstractCriterion.Conditions {
 		public static final Codec<EffectsChangedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(EffectsChangedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(EffectsChangedCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityEffectPredicate.CODEC, "effects").forGetter(EffectsChangedCriterion.Conditions::effects),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "source").forGetter(EffectsChangedCriterion.Conditions::source)
 					)
@@ -57,11 +56,6 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.source, ".source");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

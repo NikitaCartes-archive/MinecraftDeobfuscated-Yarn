@@ -23,8 +23,7 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 	public static record Conditions(Optional<LootContextPredicate> player, NumberRange.IntRange level) implements AbstractCriterion.Conditions {
 		public static final Codec<ConstructBeaconCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(ConstructBeaconCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ConstructBeaconCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "level", NumberRange.IntRange.ANY)
 							.forGetter(ConstructBeaconCriterion.Conditions::level)
 					)
@@ -41,11 +40,6 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 
 		public boolean matches(int level) {
 			return this.level.test(level);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

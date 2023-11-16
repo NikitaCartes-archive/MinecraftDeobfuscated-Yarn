@@ -11,6 +11,9 @@ import net.minecraft.text.Text;
 
 public class KickCommand {
 	private static final SimpleCommandExceptionType CANNOT_KICK_OWNER_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.kick.owner.failed"));
+	private static final SimpleCommandExceptionType CANNOT_KICK_SINGLEPLAYER_EXCEPTION = new SimpleCommandExceptionType(
+		Text.translatable("commands.kick.singleplayer.failed")
+	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -28,20 +31,24 @@ public class KickCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text reason) throws CommandSyntaxException {
-		int i = 0;
-
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			if (!source.getServer().isHost(serverPlayerEntity.getGameProfile())) {
-				serverPlayerEntity.networkHandler.disconnect(reason);
-				source.sendFeedback(() -> Text.translatable("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
-				i++;
-			}
-		}
-
-		if (i == 0) {
-			throw CANNOT_KICK_OWNER_EXCEPTION.create();
+		if (!source.getServer().isRemote()) {
+			throw CANNOT_KICK_SINGLEPLAYER_EXCEPTION.create();
 		} else {
-			return i;
+			int i = 0;
+
+			for (ServerPlayerEntity serverPlayerEntity : targets) {
+				if (!source.getServer().isHost(serverPlayerEntity.getGameProfile())) {
+					serverPlayerEntity.networkHandler.disconnect(reason);
+					source.sendFeedback(() -> Text.translatable("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
+					i++;
+				}
+			}
+
+			if (i == 0) {
+				throw CANNOT_KICK_OWNER_EXCEPTION.create();
+			} else {
+				return i;
+			}
 		}
 	}
 }

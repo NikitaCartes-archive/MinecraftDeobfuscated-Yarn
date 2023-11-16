@@ -52,6 +52,7 @@ public class ArgumentTypes {
 		register(registry, "item_predicate", ItemPredicateArgumentType.class, ConstantArgumentSerializer.of(ItemPredicateArgumentType::itemPredicate));
 		register(registry, "color", ColorArgumentType.class, ConstantArgumentSerializer.of(ColorArgumentType::color));
 		register(registry, "component", TextArgumentType.class, ConstantArgumentSerializer.of(TextArgumentType::text));
+		register(registry, "style", StyleArgumentType.class, ConstantArgumentSerializer.of(StyleArgumentType::style));
 		register(registry, "message", MessageArgumentType.class, ConstantArgumentSerializer.of(MessageArgumentType::message));
 		register(registry, "nbt_compound_tag", NbtCompoundArgumentType.class, ConstantArgumentSerializer.of(NbtCompoundArgumentType::nbtCompound));
 		register(registry, "nbt_tag", NbtElementArgumentType.class, ConstantArgumentSerializer.of(NbtElementArgumentType::nbtElement));

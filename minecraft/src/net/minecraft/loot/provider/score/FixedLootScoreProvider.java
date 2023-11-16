@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
-import javax.annotation.Nullable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.scoreboard.ScoreHolder;
 
 public record FixedLootScoreProvider(String name) implements LootScoreProvider {
 	public static final Codec<FixedLootScoreProvider> CODEC = RecordCodecBuilder.create(
@@ -22,10 +22,9 @@ public record FixedLootScoreProvider(String name) implements LootScoreProvider {
 		return LootScoreProviderTypes.FIXED;
 	}
 
-	@Nullable
 	@Override
-	public String getName(LootContext context) {
-		return this.name;
+	public ScoreHolder getScoreHolder(LootContext context) {
+		return ScoreHolder.fromName(this.name);
 	}
 
 	@Override

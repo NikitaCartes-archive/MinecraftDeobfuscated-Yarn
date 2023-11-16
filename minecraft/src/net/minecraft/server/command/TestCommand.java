@@ -75,6 +75,7 @@ public class TestCommand {
 						.executes(context -> executeRunThis(context.getSource(), false))
 						.then(CommandManager.literal("untilFailed").executes(context -> executeRunThis(context.getSource(), true)))
 				)
+				.then(CommandManager.literal("resetthis").executes(context -> executeResetThis(context.getSource())))
 				.then(CommandManager.literal("runthese").executes(context -> executeRunThese(context.getSource(), false)))
 				.then(
 					CommandManager.literal("runfailed")
@@ -289,6 +290,23 @@ public class TestCommand {
 		} else {
 			TestUtil.clearDebugMarkers(serverWorld);
 			run(serverWorld, blockPos2, null, rerunUntilFailed);
+			return 1;
+		}
+	}
+
+	private static int executeResetThis(ServerCommandSource source) {
+		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
+		ServerWorld serverWorld = source.getWorld();
+		BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld);
+		if (blockPos2 == null) {
+			sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.RED);
+			return 0;
+		} else {
+			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPos2);
+			structureBlockBlockEntity.loadAndPlaceStructure(serverWorld);
+			String string = structureBlockBlockEntity.getMetadata();
+			TestFunction testFunction = TestFunctions.getTestFunctionOrThrow(string);
+			sendMessage(serverWorld, "Reset succeded for: " + testFunction, Formatting.GREEN);
 			return 1;
 		}
 	}
@@ -551,7 +569,7 @@ public class TestCommand {
 	}
 
 	private static void sendMessage(ServerWorld world, String message, Formatting formatting) {
-		world.getPlayers(player -> true).forEach(player -> player.sendMessage(Text.literal(formatting + message)));
+		world.getPlayers(player -> true).forEach(player -> player.sendMessage(Text.literal(message).formatted(formatting)));
 	}
 
 	static class Listener implements TestListener {

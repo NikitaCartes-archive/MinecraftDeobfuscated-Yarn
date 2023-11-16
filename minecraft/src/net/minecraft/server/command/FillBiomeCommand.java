@@ -4,9 +4,13 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.datafixers.util.Either;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.RegistryEntryArgumentType;
@@ -97,25 +101,29 @@ public class FillBiomeCommand {
 		};
 	}
 
-	private static int execute(
-		ServerCommandSource source, BlockPos from, BlockPos to, RegistryEntry.Reference<Biome> biome, Predicate<RegistryEntry<Biome>> filter
-	) throws CommandSyntaxException {
+	public static Either<Integer, CommandSyntaxException> fillBiome(ServerWorld world, BlockPos from, BlockPos to, RegistryEntry<Biome> biome) {
+		return fillBiome(world, from, to, biome, biomex -> true, feedbackSupplier -> {
+		});
+	}
+
+	public static Either<Integer, CommandSyntaxException> fillBiome(
+		ServerWorld world, BlockPos from, BlockPos to, RegistryEntry<Biome> biome, Predicate<RegistryEntry<Biome>> filter, Consumer<Supplier<Text>> feedbackConsumer
+	) {
 		BlockPos blockPos = convertPos(from);
 		BlockPos blockPos2 = convertPos(to);
 		BlockBox blockBox = BlockBox.create(blockPos, blockPos2);
 		int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
-		int j = source.getWorld().getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
+		int j = world.getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
 		if (i > j) {
-			throw TOO_BIG_EXCEPTION.create(j, i);
+			return Either.right(TOO_BIG_EXCEPTION.create(j, i));
 		} else {
-			ServerWorld serverWorld = source.getWorld();
 			List<Chunk> list = new ArrayList();
 
 			for (int k = ChunkSectionPos.getSectionCoord(blockBox.getMinZ()); k <= ChunkSectionPos.getSectionCoord(blockBox.getMaxZ()); k++) {
 				for (int l = ChunkSectionPos.getSectionCoord(blockBox.getMinX()); l <= ChunkSectionPos.getSectionCoord(blockBox.getMaxX()); l++) {
-					Chunk chunk = serverWorld.getChunk(l, k, ChunkStatus.FULL, false);
+					Chunk chunk = world.getChunk(l, k, ChunkStatus.FULL, false);
 					if (chunk == null) {
-						throw UNLOADED_EXCEPTION.create();
+						return Either.right(UNLOADED_EXCEPTION.create());
 					}
 
 					list.add(chunk);
@@ -125,13 +133,13 @@ public class FillBiomeCommand {
 			MutableInt mutableInt = new MutableInt(0);
 
 			for (Chunk chunk : list) {
-				chunk.populateBiomes(createBiomeSupplier(mutableInt, chunk, blockBox, biome, filter), serverWorld.getChunkManager().getNoiseConfig().getMultiNoiseSampler());
+				chunk.populateBiomes(createBiomeSupplier(mutableInt, chunk, blockBox, biome, filter), world.getChunkManager().getNoiseConfig().getMultiNoiseSampler());
 				chunk.setNeedsSaving(true);
 			}
 
-			serverWorld.getChunkManager().threadedAnvilChunkStorage.sendChunkBiomePackets(list);
-			source.sendFeedback(
-				() -> Text.translatable(
+			world.getChunkManager().threadedAnvilChunkStorage.sendChunkBiomePackets(list);
+			feedbackConsumer.accept(
+				(Supplier)() -> Text.translatable(
 						"commands.fillbiome.success.count",
 						mutableInt.getValue(),
 						blockBox.getMinX(),
@@ -140,10 +148,23 @@ public class FillBiomeCommand {
 						blockBox.getMaxX(),
 						blockBox.getMaxY(),
 						blockBox.getMaxZ()
-					),
-				true
+					)
 			);
-			return mutableInt.getValue();
+			return Either.left(mutableInt.getValue());
+		}
+	}
+
+	private static int execute(
+		ServerCommandSource source, BlockPos from, BlockPos to, RegistryEntry.Reference<Biome> biome, Predicate<RegistryEntry<Biome>> filter
+	) throws CommandSyntaxException {
+		Either<Integer, CommandSyntaxException> either = fillBiome(
+			source.getWorld(), from, to, biome, filter, feedbackSupplier -> source.sendFeedback(feedbackSupplier, true)
+		);
+		Optional<CommandSyntaxException> optional = either.right();
+		if (optional.isPresent()) {
+			throw (CommandSyntaxException)optional.get();
+		} else {
+			return (Integer)either.left().get();
 		}
 	}
 }

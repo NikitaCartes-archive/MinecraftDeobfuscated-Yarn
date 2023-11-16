@@ -51,8 +51,7 @@ public class EditGameRulesScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.ruleListWidget = new EditGameRulesScreen.RuleListWidget(this.gameRules);
-		this.addSelectableChild(this.ruleListWidget);
+		this.ruleListWidget = this.addDrawableChild(new EditGameRulesScreen.RuleListWidget(this.gameRules));
 		GridWidget.Adder adder = new GridWidget().setColumnSpacing(10).createAdder(2);
 		this.doneButton = adder.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules))).build());
 		adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty())).build());
@@ -72,7 +71,6 @@ public class EditGameRulesScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		this.field_24297 = null;
-		this.ruleListWidget.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 	}
 
@@ -219,7 +217,7 @@ public class EditGameRulesScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	public class RuleListWidget extends ElementListWidget<EditGameRulesScreen.AbstractRuleWidget> {
 		public RuleListWidget(GameRules gameRules) {
-			super(EditGameRulesScreen.this.client, EditGameRulesScreen.this.width, EditGameRulesScreen.this.height, 43, EditGameRulesScreen.this.height - 32, 24);
+			super(EditGameRulesScreen.this.client, EditGameRulesScreen.this.width, EditGameRulesScreen.this.height - 75, 43, 24);
 			final Map<GameRules.Category, Map<GameRules.Key<?>, EditGameRulesScreen.AbstractRuleWidget>> map = Maps.<GameRules.Category, Map<GameRules.Key<?>, EditGameRulesScreen.AbstractRuleWidget>>newHashMap();
 			GameRules.accept(new GameRules.Visitor() {
 				@Override
@@ -275,8 +273,8 @@ public class EditGameRulesScreen extends Screen {
 		}
 
 		@Override
-		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-			super.render(context, mouseX, mouseY, delta);
+		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+			super.renderButton(context, mouseX, mouseY, delta);
 			EditGameRulesScreen.AbstractRuleWidget abstractRuleWidget = this.getHoveredEntry();
 			if (abstractRuleWidget != null && abstractRuleWidget.description != null) {
 				EditGameRulesScreen.this.setTooltip(abstractRuleWidget.description);

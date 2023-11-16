@@ -8,6 +8,8 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.score.ContextLootScoreProvider;
 import net.minecraft.loot.provider.score.LootScoreProvider;
 import net.minecraft.loot.provider.score.LootScoreProviderTypes;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 
@@ -41,8 +43,8 @@ public record ScoreLootNumberProvider(LootScoreProvider target, String score, fl
 
 	@Override
 	public float nextFloat(LootContext context) {
-		String string = this.target.getName(context);
-		if (string == null) {
+		ScoreHolder scoreHolder = this.target.getScoreHolder(context);
+		if (scoreHolder == null) {
 			return 0.0F;
 		} else {
 			Scoreboard scoreboard = context.getWorld().getScoreboard();
@@ -50,9 +52,8 @@ public record ScoreLootNumberProvider(LootScoreProvider target, String score, fl
 			if (scoreboardObjective == null) {
 				return 0.0F;
 			} else {
-				return !scoreboard.playerHasObjective(string, scoreboardObjective)
-					? 0.0F
-					: (float)scoreboard.getPlayerScore(string, scoreboardObjective).getScore() * this.scale;
+				ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, scoreboardObjective);
+				return readableScoreboardScore == null ? 0.0F : (float)readableScoreboardScore.getScore() * this.scale;
 			}
 		}
 	}

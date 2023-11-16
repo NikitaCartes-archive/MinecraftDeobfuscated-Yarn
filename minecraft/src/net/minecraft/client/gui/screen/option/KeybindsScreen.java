@@ -28,8 +28,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.controlsList = new ControlsListWidget(this, this.client);
-		this.addSelectableChild(this.controlsList);
+		this.controlsList = this.addDrawableChild(new ControlsListWidget(this, this.client));
 		this.resetAllButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("controls.resetAll"), button -> {
 			for (KeyBinding keyBinding : this.gameOptions.allKeys) {
 				keyBinding.setBoundKey(keyBinding.getDefaultKey());
@@ -77,7 +76,6 @@ public class KeybindsScreen extends GameOptionsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.controlsList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		boolean bl = false;
 

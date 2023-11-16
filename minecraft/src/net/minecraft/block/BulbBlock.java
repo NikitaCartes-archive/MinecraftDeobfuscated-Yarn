@@ -8,7 +8,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class BulbBlock extends Block {
@@ -28,21 +27,19 @@ public class BulbBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (oldState.getBlock() != state.getBlock()) {
-			world.scheduleBlockTick(pos, this, 1);
+		if (oldState.getBlock() != state.getBlock() && world instanceof ServerWorld serverWorld) {
+			this.update(state, serverWorld, pos);
 		}
 	}
 
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		boolean bl = world.isReceivingRedstonePower(pos);
-		if (bl != (Boolean)state.get(POWERED)) {
-			world.scheduleBlockTick(pos, this, 1);
+		if (world instanceof ServerWorld serverWorld) {
+			this.update(state, serverWorld, pos);
 		}
 	}
 
-	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void update(BlockState state, ServerWorld world, BlockPos pos) {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(POWERED)) {
 			BlockState blockState = state;

@@ -4,10 +4,11 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.scoreboard.ScoreHolder;
 
 public interface LootScoreProvider {
 	@Nullable
-	String getName(LootContext context);
+	ScoreHolder getScoreHolder(LootContext context);
 
 	LootScoreProviderType getType();
 

@@ -26,8 +26,7 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> entity) implements AbstractCriterion.Conditions {
 		public static final Codec<TameAnimalCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(TameAnimalCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TameAnimalCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(TameAnimalCriterion.Conditions::entity)
 					)
 					.apply(instance, TameAnimalCriterion.Conditions::new)
@@ -50,11 +49,6 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.entity, ".entity");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

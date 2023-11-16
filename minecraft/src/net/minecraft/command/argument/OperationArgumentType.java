@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.scoreboard.ScoreAccess;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -62,38 +62,29 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 	}
 
 	private static OperationArgumentType.IntOperator getIntOperator(String operator) throws CommandSyntaxException {
-		switch (operator) {
-			case "=":
-				return (a, b) -> b;
-			case "+=":
-				return (a, b) -> a + b;
-			case "-=":
-				return (a, b) -> a - b;
-			case "*=":
-				return (a, b) -> a * b;
-			case "/=":
-				return (a, b) -> {
-					if (b == 0) {
-						throw DIVISION_ZERO_EXCEPTION.create();
-					} else {
-						return MathHelper.floorDiv(a, b);
-					}
-				};
-			case "%=":
-				return (a, b) -> {
-					if (b == 0) {
-						throw DIVISION_ZERO_EXCEPTION.create();
-					} else {
-						return MathHelper.floorMod(a, b);
-					}
-				};
-			case "<":
-				return Math::min;
-			case ">":
-				return Math::max;
-			default:
-				throw INVALID_OPERATION.create();
-		}
+		return switch (operator) {
+			case "=" -> (a, b) -> b;
+			case "+=" -> Integer::sum;
+			case "-=" -> (a, b) -> a - b;
+			case "*=" -> (a, b) -> a * b;
+			case "/=" -> (a, b) -> {
+			if (b == 0) {
+				throw DIVISION_ZERO_EXCEPTION.create();
+			} else {
+				return MathHelper.floorDiv(a, b);
+			}
+		};
+			case "%=" -> (a, b) -> {
+			if (b == 0) {
+				throw DIVISION_ZERO_EXCEPTION.create();
+			} else {
+				return MathHelper.floorMod(a, b);
+			}
+		};
+			case "<" -> Math::min;
+			case ">" -> Math::max;
+			default -> throw INVALID_OPERATION.create();
+		};
 	}
 
 	@FunctionalInterface
@@ -101,13 +92,13 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 		int apply(int a, int b) throws CommandSyntaxException;
 
 		@Override
-		default void apply(ScoreboardPlayerScore scoreboardPlayerScore, ScoreboardPlayerScore scoreboardPlayerScore2) throws CommandSyntaxException {
-			scoreboardPlayerScore.setScore(this.apply(scoreboardPlayerScore.getScore(), scoreboardPlayerScore2.getScore()));
+		default void apply(ScoreAccess scoreAccess, ScoreAccess scoreAccess2) throws CommandSyntaxException {
+			scoreAccess.setScore(this.apply(scoreAccess.getScore(), scoreAccess2.getScore()));
 		}
 	}
 
 	@FunctionalInterface
 	public interface Operation {
-		void apply(ScoreboardPlayerScore a, ScoreboardPlayerScore b) throws CommandSyntaxException;
+		void apply(ScoreAccess a, ScoreAccess b) throws CommandSyntaxException;
 	}
 }

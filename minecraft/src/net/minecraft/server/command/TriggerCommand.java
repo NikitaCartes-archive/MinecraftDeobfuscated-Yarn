@@ -11,11 +11,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
-import net.minecraft.entity.Entity;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
+import net.minecraft.scoreboard.ScoreAccess;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -32,9 +33,7 @@ public class TriggerCommand {
 					CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
 						.suggests((context, builder) -> suggestObjectives(context.getSource(), builder))
 						.executes(
-							context -> executeSimple(
-									context.getSource(), getScore(context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))
-								)
+							context -> executeSimple(context.getSource(), context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))
 						)
 						.then(
 							CommandManager.literal("add")
@@ -43,7 +42,8 @@ public class TriggerCommand {
 										.executes(
 											context -> executeAdd(
 													context.getSource(),
-													getScore(context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
+													context.getSource().getPlayerOrThrow(),
+													ScoreboardObjectiveArgumentType.getObjective(context, "objective"),
 													IntegerArgumentType.getInteger(context, "value")
 												)
 										)
@@ -56,7 +56,8 @@ public class TriggerCommand {
 										.executes(
 											context -> executeSet(
 													context.getSource(),
-													getScore(context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
+													context.getSource().getPlayerOrThrow(),
+													ScoreboardObjectiveArgumentType.getObjective(context, "objective"),
 													IntegerArgumentType.getInteger(context, "value")
 												)
 										)
@@ -67,16 +68,15 @@ public class TriggerCommand {
 	}
 
 	public static CompletableFuture<Suggestions> suggestObjectives(ServerCommandSource source, SuggestionsBuilder builder) {
-		Entity entity = source.getEntity();
+		ScoreHolder scoreHolder = source.getEntity();
 		List<String> list = Lists.<String>newArrayList();
-		if (entity != null) {
+		if (scoreHolder != null) {
 			Scoreboard scoreboard = source.getServer().getScoreboard();
-			String string = entity.getEntityName();
 
 			for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-				if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER && scoreboard.playerHasObjective(string, scoreboardObjective)) {
-					ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
-					if (!scoreboardPlayerScore.isLocked()) {
+				if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER) {
+					ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, scoreboardObjective);
+					if (readableScoreboardScore != null && !readableScoreboardScore.isLocked()) {
 						list.add(scoreboardObjective.getName());
 					}
 				}
@@ -86,40 +86,38 @@ public class TriggerCommand {
 		return CommandSource.suggestMatching(list, builder);
 	}
 
-	private static int executeAdd(ServerCommandSource source, ScoreboardPlayerScore score, int value) {
-		score.incrementScore(value);
-		source.sendFeedback(() -> Text.translatable("commands.trigger.add.success", score.getObjective().toHoverableText(), value), true);
-		return score.getScore();
+	private static int executeAdd(ServerCommandSource source, ServerPlayerEntity player, ScoreboardObjective objective, int amount) throws CommandSyntaxException {
+		ScoreAccess scoreAccess = getScore(source.getServer().getScoreboard(), player, objective);
+		int i = scoreAccess.incrementScore(amount);
+		source.sendFeedback(() -> Text.translatable("commands.trigger.add.success", objective.toHoverableText(), amount), true);
+		return i;
 	}
 
-	private static int executeSet(ServerCommandSource source, ScoreboardPlayerScore score, int value) {
-		score.setScore(value);
-		source.sendFeedback(() -> Text.translatable("commands.trigger.set.success", score.getObjective().toHoverableText(), value), true);
+	private static int executeSet(ServerCommandSource source, ServerPlayerEntity player, ScoreboardObjective objective, int value) throws CommandSyntaxException {
+		ScoreAccess scoreAccess = getScore(source.getServer().getScoreboard(), player, objective);
+		scoreAccess.setScore(value);
+		source.sendFeedback(() -> Text.translatable("commands.trigger.set.success", objective.toHoverableText(), value), true);
 		return value;
 	}
 
-	private static int executeSimple(ServerCommandSource source, ScoreboardPlayerScore score) {
-		score.incrementScore(1);
-		source.sendFeedback(() -> Text.translatable("commands.trigger.simple.success", score.getObjective().toHoverableText()), true);
-		return score.getScore();
+	private static int executeSimple(ServerCommandSource source, ServerPlayerEntity player, ScoreboardObjective objective) throws CommandSyntaxException {
+		ScoreAccess scoreAccess = getScore(source.getServer().getScoreboard(), player, objective);
+		int i = scoreAccess.incrementScore(1);
+		source.sendFeedback(() -> Text.translatable("commands.trigger.simple.success", objective.toHoverableText()), true);
+		return i;
 	}
 
-	private static ScoreboardPlayerScore getScore(ServerPlayerEntity player, ScoreboardObjective objective) throws CommandSyntaxException {
+	private static ScoreAccess getScore(Scoreboard scoreboard, ScoreHolder scoreHolder, ScoreboardObjective objective) throws CommandSyntaxException {
 		if (objective.getCriterion() != ScoreboardCriterion.TRIGGER) {
 			throw FAILED_INVALID_EXCEPTION.create();
 		} else {
-			Scoreboard scoreboard = player.getScoreboard();
-			String string = player.getEntityName();
-			if (!scoreboard.playerHasObjective(string, objective)) {
-				throw FAILED_UNPRIMED_EXCEPTION.create();
+			ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, objective);
+			if (readableScoreboardScore != null && !readableScoreboardScore.isLocked()) {
+				ScoreAccess scoreAccess = scoreboard.getOrCreateScore(scoreHolder, objective);
+				scoreAccess.lock();
+				return scoreAccess;
 			} else {
-				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
-				if (scoreboardPlayerScore.isLocked()) {
-					throw FAILED_UNPRIMED_EXCEPTION.create();
-				} else {
-					scoreboardPlayerScore.setLocked(true);
-					return scoreboardPlayerScore;
-				}
+				throw FAILED_UNPRIMED_EXCEPTION.create();
 			}
 		}
 	}

@@ -24,7 +24,7 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 		public static final Codec<PlayerGeneratesContainerLootCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(PlayerGeneratesContainerLootCriterion.Conditions::getPlayerPredicate),
+							.forGetter(PlayerGeneratesContainerLootCriterion.Conditions::player),
 						Identifier.CODEC.fieldOf("loot_table").forGetter(PlayerGeneratesContainerLootCriterion.Conditions::lootTable)
 					)
 					.apply(instance, PlayerGeneratesContainerLootCriterion.Conditions::new)
@@ -36,11 +36,6 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 
 		public boolean test(Identifier lootTable) {
 			return this.lootTable.equals(lootTable);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

@@ -35,10 +35,9 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.layout.addHeader(new TextWidget(TITLE, this.textRenderer));
-		this.backupInfoList = new RealmsBackupInfoScreen.BackupInfoList(this.client);
-		this.addDrawableChild(this.backupInfoList);
+		this.backupInfoList = this.layout.addBody(new RealmsBackupInfoScreen.BackupInfoList(this.client));
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
-		this.layout.refreshPositions();
+		this.initTabNavigation();
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
@@ -46,8 +45,8 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	@Override
 	protected void initTabNavigation() {
+		this.backupInfoList.setDimensions(this.width, this.height - this.layout.getFooterHeight() - this.layout.getHeaderHeight());
 		this.layout.refreshPositions();
-		this.backupInfoList.updateSize(this.width, this.height, this.layout.getHeaderHeight(), this.height - this.layout.getFooterHeight());
 	}
 
 	@Override
@@ -86,9 +85,8 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 			super(
 				client,
 				RealmsBackupInfoScreen.this.width,
-				RealmsBackupInfoScreen.this.height,
+				RealmsBackupInfoScreen.this.height - RealmsBackupInfoScreen.this.layout.getFooterHeight() - RealmsBackupInfoScreen.this.layout.getHeaderHeight(),
 				RealmsBackupInfoScreen.this.layout.getHeaderHeight(),
-				RealmsBackupInfoScreen.this.height - RealmsBackupInfoScreen.this.layout.getFooterHeight(),
 				36
 			);
 			if (RealmsBackupInfoScreen.this.backup.changeList != null) {

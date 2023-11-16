@@ -28,7 +28,7 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 		implements AbstractCriterion.Conditions {
 		public static final Codec<TravelCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TravelCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TravelCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "start_position").forGetter(TravelCriterion.Conditions::startPosition),
 						Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(TravelCriterion.Conditions::distance)
 					)
@@ -59,11 +59,6 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 			return this.startPosition.isPresent() && !((LocationPredicate)this.startPosition.get()).test(world, pos.x, pos.y, pos.z)
 				? false
 				: !this.distance.isPresent() || ((DistancePredicate)this.distance.get()).test(pos.x, pos.y, pos.z, endPos.x, endPos.y, endPos.z);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

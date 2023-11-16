@@ -1,14 +1,12 @@
 package net.minecraft.client.gui.hud;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -40,9 +38,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
+import net.minecraft.scoreboard.ScoreboardEntry;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.scoreboard.number.NumberFormat;
+import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.MutableText;
@@ -107,6 +107,9 @@ public class InGameHud {
 	private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
 	private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
 	private static final Identifier POWDER_SNOW_OUTLINE = new Identifier("textures/misc/powder_snow_outline.png");
+	private static final Comparator<ScoreboardEntry> SCOREBOARD_ENTRY_COMPARATOR = Comparator.comparing(ScoreboardEntry::value)
+		.reversed()
+		.thenComparing(ScoreboardEntry::owner, String.CASE_INSENSITIVE_ORDER);
 	private static final Text DEMO_EXPIRED_MESSAGE = Text.translatable("demo.demoExpired");
 	private static final Text SAVING_LEVEL_TEXT = Text.translatable("menu.savingLevel");
 	private static final int WHITE = 16777215;
@@ -333,7 +336,7 @@ public class InGameHud {
 			this.subtitlesHud.render(context);
 			Scoreboard scoreboard = this.client.world.getScoreboard();
 			ScoreboardObjective scoreboardObjective = null;
-			Team team = scoreboard.getPlayerTeam(this.client.player.getEntityName());
+			Team team = scoreboard.getScoreHolderTeam(this.client.player.getNameForScoreboard());
 			if (team != null) {
 				ScoreboardDisplaySlot scoreboardDisplaySlot = ScoreboardDisplaySlot.fromFormatting(team.getColor());
 				if (scoreboardDisplaySlot != null) {
@@ -421,7 +424,7 @@ public class InGameHud {
 		}
 	}
 
-	private boolean shouldRenderSpectatorCrosshair(HitResult hitResult) {
+	private boolean shouldRenderSpectatorCrosshair(@Nullable HitResult hitResult) {
 		if (hitResult == null) {
 			return false;
 		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
@@ -642,59 +645,65 @@ public class InGameHud {
 
 	private void renderScoreboardSidebar(DrawContext context, ScoreboardObjective objective) {
 		Scoreboard scoreboard = objective.getScoreboard();
-		Collection<ScoreboardPlayerScore> collection = scoreboard.getAllPlayerScores(objective);
-		List<ScoreboardPlayerScore> list = (List<ScoreboardPlayerScore>)collection.stream()
-			.filter(score -> score.getPlayerName() != null && !score.getPlayerName().startsWith("#"))
-			.collect(Collectors.toList());
-		if (list.size() > 15) {
-			collection = Lists.<ScoreboardPlayerScore>newArrayList(Iterables.skip(list, collection.size() - 15));
-		} else {
-			collection = list;
+		NumberFormat numberFormat = objective.getNumberFormatOr(StyledNumberFormat.RED);
+
+		@Environment(EnvType.CLIENT)
+		record SidebarEntry(Text name, Text score, int scoreWidth) {
 		}
 
-		List<Pair<ScoreboardPlayerScore, Text>> list2 = Lists.<Pair<ScoreboardPlayerScore, Text>>newArrayListWithCapacity(collection.size());
+		SidebarEntry[] sidebarEntrys = (SidebarEntry[])scoreboard.getScoreboardEntries(objective)
+			.stream()
+			.filter(score -> !score.hidden())
+			.sorted(SCOREBOARD_ENTRY_COMPARATOR)
+			.limit(15L)
+			.map(scoreboardEntry -> {
+				Team team = scoreboard.getScoreHolderTeam(scoreboardEntry.owner());
+				Text textx = scoreboardEntry.name();
+				Text text2 = Team.decorateName(team, textx);
+				Text text3 = scoreboardEntry.formatted(numberFormat);
+				int ix = this.getTextRenderer().getWidth(text3);
+				return new SidebarEntry(text2, text3, ix);
+			})
+			.toArray(SidebarEntry[]::new);
 		Text text = objective.getDisplayName();
 		int i = this.getTextRenderer().getWidth(text);
 		int j = i;
 		int k = this.getTextRenderer().getWidth(": ");
 
-		for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
-			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			Text text2 = Team.decorateName(team, Text.literal(scoreboardPlayerScore.getPlayerName()));
-			list2.add(Pair.of(scoreboardPlayerScore, text2));
-			j = Math.max(j, this.getTextRenderer().getWidth(text2) + k + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
+		for (SidebarEntry sidebarEntry : sidebarEntrys) {
+			j = Math.max(j, this.getTextRenderer().getWidth(sidebarEntry.name) + (sidebarEntry.scoreWidth > 0 ? k + sidebarEntry.scoreWidth : 0));
 		}
 
-		int l = collection.size() * 9;
-		int m = this.scaledHeight / 2 + l / 3;
-		int n = 3;
-		int o = this.scaledWidth - j - 3;
-		int p = 0;
-		int q = this.client.options.getTextBackgroundColor(0.3F);
-		int r = this.client.options.getTextBackgroundColor(0.4F);
+		int l = j;
+		context.draw(() -> {
+			int kx = sidebarEntrys.length;
+			int lx = kx * 9;
+			int m = this.scaledHeight / 2 + lx / 3;
+			int n = 3;
+			int o = this.scaledWidth - l - 3;
+			int p = this.scaledWidth - 3 + 2;
+			int q = this.client.options.getTextBackgroundColor(0.3F);
+			int r = this.client.options.getTextBackgroundColor(0.4F);
+			int s = m - kx * 9;
+			context.fill(o - 2, s - 9 - 1, p, s - 1, r);
+			context.fill(o - 2, s - 1, p, m, q);
+			context.drawText(this.getTextRenderer(), text, o + l / 2 - i / 2, s - 9, -1, false);
 
-		for (Pair<ScoreboardPlayerScore, Text> pair : list2) {
-			p++;
-			ScoreboardPlayerScore scoreboardPlayerScore2 = pair.getFirst();
-			Text text3 = pair.getSecond();
-			String string = "" + Formatting.RED + scoreboardPlayerScore2.getScore();
-			int t = m - p * 9;
-			int u = this.scaledWidth - 3 + 2;
-			context.fill(o - 2, t, u, t + 9, q);
-			context.drawText(this.getTextRenderer(), text3, o, t, -1, false);
-			context.drawText(this.getTextRenderer(), string, u - this.getTextRenderer().getWidth(string), t, -1, false);
-			if (p == collection.size()) {
-				context.fill(o - 2, t - 9 - 1, u, t - 1, r);
-				context.fill(o - 2, t - 1, u, t, q);
-				context.drawText(this.getTextRenderer(), text, o + j / 2 - i / 2, t - 9, -1, false);
+			for (int t = 0; t < kx; t++) {
+				SidebarEntry sidebarEntryx = sidebarEntrys[t];
+				int u = m - (kx - t) * 9;
+				context.drawText(this.getTextRenderer(), sidebarEntryx.name, o, u, -1, false);
+				context.drawText(this.getTextRenderer(), sidebarEntryx.score, p - sidebarEntryx.scoreWidth, u, -1, false);
 			}
-		}
+		});
 	}
 
+	@Nullable
 	private PlayerEntity getCameraPlayer() {
-		return !(this.client.getCameraEntity() instanceof PlayerEntity) ? null : (PlayerEntity)this.client.getCameraEntity();
+		return this.client.getCameraEntity() instanceof PlayerEntity playerEntity ? playerEntity : null;
 	}
 
+	@Nullable
 	private LivingEntity getRiddenEntity() {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
@@ -711,7 +720,7 @@ public class InGameHud {
 		return null;
 	}
 
-	private int getHeartCount(LivingEntity entity) {
+	private int getHeartCount(@Nullable LivingEntity entity) {
 		if (entity != null && entity.isLiving()) {
 			float f = entity.getMaxHealth();
 			int i = (int)(f + 0.5F) / 2;
@@ -972,25 +981,24 @@ public class InGameHud {
 	}
 
 	private void updateVignetteDarkness(Entity entity) {
-		if (entity != null) {
-			BlockPos blockPos = BlockPos.ofFloored(entity.getX(), entity.getEyeY(), entity.getZ());
-			float f = LightmapTextureManager.getBrightness(entity.getWorld().getDimension(), entity.getWorld().getLightLevel(blockPos));
-			float g = MathHelper.clamp(1.0F - f, 0.0F, 1.0F);
-			this.vignetteDarkness = this.vignetteDarkness + (g - this.vignetteDarkness) * 0.01F;
-		}
+		BlockPos blockPos = BlockPos.ofFloored(entity.getX(), entity.getEyeY(), entity.getZ());
+		float f = LightmapTextureManager.getBrightness(entity.getWorld().getDimension(), entity.getWorld().getLightLevel(blockPos));
+		float g = MathHelper.clamp(1.0F - f, 0.0F, 1.0F);
+		this.vignetteDarkness = this.vignetteDarkness + (g - this.vignetteDarkness) * 0.01F;
 	}
 
-	private void renderVignetteOverlay(DrawContext context, Entity entity) {
+	private void renderVignetteOverlay(DrawContext context, @Nullable Entity entity) {
 		WorldBorder worldBorder = this.client.world.getWorldBorder();
-		float f = (float)worldBorder.getDistanceInsideBorder(entity);
-		double d = Math.min(
-			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getSizeLerpTarget() - worldBorder.getSize())
-		);
-		double e = Math.max((double)worldBorder.getWarningBlocks(), d);
-		if ((double)f < e) {
-			f = 1.0F - (float)((double)f / e);
-		} else {
-			f = 0.0F;
+		float f = 0.0F;
+		if (entity != null) {
+			float g = (float)worldBorder.getDistanceInsideBorder(entity);
+			double d = Math.min(
+				worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getSizeLerpTarget() - worldBorder.getSize())
+			);
+			double e = Math.max((double)worldBorder.getWarningBlocks(), d);
+			if ((double)g < e) {
+				f = 1.0F - (float)((double)g / e);
+			}
 		}
 
 		RenderSystem.disableDepthTest();

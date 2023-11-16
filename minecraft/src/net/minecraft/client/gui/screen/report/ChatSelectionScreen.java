@@ -66,8 +66,7 @@ public class ChatSelectionScreen extends Screen {
 	protected void init() {
 		this.listAdder = new MessagesListAdder(this.reporter, this::isSentByReportedPlayer);
 		this.contextMessage = MultilineText.create(this.textRenderer, CONTEXT_TEXT, this.width - 16);
-		this.selectionList = new ChatSelectionScreen.SelectionListWidget(this.client, (this.contextMessage.count() + 1) * 9);
-		this.addSelectableChild(this.selectionList);
+		this.selectionList = this.addDrawableChild(new ChatSelectionScreen.SelectionListWidget(this.client, (this.contextMessage.count() + 1) * 9));
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 - 155, this.height - 32, 150, 20).build());
 		this.doneButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.newReportConsumer.accept(this.report);
@@ -98,7 +97,6 @@ public class ChatSelectionScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.selectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		AbuseReportLimits abuseReportLimits = this.reporter.getSender().getLimits();
 		int i = this.report.getSelectedMessages().size();
@@ -131,7 +129,7 @@ public class ChatSelectionScreen extends Screen {
 		private ChatSelectionScreen.SelectionListWidget.SenderEntryPair lastSenderEntryPair;
 
 		public SelectionListWidget(MinecraftClient client, int contextMessagesHeight) {
-			super(client, ChatSelectionScreen.this.width, ChatSelectionScreen.this.height, 40, ChatSelectionScreen.this.height - 40 - contextMessagesHeight, 16);
+			super(client, ChatSelectionScreen.this.width, ChatSelectionScreen.this.height - contextMessagesHeight - 80, 40, 16);
 		}
 
 		@Override
@@ -189,7 +187,7 @@ public class ChatSelectionScreen extends Screen {
 		}
 
 		public int getDisplayedItemCount() {
-			return MathHelper.ceilDiv(this.bottom - this.top, this.itemHeight);
+			return MathHelper.ceilDiv(this.height, this.itemHeight);
 		}
 
 		@Override
@@ -235,7 +233,7 @@ public class ChatSelectionScreen extends Screen {
 		}
 
 		public int getContextMessageY() {
-			return this.bottom + 9;
+			return this.getBottom() + 9;
 		}
 
 		@Environment(EnvType.CLIENT)

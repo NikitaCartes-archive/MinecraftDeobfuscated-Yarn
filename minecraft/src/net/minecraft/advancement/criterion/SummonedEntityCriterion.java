@@ -26,8 +26,7 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> entity) implements AbstractCriterion.Conditions {
 		public static final Codec<SummonedEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(SummonedEntityCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(SummonedEntityCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(SummonedEntityCriterion.Conditions::entity)
 					)
 					.apply(instance, SummonedEntityCriterion.Conditions::new)
@@ -48,11 +47,6 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.entity, ".entity");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

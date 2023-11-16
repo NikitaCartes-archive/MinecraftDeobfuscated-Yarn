@@ -5994,15 +5994,15 @@ public class Blocks {
 	public static final Block OXIDIZED_COPPER_GRATE = register(
 		"oxidized_copper_grate", new OxidizableGrateBlock(Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(COPPER_GRATE).mapColor(MapColor.TEAL))
 	);
-	public static final Block WAXED_COPPER_GRATE = register("waxed_copper_grate", new TransparentBlock(AbstractBlock.Settings.copy(COPPER_GRATE)));
+	public static final Block WAXED_COPPER_GRATE = register("waxed_copper_grate", new GrateBlock(AbstractBlock.Settings.copy(COPPER_GRATE)));
 	public static final Block WAXED_EXPOSED_COPPER_GRATE = register(
-		"waxed_exposed_copper_grate", new TransparentBlock(AbstractBlock.Settings.copy(EXPOSED_COPPER_GRATE))
+		"waxed_exposed_copper_grate", new GrateBlock(AbstractBlock.Settings.copy(EXPOSED_COPPER_GRATE))
 	);
 	public static final Block WAXED_WEATHERED_COPPER_GRATE = register(
-		"waxed_weathered_copper_grate", new TransparentBlock(AbstractBlock.Settings.copy(WEATHERED_COPPER_GRATE))
+		"waxed_weathered_copper_grate", new GrateBlock(AbstractBlock.Settings.copy(WEATHERED_COPPER_GRATE))
 	);
 	public static final Block WAXED_OXIDIZED_COPPER_GRATE = register(
-		"waxed_oxidized_copper_grate", new TransparentBlock(AbstractBlock.Settings.copy(OXIDIZED_COPPER_GRATE))
+		"waxed_oxidized_copper_grate", new GrateBlock(AbstractBlock.Settings.copy(OXIDIZED_COPPER_GRATE))
 	);
 	public static final Block COPPER_BULB = register(
 		"copper_bulb",

@@ -281,7 +281,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 					vexEntity.setBounds(blockPos);
 					vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
 					if (team != null) {
-						serverWorld.getScoreboard().addPlayerToTeam(vexEntity.getEntityName(), team);
+						serverWorld.getScoreboard().addScoreHolderToTeam(vexEntity.getNameForScoreboard(), team);
 					}
 
 					serverWorld.spawnEntityAndPassengers(vexEntity);

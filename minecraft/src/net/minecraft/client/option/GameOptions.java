@@ -267,7 +267,13 @@ public class GameOptions {
 		}
 	);
 	private final SimpleOption<Boolean> narratorHotkey = SimpleOption.ofBoolean(
-		"options.accessibility.narrator_hotkey", SimpleOption.constantTooltip(Text.translatable("options.accessibility.narrator_hotkey.tooltip")), true
+		"options.accessibility.narrator_hotkey",
+		SimpleOption.constantTooltip(
+			MinecraftClient.IS_SYSTEM_MAC
+				? Text.translatable("options.accessibility.narrator_hotkey.mac.tooltip")
+				: Text.translatable("options.accessibility.narrator_hotkey.tooltip")
+		),
+		true
 	);
 	@Nullable
 	public String fullscreenResolution;

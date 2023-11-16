@@ -92,21 +92,21 @@ public class ExperimentalWarningScreen extends Screen {
 			this.addDrawableChild(
 				ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20).build()
 			);
-			this.packList = new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this.client, ExperimentalWarningScreen.this.enabledProfiles);
-			this.addSelectableChild(this.packList);
+			this.packList = this.addDrawableChild(
+				new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this.client, ExperimentalWarningScreen.this.enabledProfiles)
+			);
 		}
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 			super.render(context, mouseX, mouseY, delta);
-			this.packList.render(context, mouseX, mouseY, delta);
 			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		}
 
 		@Environment(EnvType.CLIENT)
 		class PackListWidget extends AlwaysSelectedEntryListWidget<ExperimentalWarningScreen.DetailsScreen.PackListWidgetEntry> {
 			public PackListWidget(MinecraftClient client, Collection<ResourcePackProfile> enabledProfiles) {
-				super(client, DetailsScreen.this.width, DetailsScreen.this.height, 32, DetailsScreen.this.height - 64, (9 + 2) * 3);
+				super(client, DetailsScreen.this.width, DetailsScreen.this.height - 96, 32, (9 + 2) * 3);
 
 				for (ResourcePackProfile resourcePackProfile : enabledProfiles) {
 					String string = FeatureFlags.printMissingFlags(FeatureFlags.VANILLA_FEATURES, resourcePackProfile.getRequestedFeatures());

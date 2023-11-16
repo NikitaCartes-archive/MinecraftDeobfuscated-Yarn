@@ -30,7 +30,7 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		public static final Codec<PlayerInteractedWithEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(PlayerInteractedWithEntityCriterion.Conditions::getPlayerPredicate),
+							.forGetter(PlayerInteractedWithEntityCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(PlayerInteractedWithEntityCriterion.Conditions::item),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity")
 							.forGetter(PlayerInteractedWithEntityCriterion.Conditions::entity)
@@ -58,11 +58,6 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.entity, ".entity");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

@@ -1,6 +1,8 @@
 package net.minecraft.test;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Either;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +38,10 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.command.FillBiomeCommand;
 import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -53,6 +58,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.Biome;
 
 public class TestContext {
 	private final GameTestState test;
@@ -725,6 +731,25 @@ public class TestContext {
 		serverWorld.getBlockState(blockPos).randomTick(serverWorld, blockPos, serverWorld.random);
 	}
 
+	public void forceTickIceAndSnow(BlockPos pos) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
+		ServerWorld serverWorld = this.getWorld();
+		serverWorld.tickIceAndSnow(blockPos);
+	}
+
+	public void forceTickIceAndSnow() {
+		Box box = this.getRelativeTestBox();
+		int i = (int)Math.floor(box.maxX);
+		int j = (int)Math.floor(box.maxZ);
+		int k = (int)Math.floor(box.maxY);
+
+		for (int l = (int)Math.floor(box.minX); l < i; l++) {
+			for (int m = (int)Math.floor(box.minZ); m < j; m++) {
+				this.forceTickIceAndSnow(new BlockPos(l, k, m));
+			}
+		}
+	}
+
 	public int getRelativeTopY(Heightmap.Type heightmap, int x, int z) {
 		BlockPos blockPos = this.getAbsolutePos(new BlockPos(x, 0, z));
 		return this.getRelativePos(this.getWorld().getTopPosition(heightmap, blockPos)).getY();
@@ -816,5 +841,17 @@ public class TestContext {
 		BlockHitResult blockHitResult = new BlockHitResult(Vec3d.ofCenter(blockPos), direction, blockPos, false);
 		ItemUsageContext itemUsageContext = new ItemUsageContext(player, Hand.MAIN_HAND, blockHitResult);
 		stack.useOnBlock(itemUsageContext);
+	}
+
+	public void setBiome(RegistryKey<Biome> biome) {
+		Box box = this.getTestBox();
+		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ);
+		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX, box.maxY, box.maxZ);
+		Either<Integer, CommandSyntaxException> either = FillBiomeCommand.fillBiome(
+			this.getWorld(), blockPos, blockPos2, this.getWorld().getRegistryManager().get(RegistryKeys.BIOME).entryOf(biome)
+		);
+		if (either.right().isPresent()) {
+			this.throwGameTestException("Failed to set biome for test");
+		}
 	}
 }

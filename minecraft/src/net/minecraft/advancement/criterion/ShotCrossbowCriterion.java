@@ -25,8 +25,7 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<ItemPredicate> item) implements AbstractCriterion.Conditions {
 		public static final Codec<ShotCrossbowCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(ShotCrossbowCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ShotCrossbowCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(ShotCrossbowCriterion.Conditions::item)
 					)
 					.apply(instance, ShotCrossbowCriterion.Conditions::new)
@@ -43,11 +42,6 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 
 		public boolean matches(ItemStack stack) {
 			return this.item.isEmpty() || ((ItemPredicate)this.item.get()).test(stack);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

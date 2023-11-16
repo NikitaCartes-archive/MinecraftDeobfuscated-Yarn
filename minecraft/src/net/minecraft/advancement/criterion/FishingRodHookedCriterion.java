@@ -36,8 +36,7 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 	) implements AbstractCriterion.Conditions {
 		public static final Codec<FishingRodHookedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(FishingRodHookedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(FishingRodHookedCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "rod").forGetter(FishingRodHookedCriterion.Conditions::rod),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(FishingRodHookedCriterion.Conditions::entity),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(FishingRodHookedCriterion.Conditions::item)
@@ -85,11 +84,6 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.entity, ".entity");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

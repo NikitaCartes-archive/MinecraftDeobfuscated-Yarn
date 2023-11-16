@@ -88,8 +88,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
-		this.templateList = new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList(this.templateList.getValues());
-		this.addDrawableChild(this.templateList);
+		this.templateList = this.layout.addBody(new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList(this.templateList.getValues()));
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(10));
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
 		this.trailerButton = directionalLayoutWidget.add(ButtonWidget.builder(TRAILER_TEXT, button -> this.onTrailer()).width(100).build());
@@ -105,7 +104,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 	@Override
 	protected void initTabNavigation() {
-		this.templateList.updateSize(this.width, this.height, this.getTemplateListTop(), this.height - this.layout.getFooterHeight());
+		this.templateList.setDimensions(this.width, this.height - this.layout.getFooterHeight() - this.getTemplateListTop());
 		this.layout.refreshPositions();
 	}
 
@@ -254,9 +253,8 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		public WorldTemplateObjectSelectionList(Iterable<WorldTemplate> templates) {
 			super(
 				RealmsSelectWorldTemplateScreen.this.width,
-				RealmsSelectWorldTemplateScreen.this.height,
+				RealmsSelectWorldTemplateScreen.this.height - 36 - RealmsSelectWorldTemplateScreen.this.getTemplateListTop(),
 				RealmsSelectWorldTemplateScreen.this.getTemplateListTop(),
-				RealmsSelectWorldTemplateScreen.this.height - 36,
 				46
 			);
 			templates.forEach(this::addEntry);

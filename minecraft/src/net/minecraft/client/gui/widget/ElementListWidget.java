@@ -20,8 +20,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> extends EntryListWidget<E> {
-	public ElementListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-		super(minecraftClient, i, j, k, l, m);
+	public ElementListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l) {
+		super(minecraftClient, i, j, k, l);
 	}
 
 	@Nullable
@@ -93,7 +93,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 		E entry = this.getHoveredEntry();
 		if (entry != null) {
 			entry.appendNarrations(builder.nextMessage());

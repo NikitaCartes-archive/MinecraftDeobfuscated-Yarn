@@ -48,7 +48,7 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> location) implements AbstractCriterion.Conditions {
 		public static final Codec<ItemCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ItemCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ItemCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(LootContextPredicate.CODEC, "location").forGetter(ItemCriterion.Conditions::location)
 					)
 					.apply(instance, ItemCriterion.Conditions::new)
@@ -89,11 +89,6 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			this.location.ifPresent(location -> validator.validate(location, LootContextTypes.ADVANCEMENT_LOCATION, ".location"));
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

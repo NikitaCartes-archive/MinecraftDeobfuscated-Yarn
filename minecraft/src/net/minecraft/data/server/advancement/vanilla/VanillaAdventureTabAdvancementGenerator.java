@@ -79,6 +79,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	private static final int OVERWORLD_BEDROCK_LAYER_HEIGHT = 5;
 	private static final EntityType<?>[] MONSTERS = new EntityType[]{
 		EntityType.BLAZE,
+		EntityType.BREEZE,
 		EntityType.CAVE_SPIDER,
 		EntityType.CREEPER,
 		EntityType.DROWNED,

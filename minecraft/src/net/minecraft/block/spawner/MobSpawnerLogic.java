@@ -14,8 +14,10 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.BlockPos;
@@ -125,10 +127,11 @@ public abstract class MobSpawnerLogic {
 							return;
 						}
 
-						int k = world.getNonSpectatingEntities(
-								entity.getClass(),
+						int k = world.getEntitiesByType(
+								TypeFilter.equals(entity.getClass()),
 								new Box((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), (double)(pos.getX() + 1), (double)(pos.getY() + 1), (double)(pos.getZ() + 1))
-									.expand((double)this.spawnRange)
+									.expand((double)this.spawnRange),
+								EntityPredicates.EXCEPT_SPECTATOR
 							)
 							.size();
 						if (k >= this.maxNearbyEntities) {

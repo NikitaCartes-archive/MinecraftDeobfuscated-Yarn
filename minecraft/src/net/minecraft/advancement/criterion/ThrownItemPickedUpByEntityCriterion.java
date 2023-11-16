@@ -31,7 +31,7 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 		public static final Codec<ThrownItemPickedUpByEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::getPlayerPredicate),
+							.forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::item),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity")
 							.forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::entity)
@@ -61,11 +61,6 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.entity, ".entity");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

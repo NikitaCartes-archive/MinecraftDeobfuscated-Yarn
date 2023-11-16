@@ -1183,13 +1183,21 @@ public class GameRenderer implements AutoCloseable {
 		boolean bl = this.shouldRenderBlockOutline();
 		this.client.getProfiler().swap("camera");
 		Camera camera = this.camera;
+		Entity entity = (Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity());
+		camera.update(
+			this.client.world,
+			entity,
+			!this.client.options.getPerspective().isFirstPerson(),
+			this.client.options.getPerspective().isFrontView(),
+			this.client.world.getTickManager().shouldSkipTick(entity) ? 1.0F : tickDelta
+		);
 		this.viewDistance = (float)(this.client.options.getClampedViewDistance() * 16);
 		MatrixStack matrixStack = new MatrixStack();
 		double d = this.getFov(camera, tickDelta, true);
 		matrixStack.multiplyPositionMatrix(this.getBasicProjectionMatrix(d));
-		this.tiltViewWhenHurt(matrixStack, tickDelta);
+		this.tiltViewWhenHurt(matrixStack, camera.getLastTickDelta());
 		if (this.client.options.getBobView().getValue()) {
-			this.bobView(matrixStack, tickDelta);
+			this.bobView(matrixStack, camera.getLastTickDelta());
 		}
 
 		float f = this.client.options.getDistortionEffectScale().getValue().floatValue();
@@ -1207,14 +1215,6 @@ public class GameRenderer implements AutoCloseable {
 
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 		this.loadProjectionMatrix(matrix4f);
-		Entity entity = (Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity());
-		camera.update(
-			this.client.world,
-			entity,
-			!this.client.options.getPerspective().isFirstPerson(),
-			this.client.options.getPerspective().isFrontView(),
-			this.client.world.getTickManager().shouldSkipTick(entity) ? 1.0F : tickDelta
-		);
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
 		Matrix3f matrix3f = new Matrix3f(matrices.peek().getNormalMatrix()).invert();

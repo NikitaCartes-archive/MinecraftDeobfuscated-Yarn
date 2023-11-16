@@ -17,8 +17,8 @@ import net.minecraft.client.option.SimpleOption;
 
 @Environment(EnvType.CLIENT)
 public class OptionListWidget extends ElementListWidget<OptionListWidget.WidgetEntry> {
-	public OptionListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-		super(minecraftClient, i, j, k, l, m);
+	public OptionListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l) {
+		super(minecraftClient, i, j, k, l);
 		this.centerListVertically = false;
 	}
 

@@ -5,15 +5,11 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.resource.featuretoggle.FeatureFlag;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Util;
 
 public class BlockFamily {
 	private final Block baseBlock;
 	final Map<BlockFamily.Variant, Block> variants = Maps.<BlockFamily.Variant, Block>newHashMap();
-	FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 	boolean generateModels = true;
 	boolean generateRecipes = true;
 	@Nullable
@@ -41,8 +37,8 @@ public class BlockFamily {
 		return this.generateModels;
 	}
 
-	public boolean shouldGenerateRecipes(FeatureSet enabledFeatures) {
-		return this.generateRecipes && this.requiredFeatures.isSubsetOf(enabledFeatures);
+	public boolean shouldGenerateRecipes() {
+		return this.generateRecipes;
 	}
 
 	public Optional<String> getGroup() {
@@ -157,11 +153,6 @@ public class BlockFamily {
 
 		public BlockFamily.Builder noGenerateRecipes() {
 			this.family.generateRecipes = false;
-			return this;
-		}
-
-		public BlockFamily.Builder requires(FeatureFlag... features) {
-			this.family.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
 			return this;
 		}
 

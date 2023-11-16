@@ -15,8 +15,8 @@ import net.minecraft.text.Text;
 public abstract class AlwaysSelectedEntryListWidget<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends EntryListWidget<E> {
 	private static final Text SELECTION_USAGE_TEXT = Text.translatable("narration.selection.usage");
 
-	public AlwaysSelectedEntryListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-		super(minecraftClient, i, j, k, l, m);
+	public AlwaysSelectedEntryListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l) {
+		super(minecraftClient, i, j, k, l);
 	}
 
 	@Nullable
@@ -40,7 +40,7 @@ public abstract class AlwaysSelectedEntryListWidget<E extends AlwaysSelectedEntr
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 		E entry = this.getHoveredEntry();
 		if (entry != null) {
 			this.appendNarrations(builder.nextMessage(), entry);

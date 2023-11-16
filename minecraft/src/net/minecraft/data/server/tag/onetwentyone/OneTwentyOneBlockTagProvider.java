@@ -136,5 +136,7 @@ public class OneTwentyOneBlockTagProvider extends ValueLookupTagProvider<Block> 
 				Blocks.WAXED_WEATHERED_COPPER_DOOR,
 				Blocks.WAXED_OXIDIZED_COPPER_DOOR
 			);
+		this.getOrCreateTagBuilder(BlockTags.FEATURES_CANNOT_REPLACE).add(Blocks.TRIAL_SPAWNER);
+		this.getOrCreateTagBuilder(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE).addTag(BlockTags.FEATURES_CANNOT_REPLACE);
 	}
 }

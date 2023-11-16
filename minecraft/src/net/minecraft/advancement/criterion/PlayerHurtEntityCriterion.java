@@ -29,8 +29,7 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 		implements AbstractCriterion.Conditions {
 		public static final Codec<PlayerHurtEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(PlayerHurtEntityCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(PlayerHurtEntityCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(DamagePredicate.CODEC, "damage").forGetter(PlayerHurtEntityCriterion.Conditions::damage),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(PlayerHurtEntityCriterion.Conditions::entity)
 					)
@@ -76,11 +75,6 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.entity, ".entity");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

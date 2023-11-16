@@ -52,8 +52,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		implements AbstractCriterion.Conditions {
 		public static final Codec<InventoryChangedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(InventoryChangedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(InventoryChangedCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(InventoryChangedCriterion.Conditions.Slots.CODEC, "slots", InventoryChangedCriterion.Conditions.Slots.ANY)
 							.forGetter(InventoryChangedCriterion.Conditions::slots),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC.listOf(), "items", List.of()).forGetter(InventoryChangedCriterion.Conditions::items)
@@ -113,11 +112,6 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 			} else {
 				return !stack.isEmpty() && ((ItemPredicate)this.items.get(0)).test(stack);
 			}
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 
 		public static record Slots(NumberRange.IntRange occupied, NumberRange.IntRange full, NumberRange.IntRange empty) {

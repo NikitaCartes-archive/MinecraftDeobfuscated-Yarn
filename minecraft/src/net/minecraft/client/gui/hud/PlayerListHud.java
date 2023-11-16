@@ -3,6 +3,7 @@ package net.minecraft.client.gui.hud;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,14 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.scoreboard.number.NumberFormat;
+import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -109,16 +114,33 @@ public class PlayerListHud {
 
 	public void render(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
 		List<PlayerListEntry> list = this.collectPlayerEntries();
-		int i = 0;
+		List<PlayerListHud.ScoreDisplayEntry> list2 = new ArrayList(list.size());
+		int i = this.client.textRenderer.getWidth(" ");
 		int j = 0;
+		int k = 0;
 
 		for (PlayerListEntry playerListEntry : list) {
-			int k = this.client.textRenderer.getWidth(this.getPlayerName(playerListEntry));
-			i = Math.max(i, k);
-			if (objective != null && objective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
-				k = this.client.textRenderer.getWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), objective).getScore());
-				j = Math.max(j, k);
+			Text text = this.getPlayerName(playerListEntry);
+			j = Math.max(j, this.client.textRenderer.getWidth(text));
+			int l = 0;
+			Text text2 = null;
+			int m = 0;
+			if (objective != null) {
+				ScoreHolder scoreHolder = ScoreHolder.fromProfile(playerListEntry.getProfile());
+				ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, objective);
+				if (readableScoreboardScore != null) {
+					l = readableScoreboardScore.getScore();
+				}
+
+				if (objective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
+					NumberFormat numberFormat = objective.getNumberFormatOr(StyledNumberFormat.YELLOW);
+					text2 = ReadableScoreboardScore.getFormattedScore(readableScoreboardScore, numberFormat);
+					m = this.client.textRenderer.getWidth(text2);
+					k = Math.max(k, m > 0 ? i + m : 0);
+				}
 			}
+
+			list2.add(new PlayerListHud.ScoreDisplayEntry(text, l, text2, m));
 		}
 
 		if (!this.hearts.isEmpty()) {
@@ -126,104 +148,103 @@ public class PlayerListHud {
 			this.hearts.keySet().removeIf(uuid -> !set.contains(uuid));
 		}
 
-		int l = list.size();
-		int m = l;
+		int n = list.size();
+		int o = n;
 
-		int k;
-		for (k = 1; m > 20; m = (l + k - 1) / k) {
-			k++;
+		int p;
+		for (p = 1; o > 20; o = (n + p - 1) / p) {
+			p++;
 		}
 
 		boolean bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getConnection().isEncrypted();
-		int n;
+		int q;
 		if (objective != null) {
 			if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
-				n = 90;
+				q = 90;
 			} else {
-				n = j;
+				q = k;
 			}
 		} else {
-			n = 0;
+			q = 0;
 		}
 
-		int o = Math.min(k * ((bl ? 9 : 0) + i + n + 13), scaledWindowWidth - 50) / k;
-		int p = scaledWindowWidth / 2 - (o * k + (k - 1) * 5) / 2;
-		int q = 10;
-		int r = o * k + (k - 1) * 5;
-		List<OrderedText> list2 = null;
+		int m = Math.min(p * ((bl ? 9 : 0) + j + q + 13), scaledWindowWidth - 50) / p;
+		int r = scaledWindowWidth / 2 - (m * p + (p - 1) * 5) / 2;
+		int s = 10;
+		int t = m * p + (p - 1) * 5;
+		List<OrderedText> list3 = null;
 		if (this.header != null) {
-			list2 = this.client.textRenderer.wrapLines(this.header, scaledWindowWidth - 50);
+			list3 = this.client.textRenderer.wrapLines(this.header, scaledWindowWidth - 50);
 
-			for (OrderedText orderedText : list2) {
-				r = Math.max(r, this.client.textRenderer.getWidth(orderedText));
+			for (OrderedText orderedText : list3) {
+				t = Math.max(t, this.client.textRenderer.getWidth(orderedText));
 			}
 		}
 
-		List<OrderedText> list3 = null;
+		List<OrderedText> list4 = null;
 		if (this.footer != null) {
-			list3 = this.client.textRenderer.wrapLines(this.footer, scaledWindowWidth - 50);
+			list4 = this.client.textRenderer.wrapLines(this.footer, scaledWindowWidth - 50);
+
+			for (OrderedText orderedText2 : list4) {
+				t = Math.max(t, this.client.textRenderer.getWidth(orderedText2));
+			}
+		}
+
+		if (list3 != null) {
+			context.fill(scaledWindowWidth / 2 - t / 2 - 1, s - 1, scaledWindowWidth / 2 + t / 2 + 1, s + list3.size() * 9, Integer.MIN_VALUE);
 
 			for (OrderedText orderedText2 : list3) {
-				r = Math.max(r, this.client.textRenderer.getWidth(orderedText2));
-			}
-		}
-
-		if (list2 != null) {
-			context.fill(scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + list2.size() * 9, Integer.MIN_VALUE);
-
-			for (OrderedText orderedText2 : list2) {
-				int s = this.client.textRenderer.getWidth(orderedText2);
-				context.drawTextWithShadow(this.client.textRenderer, orderedText2, scaledWindowWidth / 2 - s / 2, q, -1);
-				q += 9;
+				int u = this.client.textRenderer.getWidth(orderedText2);
+				context.drawTextWithShadow(this.client.textRenderer, orderedText2, scaledWindowWidth / 2 - u / 2, s, -1);
+				s += 9;
 			}
 
-			q++;
+			s++;
 		}
 
-		context.fill(scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + m * 9, Integer.MIN_VALUE);
-		int t = this.client.options.getTextBackgroundColor(553648127);
+		context.fill(scaledWindowWidth / 2 - t / 2 - 1, s - 1, scaledWindowWidth / 2 + t / 2 + 1, s + o * 9, Integer.MIN_VALUE);
+		int v = this.client.options.getTextBackgroundColor(553648127);
 
-		for (int u = 0; u < l; u++) {
-			int s = u / m;
-			int v = u % m;
-			int w = p + s * o + s * 5;
-			int x = q + v * 9;
-			context.fill(w, x, w + o, x + 8, t);
+		for (int w = 0; w < n; w++) {
+			int u = w / o;
+			int x = w % o;
+			int y = r + u * m + u * 5;
+			int z = s + x * 9;
+			context.fill(y, z, y + m, z + 8, v);
 			RenderSystem.enableBlend();
-			if (u < list.size()) {
-				PlayerListEntry playerListEntry2 = (PlayerListEntry)list.get(u);
+			if (w < list.size()) {
+				PlayerListEntry playerListEntry2 = (PlayerListEntry)list.get(w);
+				PlayerListHud.ScoreDisplayEntry scoreDisplayEntry = (PlayerListHud.ScoreDisplayEntry)list2.get(w);
 				GameProfile gameProfile = playerListEntry2.getProfile();
 				if (bl) {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
 					boolean bl2 = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
 					boolean bl3 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
-					PlayerSkinDrawer.draw(context, playerListEntry2.getSkinTextures().texture(), w, x, 8, bl3, bl2);
-					w += 9;
+					PlayerSkinDrawer.draw(context, playerListEntry2.getSkinTextures().texture(), y, z, 8, bl3, bl2);
+					y += 9;
 				}
 
-				context.drawTextWithShadow(
-					this.client.textRenderer, this.getPlayerName(playerListEntry2), w, x, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1
-				);
+				context.drawTextWithShadow(this.client.textRenderer, scoreDisplayEntry.name, y, z, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1);
 				if (objective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR) {
-					int y = w + i + 1;
-					int z = y + n;
-					if (z - y > 5) {
-						this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, gameProfile.getId(), context);
+					int aa = y + j + 1;
+					int ab = aa + q;
+					if (ab - aa > 5) {
+						this.renderScoreboardObjective(objective, z, scoreDisplayEntry, aa, ab, gameProfile.getId(), context);
 					}
 				}
 
-				this.renderLatencyIcon(context, o, w - (bl ? 9 : 0), x, playerListEntry2);
+				this.renderLatencyIcon(context, m, y - (bl ? 9 : 0), z, playerListEntry2);
 			}
 		}
 
-		if (list3 != null) {
-			q += m * 9 + 1;
-			context.fill(scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + list3.size() * 9, Integer.MIN_VALUE);
+		if (list4 != null) {
+			s += o * 9 + 1;
+			context.fill(scaledWindowWidth / 2 - t / 2 - 1, s - 1, scaledWindowWidth / 2 + t / 2 + 1, s + list4.size() * 9, Integer.MIN_VALUE);
 
-			for (OrderedText orderedText3 : list3) {
-				int v = this.client.textRenderer.getWidth(orderedText3);
-				context.drawTextWithShadow(this.client.textRenderer, orderedText3, scaledWindowWidth / 2 - v / 2, q, -1);
-				q += 9;
+			for (OrderedText orderedText3 : list4) {
+				int x = this.client.textRenderer.getWidth(orderedText3);
+				context.drawTextWithShadow(this.client.textRenderer, orderedText3, scaledWindowWidth / 2 - x / 2, s, -1);
+				s += 9;
 			}
 		}
 	}
@@ -250,13 +271,13 @@ public class PlayerListHud {
 		context.getMatrices().pop();
 	}
 
-	private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int left, int right, UUID uuid, DrawContext context) {
-		int i = objective.getScoreboard().getPlayerScore(player, objective).getScore();
+	private void renderScoreboardObjective(
+		ScoreboardObjective objective, int y, PlayerListHud.ScoreDisplayEntry scoreDisplayEntry, int left, int right, UUID uuid, DrawContext context
+	) {
 		if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
-			this.renderHearts(y, left, right, uuid, context, i);
-		} else {
-			String string = "" + Formatting.YELLOW + i;
-			context.drawTextWithShadow(this.client.textRenderer, string, right - this.client.textRenderer.getWidth(string), y, 16777215);
+			this.renderHearts(y, left, right, uuid, context, scoreDisplayEntry.score);
+		} else if (scoreDisplayEntry.formattedScore != null) {
+			context.drawTextWithShadow(this.client.textRenderer, scoreDisplayEntry.formattedScore, right - scoreDisplayEntry.scoreWidth, y, 16777215);
 		}
 	}
 
@@ -277,7 +298,7 @@ public class PlayerListHud {
 				if (right - this.client.textRenderer.getWidth(text) >= left) {
 					text2 = text;
 				} else {
-					text2 = Text.literal(g + "");
+					text2 = Text.literal(Float.toString(g));
 				}
 
 				context.drawTextWithShadow(this.client.textRenderer, text2, (right + left - this.client.textRenderer.getWidth(text2)) / 2, y, l);
@@ -360,5 +381,9 @@ public class PlayerListHud {
 		public boolean useHighlighted(long currentTick) {
 			return this.highlightEndTick > currentTick && (this.highlightEndTick - currentTick) % 6L >= 3L;
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static record ScoreDisplayEntry(Text name, int score, @Nullable Text formattedScore, int scoreWidth) {
 	}
 }

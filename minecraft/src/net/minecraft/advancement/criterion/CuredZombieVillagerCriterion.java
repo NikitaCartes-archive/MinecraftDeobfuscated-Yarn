@@ -29,8 +29,7 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 		implements AbstractCriterion.Conditions {
 		public static final Codec<CuredZombieVillagerCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(CuredZombieVillagerCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(CuredZombieVillagerCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "zombie").forGetter(CuredZombieVillagerCriterion.Conditions::zombie),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "villager")
 							.forGetter(CuredZombieVillagerCriterion.Conditions::villager)
@@ -53,11 +52,6 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.zombie, ".zombie");
 			validator.validateEntityPredicate(this.villager, ".villager");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

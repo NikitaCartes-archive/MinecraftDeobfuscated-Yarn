@@ -225,7 +225,8 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreResetS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
@@ -267,10 +268,11 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.ScoreAccess;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
@@ -1959,7 +1961,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		Scoreboard scoreboard = this.world.getScoreboard();
 		String string = packet.getName();
 		if (packet.getMode() == 0) {
-			scoreboard.addObjective(string, ScoreboardCriterion.DUMMY, packet.getDisplayName(), packet.getType());
+			scoreboard.addObjective(string, ScoreboardCriterion.DUMMY, packet.getDisplayName(), packet.getType(), false, packet.getNumberFormat());
 		} else {
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
 			if (scoreboardObjective != null) {
@@ -1968,28 +1970,44 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				} else if (packet.getMode() == ScoreboardObjectiveUpdateS2CPacket.UPDATE_MODE) {
 					scoreboardObjective.setRenderType(packet.getType());
 					scoreboardObjective.setDisplayName(packet.getDisplayName());
+					scoreboardObjective.setNumberFormat(packet.getNumberFormat());
 				}
 			}
 		}
 	}
 
 	@Override
-	public void onScoreboardPlayerUpdate(ScoreboardPlayerUpdateS2CPacket packet) {
+	public void onScoreboardScoreUpdate(ScoreboardScoreUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
-		String string = packet.getObjectiveName();
-		switch (packet.getUpdateMode()) {
-			case CHANGE:
-				ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
-				if (scoreboardObjective != null) {
-					ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(packet.getPlayerName(), scoreboardObjective);
-					scoreboardPlayerScore.setScore(packet.getScore());
-				} else {
-					LOGGER.warn("Received packet for unknown scoreboard: {}", string);
-				}
-				break;
-			case REMOVE:
-				scoreboard.resetPlayerScore(packet.getPlayerName(), scoreboard.getNullableObjective(string));
+		String string = packet.objectiveName();
+		ScoreHolder scoreHolder = ScoreHolder.fromName(packet.scoreHolderName());
+		ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
+		if (scoreboardObjective != null) {
+			ScoreAccess scoreAccess = scoreboard.getOrCreateScore(scoreHolder, scoreboardObjective, true);
+			scoreAccess.setScore(packet.score());
+			scoreAccess.setDisplayText(packet.display());
+			scoreAccess.setNumberFormat(packet.numberFormat());
+		} else {
+			LOGGER.warn("Received packet for unknown scoreboard objective: {}", string);
+		}
+	}
+
+	@Override
+	public void onScoreboardScoreReset(ScoreboardScoreResetS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		Scoreboard scoreboard = this.world.getScoreboard();
+		String string = packet.objectiveName();
+		ScoreHolder scoreHolder = ScoreHolder.fromName(packet.scoreHolderName());
+		if (string == null) {
+			scoreboard.removeScores(scoreHolder);
+		} else {
+			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
+			if (scoreboardObjective != null) {
+				scoreboard.removeScore(scoreHolder, scoreboardObjective);
+			} else {
+				LOGGER.warn("Received packet for unknown scoreboard objective: {}", string);
+			}
 		}
 	}
 
@@ -2044,11 +2062,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		TeamS2CPacket.Operation operation2 = packet.getPlayerListOperation();
 		if (operation2 == TeamS2CPacket.Operation.ADD) {
 			for (String string : packet.getPlayerNames()) {
-				scoreboard.addPlayerToTeam(string, team);
+				scoreboard.addScoreHolderToTeam(string, team);
 			}
 		} else if (operation2 == TeamS2CPacket.Operation.REMOVE) {
 			for (String string : packet.getPlayerNames()) {
-				scoreboard.removePlayerFromTeam(string, team);
+				scoreboard.removeScoreHolderFromTeam(string, team);
 			}
 		}
 

@@ -26,8 +26,7 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		implements AbstractCriterion.Conditions {
 		public static final Codec<LevitationCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(LevitationCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(LevitationCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(LevitationCriterion.Conditions::distance),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "duration", NumberRange.IntRange.ANY)
 							.forGetter(LevitationCriterion.Conditions::duration)
@@ -44,11 +43,6 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 					&& !((DistancePredicate)this.distance.get()).test(distance.x, distance.y, distance.z, player.getX(), player.getY(), player.getZ())
 				? false
 				: this.duration.test(duration);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

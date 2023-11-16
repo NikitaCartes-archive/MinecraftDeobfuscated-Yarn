@@ -32,7 +32,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	final PackScreen screen;
 
 	public PackListWidget(MinecraftClient client, PackScreen screen, int width, int height, Text title) {
-		super(client, width, height, 32, height - 55 + 4, 36);
+		super(client, width, height - 83, 32, 36);
 		this.screen = screen;
 		this.title = title;
 		this.centerListVertically = false;
@@ -42,7 +42,9 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	@Override
 	protected void renderHeader(DrawContext context, int x, int y) {
 		Text text = Text.empty().append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
-		context.drawText(this.client.textRenderer, text, x + this.width / 2 - this.client.textRenderer.getWidth(text) / 2, Math.min(this.top + 3, y), 16777215, false);
+		context.drawText(
+			this.client.textRenderer, text, x + this.width / 2 - this.client.textRenderer.getWidth(text) / 2, Math.min(this.getY() + 3, y), 16777215, false
+		);
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 	@Override
 	protected int getScrollbarPositionX() {
-		return this.right - 6;
+		return this.getRight() - 6;
 	}
 
 	@Override

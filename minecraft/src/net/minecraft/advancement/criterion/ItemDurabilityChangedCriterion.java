@@ -28,7 +28,7 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		public static final Codec<ItemDurabilityChangedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(ItemDurabilityChangedCriterion.Conditions::getPlayerPredicate),
+							.forGetter(ItemDurabilityChangedCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(ItemDurabilityChangedCriterion.Conditions::item),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "durability", NumberRange.IntRange.ANY)
 							.forGetter(ItemDurabilityChangedCriterion.Conditions::durability),
@@ -54,11 +54,6 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 			} else {
 				return !this.durability.test(stack.getMaxDamage() - durability) ? false : this.delta.test(stack.getDamage() - durability);
 			}
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

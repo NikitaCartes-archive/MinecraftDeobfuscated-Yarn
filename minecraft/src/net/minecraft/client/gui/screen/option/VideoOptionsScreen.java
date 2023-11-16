@@ -74,7 +74,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.list = new OptionListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+		this.list = this.addDrawableChild(new OptionListWidget(this.client, this.width, this.height - 64, 32, 25));
 		int i = -1;
 		Window window = this.client.getWindow();
 		Monitor monitor = window.getMonitor();
@@ -119,7 +119,6 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.list.addSingleOptionEntry(simpleOption);
 		this.list.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
 		this.list.addAll(getOptions(this.gameOptions));
-		this.addSelectableChild(this.list);
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.client.options.write();
 			window.applyVideoMode();
@@ -204,7 +203,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.render(context, this.list, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 	}
 
 	@Override

@@ -29,8 +29,7 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 		implements AbstractCriterion.Conditions {
 		public static final Codec<TargetHitCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(TargetHitCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TargetHitCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "signal_strength", NumberRange.IntRange.ANY)
 							.forGetter(TargetHitCriterion.Conditions::signalStrength),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "projectile").forGetter(TargetHitCriterion.Conditions::projectile)
@@ -50,11 +49,6 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.projectile, ".projectile");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

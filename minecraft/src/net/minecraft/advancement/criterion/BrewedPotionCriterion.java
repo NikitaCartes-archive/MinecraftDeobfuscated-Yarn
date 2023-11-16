@@ -25,8 +25,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<RegistryEntry<Potion>> potion) implements AbstractCriterion.Conditions {
 		public static final Codec<BrewedPotionCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(BrewedPotionCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(BrewedPotionCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(Registries.POTION.createEntryCodec(), "potion").forGetter(BrewedPotionCriterion.Conditions::potion)
 					)
 					.apply(instance, BrewedPotionCriterion.Conditions::new)
@@ -38,11 +37,6 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 
 		public boolean matches(RegistryEntry<Potion> potion) {
 			return !this.potion.isPresent() || ((RegistryEntry)this.potion.get()).equals(potion);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

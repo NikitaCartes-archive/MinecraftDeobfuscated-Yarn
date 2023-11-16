@@ -49,7 +49,7 @@ public abstract class AbstractCriterion<T extends AbstractCriterion.Conditions> 
 			for (Criterion.ConditionsContainer<T> conditionsContainer : set) {
 				T conditions = conditionsContainer.conditions();
 				if (predicate.test(conditions)) {
-					Optional<LootContextPredicate> optional = conditions.getPlayerPredicate();
+					Optional<LootContextPredicate> optional = conditions.player();
 					if (optional.isEmpty() || ((LootContextPredicate)optional.get()).test(lootContext)) {
 						if (list == null) {
 							list = Lists.<Criterion.ConditionsContainer<T>>newArrayList();
@@ -71,9 +71,9 @@ public abstract class AbstractCriterion<T extends AbstractCriterion.Conditions> 
 	public interface Conditions extends CriterionConditions {
 		@Override
 		default void validate(LootContextPredicateValidator validator) {
-			validator.validateEntityPredicate(this.getPlayerPredicate(), ".player");
+			validator.validateEntityPredicate(this.player(), ".player");
 		}
 
-		Optional<LootContextPredicate> getPlayerPredicate();
+		Optional<LootContextPredicate> player();
 	}
 }

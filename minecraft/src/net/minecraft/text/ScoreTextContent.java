@@ -11,14 +11,15 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class ScoreTextContent implements TextContent {
-	private static final String SENDER_PLACEHOLDER = "*";
 	public static final MapCodec<ScoreTextContent> INNER_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.STRING.fieldOf("name").forGetter(ScoreTextContent::getName), Codec.STRING.fieldOf("objective").forGetter(ScoreTextContent::getObjective)
@@ -65,7 +66,7 @@ public class ScoreTextContent implements TextContent {
 		return this.objective;
 	}
 
-	private String getPlayerName(ServerCommandSource source) throws CommandSyntaxException {
+	private ScoreHolder getScoreHolder(ServerCommandSource source) throws CommandSyntaxException {
 		if (this.selector != null) {
 			List<? extends Entity> list = this.selector.getEntities(source);
 			if (!list.isEmpty()) {
@@ -73,25 +74,27 @@ public class ScoreTextContent implements TextContent {
 					throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.create();
 				}
 
-				return ((Entity)list.get(0)).getEntityName();
+				return (ScoreHolder)list.get(0);
 			}
 		}
 
-		return this.name;
+		return ScoreHolder.fromName(this.name);
 	}
 
-	private String getScore(String playerName, ServerCommandSource source) {
+	private MutableText getScore(ScoreHolder scoreHolder, ServerCommandSource source) {
 		MinecraftServer minecraftServer = source.getServer();
 		if (minecraftServer != null) {
 			Scoreboard scoreboard = minecraftServer.getScoreboard();
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.objective);
-			if (scoreboardObjective != null && scoreboard.playerHasObjective(playerName, scoreboardObjective)) {
-				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(playerName, scoreboardObjective);
-				return Integer.toString(scoreboardPlayerScore.getScore());
+			if (scoreboardObjective != null) {
+				ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, scoreboardObjective);
+				if (readableScoreboardScore != null) {
+					return readableScoreboardScore.getFormattedScore(scoreboardObjective.getNumberFormatOr(StyledNumberFormat.EMPTY));
+				}
 			}
 		}
 
-		return "";
+		return Text.empty();
 	}
 
 	@Override
@@ -99,9 +102,9 @@ public class ScoreTextContent implements TextContent {
 		if (source == null) {
 			return Text.empty();
 		} else {
-			String string = this.getPlayerName(source);
-			String string2 = sender != null && string.equals("*") ? sender.getEntityName() : string;
-			return Text.literal(this.getScore(string2, source));
+			ScoreHolder scoreHolder = this.getScoreHolder(source);
+			ScoreHolder scoreHolder2 = (ScoreHolder)(sender != null && scoreHolder.equals(ScoreHolder.WILDCARD) ? sender : scoreHolder);
+			return this.getScore(scoreHolder2, source);
 		}
 	}
 

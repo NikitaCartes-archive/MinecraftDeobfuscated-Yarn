@@ -66,6 +66,7 @@ import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
@@ -211,7 +212,7 @@ import org.slf4j.Logger;
  * Entities can be discarded (despawned) by calling {@link #discard}. This does not drop loot.
  * To kill entities and drop loot, call {@link #kill} or {@link damage} (with large enough damage amount).
  */
-public abstract class Entity implements Nameable, EntityLike, CommandOutput {
+public abstract class Entity implements Nameable, EntityLike, CommandOutput, ScoreHolder {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String ID_KEY = "id";
 	public static final String PASSENGERS_KEY = "Passengers";
@@ -3262,7 +3263,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	@Nullable
 	public Team getScoreboardTeam() {
-		return this.getWorld().getScoreboard().getPlayerTeam(this.getEntityName());
+		return this.getWorld().getScoreboard().getScoreHolderTeam(this.getNameForScoreboard());
 	}
 
 	/**
@@ -4025,18 +4026,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.uuidString;
 	}
 
-	/**
-	 * {@return the name uniquely identifying the entity}
-	 * 
-	 * <p>Unlike {@link #getName}, this is guaranteed to be unique. This is the UUID
-	 * for all entities except players (which use the player's username).
-	 * This is mostly used when passing the player name to {@code
-	 * net.minecraft.scoreboard.Scoreboard} methods.
-	 * 
-	 * @see #getName
-	 * @see #getUuidAsString
-	 */
-	public String getEntityName() {
+	@Override
+	public String getNameForScoreboard() {
 		return this.uuidString;
 	}
 

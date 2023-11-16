@@ -34,7 +34,7 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.buttonList = new OptionListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+		this.buttonList = this.addDrawableChild(new OptionListWidget(this.client, this.width, this.height - 64, 32, 25));
 		if (InputUtil.isRawMouseMotionSupported()) {
 			this.buttonList
 				.addAll(
@@ -44,7 +44,6 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 			this.buttonList.addAll(getOptions(this.gameOptions));
 		}
 
-		this.addSelectableChild(this.buttonList);
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.gameOptions.write();
 			this.client.setScreen(this.parent);
@@ -54,7 +53,6 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.buttonList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 5, 16777215);
 	}
 

@@ -27,12 +27,11 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.optionButtons = new OptionListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+		this.optionButtons = this.addDrawableChild(new OptionListWidget(this.client, this.width, this.height - 64, 32, 25));
 		this.optionButtons.addSingleOptionEntry(this.gameOptions.getSoundVolumeOption(SoundCategory.MASTER));
 		this.optionButtons.addAll(this.getVolumeOptions());
 		this.optionButtons.addSingleOptionEntry(this.gameOptions.getSoundDevice());
 		this.optionButtons.addAll(getOptions(this.gameOptions));
-		this.addSelectableChild(this.optionButtons);
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.client.options.write();
 			this.client.setScreen(this.parent);
@@ -48,7 +47,8 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.render(context, this.optionButtons, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 	}
 
 	@Override

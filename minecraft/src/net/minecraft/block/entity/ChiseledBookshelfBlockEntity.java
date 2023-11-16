@@ -131,7 +131,7 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 
 	@Override
 	public boolean isValid(int slot, ItemStack stack) {
-		return stack.isIn(ItemTags.BOOKSHELF_BOOKS) && this.getStack(slot).isEmpty();
+		return stack.isIn(ItemTags.BOOKSHELF_BOOKS) && this.getStack(slot).isEmpty() && stack.getCount() == this.getMaxCountPerStack();
 	}
 
 	public int getLastInteractedSlot() {

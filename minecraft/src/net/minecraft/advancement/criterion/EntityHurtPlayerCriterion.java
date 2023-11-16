@@ -24,8 +24,7 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<DamagePredicate> damage) implements AbstractCriterion.Conditions {
 		public static final Codec<EntityHurtPlayerCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(EntityHurtPlayerCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(EntityHurtPlayerCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(DamagePredicate.CODEC, "damage").forGetter(EntityHurtPlayerCriterion.Conditions::damage)
 					)
 					.apply(instance, EntityHurtPlayerCriterion.Conditions::new)
@@ -45,11 +44,6 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 
 		public boolean matches(ServerPlayerEntity player, DamageSource damageSource, float dealt, float taken, boolean blocked) {
 			return !this.damage.isPresent() || ((DamagePredicate)this.damage.get()).test(player, damageSource, dealt, taken, blocked);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

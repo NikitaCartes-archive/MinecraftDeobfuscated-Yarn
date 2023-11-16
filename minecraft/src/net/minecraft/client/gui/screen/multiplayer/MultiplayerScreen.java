@@ -56,7 +56,7 @@ public class MultiplayerScreen extends Screen {
 	@Override
 	protected void init() {
 		if (this.initialized) {
-			this.serverListWidget.updateSize(this.width, this.height, 32, this.height - 64);
+			this.serverListWidget.setDimensionsAndPosition(this.width, this.height - 64 - 32, 0, 32);
 		} else {
 			this.initialized = true;
 			this.serverList = new ServerList(this.client);
@@ -70,11 +70,11 @@ public class MultiplayerScreen extends Screen {
 				LOGGER.warn("Unable to start LAN server detection: {}", var8.getMessage());
 			}
 
-			this.serverListWidget = new MultiplayerServerListWidget(this, this.client, this.width, this.height, 32, this.height - 64, 36);
+			this.serverListWidget = new MultiplayerServerListWidget(this, this.client, this.width, this.height - 64 - 32, 32, 36);
 			this.serverListWidget.setServers(this.serverList);
 		}
 
-		this.addSelectableChild(this.serverListWidget);
+		this.addDrawableChild(this.serverListWidget);
 		this.buttonJoin = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.select"), button -> this.connect()).width(100).build());
 		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.direct"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", ServerInfo.ServerType.OTHER);
@@ -234,7 +234,6 @@ public class MultiplayerScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		this.multiplayerScreenTooltip = null;
-		this.serverListWidget.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		if (this.multiplayerScreenTooltip != null) {
 			context.drawTooltip(this.textRenderer, this.multiplayerScreenTooltip, mouseX, mouseY);

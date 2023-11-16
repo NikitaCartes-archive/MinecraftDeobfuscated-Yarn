@@ -1075,22 +1075,41 @@ public class Util {
 		}
 	}
 
+	public static <T, E extends Throwable> T getResultOrPartial(DataResult<T> result, Function<String, E> exceptionGetter) throws E {
+		Optional<PartialResult<T>> optional = result.error();
+		if (optional.isPresent()) {
+			Optional<T> optional2 = result.resultOrPartial(string -> {
+			});
+			if (optional2.isPresent()) {
+				return (T)optional2.get();
+			} else {
+				throw (Throwable)exceptionGetter.apply(((PartialResult)optional.get()).message());
+			}
+		} else {
+			return (T)result.result().orElseThrow();
+		}
+	}
+
 	public static <A, B> Typed<B> apply(Typed<A> typed, Type<B> type, UnaryOperator<Dynamic<?>> modifier) {
 		Dynamic<?> dynamic = getResult((DataResult<Dynamic<?>>)typed.write(), IllegalStateException::new);
-		return readTyped(type, (Dynamic<?>)modifier.apply(dynamic));
+		return readTyped(type, (Dynamic<?>)modifier.apply(dynamic), true);
 	}
 
 	public static <T> Typed<T> readTyped(Type<T> type, Dynamic<?> value) {
+		return readTyped(type, value, false);
+	}
+
+	public static <T> Typed<T> readTyped(Type<T> type, Dynamic<?> value, boolean allowPartial) {
 		DataResult<Typed<T>> dataResult = type.readTyped(value).map(com.mojang.datafixers.util.Pair::getFirst);
-		Optional<PartialResult<Typed<T>>> optional = dataResult.error();
-		if (optional.isPresent()) {
-			CrashReport crashReport = CrashReport.create(new IllegalStateException(((PartialResult)optional.get()).message()), "Reading type");
+
+		try {
+			return allowPartial ? getResultOrPartial(dataResult, IllegalStateException::new) : getResult(dataResult, IllegalStateException::new);
+		} catch (IllegalStateException var7) {
+			CrashReport crashReport = CrashReport.create(var7, "Reading type");
 			CrashReportSection crashReportSection = crashReport.addElement("Info");
 			crashReportSection.add("Data", value);
 			crashReportSection.add("Type", type);
 			throw new CrashException(crashReport);
-		} else {
-			return (Typed<T>)dataResult.result().orElseThrow();
 		}
 	}
 

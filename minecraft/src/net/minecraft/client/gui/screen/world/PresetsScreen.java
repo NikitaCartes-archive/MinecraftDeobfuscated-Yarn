@@ -197,8 +197,7 @@ public class PresetsScreen extends Screen {
 		this.customPresetField.setText(getGeneratorConfigString(this.parent.getConfig()));
 		this.config = this.parent.getConfig();
 		this.addSelectableChild(this.customPresetField);
-		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget(dynamicRegistryManager, featureSet);
-		this.addSelectableChild(this.listWidget);
+		this.listWidget = this.addDrawableChild(new PresetsScreen.SuperflatPresetsListWidget(dynamicRegistryManager, featureSet));
 		this.selectPresetButton = this.addDrawableChild(
 			ButtonWidget.builder(
 					Text.translatable("createWorld.customize.presets.select"),
@@ -239,7 +238,6 @@ public class PresetsScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.listWidget.render(context, mouseX, mouseY, delta);
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 400.0F);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
@@ -256,7 +254,7 @@ public class PresetsScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	class SuperflatPresetsListWidget extends AlwaysSelectedEntryListWidget<PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry> {
 		public SuperflatPresetsListWidget(DynamicRegistryManager dynamicRegistryManager, FeatureSet featureSet) {
-			super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
+			super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height - 117, 80, 24);
 
 			for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET)
 				.iterateEntries(FlatLevelGeneratorPresetTags.VISIBLE)) {

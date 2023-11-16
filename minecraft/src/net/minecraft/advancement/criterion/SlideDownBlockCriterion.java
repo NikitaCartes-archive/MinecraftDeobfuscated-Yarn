@@ -30,8 +30,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 		public static final Codec<SlideDownBlockCriterion.Conditions> CODEC = Codecs.validate(
 			RecordCodecBuilder.create(
 				instance -> instance.group(
-							Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-								.forGetter(SlideDownBlockCriterion.Conditions::getPlayerPredicate),
+							Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(SlideDownBlockCriterion.Conditions::player),
 							Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.createEntryCodec(), "block").forGetter(SlideDownBlockCriterion.Conditions::block),
 							Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(SlideDownBlockCriterion.Conditions::state)
 						)
@@ -58,11 +57,6 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 			return this.block.isPresent() && !state.isOf((RegistryEntry<Block>)this.block.get())
 				? false
 				: !this.state.isPresent() || ((StatePredicate)this.state.get()).test(state);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

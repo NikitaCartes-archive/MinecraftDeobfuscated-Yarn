@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 
@@ -59,10 +60,8 @@ public record EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> sco
 		if (scoreboardObjective == null) {
 			return false;
 		} else {
-			String string = entity.getEntityName();
-			return !scoreboard.playerHasObjective(string, scoreboardObjective)
-				? false
-				: range.test(context, scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
+			ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(entity, scoreboardObjective);
+			return readableScoreboardScore == null ? false : range.test(context, readableScoreboardScore.getScore());
 		}
 	}
 

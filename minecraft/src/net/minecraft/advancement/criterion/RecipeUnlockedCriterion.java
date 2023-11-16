@@ -28,8 +28,7 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 	public static record Conditions(Optional<LootContextPredicate> player, Identifier recipe) implements AbstractCriterion.Conditions {
 		public static final Codec<RecipeUnlockedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(RecipeUnlockedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(RecipeUnlockedCriterion.Conditions::player),
 						Identifier.CODEC.fieldOf("recipe").forGetter(RecipeUnlockedCriterion.Conditions::recipe)
 					)
 					.apply(instance, RecipeUnlockedCriterion.Conditions::new)
@@ -37,11 +36,6 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 
 		public boolean matches(RecipeEntry<?> recipe) {
 			return this.recipe.equals(recipe.id());
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

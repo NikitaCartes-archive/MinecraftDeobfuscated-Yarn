@@ -30,8 +30,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		public static final Codec<EnterBlockCriterion.Conditions> CODEC = Codecs.validate(
 			RecordCodecBuilder.create(
 				instance -> instance.group(
-							Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-								.forGetter(EnterBlockCriterion.Conditions::getPlayerPredicate),
+							Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(EnterBlockCriterion.Conditions::player),
 							Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.createEntryCodec(), "block").forGetter(EnterBlockCriterion.Conditions::block),
 							Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(EnterBlockCriterion.Conditions::state)
 						)
@@ -58,11 +57,6 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 			return this.block.isPresent() && !state.isOf((RegistryEntry<Block>)this.block.get())
 				? false
 				: !this.state.isPresent() || ((StatePredicate)this.state.get()).test(state);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

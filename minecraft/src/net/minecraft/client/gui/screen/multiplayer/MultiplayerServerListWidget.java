@@ -73,8 +73,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	private final MultiplayerServerListWidget.Entry scanningEntry = new MultiplayerServerListWidget.ScanningEntry();
 	private final List<MultiplayerServerListWidget.LanServerEntry> lanServers = Lists.<MultiplayerServerListWidget.LanServerEntry>newArrayList();
 
-	public MultiplayerServerListWidget(MultiplayerScreen screen, MinecraftClient client, int width, int height, int top, int bottom, int entryHeight) {
-		super(client, width, height, top, bottom, entryHeight);
+	public MultiplayerServerListWidget(MultiplayerScreen screen, MinecraftClient client, int width, int height, int top, int bottom) {
+		super(client, width, height, top, bottom);
 		this.screen = screen;
 	}
 
@@ -121,7 +121,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			int k = j - this.lanServers.size() + this.children().size();
 			int l = this.getRowTop(k);
 			int m = this.getRowBottom(k);
-			if (m >= this.top && l <= this.bottom) {
+			if (m >= this.getY() && l <= this.getBottom()) {
 				this.client.getNarratorManager().narrateSystemMessage(Text.translatable("multiplayer.lan.server_found", lanServerEntry.getMotdNarration()));
 			}
 		}

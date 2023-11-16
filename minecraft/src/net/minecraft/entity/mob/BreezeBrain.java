@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
@@ -80,8 +81,9 @@ public class BreezeBrain {
 		);
 	}
 
-	static class SlideAroundTask extends WanderAroundTask {
-		SlideAroundTask(int i, int j) {
+	public static class SlideAroundTask extends WanderAroundTask {
+		@VisibleForTesting
+		public SlideAroundTask(int i, int j) {
 			super(i, j);
 		}
 

@@ -28,7 +28,7 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 	public static record Conditions(Optional<LootContextPredicate> player) implements AbstractCriterion.Conditions {
 		public static final Codec<TickCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TickCriterion.Conditions::getPlayerPredicate)
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TickCriterion.Conditions::player)
 					)
 					.apply(instance, TickCriterion.Conditions::new)
 		);
@@ -68,11 +68,6 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item)))
 					.steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block)))
 			);
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

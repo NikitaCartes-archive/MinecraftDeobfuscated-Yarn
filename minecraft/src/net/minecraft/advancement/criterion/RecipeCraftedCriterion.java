@@ -29,8 +29,7 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 		implements AbstractCriterion.Conditions {
 		public static final Codec<RecipeCraftedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(RecipeCraftedCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(RecipeCraftedCriterion.Conditions::player),
 						Identifier.CODEC.fieldOf("recipe_id").forGetter(RecipeCraftedCriterion.Conditions::recipeId),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC.listOf(), "ingredients", List.of()).forGetter(RecipeCraftedCriterion.Conditions::ingredients)
 					)
@@ -71,11 +70,6 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 
 				return true;
 			}
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

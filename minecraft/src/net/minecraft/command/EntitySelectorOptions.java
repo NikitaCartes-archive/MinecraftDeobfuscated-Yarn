@@ -34,9 +34,9 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -347,7 +347,6 @@ public class EntitySelectorOptions {
 				if (!map.isEmpty()) {
 					reader.setPredicate(entity -> {
 						Scoreboard scoreboard = entity.getServer().getScoreboard();
-						String stringx = entity.getEntityName();
 
 						for (Entry<String, NumberRange.IntRange> entry : map.entrySet()) {
 							ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective((String)entry.getKey());
@@ -355,13 +354,12 @@ public class EntitySelectorOptions {
 								return false;
 							}
 
-							if (!scoreboard.playerHasObjective(stringx, scoreboardObjective)) {
+							ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(entity, scoreboardObjective);
+							if (readableScoreboardScore == null) {
 								return false;
 							}
 
-							ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(stringx, scoreboardObjective);
-							int i = scoreboardPlayerScore.getScore();
-							if (!((NumberRange.IntRange)entry.getValue()).test(i)) {
+							if (!((NumberRange.IntRange)entry.getValue()).test(readableScoreboardScore.getScore())) {
 								return false;
 							}
 						}

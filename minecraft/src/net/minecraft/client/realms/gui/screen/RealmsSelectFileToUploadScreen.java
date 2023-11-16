@@ -60,7 +60,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.worldSelectionList = new RealmsSelectFileToUploadScreen.WorldSelectionList();
+		this.worldSelectionList = this.addDrawableChild(new RealmsSelectFileToUploadScreen.WorldSelectionList());
 
 		try {
 			this.loadLevelList();
@@ -70,7 +70,6 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			return;
 		}
 
-		this.addSelectableChild(this.worldSelectionList);
 		this.uploadButton = this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("mco.upload.button.name"), button -> this.upload())
 				.dimensions(this.width / 2 - 154, this.height - 32, 153, 20)
@@ -101,7 +100,6 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.worldSelectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 13, -1);
 	}
 
@@ -188,9 +186,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		public WorldSelectionList() {
 			super(
 				RealmsSelectFileToUploadScreen.this.width,
-				RealmsSelectFileToUploadScreen.this.height,
+				RealmsSelectFileToUploadScreen.this.height - 40 - RealmsSelectFileToUploadScreen.row(0),
 				RealmsSelectFileToUploadScreen.row(0),
-				RealmsSelectFileToUploadScreen.this.height - 40,
 				36
 			);
 		}

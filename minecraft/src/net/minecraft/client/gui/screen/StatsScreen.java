@@ -120,7 +120,6 @@ public class StatsScreen extends Screen implements StatsListener {
 			);
 		} else {
 			super.render(context, mouseX, mouseY, delta);
-			this.getSelectedStatList().render(context, mouseX, mouseY, delta);
 			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		}
 	}
@@ -145,18 +144,13 @@ public class StatsScreen extends Screen implements StatsListener {
 		return !this.downloadingStats;
 	}
 
-	@Nullable
-	public AlwaysSelectedEntryListWidget<?> getSelectedStatList() {
-		return this.selectedList;
-	}
-
 	public void selectStatList(@Nullable AlwaysSelectedEntryListWidget<?> list) {
 		if (this.selectedList != null) {
 			this.remove(this.selectedList);
 		}
 
 		if (list != null) {
-			this.addSelectableChild(list);
+			this.addDrawableChild(list);
 			this.selectedList = list;
 		}
 	}
@@ -181,7 +175,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Environment(EnvType.CLIENT)
 	class EntityStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.EntityStatsListWidget.Entry> {
 		public EntityStatsListWidget(MinecraftClient client) {
-			super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 9 * 4);
+			super(client, StatsScreen.this.width, StatsScreen.this.height - 96, 32, 9 * 4);
 
 			for (EntityType<?> entityType : Registries.ENTITY_TYPE) {
 				if (StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType)) > 0
@@ -237,7 +231,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Environment(EnvType.CLIENT)
 	class GeneralStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.GeneralStatsListWidget.Entry> {
 		public GeneralStatsListWidget(MinecraftClient client) {
-			super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
+			super(client, StatsScreen.this.width, StatsScreen.this.height - 96, 32, 10);
 			ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<>(Stats.CUSTOM.iterator());
 			objectArrayList.sort(Comparator.comparing(statx -> I18n.translate(StatsScreen.getStatTranslationKey(statx))));
 
@@ -295,7 +289,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		protected int listOrder;
 
 		public ItemStatsListWidget(MinecraftClient client) {
-			super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
+			super(client, StatsScreen.this.width, StatsScreen.this.height - 96, 32, 20);
 			this.blockStatTypes = Lists.<StatType<Block>>newArrayList();
 			this.blockStatTypes.add(Stats.MINED);
 			this.itemStatTypes = Lists.<StatType<Item>>newArrayList(Stats.BROKEN, Stats.CRAFTED, Stats.USED, Stats.PICKED_UP, Stats.DROPPED);
@@ -409,7 +403,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 		@Override
 		protected void renderDecorations(DrawContext context, int mouseX, int mouseY) {
-			if (mouseY >= this.top && mouseY <= this.bottom) {
+			if (mouseY >= this.getY() && mouseY <= this.getBottom()) {
 				StatsScreen.ItemStatsListWidget.Entry entry = this.getHoveredEntry();
 				int i = (this.width - this.getRowWidth()) / 2;
 				if (entry != null) {
