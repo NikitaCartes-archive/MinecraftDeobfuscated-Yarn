@@ -36,6 +36,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.potion.Potion;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.scoreboard.number.NumberFormatType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.StatType;
@@ -160,6 +161,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<VillagerProfession>> VILLAGER_PROFESSION = of("villager_profession");
 	public static final RegistryKey<Registry<VillagerType>> VILLAGER_TYPE = of("villager_type");
 	public static final RegistryKey<Registry<String>> DECORATED_POT_PATTERN = of("decorated_pot_patterns");
+	public static final RegistryKey<Registry<NumberFormatType<?>>> NUMBER_FORMAT_TYPE = of("number_format_type");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");

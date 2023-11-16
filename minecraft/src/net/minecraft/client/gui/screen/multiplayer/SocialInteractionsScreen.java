@@ -86,9 +86,9 @@ public class SocialInteractionsScreen extends Screen {
 	@Override
 	protected void init() {
 		if (this.initialized) {
-			this.playerList.updateSize(this.width, this.height, 88, this.getPlayerListBottom());
+			this.playerList.setDimensionsAndPosition(this.width, this.getPlayerListBottom() - 88, 0, 88);
 		} else {
-			this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.height, 88, this.getPlayerListBottom(), 36);
+			this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.getPlayerListBottom() - 88, 88, 36);
 		}
 
 		int i = this.playerList.getRowWidth() / 3;

@@ -513,7 +513,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		for(int k = 0; k < randomTickSpeed; ++k) {
 			if (this.random.nextInt(48) == 0) {
-				this.tickIceAndSnow(bl, this.getRandomPosInChunk(i, 0, j, 15));
+				this.tickIceAndSnow(this.getRandomPosInChunk(i, 0, j, 15));
 			}
 		}
 
@@ -549,7 +549,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		profiler.pop();
 	}
 
-	private void tickIceAndSnow(boolean raining, BlockPos pos) {
+	@VisibleForTesting
+	public void tickIceAndSnow(BlockPos pos) {
 		BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
 		BlockPos blockPos2 = blockPos.down();
 		Biome biome = this.getBiome(blockPos).value();
@@ -557,7 +558,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
 		}
 
-		if (raining) {
+		if (this.isRaining()) {
 			int i = this.getGameRules().getInt(GameRules.SNOW_ACCUMULATION_HEIGHT);
 			if (i > 0 && biome.canSetSnow(this, blockPos)) {
 				BlockState blockState = this.getBlockState(blockPos);
@@ -743,7 +744,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 	}
 
-	private void resetWeather() {
+	@VisibleForTesting
+	public void resetWeather() {
 		this.worldProperties.setRainTime(0);
 		this.worldProperties.setRaining(false);
 		this.worldProperties.setThunderTime(0);
@@ -1919,7 +1921,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		public void destroy(Entity entity) {
-			ServerWorld.this.getScoreboard().resetEntityScore(entity);
+			ServerWorld.this.getScoreboard().clearDeadEntity(entity);
 		}
 
 		public void startTicking(Entity entity) {

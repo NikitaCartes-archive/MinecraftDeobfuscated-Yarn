@@ -42,6 +42,7 @@ public class CrafterBlock extends BlockWithEntity {
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 	private static final EnumProperty<Orientation> ORIENTATION = Properties.ORIENTATION;
 	private static final int field_46802 = 6;
+	private static final int TRIGGER_DELAY = 4;
 	private static final RecipeCache recipeCache = new RecipeCache(10);
 
 	public CrafterBlock(AbstractBlock.Settings settings) {
@@ -73,7 +74,7 @@ public class CrafterBlock extends BlockWithEntity {
 		boolean bl2 = state.get(TRIGGERED);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (bl && !bl2) {
-			world.scheduleBlockTick(pos, this, 1);
+			world.scheduleBlockTick(pos, this, 4);
 			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 			this.setTriggered(blockEntity, true);
 		} else if (!bl && bl2) {
@@ -130,7 +131,7 @@ public class CrafterBlock extends BlockWithEntity {
 		}
 
 		if (state.get(TRIGGERED)) {
-			world.scheduleBlockTick(pos, this, 1);
+			world.scheduleBlockTick(pos, this, 4);
 		}
 	}
 
@@ -186,7 +187,7 @@ public class CrafterBlock extends BlockWithEntity {
 		Direction direction = ((Orientation)state.get(ORIENTATION)).getFacing();
 		Inventory inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
 		ItemStack itemStack = stack.copy();
-		if (inventory instanceof CrafterBlockEntity) {
+		if (inventory != null && (inventory instanceof CrafterBlockEntity || stack.getCount() > inventory.getMaxCountPerStack())) {
 			while(!itemStack.isEmpty()) {
 				ItemStack itemStack2 = itemStack.copyWithCount(1);
 				ItemStack itemStack3 = HopperBlockEntity.transfer(blockEntity, inventory, itemStack2, direction.getOpposite());

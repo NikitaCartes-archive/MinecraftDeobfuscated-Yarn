@@ -27,8 +27,7 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		implements AbstractCriterion.Conditions {
 		public static final Codec<ChangedDimensionCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(ChangedDimensionCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ChangedDimensionCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.WORLD), "from").forGetter(ChangedDimensionCriterion.Conditions::from),
 						Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.WORLD), "to").forGetter(ChangedDimensionCriterion.Conditions::to)
 					)
@@ -57,11 +56,6 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 			} else {
 				return !this.to.isPresent() || this.to.get() == to;
 			}
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

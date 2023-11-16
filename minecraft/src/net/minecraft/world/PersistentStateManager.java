@@ -46,7 +46,7 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	public <T extends PersistentState> T get(PersistentState.Type type, String id) {
+	public <T extends PersistentState> T get(PersistentState.Type<T> type, String id) {
 		PersistentState persistentState = (PersistentState)this.loadedStates.get(id);
 		if (persistentState == null && !this.loadedStates.containsKey(id)) {
 			persistentState = this.readFromFile(type.deserializer(), type.type(), id);

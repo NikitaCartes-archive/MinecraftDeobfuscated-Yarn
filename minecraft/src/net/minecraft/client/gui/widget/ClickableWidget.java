@@ -61,7 +61,7 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public final void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 			this.renderButton(context, mouseX, mouseY, delta);
@@ -309,14 +309,32 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		this.y = y;
 	}
 
+	public int getRight() {
+		return this.getX() + this.getWidth();
+	}
+
+	public int getBottom() {
+		return this.getY() + this.getHeight();
+	}
+
 	@Override
 	public void forEachChild(Consumer<ClickableWidget> consumer) {
 		consumer.accept(this);
 	}
 
+	public void setDimensions(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
 	@Override
 	public ScreenRect getNavigationFocus() {
 		return Widget.super.getNavigationFocus();
+	}
+
+	public void setDimensionsAndPosition(int width, int height, int x, int y) {
+		this.setDimensions(width, height);
+		this.setPosition(x, y);
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package net.minecraft.entity.projectile;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +15,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
@@ -24,6 +27,26 @@ public class WindChargeEntity extends ExplosiveProjectileEntity implements Flyin
 	public WindChargeEntity(EntityType<? extends WindChargeEntity> type, BreezeEntity breeze, World world) {
 		super(type, breeze.getX(), breeze.getChargeY(), breeze.getZ(), world);
 		this.setOwner(breeze);
+	}
+
+	@Override
+	protected Box calculateBoundingBox() {
+		float f = this.getType().getDimensions().width / 2.0F;
+		float g = this.getType().getDimensions().height;
+		float h = 0.15F;
+		return new Box(
+			this.getPos().x - (double)f,
+			this.getPos().y - 0.15F,
+			this.getPos().z - (double)f,
+			this.getPos().x + (double)f,
+			this.getPos().y - 0.15F + (double)g,
+			this.getPos().z + (double)f
+		);
+	}
+
+	@Override
+	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return 0.0F;
 	}
 
 	@Override

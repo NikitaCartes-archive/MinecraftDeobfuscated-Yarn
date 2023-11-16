@@ -29,9 +29,8 @@ public abstract class SimpleOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.buttonList = new OptionListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+		this.buttonList = this.addDrawableChild(new OptionListWidget(this.client, this.width, this.height - 64, 32, 25));
 		this.buttonList.addAll(this.options);
-		this.addSelectableChild(this.buttonList);
 		this.initFooter();
 		this.narratorButton = this.buttonList.getWidgetFor(this.gameOptions.getNarrator());
 		if (this.narratorButton != null) {
@@ -47,7 +46,8 @@ public abstract class SimpleOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.render(context, this.buttonList, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 	}
 
 	@Override

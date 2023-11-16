@@ -230,6 +230,7 @@ public class BlockTypes {
 		Registry.register(registry, "wall_torch", WallTorchBlock.CODEC);
 		Registry.register(registry, "wall", WallBlock.CODEC);
 		Registry.register(registry, "waterlily", LilyPadBlock.CODEC);
+		Registry.register(registry, "waterlogged_transparent", GrateBlock.CODEC);
 		Registry.register(registry, "weathering_copper_bulb", OxidizableBulbBlock.CODEC);
 		Registry.register(registry, "weathering_copper_door", OxidizableDoorBlock.CODEC);
 		Registry.register(registry, "weathering_copper_full", OxidizableBlock.CODEC);

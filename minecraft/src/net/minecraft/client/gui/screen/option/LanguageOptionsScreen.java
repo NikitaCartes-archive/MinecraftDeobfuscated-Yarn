@@ -29,13 +29,11 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.languageSelectionList = new LanguageOptionsScreen.LanguageSelectionListWidget(this.client);
-		this.addSelectableChild(this.languageSelectionList);
+		this.languageSelectionList = this.addDrawableChild(new LanguageOptionsScreen.LanguageSelectionListWidget(this.client));
 		this.addDrawableChild(this.gameOptions.getForceUnicodeFont().createWidget(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.DONE, button -> this.onDone()).dimensions(this.width / 2 - 155 + 160, this.height - 38, 150, 20).build()
 		);
-		super.init();
 	}
 
 	void onDone() {
@@ -67,7 +65,6 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.languageSelectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		context.drawCenteredTextWithShadow(this.textRenderer, LANGUAGE_WARNING_TEXT, this.width / 2, this.height - 56, -8355712);
 	}
@@ -80,7 +77,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	@Environment(EnvType.CLIENT)
 	class LanguageSelectionListWidget extends AlwaysSelectedEntryListWidget<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
 		public LanguageSelectionListWidget(MinecraftClient client) {
-			super(client, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height, 32, LanguageOptionsScreen.this.height - 65 + 4, 18);
+			super(client, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height - 93, 32, 18);
 			String string = LanguageOptionsScreen.this.languageManager.getLanguage();
 			LanguageOptionsScreen.this.languageManager
 				.getAllLanguages()

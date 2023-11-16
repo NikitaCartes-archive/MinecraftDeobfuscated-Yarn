@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
+import net.minecraft.util.JsonReaderUtils;
 
 public class TextArgumentType implements ArgumentType<Text> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("\"hello world\"", "\"\"", "\"{\"text\":\"hello world\"}", "[\"\"]");
@@ -29,12 +31,7 @@ public class TextArgumentType implements ArgumentType<Text> {
 
 	public Text parse(StringReader stringReader) throws CommandSyntaxException {
 		try {
-			Text text = Text.Serialization.fromJson(stringReader);
-			if (text == null) {
-				throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, "empty");
-			} else {
-				return text;
-			}
+			return JsonReaderUtils.parse(stringReader, TextCodecs.CODEC);
 		} catch (Exception var4) {
 			String string = var4.getCause() != null ? var4.getCause().getMessage() : var4.getMessage();
 			throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, string);

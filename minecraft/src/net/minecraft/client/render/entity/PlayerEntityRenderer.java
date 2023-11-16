@@ -25,10 +25,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
@@ -164,10 +165,11 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			Scoreboard scoreboard = abstractClientPlayerEntity.getScoreboard();
 			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.BELOW_NAME);
 			if (scoreboardObjective != null) {
-				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
+				ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(abstractClientPlayerEntity, scoreboardObjective);
+				Text text2 = ReadableScoreboardScore.getFormattedScore(readableScoreboardScore, scoreboardObjective.getNumberFormatOr(StyledNumberFormat.EMPTY));
 				super.renderLabelIfPresent(
 					abstractClientPlayerEntity,
-					Text.literal(Integer.toString(scoreboardPlayerScore.getScore())).append(ScreenTexts.SPACE).append(scoreboardObjective.getDisplayName()),
+					Text.empty().append(text2).append(ScreenTexts.SPACE).append(scoreboardObjective.getDisplayName()),
 					matrixStack,
 					vertexConsumerProvider,
 					i

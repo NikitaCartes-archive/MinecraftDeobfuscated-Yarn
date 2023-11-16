@@ -676,7 +676,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.group(getItemPath(Items.COPPER_INGOT))
 			.criterion(hasItem(Blocks.WAXED_COPPER_BLOCK), conditionsFromItem(Blocks.WAXED_COPPER_BLOCK))
 			.offerTo(exporter, convertBetween(Items.COPPER_INGOT, Blocks.WAXED_COPPER_BLOCK));
-		offerWaxingRecipes(exporter);
+		offerWaxingRecipes(exporter, FeatureSet.of(FeatureFlags.VANILLA));
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.CYAN_DYE, 2)
 			.input(Items.BLUE_DYE)
 			.input(Items.GREEN_DYE)

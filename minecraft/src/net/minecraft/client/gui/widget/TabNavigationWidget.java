@@ -27,7 +27,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TabNavigationWidget extends AbstractParentElement implements Drawable, Element, Selectable {
+public class TabNavigationWidget extends AbstractParentElement implements Drawable, Selectable {
 	private static final int field_42489 = -1;
 	private static final int field_43076 = 400;
 	private static final int field_43077 = 24;

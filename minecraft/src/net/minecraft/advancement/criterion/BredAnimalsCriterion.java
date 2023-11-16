@@ -33,8 +33,7 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 	) implements AbstractCriterion.Conditions {
 		public static final Codec<BredAnimalsCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(BredAnimalsCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(BredAnimalsCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "parent").forGetter(BredAnimalsCriterion.Conditions::parent),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "partner").forGetter(BredAnimalsCriterion.Conditions::partner),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "child").forGetter(BredAnimalsCriterion.Conditions::child)
@@ -88,11 +87,6 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 			validator.validateEntityPredicate(this.parent, ".parent");
 			validator.validateEntityPredicate(this.partner, ".partner");
 			validator.validateEntityPredicate(this.child, ".child");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

@@ -115,7 +115,7 @@ public abstract class RecipeProvider implements DataProvider {
 	protected abstract void generate(RecipeExporter exporter);
 
 	protected static void generateFamilies(RecipeExporter exporter, FeatureSet enabledFeatures) {
-		BlockFamilies.getFamilies().filter(family -> family.shouldGenerateRecipes(enabledFeatures)).forEach(family -> generateFamily(exporter, family));
+		BlockFamilies.getFamilies().filter(BlockFamily::shouldGenerateRecipes).forEach(family -> generateFamily(exporter, family, enabledFeatures));
 	}
 
 	protected static void offerSingleOutputShapelessRecipe(RecipeExporter exporter, ItemConvertible output, ItemConvertible input, @Nullable String group) {
@@ -599,15 +599,19 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter, getItemPath(output) + "_from_" + cooker);
 	}
 
-	protected static void offerWaxingRecipes(RecipeExporter exporter) {
+	protected static void offerWaxingRecipes(RecipeExporter exporter, FeatureSet enabledFeatures) {
 		((BiMap)HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get())
 			.forEach(
-				(input, output) -> ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output)
-						.input(input)
-						.input(Items.HONEYCOMB)
-						.group(getItemPath(output))
-						.criterion(hasItem(input), conditionsFromItem(input))
-						.offerTo(exporter, convertBetween(output, Items.HONEYCOMB))
+				(unwaxed, waxed) -> {
+					if (waxed.getRequiredFeatures().isSubsetOf(enabledFeatures)) {
+						ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, waxed)
+							.input(unwaxed)
+							.input(Items.HONEYCOMB)
+							.group(getItemPath(waxed))
+							.criterion(hasItem(unwaxed), conditionsFromItem(unwaxed))
+							.offerTo(exporter, convertBetween(waxed, Items.HONEYCOMB));
+					}
+				}
 			);
 	}
 
@@ -633,21 +637,28 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter);
 	}
 
-	protected static void generateFamily(RecipeExporter exporter, BlockFamily family) {
-		family.getVariants().forEach((variant, block) -> {
-			BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder> biFunction = (BiFunction)VARIANT_FACTORIES.get(variant);
-			ItemConvertible itemConvertible = getVariantRecipeInput(family, variant);
-			if (biFunction != null) {
-				CraftingRecipeJsonBuilder craftingRecipeJsonBuilder = (CraftingRecipeJsonBuilder)biFunction.apply(block, itemConvertible);
-				family.getGroup().ifPresent(group -> craftingRecipeJsonBuilder.group(group + (variant == BlockFamily.Variant.CUT ? "" : "_" + variant.getName())));
-				craftingRecipeJsonBuilder.criterion((String)family.getUnlockCriterionName().orElseGet(() -> hasItem(itemConvertible)), conditionsFromItem(itemConvertible));
-				craftingRecipeJsonBuilder.offerTo(exporter);
-			}
-
-			if (variant == BlockFamily.Variant.CRACKED) {
-				offerCrackingRecipe(exporter, block, itemConvertible);
-			}
-		});
+	protected static void generateFamily(RecipeExporter exporter, BlockFamily family, FeatureSet enabledFeatures) {
+		family.getVariants()
+			.forEach(
+				(variant, block) -> {
+					if (block.getRequiredFeatures().isSubsetOf(enabledFeatures)) {
+						BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder> biFunction = (BiFunction)VARIANT_FACTORIES.get(variant);
+						ItemConvertible itemConvertible = getVariantRecipeInput(family, variant);
+						if (biFunction != null) {
+							CraftingRecipeJsonBuilder craftingRecipeJsonBuilder = (CraftingRecipeJsonBuilder)biFunction.apply(block, itemConvertible);
+							family.getGroup().ifPresent(group -> craftingRecipeJsonBuilder.group(group + (variant == BlockFamily.Variant.CUT ? "" : "_" + variant.getName())));
+							craftingRecipeJsonBuilder.criterion(
+								(String)family.getUnlockCriterionName().orElseGet(() -> hasItem(itemConvertible)), conditionsFromItem(itemConvertible)
+							);
+							craftingRecipeJsonBuilder.offerTo(exporter);
+						}
+		
+						if (variant == BlockFamily.Variant.CRACKED) {
+							offerCrackingRecipe(exporter, block, itemConvertible);
+						}
+					}
+				}
+			);
 	}
 
 	/**

@@ -31,15 +31,15 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 	@Nullable
 	private String currentSearch;
 
-	public SocialInteractionsPlayerListWidget(SocialInteractionsScreen parent, MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
-		super(client, width, height, top, bottom, itemHeight);
+	public SocialInteractionsPlayerListWidget(SocialInteractionsScreen parent, MinecraftClient client, int width, int height, int y, int itemHeight) {
+		super(client, width, height, y, itemHeight);
 		this.parent = parent;
 		this.setRenderBackground(false);
 	}
 
 	@Override
 	protected void enableScissor(DrawContext context) {
-		context.enableScissor(this.left, this.top + 4, this.right, this.bottom);
+		context.enableScissor(this.getX(), this.getY() + 4, this.getRight(), this.getBottom());
 	}
 
 	public void update(Collection<UUID> uuids, double scrollAmount, boolean includeOffline) {

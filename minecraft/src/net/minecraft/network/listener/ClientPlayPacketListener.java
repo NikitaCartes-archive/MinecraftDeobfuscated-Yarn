@@ -76,7 +76,8 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreResetS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
@@ -222,7 +223,9 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 
 	void onTeam(TeamS2CPacket packet);
 
-	void onScoreboardPlayerUpdate(ScoreboardPlayerUpdateS2CPacket packet);
+	void onScoreboardScoreUpdate(ScoreboardScoreUpdateS2CPacket packet);
+
+	void onScoreboardScoreReset(ScoreboardScoreResetS2CPacket packet);
 
 	void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet);
 

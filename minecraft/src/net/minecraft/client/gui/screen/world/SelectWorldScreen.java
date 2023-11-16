@@ -35,9 +35,10 @@ public class SelectWorldScreen extends Screen {
 	protected void init() {
 		this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, Text.translatable("selectWorld.search"));
 		this.searchBox.setChangedListener(search -> this.levelList.setSearch(search));
-		this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, this.searchBox.getText(), this.levelList);
 		this.addSelectableChild(this.searchBox);
-		this.addSelectableChild(this.levelList);
+		this.levelList = this.addDrawableChild(
+			new WorldListWidget(this, this.client, this.width, this.height - 112, 48, 36, this.searchBox.getText(), this.levelList)
+		);
 		this.selectButton = this.addDrawableChild(
 			ButtonWidget.builder(LevelSummary.SELECT_WORLD_TEXT, button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.WorldEntry::play))
 				.dimensions(this.width / 2 - 154, this.height - 52, 150, 20)
@@ -92,7 +93,6 @@ public class SelectWorldScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.levelList.render(context, mouseX, mouseY, delta);
 		this.searchBox.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 	}

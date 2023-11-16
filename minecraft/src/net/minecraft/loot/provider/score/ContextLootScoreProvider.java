@@ -6,9 +6,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.scoreboard.ScoreHolder;
 
 public record ContextLootScoreProvider(LootContext.EntityTarget target) implements LootScoreProvider {
 	public static final Codec<ContextLootScoreProvider> CODEC = RecordCodecBuilder.create(
@@ -29,9 +29,8 @@ public record ContextLootScoreProvider(LootContext.EntityTarget target) implemen
 
 	@Nullable
 	@Override
-	public String getName(LootContext context) {
-		Entity entity = context.get(this.target.getParameter());
-		return entity != null ? entity.getEntityName() : null;
+	public ScoreHolder getScoreHolder(LootContext context) {
+		return context.get(this.target.getParameter());
 	}
 
 	@Override

@@ -27,8 +27,7 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		implements AbstractCriterion.Conditions {
 		public static final Codec<EnchantedItemCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(EnchantedItemCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(EnchantedItemCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(EnchantedItemCriterion.Conditions::item),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "levels", NumberRange.IntRange.ANY)
 							.forGetter(EnchantedItemCriterion.Conditions::levels)
@@ -46,11 +45,6 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 			} else {
 				return this.levels.test(levels);
 			}
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

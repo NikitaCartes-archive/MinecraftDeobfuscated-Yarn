@@ -1630,6 +1630,7 @@ public class ItemGroups {
 					entries.add(Items.BAT_SPAWN_EGG);
 					entries.add(Items.BEE_SPAWN_EGG);
 					entries.add(Items.BLAZE_SPAWN_EGG);
+					entries.add(Items.BREEZE_SPAWN_EGG);
 					entries.add(Items.CAMEL_SPAWN_EGG);
 					entries.add(Items.CAT_SPAWN_EGG);
 					entries.add(Items.CAVE_SPIDER_SPAWN_EGG);
@@ -1644,7 +1645,6 @@ public class ItemGroups {
 					entries.add(Items.ENDERMAN_SPAWN_EGG);
 					entries.add(Items.ENDERMITE_SPAWN_EGG);
 					entries.add(Items.EVOKER_SPAWN_EGG);
-					entries.add(Items.BREEZE_SPAWN_EGG);
 					entries.add(Items.FOX_SPAWN_EGG);
 					entries.add(Items.FROG_SPAWN_EGG);
 					entries.add(Items.GHAST_SPAWN_EGG);

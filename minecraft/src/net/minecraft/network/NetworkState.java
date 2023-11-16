@@ -167,7 +167,8 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreResetS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
@@ -283,6 +284,7 @@ public enum NetworkState {
 					.register(UnlockRecipesS2CPacket.class, UnlockRecipesS2CPacket::new)
 					.register(EntitiesDestroyS2CPacket.class, EntitiesDestroyS2CPacket::new)
 					.register(RemoveEntityStatusEffectS2CPacket.class, RemoveEntityStatusEffectS2CPacket::new)
+					.register(ScoreboardScoreResetS2CPacket.class, ScoreboardScoreResetS2CPacket::new)
 					.register(ResourcePackSendS2CPacket.class, ResourcePackSendS2CPacket::new)
 					.register(PlayerRespawnS2CPacket.class, PlayerRespawnS2CPacket::new)
 					.register(EntitySetHeadYawS2CPacket.class, EntitySetHeadYawS2CPacket::new)
@@ -310,7 +312,7 @@ public enum NetworkState {
 					.register(ScoreboardObjectiveUpdateS2CPacket.class, ScoreboardObjectiveUpdateS2CPacket::new)
 					.register(EntityPassengersSetS2CPacket.class, EntityPassengersSetS2CPacket::new)
 					.register(TeamS2CPacket.class, TeamS2CPacket::new)
-					.register(ScoreboardPlayerUpdateS2CPacket.class, ScoreboardPlayerUpdateS2CPacket::new)
+					.register(ScoreboardScoreUpdateS2CPacket.class, ScoreboardScoreUpdateS2CPacket::new)
 					.register(SimulationDistanceS2CPacket.class, SimulationDistanceS2CPacket::new)
 					.register(SubtitleS2CPacket.class, SubtitleS2CPacket::new)
 					.register(WorldTimeUpdateS2CPacket.class, WorldTimeUpdateS2CPacket::new)

@@ -30,8 +30,7 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		implements AbstractCriterion.Conditions {
 		public static final Codec<OnKilledCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(OnKilledCriterion.Conditions::getPlayerPredicate),
+						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(OnKilledCriterion.Conditions::player),
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(OnKilledCriterion.Conditions::entity),
 						Codecs.createStrictOptionalFieldCodec(DamageSourcePredicate.CODEC, "killing_blow").forGetter(OnKilledCriterion.Conditions::killingBlow)
 					)
@@ -174,11 +173,6 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		public void validate(LootContextPredicateValidator validator) {
 			AbstractCriterion.Conditions.super.validate(validator);
 			validator.validateEntityPredicate(this.entity, ".entity");
-		}
-
-		@Override
-		public Optional<LootContextPredicate> getPlayerPredicate() {
-			return this.player;
 		}
 	}
 }

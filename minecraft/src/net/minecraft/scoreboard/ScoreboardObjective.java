@@ -1,5 +1,8 @@
 package net.minecraft.scoreboard;
 
+import java.util.Objects;
+import javax.annotation.Nullable;
+import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -12,14 +15,27 @@ public class ScoreboardObjective {
 	private Text displayName;
 	private Text bracketedDisplayName;
 	private ScoreboardCriterion.RenderType renderType;
+	private boolean displayAutoUpdate;
+	@Nullable
+	private NumberFormat numberFormat;
 
-	public ScoreboardObjective(Scoreboard scoreboard, String name, ScoreboardCriterion criterion, Text displayName, ScoreboardCriterion.RenderType renderType) {
+	public ScoreboardObjective(
+		Scoreboard scoreboard,
+		String name,
+		ScoreboardCriterion criterion,
+		Text displayName,
+		ScoreboardCriterion.RenderType renderType,
+		boolean displayAutoUpdate,
+		@Nullable NumberFormat numberFormat
+	) {
 		this.scoreboard = scoreboard;
 		this.name = name;
 		this.criterion = criterion;
 		this.displayName = displayName;
 		this.bracketedDisplayName = this.generateBracketedDisplayName();
 		this.renderType = renderType;
+		this.displayAutoUpdate = displayAutoUpdate;
+		this.numberFormat = numberFormat;
 	}
 
 	public Scoreboard getScoreboard() {
@@ -36,6 +52,19 @@ public class ScoreboardObjective {
 
 	public Text getDisplayName() {
 		return this.displayName;
+	}
+
+	public boolean shouldDisplayAutoUpdate() {
+		return this.displayAutoUpdate;
+	}
+
+	@Nullable
+	public NumberFormat getNumberFormat() {
+		return this.numberFormat;
+	}
+
+	public NumberFormat getNumberFormatOr(NumberFormat format) {
+		return (NumberFormat)Objects.requireNonNullElse(this.numberFormat, format);
 	}
 
 	private Text generateBracketedDisplayName() {
@@ -58,6 +87,16 @@ public class ScoreboardObjective {
 
 	public void setRenderType(ScoreboardCriterion.RenderType renderType) {
 		this.renderType = renderType;
+		this.scoreboard.updateExistingObjective(this);
+	}
+
+	public void setDisplayAutoUpdate(boolean displayAutoUpdate) {
+		this.displayAutoUpdate = displayAutoUpdate;
+		this.scoreboard.updateExistingObjective(this);
+	}
+
+	public void setNumberFormat(@Nullable NumberFormat numberFormat) {
+		this.numberFormat = numberFormat;
 		this.scoreboard.updateExistingObjective(this);
 	}
 }

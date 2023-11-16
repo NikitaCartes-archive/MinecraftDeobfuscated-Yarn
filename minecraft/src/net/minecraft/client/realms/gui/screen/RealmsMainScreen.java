@@ -158,7 +158,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.serverFilterer = new RealmsServerFilterer(this.client);
-		this.realmSelectionList = this.addDrawableChild(new RealmsMainScreen.RealmSelectionList());
+		this.realmSelectionList = new RealmsMainScreen.RealmSelectionList();
 		Text text = Text.translatable("mco.invites.title");
 		this.inviteButton = new RealmsMainScreen.NotificationButtonWidget(
 			text, INVITE_ICON_TEXTURE, button -> this.client.setScreen(new RealmsPendingInvitesScreen(this, text))
@@ -212,7 +212,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Override
 	protected void initTabNavigation() {
 		if (this.layout != null) {
-			this.realmSelectionList.updateSize(this.width, this.height, this.layout.getHeaderHeight(), this.height - this.layout.getFooterHeight());
+			this.realmSelectionList.setDimensions(this.width, this.height - this.layout.getFooterHeight() - this.layout.getHeaderHeight());
 			this.layout.refreshPositions();
 		}
 	}
@@ -253,6 +253,9 @@ public class RealmsMainScreen extends RealmsScreen {
 				break;
 			case NO_REALMS:
 				threePartsLayoutWidget.addBody(this.makeNoRealmsLayout());
+				break;
+			case LIST:
+				threePartsLayoutWidget.addBody(this.realmSelectionList);
 		}
 
 		return threePartsLayoutWidget;
@@ -898,7 +901,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class RealmSelectionList extends RealmsObjectSelectionList<RealmsMainScreen.Entry> {
 		public RealmSelectionList() {
-			super(RealmsMainScreen.this.width, RealmsMainScreen.this.height, 0, RealmsMainScreen.this.height, 36);
+			super(RealmsMainScreen.this.width, RealmsMainScreen.this.height, 0, 36);
 		}
 
 		public void setSelected(@Nullable RealmsMainScreen.Entry entry) {

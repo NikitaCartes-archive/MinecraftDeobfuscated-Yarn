@@ -15,6 +15,7 @@ import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.command.argument.TeamArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
@@ -99,7 +100,7 @@ public class TeamCommand {
 										context -> executeJoin(
 												(ServerCommandSource)context.getSource(),
 												TeamArgumentType.getTeam(context, "team"),
-												Collections.singleton(((ServerCommandSource)context.getSource()).getEntityOrThrow().getEntityName())
+												Collections.singleton(((ServerCommandSource)context.getSource()).getEntityOrThrow())
 											)
 									))
 								.then(
@@ -291,15 +292,19 @@ public class TeamCommand {
 		);
 	}
 
-	private static int executeLeave(ServerCommandSource source, Collection<String> members) {
+	private static Text getMemberName(Collection<ScoreHolder> members) {
+		return ((ScoreHolder)members.iterator().next()).getStyledDisplayName();
+	}
+
+	private static int executeLeave(ServerCommandSource source, Collection<ScoreHolder> members) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 
-		for(String string : members) {
-			scoreboard.clearPlayerTeam(string);
+		for(ScoreHolder scoreHolder : members) {
+			scoreboard.clearTeam(scoreHolder.getNameForScoreboard());
 		}
 
 		if (members.size() == 1) {
-			source.sendFeedback(() -> Text.translatable("commands.team.leave.success.single", members.iterator().next()), true);
+			source.sendFeedback(() -> Text.translatable("commands.team.leave.success.single", getMemberName(members)), true);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.team.leave.success.multiple", members.size()), true);
 		}
@@ -307,15 +312,15 @@ public class TeamCommand {
 		return members.size();
 	}
 
-	private static int executeJoin(ServerCommandSource source, Team team, Collection<String> members) {
+	private static int executeJoin(ServerCommandSource source, Team team, Collection<ScoreHolder> members) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 
-		for(String string : members) {
-			scoreboard.addPlayerToTeam(string, team);
+		for(ScoreHolder scoreHolder : members) {
+			scoreboard.addScoreHolderToTeam(scoreHolder.getNameForScoreboard(), team);
 		}
 
 		if (members.size() == 1) {
-			source.sendFeedback(() -> Text.translatable("commands.team.join.success.single", members.iterator().next(), team.getFormattedName()), true);
+			source.sendFeedback(() -> Text.translatable("commands.team.join.success.single", getMemberName(members), team.getFormattedName()), true);
 		} else {
 			source.sendFeedback(() -> Text.translatable("commands.team.join.success.multiple", members.size(), team.getFormattedName()), true);
 		}
@@ -412,7 +417,7 @@ public class TeamCommand {
 			throw EMPTY_UNCHANGED_EXCEPTION.create();
 		} else {
 			for(String string : collection) {
-				scoreboard.removePlayerFromTeam(string, team);
+				scoreboard.removeScoreHolderFromTeam(string, team);
 			}
 
 			source.sendFeedback(() -> Text.translatable("commands.team.empty.success", collection.size(), team.getFormattedName()), true);

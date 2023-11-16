@@ -1911,7 +1911,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public String getEntityName() {
+	public String getNameForScoreboard() {
 		return this.getGameProfile().getName();
 	}
 

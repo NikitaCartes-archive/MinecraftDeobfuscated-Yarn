@@ -95,12 +95,10 @@ public class PackScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.availablePackList = new PackListWidget(this.client, this, 200, this.height, Text.translatable("pack.available.title"));
-		this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
-		this.addSelectableChild(this.availablePackList);
-		this.selectedPackList = new PackListWidget(this.client, this, 200, this.height, Text.translatable("pack.selected.title"));
-		this.selectedPackList.setLeftPos(this.width / 2 + 4);
-		this.addSelectableChild(this.selectedPackList);
+		this.availablePackList = this.addDrawableChild(new PackListWidget(this.client, this, 200, this.height, Text.translatable("pack.available.title")));
+		this.availablePackList.setX(this.width / 2 - 4 - 200);
+		this.selectedPackList = this.addDrawableChild(new PackListWidget(this.client, this, 200, this.height, Text.translatable("pack.selected.title")));
+		this.selectedPackList.setX(this.width / 2 + 4);
 		this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri()))
 				.dimensions(this.width / 2 - 154, this.height - 48, 150, 20)
@@ -171,8 +169,6 @@ public class PackScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.availablePackList.render(context, mouseX, mouseY, delta);
-		this.selectedPackList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		context.drawCenteredTextWithShadow(this.textRenderer, DROP_INFO, this.width / 2, 20, 16777215);
 	}
