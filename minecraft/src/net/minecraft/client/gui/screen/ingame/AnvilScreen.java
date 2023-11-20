@@ -62,7 +62,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 			this.client.player.closeHandledScreen();
 		}
 
-		return !this.nameField.keyPressed(keyCode, scanCode, modifiers) && !this.nameField.isActive() ? super.keyPressed(keyCode, scanCode, modifiers) : true;
+		return this.nameField.isActive() ? true : super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	private void onRenamed(String name) {

@@ -543,7 +543,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					LootPool.builder()
 						.rolls(UniformLootNumberProvider.create(3.0F, 8.0F))
 						.with(ItemEntry.builder(Items.GOLD_NUGGET).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Items.GRASS).weight(5))
+						.with(ItemEntry.builder(Items.SHORT_GRASS).weight(5))
 						.with(ItemEntry.builder(Items.TALL_GRASS).weight(5))
 						.with(ItemEntry.builder(Items.BREAD).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
 						.with(ItemEntry.builder(Items.WHEAT_SEEDS).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 5.0F))))

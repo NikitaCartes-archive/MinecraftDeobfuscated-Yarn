@@ -25,7 +25,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
-import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -44,6 +43,7 @@ import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -112,7 +112,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			throw new IllegalStateException("Protocol error", var9);
 		}
 
-		NetworkUtils.EXECUTOR.submit((Runnable)(() -> {
+		Util.getIoWorkerExecutor().submit(() -> {
 			Text text = this.joinServerSession(string);
 			if (text != null) {
 				if (this.serverInfo == null || !this.serverInfo.isLocal()) {
@@ -125,7 +125,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 			this.switchTo(ClientLoginNetworkHandler.State.ENCRYPTING);
 			this.connection.send(loginKeyC2SPacket, PacketCallbacks.always(() -> this.connection.setupEncryption(cipher, cipher2)));
-		}));
+		});
 	}
 
 	@Nullable

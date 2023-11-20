@@ -18,5 +18,6 @@ public class OneTwentyOneEntityTypeTagProvider extends ValueLookupTagProvider<En
 		this.getOrCreateTagBuilder(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(EntityType.BREEZE);
 		this.getOrCreateTagBuilder(EntityTypeTags.DEFLECTS_ARROWS).add(EntityType.BREEZE);
 		this.getOrCreateTagBuilder(EntityTypeTags.DEFLECTS_TRIDENTS).add(EntityType.BREEZE);
+		this.getOrCreateTagBuilder(EntityTypeTags.CAN_TURN_IN_BOATS).add(EntityType.BREEZE);
 	}
 }

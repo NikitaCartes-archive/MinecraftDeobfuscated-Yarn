@@ -1,22 +1,18 @@
 package net.minecraft.network.packet.c2s.common;
 
+import java.util.UUID;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerCommonPacketListener;
 import net.minecraft.network.packet.Packet;
 
-public class ResourcePackStatusC2SPacket implements Packet<ServerCommonPacketListener> {
-	private final ResourcePackStatusC2SPacket.Status status;
-
-	public ResourcePackStatusC2SPacket(ResourcePackStatusC2SPacket.Status status) {
-		this.status = status;
-	}
-
+public record ResourcePackStatusC2SPacket(UUID id, ResourcePackStatusC2SPacket.Status status) implements Packet<ServerCommonPacketListener> {
 	public ResourcePackStatusC2SPacket(PacketByteBuf buf) {
-		this.status = buf.readEnumConstant(ResourcePackStatusC2SPacket.Status.class);
+		this(buf.readUuid(), buf.readEnumConstant(ResourcePackStatusC2SPacket.Status.class));
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
+		buf.writeUuid(this.id);
 		buf.writeEnumConstant(this.status);
 	}
 
@@ -24,14 +20,13 @@ public class ResourcePackStatusC2SPacket implements Packet<ServerCommonPacketLis
 		serverCommonPacketListener.onResourcePackStatus(this);
 	}
 
-	public ResourcePackStatusC2SPacket.Status getStatus() {
-		return this.status;
-	}
-
 	public static enum Status {
 		SUCCESSFULLY_LOADED,
 		DECLINED,
 		FAILED_DOWNLOAD,
-		ACCEPTED;
+		ACCEPTED,
+		INVALID_URL,
+		FAILED_RELOAD,
+		DISCARDED;
 	}
 }

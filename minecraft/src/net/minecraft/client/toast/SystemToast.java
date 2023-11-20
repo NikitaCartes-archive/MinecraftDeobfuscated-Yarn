@@ -24,6 +24,7 @@ public class SystemToast implements Toast {
 	private long startTime;
 	private boolean justUpdated;
 	private final int width;
+	private boolean hidden;
 
 	public SystemToast(SystemToast.Type type, Text title, @Nullable Text description) {
 		this(
@@ -68,6 +69,10 @@ public class SystemToast implements Toast {
 		return 20 + Math.max(this.lines.size(), 1) * 12;
 	}
 
+	public void hide() {
+		this.hidden = true;
+	}
+
 	@Override
 	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
 		if (this.justUpdated) {
@@ -91,7 +96,7 @@ public class SystemToast implements Toast {
 			this.drawPart(context, i, 32 - l, j - l, l);
 		}
 
-		if (this.lines == null) {
+		if (this.lines.isEmpty()) {
 			context.drawText(manager.getClient().textRenderer, this.title, 18, 12, -256, false);
 		} else {
 			context.drawText(manager.getClient().textRenderer, this.title, 18, 7, -256, false);
@@ -101,9 +106,9 @@ public class SystemToast implements Toast {
 			}
 		}
 
-		return (double)(startTime - this.startTime) < (double)this.type.displayDuration * manager.getNotificationDisplayTimeMultiplier()
-			? Toast.Visibility.SHOW
-			: Toast.Visibility.HIDE;
+		double d = (double)this.type.displayDuration * manager.getNotificationDisplayTimeMultiplier();
+		long n = startTime - this.startTime;
+		return !this.hidden && (double)n < d ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
 	private void drawPart(DrawContext context, int i, int j, int k, int l) {
@@ -142,6 +147,13 @@ public class SystemToast implements Toast {
 		}
 	}
 
+	public static void hide(ToastManager manager, SystemToast.Type type) {
+		SystemToast systemToast = manager.getToast(SystemToast.class, type);
+		if (systemToast != null) {
+			systemToast.hide();
+		}
+	}
+
 	public static void addWorldAccessFailureToast(MinecraftClient client, String worldName) {
 		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, Text.translatable("selectWorld.access_failure"), Text.literal(worldName));
 	}
@@ -155,23 +167,21 @@ public class SystemToast implements Toast {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum Type {
-		TUTORIAL_HINT,
-		NARRATOR_TOGGLE,
-		WORLD_BACKUP,
-		PACK_LOAD_FAILURE,
-		WORLD_ACCESS_FAILURE,
-		PACK_COPY_FAILURE,
-		PERIODIC_NOTIFICATION,
-		UNSECURE_SERVER_WARNING(10000L);
-
+	public static class Type {
+		public static final SystemToast.Type NARRATOR_TOGGLE = new SystemToast.Type();
+		public static final SystemToast.Type WORLD_BACKUP = new SystemToast.Type();
+		public static final SystemToast.Type PACK_LOAD_FAILURE = new SystemToast.Type();
+		public static final SystemToast.Type WORLD_ACCESS_FAILURE = new SystemToast.Type();
+		public static final SystemToast.Type PACK_COPY_FAILURE = new SystemToast.Type();
+		public static final SystemToast.Type PERIODIC_NOTIFICATION = new SystemToast.Type();
+		public static final SystemToast.Type UNSECURE_SERVER_WARNING = new SystemToast.Type(10000L);
 		final long displayDuration;
 
-		private Type(long displayDuration) {
+		public Type(long displayDuration) {
 			this.displayDuration = displayDuration;
 		}
 
-		private Type() {
+		public Type() {
 			this(5000L);
 		}
 	}

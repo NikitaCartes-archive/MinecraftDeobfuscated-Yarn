@@ -20,6 +20,7 @@ import net.minecraft.data.report.CommandSyntaxProvider;
 import net.minecraft.data.report.DynamicRegistriesProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
 import net.minecraft.data.server.BiomeParametersProvider;
+import net.minecraft.data.server.advancement.onetwentyone.OneTwentyOneAdvancementProviders;
 import net.minecraft.data.server.advancement.vanilla.VanillaAdvancementProviders;
 import net.minecraft.data.server.loottable.onetwentyone.OneTwentyOneLootTableProviders;
 import net.minecraft.data.server.loottable.rebalance.TradeRebalanceLootTableProviders;
@@ -183,6 +184,7 @@ public class Main {
 		);
 		pack4.addProvider(toFactory(OneTwentyOneEntityTypeTagProvider::new, completableFuture3));
 		pack4.addProvider(toFactory(OneTwentyOneDamageTypeTagProvider::new, completableFuture3));
+		pack4.addProvider(toFactory(OneTwentyOneAdvancementProviders::createOneTwentyOneProvider, completableFuture3));
 		return dataGenerator;
 	}
 }

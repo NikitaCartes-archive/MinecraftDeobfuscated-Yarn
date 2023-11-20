@@ -31,6 +31,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -663,13 +664,15 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 	@Override
 	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		super.updatePassengerPosition(passenger, positionUpdater);
-		passenger.setYaw(passenger.getYaw() + this.yawVelocity);
-		passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
-		this.clampPassengerYaw(passenger);
-		if (passenger instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
-			int i = passenger.getId() % 2 == 0 ? 90 : 270;
-			passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)i);
-			passenger.setHeadYaw(passenger.getHeadYaw() + (float)i);
+		if (!passenger.getType().isIn(EntityTypeTags.CAN_TURN_IN_BOATS)) {
+			passenger.setYaw(passenger.getYaw() + this.yawVelocity);
+			passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
+			this.clampPassengerYaw(passenger);
+			if (passenger instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
+				int i = passenger.getId() % 2 == 0 ? 90 : 270;
+				passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)i);
+				passenger.setHeadYaw(passenger.getHeadYaw() + (float)i);
+			}
 		}
 	}
 

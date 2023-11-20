@@ -1,39 +1,34 @@
 package net.minecraft.network.packet.s2c.common;
 
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 
-public class ResourcePackSendS2CPacket implements Packet<ClientCommonPacketListener> {
+public record ResourcePackSendS2CPacket(UUID id, String url, String hash, boolean required, @Nullable Text prompt) implements Packet<ClientCommonPacketListener> {
 	public static final int MAX_HASH_LENGTH = 40;
-	private final String url;
-	private final String hash;
-	private final boolean required;
-	@Nullable
-	private final Text prompt;
 
-	public ResourcePackSendS2CPacket(String url, String hash, boolean required, @Nullable Text prompt) {
-		if (hash.length() > 40) {
-			throw new IllegalArgumentException("Hash is too long (max 40, was " + hash.length() + ")");
+	public ResourcePackSendS2CPacket(UUID uUID, String string, String string2, boolean bl, @Nullable Text text) {
+		if (string2.length() > 40) {
+			throw new IllegalArgumentException("Hash is too long (max 40, was " + string2.length() + ")");
 		} else {
-			this.url = url;
-			this.hash = hash;
-			this.required = required;
-			this.prompt = prompt;
+			this.id = uUID;
+			this.url = string;
+			this.hash = string2;
+			this.required = bl;
+			this.prompt = text;
 		}
 	}
 
 	public ResourcePackSendS2CPacket(PacketByteBuf buf) {
-		this.url = buf.readString();
-		this.hash = buf.readString(40);
-		this.required = buf.readBoolean();
-		this.prompt = buf.readNullable(PacketByteBuf::readUnlimitedText);
+		this(buf.readUuid(), buf.readString(), buf.readString(40), buf.readBoolean(), buf.readNullable(PacketByteBuf::readUnlimitedText));
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
+		buf.writeUuid(this.id);
 		buf.writeString(this.url);
 		buf.writeString(this.hash);
 		buf.writeBoolean(this.required);
@@ -42,22 +37,5 @@ public class ResourcePackSendS2CPacket implements Packet<ClientCommonPacketListe
 
 	public void apply(ClientCommonPacketListener clientCommonPacketListener) {
 		clientCommonPacketListener.onResourcePackSend(this);
-	}
-
-	public String getUrl() {
-		return this.url;
-	}
-
-	public String getHash() {
-		return this.hash;
-	}
-
-	public boolean isRequired() {
-		return this.required;
-	}
-
-	@Nullable
-	public Text getPrompt() {
-		return this.prompt;
 	}
 }

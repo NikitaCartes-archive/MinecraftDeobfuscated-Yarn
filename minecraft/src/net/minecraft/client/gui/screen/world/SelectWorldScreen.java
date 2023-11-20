@@ -76,18 +76,8 @@ public class SelectWorldScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return super.keyPressed(keyCode, scanCode, modifiers) ? true : this.searchBox.keyPressed(keyCode, scanCode, modifiers);
-	}
-
-	@Override
 	public void close() {
 		this.client.setScreen(this.parent);
-	}
-
-	@Override
-	public boolean charTyped(char chr, int modifiers) {
-		return this.searchBox.charTyped(chr, modifiers);
 	}
 
 	@Override

@@ -93,9 +93,9 @@ public class Util {
 	private static final int MAX_PARALLELISM = 255;
 	private static final int BACKUP_ATTEMPTS = 10;
 	private static final String MAX_BG_THREADS_PROPERTY = "max.bg.threads";
-	private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
 	private static final ExecutorService MAIN_WORKER_EXECUTOR = createWorker("Main");
-	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker();
+	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker("IO-Worker-", false);
+	private static final ExecutorService DOWNLOAD_WORKER_EXECUTOR = createIoWorker("Download-", true);
 	/**
 	 * A locale-independent datetime formatter that uses {@code yyyy-MM-dd_HH.mm.ss}
 	 * as the format string. Example: {@code 2022-01-01_00.00.00}
@@ -196,8 +196,9 @@ public class Util {
 		if (i <= 0) {
 			executorService = MoreExecutors.newDirectExecutorService();
 		} else {
-			executorService = new ForkJoinPool(i, forkJoinPool -> {
-				ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool) {
+			AtomicInteger atomicInteger = new AtomicInteger(1);
+			executorService = new ForkJoinPool(i, pool -> {
+				ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(pool) {
 					protected void onTermination(Throwable throwable) {
 						if (throwable != null) {
 							Util.LOGGER.warn("{} died", this.getName(), throwable);
@@ -208,7 +209,7 @@ public class Util {
 						super.onTermination(throwable);
 					}
 				};
-				forkJoinWorkerThread.setName("Worker-" + name + "-" + NEXT_WORKER_ID.getAndIncrement());
+				forkJoinWorkerThread.setName("Worker-" + name + "-" + atomicInteger.getAndIncrement());
 				return forkJoinWorkerThread;
 			}, Util::uncaughtExceptionHandler, true);
 		}
@@ -248,6 +249,13 @@ public class Util {
 		return IO_WORKER_EXECUTOR;
 	}
 
+	/**
+	 * {@return the executor for download tasks}
+	 */
+	public static ExecutorService getDownloadWorkerExecutor() {
+		return DOWNLOAD_WORKER_EXECUTOR;
+	}
+
 	public static void shutdownExecutors() {
 		attemptShutdown(MAIN_WORKER_EXECUTOR);
 		attemptShutdown(IO_WORKER_EXECUTOR);
@@ -268,10 +276,12 @@ public class Util {
 		}
 	}
 
-	private static ExecutorService createIoWorker() {
+	private static ExecutorService createIoWorker(String namePrefix, boolean daemon) {
+		AtomicInteger atomicInteger = new AtomicInteger(1);
 		return Executors.newCachedThreadPool(runnable -> {
 			Thread thread = new Thread(runnable);
-			thread.setName("IO-Worker-" + NEXT_WORKER_ID.getAndIncrement());
+			thread.setName(namePrefix + atomicInteger.getAndIncrement());
+			thread.setDaemon(daemon);
 			thread.setUncaughtExceptionHandler(Util::uncaughtExceptionHandler);
 			return thread;
 		});

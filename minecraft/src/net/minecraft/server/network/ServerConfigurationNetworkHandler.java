@@ -93,7 +93,7 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 	@Override
 	public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
 		super.onResourcePackStatus(packet);
-		if (packet.getStatus() != ResourcePackStatusC2SPacket.Status.ACCEPTED) {
+		if (packet.status() != ResourcePackStatusC2SPacket.Status.ACCEPTED) {
 			this.onTaskFinished(SendResourcePackTask.KEY);
 		}
 	}

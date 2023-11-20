@@ -54,7 +54,7 @@ public class RealmsWorldOptions extends ValueObject {
 		boolean forceGameMode,
 		String slotName,
 		String version,
-		RealmsServer.Compatibility comptaibility
+		RealmsServer.Compatibility compatibility
 	) {
 		this.pvp = pvp;
 		this.spawnAnimals = spawnAnimals;
@@ -67,7 +67,7 @@ public class RealmsWorldOptions extends ValueObject {
 		this.forceGameMode = forceGameMode;
 		this.slotName = slotName;
 		this.version = version;
-		this.compatibility = comptaibility;
+		this.compatibility = compatibility;
 	}
 
 	public static RealmsWorldOptions getDefaults() {

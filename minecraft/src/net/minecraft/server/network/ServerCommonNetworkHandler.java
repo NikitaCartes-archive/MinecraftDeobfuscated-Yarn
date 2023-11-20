@@ -74,8 +74,8 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	@Override
 	public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.server);
-		if (packet.getStatus() == ResourcePackStatusC2SPacket.Status.DECLINED && this.server.requireResourcePack()) {
-			LOGGER.info("Disconnecting {} due to resource pack rejection", this.getProfile().getName());
+		if (packet.status() == ResourcePackStatusC2SPacket.Status.DECLINED && this.server.requireResourcePack()) {
+			LOGGER.info("Disconnecting {} due to resource pack {} rejection", this.getProfile().getName(), packet.id());
 			this.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
 		}
 	}

@@ -382,7 +382,20 @@ public class Keyboard {
 			}
 
 			if (this.client.getNarratorManager().isActive() && this.client.options.getNarratorHotkey().getValue()) {
-				boolean bl2 = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
+				boolean var10000;
+				label136: {
+					if (screen != null) {
+						Element bl4 = screen.getFocused();
+						if (bl4 instanceof TextFieldWidget textFieldWidget && textFieldWidget.isActive()) {
+							var10000 = false;
+							break label136;
+						}
+					}
+
+					var10000 = true;
+				}
+
+				boolean bl2 = var10000;
 				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl2) {
 					boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
 					this.client.options.getNarrator().setValue(NarratorMode.byId(((NarratorMode)this.client.options.getNarrator().getValue()).getId() + 1));
@@ -413,12 +426,12 @@ public class Keyboard {
 			}
 
 			if (this.client.currentScreen != null) {
-				Screen var14 = this.client.currentScreen;
-				if (!(var14 instanceof GameMenuScreen)) {
+				Screen var15 = this.client.currentScreen;
+				if (!(var15 instanceof GameMenuScreen)) {
 					return;
 				}
 
-				GameMenuScreen gameMenuScreen = (GameMenuScreen)var14;
+				GameMenuScreen gameMenuScreen = (GameMenuScreen)var15;
 				if (gameMenuScreen.shouldShowMenu()) {
 					return;
 				}

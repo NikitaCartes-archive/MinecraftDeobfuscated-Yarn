@@ -19,6 +19,10 @@ public class ExplosionBehavior {
 		return true;
 	}
 
+	public boolean shouldDamage(Explosion explosion, Entity entity) {
+		return true;
+	}
+
 	public float calculateDamage(Explosion explosion, Entity entity) {
 		float f = explosion.getPower() * 2.0F;
 		Vec3d vec3d = explosion.getPosition();

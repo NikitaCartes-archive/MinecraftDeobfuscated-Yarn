@@ -4,6 +4,7 @@ import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 
@@ -17,6 +18,8 @@ public interface ClientCommonPacketListener extends ClientPacketListener {
 	void onDisconnect(DisconnectS2CPacket packet);
 
 	void onResourcePackSend(ResourcePackSendS2CPacket packet);
+
+	void onResourcePackRemove(ResourcePackRemoveS2CPacket packet);
 
 	void onSynchronizeTags(SynchronizeTagsS2CPacket packet);
 }

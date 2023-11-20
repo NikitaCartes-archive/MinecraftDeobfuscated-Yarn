@@ -303,7 +303,7 @@ public class UndergroundConfiguredFeatures {
 						.add(Blocks.FLOWERING_AZALEA.getDefaultState(), 4)
 						.add(Blocks.AZALEA.getDefaultState(), 7)
 						.add(Blocks.MOSS_CARPET.getDefaultState(), 25)
-						.add(Blocks.GRASS.getDefaultState(), 50)
+						.add(Blocks.SHORT_GRASS.getDefaultState(), 50)
 						.add(Blocks.TALL_GRASS.getDefaultState(), 10)
 				)
 			)

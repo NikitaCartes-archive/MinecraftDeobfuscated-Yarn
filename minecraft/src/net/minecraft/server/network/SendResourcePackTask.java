@@ -16,7 +16,9 @@ public class SendResourcePackTask implements ServerPlayerConfigurationTask {
 	@Override
 	public void sendPacket(Consumer<Packet<?>> sender) {
 		sender.accept(
-			new ResourcePackSendS2CPacket(this.packProperties.url(), this.packProperties.hash(), this.packProperties.isRequired(), this.packProperties.prompt())
+			new ResourcePackSendS2CPacket(
+				this.packProperties.id(), this.packProperties.url(), this.packProperties.hash(), this.packProperties.isRequired(), this.packProperties.prompt()
+			)
 		);
 	}
 

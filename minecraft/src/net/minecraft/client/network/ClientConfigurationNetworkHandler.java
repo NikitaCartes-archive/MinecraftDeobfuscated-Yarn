@@ -17,6 +17,7 @@ import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -91,5 +92,11 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	@Override
 	public void tick() {
 		this.sendQueuedPackets();
+	}
+
+	@Override
+	public void onDisconnected(Text reason) {
+		super.onDisconnected(reason);
+		this.client.onDisconnected();
 	}
 }
