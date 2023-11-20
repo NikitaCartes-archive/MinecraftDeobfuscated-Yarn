@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -24,6 +24,7 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
+import net.minecraft.client.resource.server.ServerResourcePackLoader;
 import net.minecraft.client.session.telemetry.WorldSession;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
@@ -40,6 +41,7 @@ import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -109,44 +111,47 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 
 	@Override
 	public void onResourcePackSend(ResourcePackSendS2CPacket packet) {
-		URL uRL = getParsedResourcePackUrl(packet.getUrl());
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		UUID uUID = packet.id();
+		URL uRL = getParsedResourcePackUrl(packet.url());
 		if (uRL == null) {
-			this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
+			this.connection.send(new ResourcePackStatusC2SPacket(uUID, ResourcePackStatusC2SPacket.Status.INVALID_URL));
 		} else {
-			String string = packet.getHash();
-			boolean bl = packet.isRequired();
-			if (this.serverInfo != null && this.serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.ENABLED) {
-				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-				this.sendResourcePackStatusAfter(this.client.getServerResourcePackProvider().download(uRL, string, true));
-			} else if (this.serverInfo != null
+			String string = packet.hash();
+			boolean bl = packet.required();
+			if (this.serverInfo != null
 				&& this.serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.PROMPT
 				&& (!bl || this.serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.DISABLED)) {
-				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
-				if (bl) {
-					this.connection.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
-				}
+				this.client.getServerResourcePackProvider().addResourcePack(uUID, uRL, string);
 			} else {
-				this.client.execute(() -> this.showPackConfirmationScreen(uRL, string, bl, packet.getPrompt()));
+				this.showPackConfirmationScreen(uUID, uRL, string, bl, packet.prompt());
 			}
 		}
 	}
 
-	private void showPackConfirmationScreen(URL packUrl, String sha1, boolean required, @Nullable Text prompt) {
+	@Override
+	public void onResourcePackRemove(ResourcePackRemoveS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		packet.id().ifPresentOrElse(id -> this.client.getServerResourcePackProvider().remove(id), () -> this.client.getServerResourcePackProvider().removeAll());
+	}
+
+	private void showPackConfirmationScreen(UUID id, URL url, String hash, boolean required, @Nullable Text prompt) {
 		Screen screen = this.client.currentScreen;
 		this.client
 			.setScreen(
 				new ConfirmScreen(
 					confirmed -> {
 						this.client.setScreen(screen);
+						ServerResourcePackLoader serverResourcePackLoader = this.client.getServerResourcePackProvider();
+						serverResourcePackLoader.addResourcePack(id, url, hash);
 						if (confirmed) {
 							if (this.serverInfo != null) {
 								this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
 							}
 
-							this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-							this.sendResourcePackStatusAfter(this.client.getServerResourcePackProvider().download(packUrl, sha1, true));
+							serverResourcePackLoader.acceptAll();
 						} else {
-							this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
+							serverResourcePackLoader.declineAll();
 							if (required) {
 								this.connection.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
 							} else if (this.serverInfo != null) {
@@ -186,13 +191,6 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		}
 	}
 
-	private void sendResourcePackStatusAfter(CompletableFuture<?> future) {
-		future.thenRun(() -> this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED)).exceptionally(throwable -> {
-			this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
-			return null;
-		});
-	}
-
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
@@ -208,10 +206,6 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 			TagPacketSerializer.loadTags(registryRef, registry, tags, map::put);
 			registry.populateTags(map);
 		}
-	}
-
-	private void sendResourcePackStatus(ResourcePackStatusC2SPacket.Status status) {
-		this.connection.send(new ResourcePackStatusC2SPacket(status));
 	}
 
 	@Override

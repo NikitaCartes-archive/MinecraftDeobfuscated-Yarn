@@ -82,6 +82,7 @@ import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
@@ -285,6 +286,7 @@ public enum NetworkState {
 					.register(EntitiesDestroyS2CPacket.class, EntitiesDestroyS2CPacket::new)
 					.register(RemoveEntityStatusEffectS2CPacket.class, RemoveEntityStatusEffectS2CPacket::new)
 					.register(ScoreboardScoreResetS2CPacket.class, ScoreboardScoreResetS2CPacket::new)
+					.register(ResourcePackRemoveS2CPacket.class, ResourcePackRemoveS2CPacket::new)
 					.register(ResourcePackSendS2CPacket.class, ResourcePackSendS2CPacket::new)
 					.register(PlayerRespawnS2CPacket.class, PlayerRespawnS2CPacket::new)
 					.register(EntitySetHeadYawS2CPacket.class, EntitySetHeadYawS2CPacket::new)
@@ -444,6 +446,7 @@ public enum NetworkState {
 					.register(KeepAliveS2CPacket.class, KeepAliveS2CPacket::new)
 					.register(CommonPingS2CPacket.class, CommonPingS2CPacket::new)
 					.register(DynamicRegistriesS2CPacket.class, DynamicRegistriesS2CPacket::new)
+					.register(ResourcePackRemoveS2CPacket.class, ResourcePackRemoveS2CPacket::new)
 					.register(ResourcePackSendS2CPacket.class, ResourcePackSendS2CPacket::new)
 					.register(FeaturesS2CPacket.class, FeaturesS2CPacket::new)
 					.register(SynchronizeTagsS2CPacket.class, SynchronizeTagsS2CPacket::new)

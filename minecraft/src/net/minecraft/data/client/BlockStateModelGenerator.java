@@ -2847,7 +2847,7 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void registerGrassPath() {
+	private void registerDirtPath() {
 		this.blockStateCollector.accept(createBlockStateWithRandomHorizontalRotations(Blocks.DIRT_PATH, ModelIds.getBlockModelId(Blocks.DIRT_PATH)));
 	}
 
@@ -4126,7 +4126,7 @@ public class BlockStateModelGenerator {
 		this.registerFrostedIce();
 		this.registerTopSoils();
 		this.registerCocoa();
-		this.registerGrassPath();
+		this.registerDirtPath();
 		this.registerGrindstone();
 		this.registerHopper();
 		this.registerIronBars();
@@ -4451,7 +4451,7 @@ public class BlockStateModelGenerator {
 		this.registerMushroomBlock(Blocks.BROWN_MUSHROOM_BLOCK);
 		this.registerMushroomBlock(Blocks.RED_MUSHROOM_BLOCK);
 		this.registerMushroomBlock(Blocks.MUSHROOM_STEM);
-		this.registerTintableCross(Blocks.GRASS, BlockStateModelGenerator.TintType.TINTED);
+		this.registerTintableCross(Blocks.SHORT_GRASS, BlockStateModelGenerator.TintType.TINTED);
 		this.registerTintableCrossBlockState(Blocks.SUGAR_CANE, BlockStateModelGenerator.TintType.TINTED);
 		this.registerItemModel(Items.SUGAR_CANE);
 		this.registerPlantPart(Blocks.KELP, Blocks.KELP_PLANT, BlockStateModelGenerator.TintType.NOT_TINTED);

@@ -433,7 +433,7 @@ public class ScoreboardCommand {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, objective);
 		if (readableScoreboardScore == null) {
-			throw PLAYERS_GET_NULL_EXCEPTION.create(objective.getName(), scoreHolder);
+			throw PLAYERS_GET_NULL_EXCEPTION.create(objective.getName(), scoreHolder.getStyledDisplayName());
 		} else {
 			source.sendFeedback(
 				() -> Text.translatable(

@@ -7,15 +7,16 @@ import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
@@ -25,8 +26,6 @@ import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -113,6 +112,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 			this.get("level-type", type -> type.toLowerCase(Locale.ROOT), WorldPresets.DEFAULT.getValue().toString())
 		);
 		this.serverResourcePackProperties = getServerResourcePackProperties(
+			this.getString("resource-pack-id", ""),
 			this.getString("resource-pack", ""),
 			this.getString("resource-pack-sha1", ""),
 			this.getDeprecatedString("resource-pack-hash"),
@@ -147,7 +147,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	}
 
 	private static Optional<MinecraftServer.ServerResourcePackProperties> getServerResourcePackProperties(
-		String url, String sha1, @Nullable String hash, boolean required, String prompt
+		String id, String url, String sha1, @Nullable String hash, boolean required, String prompt
 	) {
 		if (url.isEmpty()) {
 			return Optional.empty();
@@ -172,7 +172,20 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 			}
 
 			Text text = parseResourcePackPrompt(prompt);
-			return Optional.of(new MinecraftServer.ServerResourcePackProperties(url, string, required, text));
+			UUID uUID;
+			if (id.isEmpty()) {
+				uUID = UUID.nameUUIDFromBytes(url.getBytes(StandardCharsets.UTF_8));
+				LOGGER.warn("resource-pack-id missing, using default of {}", uUID);
+			} else {
+				try {
+					uUID = UUID.fromString(id);
+				} catch (IllegalArgumentException var10) {
+					LOGGER.warn("Failed to parse '{}' into UUID", id);
+					return Optional.empty();
+				}
+			}
+
+			return Optional.of(new MinecraftServer.ServerResourcePackProperties(uUID, url, string, required, text));
 		}
 	}
 
@@ -180,17 +193,6 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		List<String> list = COMMA_SPLITTER.splitToList(enabled);
 		List<String> list2 = COMMA_SPLITTER.splitToList(disabled);
 		return new DataPackSettings(list, list2);
-	}
-
-	private static FeatureSet parseFeatureFlags(String featureFlags) {
-		return FeatureFlags.FEATURE_MANAGER.featureSetOf((Iterable<Identifier>)COMMA_SPLITTER.splitToStream(featureFlags).mapMulti((id, consumer) -> {
-			Identifier identifier = Identifier.tryParse(id);
-			if (identifier == null) {
-				LOGGER.warn("Invalid resource location {}, ignoring", id);
-			} else {
-				consumer.accept(identifier);
-			}
-		}).collect(Collectors.toList()));
 	}
 
 	public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(DynamicRegistryManager dynamicRegistry) {

@@ -196,7 +196,7 @@ public class Scoreboard {
 	public void removeScore(ScoreHolder scoreHolder, ScoreboardObjective objective) {
 		Scores scores = (Scores)this.scores.get(scoreHolder.getNameForScoreboard());
 		if (scores != null) {
-			boolean bl = scores.hasScore(objective);
+			boolean bl = scores.remove(objective);
 			if (!scores.hasScores()) {
 				Scores scores2 = (Scores)this.scores.remove(scoreHolder.getNameForScoreboard());
 				if (scores2 != null) {
@@ -228,7 +228,7 @@ public class Scoreboard {
 		}
 
 		for (Scores scores : this.scores.values()) {
-			scores.hasScore(objective);
+			scores.remove(objective);
 		}
 
 		this.updateRemovedObjective(objective);

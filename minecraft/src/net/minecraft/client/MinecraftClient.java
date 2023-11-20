@@ -133,11 +133,11 @@ import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.PeriodicNotificationManager;
 import net.minecraft.client.resource.ResourceReloadLogger;
-import net.minecraft.client.resource.ServerResourcePackProvider;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
+import net.minecraft.client.resource.server.ServerResourcePackLoader;
 import net.minecraft.client.search.IdentifierSearchProvider;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
@@ -364,7 +364,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final boolean onlineChatEnabled;
 	private final ReloadableResourceManagerImpl resourceManager;
 	private final DefaultResourcePack defaultResourcePack;
-	private final ServerResourcePackProvider serverResourcePackProvider;
+	private final ServerResourcePackLoader serverResourcePackLoader;
 	private final ResourcePackManager resourcePackManager;
 	private final LanguageManager languageManager;
 	private final BlockColors blockColors;
@@ -503,11 +503,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		DefaultClientResourcePackProvider defaultClientResourcePackProvider = new DefaultClientResourcePackProvider(
 			args.directories.getAssetDir(), this.symlinkFinder
 		);
-		this.serverResourcePackProvider = new ServerResourcePackProvider(new File(this.runDirectory, "server-resource-packs"));
+		this.serverResourcePackLoader = new ServerResourcePackLoader(this, path.resolve("downloads"), args.network);
 		ResourcePackProvider resourcePackProvider = new FileResourcePackProvider(
 			this.resourcePackDir, ResourceType.CLIENT_RESOURCES, ResourcePackSource.NONE, this.symlinkFinder
 		);
-		this.resourcePackManager = new ResourcePackManager(defaultClientResourcePackProvider, this.serverResourcePackProvider, resourcePackProvider);
+		this.resourcePackManager = new ResourcePackManager(
+			defaultClientResourcePackProvider, this.serverResourcePackLoader.getPassthroughPackProvider(), resourcePackProvider
+		);
 		this.defaultResourcePack = defaultClientResourcePackProvider.getResourcePack();
 		this.networkProxy = args.network.netProxy;
 		this.authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
@@ -835,6 +837,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public void onResourceReloadFailure(Throwable exception, @Nullable Text resourceName, @Nullable MinecraftClient.LoadingContext loadingContext) {
 		LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", exception);
 		this.resourceReloadLogger.recover(exception);
+		this.serverResourcePackLoader.onReloadFailure();
 		this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
 		this.options.resourcePacks.clear();
 		this.options.incompatibleResourcePacks.clear();
@@ -1039,6 +1042,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					new SplashOverlay(
 						this, this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), error -> Util.ifPresentOrElse(error, throwable -> {
 								if (force) {
+									this.serverResourcePackLoader.onForcedReloadFailure();
 									this.onForcedResourceReloadFailure();
 								} else {
 									this.handleResourceReloadException(throwable, loadingContext);
@@ -1046,6 +1050,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							}, () -> {
 								this.worldRenderer.reload();
 								this.resourceReloadLogger.finish();
+								this.serverResourcePackLoader.onReloadSuccess();
 								completableFuture.complete(null);
 								this.onFinishedLoading(loadingContext);
 							}), !force
@@ -1343,7 +1348,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			&& (this.currentScreen != null && this.currentScreen.shouldPause() || this.overlay != null && this.overlay.pausesGame())
 			&& !this.server.isRemote();
 		if (this.paused != bl2) {
-			if (this.paused) {
+			if (bl2) {
 				this.pausedTickDelta = this.renderTickCounter.tickDelta;
 			} else {
 				this.renderTickCounter.tickDelta = this.pausedTickDelta;
@@ -2206,7 +2211,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setScreen(levelLoadingScreen);
 		this.profiler.push("waitForServer");
 
-		for (; !this.server.isLoading(); this.printCrashReport()) {
+		for (; !this.server.isLoading() || this.overlay != null; this.printCrashReport()) {
 			levelLoadingScreen.tick();
 			this.render(false);
 
@@ -2249,6 +2254,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (clientPlayNetworkHandler != null) {
 			this.cancelTasks();
 			clientPlayNetworkHandler.unloadWorld();
+			this.onDisconnected();
 		}
 
 		this.socialInteractionsManager.unloadBlockList();
@@ -2276,7 +2282,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					this.profiler.pop();
 				}
 
-				this.serverResourcePackProvider.clear();
 				this.inGameHud.clear();
 				this.integratedServerRunning = false;
 			}
@@ -2289,6 +2294,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		SkullBlockEntity.clearServices();
+	}
+
+	public void onDisconnected() {
+		this.serverResourcePackLoader.clear();
+		this.runTasks();
 	}
 
 	public void enterReconfiguration(Screen reconfigurationScreen) {
@@ -2309,7 +2319,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		try {
 			this.reset(reconfigurationScreen);
 			this.inGameHud.clear();
-			this.serverResourcePackProvider.clear();
 			this.world = null;
 			this.setWorld(null);
 			this.player = null;
@@ -2686,8 +2695,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.defaultResourcePack;
 	}
 
-	public ServerResourcePackProvider getServerResourcePackProvider() {
-		return this.serverResourcePackProvider;
+	public ServerResourcePackLoader getServerResourcePackProvider() {
+		return this.serverResourcePackLoader;
 	}
 
 	public Path getResourcePackDir() {

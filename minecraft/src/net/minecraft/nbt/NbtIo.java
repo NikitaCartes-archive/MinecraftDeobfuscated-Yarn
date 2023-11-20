@@ -30,7 +30,7 @@ import net.minecraft.util.crash.CrashReportSection;
  * Methods that do not require {@link NbtTagSizeTracker} accept any bytes of data,
  * provided that its depth does not exceed {@value NbtTagSizeTracker#DEFAULT_MAX_DEPTH}.
  * 
- * <p>When {@linkplain DataOutput#writeUTF writing an invalid string, methods in
+ * <p>When {@linkplain DataOutput#writeUTF writing an invalid string}, methods in
  * this class will write an empty string instead of crashing, with the exception of
  * {@link #writeUnsafe} which throws instead.
  */

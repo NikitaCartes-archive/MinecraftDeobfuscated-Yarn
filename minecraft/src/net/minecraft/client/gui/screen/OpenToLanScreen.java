@@ -8,12 +8,12 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.PublishCommand;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.NetworkUtils;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)

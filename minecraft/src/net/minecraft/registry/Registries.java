@@ -215,7 +215,7 @@ public class Registries {
 		RegistryKeys.STRUCTURE_POOL_ELEMENT, registry -> StructurePoolElementType.EMPTY_POOL_ELEMENT
 	);
 	public static final Registry<Codec<? extends StructurePoolAliasBinding>> POOL_ALIAS_BINDING = create(
-		RegistryKeys.POOL_ALIAS_BINDING, StructurePoolAliasBindings::registerAndGetDefalt
+		RegistryKeys.POOL_ALIAS_BINDING, StructurePoolAliasBindings::registerAndGetDefault
 	);
 	public static final Registry<CatVariant> CAT_VARIANT = create(RegistryKeys.CAT_VARIANT, CatVariant::registerAndGetDefault);
 	public static final Registry<FrogVariant> FROG_VARIANT = create(RegistryKeys.FROG_VARIANT, registry -> FrogVariant.TEMPERATE);

@@ -1,6 +1,7 @@
 package net.minecraft.data.server.advancement.vanilla;
 
 import com.mojang.datafixers.util.Pair;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -77,9 +78,8 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	private static final int OVERWORLD_MAX_Y = 320;
 	private static final int OVERWORLD_MIN_Y = -64;
 	private static final int OVERWORLD_BEDROCK_LAYER_HEIGHT = 5;
-	private static final EntityType<?>[] MONSTERS = new EntityType[]{
+	public static final List<EntityType<?>> MONSTERS = Arrays.asList(
 		EntityType.BLAZE,
-		EntityType.BREEZE,
 		EntityType.CAVE_SPIDER,
 		EntityType.CREEPER,
 		EntityType.DROWNED,
@@ -113,7 +113,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		EntityType.ZOMBIE_VILLAGER,
 		EntityType.ZOMBIE,
 		EntityType.ZOMBIFIED_PIGLIN
-	};
+	);
 
 	private static AdvancementCriterion<LightningStrikeCriterion.Conditions> createLightningStrike(NumberRange.IntRange range, Optional<EntityPredicate> entity) {
 		return LightningStrikeCriterion.Conditions.create(
@@ -199,34 +199,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				)
 			)
 			.build(exporter, "adventure/trade_at_world_height");
-		AdvancementEntry advancementEntry4 = requireListedMobsKilled(Advancement.Builder.create())
-			.parent(advancementEntry)
-			.display(
-				Items.IRON_SWORD,
-				Text.translatable("advancements.adventure.kill_a_mob.title"),
-				Text.translatable("advancements.adventure.kill_a_mob.description"),
-				null,
-				AdvancementFrame.TASK,
-				true,
-				true,
-				false
-			)
-			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
-			.build(exporter, "adventure/kill_a_mob");
-		requireListedMobsKilled(Advancement.Builder.create())
-			.parent(advancementEntry4)
-			.display(
-				Items.DIAMOND_SWORD,
-				Text.translatable("advancements.adventure.kill_all_mobs.title"),
-				Text.translatable("advancements.adventure.kill_all_mobs.description"),
-				null,
-				AdvancementFrame.CHALLENGE,
-				true,
-				true,
-				false
-			)
-			.rewards(AdvancementRewards.Builder.experience(100))
-			.build(exporter, "adventure/kill_all_mobs");
+		AdvancementEntry advancementEntry4 = createKillMobAdvancements(advancementEntry, exporter, MONSTERS);
 		AdvancementEntry advancementEntry5 = Advancement.Builder.create()
 			.parent(advancementEntry4)
 			.display(
@@ -699,6 +672,38 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.build(exporter, "adventure/read_power_of_chiseled_bookshelf");
 	}
 
+	public static AdvancementEntry createKillMobAdvancements(AdvancementEntry parent, Consumer<AdvancementEntry> exporter, List<EntityType<?>> monsters) {
+		AdvancementEntry advancementEntry = requireListedMobsKilled(Advancement.Builder.create(), monsters)
+			.parent(parent)
+			.display(
+				Items.IRON_SWORD,
+				Text.translatable("advancements.adventure.kill_a_mob.title"),
+				Text.translatable("advancements.adventure.kill_a_mob.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
+			.build(exporter, "adventure/kill_a_mob");
+		requireListedMobsKilled(Advancement.Builder.create(), monsters)
+			.parent(advancementEntry)
+			.display(
+				Items.DIAMOND_SWORD,
+				Text.translatable("advancements.adventure.kill_all_mobs.title"),
+				Text.translatable("advancements.adventure.kill_all_mobs.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.rewards(AdvancementRewards.Builder.experience(100))
+			.build(exporter, "adventure/kill_all_mobs");
+		return advancementEntry;
+	}
+
 	private static AdvancementCriterion<ItemCriterion.Conditions> requirePlacedBlockReadByComparator(Block block) {
 		LootCondition.Builder[] builders = (LootCondition.Builder[])ComparatorBlock.FACING.getValues().stream().map(facing -> {
 			StatePredicate.Builder builder = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, facing);
@@ -785,14 +790,12 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.build(exporter, "adventure/adventuring_time");
 	}
 
-	private static Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {
-		for (EntityType<?> entityType : MONSTERS) {
-			builder.criterion(
-				Registries.ENTITY_TYPE.getId(entityType).toString(),
-				OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType))
-			);
-		}
-
+	private static Advancement.Builder requireListedMobsKilled(Advancement.Builder builder, List<EntityType<?>> entityTypes) {
+		entityTypes.forEach(
+			type -> builder.criterion(
+					Registries.ENTITY_TYPE.getId(type).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(type))
+				)
+		);
 		return builder;
 	}
 

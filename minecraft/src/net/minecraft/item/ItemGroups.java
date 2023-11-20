@@ -808,7 +808,7 @@ public class ItemGroups {
 					entries.add(Items.RED_MUSHROOM);
 					entries.add(Items.CRIMSON_FUNGUS);
 					entries.add(Items.WARPED_FUNGUS);
-					entries.add(Items.GRASS);
+					entries.add(Items.SHORT_GRASS);
 					entries.add(Items.FERN);
 					entries.add(Items.DEAD_BUSH);
 					entries.add(Items.DANDELION);

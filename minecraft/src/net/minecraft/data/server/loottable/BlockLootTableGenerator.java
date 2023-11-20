@@ -339,7 +339,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 		);
 	}
 
-	protected LootTable.Builder grassDrops(Block dropWithShears) {
+	protected LootTable.Builder shortPlantDrops(Block dropWithShears) {
 		return dropsWithShears(
 			dropWithShears,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -473,12 +473,12 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 			);
 	}
 
-	protected LootTable.Builder tallGrassDrops(Block tallGrass, Block grass) {
-		LootPoolEntry.Builder<?> builder = ItemEntry.builder(grass)
+	protected LootTable.Builder tallPlantDrops(Block tallPlant, Block shortPlant) {
+		LootPoolEntry.Builder<?> builder = ItemEntry.builder(shortPlant)
 			.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
 			.conditionally(WITH_SHEARS)
 			.alternatively(
-				((LeafEntry.Builder)this.addSurvivesExplosionCondition(tallGrass, ItemEntry.builder(Items.WHEAT_SEEDS)))
+				((LeafEntry.Builder)this.addSurvivesExplosionCondition(tallPlant, ItemEntry.builder(Items.WHEAT_SEEDS)))
 					.conditionally(RandomChanceLootCondition.builder(0.125F))
 			);
 		return LootTable.builder()
@@ -486,12 +486,12 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 				LootPool.builder()
 					.with(builder)
 					.conditionally(
-						BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))
+						BlockStatePropertyLootCondition.builder(tallPlant).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))
 					)
 					.conditionally(
 						LocationCheckLootCondition.builder(
 							LocationPredicate.Builder.create()
-								.block(BlockPredicate.Builder.create().blocks(tallGrass).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))),
+								.block(BlockPredicate.Builder.create().blocks(tallPlant).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))),
 							new BlockPos(0, 1, 0)
 						)
 					)
@@ -500,12 +500,12 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 				LootPool.builder()
 					.with(builder)
 					.conditionally(
-						BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))
+						BlockStatePropertyLootCondition.builder(tallPlant).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))
 					)
 					.conditionally(
 						LocationCheckLootCondition.builder(
 							LocationPredicate.Builder.create()
-								.block(BlockPredicate.Builder.create().blocks(tallGrass).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))),
+								.block(BlockPredicate.Builder.create().blocks(tallPlant).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))),
 							new BlockPos(0, -1, 0)
 						)
 					)

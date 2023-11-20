@@ -40,7 +40,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.up();
-		BlockState blockState = Blocks.GRASS.getDefaultState();
+		BlockState blockState = Blocks.SHORT_GRASS.getDefaultState();
 		Optional<RegistryEntry.Reference<PlacedFeature>> optional = world.getRegistryManager()
 			.get(RegistryKeys.PLACED_FEATURE)
 			.getEntry(VegetationPlacedFeatures.GRASS_BONEMEAL);

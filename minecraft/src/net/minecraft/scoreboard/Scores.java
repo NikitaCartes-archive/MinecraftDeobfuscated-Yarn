@@ -17,15 +17,15 @@ class Scores {
 	}
 
 	public ScoreboardScore getOrCreate(ScoreboardObjective objective, Consumer<ScoreboardScore> scoreConsumer) {
-		return (ScoreboardScore)this.scores.computeIfAbsent(objective, scoreboardObjective -> {
+		return (ScoreboardScore)this.scores.computeIfAbsent(objective, objective2 -> {
 			ScoreboardScore scoreboardScore = new ScoreboardScore();
 			scoreConsumer.accept(scoreboardScore);
 			return scoreboardScore;
 		});
 	}
 
-	public boolean hasScore(ScoreboardObjective objective) {
-		return this.scores.get(objective) != null;
+	public boolean remove(ScoreboardObjective objective) {
+		return this.scores.remove(objective) != null;
 	}
 
 	public boolean hasScores() {

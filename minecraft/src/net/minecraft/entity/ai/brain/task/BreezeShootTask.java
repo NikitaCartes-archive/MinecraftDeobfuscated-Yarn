@@ -50,8 +50,9 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, BreezeEntity breezeEntity) {
-		return breezeEntity.isOnGround() && breezeEntity.getPose() == EntityPose.STANDING
-			? (Boolean)breezeEntity.getBrain()
+		return breezeEntity.getPose() != EntityPose.STANDING
+			? false
+			: (Boolean)breezeEntity.getBrain()
 				.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET)
 				.map(target -> isTargetWithinRange(breezeEntity, target))
 				.map(withinRange -> {
@@ -61,8 +62,7 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 
 					return withinRange;
 				})
-				.orElse(false)
-			: false;
+				.orElse(false);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, BreezeEntity breezeEntity, long l) {
@@ -87,7 +87,7 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 	protected void keepRunning(ServerWorld serverWorld, BreezeEntity breezeEntity, long l) {
 		Brain<BreezeEntity> brain = breezeEntity.getBrain();
 		LivingEntity livingEntity = (LivingEntity)brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
-		if (livingEntity != null && breezeEntity.isOnGround()) {
+		if (livingEntity != null) {
 			breezeEntity.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, livingEntity.getPos());
 			if (!brain.getOptionalRegisteredMemory(MemoryModuleType.BREEZE_SHOOT_CHARGING).isPresent()
 				&& !brain.getOptionalRegisteredMemory(MemoryModuleType.BREEZE_SHOOT_RECOVER).isPresent()) {

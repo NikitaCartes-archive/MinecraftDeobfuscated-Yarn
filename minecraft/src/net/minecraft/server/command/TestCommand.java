@@ -511,7 +511,7 @@ public class TestCommand {
 
 	private static int executeExport(ServerCommandSource source, String testName) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
-		Identifier identifier = new Identifier("minecraft", testName);
+		Identifier identifier = new Identifier(testName);
 		Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
 		Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, testName, path);
 		if (path3 == null) {
@@ -533,7 +533,7 @@ public class TestCommand {
 
 	private static int executeImport(ServerCommandSource source, String testName) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, testName + ".snbt");
-		Identifier identifier = new Identifier("minecraft", testName);
+		Identifier identifier = new Identifier(testName);
 		Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
 
 		try {

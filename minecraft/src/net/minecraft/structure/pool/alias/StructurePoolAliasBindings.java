@@ -11,7 +11,7 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 
 public class StructurePoolAliasBindings {
-	public static Codec<? extends StructurePoolAliasBinding> registerAndGetDefalt(Registry<Codec<? extends StructurePoolAliasBinding>> registry) {
+	public static Codec<? extends StructurePoolAliasBinding> registerAndGetDefault(Registry<Codec<? extends StructurePoolAliasBinding>> registry) {
 		Registry.register(registry, "random", RandomStructurePoolAliasBinding.CODEC);
 		Registry.register(registry, "random_group", RandomGroupStructurePoolAliasBinding.CODEC);
 		return Registry.register(registry, "direct", DirectStructurePoolAliasBinding.CODEC);

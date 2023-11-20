@@ -628,9 +628,9 @@ public class Blocks {
 			AbstractBlock.Settings.create().mapColor(MapColor.WHITE_GRAY).solid().noCollision().requiresTool().strength(4.0F).pistonBehavior(PistonBehavior.DESTROY)
 		)
 	);
-	public static final Block GRASS = register(
-		"grass",
-		new FernBlock(
+	public static final Block SHORT_GRASS = register(
+		"short_grass",
+		new ShortPlantBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.replaceable()
@@ -644,7 +644,7 @@ public class Blocks {
 	);
 	public static final Block FERN = register(
 		"fern",
-		new FernBlock(
+		new ShortPlantBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.replaceable()

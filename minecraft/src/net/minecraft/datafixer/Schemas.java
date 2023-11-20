@@ -1169,6 +1169,8 @@ public class Schemas {
 		Schema schema197 = builder.addSchema(3689, Schema3689::new);
 		builder.addFixer(new ChoiceTypesFix(schema197, "Added Breeze", TypeReferences.ENTITY));
 		builder.addFixer(new ChoiceTypesFix(schema197, "Added Trial Spawner", TypeReferences.BLOCK_ENTITY));
+		Schema schema198 = builder.addSchema(3692, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(BlockNameFix.create(schema198, "Rename grass to short_grass", replacing(Map.of("minecraft:grass", "minecraft:short_grass"))));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

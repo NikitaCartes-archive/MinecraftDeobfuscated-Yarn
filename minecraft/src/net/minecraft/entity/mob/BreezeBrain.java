@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreezeJumpTask;
+import net.minecraft.entity.ai.brain.task.BreezeShootIfStuckTask;
 import net.minecraft.entity.ai.brain.task.BreezeShootTask;
 import net.minecraft.entity.ai.brain.task.BreezeSlideTowardsTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
@@ -73,9 +74,10 @@ public class BreezeBrain {
 				Pair.of(0, UpdateAttackTargetTask.create(breeze -> breeze.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
 				Pair.of(1, ForgetAttackTargetTask.create()),
 				Pair.of(2, new BreezeShootTask()),
-				Pair.of(3, new BreezeJumpTask()),
-				Pair.of(4, new BreezeSlideTowardsTargetTask()),
-				Pair.of(4, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
+				Pair.of(3, new BreezeShootIfStuckTask()),
+				Pair.of(4, new BreezeJumpTask()),
+				Pair.of(5, new BreezeSlideTowardsTargetTask()),
+				Pair.of(6, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
 			),
 			Set.of()
 		);

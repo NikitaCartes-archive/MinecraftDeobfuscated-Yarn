@@ -68,7 +68,7 @@ public class RenderLayers {
 		map.put(Blocks.POWERED_RAIL, renderLayer3);
 		map.put(Blocks.DETECTOR_RAIL, renderLayer3);
 		map.put(Blocks.COBWEB, renderLayer3);
-		map.put(Blocks.GRASS, renderLayer3);
+		map.put(Blocks.SHORT_GRASS, renderLayer3);
 		map.put(Blocks.FERN, renderLayer3);
 		map.put(Blocks.DEAD_BUSH, renderLayer3);
 		map.put(Blocks.SEAGRASS, renderLayer3);

@@ -7,11 +7,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import javax.annotation.Nullable;
-import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.command.argument.GameModeArgumentType;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.NetworkUtils;
 import net.minecraft.world.GameMode;
 
 public class PublishCommand {

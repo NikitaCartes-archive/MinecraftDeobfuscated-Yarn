@@ -173,10 +173,10 @@ public enum TrialSpawnerState implements StringIdentifiable {
 				emitParticle(ParticleTypes.SMALL_FLAME, vec3d, world);
 			}
 		};
-		TrialSpawnerState.ParticleEmitter ACTIVE = (wolrd, random, pos) -> {
+		TrialSpawnerState.ParticleEmitter ACTIVE = (world, random, pos) -> {
 			Vec3d vec3d = pos.toCenterPos().addRandom(random, 1.0F);
-			emitParticle(ParticleTypes.SMOKE, vec3d, wolrd);
-			emitParticle(ParticleTypes.FLAME, vec3d, wolrd);
+			emitParticle(ParticleTypes.SMOKE, vec3d, world);
+			emitParticle(ParticleTypes.FLAME, vec3d, world);
 		};
 		TrialSpawnerState.ParticleEmitter COOLDOWN = (world, random, pos) -> {
 			Vec3d vec3d = pos.toCenterPos().addRandom(random, 0.9F);

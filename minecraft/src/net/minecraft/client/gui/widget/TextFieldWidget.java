@@ -12,8 +12,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.navigation.GuiNavigation;
-import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -126,19 +124,25 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		int i = Math.min(this.selectionStart, this.selectionEnd);
 		int j = Math.max(this.selectionStart, this.selectionEnd);
 		int k = this.maxLength - this.text.length() - (i - j);
-		String string = SharedConstants.stripInvalidChars(text);
-		int l = string.length();
-		if (k < l) {
-			string = string.substring(0, k);
-			l = k;
-		}
+		if (k > 0) {
+			String string = SharedConstants.stripInvalidChars(text);
+			int l = string.length();
+			if (k < l) {
+				if (Character.isHighSurrogate(string.charAt(k - 1))) {
+					k--;
+				}
 
-		String string2 = new StringBuilder(this.text).replace(i, j, string).toString();
-		if (this.textPredicate.test(string2)) {
-			this.text = string2;
-			this.setSelectionStart(i + l);
-			this.setSelectionEnd(this.selectionStart);
-			this.onChanged(this.text);
+				string = string.substring(0, k);
+				l = k;
+			}
+
+			String string2 = new StringBuilder(this.text).replace(i, j, string).toString();
+			if (this.textPredicate.test(string2)) {
+				this.text = string2;
+				this.setSelectionStart(i + l);
+				this.setSelectionEnd(this.selectionStart);
+				this.onChanged(this.text);
+			}
 		}
 	}
 
@@ -161,24 +165,27 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			if (this.selectionEnd != this.selectionStart) {
 				this.write("");
 			} else {
-				this.eraseCharacters(this.getWordSkipPosition(wordOffset) - this.selectionStart);
+				this.eraseCharactersTo(this.getWordSkipPosition(wordOffset));
 			}
 		}
 	}
 
 	public void eraseCharacters(int characterOffset) {
+		this.eraseCharactersTo(this.getCursorPosWithOffset(characterOffset));
+	}
+
+	public void eraseCharactersTo(int position) {
 		if (!this.text.isEmpty()) {
 			if (this.selectionEnd != this.selectionStart) {
 				this.write("");
 			} else {
-				int i = this.getCursorPosWithOffset(characterOffset);
-				int j = Math.min(i, this.selectionStart);
-				int k = Math.max(i, this.selectionStart);
-				if (j != k) {
-					String string = new StringBuilder(this.text).delete(j, k).toString();
+				int i = Math.min(position, this.selectionStart);
+				int j = Math.max(position, this.selectionStart);
+				if (i != j) {
+					String string = new StringBuilder(this.text).delete(i, j).toString();
 					if (this.textPredicate.test(string)) {
 						this.text = string;
-						this.setCursor(j, false);
+						this.setCursor(i, false);
 					}
 				}
 			}
@@ -255,29 +262,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (!this.isActive()) {
-			return false;
-		} else if (Screen.isSelectAll(keyCode)) {
-			this.setCursorToEnd(false);
-			this.setSelectionEnd(0);
-			return true;
-		} else if (Screen.isCopy(keyCode)) {
-			MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
-			return true;
-		} else if (Screen.isPaste(keyCode)) {
-			if (this.editable) {
-				this.write(MinecraftClient.getInstance().keyboard.getClipboard());
-			}
-
-			return true;
-		} else if (Screen.isCut(keyCode)) {
-			MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
-			if (this.editable) {
-				this.write("");
-			}
-
-			return true;
-		} else {
+		if (this.isNarratable() && this.isFocused()) {
 			switch (keyCode) {
 				case 259:
 					if (this.editable) {
@@ -291,7 +276,31 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 				case 266:
 				case 267:
 				default:
-					return false;
+					if (Screen.isSelectAll(keyCode)) {
+						this.setCursorToEnd(false);
+						this.setSelectionEnd(0);
+						return true;
+					} else if (Screen.isCopy(keyCode)) {
+						MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
+						return true;
+					} else if (Screen.isPaste(keyCode)) {
+						if (this.isEditable()) {
+							this.write(MinecraftClient.getInstance().keyboard.getClipboard());
+						}
+
+						return true;
+					} else {
+						if (Screen.isCut(keyCode)) {
+							MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
+							if (this.isEditable()) {
+								this.write("");
+							}
+
+							return true;
+						}
+
+						return false;
+					}
 				case 261:
 					if (this.editable) {
 						this.erase(1);
@@ -321,11 +330,13 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 					this.setCursorToEnd(Screen.hasShiftDown());
 					return true;
 			}
+		} else {
+			return false;
 		}
 	}
 
 	public boolean isActive() {
-		return this.isVisible() && this.isFocused() && this.isEditable();
+		return this.isNarratable() && this.isFocused() && this.isEditable();
 	}
 
 	@Override
@@ -470,21 +481,6 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 
 	public void setUneditableColor(int uneditableColor) {
 		this.uneditableColor = uneditableColor;
-	}
-
-	@Nullable
-	@Override
-	public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
-		return this.visible && this.editable ? super.getNavigationPath(navigation) : null;
-	}
-
-	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.visible
-			&& mouseX >= (double)this.getX()
-			&& mouseX < (double)(this.getX() + this.width)
-			&& mouseY >= (double)this.getY()
-			&& mouseY < (double)(this.getY() + this.height);
 	}
 
 	@Override

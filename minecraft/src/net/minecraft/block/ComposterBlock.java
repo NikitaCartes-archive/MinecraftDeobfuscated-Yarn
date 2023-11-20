@@ -91,7 +91,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.3F, Items.MANGROVE_PROPAGULE);
 		registerCompostableItem(0.3F, Items.BEETROOT_SEEDS);
 		registerCompostableItem(0.3F, Items.DRIED_KELP);
-		registerCompostableItem(0.3F, Items.GRASS);
+		registerCompostableItem(0.3F, Items.SHORT_GRASS);
 		registerCompostableItem(0.3F, Items.KELP);
 		registerCompostableItem(0.3F, Items.MELON_SEEDS);
 		registerCompostableItem(0.3F, Items.PUMPKIN_SEEDS);

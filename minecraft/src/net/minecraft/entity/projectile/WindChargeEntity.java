@@ -18,8 +18,12 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class WindChargeEntity extends ExplosiveProjectileEntity implements FlyingItemEntity {
+	public static final WindChargeEntity.WindChargeExplosionBehavior EXPLOSION_BEHAVIOR = new WindChargeEntity.WindChargeExplosionBehavior();
+
 	public WindChargeEntity(EntityType<? extends WindChargeEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -74,7 +78,7 @@ public class WindChargeEntity extends ExplosiveProjectileEntity implements Flyin
 			.createExplosion(
 				this,
 				null,
-				null,
+				EXPLOSION_BEHAVIOR,
 				this.getX(),
 				this.getY(),
 				this.getZ(),
@@ -126,5 +130,12 @@ public class WindChargeEntity extends ExplosiveProjectileEntity implements Flyin
 	@Override
 	protected RaycastContext.ShapeType getRaycastShapeType() {
 		return RaycastContext.ShapeType.OUTLINE;
+	}
+
+	public static final class WindChargeExplosionBehavior extends ExplosionBehavior {
+		@Override
+		public boolean shouldDamage(Explosion explosion, Entity entity) {
+			return false;
+		}
 	}
 }

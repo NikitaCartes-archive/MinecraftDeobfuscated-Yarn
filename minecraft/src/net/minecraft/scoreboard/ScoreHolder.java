@@ -15,15 +15,13 @@ public interface ScoreHolder {
 	};
 
 	/**
-	 * {@return the name uniquely identifying the entity}
+	 * {@return the name uniquely identifying the score holder}
 	 * 
-	 * <p>Unlike {@link #getName}, this is guaranteed to be unique. This is the UUID
+	 * <p>Unlike {@link net.minecraft.entity.Entity#getName}, this is guaranteed to be unique. This is the UUID
 	 * for all entities except players (which use the player's username).
-	 * This is mostly used when passing the player name to {@code
-	 * net.minecraft.scoreboard.Scoreboard} methods.
 	 * 
-	 * @see #getName
-	 * @see #getUuidAsString
+	 * @see net.minecraft.entity.Entity#getName
+	 * @see net.minecraft.entity.Entity#getUuidAsString
 	 */
 	String getNameForScoreboard();
 

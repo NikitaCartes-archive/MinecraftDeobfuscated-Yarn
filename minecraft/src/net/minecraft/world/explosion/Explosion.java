@@ -52,7 +52,6 @@ public class Explosion {
 	@Nullable
 	private final Entity entity;
 	private final float power;
-	@Nullable
 	private final DamageSource damageSource;
 	private final ExplosionBehavior behavior;
 	private final ParticleEffect particle;
@@ -140,7 +139,7 @@ public class Explosion {
 		this.z = z;
 		this.createFire = createFire;
 		this.destructionType = destructionType;
-		this.damageSource = damageSource;
+		this.damageSource = damageSource == null ? world.getDamageSources().explosion(this) : damageSource;
 		this.behavior = behavior == null ? this.chooseBehavior(entity) : behavior;
 		this.particle = particle;
 		this.emitterParticle = emitterParticle;
@@ -263,7 +262,7 @@ public class Explosion {
 						w /= z;
 						x /= z;
 						y /= z;
-						if (this.damageSource != null) {
+						if (this.behavior.shouldDamage(this, entity)) {
 							entity.damage(this.damageSource, this.behavior.calculateDamage(this, entity));
 						}
 
@@ -354,8 +353,10 @@ public class Explosion {
 			Pair<ItemStack, BlockPos> pair = (Pair<ItemStack, BlockPos>)stacks.get(i);
 			ItemStack itemStack = pair.getFirst();
 			if (ItemEntity.canMerge(itemStack, stack)) {
-				stacks.set(i, Pair.of(ItemEntity.merge(stack, itemStack, 16), pair.getSecond()));
-				return;
+				stacks.set(i, Pair.of(ItemEntity.merge(itemStack, stack, 16), pair.getSecond()));
+				if (stack.isEmpty()) {
+					return;
+				}
 			}
 		}
 

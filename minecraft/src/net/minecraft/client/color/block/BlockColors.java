@@ -45,7 +45,7 @@ public class BlockColors {
 			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getDefaultColor(),
 			Blocks.GRASS_BLOCK,
 			Blocks.FERN,
-			Blocks.GRASS,
+			Blocks.SHORT_GRASS,
 			Blocks.POTTED_FERN
 		);
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> {

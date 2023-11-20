@@ -206,7 +206,7 @@ public class BlockTypes {
 		Registry.register(registry, "sugar_cane", SugarCaneBlock.CODEC);
 		Registry.register(registry, "sweet_berry_bush", SweetBerryBushBlock.CODEC);
 		Registry.register(registry, "tall_flower", TallFlowerBlock.CODEC);
-		Registry.register(registry, "tall_grass", FernBlock.CODEC);
+		Registry.register(registry, "tall_grass", ShortPlantBlock.CODEC);
 		Registry.register(registry, "tall_seagrass", TallSeagrassBlock.CODEC);
 		Registry.register(registry, "target", TargetBlock.CODEC);
 		Registry.register(registry, "tinted_glass", TintedGlassBlock.CODEC);

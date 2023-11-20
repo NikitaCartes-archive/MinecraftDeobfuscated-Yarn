@@ -12,6 +12,7 @@ import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
+import net.minecraft.client.resource.server.ServerResourcePackManager;
 import net.minecraft.client.session.report.ReporterEnvironment;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -74,6 +75,7 @@ public class RealmsConnection {
 						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getUsername(), minecraftClient.getSession().getUuidOrNull()));
 						minecraftClient.ensureAbuseReportContext(ReporterEnvironment.ofRealm(server));
 						minecraftClient.getQuickPlayLogger().setWorld(QuickPlayLogger.WorldType.REALMS, String.valueOf(server.id), server.name);
+						minecraftClient.getServerResourcePackProvider().init(RealmsConnection.this.connection, ServerResourcePackManager.AcceptanceStatus.ALLOWED);
 					} catch (Exception var5) {
 						minecraftClient.getServerResourcePackProvider().clear();
 						if (RealmsConnection.this.aborted) {

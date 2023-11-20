@@ -1139,8 +1139,8 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.SMALL_DRIPLEAF, block -> BlockLootTableGenerator.dropsWithShears(block));
 		this.addDrop(Blocks.MANGROVE_LEAVES, block -> this.mangroveLeavesDrops(block));
 		this.addDrop(Blocks.TALL_SEAGRASS, seagrassDrops(Blocks.SEAGRASS));
-		this.addDrop(Blocks.LARGE_FERN, block -> this.tallGrassDrops(block, Blocks.FERN));
-		this.addDrop(Blocks.TALL_GRASS, block -> this.tallGrassDrops(block, Blocks.GRASS));
+		this.addDrop(Blocks.LARGE_FERN, block -> this.tallPlantDrops(block, Blocks.FERN));
+		this.addDrop(Blocks.TALL_GRASS, block -> this.tallPlantDrops(block, Blocks.SHORT_GRASS));
 		this.addDrop(Blocks.MELON_STEM, block -> this.cropStemDrops(block, Items.MELON_SEEDS));
 		this.addDrop(Blocks.ATTACHED_MELON_STEM, block -> this.attachedCropStemDrops(block, Items.MELON_SEEDS));
 		this.addDrop(Blocks.PUMPKIN_STEM, block -> this.cropStemDrops(block, Items.PUMPKIN_SEEDS));
@@ -1157,8 +1157,8 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 							)
 					)
 		);
-		this.addDrop(Blocks.FERN, block -> this.grassDrops(block));
-		this.addDrop(Blocks.GRASS, block -> this.grassDrops(block));
+		this.addDrop(Blocks.FERN, block -> this.shortPlantDrops(block));
+		this.addDrop(Blocks.SHORT_GRASS, block -> this.shortPlantDrops(block));
 		this.addDrop(
 			Blocks.GLOWSTONE,
 			block -> dropsWithSilkTouch(

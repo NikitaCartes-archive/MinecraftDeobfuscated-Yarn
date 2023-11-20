@@ -150,6 +150,7 @@ public class CommandManager {
 			DebugMobSpawningCommand.register(this.dispatcher);
 			WardenSpawnTrackerCommand.register(this.dispatcher);
 			SpawnArmorTrimsCommand.register(this.dispatcher);
+			ServerPackCommand.register(this.dispatcher);
 			if (environment.dedicated) {
 				DebugConfigCommand.register(this.dispatcher);
 			}

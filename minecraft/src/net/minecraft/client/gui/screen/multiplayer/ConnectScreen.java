@@ -20,6 +20,7 @@ import net.minecraft.client.network.AllowedAddressResolver;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.resource.server.ServerResourcePackManager;
 import net.minecraft.client.session.report.ReporterEnvironment;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
@@ -121,6 +122,8 @@ public class ConnectScreen extends Screen {
 						}
 
 						ConnectScreen.this.connection = clientConnection;
+						client.getServerResourcePackProvider()
+							.init(clientConnection, info != null ? toAcceptanceStatus(info.getResourcePackPolicy()) : ServerResourcePackManager.AcceptanceStatus.PENDING);
 					}
 
 					ConnectScreen.this.connection
@@ -154,6 +157,14 @@ public class ConnectScreen extends Screen {
 							)
 					);
 				}
+			}
+
+			private static ServerResourcePackManager.AcceptanceStatus toAcceptanceStatus(ServerInfo.ResourcePackPolicy policy) {
+				return switch (policy) {
+					case ENABLED -> ServerResourcePackManager.AcceptanceStatus.ALLOWED;
+					case DISABLED -> ServerResourcePackManager.AcceptanceStatus.DECLINED;
+					case PROMPT -> ServerResourcePackManager.AcceptanceStatus.PENDING;
+				};
 			}
 		};
 		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));

@@ -6,6 +6,10 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -23,6 +27,7 @@ import net.minecraft.client.gui.screen.world.DataPackFailureScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.gui.screen.world.RecoverWorldScreen;
 import net.minecraft.client.gui.screen.world.SymlinkWarningScreen;
+import net.minecraft.client.resource.server.ServerResourcePackLoader;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.nbt.NbtCrashException;
@@ -45,6 +50,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashMemoryReserve;
 import net.minecraft.util.crash.CrashReport;
@@ -64,6 +70,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class IntegratedServerLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final UUID WORLD_PACK_ID = UUID.fromString("640a6a92-b6cb-48a0-b391-831586500359");
 	private final MinecraftClient client;
 	private final LevelStorage storage;
 
@@ -324,6 +331,18 @@ public class IntegratedServerLoader {
 		}
 	}
 
+	public CompletableFuture<Void> applyWorldPack(ServerResourcePackLoader loader, LevelStorage.Session session) {
+		Path path = session.getDirectory(WorldSavePath.RESOURCES_ZIP);
+		if (Files.exists(path, new LinkOption[0]) && !Files.isDirectory(path, new LinkOption[0])) {
+			loader.initWorldPack();
+			CompletableFuture<Void> completableFuture = loader.getPackLoadFuture(WORLD_PACK_ID);
+			loader.addResourcePack(WORLD_PACK_ID, path);
+			return completableFuture;
+		} else {
+			return CompletableFuture.completedFuture(null);
+		}
+	}
+
 	private void start(LevelStorage.Session session, Dynamic<?> levelProperties, boolean safeMode, boolean canShowBackupPrompt, Runnable onCancel) {
 		this.client.setScreenAndRender(new MessageScreen(Text.translatable("selectWorld.resource_load")));
 		ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
@@ -331,8 +350,8 @@ public class IntegratedServerLoader {
 		SaveLoader saveLoader;
 		try {
 			saveLoader = this.load(levelProperties, safeMode, resourcePackManager);
-		} catch (Exception var11) {
-			LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)var11);
+		} catch (Exception var12) {
+			LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)var12);
 			if (!safeMode) {
 				this.client.setScreen(new DataPackFailureScreen(() -> {
 					session.tryClose();
@@ -359,16 +378,18 @@ public class IntegratedServerLoader {
 		boolean bl = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
 		boolean bl2 = saveProperties.getLifecycle() != Lifecycle.stable();
 		if (!canShowBackupPrompt || !bl && !bl2) {
-			this.client.getServerResourcePackProvider().loadServerPack(session).thenApply(v -> true).exceptionallyComposeAsync(throwable -> {
+			ServerResourcePackLoader serverResourcePackLoader = this.client.getServerResourcePackProvider();
+			this.applyWorldPack(serverResourcePackLoader, session).thenApply(v -> true).exceptionallyComposeAsync(throwable -> {
 				LOGGER.warn("Failed to load pack: ", throwable);
 				return this.showPackLoadFailureScreen();
-			}, this.client).thenAcceptAsync(packLoadSuccessful -> {
-				if (packLoadSuccessful) {
+			}, this.client).thenAcceptAsync(confirmed -> {
+				if (confirmed) {
 					this.client.startIntegratedServer(session, resourcePackManager, saveLoader, false);
 				} else {
 					saveLoader.close();
 					session.tryClose();
-					this.client.getServerResourcePackProvider().clear().thenRunAsync(onCancel, this.client);
+					serverResourcePackLoader.removeAll();
+					onCancel.run();
 				}
 			}, this.client).exceptionally(throwable -> {
 				this.client.setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Load world"));

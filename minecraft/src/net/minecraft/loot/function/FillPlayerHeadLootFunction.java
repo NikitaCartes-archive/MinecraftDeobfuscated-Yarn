@@ -49,6 +49,6 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(LootContext.EntityTarget target) {
-		return builder(conditons -> new FillPlayerHeadLootFunction(conditons, target));
+		return builder(conditions -> new FillPlayerHeadLootFunction(conditions, target));
 	}
 }

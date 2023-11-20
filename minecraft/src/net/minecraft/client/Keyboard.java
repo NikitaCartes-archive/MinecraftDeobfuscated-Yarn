@@ -381,7 +381,7 @@ public class Keyboard {
 			}
 
 			if (this.client.getNarratorManager().isActive() && this.client.options.getNarratorHotkey().getValue()) {
-				boolean bl2 = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
+				boolean bl2 = screen == null || !(screen.getFocused() instanceof TextFieldWidget textFieldWidget) || !textFieldWidget.isActive();
 				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl2) {
 					boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
 					this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));

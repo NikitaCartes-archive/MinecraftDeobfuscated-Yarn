@@ -9,17 +9,17 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class FernBlock extends PlantBlock implements Fertilizable {
-	public static final MapCodec<FernBlock> CODEC = createCodec(FernBlock::new);
+public class ShortPlantBlock extends PlantBlock implements Fertilizable {
+	public static final MapCodec<ShortPlantBlock> CODEC = createCodec(ShortPlantBlock::new);
 	protected static final float field_31261 = 6.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
 	@Override
-	public MapCodec<FernBlock> getCodec() {
+	public MapCodec<ShortPlantBlock> getCodec() {
 		return CODEC;
 	}
 
-	protected FernBlock(AbstractBlock.Settings settings) {
+	protected ShortPlantBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

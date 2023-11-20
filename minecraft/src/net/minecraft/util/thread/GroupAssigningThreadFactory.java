@@ -9,7 +9,7 @@ import org.slf4j.Logger;
  * A custom thread factory that assigns each created thread to the group of the
  * system security manager or the factory-creating thread (when the security
  * manager does not exist). Otherwise, it behaves much like the thread creation
- * logic in {@link net.minecraft.util.Util#createIoWorker()}.
+ * logic in {@link net.minecraft.util.Util#createIoWorker(String, boolean)}.
  */
 public class GroupAssigningThreadFactory implements ThreadFactory {
 	private static final Logger LOGGER = LogUtils.getLogger();
