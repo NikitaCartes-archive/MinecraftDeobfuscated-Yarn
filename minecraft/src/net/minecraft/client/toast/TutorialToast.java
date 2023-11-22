@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -41,7 +42,7 @@ public class TutorialToast implements Toast {
 			context.drawText(manager.getClient().textRenderer, this.title, 30, 12, -11534256, false);
 		} else {
 			context.drawText(manager.getClient().textRenderer, this.title, 30, 7, -11534256, false);
-			context.drawText(manager.getClient().textRenderer, this.description, 30, 18, -16777216, false);
+			context.drawText(manager.getClient().textRenderer, this.description, 30, 18, Colors.BLACK, false);
 		}
 
 		if (this.hasProgressBar) {

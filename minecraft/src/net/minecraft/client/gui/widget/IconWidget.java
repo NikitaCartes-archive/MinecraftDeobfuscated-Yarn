@@ -54,7 +54,7 @@ public abstract class IconWidget extends ClickableWidget {
 		}
 
 		@Override
-		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 			context.drawGuiTexture(this.texture, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 		}
 	}
@@ -73,7 +73,7 @@ public abstract class IconWidget extends ClickableWidget {
 		}
 
 		@Override
-		protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+		protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 			context.drawTexture(
 				this.texture,
 				this.getX(),

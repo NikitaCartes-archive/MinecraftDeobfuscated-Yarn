@@ -1,10 +1,13 @@
 package net.minecraft.scoreboard;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,16 +29,16 @@ import org.slf4j.Logger;
 public class Scoreboard {
 	public static final String field_47542 = "#";
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final Map<String, ScoreboardObjective> objectives = Maps.newHashMap();
-	private final Map<ScoreboardCriterion, List<ScoreboardObjective>> objectivesByCriterion = Maps.newHashMap();
-	private final Map<String, Scores> scores = Maps.newHashMap();
+	private final Object2ObjectMap<String, ScoreboardObjective> objectives = new Object2ObjectOpenHashMap<>(16, 0.5F);
+	private final Reference2ObjectMap<ScoreboardCriterion, List<ScoreboardObjective>> objectivesByCriterion = new Reference2ObjectOpenHashMap<>();
+	private final Map<String, Scores> scores = new Object2ObjectOpenHashMap<>(16, 0.5F);
 	private final Map<ScoreboardDisplaySlot, ScoreboardObjective> objectiveSlots = new EnumMap(ScoreboardDisplaySlot.class);
-	private final Map<String, Team> teams = Maps.newHashMap();
-	private final Map<String, Team> teamsByScoreHolder = Maps.newHashMap();
+	private final Object2ObjectMap<String, Team> teams = new Object2ObjectOpenHashMap<>();
+	private final Object2ObjectMap<String, Team> teamsByScoreHolder = new Object2ObjectOpenHashMap<>();
 
 	@Nullable
 	public ScoreboardObjective getNullableObjective(@Nullable String name) {
-		return (ScoreboardObjective)this.objectives.get(name);
+		return this.objectives.get(name);
 	}
 
 	public ScoreboardObjective addObjective(
@@ -50,7 +53,7 @@ public class Scoreboard {
 			throw new IllegalArgumentException("An objective with the name '" + name + "' already exists!");
 		} else {
 			ScoreboardObjective scoreboardObjective = new ScoreboardObjective(this, name, criterion, displayName, renderType, displayAutoUpdate, numberFormat);
-			((List)this.objectivesByCriterion.computeIfAbsent(criterion, criterionx -> Lists.newArrayList())).add(scoreboardObjective);
+			((List)this.objectivesByCriterion.computeIfAbsent(criterion, object -> Lists.newArrayList())).add(scoreboardObjective);
 			this.objectives.put(name, scoreboardObjective);
 			this.updateObjective(scoreboardObjective);
 			return scoreboardObjective;
@@ -245,7 +248,7 @@ public class Scoreboard {
 
 	@Nullable
 	public Team getTeam(String name) {
-		return (Team)this.teams.get(name);
+		return this.teams.get(name);
 	}
 
 	public Team addTeam(String name) {
@@ -309,7 +312,7 @@ public class Scoreboard {
 
 	@Nullable
 	public Team getScoreHolderTeam(String scoreHolderName) {
-		return (Team)this.teamsByScoreHolder.get(scoreHolderName);
+		return this.teamsByScoreHolder.get(scoreHolderName);
 	}
 
 	public void updateObjective(ScoreboardObjective objective) {

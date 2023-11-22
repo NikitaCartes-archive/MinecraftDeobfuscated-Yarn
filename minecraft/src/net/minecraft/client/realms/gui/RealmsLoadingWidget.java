@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -24,13 +25,13 @@ public class RealmsLoadingWidget extends ClickableWidget {
 	}
 
 	@Override
-	protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = this.getX() + this.getWidth() / 2;
 		int j = this.getY() + this.getHeight() / 2;
 		Text text = this.getMessage();
-		context.drawText(this.textRenderer, text, i - this.textRenderer.getWidth(text) / 2, j - 9, -1, false);
+		context.drawText(this.textRenderer, text, i - this.textRenderer.getWidth(text) / 2, j - 9, Colors.WHITE, false);
 		String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
-		context.drawText(this.textRenderer, string, i - this.textRenderer.getWidth(string) / 2, j + 9, -8355712, false);
+		context.drawText(this.textRenderer, string, i - this.textRenderer.getWidth(string) / 2, j + 9, Colors.GRAY, false);
 	}
 
 	@Override

@@ -50,7 +50,7 @@ public class TextWidget extends AbstractTextWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		Text text = this.getMessage();
 		TextRenderer textRenderer = this.getTextRenderer();
 		int i = this.getWidth();

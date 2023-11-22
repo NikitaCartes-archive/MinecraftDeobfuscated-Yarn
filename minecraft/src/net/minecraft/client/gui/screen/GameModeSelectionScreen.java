@@ -16,6 +16,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
@@ -80,7 +81,7 @@ public class GameModeSelectionScreen extends Screen {
 			context.drawTexture(TEXTURE, i, j, 0.0F, 0.0F, 125, 75, 128, 128);
 			context.getMatrices().pop();
 			super.render(context, mouseX, mouseY, delta);
-			context.drawCenteredTextWithShadow(this.textRenderer, this.gameMode.getText(), this.width / 2, this.height / 2 - 31 - 20, -1);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.gameMode.getText(), this.width / 2, this.height / 2 - 31 - 20, Colors.WHITE);
 			context.drawCenteredTextWithShadow(this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 16777215);
 			if (!this.mouseUsedForSelection) {
 				this.lastMouseX = mouseX;
@@ -154,7 +155,7 @@ public class GameModeSelectionScreen extends Screen {
 		}
 
 		@Override
-		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 			this.drawBackground(context);
 			this.gameMode.renderIcon(context, this.getX() + 5, this.getY() + 5);
 			if (this.selected) {

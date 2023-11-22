@@ -47,7 +47,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.textures != null) {
 			if (this.bounce > 0.0F) {
 				float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));

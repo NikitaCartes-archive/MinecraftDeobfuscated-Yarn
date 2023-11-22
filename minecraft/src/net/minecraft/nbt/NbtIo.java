@@ -1,7 +1,6 @@
 package net.minecraft.nbt;
 
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
@@ -185,57 +184,6 @@ public class NbtIo {
 		if (dataInputStream != null) {
 			dataInputStream.close();
 		}
-	}
-
-	/**
-	 * {@return the compressed byte array serialization of {@code nbt}}
-	 */
-	public static byte[] toCompressedBytes(NbtCompound nbt) throws IOException {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		DataOutputStream dataOutputStream = compress(byteArrayOutputStream);
-
-		try {
-			writeCompound(nbt, dataOutputStream);
-		} catch (Throwable var6) {
-			if (dataOutputStream != null) {
-				try {
-					dataOutputStream.close();
-				} catch (Throwable var5) {
-					var6.addSuppressed(var5);
-				}
-			}
-
-			throw var6;
-		}
-
-		if (dataOutputStream != null) {
-			dataOutputStream.close();
-		}
-
-		return byteArrayOutputStream.toByteArray();
-	}
-
-	/**
-	 * {@return the byte array serialization of {@code nbt}}
-	 */
-	public static byte[] toBytes(NbtCompound nbt) throws IOException {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-
-		try {
-			writeCompound(nbt, dataOutputStream);
-		} catch (Throwable var6) {
-			try {
-				dataOutputStream.close();
-			} catch (Throwable var5) {
-				var6.addSuppressed(var5);
-			}
-
-			throw var6;
-		}
-
-		dataOutputStream.close();
-		return byteArrayOutputStream.toByteArray();
 	}
 
 	/**

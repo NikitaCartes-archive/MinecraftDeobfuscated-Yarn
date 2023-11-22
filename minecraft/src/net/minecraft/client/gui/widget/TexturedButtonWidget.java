@@ -26,7 +26,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		Identifier identifier = this.textures.get(this.isNarratable(), this.isSelected());
 		context.drawGuiTexture(identifier, this.getX(), this.getY(), this.width, this.height);
 	}

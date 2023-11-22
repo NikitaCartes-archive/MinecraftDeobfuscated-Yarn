@@ -11,6 +11,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Colors;
 
 @Environment(EnvType.CLIENT)
 public class DialogScreen extends Screen {
@@ -59,7 +60,7 @@ public class DialogScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, this.linesY - 9 * 2, -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, this.linesY - 9 * 2, Colors.WHITE);
 		this.lines.drawCenterWithShadow(context, this.width / 2, this.linesY);
 	}
 

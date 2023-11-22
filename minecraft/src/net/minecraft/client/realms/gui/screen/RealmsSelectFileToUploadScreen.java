@@ -17,6 +17,7 @@ import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.lwjgl.glfw.GLFW;
@@ -28,7 +29,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	public static final Text TITLE = Text.translatable("mco.upload.select.world.title");
 	private static final Text LOADING_ERROR_TEXT = Text.translatable("selectWorld.unable_to_load");
 	static final Text WORLD_LANG = Text.translatable("selectWorld.world");
-	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").withColor(-65536);
+	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").withColor(Colors.RED);
 	static final Text CHEATS_TEXT = Text.translatable("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private final RealmsCreateWorldScreen parent;
@@ -100,7 +101,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 13, -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 13, Colors.WHITE);
 	}
 
 	@Override
@@ -166,8 +167,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			}
 
 			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, string, x + 2, y + 1, 16777215, false);
-			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.nameAndLastPlayed, x + 2, y + 12, -8355712, false);
-			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.details, x + 2, y + 12 + 10, -8355712, false);
+			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.nameAndLastPlayed, x + 2, y + 12, Colors.GRAY, false);
+			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.details, x + 2, y + 12 + 10, Colors.GRAY, false);
 		}
 
 		@Override

@@ -84,8 +84,8 @@ public abstract class TextIconButtonWidget extends ButtonWidget {
 		}
 
 		@Override
-		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-			super.renderButton(context, mouseX, mouseY, delta);
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+			super.renderWidget(context, mouseX, mouseY, delta);
 			int i = this.getX() + this.getWidth() / 2 - this.textureWidth / 2;
 			int j = this.getY() + this.getHeight() / 2 - this.textureHeight / 2;
 			context.drawGuiTexture(this.texture, i, j, this.textureWidth, this.textureHeight);
@@ -103,8 +103,8 @@ public abstract class TextIconButtonWidget extends ButtonWidget {
 		}
 
 		@Override
-		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-			super.renderButton(context, mouseX, mouseY, delta);
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+			super.renderWidget(context, mouseX, mouseY, delta);
 			int i = this.getX() + this.getWidth() - this.textureWidth - 2;
 			int j = this.getY() + this.getHeight() / 2 - this.textureHeight / 2;
 			context.drawGuiTexture(this.texture, i, j, this.textureWidth, this.textureHeight);

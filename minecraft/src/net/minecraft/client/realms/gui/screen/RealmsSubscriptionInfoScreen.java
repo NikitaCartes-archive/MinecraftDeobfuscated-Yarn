@@ -20,6 +20,7 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Urls;
 import org.slf4j.Logger;
 
@@ -133,16 +134,16 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		int i = this.width / 2 - 100;
-		context.drawCenteredTextWithShadow(this.textRenderer, SUBSCRIPTION_TITLE, this.width / 2, 17, -1);
-		context.drawText(this.textRenderer, SUBSCRIPTION_START_LABEL_TEXT, i, row(0), -6250336, false);
-		context.drawText(this.textRenderer, this.startDate, i, row(1), -1, false);
+		context.drawCenteredTextWithShadow(this.textRenderer, SUBSCRIPTION_TITLE, this.width / 2, 17, Colors.WHITE);
+		context.drawText(this.textRenderer, SUBSCRIPTION_START_LABEL_TEXT, i, row(0), Colors.LIGHT_GRAY, false);
+		context.drawText(this.textRenderer, this.startDate, i, row(1), Colors.WHITE, false);
 		if (this.type == Subscription.SubscriptionType.NORMAL) {
-			context.drawText(this.textRenderer, TIME_LEFT_LABEL_TEXT, i, row(3), -6250336, false);
+			context.drawText(this.textRenderer, TIME_LEFT_LABEL_TEXT, i, row(3), Colors.LIGHT_GRAY, false);
 		} else if (this.type == Subscription.SubscriptionType.RECURRING) {
-			context.drawText(this.textRenderer, DAYS_LEFT_LABEL_TEXT, i, row(3), -6250336, false);
+			context.drawText(this.textRenderer, DAYS_LEFT_LABEL_TEXT, i, row(3), Colors.LIGHT_GRAY, false);
 		}
 
-		context.drawText(this.textRenderer, this.daysLeft, i, row(4), -1, false);
+		context.drawText(this.textRenderer, this.daysLeft, i, row(4), Colors.WHITE, false);
 	}
 
 	private Text daysLeftPresentation(int daysLeft) {

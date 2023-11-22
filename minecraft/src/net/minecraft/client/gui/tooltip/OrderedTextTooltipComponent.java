@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.OrderedText;
+import net.minecraft.util.Colors;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
@@ -27,6 +28,6 @@ public class OrderedTextTooltipComponent implements TooltipComponent {
 
 	@Override
 	public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
-		textRenderer.draw(this.text, (float)x, (float)y, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
+		textRenderer.draw(this.text, (float)x, (float)y, Colors.WHITE, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
 	}
 }

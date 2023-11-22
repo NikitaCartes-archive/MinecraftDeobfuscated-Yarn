@@ -30,6 +30,7 @@ import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class MultiplayerServerListPinger {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(-65536);
+	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(Colors.RED);
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
 	public void add(ServerInfo entry, Runnable saver) throws UnknownHostException {

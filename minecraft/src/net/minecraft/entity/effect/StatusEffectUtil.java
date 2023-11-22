@@ -12,12 +12,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public final class StatusEffectUtil {
-	public static Text getDurationText(StatusEffectInstance effect, float multiplier) {
+	public static Text getDurationText(StatusEffectInstance effect, float multiplier, float tickRate) {
 		if (effect.isInfinite()) {
 			return Text.translatable("effect.duration.infinite");
 		} else {
 			int i = MathHelper.floor((float)effect.getDuration() * multiplier);
-			return Text.literal(StringHelper.formatTicks(i));
+			return Text.literal(StringHelper.formatTicks(i, tickRate));
 		}
 	}
 

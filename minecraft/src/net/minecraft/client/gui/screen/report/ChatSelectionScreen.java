@@ -30,6 +30,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
@@ -401,7 +402,7 @@ public class ChatSelectionScreen extends Screen {
 				int j = y + (entryHeight - 12) / 2;
 				PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), i, j, 12);
 				int k = y + 1 + (entryHeight - 9) / 2;
-				context.drawTextWithShadow(ChatSelectionScreen.this.textRenderer, this.headingText, x, k, this.fromReportedPlayer ? -1 : -1593835521);
+				context.drawTextWithShadow(ChatSelectionScreen.this.textRenderer, this.headingText, x, k, this.fromReportedPlayer ? Colors.WHITE : -1593835521);
 			}
 		}
 
@@ -435,7 +436,7 @@ public class ChatSelectionScreen extends Screen {
 				int k = ChatSelectionScreen.this.textRenderer.getWidth(this.text);
 				int l = (x + j - k) / 2;
 				int m = i - 9 / 2;
-				context.drawTextWithShadow(ChatSelectionScreen.this.textRenderer, this.text, l, m, -6250336);
+				context.drawTextWithShadow(ChatSelectionScreen.this.textRenderer, this.text, l, m, Colors.LIGHT_GRAY);
 			}
 
 			@Override

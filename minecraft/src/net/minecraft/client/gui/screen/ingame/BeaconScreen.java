@@ -156,7 +156,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 			Identifier identifier;
 			if (!this.active) {
 				identifier = BeaconScreen.BUTTON_DISABLED_TEXTURE;

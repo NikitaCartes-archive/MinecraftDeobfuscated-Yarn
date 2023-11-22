@@ -16,6 +16,7 @@ import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -83,7 +84,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.state != null) {
 			int i = this.getX();
 			int j = this.getY();
@@ -132,9 +133,9 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 			}
 
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-			context.drawCenteredTextWithShadow(textRenderer, this.state.slotName, i + 40, j + 66, -1);
+			context.drawCenteredTextWithShadow(textRenderer, this.state.slotName, i + 40, j + 66, Colors.WHITE);
 			context.drawCenteredTextWithShadow(
-				textRenderer, RealmsMainScreen.getVersionText(this.state.version, this.state.compatibility.isCompatible()), i + 40, j + 80 + 2, -1
+				textRenderer, RealmsMainScreen.getVersionText(this.state.version, this.state.compatibility.isCompatible()), i + 40, j + 80 + 2, Colors.WHITE
 			);
 		}
 	}

@@ -10,6 +10,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.OrderedText;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -32,7 +33,7 @@ public class AdvancementToast implements Toast {
 			List<OrderedText> list = manager.getClient().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
 			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
 			if (list.size() == 1) {
-				context.drawText(manager.getClient().textRenderer, advancementDisplay.getFrame().getToastText(), 30, 7, i | 0xFF000000, false);
+				context.drawText(manager.getClient().textRenderer, advancementDisplay.getFrame().getToastText(), 30, 7, i | Colors.BLACK, false);
 				context.drawText(manager.getClient().textRenderer, (OrderedText)list.get(0), 30, 18, -1, false);
 			} else {
 				int j = 1500;

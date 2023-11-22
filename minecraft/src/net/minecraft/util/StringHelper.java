@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -18,8 +19,8 @@ public class StringHelper {
 	 * {@return the length of the {@code tick} in the MM:SS format, where
 	 * the MM is the minutes and SS is the seconds (optionally zero-padded)}
 	 */
-	public static String formatTicks(int ticks) {
-		int i = ticks / 20;
+	public static String formatTicks(int ticks, float tickRate) {
+		int i = MathHelper.floor((float)ticks / tickRate);
 		int j = i / 60;
 		i %= 60;
 		int k = j / 60;

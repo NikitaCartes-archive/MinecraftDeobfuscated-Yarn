@@ -3,25 +3,20 @@ package net.minecraft.client.sound;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
 
 @Environment(EnvType.CLIENT)
 public class SoundListener {
 	private float volume = 1.0F;
-	private Vec3d pos = Vec3d.ZERO;
+	private SoundListenerTransform transform = SoundListenerTransform.DEFAULT;
 
-	public void setPosition(Vec3d position) {
-		this.pos = position;
-		AL10.alListener3f(4100, (float)position.x, (float)position.y, (float)position.z);
-	}
-
-	public Vec3d getPos() {
-		return this.pos;
-	}
-
-	public void setOrientation(Vector3f at, Vector3f up) {
-		AL10.alListenerfv(4111, new float[]{at.x(), at.y(), at.z(), up.x(), up.y(), up.z()});
+	public void setTransform(SoundListenerTransform transform) {
+		this.transform = transform;
+		Vec3d vec3d = transform.position();
+		Vec3d vec3d2 = transform.forward();
+		Vec3d vec3d3 = transform.up();
+		AL10.alListener3f(4100, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z);
+		AL10.alListenerfv(4111, new float[]{(float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z, (float)vec3d3.getX(), (float)vec3d3.getY(), (float)vec3d3.getZ()});
 	}
 
 	public void setVolume(float volume) {
@@ -34,7 +29,10 @@ public class SoundListener {
 	}
 
 	public void init() {
-		this.setPosition(Vec3d.ZERO);
-		this.setOrientation(new Vector3f(0.0F, 0.0F, -1.0F), new Vector3f(0.0F, 1.0F, 0.0F));
+		this.setTransform(SoundListenerTransform.DEFAULT);
+	}
+
+	public SoundListenerTransform getTransform() {
+		return this.transform;
 	}
 }

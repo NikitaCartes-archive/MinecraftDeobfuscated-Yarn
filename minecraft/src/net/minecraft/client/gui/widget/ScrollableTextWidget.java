@@ -56,7 +56,7 @@ public class ScrollableTextWidget extends ScrollableWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			if (!this.overflows()) {
 				this.drawBox(context);
@@ -65,7 +65,7 @@ public class ScrollableTextWidget extends ScrollableWidget {
 				this.wrapped.render(context, mouseX, mouseY, delta);
 				context.getMatrices().pop();
 			} else {
-				super.renderButton(context, mouseX, mouseY, delta);
+				super.renderWidget(context, mouseX, mouseY, delta);
 			}
 		}
 	}

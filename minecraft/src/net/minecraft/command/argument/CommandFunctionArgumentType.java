@@ -44,6 +44,11 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 				) throws CommandSyntaxException {
 					return Pair.of(identifier, Either.right(CommandFunctionArgumentType.getFunctionTag(context, identifier)));
 				}
+
+				@Override
+				public Pair<Identifier, Collection<CommandFunction<ServerCommandSource>>> getIdentifiedFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+					return Pair.of(identifier, CommandFunctionArgumentType.getFunctionTag(context, identifier));
+				}
 			};
 		} else {
 			final Identifier identifier = Identifier.fromCommandInput(stringReader);
@@ -58,6 +63,11 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 					CommandContext<ServerCommandSource> context
 				) throws CommandSyntaxException {
 					return Pair.of(identifier, Either.left(CommandFunctionArgumentType.getFunction(context, identifier)));
+				}
+
+				@Override
+				public Pair<Identifier, Collection<CommandFunction<ServerCommandSource>>> getIdentifiedFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+					return Pair.of(identifier, Collections.singleton(CommandFunctionArgumentType.getFunction(context, identifier)));
 				}
 			};
 		}
@@ -90,6 +100,13 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 		return context.<CommandFunctionArgumentType.FunctionArgument>getArgument(name, CommandFunctionArgumentType.FunctionArgument.class).getFunctionOrTag(context);
 	}
 
+	public static Pair<Identifier, Collection<CommandFunction<ServerCommandSource>>> getIdentifiedFunctions(
+		CommandContext<ServerCommandSource> context, String name
+	) throws CommandSyntaxException {
+		return context.<CommandFunctionArgumentType.FunctionArgument>getArgument(name, CommandFunctionArgumentType.FunctionArgument.class)
+			.getIdentifiedFunctions(context);
+	}
+
 	@Override
 	public Collection<String> getExamples() {
 		return EXAMPLES;
@@ -101,5 +118,7 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 		Pair<Identifier, Either<CommandFunction<ServerCommandSource>, Collection<CommandFunction<ServerCommandSource>>>> getFunctionOrTag(
 			CommandContext<ServerCommandSource> context
 		) throws CommandSyntaxException;
+
+		Pair<Identifier, Collection<CommandFunction<ServerCommandSource>>> getIdentifiedFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
 	}
 }

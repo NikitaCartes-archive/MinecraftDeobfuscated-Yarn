@@ -383,12 +383,12 @@ public class Keyboard {
 
 			if (this.client.getNarratorManager().isActive() && this.client.options.getNarratorHotkey().getValue()) {
 				boolean var10000;
-				label136: {
+				label155: {
 					if (screen != null) {
 						Element bl4 = screen.getFocused();
 						if (bl4 instanceof TextFieldWidget textFieldWidget && textFieldWidget.isActive()) {
 							var10000 = false;
-							break label136;
+							break label155;
 						}
 					}
 
@@ -425,22 +425,30 @@ public class Keyboard {
 				}
 			}
 
-			if (this.client.currentScreen != null) {
-				Screen var15 = this.client.currentScreen;
-				if (!(var15 instanceof GameMenuScreen)) {
-					return;
+			InputUtil.Key key2;
+			boolean bl3;
+			boolean var20;
+			label185: {
+				key2 = InputUtil.fromKeyCode(key, scancode);
+				bl3 = this.client.currentScreen == null;
+				label144:
+				if (!bl3) {
+					Screen var13 = this.client.currentScreen;
+					if (var13 instanceof GameMenuScreen gameMenuScreen && !gameMenuScreen.shouldShowMenu()) {
+						break label144;
+					}
+
+					var20 = false;
+					break label185;
 				}
 
-				GameMenuScreen gameMenuScreen = (GameMenuScreen)var15;
-				if (gameMenuScreen.shouldShowMenu()) {
-					return;
-				}
+				var20 = true;
 			}
 
-			InputUtil.Key key2 = InputUtil.fromKeyCode(key, scancode);
+			boolean bl4 = var20;
 			if (action == 0) {
 				KeyBinding.setKeyPressed(key2, false);
-				if (key == GLFW.GLFW_KEY_F3) {
+				if (bl4 && key == GLFW.GLFW_KEY_F3) {
 					if (this.switchF3State) {
 						this.switchF3State = false;
 					} else {
@@ -448,31 +456,35 @@ public class Keyboard {
 					}
 				}
 			} else {
-				if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
-					this.client.gameRenderer.togglePostProcessorEnabled();
-				}
-
-				boolean bl4 = false;
-				if (key == GLFW.GLFW_KEY_ESCAPE) {
-					this.client.openGameMenu(bl);
-					bl4 |= bl;
-				}
-
-				bl4 |= bl && this.processF3(key);
-				this.switchF3State |= bl4;
-				if (key == GLFW.GLFW_KEY_F1) {
-					this.client.options.hudHidden = !this.client.options.hudHidden;
-				}
-
+				boolean bl5 = false;
 				if (bl4) {
-					KeyBinding.setKeyPressed(key2, false);
-				} else {
-					KeyBinding.setKeyPressed(key2, true);
-					KeyBinding.onKeyPressed(key2);
+					if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
+						this.client.gameRenderer.togglePostProcessorEnabled();
+					}
+
+					if (key == GLFW.GLFW_KEY_ESCAPE) {
+						this.client.openGameMenu(bl);
+						bl5 |= bl;
+					}
+
+					bl5 |= bl && this.processF3(key);
+					this.switchF3State |= bl5;
+					if (key == GLFW.GLFW_KEY_F1) {
+						this.client.options.hudHidden = !this.client.options.hudHidden;
+					}
+
+					if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
+						this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
+					}
 				}
 
-				if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
-					this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
+				if (bl3) {
+					if (bl5) {
+						KeyBinding.setKeyPressed(key2, false);
+					} else {
+						KeyBinding.setKeyPressed(key2, true);
+						KeyBinding.onKeyPressed(key2);
+					}
 				}
 			}
 		}

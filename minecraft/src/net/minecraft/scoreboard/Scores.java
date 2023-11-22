@@ -2,22 +2,22 @@ package net.minecraft.scoreboard;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 class Scores {
-	private final Map<ScoreboardObjective, ScoreboardScore> scores = new HashMap();
+	private final Reference2ObjectOpenHashMap<ScoreboardObjective, ScoreboardScore> scores = new Reference2ObjectOpenHashMap<>(16, 0.5F);
 
 	@Nullable
 	public ScoreboardScore get(ScoreboardObjective objective) {
-		return (ScoreboardScore)this.scores.get(objective);
+		return this.scores.get(objective);
 	}
 
 	public ScoreboardScore getOrCreate(ScoreboardObjective objective, Consumer<ScoreboardScore> scoreConsumer) {
-		return (ScoreboardScore)this.scores.computeIfAbsent(objective, objective2 -> {
+		return this.scores.computeIfAbsent(objective, object -> {
 			ScoreboardScore scoreboardScore = new ScoreboardScore();
 			scoreConsumer.accept(scoreboardScore);
 			return scoreboardScore;

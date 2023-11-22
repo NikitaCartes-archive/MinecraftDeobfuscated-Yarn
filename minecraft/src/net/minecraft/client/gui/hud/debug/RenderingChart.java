@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.Colors;
 import net.minecraft.util.profiler.PerformanceLog;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +26,7 @@ public class RenderingChart extends DebugChart {
 	protected void renderThresholds(DrawContext context, int x, int width, int height) {
 		this.drawBorderedText(context, "30 FPS", x + 1, height - 60 + 1);
 		this.drawBorderedText(context, "60 FPS", x + 1, height - 30 + 1);
-		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, height - 30, -1);
+		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, height - 30, Colors.WHITE);
 		int i = MinecraftClient.getInstance().options.getMaxFps().getValue();
 		if (i > 0 && i <= 250) {
 			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, height - this.getHeight(1.0E9 / (double)i) - 1, -16711681);

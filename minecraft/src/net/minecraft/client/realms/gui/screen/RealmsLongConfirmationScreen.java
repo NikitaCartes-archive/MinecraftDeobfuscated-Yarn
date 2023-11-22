@@ -8,6 +8,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -58,8 +59,8 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.type.text, this.width / 2, row(2), this.type.colorCode);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.line2, this.width / 2, row(4), -1);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.line3, this.width / 2, row(6), -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.line2, this.width / 2, row(4), Colors.WHITE);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.line3, this.width / 2, row(6), Colors.WHITE);
 	}
 
 	@Environment(EnvType.CLIENT)

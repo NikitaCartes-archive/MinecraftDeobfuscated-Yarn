@@ -22,6 +22,7 @@ import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -164,7 +165,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.hoveredEntry = this.isMouseOver((double)mouseX, (double)mouseY) ? this.getEntryAtPosition((double)mouseX, (double)mouseY) : null;
 		if (this.renderBackground) {
 			context.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
@@ -194,8 +195,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		context.disableScissor();
 		if (this.renderBackground) {
 			int i = 4;
-			context.fillGradient(RenderLayer.getGuiOverlay(), this.getX(), this.getY(), this.getRight(), this.getY() + 4, -16777216, 0, 0);
-			context.fillGradient(RenderLayer.getGuiOverlay(), this.getX(), this.getBottom() - 4, this.getRight(), this.getBottom(), 0, -16777216, 0);
+			context.fillGradient(RenderLayer.getGuiOverlay(), this.getX(), this.getY(), this.getRight(), this.getY() + 4, Colors.BLACK, 0, 0);
+			context.fillGradient(RenderLayer.getGuiOverlay(), this.getX(), this.getBottom() - 4, this.getRight(), this.getBottom(), 0, Colors.BLACK, 0);
 		}
 
 		int i = this.getMaxScroll();
