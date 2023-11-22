@@ -105,36 +105,48 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 						return collection;
 					}
 				};
-			} else if (string.startsWith("#")) {
-				List<ScoreHolder> list = List.of(ScoreHolder.fromName(string));
-				return (source, players) -> list;
 			} else {
-				return (serverCommandSource, supplier) -> {
-					MinecraftServer minecraftServer = serverCommandSource.getServer();
-					ServerPlayerEntity serverPlayerEntity = minecraftServer.getPlayerManager().getPlayer(string);
-					if (serverPlayerEntity != null) {
-						return List.of(serverPlayerEntity);
-					} else {
-						try {
-							UUID uUID = UUID.fromString(string);
-							List<ScoreHolder> listx = new ArrayList();
+				List<ScoreHolder> list = List.of(ScoreHolder.fromName(string));
+				if (string.startsWith("#")) {
+					return (source, players) -> list;
+				} else {
+					try {
+						UUID uUID = UUID.fromString(string);
+						return (source, holders) -> {
+							MinecraftServer minecraftServer = source.getServer();
+							ScoreHolder scoreHolder = null;
+							List<ScoreHolder> list2 = null;
 
 							for (ServerWorld serverWorld : minecraftServer.getWorlds()) {
 								Entity entity = serverWorld.getEntity(uUID);
 								if (entity != null) {
-									listx.add(entity);
+									if (scoreHolder == null) {
+										scoreHolder = entity;
+									} else {
+										if (list2 == null) {
+											list2 = new ArrayList();
+											list2.add(scoreHolder);
+										}
+
+										list2.add(entity);
+									}
 								}
 							}
 
-							if (!listx.isEmpty()) {
-								return listx;
+							if (list2 != null) {
+								return list2;
+							} else {
+								return scoreHolder != null ? List.of(scoreHolder) : list;
 							}
-						} catch (IllegalArgumentException var10) {
-						}
-
-						return List.of(ScoreHolder.fromName(string));
+						};
+					} catch (IllegalArgumentException var6) {
+						return (source, holders) -> {
+							MinecraftServer minecraftServer = source.getServer();
+							ServerPlayerEntity serverPlayerEntity = minecraftServer.getPlayerManager().getPlayer(string);
+							return serverPlayerEntity != null ? List.of(serverPlayerEntity) : list;
+						};
 					}
-				};
+				}
 			}
 		}
 	}

@@ -19,6 +19,7 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
@@ -126,13 +127,13 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		this.tooltip = null;
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, Colors.WHITE);
 		if (this.tooltip != null) {
 			context.drawTooltip(this.textRenderer, this.tooltip, mouseX, mouseY);
 		}
 
 		if (this.pendingInvites.isDone() && this.pendingInvitationSelectionList.getEntryCount() == 0) {
-			context.drawCenteredTextWithShadow(this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, -1);
+			context.drawCenteredTextWithShadow(this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, Colors.WHITE);
 		}
 	}
 
@@ -209,7 +210,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 
 		private void renderPendingInvitationItem(DrawContext context, PendingInvite invite, int x, int y, int mouseX, int mouseY) {
-			context.drawText(RealmsPendingInvitesScreen.this.textRenderer, invite.worldName, x + 38, y + 1, -1, false);
+			context.drawText(RealmsPendingInvitesScreen.this.textRenderer, invite.worldName, x + 38, y + 1, Colors.WHITE, false);
 			context.drawText(RealmsPendingInvitesScreen.this.textRenderer, invite.worldOwnerName, x + 38, y + 12, 7105644, false);
 			context.drawText(RealmsPendingInvitesScreen.this.textRenderer, RealmsUtil.convertToAgePresentation(invite.date), x + 38, y + 24, 7105644, false);
 			RealmsAcceptRejectButton.render(context, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);

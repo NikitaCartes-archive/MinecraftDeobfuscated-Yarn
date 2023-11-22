@@ -33,7 +33,7 @@ public class LockButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		LockButtonWidget.Icon icon;
 		if (!this.active) {
 			icon = this.locked ? LockButtonWidget.Icon.LOCKED_DISABLED : LockButtonWidget.Icon.UNLOCKED_DISABLED;

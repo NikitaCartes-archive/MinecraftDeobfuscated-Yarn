@@ -22,6 +22,7 @@ import net.minecraft.client.realms.task.SwitchMinigameTask;
 import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
@@ -202,21 +203,26 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		this.tooltip = null;
-		context.drawCenteredTextWithShadow(this.textRenderer, WORLDS_TITLE, this.width / 2, row(4), -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, WORLDS_TITLE, this.width / 2, row(4), Colors.WHITE);
 		if (this.server == null) {
-			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, Colors.WHITE);
 		} else {
 			String string = this.server.getName();
 			int i = this.textRenderer.getWidth(string);
-			int j = this.server.state == RealmsServer.State.CLOSED ? -6250336 : 8388479;
+			int j = this.server.state == RealmsServer.State.CLOSED ? Colors.LIGHT_GRAY : 8388479;
 			int k = this.textRenderer.getWidth(this.title);
-			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, -1);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, Colors.WHITE);
 			context.drawCenteredTextWithShadow(this.textRenderer, string, this.width / 2, 24, j);
 			int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
 			this.drawServerState(context, l, 7, mouseX, mouseY);
 			if (this.isMinigame()) {
 				context.drawText(
-					this.textRenderer, Text.translatable("mco.configure.world.minigame", this.server.getMinigameName()), this.left_x + 80 + 20 + 10, row(13), -1, false
+					this.textRenderer,
+					Text.translatable("mco.configure.world.minigame", this.server.getMinigameName()),
+					this.left_x + 80 + 20 + 10,
+					row(13),
+					Colors.WHITE,
+					false
 				);
 			}
 		}

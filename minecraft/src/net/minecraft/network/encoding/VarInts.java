@@ -9,13 +9,13 @@ public class VarInts {
 	private static final int DATA_BITS_PER_BYTE = 7;
 
 	public static int getSizeInBytes(int i) {
-		for (int j = 1; j < 5; j++) {
+		for (int j = 1; j < MAX_BYTES; j++) {
 			if ((i & -1 << j * 7) == 0) {
 				return j;
 			}
 		}
 
-		return 5;
+		return MAX_BYTES;
 	}
 
 	public static boolean shouldContinueRead(byte b) {

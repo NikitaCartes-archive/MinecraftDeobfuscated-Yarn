@@ -7,6 +7,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringHelper;
 import net.minecraft.world.GameMode;
@@ -143,7 +144,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			return Text.translatable("selectWorld.incompatible.info", this.getVersion()).formatted(Formatting.RED);
 		} else {
 			MutableText mutableText = this.isHardcore()
-				? Text.empty().append(Text.translatable("gameMode.hardcore").withColor(-65536))
+				? Text.empty().append(Text.translatable("gameMode.hardcore").withColor(Colors.RED))
 				: Text.translatable("gameMode." + this.getGameMode().getName());
 			if (this.hasCheats()) {
 				mutableText.append(", ").append(Text.translatable("selectWorld.cheats"));
@@ -215,7 +216,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	public static class RecoveryWarning extends LevelSummary {
-		private static final Text WARNING_TEXT = Text.translatable("recover_world.warning").styled(style -> style.withColor(-65536));
+		private static final Text WARNING_TEXT = Text.translatable("recover_world.warning").styled(style -> style.withColor(Colors.RED));
 		private static final Text BUTTON_TEXT = Text.translatable("recover_world.button");
 		private final long lastPlayed;
 
@@ -267,7 +268,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 	public static class SymlinkLevelSummary extends LevelSummary {
 		private static final Text MORE_INFO_TEXT = Text.translatable("symlink_warning.more_info");
-		private static final Text TITLE_TEXT = Text.translatable("symlink_warning.title").withColor(-65536);
+		private static final Text TITLE_TEXT = Text.translatable("symlink_warning.title").withColor(Colors.RED);
 
 		public SymlinkLevelSummary(String name, Path iconPath) {
 			super(null, null, name, false, false, false, iconPath);

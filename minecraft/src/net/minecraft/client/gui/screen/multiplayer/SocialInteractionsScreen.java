@@ -21,6 +21,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -187,17 +188,17 @@ public class SocialInteractionsScreen extends Screen {
 		super.render(context, mouseX, mouseY, delta);
 		this.updateServerLabel(this.client);
 		if (this.serverLabel != null) {
-			context.drawTextWithShadow(this.client.textRenderer, this.serverLabel, this.getSearchBoxX() + 8, 35, -1);
+			context.drawTextWithShadow(this.client.textRenderer, this.serverLabel, this.getSearchBoxX() + 8, 35, Colors.WHITE);
 		}
 
 		if (!this.playerList.isEmpty()) {
 			this.playerList.render(context, mouseX, mouseY, delta);
 		} else if (!this.searchBox.getText().isEmpty()) {
-			context.drawCenteredTextWithShadow(this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
+			context.drawCenteredTextWithShadow(this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, Colors.WHITE);
 		} else if (this.currentTab == SocialInteractionsScreen.Tab.HIDDEN) {
-			context.drawCenteredTextWithShadow(this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
+			context.drawCenteredTextWithShadow(this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, Colors.WHITE);
 		} else if (this.currentTab == SocialInteractionsScreen.Tab.BLOCKED) {
-			context.drawCenteredTextWithShadow(this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
+			context.drawCenteredTextWithShadow(this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, Colors.WHITE);
 		}
 
 		this.searchBox.render(context, mouseX, mouseY, delta);

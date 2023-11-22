@@ -93,17 +93,19 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			double e = this.getY() + vec3d.y;
 			double f = this.getZ() + vec3d.z;
 			ProjectileUtil.setRotationFromVelocity(this, 0.2F);
-			float g = this.getDrag();
+			float h;
 			if (this.isTouchingWater()) {
 				for (int i = 0; i < 4; i++) {
-					float h = 0.25F;
+					float g = 0.25F;
 					this.getWorld().addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 				}
 
-				g = 0.8F;
+				h = this.getDragInWater();
+			} else {
+				h = this.getDrag();
 			}
 
-			this.setVelocity(vec3d.add(this.powerX, this.powerY, this.powerZ).multiply((double)g));
+			this.setVelocity(vec3d.add(this.powerX, this.powerY, this.powerZ).multiply((double)h));
 			ParticleEffect particleEffect = this.getParticleType();
 			if (particleEffect != null) {
 				this.getWorld().addParticle(particleEffect, d, e + 0.5, f, 0.0, 0.0, 0.0);
@@ -131,6 +133,10 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 
 	protected float getDrag() {
 		return 0.95F;
+	}
+
+	protected float getDragInWater() {
+		return 0.8F;
 	}
 
 	@Override

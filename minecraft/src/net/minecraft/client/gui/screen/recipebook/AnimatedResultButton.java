@@ -60,7 +60,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!Screen.hasControlDown()) {
 			this.time += delta;
 		}

@@ -14,6 +14,7 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -21,9 +22,9 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsInviteScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text INVITE_PROFILE_NAME_TEXT = Text.translatable("mco.configure.world.invite.profile.name").withColor(-6250336);
-	private static final Text INVITING_TEXT = Text.translatable("mco.configure.world.players.inviting").withColor(-6250336);
-	private static final Text PLAYER_ERROR_TEXT = Text.translatable("mco.configure.world.players.error").withColor(-65536);
+	private static final Text INVITE_PROFILE_NAME_TEXT = Text.translatable("mco.configure.world.invite.profile.name").withColor(Colors.LIGHT_GRAY);
+	private static final Text INVITING_TEXT = Text.translatable("mco.configure.world.players.inviting").withColor(Colors.LIGHT_GRAY);
+	private static final Text PLAYER_ERROR_TEXT = Text.translatable("mco.configure.world.players.error").withColor(Colors.RED);
 	private TextFieldWidget nameWidget;
 	private ButtonWidget inviteButton;
 	private final RealmsServer serverData;
@@ -104,9 +105,9 @@ public class RealmsInviteScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawText(this.textRenderer, INVITE_PROFILE_NAME_TEXT, this.width / 2 - 100, row(1), -1, false);
+		context.drawText(this.textRenderer, INVITE_PROFILE_NAME_TEXT, this.width / 2 - 100, row(1), Colors.WHITE, false);
 		if (this.errorMessage != null) {
-			context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessage, this.width / 2, row(5), -1);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessage, this.width / 2, row(5), Colors.WHITE);
 		}
 
 		this.nameWidget.render(context, mouseX, mouseY, delta);

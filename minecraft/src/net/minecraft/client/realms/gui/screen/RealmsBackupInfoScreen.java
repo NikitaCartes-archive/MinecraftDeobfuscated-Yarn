@@ -14,6 +14,7 @@ import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.dto.Backup;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 
@@ -118,9 +119,9 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			context.drawTextWithShadow(RealmsBackupInfoScreen.this.textRenderer, this.getTextFromKey(this.key), x, y, -6250336);
+			context.drawTextWithShadow(RealmsBackupInfoScreen.this.textRenderer, this.getTextFromKey(this.key), x, y, Colors.LIGHT_GRAY);
 			context.drawTextWithShadow(
-				RealmsBackupInfoScreen.this.textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, -1
+				RealmsBackupInfoScreen.this.textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, Colors.WHITE
 			);
 		}
 

@@ -27,6 +27,7 @@ import net.minecraft.client.realms.task.RestoreTask;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -179,9 +180,9 @@ public class RealmsBackupScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, Colors.WHITE);
 		if (this.noBackups) {
-			context.drawText(this.textRenderer, NO_BACKUPS_TEXT, 20, this.height / 2 - 10, -1, false);
+			context.drawText(this.textRenderer, NO_BACKUPS_TEXT, 20, this.height / 2 - 10, Colors.WHITE, false);
 		}
 
 		this.downloadButton.active = !this.noBackups;

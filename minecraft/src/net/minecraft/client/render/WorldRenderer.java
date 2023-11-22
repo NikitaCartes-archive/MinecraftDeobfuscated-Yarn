@@ -314,33 +314,36 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 									bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 								}
 
-								int u = this.ticks + o * o * 3121 + o * 45238971 + n * n * 418711 + n * 13761 & 31;
-								float h = -((float)u + tickDelta) / 32.0F * (3.0F + random.nextFloat());
-								double v = (double)o + 0.5 - cameraX;
-								double w = (double)n + 0.5 - cameraZ;
-								float x = (float)Math.sqrt(v * v + w * w) / (float)l;
-								float y = ((1.0F - x * x) * 0.5F + 0.5F) * f;
+								int u = this.ticks & 131071;
+								int v = o * o * 3121 + o * 45238971 + n * n * 418711 + n * 13761 & 0xFF;
+								float h = 3.0F + random.nextFloat();
+								float w = -((float)(u + v) + tickDelta) / 32.0F * h;
+								float x = w % 32.0F;
+								double y = (double)o + 0.5 - cameraX;
+								double z = (double)n + 0.5 - cameraZ;
+								float aa = (float)Math.sqrt(y * y + z * z) / (float)l;
+								float ab = ((1.0F - aa * aa) * 0.5F + 0.5F) * f;
 								mutable.set(o, t, n);
-								int z = getLightmapCoordinates(world, mutable);
+								int ac = getLightmapCoordinates(world, mutable);
 								bufferBuilder.vertex((double)o - cameraX - d + 0.5, (double)s - cameraY, (double)n - cameraZ - e + 0.5)
-									.texture(0.0F, (float)r * 0.25F + h)
-									.color(1.0F, 1.0F, 1.0F, y)
-									.light(z)
+									.texture(0.0F, (float)r * 0.25F + x)
+									.color(1.0F, 1.0F, 1.0F, ab)
+									.light(ac)
 									.next();
 								bufferBuilder.vertex((double)o - cameraX + d + 0.5, (double)s - cameraY, (double)n - cameraZ + e + 0.5)
-									.texture(1.0F, (float)r * 0.25F + h)
-									.color(1.0F, 1.0F, 1.0F, y)
-									.light(z)
+									.texture(1.0F, (float)r * 0.25F + x)
+									.color(1.0F, 1.0F, 1.0F, ab)
+									.light(ac)
 									.next();
 								bufferBuilder.vertex((double)o - cameraX + d + 0.5, (double)r - cameraY, (double)n - cameraZ + e + 0.5)
-									.texture(1.0F, (float)s * 0.25F + h)
-									.color(1.0F, 1.0F, 1.0F, y)
-									.light(z)
+									.texture(1.0F, (float)s * 0.25F + x)
+									.color(1.0F, 1.0F, 1.0F, ab)
+									.light(ac)
 									.next();
 								bufferBuilder.vertex((double)o - cameraX - d + 0.5, (double)r - cameraY, (double)n - cameraZ - e + 0.5)
-									.texture(0.0F, (float)s * 0.25F + h)
-									.color(1.0F, 1.0F, 1.0F, y)
-									.light(z)
+									.texture(0.0F, (float)s * 0.25F + x)
+									.color(1.0F, 1.0F, 1.0F, ab)
+									.light(ac)
 									.next();
 							} else if (precipitation == Biome.Precipitation.SNOW) {
 								if (m != 1) {
@@ -353,38 +356,38 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 									bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 								}
 
-								float aa = -((float)(this.ticks & 511) + tickDelta) / 512.0F;
-								float h = (float)(random.nextDouble() + (double)g * 0.01 * (double)((float)random.nextGaussian()));
-								float ab = (float)(random.nextDouble() + (double)(g * (float)random.nextGaussian()) * 0.001);
-								double ac = (double)o + 0.5 - cameraX;
-								double ad = (double)n + 0.5 - cameraZ;
-								float y = (float)Math.sqrt(ac * ac + ad * ad) / (float)l;
-								float ae = ((1.0F - y * y) * 0.3F + 0.5F) * f;
+								float ad = -((float)(this.ticks & 511) + tickDelta) / 512.0F;
+								float ae = (float)(random.nextDouble() + (double)g * 0.01 * (double)((float)random.nextGaussian()));
+								float h = (float)(random.nextDouble() + (double)(g * (float)random.nextGaussian()) * 0.001);
+								double af = (double)o + 0.5 - cameraX;
+								double y = (double)n + 0.5 - cameraZ;
+								float ag = (float)Math.sqrt(af * af + y * y) / (float)l;
+								float ah = ((1.0F - ag * ag) * 0.3F + 0.5F) * f;
 								mutable.set(o, t, n);
-								int af = getLightmapCoordinates(world, mutable);
-								int ag = af >> 16 & 65535;
-								int ah = af & 65535;
-								int ai = (ag * 3 + 240) / 4;
-								int aj = (ah * 3 + 240) / 4;
+								int ai = getLightmapCoordinates(world, mutable);
+								int aj = ai >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295);
+								int ac = ai & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295);
+								int ak = (aj * 3 + LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE) / 4;
+								int al = (ac * 3 + LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE) / 4;
 								bufferBuilder.vertex((double)o - cameraX - d + 0.5, (double)s - cameraY, (double)n - cameraZ - e + 0.5)
-									.texture(0.0F + h, (float)r * 0.25F + aa + ab)
-									.color(1.0F, 1.0F, 1.0F, ae)
-									.light(aj, ai)
+									.texture(0.0F + ae, (float)r * 0.25F + ad + h)
+									.color(1.0F, 1.0F, 1.0F, ah)
+									.light(al, ak)
 									.next();
 								bufferBuilder.vertex((double)o - cameraX + d + 0.5, (double)s - cameraY, (double)n - cameraZ + e + 0.5)
-									.texture(1.0F + h, (float)r * 0.25F + aa + ab)
-									.color(1.0F, 1.0F, 1.0F, ae)
-									.light(aj, ai)
+									.texture(1.0F + ae, (float)r * 0.25F + ad + h)
+									.color(1.0F, 1.0F, 1.0F, ah)
+									.light(al, ak)
 									.next();
 								bufferBuilder.vertex((double)o - cameraX + d + 0.5, (double)r - cameraY, (double)n - cameraZ + e + 0.5)
-									.texture(1.0F + h, (float)s * 0.25F + aa + ab)
-									.color(1.0F, 1.0F, 1.0F, ae)
-									.light(aj, ai)
+									.texture(1.0F + ae, (float)s * 0.25F + ad + h)
+									.color(1.0F, 1.0F, 1.0F, ah)
+									.light(al, ak)
 									.next();
 								bufferBuilder.vertex((double)o - cameraX - d + 0.5, (double)r - cameraY, (double)n - cameraZ - e + 0.5)
-									.texture(0.0F + h, (float)s * 0.25F + aa + ab)
-									.color(1.0F, 1.0F, 1.0F, ae)
-									.light(aj, ai)
+									.texture(0.0F + ae, (float)s * 0.25F + ad + h)
+									.color(1.0F, 1.0F, 1.0F, ah)
+									.light(al, ak)
 									.next();
 							}
 						}

@@ -31,6 +31,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -402,7 +403,7 @@ public class BookEditScreen extends Screen {
 			BookEditScreen.PageContent pageContent = this.getPageContent();
 
 			for (BookEditScreen.Line line : pageContent.lines) {
-				context.drawText(this.textRenderer, line.text, line.x, line.y, -16777216, false);
+				context.drawText(this.textRenderer, line.text, line.x, line.y, Colors.BLACK, false);
 			}
 
 			this.drawSelection(context, pageContent.selectionRectangles);

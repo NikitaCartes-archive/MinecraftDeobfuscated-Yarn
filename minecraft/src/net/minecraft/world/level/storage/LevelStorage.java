@@ -13,7 +13,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
@@ -26,7 +25,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +63,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashMemoryReserve;
 import net.minecraft.util.crash.CrashReport;
@@ -108,7 +105,6 @@ public class LevelStorage {
 	private final Path backupsDirectory;
 	final DataFixer dataFixer;
 	private final SymlinkFinder symlinkFinder;
-	boolean handlingError;
 
 	public LevelStorage(Path savesDirectory, Path backupsDirectory, SymlinkFinder symlinkFinder, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
@@ -558,7 +554,6 @@ public class LevelStorage {
 
 		private void save(NbtCompound nbt) {
 			Path path = this.directory.path();
-			Exception exception = null;
 
 			try {
 				Path path2 = Files.createTempFile(path, "level", ".dat");
@@ -566,41 +561,8 @@ public class LevelStorage {
 				Path path3 = this.directory.getLevelDatOldPath();
 				Path path4 = this.directory.getLevelDatPath();
 				Util.backupAndReplace(path4, path2, path3);
-			} catch (Exception var9) {
-				LevelStorage.LOGGER.error("Failed to save level {}", path, var9);
-				exception = var9;
-			}
-
-			Path path2 = this.directory.getLevelDatPath();
-			if (Files.exists(path2, new LinkOption[0])) {
-				try {
-					NbtIo.readCompressed(path2, NbtTagSizeTracker.of(104857600L));
-				} catch (Exception var10) {
-					if (LevelStorage.this.handlingError) {
-						LevelStorage.LOGGER.error("Failed to save level {}. Skipping further handling, reported errors earlier already.", path, var10);
-					} else {
-						LevelStorage.this.handlingError = true;
-						CrashReport crashReport = new CrashReport("Won the zlib-lottery?", new IllegalStateException("Failed to read back written world data", exception));
-						CrashReportSection crashReportSection = crashReport.addElement("level.dat");
-						crashReportSection.add("World folder", this.directory.getRootPath());
-						crashReportSection.add("Reading Exception", (var10 instanceof CrashException crashException ? crashException.getCause() : var10).toString());
-						crashReportSection.add("Uncompressed", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(NbtIo.toBytes(nbt))));
-						crashReportSection.add("Compressed saved", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(Files.readAllBytes(path2))));
-						crashReportSection.add("Compressed array", (CrashCallable<String>)(() -> Base64.getEncoder().encodeToString(NbtIo.toCompressedBytes(nbt))));
-						LocalDateTime localDateTime = LocalDateTime.now();
-						crashReportSection.add("Corrupted file", (CrashCallable<String>)(() -> {
-							Path path2x = this.directory.getCorruptedLevelDatPath(localDateTime);
-							Files.move(path2, path2x);
-							return path2x.getFileName().toString();
-						}));
-						crashReportSection.add("Raw file", (CrashCallable<String>)(() -> {
-							Path pathx = this.directory.getRawLevelDatPath(localDateTime);
-							Files.write(pathx, NbtIo.toBytes(nbt), new OpenOption[0]);
-							return pathx.getFileName().toString();
-						}));
-						throw new CrashException(crashReport);
-					}
-				}
+			} catch (Exception var6) {
+				LevelStorage.LOGGER.error("Failed to save level {}", path, var6);
 			}
 		}
 

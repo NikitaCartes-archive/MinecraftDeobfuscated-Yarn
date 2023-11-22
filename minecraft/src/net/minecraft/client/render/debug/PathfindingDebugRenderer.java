@@ -11,6 +11,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -172,7 +173,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 						(double)pathNode3.x + 0.5,
 						(double)pathNode3.y + 0.75,
 						(double)pathNode3.z + 0.5,
-						-1,
+						Colors.WHITE,
 						0.02F,
 						true,
 						0.0F,
@@ -185,7 +186,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 						(double)pathNode3.x + 0.5,
 						(double)pathNode3.y + 0.25,
 						(double)pathNode3.z + 0.5,
-						-1,
+						Colors.WHITE,
 						0.02F,
 						true,
 						0.0F,

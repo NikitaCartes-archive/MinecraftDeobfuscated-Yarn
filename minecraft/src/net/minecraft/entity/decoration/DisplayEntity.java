@@ -891,9 +891,9 @@ public abstract class DisplayEntity extends Entity {
 				this.setBackground(nbt.getInt("background"));
 			}
 
-			byte b = readFlag((byte)0, nbt, "shadow", (byte)1);
-			b = readFlag(b, nbt, "see_through", (byte)2);
-			b = readFlag(b, nbt, "default_background", (byte)4);
+			byte b = readFlag((byte)0, nbt, "shadow", SHADOW_FLAG);
+			b = readFlag(b, nbt, "see_through", SEE_THROUGH_FLAG);
+			b = readFlag(b, nbt, "default_background", DEFAULT_BACKGROUND_FLAG);
 			Optional<DisplayEntity.TextDisplayEntity.TextAlignment> optional = DisplayEntity.TextDisplayEntity.TextAlignment.CODEC
 				.decode(NbtOps.INSTANCE, nbt.get("alignment"))
 				.resultOrPartial(Util.addPrefix("Display entity", DisplayEntity.LOGGER::error))
@@ -937,9 +937,9 @@ public abstract class DisplayEntity extends Entity {
 			nbt.putInt("background", this.getBackground());
 			nbt.putByte("text_opacity", this.getTextOpacity());
 			byte b = this.getDisplayFlags();
-			writeFlag(b, nbt, "shadow", (byte)1);
-			writeFlag(b, nbt, "see_through", (byte)2);
-			writeFlag(b, nbt, "default_background", (byte)4);
+			writeFlag(b, nbt, "shadow", SHADOW_FLAG);
+			writeFlag(b, nbt, "see_through", SEE_THROUGH_FLAG);
+			writeFlag(b, nbt, "default_background", DEFAULT_BACKGROUND_FLAG);
 			DisplayEntity.TextDisplayEntity.TextAlignment.CODEC
 				.encodeStart(NbtOps.INSTANCE, getAlignment(b))
 				.result()
@@ -997,10 +997,10 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		public static DisplayEntity.TextDisplayEntity.TextAlignment getAlignment(byte flags) {
-			if ((flags & 8) != 0) {
+			if ((flags & LEFT_ALIGNMENT_FLAG) != 0) {
 				return DisplayEntity.TextDisplayEntity.TextAlignment.LEFT;
 			} else {
-				return (flags & 16) != 0 ? DisplayEntity.TextDisplayEntity.TextAlignment.RIGHT : DisplayEntity.TextDisplayEntity.TextAlignment.CENTER;
+				return (flags & RIGHT_ALIGNMENT_FLAG) != 0 ? DisplayEntity.TextDisplayEntity.TextAlignment.RIGHT : DisplayEntity.TextDisplayEntity.TextAlignment.CENTER;
 			}
 		}
 

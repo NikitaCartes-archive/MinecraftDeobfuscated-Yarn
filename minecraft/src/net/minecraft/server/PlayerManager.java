@@ -477,7 +477,7 @@ public abstract class PlayerManager {
 			serverPlayerEntity.setPosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
 		}
 
-		byte b = (byte)(alive ? 1 : 0);
+		byte b = alive ? PlayerRespawnS2CPacket.KEEP_ATTRIBUTES : 0;
 		ServerWorld serverWorld3 = serverPlayerEntity.getServerWorld();
 		WorldProperties worldProperties = serverWorld3.getLevelProperties();
 		serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.createCommonPlayerSpawnInfo(serverWorld3), b));
@@ -627,7 +627,10 @@ public abstract class PlayerManager {
 
 	@Nullable
 	public ServerPlayerEntity getPlayer(String name) {
-		for (ServerPlayerEntity serverPlayerEntity : this.players) {
+		int i = this.players.size();
+
+		for (int j = 0; j < i; j++) {
+			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(j);
 			if (serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(name)) {
 				return serverPlayerEntity;
 			}

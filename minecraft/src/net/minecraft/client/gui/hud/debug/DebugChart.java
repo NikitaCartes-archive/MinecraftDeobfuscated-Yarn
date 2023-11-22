@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.PerformanceLog;
@@ -46,10 +47,10 @@ public abstract class DebugChart {
 			context.fill(RenderLayer.getGuiOverlay(), p, i - r, p + 1, i, s);
 		}
 
-		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, i - 60, -1);
-		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, i - 1, -1);
-		context.drawVerticalLine(RenderLayer.getGuiOverlay(), x, i - 60, i, -1);
-		context.drawVerticalLine(RenderLayer.getGuiOverlay(), x + width - 1, i - 60, i, -1);
+		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, i - 60, Colors.WHITE);
+		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, i - 1, Colors.WHITE);
+		context.drawVerticalLine(RenderLayer.getGuiOverlay(), x, i - 60, i, Colors.WHITE);
+		context.drawVerticalLine(RenderLayer.getGuiOverlay(), x + width - 1, i - 60, i, Colors.WHITE);
 		if (k > 0) {
 			String string = this.format((double)m) + " min";
 			String string2 = this.format((double)l / (double)k) + " avg";

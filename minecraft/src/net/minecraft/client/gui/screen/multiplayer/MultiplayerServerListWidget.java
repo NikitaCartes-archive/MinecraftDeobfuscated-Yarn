@@ -29,6 +29,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -62,8 +63,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	);
 	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	static final Text LAN_SCANNING_TEXT = Text.translatable("lanServer.scanning");
-	static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").withColor(-65536);
-	static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(-65536);
+	static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").withColor(Colors.RED);
+	static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(Colors.RED);
 	static final Text INCOMPATIBLE_TEXT = Text.translatable("multiplayer.status.incompatible");
 	static final Text NO_CONNECTION_TEXT = Text.translatable("multiplayer.status.no_connection");
 	static final Text PINGING_TEXT = Text.translatable("multiplayer.status.pinging");
@@ -165,7 +166,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			context.drawText(this.client.textRenderer, TITLE_TEXT, x + 32 + 3, y + 1, 16777215, false);
-			context.drawText(this.client.textRenderer, this.server.getMotd(), x + 32 + 3, y + 12, -8355712, false);
+			context.drawText(this.client.textRenderer, this.server.getMotd(), x + 32 + 3, y + 12, Colors.GRAY, false);
 			if (this.client.options.hideServerAddress) {
 				context.drawText(this.client.textRenderer, HIDDEN_ADDRESS_TEXT, x + 32 + 3, y + 12 + 11, 3158064, false);
 			} else {
@@ -215,7 +216,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			);
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
 			context.drawText(
-				this.client.textRenderer, string, this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2, i + 9, -8355712, false
+				this.client.textRenderer, string, this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2, i + 9, Colors.GRAY, false
 			);
 		}
 
@@ -275,7 +276,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 			Text text = (Text)(bl ? this.server.version.copy().formatted(Formatting.RED) : this.server.playerCountLabel);
 			int j = this.client.textRenderer.getWidth(text);
-			context.drawText(this.client.textRenderer, text, x + entryWidth - j - 15 - 2, y + 1, -8355712, false);
+			context.drawText(this.client.textRenderer, text, x + entryWidth - j - 15 - 2, y + 1, Colors.GRAY, false);
 			Identifier identifier;
 			List<Text> list2;
 			Text text2;

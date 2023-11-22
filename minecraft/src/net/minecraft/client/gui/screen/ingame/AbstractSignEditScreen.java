@@ -20,6 +20,7 @@ import net.minecraft.client.util.SelectionManager;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
@@ -182,7 +183,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 				int o = this.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
 				int p = o - this.textRenderer.getWidth(string) / 2;
 				if (bl && j < string.length()) {
-					context.fill(p, m - 1, p + 1, m + this.blockEntity.getTextLineHeight(), 0xFF000000 | i);
+					context.fill(p, m - 1, p + 1, m + this.blockEntity.getTextLineHeight(), Colors.BLACK | i);
 				}
 
 				if (k != j) {

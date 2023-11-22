@@ -1170,7 +1170,9 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema197, "Added Breeze", TypeReferences.ENTITY));
 		builder.addFixer(new ChoiceTypesFix(schema197, "Added Trial Spawner", TypeReferences.BLOCK_ENTITY));
 		Schema schema198 = builder.addSchema(3692, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(BlockNameFix.create(schema198, "Rename grass to short_grass", replacing(Map.of("minecraft:grass", "minecraft:short_grass"))));
+		UnaryOperator<String> unaryOperator2 = replacing(Map.of("minecraft:grass", "minecraft:short_grass"));
+		builder.addFixer(JigsawBlockNameFix.create(schema198, "Rename grass block to short_grass", unaryOperator2));
+		builder.addFixer(ItemNameFix.create(schema198, "Rename grass item to short_grass", unaryOperator2));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -1,9 +1,9 @@
 package net.minecraft.command;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.mojang.brigadier.context.ContextChain;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Deque;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -24,7 +24,7 @@ public class CommandExecutionContext<T> implements AutoCloseable {
 	private int commandsRemaining;
 	private boolean queueOverflowed;
 	private final Deque<CommandQueueEntry<T>> commandQueue = Queues.<CommandQueueEntry<T>>newArrayDeque();
-	private final List<CommandQueueEntry<T>> pendingCommands = Lists.<CommandQueueEntry<T>>newArrayList();
+	private final List<CommandQueueEntry<T>> pendingCommands = new ObjectArrayList<>();
 
 	public CommandExecutionContext(int maxCommandChainLength, int maxCommandForkCount, Profiler profiler) {
 		this.maxCommandChainLength = maxCommandChainLength;
@@ -78,25 +78,35 @@ public class CommandExecutionContext<T> implements AutoCloseable {
 	}
 
 	public void run() {
-		Lists.reverse(this.pendingCommands).forEach(this.commandQueue::addFirst);
-		this.pendingCommands.clear();
+		this.queuePendingCommands();
 
-		while (!this.commandQueue.isEmpty()) {
-			if (this.commandsRemaining == 0) {
+		while (true) {
+			if (this.commandsRemaining <= 0) {
 				LOGGER.info("Command execution stopped due to limit (executed {} commands)", this.maxCommandChainLength);
 				break;
 			}
 
-			CommandQueueEntry<T> commandQueueEntry = (CommandQueueEntry<T>)this.commandQueue.removeFirst();
+			CommandQueueEntry<T> commandQueueEntry = (CommandQueueEntry<T>)this.commandQueue.pollFirst();
+			if (commandQueueEntry == null) {
+				return;
+			}
+
 			commandQueueEntry.execute(this);
 			if (this.queueOverflowed) {
 				LOGGER.error("Command execution stopped due to command queue overflow (max {})", 10000000);
 				break;
 			}
 
-			Lists.reverse(this.pendingCommands).forEach(this.commandQueue::addFirst);
-			this.pendingCommands.clear();
+			this.queuePendingCommands();
 		}
+	}
+
+	private void queuePendingCommands() {
+		for (int i = this.pendingCommands.size() - 1; i >= 0; i--) {
+			this.commandQueue.addFirst((CommandQueueEntry)this.pendingCommands.get(i));
+		}
+
+		this.pendingCommands.clear();
 	}
 
 	public void setTracer(@Nullable Tracer tracer) {

@@ -13,6 +13,7 @@ import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
@@ -66,7 +67,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
-		context.drawCenteredTextWithShadow(this.textRenderer, LANGUAGE_WARNING_TEXT, this.width / 2, this.height - 56, -8355712);
+		context.drawCenteredTextWithShadow(this.textRenderer, LANGUAGE_WARNING_TEXT, this.width / 2, this.height - 56, Colors.GRAY);
 	}
 
 	@Override

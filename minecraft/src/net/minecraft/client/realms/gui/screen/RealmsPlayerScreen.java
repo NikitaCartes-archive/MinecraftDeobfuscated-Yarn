@@ -23,6 +23,7 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -181,13 +182,13 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, Colors.WHITE);
 		int i = row(12) + 20;
 		context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
 		context.drawTexture(OPTIONS_BACKGROUND, 0, i, 0.0F, 0.0F, this.width, this.height - i, 32, 32);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		String string = this.serverData.players != null ? Integer.toString(this.serverData.players.size()) : "0";
-		context.drawText(this.textRenderer, Text.translatable("mco.configure.world.invited.number", string), this.column1_x, row(0), -1, false);
+		context.drawText(this.textRenderer, Text.translatable("mco.configure.world.invited.number", string), this.column1_x, row(0), Colors.WHITE, false);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -301,7 +302,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			} else if (this.playerInfo.isOnline()) {
 				i = 8388479;
 			} else {
-				i = -1;
+				i = Colors.WHITE;
 			}
 
 			RealmsUtil.drawPlayerHead(context, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, this.playerInfo.getUuid());

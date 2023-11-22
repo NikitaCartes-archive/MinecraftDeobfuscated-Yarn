@@ -33,6 +33,7 @@ import net.minecraft.client.realms.util.TextRenderingUtils;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
@@ -215,7 +216,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		if (this.warning != null) {
 			for (int i = 0; i < this.warning.length; i++) {
 				Text text = this.warning[i];
-				context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, row(-1 + i), -6250336);
+				context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, row(-1 + i), Colors.LIGHT_GRAY);
 			}
 		}
 	}
@@ -228,7 +229,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			int l = this.width / 2 - k / 2;
 
 			for (TextRenderingUtils.LineSegment lineSegment : line.segments) {
-				int m = lineSegment.isLink() ? 3368635 : -1;
+				int m = lineSegment.isLink() ? 3368635 : Colors.WHITE;
 				int n = context.drawTextWithShadow(this.textRenderer, lineSegment.renderedText(), l, j, m);
 				if (lineSegment.isLink() && x > l && x < n && y > j - 3 && y < j + 8) {
 					this.setTooltip(Text.literal(lineSegment.getLinkUrl()));
@@ -373,9 +374,9 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 			int k = x + 45 + 20;
 			int l = y + 5;
-			context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, this.mTemplate.name, k, l, -1, false);
+			context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, this.mTemplate.name, k, l, Colors.WHITE, false);
 			context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, this.mTemplate.version, x + entryWidth - j - 5, l, 7105644, false);
-			context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, this.mTemplate.author, k, l + 9 + 5, -6250336, false);
+			context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, this.mTemplate.author, k, l + 9 + 5, Colors.LIGHT_GRAY, false);
 			if (!this.mTemplate.recommendedPlayers.isBlank()) {
 				context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, this.mTemplate.recommendedPlayers, k, y + entryHeight - 9 / 2 - 5, 5000268, false);
 			}

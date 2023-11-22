@@ -32,6 +32,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nullables;
@@ -224,7 +225,9 @@ public class PlayerListHud {
 					y += 9;
 				}
 
-				context.drawTextWithShadow(this.client.textRenderer, scoreDisplayEntry.name, y, z, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1);
+				context.drawTextWithShadow(
+					this.client.textRenderer, scoreDisplayEntry.name, y, z, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : Colors.WHITE
+				);
 				if (objective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR) {
 					int aa = y + j + 1;
 					int ab = aa + q;

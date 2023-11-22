@@ -27,6 +27,7 @@ import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 
@@ -268,7 +269,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 			boolean bl = this.isSelected();
 			if (bl) {
 				context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
@@ -279,7 +280,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 			context.drawTexture(this.image, i + 2, j + 14, 0.0F, 0.0F, 56, 56, 56, 56);
 			context.drawGuiTexture(RealmsCreateWorldScreen.SLOT_FRAME_TEXTURE, i, j + 12, 60, 60);
 			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			int k = bl ? -6250336 : -1;
+			int k = bl ? Colors.LIGHT_GRAY : Colors.WHITE;
 			context.drawCenteredTextWithShadow(RealmsCreateWorldScreen.this.textRenderer, this.getMessage(), i + 30, j, k);
 		}
 	}

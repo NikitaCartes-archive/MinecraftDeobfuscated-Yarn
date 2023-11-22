@@ -13,6 +13,7 @@ import net.minecraft.client.realms.task.RealmsPrepareConnectionTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -86,8 +87,8 @@ public class RealmsTermsScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
-		context.drawText(this.textRenderer, SENTENCE_ONE_TEXT, this.width / 2 - 120, row(5), -1, false);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, Colors.WHITE);
+		context.drawText(this.textRenderer, SENTENCE_ONE_TEXT, this.width / 2 - 120, row(5), Colors.WHITE, false);
 		int i = this.textRenderer.getWidth(SENTENCE_ONE_TEXT);
 		int j = this.width / 2 - 121 + i;
 		int k = row(5);

@@ -15,7 +15,7 @@ import net.minecraft.world.WorldEvents;
 
 public class EatGrassGoal extends Goal {
 	private static final int MAX_TIMER = 40;
-	private static final Predicate<BlockState> GRASS_PREDICATE = BlockStatePredicate.forBlock(Blocks.SHORT_GRASS);
+	private static final Predicate<BlockState> SHORT_GRASS_PREDICATE = BlockStatePredicate.forBlock(Blocks.SHORT_GRASS);
 	private final MobEntity mob;
 	private final World world;
 	private int timer;
@@ -32,7 +32,7 @@ public class EatGrassGoal extends Goal {
 			return false;
 		} else {
 			BlockPos blockPos = this.mob.getBlockPos();
-			return GRASS_PREDICATE.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.down()).isOf(Blocks.GRASS_BLOCK);
+			return SHORT_GRASS_PREDICATE.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.down()).isOf(Blocks.GRASS_BLOCK);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class EatGrassGoal extends Goal {
 		this.timer = Math.max(0, this.timer - 1);
 		if (this.timer == this.getTickCount(4)) {
 			BlockPos blockPos = this.mob.getBlockPos();
-			if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
+			if (SHORT_GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
 				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					this.world.breakBlock(blockPos, false);
 				}

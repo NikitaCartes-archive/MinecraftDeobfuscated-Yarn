@@ -1084,7 +1084,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		ClientPlayerEntity clientPlayerEntity2;
-		if (packet.hasFlag((byte)2)) {
+		if (packet.hasFlag(PlayerRespawnS2CPacket.KEEP_TRACKED_DATA)) {
 			clientPlayerEntity2 = this.client
 				.interactionManager
 				.createPlayer(
@@ -1102,14 +1102,14 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		this.client.cameraEntity = clientPlayerEntity2;
-		if (packet.hasFlag((byte)2)) {
+		if (packet.hasFlag(PlayerRespawnS2CPacket.KEEP_TRACKED_DATA)) {
 			List<DataTracker.SerializedEntry<?>> list = clientPlayerEntity.getDataTracker().getChangedEntries();
 			if (list != null) {
 				clientPlayerEntity2.getDataTracker().writeUpdatedEntries(list);
 			}
 		}
 
-		if (packet.hasFlag((byte)1)) {
+		if (packet.hasFlag(PlayerRespawnS2CPacket.KEEP_ATTRIBUTES)) {
 			clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
 		}
 

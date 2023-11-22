@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -38,11 +39,11 @@ public class RealmsClientIncompatibleScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, row(3), -65536);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, row(3), Colors.RED);
 		Text[] texts = this.getLines();
 
 		for (int i = 0; i < texts.length; i++) {
-			context.drawCenteredTextWithShadow(this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, -1);
+			context.drawCenteredTextWithShadow(this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, Colors.WHITE);
 		}
 	}
 

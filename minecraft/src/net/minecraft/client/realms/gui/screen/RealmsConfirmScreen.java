@@ -8,6 +8,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 
 @Environment(EnvType.CLIENT)
 public class RealmsConfirmScreen extends RealmsScreen {
@@ -31,7 +32,7 @@ public class RealmsConfirmScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title1, this.width / 2, row(3), -1);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title2, this.width / 2, row(5), -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title1, this.width / 2, row(3), Colors.WHITE);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title2, this.width / 2, row(5), Colors.WHITE);
 	}
 }

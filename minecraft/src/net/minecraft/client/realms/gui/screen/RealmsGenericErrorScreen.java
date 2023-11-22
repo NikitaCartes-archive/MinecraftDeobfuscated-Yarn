@@ -11,6 +11,7 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 
 @Environment(EnvType.CLIENT)
 public class RealmsGenericErrorScreen extends RealmsScreen {
@@ -65,7 +66,7 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessages.title, this.width / 2, 80, -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessages.title, this.width / 2, 80, Colors.WHITE);
 		this.description.drawCenterWithShadow(context, this.width / 2, 100, 9, -2142128);
 	}
 

@@ -14,6 +14,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -89,7 +90,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
 				listener2.getPos(world).ifPresent(pos -> {
-					DebugRenderer.drawString(matrices, vertexConsumers, "Listener Origin", pos.getX(), pos.getY() + 1.8F, pos.getZ(), -1, 0.025F);
+					DebugRenderer.drawString(matrices, vertexConsumers, "Listener Origin", pos.getX(), pos.getY() + 1.8F, pos.getZ(), Colors.WHITE, 0.025F);
 					DebugRenderer.drawString(matrices, vertexConsumers, BlockPos.ofFloored(pos).toString(), pos.getX(), pos.getY() + 1.5, pos.getZ(), -6959665, 0.025F);
 				});
 			}

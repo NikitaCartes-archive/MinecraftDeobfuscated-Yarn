@@ -22,6 +22,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -370,7 +371,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.isVisible()) {
 			if (this.drawsBackground()) {
 				Identifier identifier = TEXTURES.get(this.isNarratable(), this.isFocused());
@@ -409,7 +410,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			}
 
 			if (!bl3 && this.suggestion != null) {
-				context.drawTextWithShadow(this.textRenderer, this.suggestion, o - 1, l, -8355712);
+				context.drawTextWithShadow(this.textRenderer, this.suggestion, o - 1, l, Colors.GRAY);
 			}
 
 			if (bl2) {

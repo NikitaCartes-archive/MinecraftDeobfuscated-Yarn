@@ -42,7 +42,7 @@ public class PlayerSkinWidget extends ClickableWidget {
 	}
 
 	@Override
-	protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		context.getMatrices().push();
 		context.getMatrices().translate((float)this.getX() + (float)this.getWidth() / 2.0F, (float)(this.getY() + this.getHeight()), 100.0F);
 		float f = (float)this.getHeight() / 2.125F;

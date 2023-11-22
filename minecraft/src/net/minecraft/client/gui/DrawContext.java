@@ -45,6 +45,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -606,8 +607,8 @@ public class DrawContext {
 				int j = stack.getItemBarColor();
 				int k = x + 2;
 				int l = y + 13;
-				this.fill(RenderLayer.getGuiOverlay(), k, l, k + 13, l + 2, -16777216);
-				this.fill(RenderLayer.getGuiOverlay(), k, l, k + i, l + 1, j | 0xFF000000);
+				this.fill(RenderLayer.getGuiOverlay(), k, l, k + 13, l + 2, Colors.BLACK);
+				this.fill(RenderLayer.getGuiOverlay(), k, l, k + i, l + 1, j | Colors.BLACK);
 			}
 
 			ClientPlayerEntity clientPlayerEntity = this.client.player;

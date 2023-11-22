@@ -38,7 +38,7 @@ public class ToggleButtonWidget extends ClickableWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.textures != null) {
 			RenderSystem.disableDepthTest();
 			context.drawGuiTexture(this.textures.get(this.toggled, this.isSelected()), this.getX(), this.getY(), this.width, this.height);

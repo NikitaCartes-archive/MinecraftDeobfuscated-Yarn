@@ -56,7 +56,7 @@ public class SuspiciousStewItem extends Item {
 		if (context.isCreative()) {
 			List<StatusEffectInstance> list = new ArrayList();
 			forEachEffect(stack, effect -> list.add(effect.createStatusEffectInstance()));
-			PotionUtil.buildTooltip(list, tooltip, 1.0F);
+			PotionUtil.buildTooltip(list, tooltip, 1.0F, world == null ? 20.0F : world.getTickManager().getTickRate());
 		}
 	}
 

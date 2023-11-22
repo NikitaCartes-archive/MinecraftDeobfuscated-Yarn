@@ -62,6 +62,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Urls;
@@ -592,7 +593,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		if (isSnapshotRealmsEligible()) {
-			context.drawTextWithShadow(this.textRenderer, "Minecraft " + SharedConstants.getGameVersion().getName(), 2, this.height - 10, -1);
+			context.drawTextWithShadow(this.textRenderer, "Minecraft " + SharedConstants.getGameVersion().getName(), 2, this.height - 10, Colors.WHITE);
 		}
 
 		if (this.trialAvailable && this.purchaseButton.active) {
@@ -631,7 +632,7 @@ public class RealmsMainScreen extends RealmsScreen {
 					showCompatibilityScreen(
 						serverData,
 						parent,
-						Text.translatable("mco.compatibility.unverifiable.title").withColor(-171),
+						Text.translatable("mco.compatibility.unverifiable.title").withColor(Colors.LIGHT_YELLOW),
 						Text.translatable("mco.compatibility.unverifiable.message"),
 						ScreenTexts.CONTINUE
 					);
@@ -640,11 +641,11 @@ public class RealmsMainScreen extends RealmsScreen {
 					showCompatibilityScreen(
 						serverData,
 						parent,
-						Text.translatable("selectWorld.backupQuestion.downgrade").withColor(-2142128),
+						Text.translatable("selectWorld.backupQuestion.downgrade").withColor(Colors.LIGHT_RED),
 						Text.translatable(
 							"mco.compatibility.downgrade.description",
-							Text.literal(serverData.activeVersion).withColor(-171),
-							Text.literal(SharedConstants.getGameVersion().getName()).withColor(-171)
+							Text.literal(serverData.activeVersion).withColor(Colors.LIGHT_YELLOW),
+							Text.literal(SharedConstants.getGameVersion().getName()).withColor(Colors.LIGHT_YELLOW)
 						),
 						Text.translatable("mco.compatibility.downgrade")
 					);
@@ -653,11 +654,11 @@ public class RealmsMainScreen extends RealmsScreen {
 					showCompatibilityScreen(
 						serverData,
 						parent,
-						Text.translatable("mco.compatibility.upgrade.title").withColor(-171),
+						Text.translatable("mco.compatibility.upgrade.title").withColor(Colors.LIGHT_YELLOW),
 						Text.translatable(
 							"mco.compatibility.upgrade.description",
-							Text.literal(serverData.activeVersion).withColor(-171),
-							Text.literal(SharedConstants.getGameVersion().getName()).withColor(-171)
+							Text.literal(serverData.activeVersion).withColor(Colors.LIGHT_YELLOW),
+							Text.literal(SharedConstants.getGameVersion().getName()).withColor(Colors.LIGHT_YELLOW)
 						),
 						Text.translatable("mco.compatibility.upgrade")
 					);
@@ -768,10 +769,10 @@ public class RealmsMainScreen extends RealmsScreen {
 			int j = this.getNameY(y);
 			int k = this.getStatusY(j);
 			if (!RealmsMainScreen.this.isSelfOwnedServer(server)) {
-				context.drawText(RealmsMainScreen.this.textRenderer, server.owner, i, this.getStatusY(j), -8355712, false);
+				context.drawText(RealmsMainScreen.this.textRenderer, server.owner, i, this.getStatusY(j), Colors.GRAY, false);
 			} else if (server.expired) {
 				Text text = server.expiredTrial ? RealmsMainScreen.EXPIRED_TRIAL_TEXT : RealmsMainScreen.EXPIRED_LIST_TEXT;
-				context.drawText(RealmsMainScreen.this.textRenderer, text, i, k, -2142128, false);
+				context.drawText(RealmsMainScreen.this.textRenderer, text, i, k, Colors.LIGHT_RED, false);
 			}
 		}
 
@@ -845,8 +846,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-			super.renderButton(context, mouseX, mouseY, delta);
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+			super.renderWidget(context, mouseX, mouseY, delta);
 			if (this.active && this.notificationCount != 0) {
 				this.render(context);
 			}
@@ -881,10 +882,10 @@ public class RealmsMainScreen extends RealmsScreen {
 			int k = this.getVersionRight(x, entryWidth, text);
 			this.drawTrimmedText(context, this.server.getName(), i, j, k, -8355712);
 			if (text != ScreenTexts.EMPTY) {
-				context.drawText(RealmsMainScreen.this.textRenderer, text, k, j, -8355712, false);
+				context.drawText(RealmsMainScreen.this.textRenderer, text, k, j, Colors.GRAY, false);
 			}
 
-			context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), -8355712, false);
+			context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), Colors.GRAY, false);
 			this.drawOwnerOrExpiredText(context, y, x, this.server);
 			this.renderStatusIcon(this.server, context, x + entryWidth, y, mouseX, mouseY);
 			this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
@@ -964,7 +965,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			int k = this.getVersionRight(x, width, text);
 			this.drawTrimmedText(context, this.server.getName(), i, j, k, -1);
 			if (text != ScreenTexts.EMPTY) {
-				context.drawText(RealmsMainScreen.this.textRenderer, text, k, j, -8355712, false);
+				context.drawText(RealmsMainScreen.this.textRenderer, text, k, j, Colors.GRAY, false);
 			}
 		}
 
@@ -974,9 +975,11 @@ public class RealmsMainScreen extends RealmsScreen {
 			int k = this.getDescriptionY(j);
 			if (this.server.worldType == RealmsServer.WorldType.MINIGAME) {
 				Text text = Text.literal(this.server.getMinigameName()).formatted(Formatting.GRAY);
-				context.drawText(RealmsMainScreen.this.textRenderer, Text.translatable("mco.selectServer.minigameName", text).withColor(-171), i, k, -1, false);
+				context.drawText(
+					RealmsMainScreen.this.textRenderer, Text.translatable("mco.selectServer.minigameName", text).withColor(Colors.LIGHT_YELLOW), i, k, Colors.WHITE, false
+				);
 			} else {
-				context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), -8355712, false);
+				context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), Colors.GRAY, false);
 			}
 		}
 
@@ -1057,7 +1060,9 @@ public class RealmsMainScreen extends RealmsScreen {
 			context.drawGuiTexture(RealmsMainScreen.NEW_REALM_ICON_TEXTURE, x - 5, y + entryHeight / 2 - 10, 40, 20);
 			int i = y + entryHeight / 2 - 9 / 2;
 			context.drawTextWithShadow(RealmsMainScreen.this.textRenderer, START_TEXT, x + 40 - 2, i - 5, 8388479);
-			context.drawTextWithShadow(RealmsMainScreen.this.textRenderer, Text.translatable("mco.snapshot.description", this.server.name), x + 40 - 2, i + 5, -8355712);
+			context.drawTextWithShadow(
+				RealmsMainScreen.this.textRenderer, Text.translatable("mco.snapshot.description", this.server.name), x + 40 - 2, i + 5, Colors.GRAY
+			);
 			this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
 		}
 

@@ -9,13 +9,13 @@ public class VarLongs {
 	private static final int DATA_BITS_PER_BYTE = 7;
 
 	public static int getSizeInBytes(long l) {
-		for (int i = 1; i < 10; i++) {
+		for (int i = 1; i < MAX_BYTES; i++) {
 			if ((l & -1L << i * 7) == 0L) {
 				return i;
 			}
 		}
 
-		return 10;
+		return MAX_BYTES;
 	}
 
 	public static boolean shouldContinueRead(byte b) {

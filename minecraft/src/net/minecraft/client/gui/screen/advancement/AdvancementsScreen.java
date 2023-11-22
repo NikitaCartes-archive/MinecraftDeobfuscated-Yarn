@@ -16,6 +16,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -139,8 +140,8 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		if (advancementTab == null) {
 			context.fill(x + 9, y + 18, x + 9 + 234, y + 18 + 113, -16777216);
 			int i = x + 9 + 117;
-			context.drawCenteredTextWithShadow(this.textRenderer, EMPTY_TEXT, i, y + 18 + 56 - 9 / 2, -1);
-			context.drawCenteredTextWithShadow(this.textRenderer, SAD_LABEL_TEXT, i, y + 18 + 113 - 9, -1);
+			context.drawCenteredTextWithShadow(this.textRenderer, EMPTY_TEXT, i, y + 18 + 56 - 9 / 2, Colors.WHITE);
+			context.drawCenteredTextWithShadow(this.textRenderer, SAD_LABEL_TEXT, i, y + 18 + 113 - 9, Colors.WHITE);
 		} else {
 			advancementTab.render(context, x + 9, y + 18);
 		}

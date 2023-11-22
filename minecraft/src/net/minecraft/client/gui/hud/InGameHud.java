@@ -48,6 +48,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
@@ -282,7 +283,7 @@ public class InGameHud {
 						k = MathHelper.hsvToRgb(h / 50.0F, 0.7F, 0.6F) & 16777215;
 					}
 
-					int m = l << 24 & 0xFF000000;
+					int m = l << 24 & Colors.BLACK;
 					int n = textRenderer.getWidth(this.overlayMessage);
 					this.drawTextBackground(context, textRenderer, -4, n, 16777215 | m);
 					context.drawTextWithShadow(textRenderer, this.overlayMessage, -n / 2, -4, k | m);
@@ -635,7 +636,9 @@ public class InGameHud {
 		if (this.client.world.getTime() >= 120500L) {
 			text = DEMO_EXPIRED_MESSAGE;
 		} else {
-			text = Text.translatable("demo.remainingTime", StringHelper.formatTicks((int)(120500L - this.client.world.getTime())));
+			text = Text.translatable(
+				"demo.remainingTime", StringHelper.formatTicks((int)(120500L - this.client.world.getTime()), this.client.world.getTickManager().getTickRate())
+			);
 		}
 
 		int i = this.getTextRenderer().getWidth(text);
@@ -687,13 +690,13 @@ public class InGameHud {
 			int s = m - kx * 9;
 			context.fill(o - 2, s - 9 - 1, p, s - 1, r);
 			context.fill(o - 2, s - 1, p, m, q);
-			context.drawText(this.getTextRenderer(), text, o + l / 2 - i / 2, s - 9, -1, false);
+			context.drawText(this.getTextRenderer(), text, o + l / 2 - i / 2, s - 9, Colors.WHITE, false);
 
 			for (int t = 0; t < kx; t++) {
 				SidebarEntry sidebarEntryx = sidebarEntrys[t];
 				int u = m - (kx - t) * 9;
-				context.drawText(this.getTextRenderer(), sidebarEntryx.name, o, u, -1, false);
-				context.drawText(this.getTextRenderer(), sidebarEntryx.score, p - sidebarEntryx.scoreWidth, u, -1, false);
+				context.drawText(this.getTextRenderer(), sidebarEntryx.name, o, u, Colors.WHITE, false);
+				context.drawText(this.getTextRenderer(), sidebarEntryx.score, p - sidebarEntryx.scoreWidth, u, Colors.WHITE, false);
 			}
 		});
 	}
@@ -974,10 +977,10 @@ public class InGameHud {
 		int m = k + i;
 		int n = l + j;
 		context.drawTexture(SPYGLASS_SCOPE, k, l, -90, 0.0F, 0.0F, i, j, i, j);
-		context.fill(RenderLayer.getGuiOverlay(), 0, n, this.scaledWidth, this.scaledHeight, -90, -16777216);
-		context.fill(RenderLayer.getGuiOverlay(), 0, 0, this.scaledWidth, l, -90, -16777216);
-		context.fill(RenderLayer.getGuiOverlay(), 0, l, k, n, -90, -16777216);
-		context.fill(RenderLayer.getGuiOverlay(), m, l, this.scaledWidth, n, -90, -16777216);
+		context.fill(RenderLayer.getGuiOverlay(), 0, n, this.scaledWidth, this.scaledHeight, -90, Colors.BLACK);
+		context.fill(RenderLayer.getGuiOverlay(), 0, 0, this.scaledWidth, l, -90, Colors.BLACK);
+		context.fill(RenderLayer.getGuiOverlay(), 0, l, k, n, -90, Colors.BLACK);
+		context.fill(RenderLayer.getGuiOverlay(), m, l, this.scaledWidth, n, -90, Colors.BLACK);
 	}
 
 	private void updateVignetteDarkness(Entity entity) {
@@ -1210,7 +1213,7 @@ public class InGameHud {
 			if (i > 8) {
 				TextRenderer textRenderer = this.getTextRenderer();
 				int j = textRenderer.getWidth(SAVING_LEVEL_TEXT);
-				int k = 16777215 | i << 24 & 0xFF000000;
+				int k = 16777215 | i << 24 & Colors.BLACK;
 				context.drawTextWithShadow(textRenderer, SAVING_LEVEL_TEXT, this.scaledWidth - j - 10, this.scaledHeight - 15, k);
 			}
 		}

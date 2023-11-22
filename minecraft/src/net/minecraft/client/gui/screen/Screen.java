@@ -173,7 +173,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	private void blur() {
+	public void blur() {
 		GuiNavigationPath guiNavigationPath = this.getFocusedPath();
 		if (guiNavigationPath != null) {
 			guiNavigationPath.setFocused(false);
@@ -404,8 +404,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public static boolean hasControlDown() {
 		return MinecraftClient.IS_SYSTEM_MAC
-			? InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 343)
-				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 347)
+			? InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SUPER)
+				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_SUPER)
 			: InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL)
 				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_CONTROL);
 	}

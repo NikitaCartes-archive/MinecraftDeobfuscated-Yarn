@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.ContextChain;
 import com.mojang.brigadier.context.ContextChain.Stage;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import java.util.ArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
@@ -51,7 +51,7 @@ public class SingleCommandAction<T extends AbstractServerCommandSource<T>> {
 					if (redirectModifier != null) {
 						context.decrementCommandQuota();
 						boolean bl = executionFlags.isSilent();
-						List<T> list2 = new ArrayList();
+						List<T> list2 = new ObjectArrayList<>();
 
 						for (T abstractServerCommandSource : list) {
 							try {

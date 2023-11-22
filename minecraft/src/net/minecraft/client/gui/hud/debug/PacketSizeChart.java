@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.PerformanceLog;
 
@@ -36,7 +37,7 @@ public class PacketSizeChart extends DebugChart {
 
 	private void drawSizeBar(DrawContext context, int x, int width, int y, String label) {
 		this.drawBorderedText(context, label, x + 1, y + 1);
-		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, y, -1);
+		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, y, Colors.WHITE);
 	}
 
 	@Override

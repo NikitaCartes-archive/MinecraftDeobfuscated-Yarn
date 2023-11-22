@@ -193,9 +193,9 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 			float f
 		) {
 			byte b = data.flags();
-			boolean bl = (b & 2) != 0;
-			boolean bl2 = (b & 4) != 0;
-			boolean bl3 = (b & 1) != 0;
+			boolean bl = (b & DisplayEntity.TextDisplayEntity.SEE_THROUGH_FLAG) != 0;
+			boolean bl2 = (b & DisplayEntity.TextDisplayEntity.DEFAULT_BACKGROUND_FLAG) != 0;
+			boolean bl3 = (b & DisplayEntity.TextDisplayEntity.SHADOW_FLAG) != 0;
 			DisplayEntity.TextDisplayEntity.TextAlignment textAlignment = DisplayEntity.TextDisplayEntity.getAlignment(b);
 			byte c = (byte)data.textOpacity().lerp(f);
 			int j;

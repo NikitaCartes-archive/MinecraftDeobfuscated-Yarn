@@ -72,6 +72,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, World world, ItemStack stack) {
 		super(type, world);
 		this.stack = stack.copy();
+		if (stack.hasCustomName()) {
+			this.setCustomName(stack.getName());
+		}
 	}
 
 	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world, ItemStack stack) {
@@ -333,7 +336,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 		boolean bl = entity.getType() == EntityType.ENDERMAN;
 		int j = entity.getFireTicks();
-		if (this.isOnFire() && !bl) {
+		boolean bl2 = entity.getType().isIn(EntityTypeTags.DEFLECTS_ARROWS);
+		if (this.isOnFire() && !bl && !bl2) {
 			entity.setOnFireFor(5);
 		}
 
@@ -384,7 +388,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			if (this.getPierceLevel() <= 0) {
 				this.discard();
 			}
-		} else if (entity.getType().isIn(EntityTypeTags.DEFLECTS_ARROWS)) {
+		} else if (bl2) {
 			this.deflect();
 		} else {
 			entity.setFireTicks(j);

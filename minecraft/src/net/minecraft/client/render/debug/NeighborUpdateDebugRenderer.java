@@ -15,6 +15,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
@@ -70,7 +71,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 		for (Entry<BlockPos, Integer> entry : map.entrySet()) {
 			BlockPos blockPos2 = (BlockPos)entry.getKey();
 			Integer integer2 = (Integer)entry.getValue();
-			DebugRenderer.drawString(matrices, vertexConsumers, String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
+			DebugRenderer.drawString(matrices, vertexConsumers, String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), Colors.WHITE);
 		}
 	}
 }

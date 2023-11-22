@@ -8,6 +8,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -70,9 +71,9 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
-		context.drawText(this.textRenderer, WORLD_NAME_TEXT, this.width / 2 - 106, row(3), -1, false);
-		context.drawText(this.textRenderer, WORLD_DESCRIPTION_TEXT, this.width / 2 - 106, row(7), -1, false);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, Colors.WHITE);
+		context.drawText(this.textRenderer, WORLD_NAME_TEXT, this.width / 2 - 106, row(3), Colors.WHITE, false);
+		context.drawText(this.textRenderer, WORLD_DESCRIPTION_TEXT, this.width / 2 - 106, row(7), Colors.WHITE, false);
 	}
 
 	public void save() {

@@ -10,6 +10,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -97,9 +98,9 @@ public class SystemToast implements Toast {
 		}
 
 		if (this.lines.isEmpty()) {
-			context.drawText(manager.getClient().textRenderer, this.title, 18, 12, -256, false);
+			context.drawText(manager.getClient().textRenderer, this.title, 18, 12, Colors.YELLOW, false);
 		} else {
-			context.drawText(manager.getClient().textRenderer, this.title, 18, 7, -256, false);
+			context.drawText(manager.getClient().textRenderer, this.title, 18, 7, Colors.YELLOW, false);
 
 			for (int j = 0; j < this.lines.size(); j++) {
 				context.drawText(manager.getClient().textRenderer, (OrderedText)this.lines.get(j), 18, 18 + j * 12, -1, false);

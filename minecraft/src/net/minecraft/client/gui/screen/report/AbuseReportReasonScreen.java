@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.session.report.AbuseReportReason;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Nullables;
 
 @Environment(EnvType.CLIENT)
@@ -78,7 +79,7 @@ public class AbuseReportReasonScreen extends Screen {
 			int m = j - i;
 			int n = l - k;
 			int o = this.textRenderer.getWrappedLinesHeight(reasonEntry.reason.getDescription(), m);
-			context.drawTextWrapped(this.textRenderer, reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, -1);
+			context.drawTextWrapped(this.textRenderer, reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, Colors.WHITE);
 		}
 	}
 
@@ -154,7 +155,7 @@ public class AbuseReportReasonScreen extends Screen {
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				int i = x + 1;
 				int j = y + (entryHeight - 9) / 2 + 1;
-				context.drawTextWithShadow(AbuseReportReasonScreen.this.textRenderer, this.reason.getText(), i, j, -1);
+				context.drawTextWithShadow(AbuseReportReasonScreen.this.textRenderer, this.reason.getText(), i, j, Colors.WHITE);
 			}
 
 			@Override

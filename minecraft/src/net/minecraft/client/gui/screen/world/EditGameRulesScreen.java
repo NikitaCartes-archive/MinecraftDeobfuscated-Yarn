@@ -273,8 +273,8 @@ public class EditGameRulesScreen extends Screen {
 		}
 
 		@Override
-		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-			super.renderButton(context, mouseX, mouseY, delta);
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+			super.renderWidget(context, mouseX, mouseY, delta);
 			EditGameRulesScreen.AbstractRuleWidget abstractRuleWidget = this.getHoveredEntry();
 			if (abstractRuleWidget != null && abstractRuleWidget.description != null) {
 				EditGameRulesScreen.this.setTooltip(abstractRuleWidget.description);

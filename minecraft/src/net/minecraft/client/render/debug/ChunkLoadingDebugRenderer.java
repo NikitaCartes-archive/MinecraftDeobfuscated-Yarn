@@ -17,6 +17,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -70,7 +71,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 						(double)ChunkSectionPos.getOffsetPos(chunkPos.x, 8),
 						e + (double)i,
 						(double)ChunkSectionPos.getOffsetPos(chunkPos.z, 8),
-						-1,
+						Colors.WHITE,
 						0.15F,
 						true,
 						0.0F,

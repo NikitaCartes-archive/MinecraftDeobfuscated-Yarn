@@ -64,7 +64,7 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	public final void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
-			this.renderButton(context, mouseX, mouseY, delta);
+			this.renderWidget(context, mouseX, mouseY, delta);
 			if (this.tooltip != null) {
 				this.tooltip.render(this.isHovered(), this.isFocused(), this.getNavigationFocus());
 			}
@@ -94,7 +94,7 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		return Text.translatable("gui.narrate.button", message);
 	}
 
-	protected abstract void renderButton(DrawContext context, int mouseX, int mouseY, float delta);
+	protected abstract void renderWidget(DrawContext context, int mouseX, int mouseY, float delta);
 
 	protected static void drawScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int startX, int startY, int endX, int endY, int color) {
 		drawScrollableText(context, textRenderer, text, (startX + endX) / 2, startX, startY, endX, endY, color);

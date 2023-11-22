@@ -411,43 +411,64 @@ public class Keyboard {
 				}
 			}
 
-			if (this.client.currentScreen == null || this.client.currentScreen instanceof GameMenuScreen gameMenuScreen && !gameMenuScreen.shouldShowMenu()) {
-				InputUtil.Key key2 = InputUtil.fromKeyCode(key, scancode);
-				if (action == 0) {
-					KeyBinding.setKeyPressed(key2, false);
-					if (key == GLFW.GLFW_KEY_F3) {
-						if (this.switchF3State) {
-							this.switchF3State = false;
-						} else {
-							this.client.getDebugHud().toggleDebugHud();
-						}
+			InputUtil.Key key2;
+			boolean bl3x;
+			boolean var20;
+			label185: {
+				key2 = InputUtil.fromKeyCode(key, scancode);
+				bl3x = this.client.currentScreen == null;
+				label144:
+				if (!bl3x) {
+					if (this.client.currentScreen instanceof GameMenuScreen gameMenuScreen && !gameMenuScreen.shouldShowMenu()) {
+						break label144;
 					}
-				} else {
+
+					var20 = false;
+					break label185;
+				}
+
+				var20 = true;
+			}
+
+			boolean bl4 = var20;
+			if (action == 0) {
+				KeyBinding.setKeyPressed(key2, false);
+				if (bl4 && key == GLFW.GLFW_KEY_F3) {
+					if (this.switchF3State) {
+						this.switchF3State = false;
+					} else {
+						this.client.getDebugHud().toggleDebugHud();
+					}
+				}
+			} else {
+				boolean bl5 = false;
+				if (bl4) {
 					if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
 						this.client.gameRenderer.togglePostProcessorEnabled();
 					}
 
-					boolean bl4 = false;
 					if (key == GLFW.GLFW_KEY_ESCAPE) {
 						this.client.openGameMenu(bl);
-						bl4 |= bl;
+						bl5 |= bl;
 					}
 
-					bl4 |= bl && this.processF3(key);
-					this.switchF3State |= bl4;
+					bl5 |= bl && this.processF3(key);
+					this.switchF3State |= bl5;
 					if (key == GLFW.GLFW_KEY_F1) {
 						this.client.options.hudHidden = !this.client.options.hudHidden;
 					}
 
-					if (bl4) {
+					if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
+						this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
+					}
+				}
+
+				if (bl3x) {
+					if (bl5) {
 						KeyBinding.setKeyPressed(key2, false);
 					} else {
 						KeyBinding.setKeyPressed(key2, true);
 						KeyBinding.onKeyPressed(key2);
-					}
-
-					if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
-						this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
 					}
 				}
 			}

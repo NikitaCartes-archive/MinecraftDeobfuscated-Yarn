@@ -17,6 +17,7 @@ import net.minecraft.client.session.report.AbuseReport;
 import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.TextifiedException;
 import org.slf4j.Logger;
@@ -166,7 +167,7 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 
 		@Override
 		protected void drawTitle(DrawContext context) {
-			context.drawTextWithShadow(this.textRenderer, this.title, this.width / 2 - 155, 30, -1);
+			context.drawTextWithShadow(this.textRenderer, this.title, this.width / 2 - 155, 30, Colors.WHITE);
 		}
 	}
 }

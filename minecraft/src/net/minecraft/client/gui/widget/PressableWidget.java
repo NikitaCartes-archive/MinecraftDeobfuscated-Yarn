@@ -30,7 +30,7 @@ public abstract class PressableWidget extends ClickableWidget {
 	public abstract void onPress();
 
 	@Override
-	protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();

@@ -761,7 +761,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			return this;
 		} else {
 			WorldProperties worldProperties = destination.getLevelProperties();
-			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(destination), (byte)3));
+			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(destination), PlayerRespawnS2CPacket.KEEP_ALL));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
@@ -1585,7 +1585,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		} else {
 			ServerWorld serverWorld = this.getServerWorld();
 			WorldProperties worldProperties = targetWorld.getLevelProperties();
-			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(targetWorld), (byte)3));
+			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(targetWorld), PlayerRespawnS2CPacket.KEEP_ALL));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			this.server.getPlayerManager().sendCommandTree(this);
 			serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);

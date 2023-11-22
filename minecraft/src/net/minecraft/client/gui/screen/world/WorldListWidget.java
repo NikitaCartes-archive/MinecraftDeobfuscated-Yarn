@@ -48,6 +48,7 @@ import net.minecraft.nbt.NbtException;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -143,13 +144,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		List<LevelSummary> list = this.tryGet();
 		if (list != this.levels) {
 			this.show(list);
 		}
 
-		super.renderButton(context, mouseX, mouseY, delta);
+		super.renderWidget(context, mouseX, mouseY, delta);
 	}
 
 	private void show(@Nullable List<LevelSummary> levels) {
@@ -279,7 +280,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
 			int k = (this.client.currentScreen.width - this.client.textRenderer.getWidth(string)) / 2;
 			int l = j + 9;
-			context.drawText(this.client.textRenderer, string, k, l, -8355712, false);
+			context.drawText(this.client.textRenderer, string, k, l, Colors.GRAY, false);
 		}
 
 		@Override
@@ -367,8 +368,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 			Text text = this.level.getDetails();
 			context.drawText(this.client.textRenderer, string, x + 32 + 3, y + 1, 16777215, false);
-			context.drawText(this.client.textRenderer, string2, x + 32 + 3, y + 9 + 3, -8355712, false);
-			context.drawText(this.client.textRenderer, text, x + 32 + 3, y + 9 + 9 + 3, -8355712, false);
+			context.drawText(this.client.textRenderer, string2, x + 32 + 3, y + 9 + 3, Colors.GRAY, false);
+			context.drawText(this.client.textRenderer, text, x + 32 + 3, y + 9 + 9 + 3, Colors.GRAY, false);
 			RenderSystem.enableBlend();
 			context.drawTexture(this.icon.getTextureId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();

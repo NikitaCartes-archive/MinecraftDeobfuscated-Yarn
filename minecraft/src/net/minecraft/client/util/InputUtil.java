@@ -461,11 +461,11 @@ public class InputUtil {
 			mapKey(KEYSYM, "key.keyboard.left.alt", GLFW.GLFW_KEY_LEFT_ALT);
 			mapKey(KEYSYM, "key.keyboard.left.control", GLFW.GLFW_KEY_LEFT_CONTROL);
 			mapKey(KEYSYM, "key.keyboard.left.shift", GLFW.GLFW_KEY_LEFT_SHIFT);
-			mapKey(KEYSYM, "key.keyboard.left.win", 343);
+			mapKey(KEYSYM, "key.keyboard.left.win", GLFW.GLFW_KEY_LEFT_SUPER);
 			mapKey(KEYSYM, "key.keyboard.right.alt", GLFW.GLFW_KEY_RIGHT_ALT);
 			mapKey(KEYSYM, "key.keyboard.right.control", GLFW.GLFW_KEY_RIGHT_CONTROL);
 			mapKey(KEYSYM, "key.keyboard.right.shift", GLFW.GLFW_KEY_RIGHT_SHIFT);
-			mapKey(KEYSYM, "key.keyboard.right.win", 347);
+			mapKey(KEYSYM, "key.keyboard.right.win", GLFW.GLFW_KEY_RIGHT_SUPER);
 			mapKey(KEYSYM, "key.keyboard.enter", GLFW.GLFW_KEY_ENTER);
 			mapKey(KEYSYM, "key.keyboard.escape", GLFW.GLFW_KEY_ESCAPE);
 			mapKey(KEYSYM, "key.keyboard.backspace", GLFW.GLFW_KEY_BACKSPACE);

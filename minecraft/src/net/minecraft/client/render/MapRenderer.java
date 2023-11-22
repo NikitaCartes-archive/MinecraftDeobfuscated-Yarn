@@ -13,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -144,7 +145,7 @@ public class MapRenderer implements AutoCloseable {
 						matrices.scale(p, p, 1.0F);
 						matrices.translate(0.0F, 0.0F, -0.1F);
 						textRenderer.draw(
-							text, 0.0F, 0.0F, -1, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, Integer.MIN_VALUE, light
+							text, 0.0F, 0.0F, Colors.WHITE, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, Integer.MIN_VALUE, light
 						);
 						matrices.pop();
 					}

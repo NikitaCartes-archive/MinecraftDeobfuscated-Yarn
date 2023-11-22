@@ -121,6 +121,11 @@ public class WindChargeEntity extends ExplosiveProjectileEntity implements Flyin
 		return 1.0F;
 	}
 
+	@Override
+	protected float getDragInWater() {
+		return this.getDrag();
+	}
+
 	@Nullable
 	@Override
 	protected ParticleEffect getParticleType() {

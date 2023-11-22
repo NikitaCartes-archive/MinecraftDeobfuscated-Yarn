@@ -8,6 +8,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -36,7 +37,7 @@ public class RecipeToast implements Toast {
 		} else {
 			context.drawGuiTexture(TEXTURE, 0, 0, this.getWidth(), this.getHeight());
 			context.drawText(manager.getClient().textRenderer, TITLE, 30, 7, -11534256, false);
-			context.drawText(manager.getClient().textRenderer, DESCRIPTION, 30, 18, -16777216, false);
+			context.drawText(manager.getClient().textRenderer, DESCRIPTION, 30, 18, Colors.BLACK, false);
 			RecipeEntry<?> recipeEntry = (RecipeEntry<?>)this.recipes
 				.get(
 					(int)(

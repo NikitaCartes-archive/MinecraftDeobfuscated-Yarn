@@ -17,6 +17,7 @@ import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.math.MathHelper;
@@ -115,7 +116,7 @@ public class AdvancementWidget {
 			int k = y + this.parent.y + 13;
 			int l = x + this.x + 13;
 			int m = y + this.y + 13;
-			int n = border ? -16777216 : -1;
+			int n = border ? Colors.BLACK : Colors.WHITE;
 			if (border) {
 				context.drawHorizontalLine(j, i, k - 1, n);
 				context.drawHorizontalLine(j + 1, i, k, n);
@@ -224,12 +225,12 @@ public class AdvancementWidget {
 		if (bl) {
 			context.drawTextWithShadow(this.client.textRenderer, this.title, m + 5, originY + this.y + 9, -1);
 			if (text != null) {
-				context.drawTextWithShadow(this.client.textRenderer, text, originX + this.x - i, originY + this.y + 9, -1);
+				context.drawTextWithShadow(this.client.textRenderer, text, originX + this.x - i, originY + this.y + 9, Colors.WHITE);
 			}
 		} else {
 			context.drawTextWithShadow(this.client.textRenderer, this.title, originX + this.x + 32, originY + this.y + 9, -1);
 			if (text != null) {
-				context.drawTextWithShadow(this.client.textRenderer, text, originX + this.x + this.width - i - 5, originY + this.y + 9, -1);
+				context.drawTextWithShadow(this.client.textRenderer, text, originX + this.x + this.width - i - 5, originY + this.y + 9, Colors.WHITE);
 			}
 		}
 

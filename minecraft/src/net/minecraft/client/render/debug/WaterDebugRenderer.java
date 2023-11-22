@@ -7,6 +7,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.WorldView;
@@ -58,7 +59,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 					(double)blockPos2x.getX() + 0.5,
 					(double)((float)blockPos2x.getY() + fluidState.getHeight(worldView, blockPos2x)),
 					(double)blockPos2x.getZ() + 0.5,
-					-16777216
+					Colors.BLACK
 				);
 			}
 		}

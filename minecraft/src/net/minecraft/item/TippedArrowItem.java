@@ -20,7 +20,7 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		PotionUtil.buildTooltip(stack, tooltip, 0.125F);
+		PotionUtil.buildTooltip(stack, tooltip, 0.125F, world == null ? 20.0F : world.getTickManager().getTickRate());
 	}
 
 	@Override

@@ -49,6 +49,7 @@ import net.minecraft.server.SaveLoading;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
@@ -300,7 +301,7 @@ public class IntegratedServerLoader {
 				.setScreen(
 					new NoticeScreen(
 						onCancel,
-						Text.translatable("selectWorld.incompatible.title").withColor(-65536),
+						Text.translatable("selectWorld.incompatible.title").withColor(Colors.RED),
 						Text.translatable("selectWorld.incompatible.description", levelSummary.getVersion())
 					)
 				);
@@ -311,7 +312,7 @@ public class IntegratedServerLoader {
 				String string2 = "selectWorld.backupWarning." + conversionWarning.getTranslationKeySuffix();
 				MutableText mutableText = Text.translatable(string);
 				if (conversionWarning.isDangerous()) {
-					mutableText.withColor(-2142128);
+					mutableText.withColor(Colors.LIGHT_RED);
 				}
 
 				Text text = Text.translatable(string2, levelSummary.getVersion(), SharedConstants.getGameVersion().getName());

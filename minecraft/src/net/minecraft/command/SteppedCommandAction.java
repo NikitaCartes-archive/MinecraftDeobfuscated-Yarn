@@ -25,15 +25,18 @@ public class SteppedCommandAction<T, P> implements CommandAction<T> {
 
 	public static <T, P> void enqueueCommands(CommandExecutionContext<T> context, Frame frame, List<P> actions, SteppedCommandAction.ActionWrapper<T, P> wrapper) {
 		int i = actions.size();
-		if (i != 0) {
-			if (i == 1) {
+		switch (i) {
+			case 0:
+				break;
+			case 1:
 				context.enqueueCommand(wrapper.create(frame, (P)actions.get(0)));
-			} else if (i == 2) {
+				break;
+			case 2:
 				context.enqueueCommand(wrapper.create(frame, (P)actions.get(0)));
 				context.enqueueCommand(wrapper.create(frame, (P)actions.get(1)));
-			} else {
+				break;
+			default:
 				context.enqueueCommand((new SteppedCommandAction<>(wrapper, actions, frame)).selfCommandQueueEntry);
-			}
 		}
 	}
 

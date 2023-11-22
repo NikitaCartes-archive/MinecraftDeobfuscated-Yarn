@@ -19,7 +19,7 @@ public class LingeringPotionItem extends ThrowablePotionItem {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		PotionUtil.buildTooltip(stack, tooltip, 0.25F);
+		PotionUtil.buildTooltip(stack, tooltip, 0.25F, world == null ? 20.0F : world.getTickManager().getTickRate());
 	}
 
 	@Override

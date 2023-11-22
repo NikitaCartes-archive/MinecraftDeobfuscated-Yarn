@@ -40,6 +40,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -477,7 +478,7 @@ public class ChatInputSuggestor {
 					suggestion.getText(),
 					this.area.getX() + 1,
 					this.area.getY() + 2 + 12 * l,
-					l + this.inWindowIndex == this.selection ? -256 : -5592406
+					l + this.inWindowIndex == this.selection ? Colors.YELLOW : -5592406
 				);
 			}
 
@@ -542,6 +543,7 @@ public class ChatInputSuggestor {
 				return true;
 			} else if (keyCode == 256) {
 				ChatInputSuggestor.this.clearWindow();
+				ChatInputSuggestor.this.textField.setSuggestion(null);
 				return true;
 			} else {
 				return false;

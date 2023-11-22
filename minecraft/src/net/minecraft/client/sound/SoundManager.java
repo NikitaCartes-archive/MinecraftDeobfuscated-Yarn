@@ -144,6 +144,10 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 		return this.soundSystem.getSoundDevices();
 	}
 
+	public SoundListenerTransform getListenerTransform() {
+		return this.soundSystem.getListenerTransform();
+	}
+
 	static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceFactory resourceFactory) {
 		Identifier identifier = sound.getLocation();
 		if (resourceFactory.getResource(identifier).isEmpty()) {

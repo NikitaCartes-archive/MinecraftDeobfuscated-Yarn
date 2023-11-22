@@ -25,6 +25,7 @@ import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
@@ -109,10 +110,10 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, Colors.WHITE);
 
 		for (int i = 0; i < this.message.length; i++) {
-			context.drawCenteredTextWithShadow(this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, -6250336);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, Colors.LIGHT_GRAY);
 		}
 
 		if (this.serverData != null) {
@@ -260,7 +261,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		}
 
 		context.drawGuiTexture(SLOT_FRAME_TEXTURE, x, y, 80, 80);
-		context.drawCenteredTextWithShadow(this.textRenderer, slotName, x + 40, y + 66, -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, slotName, x + 40, y + 66, Colors.WHITE);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

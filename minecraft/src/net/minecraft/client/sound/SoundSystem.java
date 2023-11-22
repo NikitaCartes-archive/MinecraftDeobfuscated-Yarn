@@ -28,7 +28,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -344,13 +343,10 @@ public class SoundSystem {
 							} else {
 								Vec3d vec3d = new Vec3d(sound.getX(), sound.getY(), sound.getZ());
 								if (!this.listeners.isEmpty()) {
-									boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.getPos().squaredDistanceTo(vec3d) < (double)(g * g);
-									if (bl2) {
-										for (SoundInstanceListener soundInstanceListener : this.listeners) {
-											soundInstanceListener.onSoundPlayed(sound, weightedSoundSet);
-										}
-									} else {
-										LOGGER.debug(MARKER, "Did not notify listeners of soundEvent: {}, it is too far away to hear", identifier);
+									float j = !bl && attenuationType != SoundInstance.AttenuationType.NONE ? g : Float.POSITIVE_INFINITY;
+
+									for (SoundInstanceListener soundInstanceListener : this.listeners) {
+										soundInstanceListener.onSoundPlayed(sound, weightedSoundSet, j);
 									}
 								}
 
@@ -447,13 +443,10 @@ public class SoundSystem {
 
 	public void updateListenerPosition(Camera camera) {
 		if (this.started && camera.isReady()) {
-			Vec3d vec3d = camera.getPos();
-			Vector3f vector3f = camera.getHorizontalPlane();
-			Vector3f vector3f2 = camera.getVerticalPlane();
-			this.taskQueue.execute(() -> {
-				this.listener.setPosition(vec3d);
-				this.listener.setOrientation(vector3f, vector3f2);
-			});
+			SoundListenerTransform soundListenerTransform = new SoundListenerTransform(
+				camera.getPos(), new Vec3d(camera.getHorizontalPlane()), new Vec3d(camera.getVerticalPlane())
+			);
+			this.taskQueue.execute(() -> this.listener.setTransform(soundListenerTransform));
 		}
 	}
 
@@ -481,6 +474,10 @@ public class SoundSystem {
 
 	public List<String> getSoundDevices() {
 		return this.soundEngine.getSoundDevices();
+	}
+
+	public SoundListenerTransform getListenerTransform() {
+		return this.listener.getTransform();
 	}
 
 	@Environment(EnvType.CLIENT)

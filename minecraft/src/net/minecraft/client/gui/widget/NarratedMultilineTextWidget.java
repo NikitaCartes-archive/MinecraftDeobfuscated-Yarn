@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 
 @Environment(EnvType.CLIENT)
 public class NarratedMultilineTextWidget extends MultilineTextWidget {
@@ -33,18 +34,18 @@ public class NarratedMultilineTextWidget extends MultilineTextWidget {
 	}
 
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.isFocused() || this.alwaysShowBorders) {
 			int i = this.getX() - 4;
 			int j = this.getY() - 4;
 			int k = this.getWidth() + 8;
 			int l = this.getHeight() + 8;
-			int m = this.alwaysShowBorders ? (this.isFocused() ? -1 : -6250336) : -1;
+			int m = this.alwaysShowBorders ? (this.isFocused() ? Colors.WHITE : Colors.LIGHT_GRAY) : Colors.WHITE;
 			context.fill(i + 1, j, i + k, j + l, 1426063360);
 			context.drawBorder(i, j, k, l, m);
 		}
 
-		super.renderButton(context, mouseX, mouseY, delta);
+		super.renderWidget(context, mouseX, mouseY, delta);
 	}
 
 	@Override

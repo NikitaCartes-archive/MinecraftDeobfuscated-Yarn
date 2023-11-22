@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
@@ -36,7 +37,7 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 			double d = (double)pos.getX() + 0.5;
 			double e = (double)pos.getY() + 1.2;
 			double f = (double)pos.getZ() + 0.5;
-			DebugRenderer.drawString(matrices, vertexConsumers, marker.message, d, e, f, -1, 0.01F, true, 0.0F, true);
+			DebugRenderer.drawString(matrices, vertexConsumers, marker.message, d, e, f, Colors.WHITE, 0.01F, true, 0.0F, true);
 		}
 	}
 
