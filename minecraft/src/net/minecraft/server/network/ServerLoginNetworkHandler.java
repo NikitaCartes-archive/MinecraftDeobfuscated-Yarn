@@ -34,6 +34,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Uuids;
+import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
@@ -245,6 +247,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 		this.connection.setPacketListener(serverConfigurationNetworkHandler);
 		serverConfigurationNetworkHandler.sendConfigurations();
 		this.state = ServerLoginNetworkHandler.State.ACCEPTED;
+	}
+
+	@Override
+	public void addCustomCrashReportInfo(CrashReportSection section) {
+		section.add("Login phase", (CrashCallable<String>)(() -> this.state.toString()));
 	}
 
 	static enum State {

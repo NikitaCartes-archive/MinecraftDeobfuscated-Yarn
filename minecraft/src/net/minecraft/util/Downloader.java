@@ -22,11 +22,13 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.logging.LogWriter;
+import net.minecraft.util.path.CacheFiles;
 import net.minecraft.util.thread.TaskExecutor;
 import org.slf4j.Logger;
 
 public class Downloader implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final int MAX_RETAINED_CACHE_FILES = 20;
 	private final Path directory;
 	private final LogWriter<Downloader.LogEntry> logWriter;
 	private final TaskExecutor<Runnable> executor = TaskExecutor.create(Util.getDownloadWorkerExecutor(), "download-queue");
@@ -35,6 +37,7 @@ public class Downloader implements AutoCloseable {
 		this.directory = directory;
 		PathUtil.createDirectories(directory);
 		this.logWriter = LogWriter.create(Downloader.LogEntry.CODEC, directory.resolve("log.json"));
+		CacheFiles.clear(directory, 20);
 	}
 
 	private Downloader.DownloadResult download(Downloader.Config config, Map<UUID, Downloader.DownloadEntry> entries) {

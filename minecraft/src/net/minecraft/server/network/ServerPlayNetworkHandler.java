@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.net.SocketAddress;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -221,7 +219,6 @@ public class ServerPlayNetworkHandler
 	private int vehicleFloatingTicks;
 	private int movePacketsCount;
 	private int lastTickMovePacketsCount;
-	private final AtomicReference<Instant> lastMessageTimestamp = new AtomicReference(Instant.EPOCH);
 	@Nullable
 	private PublicPlayerSession session;
 	private MessageChain.Unpacker messageUnpacker;
@@ -237,7 +234,7 @@ public class ServerPlayNetworkHandler
 		this.player = player;
 		player.networkHandler = this;
 		player.getTextStream().onConnect();
-		this.messageUnpacker = server.shouldEnforceSecureProfile() ? MessageChain.Unpacker.NOT_INITIALIZED : MessageChain.Unpacker.unsigned(player.getUuid());
+		this.messageUnpacker = MessageChain.Unpacker.unsigned(player.getUuid(), server::shouldEnforceSecureProfile);
 		this.messageChainTaskQueue = new MessageChainTaskQueue(server);
 	}
 
@@ -1172,7 +1169,7 @@ public class ServerPlayNetworkHandler
 		if (hasIllegalCharacter(packet.chatMessage())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
 		} else {
-			Optional<LastSeenMessageList> optional = this.validateMessage(packet.chatMessage(), packet.timestamp(), packet.acknowledgment());
+			Optional<LastSeenMessageList> optional = this.validateMessage(packet.acknowledgment());
 			if (optional.isPresent()) {
 				this.server.submit(() -> {
 					SignedMessage signedMessage;
@@ -1185,8 +1182,8 @@ public class ServerPlayNetworkHandler
 
 					CompletableFuture<FilteredMessage> completableFuture = this.filterText(signedMessage.getSignedContent());
 					Text text = this.server.getMessageDecorator().decorate(this.player, signedMessage.getContent());
-					this.messageChainTaskQueue.append(completableFuture, filteredMessage -> {
-						SignedMessage signedMessage2 = signedMessage.withUnsignedContent(text).withFilterMask(filteredMessage.mask());
+					this.messageChainTaskQueue.append(completableFuture, filtered -> {
+						SignedMessage signedMessage2 = signedMessage.withUnsignedContent(text).withFilterMask(filtered.mask());
 						this.handleDecoratedMessage(signedMessage2);
 					});
 				});
@@ -1199,7 +1196,7 @@ public class ServerPlayNetworkHandler
 		if (hasIllegalCharacter(packet.command())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
 		} else {
-			Optional<LastSeenMessageList> optional = this.validateMessage(packet.command(), packet.timestamp(), packet.acknowledgment());
+			Optional<LastSeenMessageList> optional = this.validateMessage(packet.acknowledgment());
 			if (optional.isPresent()) {
 				this.server.submit(() -> {
 					this.handleCommandExecution(packet, (LastSeenMessageList)optional.get());
@@ -1226,6 +1223,7 @@ public class ServerPlayNetworkHandler
 	}
 
 	private void handleMessageChainException(MessageChain.MessageChainException exception) {
+		LOGGER.warn("Failed to update secure chat state for {}: '{}'", this.player.getGameProfile().getName(), exception.getMessageText().getString());
 		if (exception.shouldDisconnect()) {
 			this.disconnect(exception.getMessageText());
 		} else {
@@ -1264,23 +1262,17 @@ public class ServerPlayNetworkHandler
 	 * {@return the validated acknowledgment if the message is valid, or an empty optional
 	 * if it is not}
 	 * 
-	 * <p>This disconnects the player if the message arrives in {@linkplain
-	 * #isInProperOrder improper order} or if chat is disabled.
+	 * <p>This disconnects the player if the message arrives in
+	 * improper order or if chat is disabled.
 	 */
-	private Optional<LastSeenMessageList> validateMessage(String message, Instant timestamp, LastSeenMessageList.Acknowledgment acknowledgment) {
-		if (!this.isInProperOrder(timestamp)) {
-			LOGGER.warn("{} sent out-of-order chat: '{}'", this.player.getName().getString(), message);
-			this.disconnect(Text.translatable("multiplayer.disconnect.out_of_order_chat"));
+	private Optional<LastSeenMessageList> validateMessage(LastSeenMessageList.Acknowledgment acknowledgment) {
+		Optional<LastSeenMessageList> optional = this.validateAcknowledgment(acknowledgment);
+		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
+			this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), false));
 			return Optional.empty();
 		} else {
-			Optional<LastSeenMessageList> optional = this.validateAcknowledgment(acknowledgment);
-			if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-				this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), false));
-				return Optional.empty();
-			} else {
-				this.player.updateLastActionTime();
-				return optional;
-			}
+			this.player.updateLastActionTime();
+			return optional;
 		}
 	}
 
@@ -1294,23 +1286,6 @@ public class ServerPlayNetworkHandler
 
 			return optional;
 		}
-	}
-
-	/**
-	 * {@return whether the message sent at {@code timestamp} is received in proper order}
-	 * 
-	 * <p>If {@code false}, the message will be discarded.
-	 */
-	private boolean isInProperOrder(Instant timestamp) {
-		Instant instant;
-		do {
-			instant = (Instant)this.lastMessageTimestamp.get();
-			if (timestamp.isBefore(instant)) {
-				return false;
-			}
-		} while (!this.lastMessageTimestamp.compareAndSet(instant, timestamp));
-
-		return true;
 	}
 
 	/**
@@ -1416,7 +1391,7 @@ public class ServerPlayNetworkHandler
 	public void addPendingAcknowledgment(SignedMessage message) {
 		MessageSignatureData messageSignatureData = message.signature();
 		if (messageSignatureData != null) {
-			this.signatureStorage.add(message);
+			this.signatureStorage.add(message.signedBody(), message.signature());
 			int i;
 			synchronized (this.acknowledgmentValidator) {
 				this.acknowledgmentValidator.addPending(messageSignatureData);

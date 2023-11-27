@@ -90,6 +90,12 @@ public record SignedMessage(
 		return this.withFilterMask(enabled ? this.filterMask : FilterMask.PASS_THROUGH);
 	}
 
+	public SignedMessage stripSignature() {
+		MessageBody messageBody = MessageBody.ofUnsigned(this.getSignedContent());
+		MessageLink messageLink = MessageLink.of(this.getSender());
+		return new SignedMessage(messageLink, null, messageBody, this.unsignedContent, this.filterMask);
+	}
+
 	public static void update(SignatureUpdatable.SignatureUpdater updater, MessageLink link, MessageBody body) throws SignatureException {
 		updater.update(Ints.toByteArray(1));
 		link.update(updater);

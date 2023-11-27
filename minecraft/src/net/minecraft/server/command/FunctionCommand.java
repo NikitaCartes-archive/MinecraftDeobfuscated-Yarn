@@ -155,7 +155,7 @@ public class FunctionCommand {
 		FunctionCommand.ResultConsumer<T> resultConsumer
 	) throws CommandSyntaxException {
 		CommandDispatcher<T> commandDispatcher = parentSource.getDispatcher();
-		T abstractServerCommandSource = functionSource.withDummyResultStorer();
+		T abstractServerCommandSource = functionSource.withDummyReturnValueConsumer();
 		ReturnValueConsumer returnValueConsumer = ReturnValueConsumer.chain(parentSource.getReturnValueConsumer(), control.getFrame().returnValueConsumer());
 
 		for (CommandFunction<T> commandFunction : functions) {
@@ -178,7 +178,7 @@ public class FunctionCommand {
 		FunctionCommand.ResultConsumer<T> resultConsumer
 	) throws CommandSyntaxException {
 		CommandDispatcher<T> commandDispatcher = parentSource.getDispatcher();
-		T abstractServerCommandSource = functionSource.withDummyResultStorer();
+		T abstractServerCommandSource = functionSource.withDummyReturnValueConsumer();
 		ReturnValueConsumer returnValueConsumer = parentSource.getReturnValueConsumer();
 		if (!functions.isEmpty()) {
 			if (functions.size() == 1) {

@@ -851,6 +851,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		Optional<MessageBody> optional = packet.body().toBody(this.signatureStorage);
 		Optional<MessageType.Parameters> optional2 = packet.serializedParameters().toParameters(this.combinedDynamicRegistries);
 		if (!optional.isEmpty() && !optional2.isEmpty()) {
+			this.signatureStorage.add((MessageBody)optional.get(), packet.signature());
 			UUID uUID = packet.sender();
 			PlayerListEntry playerListEntry = this.getPlayerListEntry(uUID);
 			if (playerListEntry == null) {
@@ -866,11 +867,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				}
 
 				SignedMessage signedMessage = new SignedMessage(messageLink, packet.signature(), (MessageBody)optional.get(), packet.unsignedContent(), packet.filterMask());
-				if (!playerListEntry.getMessageVerifier().isVerified(signedMessage)) {
-					this.client.getMessageHandler().onUnverifiedMessage(uUID, (MessageType.Parameters)optional2.get());
-				} else {
+				signedMessage = playerListEntry.getMessageVerifier().ensureVerified(signedMessage);
+				if (signedMessage != null) {
 					this.client.getMessageHandler().onChatMessage(signedMessage, playerListEntry.getProfile(), (MessageType.Parameters)optional2.get());
-					this.signatureStorage.add(signedMessage);
+				} else {
+					this.client.getMessageHandler().onUnverifiedMessage(uUID, (MessageType.Parameters)optional2.get());
 				}
 			}
 		} else {
@@ -1652,7 +1653,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			packet.getFavicon().map(ServerInfo::validateFavicon).ifPresent(this.serverInfo::setFavicon);
 			this.serverInfo.setSecureChatEnforced(packet.isSecureChatEnforced());
 			ServerList.updateServerListEntry(this.serverInfo);
-			if (!this.displayedUnsecureChatWarning && !packet.isSecureChatEnforced()) {
+			if (!this.displayedUnsecureChatWarning && !this.isSecureChatEnforced()) {
 				SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, UNSECURE_SERVER_TOAST_TITLE, UNSECURE_SERVER_TOAST_TEXT);
 				this.client.getToastManager().add(systemToast);
 				this.displayedUnsecureChatWarning = true;
@@ -1733,7 +1734,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		for (PlayerListS2CPacket.Entry entryx : packet.getEntries()) {
 			PlayerListEntry playerListEntry = (PlayerListEntry)this.playerListEntries.get(entryx.profileId());
 			if (playerListEntry == null) {
-				LOGGER.warn("Ignoring player info update for unknown player {}", entryx.profileId());
+				LOGGER.warn("Ignoring player info update for unknown player {} ({})", entryx.profileId(), packet.getActions());
 			} else {
 				for (PlayerListS2CPacket.Action action : packet.getActions()) {
 					this.handlePlayerListAction(action, entryx, playerListEntry);
@@ -1792,7 +1793,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	private boolean isSecureChatEnforced() {
-		return this.serverInfo != null && this.serverInfo.isSecureChatEnforced();
+		return !this.client.providesProfileKeys() ? false : this.serverInfo != null && this.serverInfo.isSecureChatEnforced();
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package net.minecraft.network.message;
 import com.mojang.logging.LogUtils;
 import java.time.Instant;
 import java.util.UUID;
+import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
@@ -29,6 +30,7 @@ public class MessageChain {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	@Nullable
 	private MessageLink link;
+	private Instant lastTimestamp = Instant.EPOCH;
 
 	public MessageChain(UUID sender, UUID sessionId) {
 		this.link = MessageLink.of(sender, sessionId);
@@ -49,7 +51,10 @@ public class MessageChain {
 				throw new MessageChain.MessageChainException(Text.translatable("chat.disabled.chain_broken"), false);
 			} else if (playerPublicKey.data().isExpired()) {
 				throw new MessageChain.MessageChainException(Text.translatable("chat.disabled.expiredProfileKey"), false);
+			} else if (body.timestamp().isBefore(this.lastTimestamp)) {
+				throw new MessageChain.MessageChainException(Text.translatable("multiplayer.disconnect.out_of_order_chat"), true);
 			} else {
+				this.lastTimestamp = body.timestamp();
 				SignedMessage signedMessage = new SignedMessage(messageLink, signature, body, null, FilterMask.PASS_THROUGH);
 				if (!signedMessage.verify(signatureVerifier)) {
 					throw new MessageChain.MessageChainException(Text.translatable("multiplayer.disconnect.unsigned_chat"), true);
@@ -109,16 +114,14 @@ public class MessageChain {
 	 */
 	@FunctionalInterface
 	public interface Unpacker {
-		/**
-		 * An unpacker used when the session is not initialized yet and the secure profile
-		 * is enforced. This always throws the missing profile key exception.
-		 */
-		MessageChain.Unpacker NOT_INITIALIZED = (signature, body) -> {
-			throw new MessageChain.MessageChainException(Text.translatable("chat.disabled.missingProfileKey"), false);
-		};
-
-		static MessageChain.Unpacker unsigned(UUID uuid) {
-			return (signature, body) -> SignedMessage.ofUnsigned(uuid, body.content());
+		static MessageChain.Unpacker unsigned(UUID sender, BooleanSupplier secureProfileEnforced) {
+			return (signature, body) -> {
+				if (secureProfileEnforced.getAsBoolean()) {
+					throw new MessageChain.MessageChainException(Text.translatable("chat.disabled.missingProfileKey"), false);
+				} else {
+					return SignedMessage.ofUnsigned(sender, body.content());
+				}
+			};
 		}
 
 		SignedMessage unpack(@Nullable MessageSignatureData signature, MessageBody body) throws MessageChain.MessageChainException;

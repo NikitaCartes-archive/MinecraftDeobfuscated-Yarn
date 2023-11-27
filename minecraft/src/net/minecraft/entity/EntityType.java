@@ -597,6 +597,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.setDimensions(0.3125F, 0.3125F)
 			.maxTrackingRange(4)
 			.trackingTickInterval(10)
+			.requires(FeatureFlags.UPDATE_1_21)
 	);
 	public static final EntityType<WitchEntity> WITCH = register(
 		"witch", EntityType.Builder.create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)

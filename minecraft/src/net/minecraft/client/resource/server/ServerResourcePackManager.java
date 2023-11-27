@@ -52,7 +52,7 @@ public class ServerResourcePackManager {
 
 	public void addResourcePack(UUID id, URL url, @Nullable HashCode hashCode) {
 		if (this.acceptanceStatus == ServerResourcePackManager.AcceptanceStatus.DECLINED) {
-			this.stateChangeCallback.sendResponse(id, PackStateChangeCallback.State.DECLINED);
+			this.stateChangeCallback.onFinish(id, PackStateChangeCallback.FinishState.DECLINED);
 		} else {
 			this.onAdd(id, new ServerResourcePackManager.PackEntry(id, url, hashCode));
 		}
@@ -60,7 +60,7 @@ public class ServerResourcePackManager {
 
 	public void addResourcePack(UUID id, Path path) {
 		if (this.acceptanceStatus == ServerResourcePackManager.AcceptanceStatus.DECLINED) {
-			this.stateChangeCallback.sendResponse(id, PackStateChangeCallback.State.DECLINED);
+			this.stateChangeCallback.onFinish(id, PackStateChangeCallback.FinishState.DECLINED);
 		} else {
 			URL uRL;
 			try {
@@ -87,7 +87,7 @@ public class ServerResourcePackManager {
 	}
 
 	private void accept(ServerResourcePackManager.PackEntry pack) {
-		this.stateChangeCallback.sendResponse(pack.id, PackStateChangeCallback.State.ACCEPTED);
+		this.stateChangeCallback.onStateChanged(pack.id, PackStateChangeCallback.State.ACCEPTED);
 		pack.accepted = true;
 	}
 
@@ -160,9 +160,9 @@ public class ServerResourcePackManager {
 			if (pack.status != ServerResourcePackManager.Status.INACTIVE) {
 				return false;
 			} else if (pack.discardReason != null) {
-				PackStateChangeCallback.State state = pack.discardReason.state;
-				if (state != null) {
-					this.stateChangeCallback.sendResponse(pack.id, state);
+				PackStateChangeCallback.FinishState finishState = pack.discardReason.state;
+				if (finishState != null) {
+					this.stateChangeCallback.onFinish(pack.id, finishState);
 				}
 
 				return true;
@@ -190,6 +190,9 @@ public class ServerResourcePackManager {
 			if (path != null) {
 				packEntryx.loadStatus = ServerResourcePackManager.LoadStatus.DONE;
 				packEntryx.path = path;
+				if (!packEntryx.isDiscarded()) {
+					this.stateChangeCallback.onStateChanged(packEntryx.id, PackStateChangeCallback.State.DOWNLOADED);
+				}
 			}
 		}
 
@@ -269,7 +272,7 @@ public class ServerResourcePackManager {
 					for (ServerResourcePackManager.PackEntry packEntry : list) {
 						packEntry.status = ServerResourcePackManager.Status.ACTIVE;
 						if (packEntry.discardReason == null) {
-							ServerResourcePackManager.this.stateChangeCallback.sendResponse(packEntry.id, PackStateChangeCallback.State.APPLIED);
+							ServerResourcePackManager.this.stateChangeCallback.onFinish(packEntry.id, PackStateChangeCallback.FinishState.APPLIED);
 						}
 					}
 
@@ -326,17 +329,17 @@ public class ServerResourcePackManager {
 
 	@Environment(EnvType.CLIENT)
 	static enum DiscardReason {
-		DOWNLOAD_FAILED(PackStateChangeCallback.State.DOWNLOAD_FAILED),
-		ACTIVATION_FAILED(PackStateChangeCallback.State.ACTIVATION_FAILED),
-		DECLINED(PackStateChangeCallback.State.DECLINED),
-		DISCARDED(PackStateChangeCallback.State.DISCARDED),
+		DOWNLOAD_FAILED(PackStateChangeCallback.FinishState.DOWNLOAD_FAILED),
+		ACTIVATION_FAILED(PackStateChangeCallback.FinishState.ACTIVATION_FAILED),
+		DECLINED(PackStateChangeCallback.FinishState.DECLINED),
+		DISCARDED(PackStateChangeCallback.FinishState.DISCARDED),
 		SERVER_REMOVED(null),
 		SERVER_REPLACED(null);
 
 		@Nullable
-		final PackStateChangeCallback.State state;
+		final PackStateChangeCallback.FinishState state;
 
-		private DiscardReason(@Nullable PackStateChangeCallback.State state) {
+		private DiscardReason(@Nullable PackStateChangeCallback.FinishState state) {
 			this.state = state;
 		}
 	}

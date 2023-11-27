@@ -1,5 +1,6 @@
 package net.minecraft.client.resource.server;
 
+import com.google.common.collect.Lists;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -49,9 +50,17 @@ public class ServerResourcePackLoader implements AutoCloseable {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final ResourcePackProvider NOOP_PROVIDER = profileAdder -> {
 	};
-	private static final PackStateChangeCallback DEBUG_PACK_STATE_CHANGE_CALLBACK = (id, state) -> LOGGER.debug(
-			"Downloaded pack {} changed state to {}", id, state
-		);
+	private static final PackStateChangeCallback DEBUG_PACK_STATE_CHANGE_CALLBACK = new PackStateChangeCallback() {
+		@Override
+		public void onStateChanged(UUID id, PackStateChangeCallback.State state) {
+			ServerResourcePackLoader.LOGGER.debug("Downloaded pack {} changed state to {}", id, state);
+		}
+
+		@Override
+		public void onFinish(UUID id, PackStateChangeCallback.FinishState state) {
+			ServerResourcePackLoader.LOGGER.debug("Downloaded pack {} finished with state {}", id, state);
+		}
+	};
 	final MinecraftClient client;
 	private ResourcePackProvider packProvider = NOOP_PROVIDER;
 	@Nullable
@@ -59,7 +68,8 @@ public class ServerResourcePackLoader implements AutoCloseable {
 	final ServerResourcePackManager manager;
 	private final Downloader downloader;
 	private ResourcePackSource packSource = ResourcePackSource.SERVER;
-	private PackStateChangeCallback packStateChangeCallback = DEBUG_PACK_STATE_CHANGE_CALLBACK;
+	PackStateChangeCallback packStateChangeCallback = DEBUG_PACK_STATE_CHANGE_CALLBACK;
+	private int packIndex;
 
 	public ServerResourcePackLoader(MinecraftClient client, Path downloadsDirectory, RunArgs.Network runArgs) {
 		this.client = client;
@@ -72,21 +82,28 @@ public class ServerResourcePackLoader implements AutoCloseable {
 
 		Executor executor = client::send;
 		this.manager = new ServerResourcePackManager(
-			this.createDownloadQueuer(this.downloader, executor, runArgs.session, runArgs.netProxy),
-			(id, state) -> this.packStateChangeCallback.sendResponse(id, state),
-			this.getReloadScheduler(),
-			this.createPackChangeCallback(executor),
-			ServerResourcePackManager.AcceptanceStatus.PENDING
+			this.createDownloadQueuer(this.downloader, executor, runArgs.session, runArgs.netProxy), new PackStateChangeCallback() {
+				@Override
+				public void onStateChanged(UUID id, PackStateChangeCallback.State state) {
+					ServerResourcePackLoader.this.packStateChangeCallback.onStateChanged(id, state);
+				}
+
+				@Override
+				public void onFinish(UUID id, PackStateChangeCallback.FinishState state) {
+					ServerResourcePackLoader.this.packStateChangeCallback.onFinish(id, state);
+				}
+			}, this.getReloadScheduler(), this.createPackChangeCallback(executor), ServerResourcePackManager.AcceptanceStatus.PENDING
 		);
 	}
 
 	NetworkUtils.DownloadListener createListener(int entryCount) {
 		return new NetworkUtils.DownloadListener() {
-			private final SystemToast.Type toastType = new SystemToast.Type(10000L);
+			private final SystemToast.Type toastType = new SystemToast.Type();
 			private Text toastTitle = Text.empty();
 			@Nullable
 			private Text toastDescription = null;
 			private int current;
+			private int failureCount;
 			private OptionalLong contentLength = OptionalLong.empty();
 
 			private void showToast() {
@@ -125,10 +142,22 @@ public class ServerResourcePackLoader implements AutoCloseable {
 			}
 
 			@Override
-			public void onFinish() {
-				ServerResourcePackLoader.LOGGER.debug("Download ended for pack {}", this.current);
+			public void onFinish(boolean success) {
+				if (!success) {
+					ServerResourcePackLoader.LOGGER.info("Pack {} failed to download", this.current);
+					this.failureCount++;
+				} else {
+					ServerResourcePackLoader.LOGGER.debug("Download ended for pack {}", this.current);
+				}
+
 				if (this.current == entryCount) {
-					SystemToast.hide(ServerResourcePackLoader.this.client.getToastManager(), this.toastType);
+					if (this.failureCount > 0) {
+						this.toastTitle = Text.translatable("download.pack.failed", this.failureCount, entryCount);
+						this.toastDescription = null;
+						this.showToast();
+					} else {
+						SystemToast.hide(ServerResourcePackLoader.this.client.getToastManager(), this.toastType);
+					}
 				}
 			}
 		};
@@ -199,8 +228,8 @@ public class ServerResourcePackLoader implements AutoCloseable {
 	private List<ResourcePackProfile> toProfiles(List<ReloadScheduler.PackInfo> packs) {
 		List<ResourcePackProfile> list = new ArrayList(packs.size());
 
-		for (ReloadScheduler.PackInfo packInfo : packs) {
-			String string = "server/" + packInfo.id();
+		for (ReloadScheduler.PackInfo packInfo : Lists.reverse(packs)) {
+			String string = String.format(Locale.ROOT, "server/%08X/%s", this.packIndex++, packInfo.id());
 			Path path = packInfo.path();
 			ResourcePackProfile.PackFactory packFactory = new ZipResourcePack.ZipBackedFactory(path, false);
 			int i = SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES);
@@ -293,18 +322,31 @@ public class ServerResourcePackLoader implements AutoCloseable {
 	}
 
 	private static PackStateChangeCallback getStateChangeCallback(ClientConnection connection) {
-		return (id, state) -> {
-			LOGGER.debug("Pack {} changed status to {}", id, state);
+		return new PackStateChangeCallback() {
+			@Override
+			public void onStateChanged(UUID id, PackStateChangeCallback.State state) {
+				ServerResourcePackLoader.LOGGER.debug("Pack {} changed status to {}", id, state);
 
-			ResourcePackStatusC2SPacket.Status status = switch (state) {
-				case ACCEPTED -> ResourcePackStatusC2SPacket.Status.ACCEPTED;
-				case APPLIED -> ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED;
-				case DOWNLOAD_FAILED -> ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD;
-				case DECLINED -> ResourcePackStatusC2SPacket.Status.DECLINED;
-				case DISCARDED -> ResourcePackStatusC2SPacket.Status.DISCARDED;
-				case ACTIVATION_FAILED -> ResourcePackStatusC2SPacket.Status.FAILED_RELOAD;
-			};
-			connection.send(new ResourcePackStatusC2SPacket(id, status));
+				ResourcePackStatusC2SPacket.Status status = switch (state) {
+					case ACCEPTED -> ResourcePackStatusC2SPacket.Status.ACCEPTED;
+					case DOWNLOADED -> ResourcePackStatusC2SPacket.Status.DOWNLOADED;
+				};
+				connection.send(new ResourcePackStatusC2SPacket(id, status));
+			}
+
+			@Override
+			public void onFinish(UUID id, PackStateChangeCallback.FinishState state) {
+				ServerResourcePackLoader.LOGGER.debug("Pack {} changed status to {}", id, state);
+
+				ResourcePackStatusC2SPacket.Status status = switch (state) {
+					case APPLIED -> ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED;
+					case DOWNLOAD_FAILED -> ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD;
+					case DECLINED -> ResourcePackStatusC2SPacket.Status.DECLINED;
+					case DISCARDED -> ResourcePackStatusC2SPacket.Status.DISCARDED;
+					case ACTIVATION_FAILED -> ResourcePackStatusC2SPacket.Status.FAILED_RELOAD;
+				};
+				connection.send(new ResourcePackStatusC2SPacket(id, status));
+			}
 		};
 	}
 
@@ -337,24 +379,27 @@ public class ServerResourcePackLoader implements AutoCloseable {
 		this.manager.declineAll();
 	}
 
-	public CompletableFuture<Void> getPackLoadFuture(UUID expectedId) {
-		CompletableFuture<Void> completableFuture = new CompletableFuture();
-		PackStateChangeCallback packStateChangeCallback = this.packStateChangeCallback;
-		this.packStateChangeCallback = (id, state) -> {
-			if (expectedId.equals(id)) {
-				if (state == PackStateChangeCallback.State.ACCEPTED) {
-					packStateChangeCallback.sendResponse(id, state);
-					return;
+	public CompletableFuture<Void> getPackLoadFuture(UUID id) {
+		final CompletableFuture<Void> completableFuture = new CompletableFuture();
+		final PackStateChangeCallback packStateChangeCallback = this.packStateChangeCallback;
+		this.packStateChangeCallback = new PackStateChangeCallback() {
+			@Override
+			public void onStateChanged(UUID id, PackStateChangeCallback.State state) {
+				packStateChangeCallback.onStateChanged(id, state);
+			}
+
+			@Override
+			public void onFinish(UUID id, PackStateChangeCallback.FinishState state) {
+				if (id.equals(id)) {
+					ServerResourcePackLoader.this.packStateChangeCallback = packStateChangeCallback;
+					if (state == PackStateChangeCallback.FinishState.APPLIED) {
+						completableFuture.complete(null);
+					} else {
+						completableFuture.completeExceptionally(new IllegalStateException("Failed to apply pack " + id + ", reason: " + state));
+					}
 				}
 
-				this.packStateChangeCallback = packStateChangeCallback;
-				if (state == PackStateChangeCallback.State.APPLIED) {
-					completableFuture.complete(null);
-				} else {
-					completableFuture.completeExceptionally(new IllegalStateException("Failed to apply pack " + id + ", reason: " + state));
-				}
-
-				packStateChangeCallback.sendResponse(id, state);
+				packStateChangeCallback.onFinish(id, state);
 			}
 		};
 		return completableFuture;

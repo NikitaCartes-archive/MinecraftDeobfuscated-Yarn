@@ -3,6 +3,7 @@ package net.minecraft.client.realms.task;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +32,6 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsPrepareConnectionTask extends LongRunningTask {
 	private static final Text APPLYING_PACK_TEXT = Text.translatable("multiplayer.applyingPack");
-	private static final UUID REALMS_PACK_ID = UUID.fromString("08c3b151-90fb-4c09-b6cf-0548364671bb");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text TITLE = Text.translatable("mco.connect.connecting");
 	private final RealmsServer server;
@@ -78,9 +78,15 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 
 		boolean bl2 = realmsServerAddress.resourcePackUrl != null && realmsServerAddress.resourcePackHash != null;
 		Screen screen = (Screen)(bl2
-			? this.createResourcePackConfirmationScreen(realmsServerAddress, this::createConnectingScreen)
+			? this.createResourcePackConfirmationScreen(realmsServerAddress, getResourcePackId(this.server), this::createConnectingScreen)
 			: this.createConnectingScreen(realmsServerAddress));
 		setScreen(screen);
+	}
+
+	private static UUID getResourcePackId(RealmsServer server) {
+		return server.minigameName != null
+			? UUID.nameUUIDFromBytes(("minigame:" + server.minigameName).getBytes(StandardCharsets.UTF_8))
+			: UUID.nameUUIDFromBytes(("realms:" + server.name + ":" + server.activeSlot).getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Override
@@ -111,14 +117,14 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 	}
 
 	private RealmsLongConfirmationScreen createResourcePackConfirmationScreen(
-		RealmsServerAddress address, Function<RealmsServerAddress, Screen> connectingScreenCreator
+		RealmsServerAddress address, UUID id, Function<RealmsServerAddress, Screen> connectingScreenCreator
 	) {
 		BooleanConsumer booleanConsumer = confirmed -> {
 			if (!confirmed) {
 				setScreen(this.lastScreen);
 			} else {
 				setScreen(new MessageScreen(APPLYING_PACK_TEXT));
-				this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
+				this.downloadResourcePack(address, id).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
 					MinecraftClient.getInstance().getServerResourcePackProvider().clear();
 					LOGGER.error("Failed to download resource pack from {}", address, throwable);
 					setScreen(new RealmsGenericErrorScreen(Text.translatable("mco.download.resourcePack.fail"), this.lastScreen));
@@ -135,16 +141,16 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 		);
 	}
 
-	private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address) {
+	private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address, UUID id) {
 		try {
 			ServerResourcePackLoader serverResourcePackLoader = MinecraftClient.getInstance().getServerResourcePackProvider();
-			CompletableFuture<Void> completableFuture = serverResourcePackLoader.getPackLoadFuture(REALMS_PACK_ID);
+			CompletableFuture<Void> completableFuture = serverResourcePackLoader.getPackLoadFuture(id);
 			serverResourcePackLoader.acceptAll();
-			serverResourcePackLoader.addResourcePack(REALMS_PACK_ID, new URL(address.resourcePackUrl), address.resourcePackHash);
+			serverResourcePackLoader.addResourcePack(id, new URL(address.resourcePackUrl), address.resourcePackHash);
 			return completableFuture;
-		} catch (Exception var4) {
+		} catch (Exception var5) {
 			CompletableFuture<Void> completableFuturex = new CompletableFuture();
-			completableFuturex.completeExceptionally(var4);
+			completableFuturex.completeExceptionally(var5);
 			return completableFuturex;
 		}
 	}

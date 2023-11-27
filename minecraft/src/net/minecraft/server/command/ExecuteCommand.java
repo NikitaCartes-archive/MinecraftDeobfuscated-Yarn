@@ -930,7 +930,7 @@ public class ExecuteCommand {
 			}
 
 			for (T abstractServerCommandSource : sources) {
-				T abstractServerCommandSource2 = (T)functionSourceGetter.apply(abstractServerCommandSource.withDummyResultStorer());
+				T abstractServerCommandSource2 = (T)functionSourceGetter.apply(abstractServerCommandSource.withDummyReturnValueConsumer());
 				ReturnValueConsumer returnValueConsumer = (successful, returnValue) -> {
 					if (predicate.test(returnValue)) {
 						list.add(abstractServerCommandSource);

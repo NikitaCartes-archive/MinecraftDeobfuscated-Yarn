@@ -1,5 +1,6 @@
 package net.minecraft.client.network;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.net.MalformedURLException;
@@ -54,6 +55,8 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashReportSection;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -119,12 +122,11 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		} else {
 			String string = packet.hash();
 			boolean bl = packet.required();
-			if (this.serverInfo != null
-				&& this.serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.PROMPT
-				&& (!bl || this.serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.DISABLED)) {
+			ServerInfo.ResourcePackPolicy resourcePackPolicy = this.serverInfo != null ? this.serverInfo.getResourcePackPolicy() : ServerInfo.ResourcePackPolicy.PROMPT;
+			if (resourcePackPolicy != ServerInfo.ResourcePackPolicy.PROMPT && (!bl || resourcePackPolicy != ServerInfo.ResourcePackPolicy.DISABLED)) {
 				this.client.getServerResourcePackProvider().addResourcePack(uUID, uRL, string);
 			} else {
-				this.showPackConfirmationScreen(uUID, uRL, string, bl, packet.prompt());
+				this.client.setScreen(this.createConfirmServerResourcePackScreen(uUID, uRL, string, bl, packet.prompt()));
 			}
 		}
 	}
@@ -135,48 +137,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		packet.id().ifPresentOrElse(id -> this.client.getServerResourcePackProvider().remove(id), () -> this.client.getServerResourcePackProvider().removeAll());
 	}
 
-	private void showPackConfirmationScreen(UUID id, URL url, String hash, boolean required, @Nullable Text prompt) {
-		Screen screen = this.client.currentScreen;
-		this.client
-			.setScreen(
-				new ConfirmScreen(
-					confirmed -> {
-						this.client.setScreen(screen);
-						ServerResourcePackLoader serverResourcePackLoader = this.client.getServerResourcePackProvider();
-						serverResourcePackLoader.addResourcePack(id, url, hash);
-						if (confirmed) {
-							if (this.serverInfo != null) {
-								this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
-							}
-
-							serverResourcePackLoader.acceptAll();
-						} else {
-							serverResourcePackLoader.declineAll();
-							if (required) {
-								this.connection.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
-							} else if (this.serverInfo != null) {
-								this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
-							}
-						}
-
-						if (this.serverInfo != null) {
-							ServerList.updateServerListEntry(this.serverInfo);
-						}
-					},
-					required ? Text.translatable("multiplayer.requiredTexturePrompt.line1") : Text.translatable("multiplayer.texturePrompt.line1"),
-					getPrompt(
-						required
-							? Text.translatable("multiplayer.requiredTexturePrompt.line2").formatted(Formatting.YELLOW, Formatting.BOLD)
-							: Text.translatable("multiplayer.texturePrompt.line2"),
-						prompt
-					),
-					required ? ScreenTexts.PROCEED : ScreenTexts.YES,
-					(Text)(required ? Text.translatable("menu.disconnect") : ScreenTexts.NO)
-				)
-			);
-	}
-
-	private static Text getPrompt(Text requirementPrompt, @Nullable Text customPrompt) {
+	static Text getPrompt(Text requirementPrompt, @Nullable Text customPrompt) {
 		return (Text)(customPrompt == null ? requirementPrompt : Text.translatable("multiplayer.texturePrompt.serverPrompt", requirementPrompt, customPrompt));
 	}
 
@@ -238,6 +199,12 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		LOGGER.warn("Client disconnected with reason: {}", reason.getString());
 	}
 
+	@Override
+	public void addCustomCrashReportInfo(CrashReportSection section) {
+		section.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<none>"));
+		section.add("Server brand", (CrashCallable<String>)(() -> this.brand));
+	}
+
 	protected Screen createDisconnectedScreen(Text reason) {
 		Screen screen = (Screen)Objects.requireNonNullElseGet(this.postDisconnectScreen, () -> new MultiplayerScreen(new TitleScreen()));
 		return (Screen)(this.serverInfo != null && this.serverInfo.isRealm()
@@ -255,6 +222,86 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 			this.sendPacket(packet);
 		} else {
 			this.queuedPackets.add(new ClientCommonNetworkHandler.QueuedPacket(packet, sendCondition, Util.getMeasuringTimeMs() + expiry.toMillis()));
+		}
+	}
+
+	private Screen createConfirmServerResourcePackScreen(UUID id, URL url, String hash, boolean required, @Nullable Text prompt) {
+		Screen screen = this.client.currentScreen;
+		return screen instanceof ClientCommonNetworkHandler.ConfirmServerResourcePackScreen confirmServerResourcePackScreen
+			? confirmServerResourcePackScreen.add(this.client, id, url, hash, required, prompt)
+			: new ClientCommonNetworkHandler.ConfirmServerResourcePackScreen(
+				this.client, screen, List.of(new ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack(id, url, hash)), required, prompt
+			);
+	}
+
+	@Environment(EnvType.CLIENT)
+	class ConfirmServerResourcePackScreen extends ConfirmScreen {
+		private final List<ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack> packs;
+		@Nullable
+		private final Screen parent;
+
+		ConfirmServerResourcePackScreen(
+			MinecraftClient client,
+			@Nullable Screen parent,
+			List<ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack> pack,
+			boolean required,
+			@Nullable Text prompt
+		) {
+			super(
+				confirmed -> {
+					client.setScreen(parent);
+					ServerResourcePackLoader serverResourcePackLoader = client.getServerResourcePackProvider();
+					if (confirmed) {
+						if (ClientCommonNetworkHandler.this.serverInfo != null) {
+							ClientCommonNetworkHandler.this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
+						}
+
+						serverResourcePackLoader.acceptAll();
+					} else {
+						serverResourcePackLoader.declineAll();
+						if (required) {
+							ClientCommonNetworkHandler.this.connection.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
+						} else if (ClientCommonNetworkHandler.this.serverInfo != null) {
+							ClientCommonNetworkHandler.this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
+						}
+					}
+
+					for (ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack packx : pack) {
+						serverResourcePackLoader.addResourcePack(packx.id, packx.url, packx.hash);
+					}
+
+					if (ClientCommonNetworkHandler.this.serverInfo != null) {
+						ServerList.updateServerListEntry(ClientCommonNetworkHandler.this.serverInfo);
+					}
+				},
+				required ? Text.translatable("multiplayer.requiredTexturePrompt.line1") : Text.translatable("multiplayer.texturePrompt.line1"),
+				ClientCommonNetworkHandler.getPrompt(
+					required
+						? Text.translatable("multiplayer.requiredTexturePrompt.line2").formatted(Formatting.YELLOW, Formatting.BOLD)
+						: Text.translatable("multiplayer.texturePrompt.line2"),
+					prompt
+				),
+				required ? ScreenTexts.PROCEED : ScreenTexts.YES,
+				required ? ScreenTexts.DISCONNECT : ScreenTexts.NO
+			);
+			this.packs = pack;
+			this.parent = parent;
+		}
+
+		public ClientCommonNetworkHandler.ConfirmServerResourcePackScreen add(
+			MinecraftClient client, UUID id, URL url, String hash, boolean required, @Nullable Text prompt
+		) {
+			List<ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack> list = ImmutableList.<ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack>builderWithExpectedSize(
+					this.packs.size() + 1
+				)
+				.addAll(this.packs)
+				.add(new ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack(id, url, hash))
+				.build();
+			return ClientCommonNetworkHandler.this.new ConfirmServerResourcePackScreen(client, this.parent, list, required, prompt);
+		}
+
+		@Environment(EnvType.CLIENT)
+		static record Pack(UUID id, URL url, String hash) {
 		}
 	}
 

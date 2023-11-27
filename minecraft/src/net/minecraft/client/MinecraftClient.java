@@ -10,6 +10,7 @@ import com.mojang.authlib.minecraft.BanDetails;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.minecraft.UserApiService.UserFlag;
+import com.mojang.authlib.minecraft.UserApiService.UserProperties;
 import com.mojang.authlib.yggdrasil.ProfileActionType;
 import com.mojang.authlib.yggdrasil.ServicesKeyType;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
@@ -381,6 +382,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final YggdrasilAuthenticationService authenticationService;
 	private final MinecraftSessionService sessionService;
 	private final UserApiService userApiService;
+	private final CompletableFuture<UserProperties> userPropertiesFuture;
 	private final PlayerSkinProvider skinProvider;
 	private final BakedModelManager bakedModelManager;
 	private final BlockRenderManager blockRenderManager;
@@ -515,8 +517,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
 		this.sessionService = this.authenticationService.createMinecraftSessionService();
 		this.session = args.network.session;
-		this.gameProfileFuture = CompletableFuture.supplyAsync(() -> this.sessionService.fetchProfile(this.session.getUuidOrNull(), true), Util.getIoWorkerExecutor());
+		this.gameProfileFuture = CompletableFuture.supplyAsync(
+			() -> this.sessionService.fetchProfile(this.session.getUuidOrNull(), true), Util.getDownloadWorkerExecutor()
+		);
 		this.userApiService = this.createUserApiService(this.authenticationService, args);
+		this.userPropertiesFuture = CompletableFuture.supplyAsync(() -> {
+			try {
+				return this.userApiService.fetchProperties();
+			} catch (AuthenticationException var2x) {
+				LOGGER.error("Failed to fetch user properties", (Throwable)var2x);
+				return UserApiService.OFFLINE_PROPERTIES;
+			}
+		}, Util.getDownloadWorkerExecutor());
 		LOGGER.info("Setting user: {}", this.session.getUsername());
 		LOGGER.debug("(Session ID is {})", this.session.getSessionId());
 		this.isDemo = args.game.demo;
@@ -814,12 +826,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private UserApiService createUserApiService(YggdrasilAuthenticationService authService, RunArgs runArgs) {
-		try {
-			return authService.createUserApiService(runArgs.network.session.getAccessToken());
-		} catch (AuthenticationException var4) {
-			LOGGER.error("Failed to verify authentication", (Throwable)var4);
-			return UserApiService.OFFLINE;
-		}
+		return authService.createUserApiService(runArgs.network.session.getAccessToken());
 	}
 
 	public static ModStatus getModStatus() {
@@ -2353,32 +2360,36 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.updateWindowTitle();
 	}
 
+	private UserProperties getUserProperties() {
+		return (UserProperties)this.userPropertiesFuture.join();
+	}
+
 	public boolean isOptionalTelemetryEnabled() {
 		return this.isOptionalTelemetryEnabledByApi() && this.options.getTelemetryOptInExtra().getValue();
 	}
 
 	public boolean isOptionalTelemetryEnabledByApi() {
-		return this.isTelemetryEnabledByApi() && this.userApiService.properties().flag(UserFlag.OPTIONAL_TELEMETRY_AVAILABLE);
+		return this.isTelemetryEnabledByApi() && this.getUserProperties().flag(UserFlag.OPTIONAL_TELEMETRY_AVAILABLE);
 	}
 
 	public boolean isTelemetryEnabledByApi() {
-		return this.userApiService.properties().flag(UserFlag.TELEMETRY_ENABLED);
+		return SharedConstants.isDevelopment ? false : this.getUserProperties().flag(UserFlag.TELEMETRY_ENABLED);
 	}
 
 	public boolean isMultiplayerEnabled() {
 		return this.multiplayerEnabled
-			&& this.userApiService.properties().flag(UserFlag.SERVERS_ALLOWED)
+			&& this.getUserProperties().flag(UserFlag.SERVERS_ALLOWED)
 			&& this.getMultiplayerBanDetails() == null
 			&& !this.isUsernameBanned();
 	}
 
 	public boolean isRealmsEnabled() {
-		return this.userApiService.properties().flag(UserFlag.REALMS_ALLOWED) && this.getMultiplayerBanDetails() == null;
+		return this.getUserProperties().flag(UserFlag.REALMS_ALLOWED) && this.getMultiplayerBanDetails() == null;
 	}
 
 	@Nullable
 	public BanDetails getMultiplayerBanDetails() {
-		return (BanDetails)this.userApiService.properties().bannedScopes().get("MULTIPLAYER");
+		return (BanDetails)this.getUserProperties().bannedScopes().get("MULTIPLAYER");
 	}
 
 	public boolean isUsernameBanned() {
@@ -2404,9 +2415,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} else if (!this.onlineChatEnabled) {
 			return MinecraftClient.ChatRestriction.DISABLED_BY_LAUNCHER;
 		} else {
-			return !this.userApiService.properties().flag(UserFlag.CHAT_ALLOWED)
-				? MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE
-				: MinecraftClient.ChatRestriction.ENABLED;
+			return !this.getUserProperties().flag(UserFlag.CHAT_ALLOWED) ? MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE : MinecraftClient.ChatRestriction.ENABLED;
 		}
 	}
 
@@ -3054,7 +3063,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean shouldFilterText() {
-		return this.userApiService.properties().flag(UserFlag.PROFANITY_FILTER_ENABLED);
+		return this.getUserProperties().flag(UserFlag.PROFANITY_FILTER_ENABLED);
 	}
 
 	public void loadBlockList() {
@@ -3069,6 +3078,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	public SignatureVerifier getServicesSignatureVerifier() {
 		return SignatureVerifier.create(this.authenticationService.getServicesKeySet(), ServicesKeyType.PROFILE_KEY);
+	}
+
+	public boolean providesProfileKeys() {
+		return !this.authenticationService.getServicesKeySet().keys(ServicesKeyType.PROFILE_KEY).isEmpty();
 	}
 
 	public GuiNavigationType getNavigationType() {

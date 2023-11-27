@@ -120,7 +120,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && player.isCreative()) {
+		if (!world.isClient && (player.isCreative() || !player.canHarvest(state))) {
 			TallPlantBlock.onBreakInCreative(world, pos, state, player);
 		}
 

@@ -513,7 +513,7 @@ public class TestCommand {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
 		Identifier identifier = new Identifier(testName);
 		Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
-		Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, testName, path);
+		Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, identifier.getPath(), path);
 		if (path3 == null) {
 			sendMessage(source, "Failed to export " + path2);
 			return 1;
