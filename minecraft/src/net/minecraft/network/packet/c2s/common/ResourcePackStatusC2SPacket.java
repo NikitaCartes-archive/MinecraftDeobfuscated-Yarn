@@ -25,8 +25,13 @@ public record ResourcePackStatusC2SPacket(UUID id, ResourcePackStatusC2SPacket.S
 		DECLINED,
 		FAILED_DOWNLOAD,
 		ACCEPTED,
+		DOWNLOADED,
 		INVALID_URL,
 		FAILED_RELOAD,
 		DISCARDED;
+
+		public boolean hasFinished() {
+			return this != ACCEPTED && this != DOWNLOADED;
+		}
 	}
 }

@@ -44,6 +44,8 @@ import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashReportSection;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -209,6 +211,12 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	public void setMinigameName(String minigameName) {
 		this.minigameName = minigameName;
+	}
+
+	@Override
+	public void addCustomCrashReportInfo(CrashReportSection section) {
+		section.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<unknown>"));
+		section.add("Login phase", (CrashCallable<String>)(() -> ((ClientLoginNetworkHandler.State)this.state.get()).toString()));
 	}
 
 	@Environment(EnvType.CLIENT)

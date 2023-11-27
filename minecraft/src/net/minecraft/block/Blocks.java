@@ -5988,7 +5988,7 @@ public class Blocks {
 			Oxidizable.OxidationLevel.UNAFFECTED,
 			AbstractBlock.Settings.create()
 				.mapColor(COPPER_BLOCK.getDefaultMapColor())
-				.strength(3.0F)
+				.strength(3.0F, 6.0F)
 				.nonOpaque()
 				.requiresTool()
 				.pistonBehavior(PistonBehavior.DESTROY)
@@ -6030,7 +6030,7 @@ public class Blocks {
 			Oxidizable.OxidationLevel.UNAFFECTED,
 			AbstractBlock.Settings.create()
 				.mapColor(COPPER_BLOCK.getDefaultMapColor())
-				.strength(3.0F)
+				.strength(3.0F, 6.0F)
 				.requiresTool()
 				.nonOpaque()
 				.allowsSpawning(Blocks::never)

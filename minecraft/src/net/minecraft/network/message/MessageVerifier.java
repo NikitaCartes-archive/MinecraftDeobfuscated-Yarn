@@ -15,20 +15,14 @@ import org.slf4j.Logger;
 @FunctionalInterface
 public interface MessageVerifier {
 	Logger LOGGER = LogUtils.getLogger();
-	MessageVerifier NO_SIGNATURE = message -> {
-		if (message.hasSignature()) {
-			LOGGER.error("Received chat message with signature from {}, but they have no chat session initialized", message.getSender());
-			return false;
-		} else {
-			return true;
-		}
-	};
+	MessageVerifier NO_SIGNATURE = SignedMessage::stripSignature;
 	MessageVerifier UNVERIFIED = message -> {
 		LOGGER.error("Received chat message from {}, but they have no chat session initialized and secure chat is enforced", message.getSender());
-		return false;
+		return null;
 	};
 
-	boolean isVerified(SignedMessage message);
+	@Nullable
+	SignedMessage ensureVerified(SignedMessage message);
 
 	public static class Impl implements MessageVerifier {
 		private final SignatureVerifier signatureVerifier;
@@ -72,14 +66,15 @@ public interface MessageVerifier {
 			}
 		}
 
+		@Nullable
 		@Override
-		public boolean isVerified(SignedMessage message) {
+		public SignedMessage ensureVerified(SignedMessage message) {
 			this.lastMessageVerified = this.lastMessageVerified && this.verify(message);
 			if (!this.lastMessageVerified) {
-				return false;
+				return null;
 			} else {
 				this.lastVerifiedMessage = message;
-				return true;
+				return message;
 			}
 		}
 	}

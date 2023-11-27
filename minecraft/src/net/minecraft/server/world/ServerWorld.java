@@ -386,7 +386,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		if (bl2 || this.idleTimeout++ < 300) {
 			profiler.push("entities");
-			if (this.enderDragonFight != null) {
+			if (this.enderDragonFight != null && bl) {
 				profiler.push("dragonFight");
 				this.enderDragonFight.tick();
 				profiler.pop();

@@ -64,7 +64,9 @@ public class StructurePoolBasedGenerator {
 		ChunkRandom chunkRandom = context.random();
 		Registry<StructurePool> registry = dynamicRegistryManager.get(RegistryKeys.TEMPLATE_POOL);
 		BlockRotation blockRotation = BlockRotation.random(chunkRandom);
-		StructurePool structurePool2 = structurePool.value();
+		StructurePool structurePool2 = (StructurePool)structurePool.getKey()
+			.flatMap(registryKey -> registry.getOrEmpty(aliasLookup.lookup(registryKey)))
+			.orElse(structurePool.value());
 		StructurePoolElement structurePoolElement = structurePool2.getRandomElement(chunkRandom);
 		if (structurePoolElement == EmptyPoolElement.INSTANCE) {
 			return Optional.empty();

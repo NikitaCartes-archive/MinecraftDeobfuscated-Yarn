@@ -108,14 +108,6 @@ public class OneTwentyOneBlockTagProvider extends ValueLookupTagProvider<Block> 
 				Blocks.WAXED_EXPOSED_COPPER_BULB,
 				Blocks.WAXED_WEATHERED_COPPER_BULB,
 				Blocks.WAXED_OXIDIZED_COPPER_BULB,
-				Blocks.COPPER_DOOR,
-				Blocks.EXPOSED_COPPER_DOOR,
-				Blocks.WEATHERED_COPPER_DOOR,
-				Blocks.OXIDIZED_COPPER_DOOR,
-				Blocks.WAXED_COPPER_DOOR,
-				Blocks.WAXED_EXPOSED_COPPER_DOOR,
-				Blocks.WAXED_WEATHERED_COPPER_DOOR,
-				Blocks.WAXED_OXIDIZED_COPPER_DOOR,
 				Blocks.COPPER_TRAPDOOR,
 				Blocks.EXPOSED_COPPER_TRAPDOOR,
 				Blocks.WEATHERED_COPPER_TRAPDOOR,
@@ -138,5 +130,27 @@ public class OneTwentyOneBlockTagProvider extends ValueLookupTagProvider<Block> 
 			);
 		this.getOrCreateTagBuilder(BlockTags.FEATURES_CANNOT_REPLACE).add(Blocks.TRIAL_SPAWNER);
 		this.getOrCreateTagBuilder(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE).addTag(BlockTags.FEATURES_CANNOT_REPLACE);
+		this.getOrCreateTagBuilder(BlockTags.TRAPDOORS)
+			.add(
+				Blocks.COPPER_TRAPDOOR,
+				Blocks.EXPOSED_COPPER_TRAPDOOR,
+				Blocks.WEATHERED_COPPER_TRAPDOOR,
+				Blocks.OXIDIZED_COPPER_TRAPDOOR,
+				Blocks.WAXED_COPPER_TRAPDOOR,
+				Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR,
+				Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR,
+				Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR
+			);
+		this.getOrCreateTagBuilder(BlockTags.DOORS)
+			.add(
+				Blocks.COPPER_DOOR,
+				Blocks.EXPOSED_COPPER_DOOR,
+				Blocks.WEATHERED_COPPER_DOOR,
+				Blocks.OXIDIZED_COPPER_DOOR,
+				Blocks.WAXED_COPPER_DOOR,
+				Blocks.WAXED_EXPOSED_COPPER_DOOR,
+				Blocks.WAXED_WEATHERED_COPPER_DOOR,
+				Blocks.WAXED_OXIDIZED_COPPER_DOOR
+			);
 	}
 }

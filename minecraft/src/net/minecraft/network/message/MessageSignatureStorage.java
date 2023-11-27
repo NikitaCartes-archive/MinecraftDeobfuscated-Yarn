@@ -38,13 +38,12 @@ public class MessageSignatureStorage {
 		return this.signatures[index];
 	}
 
-	public void add(SignedMessage message) {
-		List<MessageSignatureData> list = message.signedBody().lastSeenMessages().entries();
+	public void add(MessageBody body, @Nullable MessageSignatureData signature) {
+		List<MessageSignatureData> list = body.lastSeenMessages().entries();
 		ArrayDeque<MessageSignatureData> arrayDeque = new ArrayDeque(list.size() + 1);
 		arrayDeque.addAll(list);
-		MessageSignatureData messageSignatureData = message.signature();
-		if (messageSignatureData != null) {
-			arrayDeque.add(messageSignatureData);
+		if (signature != null) {
+			arrayDeque.add(signature);
 		}
 
 		this.addFrom(arrayDeque);

@@ -22,6 +22,12 @@ public class ItemPickupParticle extends Particle {
 	private final Entity interactingEntity;
 	private int ticksExisted;
 	private final EntityRenderDispatcher dispatcher;
+	private double targetX;
+	private double targetY;
+	private double targetZ;
+	private double lastTargetX;
+	private double lastTargetY;
+	private double lastTargetZ;
 
 	public ItemPickupParticle(
 		EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, ClientWorld world, Entity itemEntity, Entity interactingEntity
@@ -37,6 +43,8 @@ public class ItemPickupParticle extends Particle {
 		this.itemEntity = this.getOrCopy(itemEntity);
 		this.interactingEntity = interactingEntity;
 		this.dispatcher = dispatcher;
+		this.updateTargetPos();
+		this.updateLastTargetPos();
 	}
 
 	private Entity getOrCopy(Entity entity) {
@@ -52,9 +60,9 @@ public class ItemPickupParticle extends Particle {
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 		float f = ((float)this.ticksExisted + tickDelta) / 3.0F;
 		f *= f;
-		double d = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderX, this.interactingEntity.getX());
-		double e = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderY, (this.interactingEntity.getY() + this.interactingEntity.getEyeY()) / 2.0);
-		double g = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderZ, this.interactingEntity.getZ());
+		double d = MathHelper.lerp((double)tickDelta, this.lastTargetX, this.targetX);
+		double e = MathHelper.lerp((double)tickDelta, this.lastTargetY, this.targetY);
+		double g = MathHelper.lerp((double)tickDelta, this.lastTargetZ, this.targetZ);
 		double h = MathHelper.lerp((double)f, this.itemEntity.getX(), d);
 		double i = MathHelper.lerp((double)f, this.itemEntity.getY(), e);
 		double j = MathHelper.lerp((double)f, this.itemEntity.getZ(), g);
@@ -81,5 +89,20 @@ public class ItemPickupParticle extends Particle {
 		if (this.ticksExisted == 3) {
 			this.markDead();
 		}
+
+		this.updateLastTargetPos();
+		this.updateTargetPos();
+	}
+
+	private void updateTargetPos() {
+		this.targetX = this.interactingEntity.getX();
+		this.targetY = (this.interactingEntity.getY() + this.interactingEntity.getEyeY()) / 2.0;
+		this.targetZ = this.interactingEntity.getZ();
+	}
+
+	private void updateLastTargetPos() {
+		this.lastTargetX = this.targetX;
+		this.lastTargetY = this.targetY;
+		this.lastTargetZ = this.targetZ;
 	}
 }

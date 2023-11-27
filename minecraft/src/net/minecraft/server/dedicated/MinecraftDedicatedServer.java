@@ -442,7 +442,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public boolean shouldEnforceSecureProfile() {
 		ServerPropertiesHandler serverPropertiesHandler = this.getProperties();
-		return serverPropertiesHandler.enforceSecureProfile && serverPropertiesHandler.onlineMode && this.apiServices.serviceSignatureVerifier() != null;
+		return serverPropertiesHandler.enforceSecureProfile && serverPropertiesHandler.onlineMode && this.apiServices.providesProfileKeys();
 	}
 
 	@Override

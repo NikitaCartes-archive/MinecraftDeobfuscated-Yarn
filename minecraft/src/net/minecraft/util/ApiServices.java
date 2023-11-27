@@ -35,4 +35,8 @@ public record ApiServices(MinecraftSessionService sessionService, ServicesKeySet
 	public SignatureVerifier serviceSignatureVerifier() {
 		return SignatureVerifier.create(this.servicesKeySet, ServicesKeyType.PROFILE_KEY);
 	}
+
+	public boolean providesProfileKeys() {
+		return !this.servicesKeySet.keys(ServicesKeyType.PROFILE_KEY).isEmpty();
+	}
 }

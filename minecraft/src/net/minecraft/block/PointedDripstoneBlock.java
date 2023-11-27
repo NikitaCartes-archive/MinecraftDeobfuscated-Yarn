@@ -127,13 +127,14 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
-		BlockPos blockPos = hit.getBlockPos();
-		if (!world.isClient
-			&& projectile.canModifyAt(world, blockPos)
-			&& projectile.canBreakBlocks(world)
-			&& projectile instanceof TridentEntity
-			&& projectile.getVelocity().length() > 0.6) {
-			world.breakBlock(blockPos, true);
+		if (!world.isClient) {
+			BlockPos blockPos = hit.getBlockPos();
+			if (projectile.canModifyAt(world, blockPos)
+				&& projectile.canBreakBlocks(world)
+				&& projectile instanceof TridentEntity
+				&& projectile.getVelocity().length() > 0.6) {
+				world.breakBlock(blockPos, true);
+			}
 		}
 	}
 

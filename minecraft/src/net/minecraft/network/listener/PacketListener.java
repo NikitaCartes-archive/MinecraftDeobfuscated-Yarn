@@ -4,6 +4,9 @@ import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
+import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 
 /**
  * A packet listener listens to packets on a {@linkplain
@@ -46,5 +49,15 @@ public interface PacketListener {
 	 */
 	default boolean shouldCrashOnException() {
 		return true;
+	}
+
+	default void fillCrashReport(CrashReport report) {
+		CrashReportSection crashReportSection = report.addElement("Connection");
+		crashReportSection.add("Protocol", (CrashCallable<String>)(() -> this.getState().getId()));
+		crashReportSection.add("Flow", (CrashCallable<String>)(() -> this.getSide().toString()));
+		this.addCustomCrashReportInfo(crashReportSection);
+	}
+
+	default void addCustomCrashReportInfo(CrashReportSection section) {
 	}
 }

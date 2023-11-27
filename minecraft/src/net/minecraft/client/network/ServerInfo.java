@@ -128,6 +128,10 @@ public class ServerInfo {
 		return this.serverType == ServerInfo.ServerType.REALM;
 	}
 
+	public ServerInfo.ServerType getServerType() {
+		return this.serverType;
+	}
+
 	public void setSecureChatEnforced(boolean secureChatEnforced) {
 		this.secureChatEnforced = secureChatEnforced;
 	}

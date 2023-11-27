@@ -11,7 +11,7 @@ public interface AdvancementTabGenerator {
 
 	/**
 	 * {@return an advancement to use as a reference in {@link
-	 * net.minecraft.advancement.Advancement$Builder#parent(net.minecraft.advancement.AdvancementEntry)}}
+	 * net.minecraft.advancement.Advancement.Builder#parent(net.minecraft.advancement.AdvancementEntry)}}
 	 * 
 	 * <p>The returned advancement itself should not be exported.
 	 */

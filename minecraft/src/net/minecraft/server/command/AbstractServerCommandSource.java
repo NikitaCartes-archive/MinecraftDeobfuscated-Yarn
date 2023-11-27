@@ -17,7 +17,7 @@ public interface AbstractServerCommandSource<T extends AbstractServerCommandSour
 
 	ReturnValueConsumer getReturnValueConsumer();
 
-	default T withDummyResultStorer() {
+	default T withDummyReturnValueConsumer() {
 		return this.withReturnValueConsumer(ReturnValueConsumer.EMPTY);
 	}
 
