@@ -74,7 +74,7 @@ public class MultiplayerScreen extends Screen {
 			this.serverListWidget.setServers(this.serverList);
 		}
 
-		this.addDrawableChild(this.serverListWidget);
+		this.addSelectableChild(this.serverListWidget);
 		this.buttonJoin = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.select"), button -> this.connect()).width(100).build());
 		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.direct"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", ServerInfo.ServerType.OTHER);
@@ -234,6 +234,7 @@ public class MultiplayerScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		this.multiplayerScreenTooltip = null;
+		this.serverListWidget.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		if (this.multiplayerScreenTooltip != null) {
 			context.drawTooltip(this.textRenderer, this.multiplayerScreenTooltip, mouseX, mouseY);

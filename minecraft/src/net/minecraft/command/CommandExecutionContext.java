@@ -25,6 +25,7 @@ public class CommandExecutionContext<T> implements AutoCloseable {
 	private boolean queueOverflowed;
 	private final Deque<CommandQueueEntry<T>> commandQueue = Queues.<CommandQueueEntry<T>>newArrayDeque();
 	private final List<CommandQueueEntry<T>> pendingCommands = new ObjectArrayList<>();
+	private int currentDepth;
 
 	public CommandExecutionContext(int maxCommandChainLength, int maxCommandForkCount, Profiler profiler) {
 		this.maxCommandChainLength = maxCommandChainLength;
@@ -34,7 +35,12 @@ public class CommandExecutionContext<T> implements AutoCloseable {
 	}
 
 	private static <T extends AbstractServerCommandSource<T>> Frame frame(CommandExecutionContext<T> context, ReturnValueConsumer returnValueConsumer) {
-		return new Frame(0, returnValueConsumer, context.commandQueue::clear);
+		if (context.currentDepth == 0) {
+			return new Frame(0, returnValueConsumer, context.commandQueue::clear);
+		} else {
+			int i = context.currentDepth + 1;
+			return new Frame(i, returnValueConsumer, context.getEscapeControl(i));
+		}
 	}
 
 	public static <T extends AbstractServerCommandSource<T>> void enqueueProcedureCall(
@@ -91,6 +97,7 @@ public class CommandExecutionContext<T> implements AutoCloseable {
 				return;
 			}
 
+			this.currentDepth = commandQueueEntry.frame().depth();
 			commandQueueEntry.execute(this);
 			if (this.queueOverflowed) {
 				LOGGER.error("Command execution stopped due to command queue overflow (max {})", 10000000);
@@ -99,6 +106,8 @@ public class CommandExecutionContext<T> implements AutoCloseable {
 
 			this.queuePendingCommands();
 		}
+
+		this.currentDepth = 0;
 	}
 
 	private void queuePendingCommands() {
