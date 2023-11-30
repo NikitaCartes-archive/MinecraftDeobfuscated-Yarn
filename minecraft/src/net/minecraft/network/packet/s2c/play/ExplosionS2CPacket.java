@@ -89,12 +89,17 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.playerVelocityY = buf.readFloat();
 		this.playerVelocityZ = buf.readFloat();
 		this.destructionType = buf.readEnumConstant(Explosion.DestructionType.class);
-		this.particle = readParticleEffect(buf, buf.readRegistryValue(Registries.PARTICLE_TYPE));
-		this.emitterParticle = readParticleEffect(buf, buf.readRegistryValue(Registries.PARTICLE_TYPE));
+		this.particle = this.readParticleEffect(buf, buf.readRegistryValue(Registries.PARTICLE_TYPE));
+		this.emitterParticle = this.readParticleEffect(buf, buf.readRegistryValue(Registries.PARTICLE_TYPE));
 		this.soundEvent = SoundEvent.fromBuf(buf);
 	}
 
-	private static <T extends ParticleEffect> T readParticleEffect(PacketByteBuf buf, ParticleType<T> particleType) {
+	public void writeParticleEffect(PacketByteBuf buf, ParticleEffect particleEffect) {
+		buf.writeRegistryValue(Registries.PARTICLE_TYPE, particleEffect.getType());
+		particleEffect.write(buf);
+	}
+
+	private <T extends ParticleEffect> T readParticleEffect(PacketByteBuf buf, ParticleType<T> particleType) {
 		return particleType.getParametersFactory().read(particleType, buf);
 	}
 
@@ -119,8 +124,8 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeFloat(this.playerVelocityY);
 		buf.writeFloat(this.playerVelocityZ);
 		buf.writeEnumConstant(this.destructionType);
-		buf.writeRegistryValue(Registries.PARTICLE_TYPE, this.particle.getType());
-		buf.writeRegistryValue(Registries.PARTICLE_TYPE, this.emitterParticle.getType());
+		this.writeParticleEffect(buf, this.particle);
+		this.writeParticleEffect(buf, this.emitterParticle);
 		this.soundEvent.writeBuf(buf);
 	}
 
