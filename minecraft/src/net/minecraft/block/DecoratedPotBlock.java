@@ -116,7 +116,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 						serverWorld.spawnParticles(ParticleTypes.DUST_PLUME, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, 7, 0.0, 0.0, 0.0, 0.0);
 					}
 
-					world.updateComparators(pos, this);
+					decoratedPotBlockEntity.markDirty();
 				} else {
 					world.playSound(null, pos, SoundEvents.BLOCK_DECORATED_POT_INSERT_FAIL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 					decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.NEGATIVE);
