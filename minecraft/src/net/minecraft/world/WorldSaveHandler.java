@@ -11,7 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -49,7 +49,7 @@ public class WorldSaveHandler {
 		try {
 			File file = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
 			if (file.exists() && file.isFile()) {
-				nbtCompound = NbtIo.readCompressed(file.toPath(), NbtTagSizeTracker.ofUnlimitedBytes());
+				nbtCompound = NbtIo.readCompressed(file.toPath(), NbtSizeTracker.ofUnlimitedBytes());
 			}
 		} catch (Exception var4) {
 			LOGGER.warn("Failed to load player data for {}", player.getName().getString());

@@ -26,8 +26,8 @@ import net.minecraft.util.crash.CrashReportSection;
 
 /**
  * A set of utility functions for reading, writing, and scanning NBT files.
- * Methods that do not require {@link NbtTagSizeTracker} accept any bytes of data,
- * provided that its depth does not exceed {@value NbtTagSizeTracker#DEFAULT_MAX_DEPTH}.
+ * Methods that do not require {@link NbtSizeTracker} accept any bytes of data,
+ * provided that its depth does not exceed {@value NbtSizeTracker#DEFAULT_MAX_DEPTH}.
  * 
  * <p>When {@linkplain DataOutput#writeUTF writing an invalid string}, methods in
  * this class will write an empty string instead of crashing, with the exception of
@@ -45,9 +45,9 @@ public class NbtIo {
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
 	 * @throws NbtSizeValidationException if the NBT is too deep
-	 * @see #readCompressed(InputStream, NbtTagSizeTracker)
+	 * @see #readCompressed(InputStream, NbtSizeTracker)
 	 */
-	public static NbtCompound readCompressed(Path path, NbtTagSizeTracker tagSizeTracker) throws IOException {
+	public static NbtCompound readCompressed(Path path, NbtSizeTracker tagSizeTracker) throws IOException {
 		InputStream inputStream = Files.newInputStream(path);
 
 		NbtCompound var3;
@@ -93,9 +93,9 @@ public class NbtIo {
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
 	 * @throws NbtSizeValidationException if the NBT is too deep
-	 * @see #readCompressed(Path, NbtTagSizeTracker)
+	 * @see #readCompressed(Path, NbtSizeTracker)
 	 */
-	public static NbtCompound readCompressed(InputStream stream, NbtTagSizeTracker tagSizeTracker) throws IOException {
+	public static NbtCompound readCompressed(InputStream stream, NbtSizeTracker tagSizeTracker) throws IOException {
 		DataInputStream dataInputStream = decompress(stream);
 
 		NbtCompound var3;
@@ -129,9 +129,9 @@ public class NbtIo {
 	 * 
 	 * @throws IOException if the IO operation fails
 	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
-	 * @see #scanCompressed(InputStream, NbtScanner, NbtTagSizeTracker)
+	 * @see #scanCompressed(InputStream, NbtScanner, NbtSizeTracker)
 	 */
-	public static void scanCompressed(Path path, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
+	public static void scanCompressed(Path path, NbtScanner scanner, NbtSizeTracker tracker) throws IOException {
 		InputStream inputStream = Files.newInputStream(path);
 
 		try {
@@ -162,9 +162,9 @@ public class NbtIo {
 	 * 
 	 * @throws IOException if the IO operation fails
 	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
-	 * @see #scanCompressed(Path, NbtScanner, NbtTagSizeTracker)
+	 * @see #scanCompressed(Path, NbtScanner, NbtSizeTracker)
 	 */
-	public static void scanCompressed(InputStream stream, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
+	public static void scanCompressed(InputStream stream, NbtScanner scanner, NbtSizeTracker tracker) throws IOException {
 		DataInputStream dataInputStream = decompress(stream);
 
 		try {
@@ -332,7 +332,7 @@ public class NbtIo {
 				DataInputStream dataInputStream = new DataInputStream(inputStream);
 
 				try {
-					var3 = readCompound(dataInputStream, NbtTagSizeTracker.ofUnlimitedBytes());
+					var3 = readCompound(dataInputStream, NbtSizeTracker.ofUnlimitedBytes());
 				} catch (Throwable var7) {
 					try {
 						dataInputStream.close();
@@ -373,7 +373,7 @@ public class NbtIo {
 	 * @throws NbtSizeValidationException if the NBT is too deep
 	 */
 	public static NbtCompound readCompound(DataInput input) throws IOException {
-		return readCompound(input, NbtTagSizeTracker.ofUnlimitedBytes());
+		return readCompound(input, NbtSizeTracker.ofUnlimitedBytes());
 	}
 
 	/**
@@ -384,7 +384,7 @@ public class NbtIo {
 	 * not a compound
 	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
 	 */
-	public static NbtCompound readCompound(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+	public static NbtCompound readCompound(DataInput input, NbtSizeTracker tracker) throws IOException {
 		NbtElement nbtElement = readElement(input, tracker);
 		if (nbtElement instanceof NbtCompound) {
 			return (NbtCompound)nbtElement;
@@ -413,7 +413,7 @@ public class NbtIo {
 	 * @throws IOException if the IO operation fails
 	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
 	 */
-	public static void scan(DataInput input, NbtScanner scanner, NbtTagSizeTracker tracker) throws IOException {
+	public static void scan(DataInput input, NbtScanner scanner, NbtSizeTracker tracker) throws IOException {
 		NbtType<?> nbtType = NbtTypes.byId(input.readByte());
 		if (nbtType == NbtEnd.TYPE) {
 			if (scanner.start(NbtEnd.TYPE) == NbtScanner.Result.CONTINUE) {
@@ -437,14 +437,14 @@ public class NbtIo {
 
 	/**
 	 * Reads an NBT element from {@code input}. Unlike {@link
-	 * #readCompound(DataInput, NbtTagSizeTracker)}, the element does not have to
+	 * #readCompound(DataInput, NbtSizeTracker)}, the element does not have to
 	 * be a compound.
 	 * 
 	 * @return the NBT element from the input
 	 * @throws IOException if the IO operation fails
 	 * @throws NbtSizeValidationException if the {@code tracker}'s validation fails
 	 */
-	public static NbtElement read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+	public static NbtElement read(DataInput input, NbtSizeTracker tracker) throws IOException {
 		byte b = input.readByte();
 		return (NbtElement)(b == 0 ? NbtEnd.INSTANCE : readElement(input, tracker, b));
 	}
@@ -455,7 +455,7 @@ public class NbtIo {
 	 * 
 	 * @apiNote In vanilla, this is used exclusively in networking.
 	 * @throws IOException if the IO operation fails
-	 * @see #read(DataInput, NbtTagSizeTracker)
+	 * @see #read(DataInput, NbtSizeTracker)
 	 * @see #write(NbtElement, DataOutput)
 	 */
 	public static void writeForPacket(NbtElement nbt, DataOutput output) throws IOException {
@@ -474,7 +474,7 @@ public class NbtIo {
 	 * method will <strong>throw an error</strong>, unlike other methods.
 	 * 
 	 * @throws IOException if the IO operation fails
-	 * @see #read(DataInput, NbtTagSizeTracker)
+	 * @see #read(DataInput, NbtSizeTracker)
 	 * @see #writeForPacket(NbtElement, DataOutput)
 	 * @see #write(NbtElement, DataOutput)
 	 */
@@ -495,7 +495,7 @@ public class NbtIo {
 	 * method will write an empty string instead of crashing.
 	 * 
 	 * @throws IOException if the IO operation fails
-	 * @see #read(DataInput, NbtTagSizeTracker)
+	 * @see #read(DataInput, NbtSizeTracker)
 	 * @see #writeForPacket(NbtElement, DataOutput)
 	 * @see #writeUnsafe(NbtElement, DataOutput)
 	 */
@@ -503,7 +503,7 @@ public class NbtIo {
 		writeUnsafe(nbt, new NbtIo.InvalidUtfSkippingDataOutput(output));
 	}
 
-	private static NbtElement readElement(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+	private static NbtElement readElement(DataInput input, NbtSizeTracker tracker) throws IOException {
 		byte b = input.readByte();
 		if (b == 0) {
 			return NbtEnd.INSTANCE;
@@ -513,7 +513,7 @@ public class NbtIo {
 		}
 	}
 
-	private static NbtElement readElement(DataInput input, NbtTagSizeTracker tracker, byte typeId) {
+	private static NbtElement readElement(DataInput input, NbtSizeTracker tracker, byte typeId) {
 		try {
 			return NbtTypes.byId(typeId).read(input, tracker);
 		} catch (IOException var6) {

@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.ThrowableDeliverer;
@@ -90,7 +90,7 @@ public final class RegionBasedStorage implements AutoCloseable {
 
 		try {
 			if (dataInputStream != null) {
-				NbtIo.scan(dataInputStream, scanner, NbtTagSizeTracker.ofUnlimitedBytes());
+				NbtIo.scan(dataInputStream, scanner, NbtSizeTracker.ofUnlimitedBytes());
 			}
 		} catch (Throwable var8) {
 			if (dataInputStream != null) {

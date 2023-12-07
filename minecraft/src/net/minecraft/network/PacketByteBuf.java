@@ -54,7 +54,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.network.encoding.StringEncoding;
 import net.minecraft.network.encoding.VarInts;
 import net.minecraft.network.encoding.VarLongs;
@@ -94,7 +94,7 @@ import org.joml.Vector3f;
  *  <th><b>Object Type</b></th> <th><b>read method</b></th> <th><b>write method</b></th>
  * </tr>
  * <tr>
- *  <td>Codec-based (NBT)</td><td>{@link #decode(DynamicOps, Codec, NbtTagSizeTracker)}</td><td>{@link #encode(DynamicOps, Codec, Object)}</td>
+ *  <td>Codec-based (NBT)</td><td>{@link #decode(DynamicOps, Codec, NbtSizeTracker)}</td><td>{@link #encode(DynamicOps, Codec, Object)}</td>
  * </tr>
  * <tr>
  *  <td>Codec-based (JSON)</td><td>{@link #decodeAsJson(Codec)}</td><td>{@link #encodeAsJson(Codec, Object)}</td>
@@ -264,7 +264,7 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Deprecated
 	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec) {
-		return this.decode(ops, codec, NbtTagSizeTracker.ofUnlimitedBytes());
+		return this.decode(ops, codec, NbtSizeTracker.ofUnlimitedBytes());
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #encode(DynamicOps, Codec, Object)
 	 */
 	@Deprecated
-	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec, NbtTagSizeTracker sizeTracker) {
+	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec, NbtSizeTracker sizeTracker) {
 		NbtElement nbtElement = this.readNbt(sizeTracker);
 		return Util.getResult(codec.parse(ops, nbtElement), error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
 	}
@@ -288,7 +288,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param <T> the encoded object's type
 	 * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
 	 * to encode the compound NBT
-	 * @see #decode(DynamicOps, Codec, NbtTagSizeTracker)
+	 * @see #decode(DynamicOps, Codec, NbtSizeTracker)
 	 */
 	@Deprecated
 	public <T> PacketByteBuf encode(DynamicOps<NbtElement> ops, Codec<T> codec, T value) {
@@ -1083,7 +1083,7 @@ public class PacketByteBuf extends ByteBuf {
 
 	/**
 	 * Reads a text from this buf. A text is represented as an NBT-encoded data
-	 * with {@linkplain NbtTagSizeTracker the maximum size} as {@value #MAX_READ_NBT_SIZE}.
+	 * with {@linkplain NbtSizeTracker the maximum size} as {@value #MAX_READ_NBT_SIZE}.
 	 * 
 	 * @return the read text
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
@@ -1093,7 +1093,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #MAX_READ_NBT_SIZE
 	 */
 	public Text readText() {
-		return this.decode(NbtOps.INSTANCE, TextCodecs.CODEC, NbtTagSizeTracker.of(2097152L));
+		return this.decode(NbtOps.INSTANCE, TextCodecs.CODEC, NbtSizeTracker.of(2097152L));
 	}
 
 	/**
@@ -1263,7 +1263,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be
 	 * written
 	 * @see #readNbt()
-	 * @see #readNbt(NbtTagSizeTracker)
+	 * @see #readNbt(NbtSizeTracker)
 	 */
 	public PacketByteBuf writeNbt(@Nullable NbtElement nbt) {
 		if (nbt == null) {
@@ -1284,19 +1284,19 @@ public class PacketByteBuf extends ByteBuf {
 	 * this method returns {@code null}. The compound can have a maximum size of
 	 * {@value #MAX_READ_NBT_SIZE} bytes.
 	 * 
-	 * <p>Note that unlike {@link #readNbt(NbtTagSizeTracker)}, this can only
+	 * <p>Note that unlike {@link #readNbt(NbtSizeTracker)}, this can only
 	 * read compounds.
 	 * 
 	 * @return the read compound, may be {@code null}
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
 	 * @throws net.minecraft.nbt.NbtSizeValidationException if the compound exceeds the allowed maximum size
 	 * @see #writeNbt(NbtCompound)
-	 * @see #readNbt(NbtTagSizeTracker)
+	 * @see #readNbt(NbtSizeTracker)
 	 * @see #MAX_READ_NBT_SIZE
 	 */
 	@Nullable
 	public NbtCompound readNbt() {
-		NbtElement nbtElement = this.readNbt(NbtTagSizeTracker.of(2097152L));
+		NbtElement nbtElement = this.readNbt(NbtSizeTracker.of(2097152L));
 		if (nbtElement != null && !(nbtElement instanceof NbtCompound)) {
 			throw new DecoderException("Not a compound tag: " + nbtElement);
 		} else {
@@ -1317,7 +1317,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readNbt()
 	 */
 	@Nullable
-	public NbtElement readNbt(NbtTagSizeTracker sizeTracker) {
+	public NbtElement readNbt(NbtSizeTracker sizeTracker) {
 		try {
 			NbtElement nbtElement = NbtIo.read(new ByteBufInputStream(this), sizeTracker);
 			return nbtElement.getType() == 0 ? null : nbtElement;

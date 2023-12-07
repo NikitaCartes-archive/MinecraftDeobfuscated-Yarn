@@ -31,20 +31,20 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtList extends AbstractNbtList<NbtElement> {
 	private static final int SIZE = 37;
 	public static final NbtType<NbtList> TYPE = new NbtType.OfVariableSize<NbtList>() {
-		public NbtList read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.pushStack();
+		public NbtList read(DataInput dataInput, NbtSizeTracker nbtSizeTracker) throws IOException {
+			nbtSizeTracker.pushStack();
 
 			NbtList var3;
 			try {
-				var3 = readList(dataInput, nbtTagSizeTracker);
+				var3 = readList(dataInput, nbtSizeTracker);
 			} finally {
-				nbtTagSizeTracker.popStack();
+				nbtSizeTracker.popStack();
 			}
 
 			return var3;
 		}
 
-		private static NbtList readList(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		private static NbtList readList(DataInput input, NbtSizeTracker tracker) throws IOException {
 			tracker.add(37L);
 			byte b = input.readByte();
 			int i = input.readInt();
@@ -64,7 +64,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtSizeTracker tracker) throws IOException {
 			tracker.pushStack();
 
 			NbtScanner.Result var4;
@@ -77,7 +77,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 			return var4;
 		}
 
-		private static NbtScanner.Result scanList(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+		private static NbtScanner.Result scanList(DataInput input, NbtScanner visitor, NbtSizeTracker tracker) throws IOException {
 			tracker.add(37L);
 			NbtType<?> nbtType = NbtTypes.byId(input.readByte());
 			int i = input.readInt();
@@ -129,7 +129,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		}
 
 		@Override
-		public void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		public void skip(DataInput input, NbtSizeTracker tracker) throws IOException {
 			tracker.pushStack();
 
 			try {

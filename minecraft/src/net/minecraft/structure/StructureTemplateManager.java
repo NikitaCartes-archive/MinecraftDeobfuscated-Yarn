@@ -33,7 +33,7 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
@@ -253,7 +253,7 @@ public class StructureTemplateManager {
 	}
 
 	private StructureTemplate readTemplate(InputStream templateIInputStream) throws IOException {
-		NbtCompound nbtCompound = NbtIo.readCompressed(templateIInputStream, NbtTagSizeTracker.ofUnlimitedBytes());
+		NbtCompound nbtCompound = NbtIo.readCompressed(templateIInputStream, NbtSizeTracker.ofUnlimitedBytes());
 		return this.createTemplate(nbtCompound);
 	}
 

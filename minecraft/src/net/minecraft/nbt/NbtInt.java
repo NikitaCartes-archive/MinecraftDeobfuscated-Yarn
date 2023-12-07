@@ -13,16 +13,16 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtInt extends AbstractNbtNumber {
 	private static final int SIZE = 12;
 	public static final NbtType<NbtInt> TYPE = new NbtType.OfFixedSize<NbtInt>() {
-		public NbtInt read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			return NbtInt.of(readInt(dataInput, nbtTagSizeTracker));
+		public NbtInt read(DataInput dataInput, NbtSizeTracker nbtSizeTracker) throws IOException {
+			return NbtInt.of(readInt(dataInput, nbtSizeTracker));
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtSizeTracker tracker) throws IOException {
 			return visitor.visitInt(readInt(input, tracker));
 		}
 
-		private static int readInt(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		private static int readInt(DataInput input, NbtSizeTracker tracker) throws IOException {
 			tracker.add(12L);
 			return input.readInt();
 		}

@@ -7,24 +7,24 @@ import com.google.common.annotations.VisibleForTesting;
  * NbtSizeValidationException} if the tracked element becomes larger than {@link
  * #maxBytes} or if the depth exceeds {@link #maxDepth} during addition.
  */
-public class NbtTagSizeTracker {
+public class NbtSizeTracker {
 	private static final int DEFAULT_MAX_DEPTH = 512;
 	private final long maxBytes;
 	private long allocatedBytes;
 	private final int maxDepth;
 	private int depth;
 
-	public NbtTagSizeTracker(long maxBytes, int maxDepth) {
+	public NbtSizeTracker(long maxBytes, int maxDepth) {
 		this.maxBytes = maxBytes;
 		this.maxDepth = maxDepth;
 	}
 
-	public static NbtTagSizeTracker of(long maxBytes) {
-		return new NbtTagSizeTracker(maxBytes, 512);
+	public static NbtSizeTracker of(long maxBytes) {
+		return new NbtSizeTracker(maxBytes, 512);
 	}
 
-	public static NbtTagSizeTracker ofUnlimitedBytes() {
-		return new NbtTagSizeTracker(Long.MAX_VALUE, 512);
+	public static NbtSizeTracker ofUnlimitedBytes() {
+		return new NbtSizeTracker(Long.MAX_VALUE, 512);
 	}
 
 	public void add(long multiplier, long bytes) {
