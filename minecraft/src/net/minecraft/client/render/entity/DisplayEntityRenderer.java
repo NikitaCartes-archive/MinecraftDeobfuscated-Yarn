@@ -65,27 +65,27 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 		Camera camera = this.renderDispatcher.camera;
 
 		return switch (renderState.billboardConstraints()) {
-			case FIXED -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * method_52844(entity, yaw), (float) (Math.PI / 180.0) * method_52846(entity, yaw), 0.0F);
-			case HORIZONTAL -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * method_52844(entity, yaw), (float) (Math.PI / 180.0) * method_52847(camera), 0.0F);
-			case VERTICAL -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * method_52845(camera), (float) (Math.PI / 180.0) * method_52846(entity, yaw), 0.0F);
-			case CENTER -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * method_52845(camera), (float) (Math.PI / 180.0) * method_52847(camera), 0.0F);
+			case FIXED -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * lerpYaw(entity, yaw), (float) (Math.PI / 180.0) * lerpPitch(entity, yaw), 0.0F);
+			case HORIZONTAL -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * lerpYaw(entity, yaw), (float) (Math.PI / 180.0) * getNegatedPitch(camera), 0.0F);
+			case VERTICAL -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * getBackwardsYaw(camera), (float) (Math.PI / 180.0) * lerpPitch(entity, yaw), 0.0F);
+			case CENTER -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * getBackwardsYaw(camera), (float) (Math.PI / 180.0) * getNegatedPitch(camera), 0.0F);
 		};
 	}
 
-	private static float method_52845(Camera camera) {
+	private static float getBackwardsYaw(Camera camera) {
 		return camera.getYaw() - 180.0F;
 	}
 
-	private static float method_52847(Camera camera) {
+	private static float getNegatedPitch(Camera camera) {
 		return -camera.getPitch();
 	}
 
-	private static <T extends DisplayEntity> float method_52844(T displayEntity, float f) {
-		return MathHelper.lerpAngleDegrees(f, displayEntity.prevYaw, displayEntity.getYaw());
+	private static <T extends DisplayEntity> float lerpYaw(T entity, float delta) {
+		return MathHelper.lerpAngleDegrees(delta, entity.prevYaw, entity.getYaw());
 	}
 
-	private static <T extends DisplayEntity> float method_52846(T displayEntity, float f) {
-		return MathHelper.lerp(f, displayEntity.prevPitch, displayEntity.getPitch());
+	private static <T extends DisplayEntity> float lerpPitch(T entity, float delta) {
+		return MathHelper.lerp(delta, entity.prevPitch, entity.getPitch());
 	}
 
 	@Nullable

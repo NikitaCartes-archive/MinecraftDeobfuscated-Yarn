@@ -14,16 +14,16 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtString implements NbtElement {
 	private static final int SIZE = 36;
 	public static final NbtType<NbtString> TYPE = new NbtType.OfVariableSize<NbtString>() {
-		public NbtString read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			return NbtString.of(readString(dataInput, nbtTagSizeTracker));
+		public NbtString read(DataInput dataInput, NbtSizeTracker nbtSizeTracker) throws IOException {
+			return NbtString.of(readString(dataInput, nbtSizeTracker));
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtSizeTracker tracker) throws IOException {
 			return visitor.visitString(readString(input, tracker));
 		}
 
-		private static String readString(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		private static String readString(DataInput input, NbtSizeTracker tracker) throws IOException {
 			tracker.add(36L);
 			String string = input.readUTF();
 			tracker.add(2L, (long)string.length());
@@ -31,7 +31,7 @@ public class NbtString implements NbtElement {
 		}
 
 		@Override
-		public void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		public void skip(DataInput input, NbtSizeTracker tracker) throws IOException {
 			NbtString.skip(input);
 		}
 

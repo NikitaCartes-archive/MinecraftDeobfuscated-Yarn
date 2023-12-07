@@ -46,7 +46,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.nbt.scanner.ExclusiveNbtCollector;
 import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -276,7 +276,7 @@ public class LevelStorage {
 	}
 
 	static NbtCompound readLevelProperties(Path path) throws IOException {
-		return NbtIo.readCompressed(path, NbtTagSizeTracker.of(104857600L));
+		return NbtIo.readCompressed(path, NbtSizeTracker.of(104857600L));
 	}
 
 	static Dynamic<?> readLevelProperties(Path path, DataFixer dataFixer) throws IOException {
@@ -373,7 +373,7 @@ public class LevelStorage {
 		ExclusiveNbtCollector exclusiveNbtCollector = new ExclusiveNbtCollector(
 			new NbtScanQuery("Data", NbtCompound.TYPE, "Player"), new NbtScanQuery("Data", NbtCompound.TYPE, "WorldGenSettings")
 		);
-		NbtIo.scanCompressed(path, exclusiveNbtCollector, NbtTagSizeTracker.of(104857600L));
+		NbtIo.scanCompressed(path, exclusiveNbtCollector, NbtSizeTracker.of(104857600L));
 		return exclusiveNbtCollector.getRoot();
 	}
 

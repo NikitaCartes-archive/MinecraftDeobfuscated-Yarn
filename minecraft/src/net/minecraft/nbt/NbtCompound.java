@@ -53,20 +53,20 @@ public class NbtCompound implements NbtElement {
 	private static final int SIZE = 48;
 	private static final int field_41719 = 32;
 	public static final NbtType<NbtCompound> TYPE = new NbtType.OfVariableSize<NbtCompound>() {
-		public NbtCompound read(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.pushStack();
+		public NbtCompound read(DataInput dataInput, NbtSizeTracker nbtSizeTracker) throws IOException {
+			nbtSizeTracker.pushStack();
 
 			NbtCompound var3;
 			try {
-				var3 = readCompound(dataInput, nbtTagSizeTracker);
+				var3 = readCompound(dataInput, nbtSizeTracker);
 			} finally {
-				nbtTagSizeTracker.popStack();
+				nbtSizeTracker.popStack();
 			}
 
 			return var3;
 		}
 
-		private static NbtCompound readCompound(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		private static NbtCompound readCompound(DataInput input, NbtSizeTracker tracker) throws IOException {
 			tracker.add(48L);
 			Map<String, NbtElement> map = Maps.<String, NbtElement>newHashMap();
 
@@ -83,7 +83,7 @@ public class NbtCompound implements NbtElement {
 		}
 
 		@Override
-		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor, NbtSizeTracker tracker) throws IOException {
 			tracker.pushStack();
 
 			NbtScanner.Result var4;
@@ -96,7 +96,7 @@ public class NbtCompound implements NbtElement {
 			return var4;
 		}
 
-		private static NbtScanner.Result scanCompound(DataInput input, NbtScanner visitor, NbtTagSizeTracker tracker) throws IOException {
+		private static NbtScanner.Result scanCompound(DataInput input, NbtScanner visitor, NbtSizeTracker tracker) throws IOException {
 			tracker.add(48L);
 
 			byte b;
@@ -146,7 +146,7 @@ public class NbtCompound implements NbtElement {
 			return visitor.endNested();
 		}
 
-		private static String readString(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		private static String readString(DataInput input, NbtSizeTracker tracker) throws IOException {
 			String string = input.readUTF();
 			tracker.add(28L);
 			tracker.add(2L, (long)string.length());
@@ -154,7 +154,7 @@ public class NbtCompound implements NbtElement {
 		}
 
 		@Override
-		public void skip(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		public void skip(DataInput input, NbtSizeTracker tracker) throws IOException {
 			tracker.pushStack();
 
 			byte b;
@@ -779,7 +779,7 @@ public class NbtCompound implements NbtElement {
 		}
 	}
 
-	static NbtElement read(NbtType<?> reader, String key, DataInput input, NbtTagSizeTracker tracker) {
+	static NbtElement read(NbtType<?> reader, String key, DataInput input, NbtSizeTracker tracker) {
 		try {
 			return reader.read(input, tracker);
 		} catch (IOException var7) {
