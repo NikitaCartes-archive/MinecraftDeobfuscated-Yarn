@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 public interface CommandFunction<T> {
 	Identifier id();
 
-	Procedure<T> withMacroReplaced(@Nullable NbtCompound arguments, CommandDispatcher<T> dispatcher, T source) throws MacroException;
+	Procedure<T> withMacroReplaced(@Nullable NbtCompound arguments, CommandDispatcher<T> dispatcher) throws MacroException;
 
 	private static boolean continuesToNextLine(CharSequence string) {
 		int i = string.length();
@@ -72,7 +72,7 @@ public interface CommandFunction<T> {
 				}
 
 				if (stringReader.peek() == '$') {
-					functionBuilder.addMacroCommand(string3.substring(1), j);
+					functionBuilder.addMacroCommand(string3.substring(1), j, source);
 				} else {
 					try {
 						functionBuilder.addAction(parse(dispatcher, source, stringReader));

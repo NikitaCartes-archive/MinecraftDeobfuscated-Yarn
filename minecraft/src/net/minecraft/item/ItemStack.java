@@ -51,6 +51,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -1057,12 +1058,12 @@ public final class ItemStack {
 
 		if (isSectionVisible(i, ItemStack.TooltipSection.MODIFIERS)) {
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
+				Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
 				if (!multimap.isEmpty()) {
 					list.add(ScreenTexts.EMPTY);
 					list.add(Text.translatable("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
 
-					for (Entry<EntityAttribute, EntityAttributeModifier> entry : multimap.entries()) {
+					for (Entry<RegistryEntry<EntityAttribute>, EntityAttributeModifier> entry : multimap.entries()) {
 						EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
 						double d = entityAttributeModifier.getValue();
 						boolean bl = false;
@@ -1081,7 +1082,7 @@ public final class ItemStack {
 						if (entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE
 							|| entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
 							e = d * 100.0;
-						} else if (((EntityAttribute)entry.getKey()).equals(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
+						} else if (((RegistryEntry)entry.getKey()).method_55838(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
 							e = d * 10.0;
 						} else {
 							e = d;
@@ -1094,7 +1095,7 @@ public final class ItemStack {
 										Text.translatable(
 											"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),
 											MODIFIER_FORMAT.format(e),
-											Text.translatable(((EntityAttribute)entry.getKey()).getTranslationKey())
+											Text.translatable(((EntityAttribute)((RegistryEntry)entry.getKey()).value()).getTranslationKey())
 										)
 									)
 									.formatted(Formatting.DARK_GREEN)
@@ -1104,7 +1105,7 @@ public final class ItemStack {
 								Text.translatable(
 										"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
 										MODIFIER_FORMAT.format(e),
-										Text.translatable(((EntityAttribute)entry.getKey()).getTranslationKey())
+										Text.translatable(((EntityAttribute)((RegistryEntry)entry.getKey()).value()).getTranslationKey())
 									)
 									.formatted(Formatting.BLUE)
 							);
@@ -1114,7 +1115,7 @@ public final class ItemStack {
 								Text.translatable(
 										"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
 										MODIFIER_FORMAT.format(e),
-										Text.translatable(((EntityAttribute)entry.getKey()).getTranslationKey())
+										Text.translatable(((EntityAttribute)((RegistryEntry)entry.getKey()).value()).getTranslationKey())
 									)
 									.formatted(Formatting.RED)
 							);
@@ -1354,8 +1355,8 @@ public final class ItemStack {
 	 * @see Item#getAttributeModifiers
 	 * @see #addAttributeModifier
 	 */
-	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		Multimap<EntityAttribute, EntityAttributeModifier> multimap;
+	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+		Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> multimap;
 		if (this.hasNbt() && this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
 			multimap = HashMultimap.create();
 			NbtList nbtList = this.nbt.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
@@ -1363,13 +1364,16 @@ public final class ItemStack {
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
 				if (!nbtCompound.contains("Slot", NbtElement.STRING_TYPE) || nbtCompound.getString("Slot").equals(slot.getName())) {
-					Optional<EntityAttribute> optional = Registries.ATTRIBUTE.getOrEmpty(Identifier.tryParse(nbtCompound.getString("AttributeName")));
-					if (!optional.isEmpty()) {
-						EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtCompound);
-						if (entityAttributeModifier != null
-							&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
-							&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
-							multimap.put((EntityAttribute)optional.get(), entityAttributeModifier);
+					Identifier identifier = Identifier.tryParse(nbtCompound.getString("AttributeName"));
+					if (identifier != null) {
+						Optional<RegistryEntry.Reference<EntityAttribute>> optional = Registries.ATTRIBUTE.method_55841(identifier);
+						if (!optional.isEmpty()) {
+							EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtCompound);
+							if (entityAttributeModifier != null
+								&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
+								&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
+								multimap.put((RegistryEntry<EntityAttribute>)optional.get(), entityAttributeModifier);
+							}
 						}
 					}
 				}
@@ -1386,7 +1390,7 @@ public final class ItemStack {
 	 * 
 	 * @see #getAttributeModifiers
 	 */
-	public void addAttributeModifier(EntityAttribute attribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
+	public void addAttributeModifier(RegistryEntry<EntityAttribute> registryEntry, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
 		this.getOrCreateNbt();
 		if (!this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
 			this.nbt.put("AttributeModifiers", new NbtList());
@@ -1394,7 +1398,10 @@ public final class ItemStack {
 
 		NbtList nbtList = this.nbt.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
 		NbtCompound nbtCompound = modifier.toNbt();
-		nbtCompound.putString("AttributeName", Registries.ATTRIBUTE.getId(attribute).toString());
+		nbtCompound.putString(
+			"AttributeName",
+			((RegistryKey)registryEntry.getKey().orElseThrow(() -> new IllegalArgumentException("Cannot add unregistered attribute"))).getValue().toString()
+		);
 		if (slot != null) {
 			nbtCompound.putString("Slot", slot.getName());
 		}

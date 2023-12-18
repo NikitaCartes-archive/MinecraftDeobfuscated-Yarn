@@ -1,6 +1,7 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
+import io.netty.handler.codec.DecoderException;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -10,7 +11,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int entityId;
@@ -32,15 +33,18 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		this.entityId = buf.readVarInt();
 		this.entries = buf.readList(
 			buf2 -> {
-				Identifier identifier = buf2.readIdentifier();
-				EntityAttribute entityAttribute = Registries.ATTRIBUTE.get(identifier);
-				double d = buf2.readDouble();
-				List<EntityAttributeModifier> list = buf2.readList(
-					modifiers -> new EntityAttributeModifier(
-							modifiers.readUuid(), "Unknown synced attribute modifier", modifiers.readDouble(), EntityAttributeModifier.Operation.fromId(modifiers.readByte())
-						)
-				);
-				return new EntityAttributesS2CPacket.Entry(entityAttribute, d, list);
+				RegistryEntry<EntityAttribute> registryEntry = buf2.readRegistryValue(Registries.ATTRIBUTE.getIndexedEntries());
+				if (registryEntry == null) {
+					throw new DecoderException("Received unrecognized attribute id");
+				} else {
+					double d = buf2.readDouble();
+					List<EntityAttributeModifier> list = buf2.readList(
+						modifiers -> new EntityAttributeModifier(
+								modifiers.readUuid(), "Unknown synced attribute modifier", modifiers.readDouble(), EntityAttributeModifier.Operation.fromId(modifiers.readByte())
+							)
+					);
+					return new EntityAttributesS2CPacket.Entry(registryEntry, d, list);
+				}
 			}
 		);
 	}
@@ -49,9 +53,9 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeCollection(this.entries, (buf2, attribute) -> {
-			buf2.writeIdentifier(Registries.ATTRIBUTE.getId(attribute.getAttribute()));
-			buf2.writeDouble(attribute.getBaseValue());
-			buf2.writeCollection(attribute.getModifiers(), (buf3, modifier) -> {
+			buf2.writeRegistryValue(Registries.ATTRIBUTE.getIndexedEntries(), attribute.attribute());
+			buf2.writeDouble(attribute.baseValue());
+			buf2.writeCollection(attribute.modifiers(), (buf3, modifier) -> {
 				buf3.writeUuid(modifier.getId());
 				buf3.writeDouble(modifier.getValue());
 				buf3.writeByte(modifier.getOperation().getId());
@@ -71,27 +75,6 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		return this.entries;
 	}
 
-	public static class Entry {
-		private final EntityAttribute attribute;
-		private final double baseValue;
-		private final Collection<EntityAttributeModifier> modifiers;
-
-		public Entry(EntityAttribute attribute, double baseValue, Collection<EntityAttributeModifier> modifiers) {
-			this.attribute = attribute;
-			this.baseValue = baseValue;
-			this.modifiers = modifiers;
-		}
-
-		public EntityAttribute getAttribute() {
-			return this.attribute;
-		}
-
-		public double getBaseValue() {
-			return this.baseValue;
-		}
-
-		public Collection<EntityAttributeModifier> getModifiers() {
-			return this.modifiers;
-		}
+	public static record Entry(RegistryEntry<EntityAttribute> attribute, double baseValue, Collection<EntityAttributeModifier> modifiers) {
 	}
 }

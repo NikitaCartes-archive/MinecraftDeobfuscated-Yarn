@@ -14,6 +14,7 @@ public class EntityModelLayers {
 	private static final String MAIN = "main";
 	private static final Set<EntityModelLayer> LAYERS = Sets.<EntityModelLayer>newHashSet();
 	public static final EntityModelLayer ALLAY = registerMain("allay");
+	public static final EntityModelLayer ARMADILLO = registerMain("armadillo");
 	public static final EntityModelLayer ARMOR_STAND = registerMain("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_INNER_ARMOR = createInnerArmor("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_OUTER_ARMOR = createOuterArmor("armor_stand");
@@ -27,8 +28,6 @@ public class EntityModelLayers {
 	public static final EntityModelLayer BLAZE = registerMain("blaze");
 	public static final EntityModelLayer BOOK = registerMain("book");
 	public static final EntityModelLayer BREEZE = registerMain("breeze");
-	public static final EntityModelLayer BREEZE_WIND = register("breeze", "wind");
-	public static final EntityModelLayer BREEZE_EYES = register("breeze", "eyes");
 	public static final EntityModelLayer CAT = registerMain("cat");
 	public static final EntityModelLayer CAT_COLLAR = register("cat", "collar");
 	public static final EntityModelLayer CAMEL = registerMain("camel");
@@ -169,6 +168,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer WITHER_SKELETON_SKULL = registerMain("wither_skeleton_skull");
 	public static final EntityModelLayer WITHER_SKULL = registerMain("wither_skull");
 	public static final EntityModelLayer WOLF = registerMain("wolf");
+	public static final EntityModelLayer WOLF_ARMOR = registerMain("wolf_armor");
 	public static final EntityModelLayer ZOGLIN = registerMain("zoglin");
 	public static final EntityModelLayer ZOMBIE = registerMain("zombie");
 	public static final EntityModelLayer ZOMBIE_HEAD = registerMain("zombie_head");

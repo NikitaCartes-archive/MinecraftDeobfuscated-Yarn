@@ -2,12 +2,14 @@ package net.minecraft.entity.mob;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
@@ -49,6 +51,7 @@ public class BreezeBrain {
 		MemoryModuleType.BREEZE_SHOOT_RECOVER,
 		MemoryModuleType.BREEZE_SHOOT_COOLDOWN,
 		MemoryModuleType.BREEZE_JUMP_TARGET,
+		MemoryModuleType.BREEZE_LEAVING_WATER,
 		MemoryModuleType.HURT_BY,
 		MemoryModuleType.HURT_BY_ENTITY,
 		MemoryModuleType.PATH
@@ -56,6 +59,7 @@ public class BreezeBrain {
 
 	protected static Brain<?> create(Brain<BreezeEntity> brain) {
 		addCoreTasks(brain);
+		method_55750(brain);
 		addFightTasks(brain);
 		brain.setCoreActivities(Set.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.FIGHT);
@@ -64,23 +68,38 @@ public class BreezeBrain {
 	}
 
 	private static void addCoreTasks(Brain<BreezeEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new LookAroundTask(45, 90), new BreezeBrain.SlideAroundTask(20, 100)));
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new LookAroundTask(45, 90)));
+	}
+
+	private static void method_55750(Brain<BreezeEntity> brain) {
+		brain.setTaskList(
+			Activity.IDLE,
+			ImmutableList.of(
+				Pair.of(0, UpdateAttackTargetTask.create(breezeEntity -> breezeEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
+				Pair.of(2, new BreezeBrain.SlideAroundTask(20, 40)),
+				Pair.of(3, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
+			)
+		);
 	}
 
 	private static void addFightTasks(Brain<BreezeEntity> brain) {
 		brain.setTaskList(
 			Activity.FIGHT,
 			ImmutableList.of(
-				Pair.of(0, UpdateAttackTargetTask.create(breeze -> breeze.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
-				Pair.of(1, ForgetAttackTargetTask.create()),
-				Pair.of(2, new BreezeShootTask()),
+				Pair.of(0, ForgetAttackTargetTask.create()),
+				Pair.of(1, new BreezeShootTask()),
+				Pair.of(2, new BreezeJumpTask()),
 				Pair.of(3, new BreezeShootIfStuckTask()),
-				Pair.of(4, new BreezeJumpTask()),
-				Pair.of(5, new BreezeSlideTowardsTargetTask()),
-				Pair.of(6, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
+				Pair.of(4, new BreezeSlideTowardsTargetTask())
 			),
-			Set.of()
+			ImmutableSet.of(
+				Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT), Pair.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT)
+			)
 		);
+	}
+
+	static void method_55748(BreezeEntity breezeEntity) {
+		breezeEntity.getBrain().resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
 	}
 
 	public static class SlideAroundTask extends WanderAroundTask {

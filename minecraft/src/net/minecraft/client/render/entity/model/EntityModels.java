@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9082;
 import net.minecraft.block.WoodType;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.TexturedModelData;
@@ -52,6 +53,7 @@ public class EntityModels {
 		TexturedModelData texturedModelData18 = TexturedModelData.of(VillagerResemblingModel.getModelData(), 64, 64);
 		TexturedModelData texturedModelData19 = SpiderEntityModel.getTexturedModelData();
 		builder.put(EntityModelLayers.ALLAY, AllayEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.ARMADILLO, class_9082.method_55818());
 		builder.put(EntityModelLayers.ARMOR_STAND, ArmorStandEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ARMOR_STAND_INNER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(HAT_DILATION));
 		builder.put(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(ARMOR_DILATION));
@@ -64,9 +66,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.BELL, BellBlockEntityRenderer.getTexturedModelData());
 		builder.put(EntityModelLayers.BLAZE, BlazeEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.BOOK, BookModel.getTexturedModelData());
-		builder.put(EntityModelLayers.BREEZE, BreezeEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.BREEZE_EYES, BreezeEntityModel.getEyesTexturedModelData());
-		builder.put(EntityModelLayers.BREEZE_WIND, BreezeEntityModel.getWindTexturedModelData());
+		builder.put(EntityModelLayers.BREEZE, BreezeEntityModel.getTexturedModelData(32, 32));
 		builder.put(EntityModelLayers.CAT, texturedModelData10);
 		builder.put(EntityModelLayers.CAT_COLLAR, TexturedModelData.of(OcelotEntityModel.getModelData(new Dilation(0.01F)), 64, 32));
 		builder.put(EntityModelLayers.CAMEL, CamelEntityModel.getTexturedModelData());
@@ -206,7 +206,8 @@ public class EntityModels {
 		builder.put(EntityModelLayers.WITHER_SKELETON_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.WITHER_SKELETON_OUTER_ARMOR, texturedModelData2);
 		builder.put(EntityModelLayers.WITHER_SKELETON_SKULL, texturedModelData6);
-		builder.put(EntityModelLayers.WOLF, WolfEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.WOLF, TexturedModelData.of(WolfEntityModel.getTexturedModelData(Dilation.NONE), 64, 32));
+		builder.put(EntityModelLayers.WOLF_ARMOR, TexturedModelData.of(WolfEntityModel.getTexturedModelData(new Dilation(0.2F)), 64, 32));
 		builder.put(EntityModelLayers.ZOGLIN, texturedModelData16);
 		builder.put(EntityModelLayers.ZOMBIE, texturedModelData);
 		builder.put(EntityModelLayers.ZOMBIE_INNER_ARMOR, texturedModelData4);

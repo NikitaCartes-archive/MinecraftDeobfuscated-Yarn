@@ -23,6 +23,7 @@ import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AxolotlEntity;
@@ -60,11 +61,14 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	public DrownedEntity(EntityType<? extends DrownedEntity> entityType, World world) {
 		super(entityType, world);
-		this.setStepHeight(1.0F);
 		this.moveControl = new DrownedEntity.DrownedMoveControl(this);
 		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 		this.waterNavigation = new SwimNavigation(this, world);
 		this.landNavigation = new MobNavigation(this, world);
+	}
+
+	public static DefaultAttributeContainer.Builder method_55746() {
+		return ZombieEntity.createZombieAttributes().add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 
 	@Override

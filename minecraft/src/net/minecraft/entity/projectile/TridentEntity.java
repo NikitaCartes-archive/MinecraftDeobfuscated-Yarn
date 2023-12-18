@@ -125,7 +125,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 				this.onHit(livingEntity2);
 			}
 		} else if (entity.getType().isIn(EntityTypeTags.DEFLECTS_TRIDENTS)) {
-			this.deflect();
+			this.deflect(entity);
 			return;
 		}
 

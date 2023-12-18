@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
@@ -24,6 +25,8 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -42,7 +45,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	public static final float field_40732 = 6.0F;
 	public static final float field_40733 = 0.5F;
 	private static final String EFFECTS_NBT_KEY = "effects";
-	private Potion potion = Potions.EMPTY;
+	private RegistryEntry<Potion> potion = Potions.EMPTY;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
 	private int duration = 600;
@@ -94,15 +97,15 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		return this.getDataTracker().get(RADIUS);
 	}
 
-	public void setPotion(Potion potion) {
-		this.potion = potion;
+	public void setPotion(RegistryEntry<Potion> registryEntry) {
+		this.potion = registryEntry;
 		if (!this.customColor) {
 			this.updateColor();
 		}
 	}
 
 	private void updateColor() {
-		if (this.potion == Potions.EMPTY && this.effects.isEmpty()) {
+		if (this.potion.method_55838(Potions.EMPTY) && this.effects.isEmpty()) {
 			this.getDataTracker().set(COLOR, 0);
 		} else {
 			this.getDataTracker().set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
@@ -225,7 +228,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 				this.affectedEntities.entrySet().removeIf(entry -> this.age >= (Integer)entry.getValue());
 				List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
 
-				for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
+				for (StatusEffectInstance statusEffectInstance : this.potion.value().getEffects()) {
 					list.add(
 						new StatusEffectInstance(
 							statusEffectInstance.getEffectType(),
@@ -252,8 +255,8 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 									this.affectedEntities.put(livingEntity, this.age + this.reapplicationDelay);
 
 									for (StatusEffectInstance statusEffectInstance2 : list) {
-										if (statusEffectInstance2.getEffectType().isInstant()) {
-											statusEffectInstance2.getEffectType().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance2.getAmplifier(), 0.5);
+										if (statusEffectInstance2.getEffectType().value().isInstant()) {
+											statusEffectInstance2.getEffectType().value().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance2.getAmplifier(), 0.5);
 										} else {
 											livingEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance2), this);
 										}
@@ -396,8 +399,9 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 			nbt.putInt("Color", this.getColor());
 		}
 
-		if (this.potion != Potions.EMPTY) {
-			nbt.putString("Potion", Registries.POTION.getId(this.potion).toString());
+		Optional<RegistryKey<Potion>> optional = this.potion.getKey();
+		if (optional.isPresent() && !this.potion.method_55838(Potions.EMPTY)) {
+			nbt.putString("Potion", ((RegistryKey)optional.get()).getValue().toString());
 		}
 
 		if (!this.effects.isEmpty()) {
@@ -420,7 +424,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		super.onTrackedDataSet(data);
 	}
 
-	public Potion getPotion() {
+	public RegistryEntry<Potion> getPotion() {
 		return this.potion;
 	}
 

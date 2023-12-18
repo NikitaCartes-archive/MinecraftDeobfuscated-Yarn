@@ -17,7 +17,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -103,13 +102,13 @@ public class ButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if ((Boolean)state.get(POWERED)) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if ((Boolean)blockState.get(POWERED)) {
 			return ActionResult.CONSUME;
 		} else {
-			this.powerOn(state, world, pos);
-			this.playClickSound(player, world, pos, true);
-			world.emitGameEvent(player, GameEvent.BLOCK_ACTIVATE, pos);
+			this.powerOn(blockState, world, blockPos);
+			this.playClickSound(playerEntity, world, blockPos, true);
+			world.emitGameEvent(playerEntity, GameEvent.BLOCK_ACTIVATE, blockPos);
 			return ActionResult.success(world.isClient);
 		}
 	}

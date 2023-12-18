@@ -20,6 +20,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9061;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementCriteriaRenameFix;
@@ -117,7 +118,6 @@ import net.minecraft.datafixer.fix.ItemStackEnchantmentFix;
 import net.minecraft.datafixer.fix.ItemStackUuidFix;
 import net.minecraft.datafixer.fix.ItemWaterPotionFix;
 import net.minecraft.datafixer.fix.ItemWrittenBookPagesStrictJsonFix;
-import net.minecraft.datafixer.fix.JigsawBlockNameFix;
 import net.minecraft.datafixer.fix.JigsawPropertiesFix;
 import net.minecraft.datafixer.fix.JigsawRotationFix;
 import net.minecraft.datafixer.fix.LeavesFix;
@@ -788,7 +788,7 @@ public class Schemas {
 		builder.addFixer(new CauldronRenameFix(schema127, false));
 		Schema schema128 = builder.addSchema(2680, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(ItemNameFix.create(schema128, "Renamed grass path item to dirt path", replacing("minecraft:grass_path", "minecraft:dirt_path")));
-		builder.addFixer(JigsawBlockNameFix.create(schema128, "Renamed grass path block to dirt path", replacing("minecraft:grass_path", "minecraft:dirt_path")));
+		builder.addFixer(BlockNameFix.create(schema128, "Renamed grass path block to dirt path", replacing("minecraft:grass_path", "minecraft:dirt_path")));
 		Schema schema129 = builder.addSchema(2684, Schema2684::new);
 		builder.addFixer(new ChoiceTypesFix(schema129, "Added Sculk Sensor", TypeReferences.BLOCK_ENTITY));
 		Schema schema130 = builder.addSchema(2686, Schema2686::new);
@@ -820,7 +820,7 @@ public class Schemas {
 			.put("minecraft:waxed_lightly_weathered_cut_copper_slab", "minecraft:waxed_exposed_cut_copper_slab")
 			.build();
 		builder.addFixer(ItemNameFix.create(schema132, "Renamed copper block items to new oxidized terms", replacing(immutableMap)));
-		builder.addFixer(JigsawBlockNameFix.create(schema132, "Renamed copper blocks to new oxidized terms", replacing(immutableMap)));
+		builder.addFixer(BlockNameFix.create(schema132, "Renamed copper blocks to new oxidized terms", replacing(immutableMap)));
 		Schema schema133 = builder.addSchema(2691, EMPTY_IDENTIFIER_NORMALIZE);
 		ImmutableMap<String, String> immutableMap2 = ImmutableMap.<String, String>builder()
 			.put("minecraft:waxed_copper", "minecraft:waxed_copper_block")
@@ -829,7 +829,7 @@ public class Schemas {
 			.put("minecraft:exposed_copper_block", "minecraft:exposed_copper")
 			.build();
 		builder.addFixer(ItemNameFix.create(schema133, "Rename copper item suffixes", replacing(immutableMap2)));
-		builder.addFixer(JigsawBlockNameFix.create(schema133, "Rename copper blocks suffixes", replacing(immutableMap2)));
+		builder.addFixer(BlockNameFix.create(schema133, "Rename copper blocks suffixes", replacing(immutableMap2)));
 		Schema schema134 = builder.addSchema(2693, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new AddFlagIfNotPresentFix(schema134, TypeReferences.WORLD_GEN_SETTINGS, "has_increased_height_already", false));
 		Schema schema135 = builder.addSchema(2696, EMPTY_IDENTIFIER_NORMALIZE);
@@ -853,10 +853,10 @@ public class Schemas {
 			.put("minecraft:chiseled_grimstone", "minecraft:chiseled_deepslate")
 			.build();
 		builder.addFixer(ItemNameFix.create(schema135, "Renamed grimstone block items to deepslate", replacing(immutableMap3)));
-		builder.addFixer(JigsawBlockNameFix.create(schema135, "Renamed grimstone blocks to deepslate", replacing(immutableMap3)));
+		builder.addFixer(BlockNameFix.create(schema135, "Renamed grimstone blocks to deepslate", replacing(immutableMap3)));
 		Schema schema136 = builder.addSchema(2700, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
-			JigsawBlockNameFix.create(
+			BlockNameFix.create(
 				schema136,
 				"Renamed cave vines blocks",
 				replacing(ImmutableMap.of("minecraft:cave_vines_head", "minecraft:cave_vines", "minecraft:cave_vines_body", "minecraft:cave_vines_plant"))
@@ -1171,8 +1171,13 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema197, "Added Trial Spawner", TypeReferences.BLOCK_ENTITY));
 		Schema schema198 = builder.addSchema(3692, EMPTY_IDENTIFIER_NORMALIZE);
 		UnaryOperator<String> unaryOperator2 = replacing(Map.of("minecraft:grass", "minecraft:short_grass"));
-		builder.addFixer(JigsawBlockNameFix.create(schema198, "Rename grass block to short_grass", unaryOperator2));
+		builder.addFixer(BlockNameFix.create(schema198, "Rename grass block to short_grass", unaryOperator2));
 		builder.addFixer(ItemNameFix.create(schema198, "Rename grass item to short_grass", unaryOperator2));
+		Schema schema199 = builder.addSchema(3799, class_9061::new);
+		builder.addFixer(new ChoiceTypesFix(schema199, "Added Armadillo", TypeReferences.ENTITY));
+		Schema schema200 = builder.addSchema(3800, EMPTY_IDENTIFIER_NORMALIZE);
+		UnaryOperator<String> unaryOperator3 = replacing(Map.of("minecraft:scute", "minecraft:turtle_scute"));
+		builder.addFixer(ItemNameFix.create(schema200, "Rename scute item to turtle_scute", unaryOperator3));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -16,17 +16,14 @@ class BadOmenStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		super.applyUpdateEffect(entity, amplifier);
+	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (entity instanceof ServerPlayerEntity serverPlayerEntity && !entity.isSpectator()) {
 			ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
-			if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
-				return;
-			}
-
-			if (serverWorld.isNearOccupiedPointOfInterest(entity.getBlockPos())) {
+			if (serverWorld.getDifficulty() != Difficulty.PEACEFUL && serverWorld.isNearOccupiedPointOfInterest(entity.getBlockPos())) {
 				serverWorld.getRaidManager().startRaid(serverPlayerEntity);
 			}
 		}
+
+		return true;
 	}
 }

@@ -149,12 +149,11 @@ public abstract class PlayerManager {
 			string = gameProfile.getName();
 		}
 
-		NbtCompound nbtCompound = this.loadPlayerData(player);
-		RegistryKey<World> registryKey = nbtCompound != null
-			? (RegistryKey)DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.get("Dimension")))
-				.resultOrPartial(LOGGER::error)
-				.orElse(World.OVERWORLD)
-			: World.OVERWORLD;
+		Optional<NbtCompound> optional = this.loadPlayerData(player);
+		RegistryKey<World> registryKey = (RegistryKey<World>)optional.flatMap(
+				nbtCompound -> DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.get("Dimension"))).resultOrPartial(LOGGER::error)
+			)
+			.orElse(World.OVERWORLD);
 		ServerWorld serverWorld = this.server.getWorld(registryKey);
 		ServerWorld serverWorld2;
 		if (serverWorld == null) {
@@ -170,7 +169,7 @@ public abstract class PlayerManager {
 			"{}[{}] logged in with entity id {} at ({}, {}, {})", player.getName().getString(), string2, player.getId(), player.getX(), player.getY(), player.getZ()
 		);
 		WorldProperties worldProperties = serverWorld2.getLevelProperties();
-		player.setGameMode(nbtCompound);
+		player.setGameMode((NbtCompound)optional.orElse(null));
 		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player, clientData);
 		GameRules gameRules = serverWorld2.getGameRules();
 		boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
@@ -222,18 +221,18 @@ public abstract class PlayerManager {
 		this.server.getBossBarManager().onPlayerConnect(player);
 
 		for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
-			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
+			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance, false));
 		}
 
-		if (nbtCompound != null && nbtCompound.contains("RootVehicle", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound2 = nbtCompound.getCompound("RootVehicle");
+		if (optional.isPresent() && ((NbtCompound)optional.get()).contains("RootVehicle", NbtElement.COMPOUND_TYPE)) {
+			NbtCompound nbtCompound = ((NbtCompound)optional.get()).getCompound("RootVehicle");
 			Entity entity = EntityType.loadEntityWithPassengers(
-				nbtCompound2.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
+				nbtCompound.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
 			);
 			if (entity != null) {
 				UUID uUID;
-				if (nbtCompound2.containsUuid("Attach")) {
-					uUID = nbtCompound2.getUuid("Attach");
+				if (nbtCompound.containsUuid("Attach")) {
+					uUID = nbtCompound.getUuid("Attach");
 				} else {
 					uUID = null;
 				}
@@ -319,19 +318,18 @@ public abstract class PlayerManager {
 		});
 	}
 
-	@Nullable
-	public NbtCompound loadPlayerData(ServerPlayerEntity player) {
+	public Optional<NbtCompound> loadPlayerData(ServerPlayerEntity player) {
 		NbtCompound nbtCompound = this.server.getSaveProperties().getPlayerData();
-		NbtCompound nbtCompound2;
+		Optional<NbtCompound> optional;
 		if (this.server.isHost(player.getGameProfile()) && nbtCompound != null) {
-			nbtCompound2 = nbtCompound;
+			optional = Optional.of(nbtCompound);
 			player.readNbt(nbtCompound);
 			LOGGER.debug("loading single player");
 		} else {
-			nbtCompound2 = this.saveHandler.loadPlayerData(player);
+			optional = this.saveHandler.method_55789(player);
 		}
 
-		return nbtCompound2;
+		return optional;
 	}
 
 	protected void savePlayerData(ServerPlayerEntity player) {

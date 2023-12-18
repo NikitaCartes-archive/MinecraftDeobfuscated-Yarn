@@ -180,7 +180,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.renewButton = ButtonWidget.builder(EXPIRED_RENEW_TEXT, button -> this.onRenew(this.findServer())).width(100).build();
 		this.leaveButton = ButtonWidget.builder(LEAVE_TEXT, button -> this.leaveClicked(this.findServer())).width(100).build();
 		this.purchaseButton = ButtonWidget.builder(Text.translatable("mco.selectServer.purchase"), button -> this.showBuyRealmsScreen()).size(100, 20).build();
-		this.backButton = ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).width(100).build();
+		this.backButton = ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(100).build();
 		if (RealmsClient.ENVIRONMENT == RealmsClient.Environment.STAGE) {
 			this.addDrawableChild(
 				CyclingButtonWidget.onOffBuilder(Text.literal("Snapshot"), Text.literal("Release")).build(5, 5, 100, 20, Text.literal("Realm"), (button, snapshot) -> {
@@ -213,6 +213,11 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.realmSelectionList.setDimensions(this.width, this.height - this.layout.getFooterHeight() - this.layout.getHeaderHeight());
 			this.layout.refreshPositions();
 		}
+	}
+
+	@Override
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	private void updateLoadStatus() {

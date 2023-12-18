@@ -115,7 +115,7 @@ public class DebugCommand {
 					for (final CommandFunction<ServerCommandSource> commandFunction : collection) {
 						try {
 							ServerCommandSource serverCommandSource2 = serverCommandSource.withOutput(tracer).withMaxLevel(2);
-							Procedure<ServerCommandSource> procedure = commandFunction.withMacroReplaced(null, commandDispatcher, serverCommandSource2);
+							Procedure<ServerCommandSource> procedure = commandFunction.withMacroReplaced(null, commandDispatcher);
 							executionControl.enqueueAction((new CommandFunctionAction<ServerCommandSource>(procedure, ReturnValueConsumer.EMPTY, false) {
 								public void execute(ServerCommandSource serverCommandSource, CommandExecutionContext<ServerCommandSource> commandExecutionContext, Frame frame) {
 									printWriter.println(commandFunction.id());

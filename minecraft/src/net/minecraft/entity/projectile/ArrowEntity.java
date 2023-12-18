@@ -2,6 +2,7 @@ package net.minecraft.entity.projectile;
 
 import com.google.common.collect.Sets;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -19,7 +20,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 
 public class ArrowEntity extends PersistentProjectileEntity {
@@ -28,7 +30,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final byte PARTICLE_EFFECT_STATUS = 0;
 	private static final ItemStack DEFAULT_STACK = new ItemStack(Items.ARROW);
-	private Potion potion = Potions.EMPTY;
+	private RegistryEntry<Potion> potion = Potions.EMPTY;
 	private final Set<StatusEffectInstance> effects = Sets.<StatusEffectInstance>newHashSet();
 	private boolean colorSet;
 
@@ -74,7 +76,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 
 	private void initColor() {
 		this.colorSet = false;
-		if (this.potion == Potions.EMPTY && this.effects.isEmpty()) {
+		if (this.potion.method_55838(Potions.EMPTY) && this.effects.isEmpty()) {
 			this.dataTracker.set(COLOR, -1);
 		} else {
 			this.dataTracker.set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
@@ -136,8 +138,9 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		if (this.potion != Potions.EMPTY) {
-			nbt.putString("Potion", Registries.POTION.getId(this.potion).toString());
+		Optional<RegistryKey<Potion>> optional = this.potion.getKey();
+		if (optional.isPresent() && !this.potion.method_55838(Potions.EMPTY)) {
+			nbt.putString("Potion", ((RegistryKey)optional.get()).getValue().toString());
 		}
 
 		if (this.colorSet) {
@@ -178,7 +181,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 		super.onHit(target);
 		Entity entity = this.getEffectCause();
 
-		for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
+		for (StatusEffectInstance statusEffectInstance : this.potion.value().getEffects()) {
 			target.addStatusEffect(
 				new StatusEffectInstance(
 					statusEffectInstance.getEffectType(),
@@ -201,7 +204,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	@Override
 	protected ItemStack asItemStack() {
 		ItemStack itemStack = super.asItemStack();
-		if (this.effects.isEmpty() && this.potion == Potions.EMPTY) {
+		if (this.effects.isEmpty() && this.potion.method_55838(Potions.EMPTY)) {
 			return itemStack;
 		} else {
 			PotionUtil.setPotion(itemStack, this.potion);

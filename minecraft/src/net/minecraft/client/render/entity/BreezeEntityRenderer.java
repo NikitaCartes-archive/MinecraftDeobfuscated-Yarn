@@ -2,25 +2,46 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.BreezeEyesFeatureRenderer;
 import net.minecraft.client.render.entity.feature.BreezeWindFeatureRenderer;
 import net.minecraft.client.render.entity.model.BreezeEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BreezeEntityRenderer extends MobEntityRenderer<BreezeEntity, BreezeEntityModel<BreezeEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/breeze/breeze.png");
-	private static final Identifier WIND_TEXTURE = new Identifier("textures/entity/breeze/breeze_wind.png");
 
 	public BreezeEntityRenderer(EntityRendererFactory.Context context) {
-		super(context, new BreezeEntityModel<>(context.getPart(EntityModelLayers.BREEZE)), 0.8F);
-		this.addFeature(new BreezeWindFeatureRenderer(this, context.getModelLoader(), WIND_TEXTURE));
-		this.addFeature(new BreezeEyesFeatureRenderer(this, context.getModelLoader(), TEXTURE));
+		super(context, new BreezeEntityModel<>(context.getPart(EntityModelLayers.BREEZE)), 0.5F);
+		this.addFeature(new BreezeWindFeatureRenderer(this));
+		this.addFeature(new BreezeEyesFeatureRenderer(this));
+	}
+
+	public void render(BreezeEntity breezeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		BreezeEntityModel<BreezeEntity> breezeEntityModel = this.getModel();
+		method_55830(breezeEntityModel, breezeEntityModel.method_55819(), breezeEntityModel.method_55821());
+		super.render(breezeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public Identifier getTexture(BreezeEntity breezeEntity) {
 		return TEXTURE;
+	}
+
+	public static BreezeEntityModel<BreezeEntity> method_55830(BreezeEntityModel<BreezeEntity> breezeEntityModel, ModelPart... modelParts) {
+		breezeEntityModel.method_55819().visible = false;
+		breezeEntityModel.method_55820().visible = false;
+		breezeEntityModel.method_55821().visible = false;
+		breezeEntityModel.method_55822().visible = false;
+
+		for (ModelPart modelPart : modelParts) {
+			modelPart.visible = true;
+		}
+
+		return breezeEntityModel;
 	}
 }

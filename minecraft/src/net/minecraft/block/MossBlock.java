@@ -39,4 +39,9 @@ public class MossBlock extends Block implements Fertilizable {
 			.flatMap(key -> key.getEntry(UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL))
 			.ifPresent(entry -> ((ConfiguredFeature)entry.value()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up()));
 	}
+
+	@Override
+	public Fertilizable.class_9077 method_55770() {
+		return Fertilizable.class_9077.NEIGHBOR_SPREADER;
+	}
 }

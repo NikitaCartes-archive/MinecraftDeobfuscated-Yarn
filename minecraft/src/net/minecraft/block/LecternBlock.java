@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.entity.Entity;
@@ -267,16 +268,30 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if ((Boolean)state.get(HAS_BOOK)) {
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
+		if ((Boolean)blockState.get(HAS_BOOK)) {
+			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		} else if (itemStack.isIn(ItemTags.LECTERN_BOOKS)) {
+			return putBookIfAbsent(playerEntity, world, blockPos, blockState, itemStack)
+				? class_9062.method_55644(world.isClient)
+				: class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+		} else {
+			return itemStack.isEmpty() && hand == Hand.MAIN_HAND ? class_9062.SKIP_DEFAULT_BLOCK_INTERACTION : class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		}
+	}
+
+	@Override
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if ((Boolean)blockState.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				this.openScreen(world, pos, player);
+				this.openScreen(world, blockPos, playerEntity);
 			}
 
 			return ActionResult.success(world.isClient);
 		} else {
-			ItemStack itemStack = player.getStackInHand(hand);
-			return !itemStack.isEmpty() && !itemStack.isIn(ItemTags.LECTERN_BOOKS) ? ActionResult.CONSUME : ActionResult.PASS;
+			return ActionResult.CONSUME;
 		}
 	}
 

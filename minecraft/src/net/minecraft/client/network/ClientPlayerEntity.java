@@ -68,6 +68,7 @@ import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -872,13 +873,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Nullable
 	@Override
-	public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
-		if (type == StatusEffects.NAUSEA) {
+	public StatusEffectInstance removeStatusEffectInternal(RegistryEntry<StatusEffect> registryEntry) {
+		if (registryEntry.method_55838(StatusEffects.NAUSEA)) {
 			this.prevNauseaIntensity = 0.0F;
 			this.nauseaIntensity = 0.0F;
 		}
 
-		return super.removeStatusEffectInternal(type);
+		return super.removeStatusEffectInternal(registryEntry);
 	}
 
 	@Override

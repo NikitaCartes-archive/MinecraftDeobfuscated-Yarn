@@ -8,15 +8,18 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 
-public record Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid, @Nullable Entity entity) {
+public record Vibration(
+	RegistryEntry<GameEvent> gameEvent, float distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid, @Nullable Entity entity
+) {
 	public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.GAME_EVENT.getCodec().fieldOf("game_event").forGetter(Vibration::gameEvent),
+					Registries.GAME_EVENT.createEntryCodec().fieldOf("game_event").forGetter(Vibration::gameEvent),
 					Codec.floatRange(0.0F, Float.MAX_VALUE).fieldOf("distance").forGetter(Vibration::distance),
 					Vec3d.CODEC.fieldOf("pos").forGetter(Vibration::pos),
 					Uuids.INT_STREAM_CODEC.optionalFieldOf("source").forGetter(vibration -> Optional.ofNullable(vibration.uuid())),
@@ -28,11 +31,11 @@ public record Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullabl
 				)
 	);
 
-	public Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid) {
+	public Vibration(RegistryEntry<GameEvent> gameEvent, float distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid) {
 		this(gameEvent, distance, pos, uuid, projectileOwnerUuid, null);
 	}
 
-	public Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable Entity entity) {
+	public Vibration(RegistryEntry<GameEvent> gameEvent, float distance, Vec3d pos, @Nullable Entity entity) {
 		this(gameEvent, distance, pos, entity == null ? null : entity.getUuid(), getOwnerUuid(entity), entity);
 	}
 

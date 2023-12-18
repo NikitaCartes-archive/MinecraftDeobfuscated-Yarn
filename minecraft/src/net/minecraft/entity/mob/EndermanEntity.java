@@ -11,8 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -49,6 +47,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
@@ -68,7 +67,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
@@ -91,7 +89,6 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
 		super(entityType, world);
-		this.setStepHeight(1.0F);
 		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 	}
 
@@ -116,7 +113,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0);
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -227,16 +225,6 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			double e = vec3d.dotProduct(vec3d2);
 			return e > 1.0 - 0.025 / d ? player.canSee(this) : false;
 		}
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 2.55F;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - 0.09375F * scaleFactor, 0.0F);
 	}
 
 	@Override
@@ -401,9 +389,9 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	private boolean damageFromPotion(DamageSource source, PotionEntity potion, float amount) {
 		ItemStack itemStack = potion.getStack();
-		Potion potion2 = PotionUtil.getPotion(itemStack);
+		RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
 		List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-		boolean bl = potion2 == Potions.WATER && list.isEmpty();
+		boolean bl = registryEntry.method_55838(Potions.WATER) && list.isEmpty();
 		return bl ? super.damage(source, amount) : false;
 	}
 

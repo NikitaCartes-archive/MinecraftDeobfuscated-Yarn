@@ -6,6 +6,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -38,9 +39,17 @@ public abstract class PathAwareEntity extends MobEntity {
 	}
 
 	public boolean isPanicking() {
-		return this.brain.hasMemoryModule(MemoryModuleType.IS_PANICKING)
-			? this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_PANICKING).isPresent()
-			: this.goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof EscapeDangerGoal);
+		if (this.brain.hasMemoryModule(MemoryModuleType.IS_PANICKING)) {
+			return this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_PANICKING).isPresent();
+		} else {
+			for (PrioritizedGoal prioritizedGoal : this.goalSelector.getGoals()) {
+				if (prioritizedGoal.isRunning() && prioritizedGoal.getGoal() instanceof EscapeDangerGoal) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 	@Override

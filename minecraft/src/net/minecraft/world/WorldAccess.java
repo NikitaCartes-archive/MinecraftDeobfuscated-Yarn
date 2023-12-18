@@ -7,6 +7,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -103,17 +106,21 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	/**
 	 * Emits a game event.
 	 */
-	void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter);
+	void emitGameEvent(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter);
 
-	default void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
+	default void emitGameEvent(@Nullable Entity entity, RegistryEntry<GameEvent> event, Vec3d pos) {
 		this.emitGameEvent(event, pos, new GameEvent.Emitter(entity, null));
 	}
 
-	default void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
+	default void emitGameEvent(@Nullable Entity entity, RegistryEntry<GameEvent> event, BlockPos pos) {
 		this.emitGameEvent(event, pos, new GameEvent.Emitter(entity, null));
 	}
 
-	default void emitGameEvent(GameEvent event, BlockPos pos, GameEvent.Emitter emitter) {
+	default void emitGameEvent(RegistryEntry<GameEvent> event, BlockPos pos, GameEvent.Emitter emitter) {
 		this.emitGameEvent(event, Vec3d.ofCenter(pos), emitter);
+	}
+
+	default void method_55764(RegistryKey<GameEvent> registryKey, BlockPos blockPos, GameEvent.Emitter emitter) {
+		this.emitGameEvent(this.getRegistryManager().get(RegistryKeys.GAME_EVENT).entryOf(registryKey), blockPos, emitter);
 	}
 }

@@ -9,7 +9,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -41,11 +40,11 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (!player.getAbilities().allowModifyWorld) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if (!playerEntity.getAbilities().allowModifyWorld) {
 			return ActionResult.PASS;
 		} else {
-			world.setBlockState(pos, state.cycle(DELAY), Block.NOTIFY_ALL);
+			world.setBlockState(blockPos, blockState.cycle(DELAY), Block.NOTIFY_ALL);
 			return ActionResult.success(world.isClient);
 		}
 	}

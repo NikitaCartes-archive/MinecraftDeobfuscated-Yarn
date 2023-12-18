@@ -7,7 +7,6 @@ import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -46,7 +45,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -190,11 +188,6 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		if (!this.isBaby()) {
 			Hoglin.knockback(this, target);
 		}
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.09375F * scaleFactor, 0.0F);
 	}
 
 	@Override

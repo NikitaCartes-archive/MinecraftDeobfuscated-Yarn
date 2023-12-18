@@ -22,6 +22,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -40,6 +42,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -60,6 +63,7 @@ import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
@@ -124,7 +128,6 @@ import net.minecraft.world.entity.EntityLike;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.explosion.Explosion;
-import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 /**
@@ -320,7 +323,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	public double lastRenderX;
 	public double lastRenderY;
 	public double lastRenderZ;
-	private float stepHeight;
 	public boolean noClip;
 	protected final Random random = Random.create();
 	public int age;
@@ -373,7 +375,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	private int lastChimeAge;
 	private boolean hasVisualFire;
 	@Nullable
-	private BlockState blockStateAtPos = null;
+	private BlockState field_47742 = null;
 
 	public Entity(EntityType<?> type, World world) {
 		this.type = type;
@@ -393,7 +395,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		this.dataTracker.startTracking(FROZEN_TICKS, 0);
 		this.initDataTracker();
 		this.setPosition(0.0, 0.0, 0.0);
-		this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
+		this.standingEyeHeight = this.dimensions.eyeHeight();
 	}
 
 	/**
@@ -664,7 +666,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 
 	public void baseTick() {
 		this.getWorld().getProfiler().push("entityBaseTick");
-		this.blockStateAtPos = null;
+		this.field_47742 = null;
 		if (this.hasVehicle() && this.getVehicle().isRemoved()) {
 			this.stopRiding();
 		}
@@ -1358,7 +1360,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 * 
 	 * @param entity the entity that emitted the game event, or {@code null} if there is none
 	 */
-	public void emitGameEvent(GameEvent event, @Nullable Entity entity) {
+	public void emitGameEvent(RegistryEntry<GameEvent> event, @Nullable Entity entity) {
 		this.getWorld().emitGameEvent(entity, event, this.pos);
 	}
 
@@ -1367,7 +1369,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 * 
 	 * @see #emitGameEvent(GameEvent, Entity)
 	 */
-	public void emitGameEvent(GameEvent event) {
+	public void emitGameEvent(RegistryEntry<GameEvent> event) {
 		this.emitGameEvent(event, this);
 	}
 
@@ -1727,16 +1729,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 
 		float h = (float)MathHelper.floor(this.getY());
 
-		for (int i = 0; (float)i < 1.0F + this.dimensions.width * 20.0F; i++) {
-			double d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
-			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+		for (int i = 0; (float)i < 1.0F + this.dimensions.width() * 20.0F; i++) {
+			double d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width();
+			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width();
 			this.getWorld()
 				.addParticle(ParticleTypes.BUBBLE, this.getX() + d, (double)(h + 1.0F), this.getZ() + e, vec3d.x, vec3d.y - this.random.nextDouble() * 0.2F, vec3d.z);
 		}
 
-		for (int i = 0; (float)i < 1.0F + this.dimensions.width * 20.0F; i++) {
-			double d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
-			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+		for (int i = 0; (float)i < 1.0F + this.dimensions.width() * 20.0F; i++) {
+			double d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width();
+			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width();
 			this.getWorld().addParticle(ParticleTypes.SPLASH, this.getX() + d, (double)(h + 1.0F), this.getZ() + e, vec3d.x, vec3d.y, vec3d.z);
 		}
 
@@ -1780,8 +1782,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 			Vec3d vec3d = this.getVelocity();
 			BlockPos blockPos2 = this.getBlockPos();
-			double d = this.getX() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width;
-			double e = this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width;
+			double d = this.getX() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width();
+			double e = this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width();
 			if (blockPos2.getX() != blockPos.getX()) {
 				d = MathHelper.clamp(d, (double)blockPos.getX(), (double)blockPos.getX() + 1.0);
 			}
@@ -2464,7 +2466,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		if (this.noClip) {
 			return false;
 		} else {
-			float f = this.dimensions.width * 0.8F;
+			float f = this.dimensions.width() * 0.8F;
 			Box box = Box.of(this.getEyePos(), (double)f, 1.0E-6, (double)f);
 			return BlockPos.stream(box)
 				.anyMatch(
@@ -2531,28 +2533,30 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		}
 	}
 
-	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
-		Vec3d vec3d = this.getPassengerRidingPos(passenger);
-		positionUpdater.accept(passenger, vec3d.x, vec3d.y + (double)passenger.getRidingOffset(this), vec3d.z);
+	protected void updatePassengerPosition(Entity entity, Entity.PositionUpdater positionUpdater) {
+		Vec3d vec3d = this.getPassengerRidingPos(entity);
+		Vec3d vec3d2 = entity.method_55668(this);
+		positionUpdater.accept(entity, vec3d.x - vec3d2.x, vec3d.y - vec3d2.y, vec3d.z - vec3d2.z);
 	}
 
 	public void onPassengerLookAround(Entity passenger) {
 	}
 
-	public float getRidingOffset(Entity vehicle) {
-		return this.getUnscaledRidingOffset(vehicle);
-	}
-
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return 0.0F;
+	public Vec3d method_55668(Entity entity) {
+		return this.dimensions.attachments().method_55678(class_9064.VEHICLE, 0, this.yaw);
 	}
 
 	public Vec3d getPassengerRidingPos(Entity passenger) {
-		return new Vec3d(this.getPassengerAttachmentPos(passenger, this.dimensions, 1.0F).rotateY(-this.yaw * (float) (Math.PI / 180.0))).add(this.getPos());
+		return this.getPos().add(this.getPassengerAttachmentPos(passenger, this.dimensions, 1.0F));
 	}
 
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height, 0.0F);
+	protected Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return method_55665(this, passenger, dimensions.attachments());
+	}
+
+	protected static Vec3d method_55665(Entity entity, Entity entity2, class_9066 arg) {
+		int i = entity.getPassengerList().indexOf(entity2);
+		return arg.method_55679(class_9064.PASSENGER, i, entity.yaw);
 	}
 
 	/**
@@ -4243,7 +4247,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		EntityPose entityPose = this.getPose();
 		EntityDimensions entityDimensions = this.getDimensions(entityPose);
 		this.dimensions = entityDimensions;
-		this.standingEyeHeight = this.getEyeHeight(entityPose, entityDimensions);
+		this.standingEyeHeight = entityDimensions.eyeHeight();
 	}
 
 	/**
@@ -4255,22 +4259,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		EntityPose entityPose = this.getPose();
 		EntityDimensions entityDimensions2 = this.getDimensions(entityPose);
 		this.dimensions = entityDimensions2;
-		this.standingEyeHeight = this.getEyeHeight(entityPose, entityDimensions2);
+		this.standingEyeHeight = entityDimensions2.eyeHeight();
 		this.refreshPosition();
-		boolean bl = (double)entityDimensions2.width <= 4.0 && (double)entityDimensions2.height <= 4.0;
+		boolean bl = (double)entityDimensions2.width() <= 4.0 && (double)entityDimensions2.height() <= 4.0;
 		if (!this.getWorld().isClient
 			&& !this.firstUpdate
 			&& !this.noClip
 			&& bl
-			&& (entityDimensions2.width > entityDimensions.width || entityDimensions2.height > entityDimensions.height)
+			&& (entityDimensions2.width() > entityDimensions.width() || entityDimensions2.height() > entityDimensions.height())
 			&& !(this instanceof PlayerEntity)) {
-			Vec3d vec3d = this.getPos().add(0.0, (double)entityDimensions.height / 2.0, 0.0);
-			double d = (double)Math.max(0.0F, entityDimensions2.width - entityDimensions.width) + 1.0E-6;
-			double e = (double)Math.max(0.0F, entityDimensions2.height - entityDimensions.height) + 1.0E-6;
+			Vec3d vec3d = this.getPos().add(0.0, (double)entityDimensions.height() / 2.0, 0.0);
+			double d = (double)Math.max(0.0F, entityDimensions2.width() - entityDimensions.width()) + 1.0E-6;
+			double e = (double)Math.max(0.0F, entityDimensions2.height() - entityDimensions.height()) + 1.0E-6;
 			VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, d, e, d));
 			this.getWorld()
-				.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions2.width, (double)entityDimensions2.height, (double)entityDimensions2.width)
-				.ifPresent(pos -> this.setPosition(pos.add(0.0, (double)(-entityDimensions2.height) / 2.0, 0.0)));
+				.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions2.width(), (double)entityDimensions2.height(), (double)entityDimensions2.width())
+				.ifPresent(pos -> this.setPosition(pos.add(0.0, (double)(-entityDimensions2.height()) / 2.0, 0.0)));
 		}
 	}
 
@@ -4311,15 +4315,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		this.boundingBox = boundingBox;
 	}
 
-	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.85F;
-	}
-
 	/**
 	 * {@return the eye height for {@code pose}}
 	 */
-	public float getEyeHeight(EntityPose pose) {
-		return this.getEyeHeight(pose, this.getDimensions(pose));
+	public final float getEyeHeight(EntityPose pose) {
+		return this.getDimensions(pose).eyeHeight();
 	}
 
 	/**
@@ -4485,6 +4485,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 */
 	public boolean entityDataRequiresOperator() {
 		return false;
+	}
+
+	public void method_55666(ProjectileEntity projectileEntity) {
 	}
 
 	/**
@@ -4962,18 +4965,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 * {@return the width of the entity's current dimension}
 	 */
 	public final float getWidth() {
-		return this.dimensions.width;
+		return this.dimensions.width();
 	}
 
 	/**
 	 * {@return the height of the entity's current dimension}
 	 */
 	public final float getHeight() {
-		return this.dimensions.height;
-	}
-
-	public float getNameLabelHeight() {
-		return this.getHeight() + 0.5F;
+		return this.dimensions.height();
 	}
 
 	/**
@@ -5026,21 +5025,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		return this.blockPos;
 	}
 
-	/**
-	 * {@return the block state at the entity's position}
-	 * 
-	 * <p>The result is cached.
-	 * 
-	 * @see #getBlockPos
-	 * @see #getLandingBlockState
-	 * @see #getSteppingBlockState
-	 */
-	public BlockState getBlockStateAtPos() {
-		if (this.blockStateAtPos == null) {
-			this.blockStateAtPos = this.getWorld().getBlockState(this.getBlockPos());
+	public BlockState method_55667() {
+		if (this.field_47742 == null) {
+			this.field_47742 = this.getWorld().getBlockState(this.getBlockPos());
 		}
 
-		return this.blockStateAtPos;
+		return this.field_47742;
 	}
 
 	/**
@@ -5136,7 +5126,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 			int k = MathHelper.floor(z);
 			if (i != this.blockPos.getX() || j != this.blockPos.getY() || k != this.blockPos.getZ()) {
 				this.blockPos = new BlockPos(i, j, k);
-				this.blockStateAtPos = null;
+				this.field_47742 = null;
 				if (ChunkSectionPos.getSectionCoord(i) != this.chunkPos.x || ChunkSectionPos.getSectionCoord(k) != this.chunkPos.z) {
 					this.chunkPos = new ChunkPos(this.blockPos);
 				}
@@ -5270,11 +5260,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	}
 
 	public float getStepHeight() {
-		return this.stepHeight;
-	}
-
-	public void setStepHeight(float stepHeight) {
-		this.stepHeight = stepHeight;
+		return 0.0F;
 	}
 
 	/**

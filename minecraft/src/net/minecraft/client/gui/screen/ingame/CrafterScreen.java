@@ -93,7 +93,8 @@ public class CrafterScreen extends HandledScreen<CrafterScreenHandler> {
 		if (this.focusedSlot instanceof CrafterInputSlot
 			&& !this.handler.isSlotDisabled(this.focusedSlot.id)
 			&& this.handler.getCursorStack().isEmpty()
-			&& !this.focusedSlot.hasStack()) {
+			&& !this.focusedSlot.hasStack()
+			&& !this.player.isSpectator()) {
 			context.drawTooltip(this.textRenderer, TOGGLEABLE_SLOT_TEXT, mouseX, mouseY);
 		}
 	}

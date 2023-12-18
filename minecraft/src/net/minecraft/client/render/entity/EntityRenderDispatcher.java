@@ -34,7 +34,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
@@ -154,11 +153,14 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			}
 
 			matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
-			if (this.gameOptions.getEntityShadows().getValue() && this.renderShadows && entityRenderer.shadowRadius > 0.0F && !entity.isInvisible()) {
-				double g = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ());
-				float h = (float)((1.0 - g / 256.0) * (double)entityRenderer.shadowOpacity);
-				if (h > 0.0F) {
-					renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, Math.min(entityRenderer.shadowRadius, 32.0F));
+			if (this.gameOptions.getEntityShadows().getValue() && this.renderShadows && !entity.isInvisible()) {
+				float g = entityRenderer.method_55831(entity);
+				if (g > 0.0F) {
+					double h = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ());
+					float i = (float)((1.0 - h / 256.0) * (double)entityRenderer.shadowOpacity);
+					if (i > 0.0F) {
+						renderShadow(matrices, vertexConsumers, entity, i, tickDelta, this.world, Math.min(g, 32.0F));
+					}
 				}
 			}
 
@@ -167,8 +169,8 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			}
 
 			matrices.pop();
-		} catch (Throwable var24) {
-			CrashReport crashReport = CrashReport.create(var24, "Rendering entity in world");
+		} catch (Throwable var25) {
+			CrashReport crashReport = CrashReport.create(var25, "Rendering entity in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being rendered");
 			entity.populateCrashReport(crashReportSection);
 			CrashReportSection crashReportSection2 = crashReport.addElement("Renderer details");
@@ -302,21 +304,16 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	private static void renderShadow(
 		MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, float opacity, float tickDelta, WorldView world, float radius
 	) {
-		float f = radius;
-		if (entity instanceof MobEntity mobEntity && mobEntity.isBaby()) {
-			f = radius * 0.5F;
-		}
-
 		double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
 		double e = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
-		double g = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
-		float h = Math.min(opacity / 0.5F, f);
-		int i = MathHelper.floor(d - (double)f);
-		int j = MathHelper.floor(d + (double)f);
-		int k = MathHelper.floor(e - (double)h);
+		double f = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+		float g = Math.min(opacity / 0.5F, radius);
+		int i = MathHelper.floor(d - (double)radius);
+		int j = MathHelper.floor(d + (double)radius);
+		int k = MathHelper.floor(e - (double)g);
 		int l = MathHelper.floor(e);
-		int m = MathHelper.floor(g - (double)f);
-		int n = MathHelper.floor(g + (double)f);
+		int m = MathHelper.floor(f - (double)radius);
+		int n = MathHelper.floor(f + (double)radius);
 		MatrixStack.Entry entry = matrices.peek();
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(SHADOW_LAYER);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -328,8 +325,8 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 				for (int q = k; q <= l; q++) {
 					mutable.setY(q);
-					float r = opacity - (float)(e - (double)mutable.getY()) * 0.5F;
-					renderShadowPart(entry, vertexConsumer, chunk, world, mutable, d, e, g, f, r);
+					float h = opacity - (float)(e - (double)mutable.getY()) * 0.5F;
+					renderShadowPart(entry, vertexConsumer, chunk, world, mutable, d, e, f, radius, h);
 				}
 			}
 		}

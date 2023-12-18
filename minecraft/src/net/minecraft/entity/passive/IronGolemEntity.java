@@ -66,7 +66,6 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	public IronGolemEntity(EntityType<? extends IronGolemEntity> entityType, World world) {
 		super(entityType, world);
-		this.setStepHeight(1.0F);
 	}
 
 	@Override
@@ -97,7 +96,8 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 100.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
 			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 15.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 15.0)
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 
 	@Override

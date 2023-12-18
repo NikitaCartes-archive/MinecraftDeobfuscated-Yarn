@@ -1,7 +1,11 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
+import net.minecraft.class_9068;
+import net.minecraft.class_9069;
+import net.minecraft.class_9071;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.AxolotlBrain;
 import net.minecraft.entity.passive.CamelBrain;
 import net.minecraft.entity.passive.FrogBrain;
@@ -24,6 +28,9 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<VillagerBabiesSensor> VILLAGER_BABIES = register("villager_babies", VillagerBabiesSensor::new);
 	public static final SensorType<SecondaryPointsOfInterestSensor> SECONDARY_POIS = register("secondary_pois", SecondaryPointsOfInterestSensor::new);
 	public static final SensorType<GolemLastSeenSensor> GOLEM_DETECTED = register("golem_detected", GolemLastSeenSensor::new);
+	public static final SensorType<class_9068<class_9069>> ARMADILLO_SCARE_DETECTED = register(
+		"armadillo_scare_detected", () -> new class_9068(5, class_9069::method_55721, class_9069::method_55717, MemoryModuleType.DANGER_DETECTED_RECENTLY, 60)
+	);
 	public static final SensorType<PiglinSpecificSensor> PIGLIN_SPECIFIC_SENSOR = register("piglin_specific_sensor", PiglinSpecificSensor::new);
 	public static final SensorType<PiglinBruteSpecificSensor> PIGLIN_BRUTE_SPECIFIC_SENSOR = register(
 		"piglin_brute_specific_sensor", PiglinBruteSpecificSensor::new
@@ -37,6 +44,9 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<TemptationsSensor> GOAT_TEMPTATIONS = register("goat_temptations", () -> new TemptationsSensor(GoatBrain.getTemptItems()));
 	public static final SensorType<TemptationsSensor> FROG_TEMPTATIONS = register("frog_temptations", () -> new TemptationsSensor(FrogBrain.getTemptItems()));
 	public static final SensorType<TemptationsSensor> CAMEL_TEMPTATIONS = register("camel_temptations", () -> new TemptationsSensor(CamelBrain.getTemptItems()));
+	public static final SensorType<TemptationsSensor> ARMADILLO_TEMPTATIONS = register(
+		"armadillo_temptations", () -> new TemptationsSensor(class_9071.method_55735())
+	);
 	public static final SensorType<FrogAttackablesSensor> FROG_ATTACKABLES = register("frog_attackables", FrogAttackablesSensor::new);
 	public static final SensorType<IsInWaterSensor> IS_IN_WATER = register("is_in_water", IsInWaterSensor::new);
 	public static final SensorType<WardenAttackablesSensor> WARDEN_ENTITY_SENSOR = register("warden_entity_sensor", WardenAttackablesSensor::new);

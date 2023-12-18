@@ -8,11 +8,8 @@ class AbsorptionStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		super.applyUpdateEffect(entity, amplifier);
-		if (entity.getAbsorptionAmount() <= 0.0F && !entity.getWorld().isClient) {
-			entity.removeStatusEffect(this);
-		}
+	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+		return entity.getAbsorptionAmount() > 0.0F || entity.getWorld().isClient;
 	}
 
 	@Override

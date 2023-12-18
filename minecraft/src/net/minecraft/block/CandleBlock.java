@@ -7,16 +7,17 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
 import java.util.function.ToIntFunction;
+import net.minecraft.class_9062;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -68,12 +69,14 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (player.getAbilities().allowModifyWorld && player.getStackInHand(hand).isEmpty() && (Boolean)state.get(LIT)) {
-			extinguish(player, state, world, pos);
-			return ActionResult.success(world.isClient);
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
+		if (itemStack.isEmpty() && playerEntity.getAbilities().allowModifyWorld && (Boolean)blockState.get(LIT)) {
+			extinguish(playerEntity, blockState, world, blockPos);
+			return class_9062.method_55644(world.isClient);
 		} else {
-			return ActionResult.PASS;
+			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 

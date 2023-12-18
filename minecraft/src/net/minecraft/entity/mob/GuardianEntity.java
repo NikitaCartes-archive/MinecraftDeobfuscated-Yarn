@@ -4,9 +4,7 @@ import java.util.EnumSet;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -46,7 +44,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import org.joml.Vector3f;
 
 public class GuardianEntity extends HostileEntity {
 	protected static final int WARMUP_TIME = 80;
@@ -186,11 +183,6 @@ public class GuardianEntity extends HostileEntity {
 	@Override
 	protected Entity.MoveEffect getMoveEffect() {
 		return Entity.MoveEffect.EVENTS;
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.5F;
 	}
 
 	@Override
@@ -363,11 +355,6 @@ public class GuardianEntity extends HostileEntity {
 		} else {
 			super.travel(movementInput);
 		}
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.125F * scaleFactor, 0.0F);
 	}
 
 	static class FireBeamGoal extends Goal {

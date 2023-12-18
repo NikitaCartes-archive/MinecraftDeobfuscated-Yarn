@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
+import net.minecraft.class_9062;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -36,9 +37,9 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 	protected static final VoxelShape CAKE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0);
 	protected static final VoxelShape CANDLE_SHAPE = Block.createCuboidShape(7.0, 8.0, 7.0, 9.0, 14.0, 9.0);
 	protected static final VoxelShape SHAPE = VoxelShapes.union(CAKE_SHAPE, CANDLE_SHAPE);
-	private static final Map<Block, CandleCakeBlock> CANDLES_TO_CANDLE_CAKES = Maps.<Block, CandleCakeBlock>newHashMap();
+	private static final Map<CandleBlock, CandleCakeBlock> CANDLES_TO_CANDLE_CAKES = Maps.<CandleBlock, CandleCakeBlock>newHashMap();
 	private static final Iterable<Vec3d> PARTICLE_OFFSETS = ImmutableList.<Vec3d>of(new Vec3d(0.5, 1.0, 0.5));
-	private final Block candle;
+	private final CandleBlock candle;
 
 	@Override
 	public MapCodec<CandleCakeBlock> getCodec() {
@@ -48,8 +49,12 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 	protected CandleCakeBlock(Block candle, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(LIT, Boolean.valueOf(false)));
-		CANDLES_TO_CANDLE_CAKES.put(candle, this);
-		this.candle = candle;
+		if (candle instanceof CandleBlock candleBlock) {
+			CANDLES_TO_CANDLE_CAKES.put(candleBlock, this);
+			this.candle = candleBlock;
+		} else {
+			throw new IllegalArgumentException("Expected block to be of " + CandleBlock.class + " was " + candle.getClass());
+		}
 	}
 
 	@Override
@@ -63,21 +68,27 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getStackInHand(hand);
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
 		if (itemStack.isOf(Items.FLINT_AND_STEEL) || itemStack.isOf(Items.FIRE_CHARGE)) {
-			return ActionResult.PASS;
-		} else if (isHittingCandle(hit) && player.getStackInHand(hand).isEmpty() && (Boolean)state.get(LIT)) {
-			extinguish(player, state, world, pos);
-			return ActionResult.success(world.isClient);
+			return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+		} else if (isHittingCandle(blockHitResult) && itemStack.isEmpty() && (Boolean)blockState.get(LIT)) {
+			extinguish(playerEntity, blockState, world, blockPos);
+			return class_9062.method_55644(world.isClient);
 		} else {
-			ActionResult actionResult = CakeBlock.tryEat(world, pos, Blocks.CAKE.getDefaultState(), player);
-			if (actionResult.isAccepted()) {
-				dropStacks(state, world, pos);
-			}
-
-			return actionResult;
+			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
+	}
+
+	@Override
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		ActionResult actionResult = CakeBlock.tryEat(world, blockPos, Blocks.CAKE.getDefaultState(), playerEntity);
+		if (actionResult.isAccepted()) {
+			dropStacks(blockState, world, blockPos);
+		}
+
+		return actionResult;
 	}
 
 	private static boolean isHittingCandle(BlockHitResult hitResult) {
@@ -123,8 +134,8 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 		return false;
 	}
 
-	public static BlockState getCandleCakeFromCandle(Block candle) {
-		return ((CandleCakeBlock)CANDLES_TO_CANDLE_CAKES.get(candle)).getDefaultState();
+	public static BlockState getCandleCakeFromCandle(CandleBlock candleBlock) {
+		return ((CandleCakeBlock)CANDLES_TO_CANDLE_CAKES.get(candleBlock)).getDefaultState();
 	}
 
 	public static boolean canBeLit(BlockState state) {

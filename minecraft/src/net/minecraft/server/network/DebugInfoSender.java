@@ -30,6 +30,7 @@ import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.custom.DebugGameTestAddMarkerCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugGameTestClearCustomPayload;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.NameGenerator;
@@ -98,7 +99,7 @@ public class DebugInfoSender {
 	public static void sendBreezeDebugData(BreezeEntity breeze) {
 	}
 
-	public static void sendGameEvent(World world, GameEvent event, Vec3d pos) {
+	public static void sendGameEvent(World world, RegistryEntry<GameEvent> event, Vec3d pos) {
 	}
 
 	public static void sendGameEventListener(World world, GameEventListener eventListener) {

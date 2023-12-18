@@ -185,7 +185,6 @@ public class ServerPlayNetworkHandler
 	PlayerAssociatedNetworkHandler,
 	TickablePacketListener {
 	static final Logger LOGGER = LogUtils.getLogger();
-	public static final double MAX_BREAK_SQUARED_DISTANCE = MathHelper.square(6.0);
 	private static final int DEFAULT_SEQUENCE = -1;
 	private static final int MAX_PENDING_ACKNOWLEDGMENTS = 4096;
 	private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
@@ -624,7 +623,7 @@ public class ServerPlayNetworkHandler
 				return;
 			}
 
-			beaconScreenHandler.setEffects(packet.getPrimaryEffectId(), packet.getSecondaryEffectId());
+			beaconScreenHandler.setEffects(packet.primaryEffectId(), packet.secondaryEffectId());
 		}
 	}
 
@@ -1053,18 +1052,15 @@ public class ServerPlayNetworkHandler
 			BlockHitResult blockHitResult = packet.getBlockHitResult();
 			Vec3d vec3d = blockHitResult.getPos();
 			BlockPos blockPos = blockHitResult.getBlockPos();
-			Vec3d vec3d2 = Vec3d.ofCenter(blockPos);
-			if (!(this.player.getEyePos().squaredDistanceTo(vec3d2) > MAX_BREAK_SQUARED_DISTANCE)) {
-				Vec3d vec3d3 = vec3d.subtract(vec3d2);
+			if (this.player.method_55632(blockPos)) {
+				Vec3d vec3d2 = vec3d.subtract(Vec3d.ofCenter(blockPos));
 				double d = 1.0000001;
-				if (Math.abs(vec3d3.getX()) < 1.0000001 && Math.abs(vec3d3.getY()) < 1.0000001 && Math.abs(vec3d3.getZ()) < 1.0000001) {
+				if (Math.abs(vec3d2.getX()) < 1.0000001 && Math.abs(vec3d2.getY()) < 1.0000001 && Math.abs(vec3d2.getZ()) < 1.0000001) {
 					Direction direction = blockHitResult.getSide();
 					this.player.updateLastActionTime();
 					int i = this.player.getWorld().getTopY();
 					if (blockPos.getY() < i) {
-						if (this.requestedTeleportPos == null
-							&& this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0
-							&& serverWorld.canPlayerModifyAt(this.player, blockPos)) {
+						if (this.requestedTeleportPos == null && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
 							ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
 							if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
 								Text text = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
@@ -1451,7 +1447,7 @@ public class ServerPlayNetworkHandler
 			}
 
 			Box box = entity.getBoundingBox();
-			if (box.squaredMagnitude(this.player.getEyePos()) < MAX_BREAK_SQUARED_DISTANCE) {
+			if (this.player.method_55631(box)) {
 				packet.handle(
 					new PlayerInteractEntityC2SPacket.Handler() {
 						private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {

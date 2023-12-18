@@ -36,7 +36,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 
 	public ItemPredicateArgumentType.ItemStackPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		Either<ItemStringReader.ItemResult, ItemStringReader.TagResult> either = ItemStringReader.itemOrTag(this.registryWrapper, stringReader);
-		return either.map(item -> getItemStackPredicate(item2 -> item2 == item.item(), item.nbt()), tag -> getItemStackPredicate(tag.tag()::contains, tag.nbt()));
+		return either.map(item -> getItemStackPredicate(item2 -> item2.equals(item.item()), item.nbt()), tag -> getItemStackPredicate(tag.tag()::contains, tag.nbt()));
 	}
 
 	public static Predicate<ItemStack> getItemStackPredicate(CommandContext<ServerCommandSource> context, String name) {

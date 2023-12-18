@@ -842,7 +842,9 @@ public class Items {
 	public static final Item STRUCTURE_BLOCK = register(new OperatorOnlyBlockItem(Blocks.STRUCTURE_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item JIGSAW = register(new OperatorOnlyBlockItem(Blocks.JIGSAW, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item TURTLE_HELMET = register("turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings()));
-	public static final Item SCUTE = register("scute", new Item(new Item.Settings()));
+	public static final Item TURTLE_SCUTE = register("turtle_scute", new Item(new Item.Settings()));
+	public static final Item ARMADILLO_SCUTE = register("armadillo_scute", new Item(new Item.Settings()));
+	public static final Item WOLF_ARMOR = register("wolf_armor", new HorseArmorItem(11, HorseArmorItem.class_9076.CANINE, null, new Item.Settings().maxCount(1)));
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64)));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().food(FoodComponents.APPLE)));
 	public static final Item BOW = register("bow", new BowItem(new Item.Settings().maxDamage(384)));
@@ -1111,6 +1113,7 @@ public class Items {
 	public static final Item CAULDRON = register(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
 	public static final Item ENDER_EYE = register("ender_eye", new EnderEyeItem(new Item.Settings()));
 	public static final Item GLISTERING_MELON_SLICE = register("glistering_melon_slice", new Item(new Item.Settings()));
+	public static final Item ARMADILLO_SPAWN_EGG = register("armadillo_spawn_egg", new SpawnEggItem(EntityType.ARMADILLO, 10909557, 7555919, new Item.Settings()));
 	public static final Item ALLAY_SPAWN_EGG = register("allay_spawn_egg", new SpawnEggItem(EntityType.ALLAY, 56063, 44543, new Item.Settings()));
 	public static final Item AXOLOTL_SPAWN_EGG = register("axolotl_spawn_egg", new SpawnEggItem(EntityType.AXOLOTL, 16499171, 10890612, new Item.Settings()));
 	public static final Item BAT_SPAWN_EGG = register("bat_spawn_egg", new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings()));
@@ -1275,10 +1278,18 @@ public class Items {
 	public static final Item RABBIT_FOOT = register("rabbit_foot", new Item(new Item.Settings()));
 	public static final Item RABBIT_HIDE = register("rabbit_hide", new Item(new Item.Settings()));
 	public static final Item ARMOR_STAND = register("armor_stand", new ArmorStandItem(new Item.Settings().maxCount(16)));
-	public static final Item IRON_HORSE_ARMOR = register("iron_horse_armor", new HorseArmorItem(5, "iron", new Item.Settings().maxCount(1)));
-	public static final Item GOLDEN_HORSE_ARMOR = register("golden_horse_armor", new HorseArmorItem(7, "gold", new Item.Settings().maxCount(1)));
-	public static final Item DIAMOND_HORSE_ARMOR = register("diamond_horse_armor", new HorseArmorItem(11, "diamond", new Item.Settings().maxCount(1)));
-	public static final Item LEATHER_HORSE_ARMOR = register("leather_horse_armor", new DyeableHorseArmorItem(3, "leather", new Item.Settings().maxCount(1)));
+	public static final Item IRON_HORSE_ARMOR = register(
+		"iron_horse_armor", new HorseArmorItem(5, HorseArmorItem.class_9076.EQUESTRIAN, "iron", new Item.Settings().maxCount(1))
+	);
+	public static final Item GOLDEN_HORSE_ARMOR = register(
+		"golden_horse_armor", new HorseArmorItem(7, HorseArmorItem.class_9076.EQUESTRIAN, "gold", new Item.Settings().maxCount(1))
+	);
+	public static final Item DIAMOND_HORSE_ARMOR = register(
+		"diamond_horse_armor", new HorseArmorItem(11, HorseArmorItem.class_9076.EQUESTRIAN, "diamond", new Item.Settings().maxCount(1))
+	);
+	public static final Item LEATHER_HORSE_ARMOR = register(
+		"leather_horse_armor", new DyeableHorseArmorItem(3, HorseArmorItem.class_9076.EQUESTRIAN, "leather", new Item.Settings().maxCount(1))
+	);
 	public static final Item LEAD = register("lead", new LeadItem(new Item.Settings()));
 	public static final Item NAME_TAG = register("name_tag", new NameTagItem(new Item.Settings()));
 	public static final Item COMMAND_BLOCK_MINECART = register(

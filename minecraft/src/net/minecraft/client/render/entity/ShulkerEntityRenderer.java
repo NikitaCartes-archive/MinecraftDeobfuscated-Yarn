@@ -30,7 +30,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	public Vec3d getPositionOffset(ShulkerEntity shulkerEntity, float f) {
-		return (Vec3d)shulkerEntity.getRenderPositionOffset(f).orElse(super.getPositionOffset(shulkerEntity, f));
+		return ((Vec3d)shulkerEntity.getRenderPositionOffset(f).orElse(super.getPositionOffset(shulkerEntity, f))).multiply((double)shulkerEntity.method_55693());
 	}
 
 	public boolean shouldRender(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {

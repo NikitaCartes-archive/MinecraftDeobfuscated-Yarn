@@ -43,6 +43,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 	@Override
 	public void generate() {
 		this.register(EntityType.ALLAY, LootTable.builder());
+		this.register(EntityType.ARMADILLO, LootTable.builder());
 		this.register(EntityType.ARMOR_STAND, LootTable.builder());
 		this.register(EntityType.AXOLOTL, LootTable.builder());
 		this.register(EntityType.BAT, LootTable.builder());

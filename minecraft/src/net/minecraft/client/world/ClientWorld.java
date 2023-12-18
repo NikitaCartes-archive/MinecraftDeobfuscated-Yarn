@@ -106,7 +106,6 @@ public class ClientWorld extends World {
 	private final TickManager tickManager;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
-	private Scoreboard scoreboard = new Scoreboard();
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
 	private static final long field_32640 = 16777215L;
 	private int lightningTicksLeft;
@@ -526,10 +525,6 @@ public class ClientWorld extends World {
 		return this.tickManager;
 	}
 
-	public void setScoreboard(Scoreboard scoreboard) {
-		this.scoreboard = scoreboard;
-	}
-
 	@Override
 	public QueryableTickScheduler<Block> getBlockTickScheduler() {
 		return EmptyTickSchedulers.getClientTickScheduler();
@@ -565,7 +560,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public Scoreboard getScoreboard() {
-		return this.scoreboard;
+		return this.networkHandler.method_55823();
 	}
 
 	@Override
@@ -806,7 +801,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter) {
+	public void emitGameEvent(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter) {
 	}
 
 	public Map<String, MapState> getMapStates() {

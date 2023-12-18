@@ -586,6 +586,18 @@ public class PlayerInventory implements Inventory, Nameable {
 		return false;
 	}
 
+	public boolean method_55753(Predicate<ItemStack> predicate) {
+		for (List<ItemStack> list : this.combinedInventory) {
+			for (ItemStack itemStack : list) {
+				if (predicate.test(itemStack)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public void clone(PlayerInventory other) {
 		for (int i = 0; i < this.size(); i++) {
 			this.setStack(i, other.getStack(i));

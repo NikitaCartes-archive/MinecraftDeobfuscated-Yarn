@@ -96,7 +96,6 @@ public class StatusEffectFix extends DataFix {
 		effectDynamic = renameKey(effectDynamic, "Duration", "duration");
 		effectDynamic = renameKey(effectDynamic, "ShowParticles", "show_particles");
 		effectDynamic = renameKey(effectDynamic, "ShowIcon", "show_icon");
-		effectDynamic = renameKey(effectDynamic, "FactorCalculationData", "factor_calculation_data");
 		Optional<Dynamic<T>> optional = effectDynamic.get("HiddenEffect").result().map(StatusEffectFix::fixEffect);
 		return renameKey(effectDynamic, "HiddenEffect", "hidden_effect", optional);
 	}

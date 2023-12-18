@@ -60,12 +60,9 @@ public class SleepingChatScreen extends ChatScreen {
 		} else if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 			return super.keyPressed(keyCode, scanCode, modifiers);
 		} else {
-			if (this.sendMessage(this.chatField.getText(), true)) {
-				this.client.setScreen(null);
-				this.chatField.setText("");
-				this.client.inGameHud.getChatHud().resetScroll();
-			}
-
+			this.sendMessage(this.chatField.getText(), true);
+			this.chatField.setText("");
+			this.client.inGameHud.getChatHud().resetScroll();
 			return true;
 		}
 	}

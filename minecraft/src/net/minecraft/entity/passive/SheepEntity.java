@@ -7,10 +7,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -62,7 +59,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class SheepEntity extends AnimalEntity implements Shearable {
 	private static final int MAX_GRASS_TIMER = 40;
@@ -374,15 +370,5 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		recipeInputInventory.setStack(0, new ItemStack(DyeItem.byColor(firstColor)));
 		recipeInputInventory.setStack(1, new ItemStack(DyeItem.byColor(secondColor)));
 		return recipeInputInventory;
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.95F * dimensions.height;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - 0.0625F * scaleFactor, 0.0F);
 	}
 }

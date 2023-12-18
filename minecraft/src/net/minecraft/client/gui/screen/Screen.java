@@ -608,7 +608,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	protected void setTooltip(Text tooltip) {
+	public void setTooltip(Text tooltip) {
 		this.setTooltip(Tooltip.wrapLines(this.client, tooltip));
 	}
 

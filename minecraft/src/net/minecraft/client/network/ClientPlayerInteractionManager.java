@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9062;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.OperatorBlock;
@@ -254,10 +255,6 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public float getReachDistance() {
-		return PlayerEntity.getReachDistance(this.gameMode.isCreative());
-	}
-
 	public void tick() {
 		this.syncSelectedSlot();
 		if (this.networkHandler.getConnection().isOpen()) {
@@ -308,9 +305,16 @@ public class ClientPlayerInteractionManager {
 					return ActionResult.FAIL;
 				}
 
-				ActionResult actionResult = blockState.onUse(this.client.world, player, hand, hitResult);
-				if (actionResult.isAccepted()) {
-					return actionResult;
+				class_9062 lv = blockState.method_55780(player.getStackInHand(hand), this.client.world, player, hand, hitResult);
+				if (lv.method_55643()) {
+					return lv.method_55645();
+				}
+
+				if (lv == class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
+					ActionResult actionResult = blockState.method_55781(this.client.world, player, hitResult);
+					if (actionResult.isAccepted()) {
+						return actionResult;
+					}
 				}
 			}
 
@@ -458,10 +462,6 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public boolean hasCreativeInventory() {
-		return this.gameMode.isCreative();
-	}
-
-	public boolean hasExtendedReach() {
 		return this.gameMode.isCreative();
 	}
 

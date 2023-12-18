@@ -6,8 +6,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -248,11 +246,6 @@ public class BatEntity extends AmbientEntity {
 		int i = localDate.get(ChronoField.DAY_OF_MONTH);
 		int j = localDate.get(ChronoField.MONTH_OF_YEAR);
 		return j == 10 && i >= 20 || j == 11 && i <= 3;
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height / 2.0F;
 	}
 
 	private void updateAnimations() {

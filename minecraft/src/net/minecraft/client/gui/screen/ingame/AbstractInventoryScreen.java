@@ -13,6 +13,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -98,8 +99,8 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 		int i = this.y;
 
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
-			StatusEffect statusEffect = statusEffectInstance.getEffectType();
-			Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
+			RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
+			Sprite sprite = statusEffectSpriteManager.getSprite(registryEntry);
 			context.drawSprite(x + (wide ? 6 : 7), i + 7, 0, 18, 18, sprite);
 			i += height;
 		}
@@ -118,7 +119,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 	}
 
 	private Text getStatusEffectDescription(StatusEffectInstance statusEffect) {
-		MutableText mutableText = statusEffect.getEffectType().getName().copy();
+		MutableText mutableText = statusEffect.getEffectType().value().getName().copy();
 		if (statusEffect.getAmplifier() >= 1 && statusEffect.getAmplifier() <= 9) {
 			mutableText.append(ScreenTexts.SPACE).append(Text.translatable("enchantment.level." + (statusEffect.getAmplifier() + 1)));
 		}

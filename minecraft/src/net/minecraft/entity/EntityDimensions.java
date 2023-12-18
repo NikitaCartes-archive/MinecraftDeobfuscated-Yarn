@@ -1,17 +1,16 @@
 package net.minecraft.entity;
 
+import net.minecraft.class_9066;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-public class EntityDimensions {
-	public final float width;
-	public final float height;
-	public final boolean fixed;
+public record EntityDimensions(float width, float height, float eyeHeight, class_9066 attachments, boolean fixed) {
+	private EntityDimensions(float width, float height, boolean fixed) {
+		this(width, height, method_55686(height), class_9066.field_47751, fixed);
+	}
 
-	public EntityDimensions(float width, float height, boolean fixed) {
-		this.width = width;
-		this.height = height;
-		this.fixed = fixed;
+	private static float method_55686(float f) {
+		return f * 0.85F;
 	}
 
 	public Box getBoxAt(Vec3d pos) {
@@ -29,7 +28,11 @@ public class EntityDimensions {
 	}
 
 	public EntityDimensions scaled(float widthRatio, float heightRatio) {
-		return !this.fixed && (widthRatio != 1.0F || heightRatio != 1.0F) ? changing(this.width * widthRatio, this.height * heightRatio) : this;
+		return !this.fixed && (widthRatio != 1.0F || heightRatio != 1.0F)
+			? new EntityDimensions(
+				this.width * widthRatio, this.height * heightRatio, this.eyeHeight * heightRatio, this.attachments.method_55674(widthRatio, heightRatio, widthRatio), false
+			)
+			: this;
 	}
 
 	public static EntityDimensions changing(float width, float height) {
@@ -40,7 +43,11 @@ public class EntityDimensions {
 		return new EntityDimensions(width, height, true);
 	}
 
-	public String toString() {
-		return "EntityDimensions w=" + this.width + ", h=" + this.height + ", fixed=" + this.fixed;
+	public EntityDimensions method_55685(float f) {
+		return new EntityDimensions(this.width, this.height, f, this.attachments, this.fixed);
+	}
+
+	public EntityDimensions method_55684(class_9066.class_9067 arg) {
+		return new EntityDimensions(this.width, this.height, this.eyeHeight, arg.method_55680(this.width, this.height), this.fixed);
 	}
 }

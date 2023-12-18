@@ -372,16 +372,6 @@ public class WorldEvents {
 	 */
 	public static final int SPAWNER_SPAWNS_MOB = 2004;
 	/**
-	 * A plant is fertilized with bone meal or by a bee, or a turtle egg is placed.
-	 * <br>Spawns happy villager particles.
-	 * <p>Called by {@link net.minecraft.entity.passive.BeeEntity.GrowCropsGoal#tick() BeeEntity.GrowCropsGoal#tick},
-	 * {@link net.minecraft.item.BoneMealItem#useOnBlock(net.minecraft.item.ItemUsageContext) BoneMealItem#useOnBlock},
-	 * {@link net.minecraft.entity.ai.brain.task.BoneMealTask#keepRunning(net.minecraft.server.world.ServerWorld, net.minecraft.entity.passive.VillagerEntity, long) BoneMealTask#keepRunning},
-	 * {@link net.minecraft.block.dispenser.DispenserBehavior DispenserBehavior},
-	 * and {@link net.minecraft.block.TurtleEggBlock#onBlockAdded(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, boolean) TurtleEggBlock#onBlockAdded}
-	 */
-	public static final int PLANT_FERTILIZED = 2005;
-	/**
 	 * A dragon breath cloud spawns.
 	 * <br>Plays the dragon fireball explode sound event and spawns dragon breath particles.
 	 * <p>Called by {@link net.minecraft.entity.projectile.DragonFireballEntity#onCollision(net.minecraft.util.hit.HitResult) DragonFireballEntity#onCollision}
@@ -414,6 +404,8 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.CrafterBlock#transferOrSpawnStack(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.entity.CrafterBlockEntity, net.minecraft.item.ItemStack, net.minecraft.block.BlockState) CrafterBlock#transferOrSpawnStack}
 	 */
 	public static final int CRAFTER_SHOOTS = 2010;
+	public static final int field_47837 = 2011;
+	public static final int field_47838 = 2012;
 	/**
 	 * An end gateway spawns.
 	 * <br>Plays the end gateway spawn sound event and spawns an explosion emitter particle.

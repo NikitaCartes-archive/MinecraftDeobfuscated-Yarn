@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.class_9062;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -57,35 +58,38 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getStackInHand(hand);
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
 		Item item = itemStack.getItem();
-		if (itemStack.isIn(ItemTags.CANDLES) && (Integer)state.get(BITES) == 0) {
-			Block block = Block.getBlockFromItem(item);
-			if (block instanceof CandleBlock) {
-				if (!player.isCreative()) {
-					itemStack.decrement(1);
-				}
-
-				world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				world.setBlockState(pos, CandleCakeBlock.getCandleCakeFromCandle(block));
-				world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-				player.incrementStat(Stats.USED.getOrCreateStat(item));
-				return ActionResult.SUCCESS;
+		if (itemStack.isIn(ItemTags.CANDLES) && (Integer)blockState.get(BITES) == 0 && Block.getBlockFromItem(item) instanceof CandleBlock candleBlock) {
+			if (!playerEntity.isCreative()) {
+				itemStack.decrement(1);
 			}
+
+			world.playSound(null, blockPos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.setBlockState(blockPos, CandleCakeBlock.getCandleCakeFromCandle(candleBlock));
+			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+			playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
+			return class_9062.SUCCESS;
+		} else {
+			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
+	}
 
+	@Override
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
 		if (world.isClient) {
-			if (tryEat(world, pos, state, player).isAccepted()) {
+			if (tryEat(world, blockPos, blockState, playerEntity).isAccepted()) {
 				return ActionResult.SUCCESS;
 			}
 
-			if (itemStack.isEmpty()) {
+			if (playerEntity.getStackInHand(Hand.MAIN_HAND).isEmpty()) {
 				return ActionResult.CONSUME;
 			}
 		}
 
-		return tryEat(world, pos, state, player);
+		return tryEat(world, blockPos, blockState, playerEntity);
 	}
 
 	protected static ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {

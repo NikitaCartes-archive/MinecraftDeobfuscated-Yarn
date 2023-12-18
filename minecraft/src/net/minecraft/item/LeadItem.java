@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -35,30 +36,27 @@ public class LeadItem extends Item {
 
 	public static ActionResult attachHeldMobsToBlock(PlayerEntity player, World world, BlockPos pos) {
 		LeashKnotEntity leashKnotEntity = null;
-		boolean bl = false;
 		double d = 7.0;
 		int i = pos.getX();
 		int j = pos.getY();
 		int k = pos.getZ();
+		Box box = new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0);
+		List<MobEntity> list = world.getEntitiesByClass(MobEntity.class, box, mobEntityx -> mobEntityx.getHoldingEntity() == player);
 
-		for (MobEntity mobEntity : world.getNonSpectatingEntities(
-			MobEntity.class, new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0)
-		)) {
-			if (mobEntity.getHoldingEntity() == player) {
-				if (leashKnotEntity == null) {
-					leashKnotEntity = LeashKnotEntity.getOrCreate(world, pos);
-					leashKnotEntity.onPlace();
-				}
-
-				mobEntity.attachLeash(leashKnotEntity, true);
-				bl = true;
+		for (MobEntity mobEntity : list) {
+			if (leashKnotEntity == null) {
+				leashKnotEntity = LeashKnotEntity.getOrCreate(world, pos);
+				leashKnotEntity.onPlace();
 			}
+
+			mobEntity.attachLeash(leashKnotEntity, true);
 		}
 
-		if (bl) {
+		if (!list.isEmpty()) {
 			world.emitGameEvent(GameEvent.BLOCK_ATTACH, pos, GameEvent.Emitter.of(player));
+			return ActionResult.SUCCESS;
+		} else {
+			return ActionResult.PASS;
 		}
-
-		return bl ? ActionResult.SUCCESS : ActionResult.PASS;
 	}
 }

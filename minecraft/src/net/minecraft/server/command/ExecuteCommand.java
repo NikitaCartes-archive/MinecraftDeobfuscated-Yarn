@@ -920,7 +920,7 @@ public class ExecuteCommand {
 			try {
 				for (CommandFunction<T> commandFunction : collection) {
 					try {
-						list2.add(commandFunction.withMacroReplaced(args, baseSource.getDispatcher(), baseSource));
+						list2.add(commandFunction.withMacroReplaced(args, baseSource.getDispatcher()));
 					} catch (MacroException var17) {
 						throw INSTANTIATION_FAILURE_EXCEPTION.create(commandFunction.id(), var17.getMessage());
 					}

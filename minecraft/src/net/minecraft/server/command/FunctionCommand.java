@@ -130,7 +130,7 @@ public class FunctionCommand {
 		boolean propagateReturn
 	) throws CommandSyntaxException {
 		try {
-			Procedure<T> procedure = function.withMacroReplaced(args, dispatcher, source);
+			Procedure<T> procedure = function.withMacroReplaced(args, dispatcher);
 			control.enqueueAction(new CommandFunctionAction<>(procedure, returnValueConsumer, propagateReturn).bind(source));
 		} catch (MacroException var9) {
 			throw INSTANTIATION_FAILURE_EXCEPTION.create(id, var9.getMessage());
@@ -142,7 +142,7 @@ public class FunctionCommand {
 	) {
 		return flags.isSilent() ? wrapped : (successful, returnValue) -> {
 			resultConsumer.accept(flags, id, returnValue);
-			wrapped.onSuccess(returnValue);
+			wrapped.onResult(successful, returnValue);
 		};
 	}
 
@@ -164,9 +164,7 @@ public class FunctionCommand {
 			enqueueFunction(args, control, commandDispatcher, abstractServerCommandSource, commandFunction, identifier, returnValueConsumer2, true);
 		}
 
-		if (returnValueConsumer != ReturnValueConsumer.EMPTY) {
-			control.enqueueAction(FallthroughCommandAction.getInstance());
-		}
+		control.enqueueAction(FallthroughCommandAction.getInstance());
 	}
 
 	private static <T extends AbstractServerCommandSource<T>> void enqueueOutsideReturnRun(

@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -120,19 +122,27 @@ public abstract class PlayerEntity extends LivingEntity {
 	public static final int field_30645 = 100;
 	public static final int field_30646 = 10;
 	public static final int field_30647 = 200;
+	public static final float field_47819 = 4.5F;
+	public static final float field_47820 = 3.0F;
 	public static final float field_30648 = 1.5F;
 	public static final float field_30649 = 0.6F;
 	public static final float field_30650 = 0.6F;
 	public static final float DEFAULT_EYE_HEIGHT = 1.62F;
-	public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6F, 1.8F);
+	public static final Vec3d field_47821 = new Vec3d(0.0, 0.6, 0.0);
+	public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6F, 1.8F)
+		.method_55685(1.62F)
+		.method_55684(class_9066.method_55673().method_55683(class_9064.VEHICLE, field_47821));
 	private static final Map<EntityPose, EntityDimensions> POSE_DIMENSIONS = ImmutableMap.<EntityPose, EntityDimensions>builder()
 		.put(EntityPose.STANDING, STANDING_DIMENSIONS)
 		.put(EntityPose.SLEEPING, SLEEPING_DIMENSIONS)
-		.put(EntityPose.FALL_FLYING, EntityDimensions.changing(0.6F, 0.6F))
-		.put(EntityPose.SWIMMING, EntityDimensions.changing(0.6F, 0.6F))
-		.put(EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6F, 0.6F))
-		.put(EntityPose.CROUCHING, EntityDimensions.changing(0.6F, 1.5F))
-		.put(EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F))
+		.put(EntityPose.FALL_FLYING, EntityDimensions.changing(0.6F, 0.6F).method_55685(0.4F))
+		.put(EntityPose.SWIMMING, EntityDimensions.changing(0.6F, 0.6F).method_55685(0.4F))
+		.put(EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6F, 0.6F).method_55685(0.4F))
+		.put(
+			EntityPose.CROUCHING,
+			EntityDimensions.changing(0.6F, 1.5F).method_55685(1.27F).method_55684(class_9066.method_55673().method_55683(class_9064.VEHICLE, field_47821))
+		)
+		.put(EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F).method_55685(1.62F))
 		.build();
 	private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -202,7 +212,9 @@ public abstract class PlayerEntity extends LivingEntity {
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1F)
 			.add(EntityAttributes.GENERIC_ATTACK_SPEED)
-			.add(EntityAttributes.GENERIC_LUCK);
+			.add(EntityAttributes.GENERIC_LUCK)
+			.add(EntityAttributes.GENERIC_BLOCK_INTERACTION_RANGE, 4.5)
+			.add(EntityAttributes.GENERIC_ENTITY_INTERACTION_RANGE, 3.0);
 	}
 
 	@Override
@@ -1054,11 +1066,6 @@ public abstract class PlayerEntity extends LivingEntity {
 				return ActionResult.PASS;
 			}
 		}
-	}
-
-	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return -0.6F;
 	}
 
 	@Override
@@ -1915,20 +1922,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		switch (pose) {
-			case SWIMMING:
-			case FALL_FLYING:
-			case SPIN_ATTACK:
-				return 0.4F;
-			case CROUCHING:
-				return 1.27F;
-			default:
-				return 1.62F;
-		}
-	}
-
-	@Override
 	protected void setAbsorptionAmountUnclamped(float absorptionAmount) {
 		this.getDataTracker().set(ABSORPTION_AMOUNT, absorptionAmount);
 	}
@@ -2026,8 +2019,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
-		return (EntityDimensions)POSE_DIMENSIONS.getOrDefault(pose, STANDING_DIMENSIONS);
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return (EntityDimensions)POSE_DIMENSIONS.getOrDefault(entityPose, STANDING_DIMENSIONS);
 	}
 
 	@Override
@@ -2158,8 +2151,12 @@ public abstract class PlayerEntity extends LivingEntity {
 		return name.length() > 16 ? false : name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
 	}
 
-	public static float getReachDistance(boolean creative) {
-		return creative ? 5.0F : 4.5F;
+	public double method_55754() {
+		return this.getAttributeValue(EntityAttributes.GENERIC_BLOCK_INTERACTION_RANGE);
+	}
+
+	public double method_55755() {
+		return this.getAttributeValue(EntityAttributes.GENERIC_ENTITY_INTERACTION_RANGE);
 	}
 
 	/**

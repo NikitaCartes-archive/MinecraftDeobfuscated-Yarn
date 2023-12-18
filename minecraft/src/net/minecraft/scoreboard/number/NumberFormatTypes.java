@@ -13,10 +13,9 @@ public class NumberFormatTypes {
 	public static final Codec<NumberFormat> CODEC = REGISTRY_CODEC.codec();
 
 	public static NumberFormatType<?> registerAndGetDefault(Registry<NumberFormatType<?>> registry) {
-		NumberFormatType<?> numberFormatType = Registry.register(registry, "blank", BlankNumberFormat.TYPE);
+		Registry.register(registry, "blank", BlankNumberFormat.TYPE);
 		Registry.register(registry, "styled", StyledNumberFormat.TYPE);
-		Registry.register(registry, "fixed", FixedNumberFormat.TYPE);
-		return numberFormatType;
+		return Registry.register(registry, "fixed", FixedNumberFormat.TYPE);
 	}
 
 	public static <T extends NumberFormat> void toBuf(PacketByteBuf buf, T format) {

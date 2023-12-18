@@ -176,12 +176,12 @@ public class NetherPortal {
 	}
 
 	public static Vec3d entityPosInPortal(BlockLocating.Rectangle portalRect, Direction.Axis portalAxis, Vec3d entityPos, EntityDimensions entityDimensions) {
-		double d = (double)portalRect.width - (double)entityDimensions.width;
-		double e = (double)portalRect.height - (double)entityDimensions.height;
+		double d = (double)portalRect.width - (double)entityDimensions.width();
+		double e = (double)portalRect.height - (double)entityDimensions.height();
 		BlockPos blockPos = portalRect.lowerLeft;
 		double g;
 		if (d > 0.0) {
-			double f = (double)blockPos.getComponentAlongAxis(portalAxis) + (double)entityDimensions.width / 2.0;
+			double f = (double)blockPos.getComponentAlongAxis(portalAxis) + (double)entityDimensions.width() / 2.0;
 			g = MathHelper.clamp(MathHelper.getLerpProgress(entityPos.getComponentAlongAxis(portalAxis) - f, 0.0, d), 0.0, 1.0);
 		} else {
 			g = 0.5;
@@ -216,8 +216,8 @@ public class NetherPortal {
 		EntityDimensions entityDimensions = entity.getDimensions(entity.getPose());
 		int i = portalAxis == axis ? 0 : 90;
 		Vec3d vec3d = portalAxis == axis ? velocity : new Vec3d(velocity.z, velocity.y, -velocity.x);
-		double f = (double)entityDimensions.width / 2.0 + (d - (double)entityDimensions.width) * offset.getX();
-		double g = (e - (double)entityDimensions.height) * offset.getY();
+		double f = (double)entityDimensions.width() / 2.0 + (d - (double)entityDimensions.width()) * offset.getX();
+		double g = (e - (double)entityDimensions.height()) * offset.getY();
 		double h = 0.5 + offset.getZ();
 		boolean bl = axis == Direction.Axis.X;
 		Vec3d vec3d2 = new Vec3d((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
@@ -226,12 +226,12 @@ public class NetherPortal {
 	}
 
 	private static Vec3d findOpenPosition(Vec3d fallback, ServerWorld world, Entity entity, EntityDimensions dimensions) {
-		if (!(dimensions.width > 4.0F) && !(dimensions.height > 4.0F)) {
-			double d = (double)dimensions.height / 2.0;
+		if (!(dimensions.width() > 4.0F) && !(dimensions.height() > 4.0F)) {
+			double d = (double)dimensions.height() / 2.0;
 			Vec3d vec3d = fallback.add(0.0, d, 0.0);
-			VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, (double)dimensions.width, 0.0, (double)dimensions.width).stretch(0.0, 1.0, 0.0).expand(1.0E-6));
+			VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, (double)dimensions.width(), 0.0, (double)dimensions.width()).stretch(0.0, 1.0, 0.0).expand(1.0E-6));
 			Optional<Vec3d> optional = world.findClosestCollision(
-				entity, voxelShape, vec3d, (double)dimensions.width, (double)dimensions.height, (double)dimensions.width
+				entity, voxelShape, vec3d, (double)dimensions.width(), (double)dimensions.height(), (double)dimensions.width()
 			);
 			Optional<Vec3d> optional2 = optional.map(pos -> pos.subtract(0.0, d, 0.0));
 			return (Vec3d)optional2.orElse(fallback);

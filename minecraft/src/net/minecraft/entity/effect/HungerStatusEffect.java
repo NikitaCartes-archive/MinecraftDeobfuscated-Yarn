@@ -9,11 +9,12 @@ class HungerStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		super.applyUpdateEffect(entity, amplifier);
+	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (entity instanceof PlayerEntity playerEntity) {
 			playerEntity.addExhaustion(0.005F * (float)(amplifier + 1));
 		}
+
+		return true;
 	}
 
 	@Override

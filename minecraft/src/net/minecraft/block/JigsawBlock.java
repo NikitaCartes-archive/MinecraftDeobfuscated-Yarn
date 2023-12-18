@@ -13,7 +13,6 @@ import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -67,10 +66,10 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof JigsawBlockEntity && player.isCreativeLevelTwoOp()) {
-			player.openJigsawScreen((JigsawBlockEntity)blockEntity);
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (blockEntity instanceof JigsawBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
+			playerEntity.openJigsawScreen((JigsawBlockEntity)blockEntity);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;

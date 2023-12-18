@@ -55,24 +55,27 @@ public class BossBarHud {
 		this.client = client;
 	}
 
-	public void render(DrawContext context) {
+	public void render(DrawContext drawContext) {
 		if (!this.bossBars.isEmpty()) {
-			int i = context.getScaledWindowWidth();
+			this.client.getProfiler().push("bossHealth");
+			int i = drawContext.getScaledWindowWidth();
 			int j = 12;
 
 			for (ClientBossBar clientBossBar : this.bossBars.values()) {
 				int k = i / 2 - 91;
-				this.renderBossBar(context, k, j, clientBossBar);
+				this.renderBossBar(drawContext, k, j, clientBossBar);
 				Text text = clientBossBar.getName();
 				int m = this.client.textRenderer.getWidth(text);
 				int n = i / 2 - m / 2;
 				int o = j - 9;
-				context.drawTextWithShadow(this.client.textRenderer, text, n, o, 16777215);
+				drawContext.drawTextWithShadow(this.client.textRenderer, text, n, o, 16777215);
 				j += 10 + 9;
-				if (j >= context.getScaledWindowHeight() / 3) {
+				if (j >= drawContext.getScaledWindowHeight() / 3) {
 					break;
 				}
 			}
+
+			this.client.getProfiler().pop();
 		}
 	}
 

@@ -175,7 +175,7 @@ public class EffectCommand {
 
 		for (Entity entity : targets) {
 			if (entity instanceof LivingEntity) {
-				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(statusEffect2, j, amplifier, false, showParticles);
+				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(statusEffect, j, amplifier, false, showParticles);
 				if (((LivingEntity)entity).addStatusEffect(statusEffectInstance, source.getEntity())) {
 					i++;
 				}
@@ -225,7 +225,7 @@ public class EffectCommand {
 		int i = 0;
 
 		for (Entity entity : targets) {
-			if (entity instanceof LivingEntity && ((LivingEntity)entity).removeStatusEffect(statusEffect2)) {
+			if (entity instanceof LivingEntity && ((LivingEntity)entity).removeStatusEffect(statusEffect)) {
 				i++;
 			}
 		}

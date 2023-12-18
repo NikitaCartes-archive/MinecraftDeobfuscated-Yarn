@@ -47,7 +47,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Saddleable {
 	public static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CACTUS);
@@ -69,13 +68,13 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	public final AnimationState standingTransitionAnimationState = new AnimationState();
 	public final AnimationState idlingAnimationState = new AnimationState();
 	public final AnimationState dashingAnimationState = new AnimationState();
-	private static final EntityDimensions SITTING_DIMENSIONS = EntityDimensions.changing(EntityType.CAMEL.getWidth(), EntityType.CAMEL.getHeight() - 1.43F);
+	private static final EntityDimensions SITTING_DIMENSIONS = EntityDimensions.changing(EntityType.CAMEL.getWidth(), EntityType.CAMEL.getHeight() - 1.43F)
+		.method_55685(0.845F);
 	private int dashCooldown = 0;
 	private int idleAnimationCooldown = 0;
 
 	public CamelEntity(EntityType<? extends CamelEntity> entityType, World world) {
 		super(entityType, world);
-		this.setStepHeight(1.5F);
 		this.moveControl = new CamelEntity.CamelMoveControl();
 		this.lookControl = new CamelEntity.CamelLookControl();
 		MobNavigation mobNavigation = (MobNavigation)this.getNavigation();
@@ -104,7 +103,8 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		return createBaseHorseAttributes()
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 32.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.09F)
-			.add(EntityAttributes.HORSE_JUMP_STRENGTH, 0.42F);
+			.add(EntityAttributes.HORSE_JUMP_STRENGTH, 0.42F)
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.5);
 	}
 
 	@Override
@@ -138,13 +138,8 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
-		return pose == EntityPose.SITTING ? SITTING_DIMENSIONS.scaled(this.getScaleFactor()) : super.getDimensions(pose);
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height - 0.1F * this.getScaleFactor();
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return entityPose == EntityPose.SITTING ? SITTING_DIMENSIONS.scaled(this.getScaleFactor()) : super.method_55694(entityPose);
 	}
 
 	@Override
@@ -462,7 +457,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+	protected Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
 		int i = Math.max(this.getPassengerList().indexOf(passenger), 0);
 		boolean bl = i == 0;
 		float f = 0.5F;
@@ -477,7 +472,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 			}
 		}
 
-		return new Vector3f(0.0F, g, f * scaleFactor);
+		return new Vec3d(0.0, (double)g, (double)(f * scaleFactor)).rotateY(-this.getYaw() * (float) (Math.PI / 180.0));
 	}
 
 	@Override
@@ -486,7 +481,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	private double getPassengerAttachmentY(boolean primaryPassenger, float tickDelta, EntityDimensions dimensions, float scaleFactor) {
-		double d = (double)(dimensions.height - 0.375F * scaleFactor);
+		double d = (double)(dimensions.height() - 0.375F * scaleFactor);
 		float f = scaleFactor * 1.43F;
 		float g = f - scaleFactor * 0.2F;
 		float h = f - g;
@@ -522,7 +517,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	public Vec3d getLeashOffset(float tickDelta) {
 		EntityDimensions entityDimensions = this.getDimensions(this.getPose());
 		float f = this.getScaleFactor();
-		return new Vec3d(0.0, this.getPassengerAttachmentY(true, tickDelta, entityDimensions, f) - (double)(0.2F * f), (double)(entityDimensions.width * 0.56F));
+		return new Vec3d(0.0, this.getPassengerAttachmentY(true, tickDelta, entityDimensions, f) - (double)(0.2F * f), (double)(entityDimensions.width() * 0.56F));
 	}
 
 	private void clampHeadYaw(Entity entity, float range) {

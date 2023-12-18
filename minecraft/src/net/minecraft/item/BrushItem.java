@@ -94,7 +94,7 @@ public class BrushItem extends Item {
 	}
 
 	private HitResult getHitResult(PlayerEntity user) {
-		return ProjectileUtil.getCollision(user, entity -> !entity.isSpectator() && entity.canHit(), (double)PlayerEntity.getReachDistance(user.isCreative()));
+		return ProjectileUtil.getCollision(user, entity -> !entity.isSpectator() && entity.canHit(), user.method_55754());
 	}
 
 	private void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d userRotation, Arm arm) {

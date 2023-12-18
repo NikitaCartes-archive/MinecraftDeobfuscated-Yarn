@@ -20,7 +20,6 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -82,9 +81,9 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (!world.isClient && world.getBlockEntity(pos) == null) {
-			world.removeBlock(pos, false);
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if (!world.isClient && world.getBlockEntity(blockPos) == null) {
+			world.removeBlock(blockPos, false);
 			return ActionResult.CONSUME;
 		} else {
 			return ActionResult.PASS;

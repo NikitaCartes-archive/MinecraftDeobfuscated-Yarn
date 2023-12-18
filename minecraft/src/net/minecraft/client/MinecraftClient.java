@@ -660,7 +660,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.videoWarningManager = new VideoWarningManager();
 		this.resourceManager.registerReloader(this.videoWarningManager);
 		this.resourceManager.registerReloader(this.regionalComplianciesManager);
-		this.inGameHud = new InGameHud(this, this.itemRenderer);
+		this.inGameHud = new InGameHud(this);
 		this.debugRenderer = new DebugRenderer(this);
 		RealmsClient realmsClient = RealmsClient.createRealmsClient(this);
 		this.realmsPeriodicCheckers = new RealmsPeriodicCheckers(realmsClient);
@@ -1293,7 +1293,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.profiler.pop();
 		}
 
-		this.mouse.updateMouse();
 		this.window.setPhase("Render");
 		this.profiler.push("sound");
 		this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
@@ -1316,6 +1315,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		BackgroundRenderer.clearFog();
 		this.profiler.push("display");
 		RenderSystem.enableCull();
+		this.profiler.swap("mouse");
+		this.mouse.method_55793();
 		this.profiler.pop();
 		if (!this.skipGameRender) {
 			this.profiler.swap("gameRenderer");
@@ -1391,7 +1392,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				"%d fps T: %s%s%s%s B: %d%s",
 				currentFps,
 				k == 260 ? "inf" : k,
-				this.options.getEnableVsync().getValue() ? " vsync" : "",
+				this.options.getEnableVsync().getValue() ? " vsync" : " ",
 				this.options.getGraphicsMode().getValue(),
 				this.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF
 					? ""

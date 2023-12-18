@@ -113,15 +113,15 @@ public class Registries {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<Identifier, Supplier<?>> DEFAULT_ENTRIES = Maps.<Identifier, Supplier<?>>newLinkedHashMap();
 	private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry<>(RegistryKey.ofRegistry(RegistryKeys.ROOT), Lifecycle.stable());
-	public static final DefaultedRegistry<GameEvent> GAME_EVENT = createIntrusive(RegistryKeys.GAME_EVENT, "step", registry -> GameEvent.STEP);
+	public static final DefaultedRegistry<GameEvent> GAME_EVENT = create(RegistryKeys.GAME_EVENT, "step", GameEvent::method_55782);
 	public static final Registry<SoundEvent> SOUND_EVENT = create(RegistryKeys.SOUND_EVENT, registry -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = createIntrusive(RegistryKeys.FLUID, "empty", registry -> Fluids.EMPTY);
-	public static final Registry<StatusEffect> STATUS_EFFECT = createIntrusive(RegistryKeys.STATUS_EFFECT, registry -> StatusEffects.LUCK);
+	public static final Registry<StatusEffect> STATUS_EFFECT = create(RegistryKeys.STATUS_EFFECT, StatusEffects::method_55664);
 	public static final DefaultedRegistry<Block> BLOCK = createIntrusive(RegistryKeys.BLOCK, "air", registry -> Blocks.AIR);
 	public static final Registry<Enchantment> ENCHANTMENT = createIntrusive(RegistryKeys.ENCHANTMENT, registry -> Enchantments.FORTUNE);
 	public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = createIntrusive(RegistryKeys.ENTITY_TYPE, "pig", registry -> EntityType.PIG);
 	public static final DefaultedRegistry<Item> ITEM = createIntrusive(RegistryKeys.ITEM, "air", registry -> Items.AIR);
-	public static final DefaultedRegistry<Potion> POTION = createIntrusive(RegistryKeys.POTION, "empty", registry -> Potions.EMPTY);
+	public static final DefaultedRegistry<Potion> POTION = create(RegistryKeys.POTION, "empty", Potions::method_55763);
 	public static final Registry<ParticleType<?>> PARTICLE_TYPE = create(RegistryKeys.PARTICLE_TYPE, registry -> ParticleTypes.BLOCK);
 	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = createIntrusive(RegistryKeys.BLOCK_ENTITY_TYPE, registry -> BlockEntityType.FURNACE);
 	public static final DefaultedRegistry<PaintingVariant> PAINTING_VARIANT = create(
@@ -137,7 +137,7 @@ public class Registries {
 	public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = create(RegistryKeys.SCREEN_HANDLER, registry -> ScreenHandlerType.ANVIL);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = create(RegistryKeys.RECIPE_TYPE, registry -> RecipeType.CRAFTING);
 	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create(RegistryKeys.RECIPE_SERIALIZER, registry -> RecipeSerializer.SHAPELESS);
-	public static final Registry<EntityAttribute> ATTRIBUTE = create(RegistryKeys.ATTRIBUTE, registry -> EntityAttributes.GENERIC_LUCK);
+	public static final Registry<EntityAttribute> ATTRIBUTE = create(RegistryKeys.ATTRIBUTE, EntityAttributes::method_55699);
 	public static final Registry<PositionSourceType<?>> POSITION_SOURCE_TYPE = create(RegistryKeys.POSITION_SOURCE_TYPE, registry -> PositionSourceType.BLOCK);
 	public static final Registry<ArgumentSerializer<?, ?>> COMMAND_ARGUMENT_TYPE = create(RegistryKeys.COMMAND_ARGUMENT_TYPE, ArgumentTypes::register);
 	public static final Registry<StatType<?>> STAT_TYPE = create(RegistryKeys.STAT_TYPE, registry -> Stats.USED);
@@ -306,6 +306,6 @@ public class Registries {
 
 	@FunctionalInterface
 	interface Initializer<T> {
-		T run(Registry<T> registry);
+		Object run(Registry<T> registry);
 	}
 }

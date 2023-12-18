@@ -3,6 +3,7 @@ package net.minecraft.item;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.text.Text;
@@ -25,6 +26,6 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return PotionUtil.getPotion(stack).finishTranslationKey(this.getTranslationKey() + ".effect.");
+		return Potion.finishTranslationKey(PotionUtil.getPotion(stack), this.getTranslationKey() + ".effect.");
 	}
 }

@@ -2,8 +2,6 @@ package net.minecraft.entity.projectile;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -35,8 +33,8 @@ public class WindChargeEntity extends ExplosiveProjectileEntity implements Flyin
 
 	@Override
 	protected Box calculateBoundingBox() {
-		float f = this.getType().getDimensions().width / 2.0F;
-		float g = this.getType().getDimensions().height;
+		float f = this.getType().getDimensions().width() / 2.0F;
+		float g = this.getType().getDimensions().height();
 		float h = 0.15F;
 		return new Box(
 			this.getPos().x - (double)f,
@@ -46,11 +44,6 @@ public class WindChargeEntity extends ExplosiveProjectileEntity implements Flyin
 			this.getPos().y - 0.15F + (double)g,
 			this.getPos().z + (double)f
 		);
-	}
-
-	@Override
-	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.0F;
 	}
 
 	@Override
@@ -68,7 +61,7 @@ public class WindChargeEntity extends ExplosiveProjectileEntity implements Flyin
 		super.onEntityHit(entityHitResult);
 		if (!this.getWorld().isClient) {
 			entityHitResult.getEntity()
-				.damage(this.getDamageSources().mobProjectile(this, this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null), 1.0F);
+				.damage(this.getDamageSources().method_55648(this, this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null), 1.0F);
 			this.createExplosion();
 		}
 	}

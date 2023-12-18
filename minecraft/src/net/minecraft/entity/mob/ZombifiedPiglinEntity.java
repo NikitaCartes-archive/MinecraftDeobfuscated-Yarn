@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -39,9 +38,9 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import org.joml.Vector3f;
 
 public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
+	private static final EntityDimensions field_47812 = EntityType.ZOMBIFIED_PIGLIN.getDimensions().scaled(0.5F).method_55685(0.97F);
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
 		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
@@ -55,8 +54,6 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final int field_30524 = 10;
 	private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = TimeHelper.betweenSeconds(4, 6);
 	private int angerPassingCooldown;
-	private static final float EYE_HEIGHT = 1.79F;
-	private static final float BABY_EYE_HEIGHT_OFFSET = 0.82F;
 
 	public ZombifiedPiglinEntity(EntityType<? extends ZombifiedPiglinEntity> entityType, World world) {
 		super(entityType, world);
@@ -85,8 +82,8 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? 0.96999997F : 1.79F;
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47812 : super.method_55694(entityPose);
 	}
 
 	@Override
@@ -250,10 +247,5 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	public boolean canGather(ItemStack stack) {
 		return this.canPickupItem(stack);
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.05F * scaleFactor, 0.0F);
 	}
 }

@@ -15,13 +15,14 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 
 /**
  * A double-valued attribute.
  */
 public class EntityAttributeInstance {
-	private final EntityAttribute type;
+	private final RegistryEntry<EntityAttribute> type;
 	private final Map<EntityAttributeModifier.Operation, Set<EntityAttributeModifier>> operationToModifiers = Maps.newEnumMap(
 		EntityAttributeModifier.Operation.class
 	);
@@ -32,13 +33,13 @@ public class EntityAttributeInstance {
 	private double value;
 	private final Consumer<EntityAttributeInstance> updateCallback;
 
-	public EntityAttributeInstance(EntityAttribute type, Consumer<EntityAttributeInstance> updateCallback) {
-		this.type = type;
+	public EntityAttributeInstance(RegistryEntry<EntityAttribute> registryEntry, Consumer<EntityAttributeInstance> updateCallback) {
+		this.type = registryEntry;
 		this.updateCallback = updateCallback;
-		this.baseValue = type.getDefaultValue();
+		this.baseValue = registryEntry.value().getDefaultValue();
 	}
 
-	public EntityAttribute getAttribute() {
+	public RegistryEntry<EntityAttribute> getAttribute() {
 		return this.type;
 	}
 
@@ -84,6 +85,20 @@ public class EntityAttributeInstance {
 		}
 	}
 
+	public void method_55696(EntityAttributeModifier entityAttributeModifier) {
+		EntityAttributeModifier entityAttributeModifier2 = (EntityAttributeModifier)this.idToModifiers
+			.putIfAbsent(entityAttributeModifier.getId(), entityAttributeModifier);
+		if (entityAttributeModifier != entityAttributeModifier2) {
+			Set<EntityAttributeModifier> set = this.getModifiers(entityAttributeModifier.getOperation());
+			if (entityAttributeModifier2 != null) {
+				set.remove(entityAttributeModifier2);
+			}
+
+			set.add(entityAttributeModifier);
+			this.onUpdate();
+		}
+	}
+
 	/**
 	 * Adds a temporary attribute modifier.
 	 * The modifier will not be serialized.
@@ -102,7 +117,7 @@ public class EntityAttributeInstance {
 		this.updateCallback.accept(this);
 	}
 
-	private void removeModifier(EntityAttributeModifier modifier) {
+	public void removeModifier(EntityAttributeModifier modifier) {
 		this.getModifiers(modifier.getOperation()).remove(modifier);
 		this.idToModifiers.remove(modifier.getId());
 		this.persistentModifiers.remove(modifier);
@@ -167,7 +182,7 @@ public class EntityAttributeInstance {
 			e *= 1.0 + entityAttributeModifier2.getValue();
 		}
 
-		return this.type.clamp(e);
+		return this.type.value().clamp(e);
 	}
 
 	private Collection<EntityAttributeModifier> getModifiersByOperation(EntityAttributeModifier.Operation operation) {
@@ -192,7 +207,10 @@ public class EntityAttributeInstance {
 
 	public NbtCompound toNbt() {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", Registries.ATTRIBUTE.getId(this.type).toString());
+		RegistryKey<EntityAttribute> registryKey = (RegistryKey<EntityAttribute>)this.type
+			.getKey()
+			.orElseThrow(() -> new IllegalStateException("Tried to serialize unregistered attribute"));
+		nbtCompound.putString("Name", registryKey.getValue().toString());
 		nbtCompound.putDouble("Base", this.baseValue);
 		if (!this.persistentModifiers.isEmpty()) {
 			NbtList nbtList = new NbtList();

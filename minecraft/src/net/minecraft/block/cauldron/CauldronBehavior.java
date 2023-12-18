@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.function.Predicate;
+import net.minecraft.class_9062;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,7 +24,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
@@ -130,7 +130,7 @@ public interface CauldronBehavior {
 	CauldronBehavior CLEAN_SHULKER_BOX = (state, world, pos, player, hand, stack) -> {
 		Block block = Block.getBlockFromItem(stack.getItem());
 		if (!(block instanceof ShulkerBoxBlock)) {
-			return ActionResult.PASS;
+			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
 				ItemStack itemStack = new ItemStack(Blocks.SHULKER_BOX);
@@ -143,7 +143,7 @@ public interface CauldronBehavior {
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
 
-			return ActionResult.success(world.isClient);
+			return class_9062.method_55644(world.isClient);
 		}
 	};
 	/**
@@ -151,7 +151,7 @@ public interface CauldronBehavior {
 	 */
 	CauldronBehavior CLEAN_BANNER = (state, world, pos, player, hand, stack) -> {
 		if (BannerBlockEntity.getPatternCount(stack) <= 0) {
-			return ActionResult.PASS;
+			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
 				ItemStack itemStack = stack.copyWithCount(1);
@@ -172,7 +172,7 @@ public interface CauldronBehavior {
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
 
-			return ActionResult.success(world.isClient);
+			return class_9062.method_55644(world.isClient);
 		}
 	};
 	/**
@@ -180,9 +180,9 @@ public interface CauldronBehavior {
 	 */
 	CauldronBehavior CLEAN_DYEABLE_ITEM = (state, world, pos, player, hand, stack) -> {
 		if (!(stack.getItem() instanceof DyeableItem dyeableItem)) {
-			return ActionResult.PASS;
+			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else if (!dyeableItem.hasColor(stack)) {
-			return ActionResult.PASS;
+			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
 				dyeableItem.removeColor(stack);
@@ -190,7 +190,7 @@ public interface CauldronBehavior {
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
 
-			return ActionResult.success(world.isClient);
+			return class_9062.method_55644(world.isClient);
 		}
 	};
 
@@ -205,7 +205,7 @@ public interface CauldronBehavior {
 	 */
 	static CauldronBehavior.CauldronBehaviorMap createMap(String name) {
 		Object2ObjectOpenHashMap<Item, CauldronBehavior> object2ObjectOpenHashMap = new Object2ObjectOpenHashMap<>();
-		object2ObjectOpenHashMap.defaultReturnValue((state, world, pos, player, hand, stack) -> ActionResult.PASS);
+		object2ObjectOpenHashMap.defaultReturnValue((state, world, pos, player, hand, stack) -> class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION);
 		CauldronBehavior.CauldronBehaviorMap cauldronBehaviorMap = new CauldronBehavior.CauldronBehaviorMap(name, object2ObjectOpenHashMap);
 		BEHAVIOR_MAPS.put(name, cauldronBehaviorMap);
 		return cauldronBehaviorMap;
@@ -217,14 +217,14 @@ public interface CauldronBehavior {
 	 * @return a {@linkplain ActionResult#isAccepted successful} action result if this behavior succeeds,
 	 * {@link ActionResult#PASS} otherwise
 	 * 
-	 * @param state the current cauldron block state
+	 * @param pos the cauldron's position
 	 * @param player the interacting player
 	 * @param hand the hand interacting with the cauldron
-	 * @param world the world where the cauldron is located
-	 * @param pos the cauldron's position
 	 * @param stack the stack in the player's hand
+	 * @param state the current cauldron block state
+	 * @param world the world where the cauldron is located
 	 */
-	ActionResult interact(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack);
+	class_9062 interact(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack);
 
 	/**
 	 * Registers the vanilla cauldron behaviors.
@@ -233,8 +233,8 @@ public interface CauldronBehavior {
 		Map<Item, CauldronBehavior> map = EMPTY_CAULDRON_BEHAVIOR.map();
 		registerBucketBehavior(map);
 		map.put(Items.POTION, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
-			if (PotionUtil.getPotion(stack) != Potions.WATER) {
-				return ActionResult.PASS;
+			if (!PotionUtil.getPotion(stack).method_55838(Potions.WATER)) {
+				return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 			} else {
 				if (!world.isClient) {
 					Item item = stack.getItem();
@@ -246,7 +246,7 @@ public interface CauldronBehavior {
 					world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 				}
 
-				return ActionResult.success(world.isClient);
+				return class_9062.method_55644(world.isClient);
 			}
 		});
 		Map<Item, CauldronBehavior> map2 = WATER_CAULDRON_BEHAVIOR.map();
@@ -276,10 +276,10 @@ public interface CauldronBehavior {
 				world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
 			}
 
-			return ActionResult.success(world.isClient);
+			return class_9062.method_55644(world.isClient);
 		});
 		map2.put(Items.POTION, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
-			if ((Integer)state.get(LeveledCauldronBlock.LEVEL) != 3 && PotionUtil.getPotion(stack) == Potions.WATER) {
+			if ((Integer)state.get(LeveledCauldronBlock.LEVEL) != 3 && PotionUtil.getPotion(stack).method_55838(Potions.WATER)) {
 				if (!world.isClient) {
 					player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
 					player.incrementStat(Stats.USE_CAULDRON);
@@ -289,9 +289,9 @@ public interface CauldronBehavior {
 					world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 				}
 
-				return ActionResult.success(world.isClient);
+				return class_9062.method_55644(world.isClient);
 			} else {
-				return ActionResult.PASS;
+				return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 			}
 		});
 		map2.put(Items.LEATHER_BOOTS, CLEAN_DYEABLE_ITEM);
@@ -371,17 +371,17 @@ public interface CauldronBehavior {
 	 * 
 	 * @return a {@linkplain ActionResult#isAccepted successful} action result if emptied, {@link ActionResult#PASS} otherwise
 	 * 
-	 * @param soundEvent the sound produced by emptying
-	 * @param fullPredicate a predicate used to check if the cauldron can be emptied into the output stack
 	 * @param output the item stack that replaces the interaction stack when the cauldron is emptied
-	 * @param stack the stack in the player's hand
+	 * @param fullPredicate a predicate used to check if the cauldron can be emptied into the output stack
 	 * @param hand the hand interacting with the cauldron
-	 * @param player the interacting player
+	 * @param stack the stack in the player's hand
+	 * @param soundEvent the sound produced by emptying
 	 * @param pos the cauldron's position
-	 * @param world the world where the cauldron is located
+	 * @param player the interacting player
 	 * @param state the cauldron block state
+	 * @param world the world where the cauldron is located
 	 */
-	static ActionResult emptyCauldron(
+	static class_9062 emptyCauldron(
 		BlockState state,
 		World world,
 		BlockPos pos,
@@ -393,7 +393,7 @@ public interface CauldronBehavior {
 		SoundEvent soundEvent
 	) {
 		if (!fullPredicate.test(state)) {
-			return ActionResult.PASS;
+			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
 				Item item = stack.getItem();
@@ -405,7 +405,7 @@ public interface CauldronBehavior {
 				world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
 			}
 
-			return ActionResult.success(world.isClient);
+			return class_9062.method_55644(world.isClient);
 		}
 	}
 
@@ -417,15 +417,15 @@ public interface CauldronBehavior {
 	 * 
 	 * @return a {@linkplain ActionResult#isAccepted successful} action result
 	 * 
-	 * @param pos the cauldron's position
-	 * @param world the world where the cauldron is located
 	 * @param soundEvent the sound produced by filling
-	 * @param hand the hand interacting with the cauldron
-	 * @param player the interacting player
 	 * @param state the filled cauldron state
 	 * @param stack the filled bucket stack in the player's hand
+	 * @param hand the hand interacting with the cauldron
+	 * @param player the interacting player
+	 * @param pos the cauldron's position
+	 * @param world the world where the cauldron is located
 	 */
-	static ActionResult fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state, SoundEvent soundEvent) {
+	static class_9062 fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state, SoundEvent soundEvent) {
 		if (!world.isClient) {
 			Item item = stack.getItem();
 			player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.BUCKET)));
@@ -436,7 +436,7 @@ public interface CauldronBehavior {
 			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 		}
 
-		return ActionResult.success(world.isClient);
+		return class_9062.method_55644(world.isClient);
 	}
 
 	public static record CauldronBehaviorMap(String name, Map<Item, CauldronBehavior> map) {

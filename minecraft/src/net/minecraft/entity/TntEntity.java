@@ -114,11 +114,6 @@ public class TntEntity extends Entity implements Ownable {
 		}
 	}
 
-	@Override
-	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.15F;
-	}
-
 	public void setFuse(int fuse) {
 		this.dataTracker.set(FUSE, fuse);
 	}

@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -230,7 +229,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	public class ServerEntry extends MultiplayerServerListWidget.Entry {
 		private static final int field_32387 = 32;
 		private static final int field_32388 = 32;
-		private static final int field_32390 = 32;
+		private static final int field_47852 = 5;
+		private static final int field_47853 = 10;
+		private static final int field_47854 = 8;
 		private final MultiplayerScreen screen;
 		private final MinecraftClient client;
 		private final ServerInfo server;
@@ -238,35 +239,57 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		@Nullable
 		private byte[] favicon;
 		private long time;
+		@Nullable
+		private List<Text> field_47855;
+		private Identifier field_47856;
+		private Text field_47857;
 
 		protected ServerEntry(MultiplayerScreen screen, ServerInfo server) {
 			this.screen = screen;
 			this.server = server;
 			this.client = MinecraftClient.getInstance();
 			this.icon = WorldIcon.forServer(this.client.getTextureManager(), server.address);
+			this.method_55815();
 		}
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			if (!this.server.online) {
-				this.server.online = true;
-				this.server.ping = -2L;
+			if (this.server.method_55825() == ServerInfo.class_9083.INITIAL) {
+				this.server.method_55824(ServerInfo.class_9083.PINGING);
 				this.server.label = ScreenTexts.EMPTY;
 				this.server.playerCountLabel = ScreenTexts.EMPTY;
-				MultiplayerServerListWidget.SERVER_PINGER_THREAD_POOL.submit(() -> {
-					try {
-						this.screen.getServerListPinger().add(this.server, () -> this.client.execute(this::saveFile));
-					} catch (UnknownHostException var2) {
-						this.server.ping = -1L;
-						this.server.label = MultiplayerServerListWidget.CANNOT_RESOLVE_TEXT;
-					} catch (Exception var3) {
-						this.server.ping = -1L;
-						this.server.label = MultiplayerServerListWidget.CANNOT_CONNECT_TEXT;
-					}
-				});
+				MultiplayerServerListWidget.SERVER_PINGER_THREAD_POOL
+					.submit(
+						() -> {
+							try {
+								this.screen
+									.getServerListPinger()
+									.add(
+										this.server,
+										() -> this.client.execute(this::saveFile),
+										() -> {
+											this.server
+												.method_55824(
+													this.server.protocolVersion == SharedConstants.getGameVersion().getProtocolVersion()
+														? ServerInfo.class_9083.SUCCESSFUL
+														: ServerInfo.class_9083.INCOMPATIBLE
+												);
+											this.client.execute(this::method_55815);
+										}
+									);
+							} catch (UnknownHostException var2) {
+								this.server.method_55824(ServerInfo.class_9083.UNREACHABLE);
+								this.server.label = MultiplayerServerListWidget.CANNOT_RESOLVE_TEXT;
+								this.client.execute(this::method_55815);
+							} catch (Exception var3) {
+								this.server.method_55824(ServerInfo.class_9083.UNREACHABLE);
+								this.server.label = MultiplayerServerListWidget.CANNOT_CONNECT_TEXT;
+								this.client.execute(this::method_55815);
+							}
+						}
+					);
 			}
 
-			boolean bl = !this.protocolVersionMatches();
 			context.drawText(this.client.textRenderer, this.server.name, x + 32 + 3, y + 1, 16777215, false);
 			List<OrderedText> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
 
@@ -274,55 +297,23 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				context.drawText(this.client.textRenderer, (OrderedText)list.get(i), x + 32 + 3, y + 12 + 9 * i, -8355712, false);
 			}
 
-			Text text = (Text)(bl ? this.server.version.copy().formatted(Formatting.RED) : this.server.playerCountLabel);
-			int j = this.client.textRenderer.getWidth(text);
-			context.drawText(this.client.textRenderer, text, x + entryWidth - j - 15 - 2, y + 1, Colors.GRAY, false);
-			Identifier identifier;
-			List<Text> list2;
-			Text text2;
-			if (bl) {
-				identifier = MultiplayerServerListWidget.INCOMPATIBLE_TEXTURE;
-				text2 = MultiplayerServerListWidget.INCOMPATIBLE_TEXT;
-				list2 = this.server.playerListSummary;
-			} else if (this.pinged()) {
-				if (this.server.ping < 0L) {
-					identifier = MultiplayerServerListWidget.UNREACHABLE_TEXTURE;
-				} else if (this.server.ping < 150L) {
-					identifier = MultiplayerServerListWidget.PING_5_TEXTURE;
-				} else if (this.server.ping < 300L) {
-					identifier = MultiplayerServerListWidget.PING_4_TEXTURE;
-				} else if (this.server.ping < 600L) {
-					identifier = MultiplayerServerListWidget.PING_3_TEXTURE;
-				} else if (this.server.ping < 1000L) {
-					identifier = MultiplayerServerListWidget.PING_2_TEXTURE;
-				} else {
-					identifier = MultiplayerServerListWidget.PING_1_TEXTURE;
+			this.draw(context, x, y, this.icon.getTextureId());
+			if (this.server.method_55825() == ServerInfo.class_9083.PINGING) {
+				int i = (int)(Util.getMeasuringTimeMs() / 100L + (long)(index * 2) & 7L);
+				if (i > 4) {
+					i = 8 - i;
 				}
-
-				if (this.server.ping < 0L) {
-					text2 = MultiplayerServerListWidget.NO_CONNECTION_TEXT;
-					list2 = Collections.emptyList();
-				} else {
-					text2 = Text.translatable("multiplayer.status.ping", this.server.ping);
-					list2 = this.server.playerListSummary;
-				}
-			} else {
-				int k = (int)(Util.getMeasuringTimeMs() / 100L + (long)(index * 2) & 7L);
-				if (k > 4) {
-					k = 8 - k;
-				}
-				identifier = switch (k) {
+				this.field_47856 = switch (i) {
 					case 1 -> MultiplayerServerListWidget.PINGING_2_TEXTURE;
 					case 2 -> MultiplayerServerListWidget.PINGING_3_TEXTURE;
 					case 3 -> MultiplayerServerListWidget.PINGING_4_TEXTURE;
 					case 4 -> MultiplayerServerListWidget.PINGING_5_TEXTURE;
 					default -> MultiplayerServerListWidget.PINGING_1_TEXTURE;
 				};
-				text2 = MultiplayerServerListWidget.PINGING_TEXT;
-				list2 = Collections.emptyList();
 			}
 
-			context.drawGuiTexture(identifier, x + entryWidth - 15, y, 10, 8);
+			int i = x + entryWidth - 10 - 5;
+			context.drawGuiTexture(this.field_47856, i, y, 10, 8);
 			byte[] bs = this.server.getFavicon();
 			if (!Arrays.equals(bs, this.favicon)) {
 				if (this.uploadFavicon(bs)) {
@@ -333,21 +324,24 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 			}
 
-			this.draw(context, x, y, this.icon.getTextureId());
-			int l = mouseX - x;
-			int m = mouseY - y;
-			if (l >= entryWidth - 15 && l <= entryWidth - 5 && m >= 0 && m <= 8) {
-				this.screen.setMultiplayerScreenTooltip(Collections.singletonList(text2));
-			} else if (l >= entryWidth - j - 15 - 2 && l <= entryWidth - 15 - 2 && m >= 0 && m <= 8) {
-				this.screen.setMultiplayerScreenTooltip(list2);
+			Text text = (Text)(this.server.method_55825() == ServerInfo.class_9083.INCOMPATIBLE
+				? this.server.version.copy().formatted(Formatting.RED)
+				: this.server.playerCountLabel);
+			int j = this.client.textRenderer.getWidth(text);
+			int k = i - j - 5;
+			context.drawText(this.client.textRenderer, text, k, y + 1, Colors.GRAY, false);
+			if (mouseX >= i && mouseX <= i + 10 && mouseY >= y && mouseY <= y + 8) {
+				this.screen.setTooltip(this.field_47857);
+			} else if (this.field_47855 != null && mouseX >= k && mouseX <= k + j && mouseY >= y && mouseY <= y - 1 + 9) {
+				this.screen.setTooltip(Lists.transform(this.field_47855, Text::asOrderedText));
 			}
 
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
 				context.fill(x, y, x + 32, y + 32, -1601138544);
-				int n = mouseX - x;
-				int o = mouseY - y;
+				int l = mouseX - x;
+				int m = mouseY - y;
 				if (this.canConnect()) {
-					if (n < 32 && n > 16) {
+					if (l < 32 && l > 16) {
 						context.drawGuiTexture(MultiplayerServerListWidget.JOIN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
 						context.drawGuiTexture(MultiplayerServerListWidget.JOIN_TEXTURE, x, y, 32, 32);
@@ -355,7 +349,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 
 				if (index > 0) {
-					if (n < 16 && o < 16) {
+					if (l < 16 && m < 16) {
 						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
 						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_UP_TEXTURE, x, y, 32, 32);
@@ -363,7 +357,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 
 				if (index < this.screen.getServerList().size() - 1) {
-					if (n < 16 && o > 16) {
+					if (l < 16 && m > 16) {
 						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
 						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_DOWN_TEXTURE, x, y, 32, 32);
@@ -372,12 +366,38 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 		}
 
-		private boolean pinged() {
-			return this.server.online && this.server.ping != -2L;
-		}
+		private void method_55815() {
+			this.field_47855 = null;
+			switch (this.server.method_55825()) {
+				case INITIAL:
+				case PINGING:
+					this.field_47857 = MultiplayerServerListWidget.PINGING_TEXT;
+					break;
+				case INCOMPATIBLE:
+					this.field_47856 = MultiplayerServerListWidget.INCOMPATIBLE_TEXTURE;
+					this.field_47857 = MultiplayerServerListWidget.INCOMPATIBLE_TEXT;
+					this.field_47855 = this.server.playerListSummary;
+					break;
+				case UNREACHABLE:
+					this.field_47856 = MultiplayerServerListWidget.UNREACHABLE_TEXTURE;
+					this.field_47857 = MultiplayerServerListWidget.NO_CONNECTION_TEXT;
+					break;
+				case SUCCESSFUL:
+					if (this.server.ping < 150L) {
+						this.field_47856 = MultiplayerServerListWidget.PING_5_TEXTURE;
+					} else if (this.server.ping < 300L) {
+						this.field_47856 = MultiplayerServerListWidget.PING_4_TEXTURE;
+					} else if (this.server.ping < 600L) {
+						this.field_47856 = MultiplayerServerListWidget.PING_3_TEXTURE;
+					} else if (this.server.ping < 1000L) {
+						this.field_47856 = MultiplayerServerListWidget.PING_2_TEXTURE;
+					} else {
+						this.field_47856 = MultiplayerServerListWidget.PING_1_TEXTURE;
+					}
 
-		private boolean protocolVersionMatches() {
-			return this.server.protocolVersion == SharedConstants.getGameVersion().getProtocolVersion();
+					this.field_47857 = Text.translatable("multiplayer.status.ping", this.server.ping);
+					this.field_47855 = this.server.playerListSummary;
+			}
 		}
 
 		public void saveFile() {
@@ -476,28 +496,32 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			MutableText mutableText = Text.empty();
 			mutableText.append(Text.translatable("narrator.select", this.server.name));
 			mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-			if (!this.protocolVersionMatches()) {
-				mutableText.append(MultiplayerServerListWidget.INCOMPATIBLE_TEXT);
-				mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-				mutableText.append(Text.translatable("multiplayer.status.version.narration", this.server.version));
-				mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-				mutableText.append(Text.translatable("multiplayer.status.motd.narration", this.server.label));
-			} else if (this.server.ping < 0L) {
-				mutableText.append(MultiplayerServerListWidget.NO_CONNECTION_TEXT);
-			} else if (!this.pinged()) {
-				mutableText.append(MultiplayerServerListWidget.PINGING_TEXT);
-			} else {
-				mutableText.append(MultiplayerServerListWidget.ONLINE_TEXT);
-				mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-				mutableText.append(Text.translatable("multiplayer.status.ping.narration", this.server.ping));
-				mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-				mutableText.append(Text.translatable("multiplayer.status.motd.narration", this.server.label));
-				if (this.server.players != null) {
+			switch (this.server.method_55825()) {
+				case PINGING:
+					mutableText.append(MultiplayerServerListWidget.PINGING_TEXT);
+					break;
+				case INCOMPATIBLE:
+					mutableText.append(MultiplayerServerListWidget.INCOMPATIBLE_TEXT);
 					mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-					mutableText.append(Text.translatable("multiplayer.status.player_count.narration", this.server.players.online(), this.server.players.max()));
+					mutableText.append(Text.translatable("multiplayer.status.version.narration", this.server.version));
 					mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-					mutableText.append(Texts.join(this.server.playerListSummary, Text.literal(", ")));
-				}
+					mutableText.append(Text.translatable("multiplayer.status.motd.narration", this.server.label));
+					break;
+				case UNREACHABLE:
+					mutableText.append(MultiplayerServerListWidget.NO_CONNECTION_TEXT);
+					break;
+				default:
+					mutableText.append(MultiplayerServerListWidget.ONLINE_TEXT);
+					mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+					mutableText.append(Text.translatable("multiplayer.status.ping.narration", this.server.ping));
+					mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+					mutableText.append(Text.translatable("multiplayer.status.motd.narration", this.server.label));
+					if (this.server.players != null) {
+						mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+						mutableText.append(Text.translatable("multiplayer.status.player_count.narration", this.server.players.online(), this.server.players.max()));
+						mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+						mutableText.append(Texts.join(this.server.playerListSummary, Text.literal(", ")));
+					}
 			}
 
 			return mutableText;

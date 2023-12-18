@@ -14,9 +14,7 @@ import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -141,7 +139,6 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 		this.moveControl = new AxolotlEntity.AxolotlMoveControl(this);
 		this.lookControl = new AxolotlEntity.AxolotlLookControl(this, 20);
-		this.setStepHeight(1.0F);
 	}
 
 	@Override
@@ -332,7 +329,8 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		return MobEntity.createMobAttributes()
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 14.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0)
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -366,11 +364,6 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		}
 
 		return super.damage(source, amount);
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.655F;
 	}
 
 	@Override

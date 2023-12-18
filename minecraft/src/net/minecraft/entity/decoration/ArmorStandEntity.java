@@ -13,6 +13,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -53,8 +55,8 @@ public class ArmorStandEntity extends LivingEntity {
 	private static final EulerAngle DEFAULT_RIGHT_ARM_ROTATION = new EulerAngle(-15.0F, 0.0F, 10.0F);
 	private static final EulerAngle DEFAULT_LEFT_LEG_ROTATION = new EulerAngle(-1.0F, 0.0F, -1.0F);
 	private static final EulerAngle DEFAULT_RIGHT_LEG_ROTATION = new EulerAngle(1.0F, 0.0F, 1.0F);
-	private static final EntityDimensions MARKER_DIMENSIONS = new EntityDimensions(0.0F, 0.0F, true);
-	private static final EntityDimensions SMALL_DIMENSIONS = EntityType.ARMOR_STAND.getDimensions().scaled(0.5F);
+	private static final EntityDimensions MARKER_DIMENSIONS = EntityDimensions.fixed(0.0F, 0.0F);
+	private static final EntityDimensions SMALL_DIMENSIONS = EntityType.ARMOR_STAND.getDimensions().scaled(0.5F).method_55685(0.9875F);
 	private static final double field_30447 = 0.1;
 	private static final double field_30448 = 0.9;
 	private static final double field_30449 = 0.4;
@@ -88,12 +90,15 @@ public class ArmorStandEntity extends LivingEntity {
 
 	public ArmorStandEntity(EntityType<? extends ArmorStandEntity> entityType, World world) {
 		super(entityType, world);
-		this.setStepHeight(0.0F);
 	}
 
 	public ArmorStandEntity(World world, double x, double y, double z) {
 		this(EntityType.ARMOR_STAND, world);
 		this.setPosition(x, y, z);
+	}
+
+	public static DefaultAttributeContainer.Builder method_55745() {
+		return createLivingAttributes().add(EntityAttributes.GENERIC_STEP_HEIGHT, 0.0);
 	}
 
 	@Override
@@ -529,11 +534,6 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * (this.isBaby() ? 0.5F : 0.9F);
-	}
-
-	@Override
 	public void travel(Vec3d movementInput) {
 		if (this.canClip()) {
 			super.travel(movementInput);
@@ -776,7 +776,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
+	public EntityDimensions method_55694(EntityPose entityPose) {
 		return this.getDimensions(this.isMarker());
 	}
 

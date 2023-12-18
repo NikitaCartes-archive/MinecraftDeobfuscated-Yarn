@@ -21,24 +21,26 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 	private static final float field_47433 = 1.0F;
 	private final ModelPart root;
 	private final ModelPart head;
-	private final ModelPart windBody;
+	private final ModelPart field_47874;
+	private final ModelPart field_47875;
 	private final ModelPart windTop;
 	private final ModelPart windMid;
 	private final ModelPart windBottom;
 	private final ModelPart rods;
 
-	public BreezeEntityModel(ModelPart root) {
+	public BreezeEntityModel(ModelPart modelPart) {
 		super(RenderLayer::getEntityTranslucent);
-		this.root = root;
-		this.windBody = root.getChild(EntityModelPartNames.WIND_BODY);
-		this.windBottom = this.windBody.getChild(EntityModelPartNames.WIND_BOTTOM);
+		this.root = modelPart;
+		this.field_47875 = modelPart.getChild(EntityModelPartNames.WIND_BODY);
+		this.windBottom = this.field_47875.getChild(EntityModelPartNames.WIND_BOTTOM);
 		this.windMid = this.windBottom.getChild(EntityModelPartNames.WIND_MID);
 		this.windTop = this.windMid.getChild(EntityModelPartNames.WIND_TOP);
-		this.head = root.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
-		this.rods = root.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.RODS);
+		this.head = modelPart.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
+		this.field_47874 = this.head.getChild(EntityModelPartNames.EYES);
+		this.rods = modelPart.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.RODS);
 	}
 
-	public static TexturedModelData getTexturedModelData() {
+	public static TexturedModelData getTexturedModelData(int i, int j) {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
@@ -60,51 +62,29 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 		);
 		ModelPartData modelPartData4 = modelPartData2.addChild(
 			EntityModelPartNames.HEAD,
-			ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F)),
+			ModelPartBuilder.create()
+				.uv(4, 24)
+				.cuboid(-5.0F, -5.0F, -4.2F, 10.0F, 3.0F, 4.0F, new Dilation(0.0F))
+				.uv(0, 0)
+				.cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(0.0F, 4.0F, 0.0F)
 		);
-		ModelPartData modelPartData5 = modelPartData.addChild(EntityModelPartNames.WIND_BODY, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData modelPartData6 = modelPartData5.addChild(EntityModelPartNames.WIND_BOTTOM, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
-		ModelPartData modelPartData7 = modelPartData6.addChild(EntityModelPartNames.WIND_MID, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -7.0F, 0.0F));
-		modelPartData7.addChild(EntityModelPartNames.WIND_TOP, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -6.0F, 0.0F));
-		return TexturedModelData.of(modelData, 32, 32);
-	}
-
-	public static TexturedModelData getEyesTexturedModelData() {
-		ModelData modelData = new ModelData();
-		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData modelPartData3 = modelPartData2.addChild(EntityModelPartNames.RODS, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 8.0F, 0.0F));
-		ModelPartData modelPartData4 = modelPartData2.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 4.0F, 0.0F));
 		modelPartData4.addChild(
 			EntityModelPartNames.EYES,
 			ModelPartBuilder.create()
 				.uv(4, 24)
 				.cuboid(-5.0F, -5.0F, -4.2F, 10.0F, 3.0F, 4.0F, new Dilation(0.0F))
-				.uv(7, 16)
-				.cuboid(-4.0F, -2.0F, -4.0F, 8.0F, 1.0F, 1.0F, new Dilation(0.0F)),
+				.uv(0, 0)
+				.cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(0.0F, 0.0F, 0.0F)
 		);
 		ModelPartData modelPartData5 = modelPartData.addChild(EntityModelPartNames.WIND_BODY, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData modelPartData6 = modelPartData5.addChild(EntityModelPartNames.WIND_BOTTOM, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
-		ModelPartData modelPartData7 = modelPartData6.addChild(EntityModelPartNames.WIND_MID, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -7.0F, 0.0F));
-		modelPartData7.addChild(EntityModelPartNames.WIND_TOP, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -6.0F, 0.0F));
-		return TexturedModelData.of(modelData, 32, 32);
-	}
-
-	public static TexturedModelData getWindTexturedModelData() {
-		ModelData modelData = new ModelData();
-		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData modelPartData3 = modelPartData2.addChild(EntityModelPartNames.RODS, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 8.0F, 0.0F));
-		modelPartData2.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 4.0F, 0.0F));
-		ModelPartData modelPartData4 = modelPartData.addChild(EntityModelPartNames.WIND_BODY, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData modelPartData5 = modelPartData4.addChild(
+		ModelPartData modelPartData6 = modelPartData5.addChild(
 			EntityModelPartNames.WIND_BOTTOM,
 			ModelPartBuilder.create().uv(1, 83).cuboid(-2.5F, -7.0F, -2.5F, 5.0F, 7.0F, 5.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(0.0F, 24.0F, 0.0F)
 		);
-		ModelPartData modelPartData6 = modelPartData5.addChild(
+		ModelPartData modelPartData7 = modelPartData6.addChild(
 			EntityModelPartNames.WIND_MID,
 			ModelPartBuilder.create()
 				.uv(74, 28)
@@ -115,7 +95,7 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 				.cuboid(-2.5F, -6.0F, -2.5F, 5.0F, 6.0F, 5.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(0.0F, -7.0F, 0.0F)
 		);
-		modelPartData6.addChild(
+		modelPartData7.addChild(
 			EntityModelPartNames.WIND_TOP,
 			ModelPartBuilder.create()
 				.uv(0, 0)
@@ -126,7 +106,7 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 				.cuboid(-2.5F, -8.0F, -2.5F, 5.0F, 8.0F, 5.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(0.0F, -6.0F, 0.0F)
 		);
-		return TexturedModelData.of(modelData, 128, 128);
+		return TexturedModelData.of(modelData, i, j);
 	}
 
 	public void setAngles(T breezeEntity, float f, float g, float h, float i, float j) {
@@ -142,6 +122,7 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 		this.rods.yaw = h * (float) Math.PI * 0.1F;
 		this.updateAnimation(breezeEntity.shootingAnimationState, BreezeAnimations.SHOOTING, h);
 		this.updateAnimation(breezeEntity.slidingAnimationState, BreezeAnimations.SLIDING, h);
+		this.updateAnimation(breezeEntity.field_47816, BreezeAnimations.field_47846, h);
 		this.updateAnimation(breezeEntity.inhalingAnimationState, BreezeAnimations.INHALING, h);
 	}
 
@@ -150,15 +131,19 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 		return this.root;
 	}
 
-	public ModelPart getWindTop() {
-		return this.windTop;
+	public ModelPart method_55819() {
+		return this.head;
 	}
 
-	public ModelPart getWindMid() {
-		return this.windMid;
+	public ModelPart method_55820() {
+		return this.field_47874;
 	}
 
-	public ModelPart getWindBottom() {
-		return this.windBottom;
+	public ModelPart method_55821() {
+		return this.rods;
+	}
+
+	public ModelPart method_55822() {
+		return this.field_47875;
 	}
 }

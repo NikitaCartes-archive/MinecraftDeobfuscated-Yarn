@@ -66,13 +66,13 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isOf(Items.SUSPICIOUS_STEW) && !this.stewEffects.isEmpty()) {
 			SetStewEffectLootFunction.StewEffect stewEffect = Util.getRandom(this.stewEffects, context.getRandom());
-			StatusEffect statusEffect = stewEffect.effect().value();
+			RegistryEntry<StatusEffect> registryEntry = stewEffect.effect();
 			int i = stewEffect.duration().nextInt(context);
-			if (!statusEffect.isInstant()) {
+			if (!registryEntry.value().isInstant()) {
 				i *= 20;
 			}
 
-			SuspiciousStewItem.addEffectsToStew(stack, List.of(new SuspiciousStewIngredient.StewEffect(statusEffect, i)));
+			SuspiciousStewItem.addEffectsToStew(stack, List.of(new SuspiciousStewIngredient.StewEffect(registryEntry, i)));
 			return stack;
 		} else {
 			return stack;
@@ -90,8 +90,8 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public SetStewEffectLootFunction.Builder withEffect(StatusEffect effect, LootNumberProvider durationRange) {
-			this.map.add(new SetStewEffectLootFunction.StewEffect(effect.getRegistryEntry(), durationRange));
+		public SetStewEffectLootFunction.Builder withEffect(RegistryEntry<StatusEffect> registryEntry, LootNumberProvider durationRange) {
+			this.map.add(new SetStewEffectLootFunction.StewEffect(registryEntry, durationRange));
 			return this;
 		}
 

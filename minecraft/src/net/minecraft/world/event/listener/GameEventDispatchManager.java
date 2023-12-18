@@ -3,6 +3,7 @@ package net.minecraft.world.event.listener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -22,8 +23,8 @@ public class GameEventDispatchManager {
 		this.world = world;
 	}
 
-	public void dispatch(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter) {
-		int i = event.getRange();
+	public void dispatch(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter) {
+		int i = event.value().range();
 		BlockPos blockPos = BlockPos.ofFloored(emitterPos);
 		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
 		int k = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);

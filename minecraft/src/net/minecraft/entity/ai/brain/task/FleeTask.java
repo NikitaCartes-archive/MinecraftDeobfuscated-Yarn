@@ -34,13 +34,15 @@ public class FleeTask extends MultiTickTask<PathAwareEntity> {
 	}
 
 	public FleeTask(float speed, Predicate<PathAwareEntity> predicate) {
-		super(ImmutableMap.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.VALUE_PRESENT), 100, 120);
+		super(ImmutableMap.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.REGISTERED), 100, 120);
 		this.speed = speed;
 		this.predicate = predicate;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
-		return this.predicate.test(pathAwareEntity);
+		return pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.HURT_BY)
+			|| this.predicate.test(pathAwareEntity)
+			|| pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {

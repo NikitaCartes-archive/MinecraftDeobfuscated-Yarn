@@ -542,7 +542,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	@Override
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.getEffectType() == StatusEffects.WITHER ? false : super.canHaveStatusEffect(effect);
+		return effect.method_55654(StatusEffects.WITHER) ? false : super.canHaveStatusEffect(effect);
 	}
 
 	class DescendAtHalfHealthGoal extends Goal {

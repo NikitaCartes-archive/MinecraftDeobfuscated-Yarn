@@ -94,7 +94,6 @@ public class GameRenderer implements AutoCloseable {
 	 */
 	public static final float CAMERA_DEPTH = 0.05F;
 	private static final float field_44940 = 1000.0F;
-	private static final int field_46727 = 3;
 	final MinecraftClient client;
 	private final ResourceManager resourceManager;
 	private final Random random = Random.create();
@@ -777,30 +776,33 @@ public class GameRenderer implements AutoCloseable {
 	public void updateTargetedEntity(float tickDelta) {
 		Entity entity = this.client.getCameraEntity();
 		if (entity != null) {
-			if (this.client.world != null) {
+			if (this.client.world != null && this.client.player != null) {
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
-				double d = (double)this.client.interactionManager.getReachDistance();
+				double d = this.client.player.method_55754();
+				double e = this.client.player.method_55755();
+				double f = Math.max(d, e);
 				this.client.crosshairTarget = entity.raycast(d, tickDelta, false);
 				Vec3d vec3d = entity.getCameraPosVec(tickDelta);
-				boolean bl = this.client.interactionManager.hasExtendedReach();
-				d = bl ? 6.0 : d;
-				boolean bl2 = !bl;
-				double e = this.client.crosshairTarget != null ? this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d) : d * d;
+				double g = f;
+				double h = MathHelper.square(f);
+				if (this.client.crosshairTarget != null) {
+					h = this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d);
+					g = Math.sqrt(h);
+				}
+
 				Vec3d vec3d2 = entity.getRotationVec(1.0F);
-				Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
-				float f = 1.0F;
-				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-				EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.canHit(), e);
+				Vec3d vec3d3 = vec3d.add(vec3d2.x * f, vec3d2.y * f, vec3d2.z * f);
+				float i = 1.0F;
+				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(g)).expand(1.0, 1.0, 1.0);
+				EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.canHit(), h);
 				if (entityHitResult != null) {
 					Vec3d vec3d4 = entityHitResult.getPos();
-					double g = vec3d.squaredDistanceTo(vec3d4);
-					if (bl2 && g > 9.0) {
-						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), BlockPos.ofFloored(vec3d4));
-					} else if (g < e || this.client.crosshairTarget == null) {
+					if (vec3d.isInRange(vec3d4, e)) {
 						this.client.crosshairTarget = entityHitResult;
-						Entity entity2 = entityHitResult.getEntity();
-						this.client.targetedEntity = entity2;
+						this.client.targetedEntity = entityHitResult.getEntity();
+					} else {
+						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), BlockPos.ofFloored(vec3d4));
 					}
 				}
 
@@ -1031,12 +1033,12 @@ public class GameRenderer implements AutoCloseable {
 					}
 				}
 
-				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
+				if (!this.client.options.hudHidden) {
 					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), f);
-					this.client.inGameHud.render(drawContext, f);
-					RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 				}
 
+				this.client.inGameHud.render(drawContext, f);
+				RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 				this.client.getProfiler().pop();
 			}
 

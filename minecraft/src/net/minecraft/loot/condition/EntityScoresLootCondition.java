@@ -43,7 +43,7 @@ public record EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> sco
 		if (entity == null) {
 			return false;
 		} else {
-			Scoreboard scoreboard = entity.getWorld().getScoreboard();
+			Scoreboard scoreboard = lootContext.getWorld().getScoreboard();
 
 			for (Entry<String, BoundedIntUnaryOperator> entry : this.scores.entrySet()) {
 				if (!this.entityScoreIsInRange(lootContext, entity, scoreboard, (String)entry.getKey(), (BoundedIntUnaryOperator)entry.getValue())) {

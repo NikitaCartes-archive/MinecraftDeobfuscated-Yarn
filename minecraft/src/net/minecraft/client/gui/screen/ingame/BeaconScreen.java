@@ -19,6 +19,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
@@ -40,9 +41,9 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	private static final Text SECONDARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.secondary");
 	private final List<BeaconScreen.BeaconButtonWidget> buttons = Lists.<BeaconScreen.BeaconButtonWidget>newArrayList();
 	@Nullable
-	StatusEffect primaryEffect;
+	RegistryEntry<StatusEffect> primaryEffect;
 	@Nullable
-	StatusEffect secondaryEffect;
+	RegistryEntry<StatusEffect> secondaryEffect;
 
 	public BeaconScreen(BeaconScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
@@ -74,13 +75,13 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		this.addButton(new BeaconScreen.CancelButtonWidget(this.x + 190, this.y + 107));
 
 		for (int i = 0; i <= 2; i++) {
-			int j = BeaconBlockEntity.EFFECTS_BY_LEVEL[i].length;
+			int j = ((List)BeaconBlockEntity.EFFECTS_BY_LEVEL.get(i)).size();
 			int k = j * 22 + (j - 1) * 2;
 
 			for (int l = 0; l < j; l++) {
-				StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[i][l];
+				RegistryEntry<StatusEffect> registryEntry = (RegistryEntry<StatusEffect>)((List)BeaconBlockEntity.EFFECTS_BY_LEVEL.get(i)).get(l);
 				BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(
-					this.x + 76 + l * 24 - k / 2, this.y + 22 + i * 25, statusEffect, true, i
+					this.x + 76 + l * 24 - k / 2, this.y + 22 + i * 25, registryEntry, true, i
 				);
 				effectButtonWidget.active = false;
 				this.addButton(effectButtonWidget);
@@ -88,18 +89,19 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		int i = 3;
-		int j = BeaconBlockEntity.EFFECTS_BY_LEVEL[3].length + 1;
+		int j = ((List)BeaconBlockEntity.EFFECTS_BY_LEVEL.get(3)).size() + 1;
 		int k = j * 22 + (j - 1) * 2;
 
 		for (int l = 0; l < j - 1; l++) {
-			StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[3][l];
-			BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(this.x + 167 + l * 24 - k / 2, this.y + 47, statusEffect, false, 3);
+			RegistryEntry<StatusEffect> registryEntry = (RegistryEntry<StatusEffect>)((List)BeaconBlockEntity.EFFECTS_BY_LEVEL.get(3)).get(l);
+			BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(this.x + 167 + l * 24 - k / 2, this.y + 47, registryEntry, false, 3);
 			effectButtonWidget.active = false;
 			this.addButton(effectButtonWidget);
 		}
 
+		RegistryEntry<StatusEffect> registryEntry2 = (RegistryEntry<StatusEffect>)((List)BeaconBlockEntity.EFFECTS_BY_LEVEL.get(0)).get(0);
 		BeaconScreen.EffectButtonWidget effectButtonWidget2 = new BeaconScreen.LevelTwoEffectButtonWidget(
-			this.x + 167 + (j - 1) * 24 - k / 2, this.y + 47, BeaconBlockEntity.EFFECTS_BY_LEVEL[0][0]
+			this.x + 167 + (j - 1) * 24 - k / 2, this.y + 47, registryEntry2
 		);
 		effectButtonWidget2.visible = false;
 		this.addButton(effectButtonWidget2);
@@ -233,24 +235,24 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	class EffectButtonWidget extends BeaconScreen.BaseButtonWidget {
 		private final boolean primary;
 		protected final int level;
-		private StatusEffect effect;
+		private RegistryEntry<StatusEffect> effect;
 		private Sprite sprite;
 
-		public EffectButtonWidget(int x, int y, StatusEffect statusEffect, boolean primary, int level) {
+		public EffectButtonWidget(int x, int y, RegistryEntry<StatusEffect> registryEntry, boolean primary, int level) {
 			super(x, y);
 			this.primary = primary;
 			this.level = level;
-			this.init(statusEffect);
+			this.init(registryEntry);
 		}
 
-		protected void init(StatusEffect statusEffect) {
-			this.effect = statusEffect;
-			this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect);
-			this.setTooltip(Tooltip.of(this.getEffectName(statusEffect), null));
+		protected void init(RegistryEntry<StatusEffect> registryEntry) {
+			this.effect = registryEntry;
+			this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(registryEntry);
+			this.setTooltip(Tooltip.of(this.getEffectName(registryEntry), null));
 		}
 
-		protected MutableText getEffectName(StatusEffect statusEffect) {
-			return Text.translatable(statusEffect.getTranslationKey());
+		protected MutableText getEffectName(RegistryEntry<StatusEffect> registryEntry) {
+			return Text.translatable(registryEntry.value().getTranslationKey());
 		}
 
 		@Override
@@ -274,7 +276,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		@Override
 		public void tick(int level) {
 			this.active = this.level < level;
-			this.setDisabled(this.effect == (this.primary ? BeaconScreen.this.primaryEffect : BeaconScreen.this.secondaryEffect));
+			this.setDisabled(this.effect.equals(this.primary ? BeaconScreen.this.primaryEffect : BeaconScreen.this.secondaryEffect));
 		}
 
 		@Override
@@ -300,13 +302,13 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Environment(EnvType.CLIENT)
 	class LevelTwoEffectButtonWidget extends BeaconScreen.EffectButtonWidget {
-		public LevelTwoEffectButtonWidget(int x, int y, StatusEffect statusEffect) {
-			super(x, y, statusEffect, false, 3);
+		public LevelTwoEffectButtonWidget(int x, int y, RegistryEntry<StatusEffect> registryEntry) {
+			super(x, y, registryEntry, false, 3);
 		}
 
 		@Override
-		protected MutableText getEffectName(StatusEffect statusEffect) {
-			return Text.translatable(statusEffect.getTranslationKey()).append(" II");
+		protected MutableText getEffectName(RegistryEntry<StatusEffect> registryEntry) {
+			return Text.translatable(registryEntry.value().getTranslationKey()).append(" II");
 		}
 
 		@Override

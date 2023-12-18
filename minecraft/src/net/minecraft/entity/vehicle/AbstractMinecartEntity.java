@@ -44,11 +44,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 public abstract class AbstractMinecartEntity extends VehicleEntity {
-	private static final float VILLAGER_PASSENGER_ATTACHMENT_Y_OFFSET = 0.0F;
-	private static final float PASSENGER_ATTACHMENT_Y_OFFSET = 0.1875F;
+	private static final Vec3d field_47822 = new Vec3d(0.0, 0.0, 0.0);
 	private static final TrackedData<Integer> CUSTOM_BLOCK_ID = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -144,9 +142,9 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+	protected Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
 		boolean bl = passenger instanceof VillagerEntity || passenger instanceof WanderingTraderEntity;
-		return new Vector3f(0.0F, bl ? 0.0F : 0.1875F, 0.0F);
+		return bl ? field_47822 : super.getPassengerAttachmentPos(passenger, dimensions, scaleFactor);
 	}
 
 	@Override
@@ -162,7 +160,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 
 			for (EntityPose entityPose : immutableList) {
 				EntityDimensions entityDimensions = passenger.getDimensions(entityPose);
-				float f = Math.min(entityDimensions.width, 1.0F) / 2.0F;
+				float f = Math.min(entityDimensions.width(), 1.0F) / 2.0F;
 
 				for (int i : DISMOUNT_FREE_Y_SPACES_NEEDED.get(entityPose)) {
 					for (int[] js : is) {
@@ -170,7 +168,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 						double d = this.getWorld()
 							.getDismountHeight(Dismounting.getCollisionShape(this.getWorld(), mutable), () -> Dismounting.getCollisionShape(this.getWorld(), mutable.down()));
 						if (Dismounting.canDismountInBlock(d)) {
-							Box box = new Box((double)(-f), 0.0, (double)(-f), (double)f, (double)entityDimensions.height, (double)f);
+							Box box = new Box((double)(-f), 0.0, (double)(-f), (double)f, (double)entityDimensions.height(), (double)f);
 							Vec3d vec3d = Vec3d.ofCenter(mutable, d);
 							if (Dismounting.canPlaceEntityAt(this.getWorld(), passenger, box.offset(vec3d))) {
 								passenger.setPose(entityPose);
@@ -185,7 +183,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 			mutable.set((double)blockPos.getX(), e, (double)blockPos.getZ());
 
 			for (EntityPose entityPose2 : immutableList) {
-				double g = (double)passenger.getDimensions(entityPose2).height;
+				double g = (double)passenger.getDimensions(entityPose2).height();
 				int j = MathHelper.ceil(e - (double)mutable.getY() + g);
 				double h = Dismounting.getCeilingHeight(mutable, j, pos -> this.getWorld().getBlockState(pos).getCollisionShape(this.getWorld(), pos));
 				if (e + g <= h) {

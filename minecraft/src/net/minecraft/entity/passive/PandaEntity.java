@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -60,7 +63,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class PandaEntity extends AnimalEntity {
 	private static final TrackedData<Integer> ASK_FOR_BAMBOO_TICKS = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -70,6 +72,10 @@ public class PandaEntity extends AnimalEntity {
 	private static final TrackedData<Byte> HIDDEN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> PANDA_FLAGS = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	static final TargetPredicate ASK_FOR_BAMBOO_TARGET = TargetPredicate.createNonAttackable().setBaseMaxDistance(8.0);
+	private static final EntityDimensions field_47773 = EntityType.PANDA
+		.getDimensions()
+		.scaled(0.5F)
+		.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, 0.40625F, 0.0F));
 	private static final int SNEEZING_FLAG = 2;
 	private static final int PLAYING_FLAG = 4;
 	private static final int SITTING_FLAG = 8;
@@ -689,8 +695,8 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - (this.isBaby() ? 0.4375F : 0.0F) * scaleFactor, 0.0F);
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47773 : super.method_55694(entityPose);
 	}
 
 	static class AttackGoal extends MeleeAttackGoal {

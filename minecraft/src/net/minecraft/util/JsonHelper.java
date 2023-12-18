@@ -26,8 +26,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Contract;
@@ -113,7 +111,7 @@ public class JsonHelper {
 		if (element.isJsonPrimitive()) {
 			String string = element.getAsString();
 			return (RegistryEntry<Item>)Registries.ITEM
-				.getEntry(RegistryKey.of(RegistryKeys.ITEM, new Identifier(string)))
+				.method_55841(new Identifier(string))
 				.orElseThrow(() -> new JsonSyntaxException("Expected " + name + " to be an item, was unknown string '" + string + "'"));
 		} else {
 			throw new JsonSyntaxException("Expected " + name + " to be an item, was " + getType(element));

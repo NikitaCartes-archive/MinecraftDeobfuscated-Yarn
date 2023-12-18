@@ -59,12 +59,12 @@ public class ChatHud {
 		}
 	}
 
-	public void render(DrawContext context, int currentTick, int mouseX, int mouseY) {
+	public void render(DrawContext context, int currentTick, int mouseX, int mouseY, boolean bl) {
 		if (!this.isChatHidden()) {
 			int i = this.getVisibleLineCount();
 			int j = this.visibleMessages.size();
 			if (j > 0) {
-				boolean bl = this.isChatFocused();
+				this.client.getProfiler().push("chat");
 				float f = (float)this.getChatScale();
 				int k = MathHelper.ceil((float)this.getWidth() / f);
 				int l = context.getScaledWindowHeight();
@@ -94,8 +94,6 @@ public class ChatHud {
 								int w = 0;
 								int x = m - r * o;
 								int y = x + p;
-								context.getMatrices().push();
-								context.getMatrices().translate(0.0F, 0.0F, 50.0F);
 								context.fill(-4, x - o, 0 + k + 4 + 4, x, v << 24);
 								MessageIndicator messageIndicator = visible.indicator();
 								if (messageIndicator != null) {
@@ -108,6 +106,7 @@ public class ChatHud {
 									}
 								}
 
+								context.getMatrices().push();
 								context.getMatrices().translate(0.0F, 0.0F, 50.0F);
 								context.drawTextWithShadow(this.client.textRenderer, visible.content(), 0, y, 16777215 + (u << 24));
 								context.getMatrices().pop();
@@ -121,7 +120,7 @@ public class ChatHud {
 					int ad = (int)(128.0 * d);
 					int t = (int)(255.0 * e);
 					context.getMatrices().push();
-					context.getMatrices().translate(0.0F, (float)m, 50.0F);
+					context.getMatrices().translate(0.0F, (float)m, 0.0F);
 					context.fill(-2, 0, k + 4, 9, t << 24);
 					context.getMatrices().translate(0.0F, 0.0F, 50.0F);
 					context.drawTextWithShadow(this.client.textRenderer, Text.translatable("chat.queue", ac), 0, 1, 16777215 + (ad << 24));
@@ -144,6 +143,7 @@ public class ChatHud {
 				}
 
 				context.getMatrices().pop();
+				this.client.getProfiler().pop();
 			}
 		}
 	}
@@ -430,7 +430,7 @@ public class ChatHud {
 		}
 	}
 
-	private boolean isChatFocused() {
+	public boolean isChatFocused() {
 		return this.client.currentScreen instanceof ChatScreen;
 	}
 

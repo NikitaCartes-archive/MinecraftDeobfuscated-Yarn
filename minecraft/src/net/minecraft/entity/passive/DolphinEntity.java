@@ -6,8 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -194,11 +192,6 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Override
 	protected int getNextAirOnLand(int air) {
 		return this.getMaxAir();
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.3F;
 	}
 
 	@Override

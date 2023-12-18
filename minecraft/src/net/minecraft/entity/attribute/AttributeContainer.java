@@ -1,9 +1,9 @@
 package net.minecraft.entity.attribute;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 
 public class AttributeContainer {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final Map<EntityAttribute, EntityAttributeInstance> custom = Maps.<EntityAttribute, EntityAttributeInstance>newHashMap();
-	private final Set<EntityAttributeInstance> tracked = Sets.<EntityAttributeInstance>newHashSet();
+	private final Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> custom = new Object2ObjectOpenHashMap<>();
+	private final Set<EntityAttributeInstance> tracked = new ObjectOpenHashSet<>();
 	private final DefaultAttributeContainer fallback;
 
 	public AttributeContainer(DefaultAttributeContainer defaultAttributes) {
@@ -29,7 +29,7 @@ public class AttributeContainer {
 	}
 
 	private void updateTrackedStatus(EntityAttributeInstance instance) {
-		if (instance.getAttribute().isTracked()) {
+		if (instance.getAttribute().value().isTracked()) {
 			this.tracked.add(instance);
 		}
 	}
@@ -42,68 +42,52 @@ public class AttributeContainer {
 		return (Collection<EntityAttributeInstance>)this.custom
 			.values()
 			.stream()
-			.filter(attribute -> attribute.getAttribute().isTracked())
+			.filter(attribute -> attribute.getAttribute().value().isTracked())
 			.collect(Collectors.toList());
 	}
 
 	@Nullable
-	public EntityAttributeInstance getCustomInstance(EntityAttribute attribute) {
-		return (EntityAttributeInstance)this.custom.computeIfAbsent(attribute, attributex -> this.fallback.createOverride(this::updateTrackedStatus, attributex));
-	}
-
-	@Nullable
 	public EntityAttributeInstance getCustomInstance(RegistryEntry<EntityAttribute> attribute) {
-		return this.getCustomInstance(attribute.value());
-	}
-
-	public boolean hasAttribute(EntityAttribute attribute) {
-		return this.custom.get(attribute) != null || this.fallback.has(attribute);
+		return (EntityAttributeInstance)this.custom
+			.computeIfAbsent(attribute, registryEntry -> this.fallback.createOverride(this::updateTrackedStatus, registryEntry));
 	}
 
 	public boolean hasAttribute(RegistryEntry<EntityAttribute> attribute) {
-		return this.hasAttribute(attribute.value());
+		return this.custom.get(attribute) != null || this.fallback.has(attribute);
 	}
 
-	public boolean hasModifierForAttribute(EntityAttribute attribute, UUID uuid) {
+	public boolean hasModifierForAttribute(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
 		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid) != null : this.fallback.hasModifier(attribute, uuid);
 	}
 
-	public boolean hasModifierForAttribute(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
-		return this.hasModifierForAttribute(attribute.value(), uuid);
+	public double getValue(RegistryEntry<EntityAttribute> registryEntry) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(registryEntry);
+		return entityAttributeInstance != null ? entityAttributeInstance.getValue() : this.fallback.getValue(registryEntry);
 	}
 
-	public double getValue(EntityAttribute attribute) {
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
-		return entityAttributeInstance != null ? entityAttributeInstance.getValue() : this.fallback.getValue(attribute);
+	public double getBaseValue(RegistryEntry<EntityAttribute> registryEntry) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(registryEntry);
+		return entityAttributeInstance != null ? entityAttributeInstance.getBaseValue() : this.fallback.getBaseValue(registryEntry);
 	}
 
-	public double getBaseValue(EntityAttribute attribute) {
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
-		return entityAttributeInstance != null ? entityAttributeInstance.getBaseValue() : this.fallback.getBaseValue(attribute);
-	}
-
-	public double getModifierValue(EntityAttribute attribute, UUID uuid) {
+	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
 		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid).getValue() : this.fallback.getModifierValue(attribute, uuid);
 	}
 
-	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
-		return this.getModifierValue(attribute.value(), uuid);
-	}
-
-	public void removeModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
-		attributeModifiers.asMap().forEach((attribute, modifiers) -> {
-			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
+	public void removeModifiers(Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifiers) {
+		attributeModifiers.asMap().forEach((registryEntry, modifiers) -> {
+			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(registryEntry);
 			if (entityAttributeInstance != null) {
 				modifiers.forEach(modifier -> entityAttributeInstance.removeModifier(modifier.getId()));
 			}
 		});
 	}
 
-	public void addTemporaryModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
-		attributeModifiers.forEach((attribute, attributeModifier) -> {
-			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
+	public void addTemporaryModifiers(Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifiers) {
+		attributeModifiers.forEach((registryEntry, attributeModifier) -> {
+			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(registryEntry);
 			if (entityAttributeInstance != null) {
 				entityAttributeInstance.removeModifier(attributeModifier.getId());
 				entityAttributeInstance.addTemporaryModifier(attributeModifier);
@@ -134,12 +118,17 @@ public class AttributeContainer {
 		for (int i = 0; i < nbt.size(); i++) {
 			NbtCompound nbtCompound = nbt.getCompound(i);
 			String string = nbtCompound.getString("Name");
-			Util.ifPresentOrElse(Registries.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), attribute -> {
-				EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
-				if (entityAttributeInstance != null) {
-					entityAttributeInstance.readNbt(nbtCompound);
-				}
-			}, () -> LOGGER.warn("Ignoring unknown attribute '{}'", string));
+			Identifier identifier = Identifier.tryParse(string);
+			if (identifier != null) {
+				Util.ifPresentOrElse(Registries.ATTRIBUTE.method_55841(identifier), reference -> {
+					EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(reference);
+					if (entityAttributeInstance != null) {
+						entityAttributeInstance.readNbt(nbtCompound);
+					}
+				}, () -> LOGGER.warn("Ignoring unknown attribute '{}'", identifier));
+			} else {
+				LOGGER.warn("Ignoring malformed attribute '{}'", string);
+			}
 		}
 	}
 }

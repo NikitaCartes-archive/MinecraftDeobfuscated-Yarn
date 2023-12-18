@@ -78,4 +78,9 @@ public class NyliumBlock extends Block implements Fertilizable {
 	) {
 		registry.getEntry(key).ifPresent(entry -> ((ConfiguredFeature)entry.value()).generate(world, chunkGenerator, random, pos));
 	}
+
+	@Override
+	public Fertilizable.class_9077 method_55770() {
+		return Fertilizable.class_9077.NEIGHBOR_SPREADER;
+	}
 }

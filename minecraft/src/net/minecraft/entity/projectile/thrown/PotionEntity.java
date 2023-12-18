@@ -22,6 +22,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -64,9 +65,9 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		super.onBlockHit(blockHitResult);
 		if (!this.getWorld().isClient) {
 			ItemStack itemStack = this.getStack();
-			Potion potion = PotionUtil.getPotion(itemStack);
+			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = potion == Potions.WATER && list.isEmpty();
+			boolean bl = registryEntry.method_55838(Potions.WATER) && list.isEmpty();
 			Direction direction = blockHitResult.getSide();
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			BlockPos blockPos2 = blockPos.offset(direction);
@@ -86,20 +87,20 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		super.onCollision(hitResult);
 		if (!this.getWorld().isClient) {
 			ItemStack itemStack = this.getStack();
-			Potion potion = PotionUtil.getPotion(itemStack);
+			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = potion == Potions.WATER && list.isEmpty();
+			boolean bl = registryEntry.method_55838(Potions.WATER) && list.isEmpty();
 			if (bl) {
 				this.applyWater();
 			} else if (!list.isEmpty()) {
 				if (this.isLingering()) {
-					this.applyLingeringPotion(itemStack, potion);
+					this.applyLingeringPotion(itemStack, registryEntry);
 				} else {
 					this.applySplashPotion(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
 				}
 			}
 
-			int i = potion.hasInstantEffect() ? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED : WorldEvents.SPLASH_POTION_SPLASHED;
+			int i = registryEntry.value().hasInstantEffect() ? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED : WorldEvents.SPLASH_POTION_SPLASHED;
 			this.getWorld().syncWorldEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
 			this.discard();
 		}
@@ -144,13 +145,13 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 						}
 
 						for (StatusEffectInstance statusEffectInstance : statusEffects) {
-							StatusEffect statusEffect = statusEffectInstance.getEffectType();
-							if (statusEffect.isInstant()) {
-								statusEffect.applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
+							RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
+							if (registryEntry.value().isInstant()) {
+								registryEntry.value().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
 							} else {
 								int i = statusEffectInstance.mapDuration(ix -> (int)(e * (double)ix + 0.5));
 								StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(
-									statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()
+									registryEntry, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()
 								);
 								if (!statusEffectInstance2.isDurationBelow(20)) {
 									livingEntity.addStatusEffect(statusEffectInstance2, entity2);
@@ -163,18 +164,17 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void applyLingeringPotion(ItemStack stack, Potion potion) {
+	private void applyLingeringPotion(ItemStack stack, RegistryEntry<Potion> registryEntry) {
 		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.getWorld(), this.getX(), this.getY(), this.getZ());
-		Entity entity = this.getOwner();
-		if (entity instanceof LivingEntity) {
-			areaEffectCloudEntity.setOwner((LivingEntity)entity);
+		if (this.getOwner() instanceof LivingEntity livingEntity) {
+			areaEffectCloudEntity.setOwner(livingEntity);
 		}
 
 		areaEffectCloudEntity.setRadius(3.0F);
 		areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 		areaEffectCloudEntity.setWaitTime(10);
 		areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
-		areaEffectCloudEntity.setPotion(potion);
+		areaEffectCloudEntity.setPotion(registryEntry);
 
 		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(stack)) {
 			areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));

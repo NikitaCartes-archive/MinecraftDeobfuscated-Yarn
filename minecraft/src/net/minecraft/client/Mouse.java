@@ -35,7 +35,7 @@ public class Mouse {
 	private double cursorDeltaY;
 	private double eventDeltaHorizontalWheel;
 	private double eventDeltaVerticalWheel;
-	private double lastMouseUpdateTime = Double.MIN_VALUE;
+	private double field_47842 = Double.MIN_VALUE;
 	private boolean cursorLocked;
 
 	public Mouse(MinecraftClient client) {
@@ -201,76 +201,77 @@ public class Mouse {
 				this.x = x;
 				this.y = y;
 				this.hasResolutionChanged = false;
-			}
+			} else {
+				if (this.client.isWindowFocused()) {
+					this.cursorDeltaX = this.cursorDeltaX + (x - this.x);
+					this.cursorDeltaY = this.cursorDeltaY + (y - this.y);
+				}
 
+				this.x = x;
+				this.y = y;
+			}
+		}
+	}
+
+	public void method_55793() {
+		double d = GlfwUtil.getTime();
+		double e = d - this.field_47842;
+		this.field_47842 = d;
+		if (this.client.isWindowFocused()) {
 			Screen screen = this.client.currentScreen;
 			if (screen != null && this.client.getOverlay() == null) {
-				double d = x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
-				double e = y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-				Screen.wrapScreenError(() -> screen.mouseMoved(d, e), "mouseMoved event handler", screen.getClass().getCanonicalName());
+				double f = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
+				double g = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
+				Screen.wrapScreenError(() -> screen.mouseMoved(f, g), "mouseMoved event handler", screen.getClass().getCanonicalName());
 				if (this.activeButton != -1 && this.glfwTime > 0.0) {
-					double f = (x - this.x) * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
-					double g = (y - this.y) * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-					Screen.wrapScreenError(() -> screen.mouseDragged(d, e, this.activeButton, f, g), "mouseDragged event handler", screen.getClass().getCanonicalName());
+					double h = this.cursorDeltaX * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
+					double i = this.cursorDeltaY * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
+					Screen.wrapScreenError(() -> screen.mouseDragged(f, g, this.activeButton, h, i), "mouseDragged event handler", screen.getClass().getCanonicalName());
 				}
 
 				screen.applyMouseMoveNarratorDelay();
 			}
 
-			this.client.getProfiler().push("mouse");
-			if (this.isCursorLocked() && this.client.isWindowFocused()) {
-				this.cursorDeltaX = this.cursorDeltaX + (x - this.x);
-				this.cursorDeltaY = this.cursorDeltaY + (y - this.y);
+			if (this.isCursorLocked() && this.client.player != null) {
+				this.updateMouse(e);
 			}
-
-			this.updateMouse();
-			this.x = x;
-			this.y = y;
-			this.client.getProfiler().pop();
 		}
+
+		this.cursorDeltaX = 0.0;
+		this.cursorDeltaY = 0.0;
 	}
 
-	public void updateMouse() {
-		double d = GlfwUtil.getTime();
-		double e = d - this.lastMouseUpdateTime;
-		this.lastMouseUpdateTime = d;
-		if (this.isCursorLocked() && this.client.isWindowFocused()) {
-			double f = this.client.options.getMouseSensitivity().getValue() * 0.6F + 0.2F;
-			double g = f * f * f;
-			double h = g * 8.0;
-			double k;
-			double l;
-			if (this.client.options.smoothCameraEnabled) {
-				double i = this.cursorXSmoother.smooth(this.cursorDeltaX * h, e * h);
-				double j = this.cursorYSmoother.smooth(this.cursorDeltaY * h, e * h);
-				k = i;
-				l = j;
-			} else if (this.client.options.getPerspective().isFirstPerson() && this.client.player.isUsingSpyglass()) {
-				this.cursorXSmoother.clear();
-				this.cursorYSmoother.clear();
-				k = this.cursorDeltaX * g;
-				l = this.cursorDeltaY * g;
-			} else {
-				this.cursorXSmoother.clear();
-				this.cursorYSmoother.clear();
-				k = this.cursorDeltaX * h;
-				l = this.cursorDeltaY * h;
-			}
-
-			this.cursorDeltaX = 0.0;
-			this.cursorDeltaY = 0.0;
-			int m = 1;
-			if (this.client.options.getInvertYMouse().getValue()) {
-				m = -1;
-			}
-
-			this.client.getTutorialManager().onUpdateMouse(k, l);
-			if (this.client.player != null) {
-				this.client.player.changeLookDirection(k, l * (double)m);
-			}
+	private void updateMouse(double d) {
+		double e = this.client.options.getMouseSensitivity().getValue() * 0.6F + 0.2F;
+		double f = e * e * e;
+		double g = f * 8.0;
+		double j;
+		double k;
+		if (this.client.options.smoothCameraEnabled) {
+			double h = this.cursorXSmoother.smooth(this.cursorDeltaX * g, d * g);
+			double i = this.cursorYSmoother.smooth(this.cursorDeltaY * g, d * g);
+			j = h;
+			k = i;
+		} else if (this.client.options.getPerspective().isFirstPerson() && this.client.player.isUsingSpyglass()) {
+			this.cursorXSmoother.clear();
+			this.cursorYSmoother.clear();
+			j = this.cursorDeltaX * f;
+			k = this.cursorDeltaY * f;
 		} else {
-			this.cursorDeltaX = 0.0;
-			this.cursorDeltaY = 0.0;
+			this.cursorXSmoother.clear();
+			this.cursorYSmoother.clear();
+			j = this.cursorDeltaX * g;
+			k = this.cursorDeltaY * g;
+		}
+
+		int l = 1;
+		if (this.client.options.getInvertYMouse().getValue()) {
+			l = -1;
+		}
+
+		this.client.getTutorialManager().onUpdateMouse(j, k);
+		if (this.client.player != null) {
+			this.client.player.changeLookDirection(j, k * (double)l);
 		}
 	}
 

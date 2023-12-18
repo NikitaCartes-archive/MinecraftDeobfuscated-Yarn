@@ -2,6 +2,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
@@ -65,7 +67,7 @@ public abstract class EntityRenderer<T extends Entity> {
 
 	public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 		if (this.hasLabel(entity)) {
-			this.renderLabelIfPresent(entity, entity.getDisplayName(), matrices, vertexConsumers, light);
+			this.renderLabelIfPresent(entity, entity.getDisplayName(), matrices, vertexConsumers, light, tickDelta);
 		}
 	}
 
@@ -84,29 +86,36 @@ public abstract class EntityRenderer<T extends Entity> {
 		return this.textRenderer;
 	}
 
-	protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+	protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float f) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
-			boolean bl = !entity.isSneaky();
-			float f = entity.getNameLabelHeight();
-			int i = "deadmau5".equals(text.getString()) ? -10 : 0;
-			matrices.push();
-			matrices.translate(0.0F, f, 0.0F);
-			matrices.multiply(this.dispatcher.getRotation());
-			matrices.scale(-0.025F, -0.025F, 0.025F);
-			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
-			int j = (int)(g * 255.0F) << 24;
-			TextRenderer textRenderer = this.getTextRenderer();
-			float h = (float)(-textRenderer.getWidth(text) / 2);
-			textRenderer.draw(
-				text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
-			);
-			if (bl) {
-				textRenderer.draw(text, h, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
-			}
+			class_9066 lv = entity.getDimensions(entity.getPose()).attachments();
+			Vec3d vec3d = lv.method_55675(class_9064.NAME_TAG, 0, entity.getYaw(f));
+			if (vec3d != null) {
+				boolean bl = !entity.isSneaky();
+				int i = "deadmau5".equals(text.getString()) ? -10 : 0;
+				matrices.push();
+				matrices.translate(vec3d.x, vec3d.y + 0.5, vec3d.z);
+				matrices.multiply(this.dispatcher.getRotation());
+				matrices.scale(-0.025F, -0.025F, 0.025F);
+				Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+				float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
+				int j = (int)(g * 255.0F) << 24;
+				TextRenderer textRenderer = this.getTextRenderer();
+				float h = (float)(-textRenderer.getWidth(text) / 2);
+				textRenderer.draw(
+					text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
+				);
+				if (bl) {
+					textRenderer.draw(text, h, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+				}
 
-			matrices.pop();
+				matrices.pop();
+			}
 		}
+	}
+
+	protected float method_55831(T entity) {
+		return this.shadowRadius;
 	}
 }

@@ -1,19 +1,14 @@
 package net.minecraft.entity.ai.goal;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Sets;
-import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import net.minecraft.util.profiler.Profiler;
-import org.slf4j.Logger;
 
 /**
  * Manages a set of goals, which are competing for certain controls on the mob.
@@ -29,7 +24,6 @@ import org.slf4j.Logger;
  * they were added.
  */
 public class GoalSelector {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final PrioritizedGoal REPLACEABLE_GOAL = new PrioritizedGoal(Integer.MAX_VALUE, new Goal() {
 		@Override
 		public boolean canStart() {
@@ -42,11 +36,9 @@ public class GoalSelector {
 		}
 	};
 	private final Map<Goal.Control, PrioritizedGoal> goalsByControl = new EnumMap(Goal.Control.class);
-	private final Set<PrioritizedGoal> goals = Sets.<PrioritizedGoal>newLinkedHashSet();
+	private final Set<PrioritizedGoal> goals = new ObjectLinkedOpenHashSet<>();
 	private final Supplier<Profiler> profiler;
 	private final EnumSet<Goal.Control> disabledControls = EnumSet.noneOf(Goal.Control.class);
-	private int field_30212;
-	private int timeInterval = 3;
 
 	public GoalSelector(Supplier<Profiler> profiler) {
 		this.profiler = profiler;
@@ -66,8 +58,13 @@ public class GoalSelector {
 	}
 
 	public void remove(Goal goal) {
-		this.goals.stream().filter(prioritizedGoal -> prioritizedGoal.getGoal() == goal).filter(PrioritizedGoal::isRunning).forEach(PrioritizedGoal::stop);
-		this.goals.removeIf(prioritizedGoal -> prioritizedGoal.getGoal() == goal);
+		for (PrioritizedGoal prioritizedGoal : this.goals) {
+			if (prioritizedGoal.getGoal() == goal && prioritizedGoal.isRunning()) {
+				prioritizedGoal.stop();
+			}
+		}
+
+		this.goals.removeIf(prioritizedGoalx -> prioritizedGoalx.getGoal() == goal);
 	}
 
 	private static boolean usesAny(PrioritizedGoal goal, EnumSet<Goal.Control> controls) {
@@ -100,15 +97,7 @@ public class GoalSelector {
 			}
 		}
 
-		Iterator<Entry<Goal.Control, PrioritizedGoal>> iterator = this.goalsByControl.entrySet().iterator();
-
-		while (iterator.hasNext()) {
-			Entry<Goal.Control, PrioritizedGoal> entry = (Entry<Goal.Control, PrioritizedGoal>)iterator.next();
-			if (!((PrioritizedGoal)entry.getValue()).isRunning()) {
-				iterator.remove();
-			}
-		}
-
+		this.goalsByControl.entrySet().removeIf(entry -> !((PrioritizedGoal)entry.getValue()).isRunning());
 		profiler.pop();
 		profiler.push("goalUpdate");
 
@@ -146,14 +135,6 @@ public class GoalSelector {
 
 	public Set<PrioritizedGoal> getGoals() {
 		return this.goals;
-	}
-
-	public Stream<PrioritizedGoal> getRunningGoals() {
-		return this.goals.stream().filter(PrioritizedGoal::isRunning);
-	}
-
-	public void setTimeInterval(int timeInterval) {
-		this.timeInterval = timeInterval;
 	}
 
 	public void disableControl(Goal.Control control) {

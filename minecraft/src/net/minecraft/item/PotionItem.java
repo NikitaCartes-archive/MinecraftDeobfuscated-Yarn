@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.BlockTags;
@@ -49,8 +50,8 @@ public class PotionItem extends Item {
 
 		if (!world.isClient) {
 			for (StatusEffectInstance statusEffectInstance : PotionUtil.getPotionEffects(stack)) {
-				if (statusEffectInstance.getEffectType().isInstant()) {
-					statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, user, statusEffectInstance.getAmplifier(), 1.0);
+				if (statusEffectInstance.getEffectType().value().isInstant()) {
+					statusEffectInstance.getEffectType().value().applyInstantEffect(playerEntity, playerEntity, user, statusEffectInstance.getAmplifier(), 1.0);
 				} else {
 					user.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
 				}
@@ -85,7 +86,7 @@ public class PotionItem extends Item {
 		PlayerEntity playerEntity = context.getPlayer();
 		ItemStack itemStack = context.getStack();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (context.getSide() != Direction.DOWN && blockState.isIn(BlockTags.CONVERTABLE_TO_MUD) && PotionUtil.getPotion(itemStack) == Potions.WATER) {
+		if (context.getSide() != Direction.DOWN && blockState.isIn(BlockTags.CONVERTABLE_TO_MUD) && PotionUtil.getPotion(itemStack).method_55838(Potions.WATER)) {
 			world.playSound(null, blockPos, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			playerEntity.setStackInHand(context.getHand(), ItemUsage.exchangeStack(itemStack, playerEntity, new ItemStack(Items.GLASS_BOTTLE)));
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
@@ -133,7 +134,7 @@ public class PotionItem extends Item {
 
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return PotionUtil.getPotion(stack).finishTranslationKey(this.getTranslationKey() + ".effect.");
+		return Potion.finishTranslationKey(PotionUtil.getPotion(stack), this.getTranslationKey() + ".effect.");
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
@@ -49,7 +48,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.gen.feature.EndPortalFeature;
-import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 public class EnderDragonEntity extends MobEntity implements Monster {
@@ -915,10 +913,5 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	@Override
 	public boolean canTarget(LivingEntity target) {
 		return target.canTakeDamage();
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, this.body.getHeight(), 0.0F);
 	}
 }

@@ -3,8 +3,6 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -88,16 +86,6 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 2.1F;
-	}
-
-	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return -0.875F;
-	}
-
-	@Override
 	public boolean tryAttack(Entity target) {
 		if (!super.tryAttack(target)) {
 			return false;
@@ -119,6 +107,6 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.getEffectType() == StatusEffects.WITHER ? false : super.canHaveStatusEffect(effect);
+		return effect.method_55654(StatusEffects.WITHER) ? false : super.canHaveStatusEffect(effect);
 	}
 }

@@ -88,7 +88,6 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.Type> {
 	private static final TrackedData<Integer> TYPE = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -109,6 +108,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
 	private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity);
 	private static final int EATING_DURATION = 600;
+	private static final EntityDimensions field_47772 = EntityType.FOX.getDimensions().scaled(0.5F).method_55685(0.2975F);
 	private Goal followChickenAndRabbitGoal;
 	private Goal followBabyTurtleGoal;
 	private Goal followFishGoal;
@@ -352,8 +352,8 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? dimensions.height * 0.85F : 0.4F;
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47772 : super.method_55694(entityPose);
 	}
 
 	public FoxEntity.Type getVariant() {
@@ -682,11 +682,6 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		super.drop(source);
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + -0.0625F * scaleFactor, -0.25F * scaleFactor);
 	}
 
 	public static boolean canJumpChase(FoxEntity fox, LivingEntity chasedEntity) {

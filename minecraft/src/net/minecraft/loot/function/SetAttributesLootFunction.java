@@ -61,9 +61,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			UUID uUID = (UUID)attribute.id.orElseGet(UUID::randomUUID);
 			EquipmentSlot equipmentSlot = Util.getRandom(attribute.slots, random);
 			stack.addAttributeModifier(
-				attribute.attribute.value(),
-				new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation),
-				equipmentSlot
+				attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation), equipmentSlot
 			);
 		}
 

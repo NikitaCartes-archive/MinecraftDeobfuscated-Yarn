@@ -50,10 +50,11 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class TitleScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final String DEMO_WORLD_NAME = "Demo_World";
+	private static final Text field_47850 = Text.translatable("narrator.screen.title");
 	public static final Text COPYRIGHT = Text.translatable("title.credits");
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
+	private static final String DEMO_WORLD_NAME = "Demo_World";
 	@Nullable
 	private SplashTextRenderer splashText;
 	private ButtonWidget buttonResetDemo;
@@ -75,7 +76,7 @@ public class TitleScreen extends Screen {
 	}
 
 	public TitleScreen(boolean doBackgroundFade, @Nullable LogoDrawer logoDrawer) {
-		super(Text.translatable("narrator.screen.title"));
+		super(field_47850);
 		this.doBackgroundFade = doBackgroundFade;
 		this.logoDrawer = (LogoDrawer)Objects.requireNonNullElseGet(logoDrawer, () -> new LogoDrawer(false));
 	}
@@ -180,7 +181,7 @@ public class TitleScreen extends Screen {
 			this.client.setScreen(screen);
 		}).dimensions(this.width / 2 - 100, y + spacingY * 1, 200, 20).tooltip(tooltip).build()).active = bl;
 		this.addDrawableChild(
-				ButtonWidget.builder(Text.translatable("menu.online"), button -> this.switchToRealms())
+				ButtonWidget.builder(Text.translatable("menu.online"), buttonWidget -> this.client.setScreen(new RealmsMainScreen(this)))
 					.dimensions(this.width / 2 - 100, y + spacingY * 2, 200, 20)
 					.tooltip(tooltip)
 					.build()
@@ -268,10 +269,6 @@ public class TitleScreen extends Screen {
 			LOGGER.warn("Failed to read demo world data", (Throwable)var6);
 			return false;
 		}
-	}
-
-	private void switchToRealms() {
-		this.client.setScreen(new RealmsMainScreen(this));
 	}
 
 	@Override

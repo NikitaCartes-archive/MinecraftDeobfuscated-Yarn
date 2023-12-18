@@ -47,6 +47,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.registry.tag.TagKey;
@@ -70,7 +71,6 @@ import net.minecraft.world.event.Vibrations;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Contract;
-import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 public class WardenEntity extends HostileEntity implements Vibrations {
@@ -531,9 +531,9 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
-		EntityDimensions entityDimensions = super.getDimensions(pose);
-		return this.isDiggingOrEmerging() ? EntityDimensions.fixed(entityDimensions.width, 1.0F) : entityDimensions;
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		EntityDimensions entityDimensions = super.method_55694(entityPose);
+		return this.isDiggingOrEmerging() ? EntityDimensions.fixed(entityDimensions.width(), 1.0F) : entityDimensions;
 	}
 
 	@Override
@@ -575,11 +575,6 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.25F * scaleFactor, 0.0F);
-	}
-
-	@Override
 	public Vibrations.ListenerData getVibrationListenerData() {
 		return this.vibrationListenerData;
 	}
@@ -614,7 +609,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 		}
 
 		@Override
-		public boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
+		public boolean accepts(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter) {
 			if (!WardenEntity.this.isAiDisabled()
 				&& !WardenEntity.this.isDead()
 				&& !WardenEntity.this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN)
@@ -631,7 +626,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 		}
 
 		@Override
-		public void accept(ServerWorld world, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
+		public void accept(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
 			if (!WardenEntity.this.isDead()) {
 				WardenEntity.this.brain.remember(MemoryModuleType.VIBRATION_COOLDOWN, Unit.INSTANCE, 40L);
 				world.sendEntityStatus(WardenEntity.this, EntityStatuses.EARS_TWITCH);

@@ -10,6 +10,7 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class ParticleUtil {
 	public static void spawnParticle(World world, BlockPos pos, ParticleEffect effect, IntProvider count) {
@@ -69,5 +70,28 @@ public class ParticleUtil {
 		double e = (double)pos.getY() - 0.05;
 		double f = (double)pos.getZ() + random.nextDouble();
 		world.addParticle(effect, d, e, f, 0.0, 0.0, 0.0);
+	}
+
+	public static void method_55636(WorldAccess worldAccess, BlockPos blockPos, int i, ParticleEffect particleEffect) {
+		double d = 0.5;
+		double e = worldAccess.getBlockState(blockPos).getOutlineShape(worldAccess, blockPos).getMax(Direction.Axis.Y);
+		method_55635(worldAccess, blockPos, i, 0.5, e, true, particleEffect);
+	}
+
+	public static void method_55635(WorldAccess worldAccess, BlockPos blockPos, int i, double d, double e, boolean bl, ParticleEffect particleEffect) {
+		Random random = worldAccess.getRandom();
+
+		for (int j = 0; j < i; j++) {
+			double f = random.nextGaussian() * 0.02;
+			double g = random.nextGaussian() * 0.02;
+			double h = random.nextGaussian() * 0.02;
+			double k = 0.5 - d;
+			double l = (double)blockPos.getX() + k + random.nextDouble() * d * 2.0;
+			double m = (double)blockPos.getY() + random.nextDouble() * e;
+			double n = (double)blockPos.getZ() + k + random.nextDouble() * d * 2.0;
+			if (bl || !worldAccess.getBlockState(BlockPos.ofFloored(l, m, n).down()).isAir()) {
+				worldAccess.addParticle(particleEffect, l, m, n, f, g, h);
+			}
+		}
 	}
 }

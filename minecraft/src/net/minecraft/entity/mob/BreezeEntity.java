@@ -14,6 +14,7 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -33,12 +34,16 @@ public class BreezeEntity extends HostileEntity {
 	private static final int field_47275 = 5;
 	private static final int field_47276 = 10;
 	private static final float field_47278 = 3.0F;
+	private static final int field_47813 = 1;
+	private static final int field_47814 = 80;
 	public AnimationState field_47269 = new AnimationState();
 	public AnimationState slidingAnimationState = new AnimationState();
+	public AnimationState field_47816 = new AnimationState();
 	public AnimationState inhalingAnimationState = new AnimationState();
 	public AnimationState shootingAnimationState = new AnimationState();
 	public AnimationState field_47270 = new AnimationState();
 	private int longJumpingParticleAddCount = 0;
+	private int field_47815 = 0;
 
 	public static DefaultAttributeContainer.Builder createBreezeAttributes() {
 		return MobEntity.createMobAttributes()
@@ -99,12 +104,12 @@ public class BreezeEntity extends HostileEntity {
 		this.field_47269.stop();
 		this.field_47270.stop();
 		this.inhalingAnimationState.stop();
-		this.slidingAnimationState.stop();
 	}
 
 	@Override
 	public void tick() {
-		switch (this.getPose()) {
+		EntityPose entityPose = this.getPose();
+		switch (entityPose) {
 			case SHOOTING:
 			case INHALING:
 			case STANDING:
@@ -115,6 +120,16 @@ public class BreezeEntity extends HostileEntity {
 				break;
 			case LONG_JUMPING:
 				this.addLongJumpingParticles();
+		}
+
+		if (entityPose != EntityPose.SLIDING && this.slidingAnimationState.isRunning()) {
+			this.field_47816.start(this.age);
+			this.slidingAnimationState.stop();
+		}
+
+		this.field_47815 = this.field_47815 == 0 ? this.random.nextBetween(1, 80) : this.field_47815 - 1;
+		if (this.field_47815 == 0) {
+			this.method_55747();
 		}
 
 		super.tick();
@@ -137,7 +152,7 @@ public class BreezeEntity extends HostileEntity {
 
 	public void addLongJumpingParticles() {
 		if (++this.longJumpingParticleAddCount <= 5) {
-			BlockState blockState = this.getWorld().getBlockState(this.getBlockPos().down());
+			BlockState blockState = !this.method_55667().isAir() ? this.method_55667() : this.getSteppingBlockState();
 			Vec3d vec3d = this.getVelocity();
 			Vec3d vec3d2 = this.getPos().add(vec3d).add(0.0, 0.1F, 0.0);
 
@@ -148,19 +163,34 @@ public class BreezeEntity extends HostileEntity {
 	}
 
 	public void addBlockParticles(int count) {
-		Vec3d vec3d = this.getBoundingBox().getCenter();
-		Vec3d vec3d2 = new Vec3d(vec3d.x, this.getPos().y, vec3d.z);
-		BlockState blockState = this.getWorld().getBlockState(this.getBlockPos().down());
-		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-			for (int i = 0; i < count; i++) {
-				this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), vec3d2.x, vec3d2.y, vec3d2.z, 0.0, 0.0, 0.0);
+		if (!this.hasVehicle()) {
+			Vec3d vec3d = this.getBoundingBox().getCenter();
+			Vec3d vec3d2 = new Vec3d(vec3d.x, this.getPos().y, vec3d.z);
+			BlockState blockState = !this.method_55667().isAir() ? this.method_55667() : this.getSteppingBlockState();
+			if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
+				for (int i = 0; i < count; i++) {
+					this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), vec3d2.x, vec3d2.y, vec3d2.z, 0.0, 0.0, 0.0);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void playAmbientSound() {
-		this.getWorld().playSoundFromEntity(this, this.getAmbientSound(), this.getSoundCategory(), 1.0F, 1.0F);
+		if (this.getTarget() == null || !this.isOnGround()) {
+			this.getWorld().playSoundFromEntity(this, this.getAmbientSound(), this.getSoundCategory(), 1.0F, 1.0F);
+		}
+	}
+
+	public void method_55747() {
+		float f = 0.7F + 0.4F * this.random.nextFloat();
+		float g = 0.8F + 0.2F * this.random.nextFloat();
+		this.getWorld().playSoundFromEntity(this, SoundEvents.ENTITY_BREEZE_WHIRL, this.getSoundCategory(), g, f);
+	}
+
+	@Override
+	public void method_55666(ProjectileEntity projectileEntity) {
+		this.getWorld().playSoundFromEntity(this, SoundEvents.ENTITY_BREEZE_DEFLECT, this.getSoundCategory(), 1.0F, 1.0F);
 	}
 
 	@Override
@@ -183,16 +213,6 @@ public class BreezeEntity extends HostileEntity {
 		return this.isOnGround() ? SoundEvents.ENTITY_BREEZE_IDLE_GROUND : SoundEvents.ENTITY_BREEZE_IDLE_AIR;
 	}
 
-	public boolean isWithinLargeRange(Vec3d pos) {
-		Vec3d vec3d = this.getBlockPos().toCenterPos();
-		return pos.isWithinRangeOf(vec3d, 20.0, 10.0) && !pos.isWithinRangeOf(vec3d, 8.0, 10.0);
-	}
-
-	public boolean isWithinMediumRange(Vec3d pos) {
-		Vec3d vec3d = this.getBlockPos().toCenterPos();
-		return pos.isWithinRangeOf(vec3d, 8.0, 10.0) && !pos.isWithinRangeOf(vec3d, 4.0, 10.0);
-	}
-
 	public boolean isWithinShortRange(Vec3d pos) {
 		Vec3d vec3d = this.getBlockPos().toCenterPos();
 		return pos.isWithinRangeOf(vec3d, 4.0, 10.0);
@@ -203,6 +223,7 @@ public class BreezeEntity extends HostileEntity {
 		this.getWorld().getProfiler().push("breezeBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
 		this.getWorld().getProfiler().swap("breezeActivityUpdate");
+		BreezeBrain.method_55748(this);
 		this.getWorld().getProfiler().pop();
 		super.mobTick();
 	}

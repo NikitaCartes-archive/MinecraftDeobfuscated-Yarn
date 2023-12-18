@@ -1,7 +1,10 @@
 package net.minecraft.entity.passive;
 
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -24,10 +27,14 @@ import net.minecraft.world.World;
 public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	private static final TrackedData<Boolean> CHEST = DataTracker.registerData(AbstractDonkeyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final int field_30412 = 15;
+	private final EntityDimensions field_47806;
 
 	protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> entityType, World world) {
 		super(entityType, world);
 		this.playExtraHorseSounds = false;
+		this.field_47806 = entityType.getDimensions()
+			.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, entityType.getHeight() - 0.15625F, 0.0F))
+			.scaled(0.5F);
 	}
 
 	@Override
@@ -59,8 +66,8 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected float getPassengerAttachmentY(EntityDimensions dimensions, float scaleFactor) {
-		return dimensions.height - (this.isBaby() ? 0.15625F : 0.3875F) * scaleFactor;
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? this.field_47806 : super.method_55694(entityPose);
 	}
 
 	@Override

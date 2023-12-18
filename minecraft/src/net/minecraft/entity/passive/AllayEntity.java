@@ -11,8 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -45,6 +43,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
@@ -122,7 +121,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		this.vibrationListenerData = new Vibrations.ListenerData();
 		this.gameEventHandler = new EntityGameEventHandler<>(new Vibrations.VibrationListener(this));
 		this.jukeboxEventHandler = new EntityGameEventHandler<>(
-			new AllayEntity.JukeboxEventListener(this.vibrationCallback.getPositionSource(), GameEvent.JUKEBOX_PLAY.getRange())
+			new AllayEntity.JukeboxEventListener(this.vibrationCallback.getPositionSource(), GameEvent.JUKEBOX_PLAY.value().range())
 		);
 	}
 
@@ -185,11 +184,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		}
 
 		this.updateLimbs(false);
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.6F;
 	}
 
 	@Override
@@ -433,7 +427,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 	private boolean shouldStopDancing() {
 		return this.jukeboxPos == null
-			|| !this.jukeboxPos.isWithinDistance(this.getPos(), (double)GameEvent.JUKEBOX_PLAY.getRange())
+			|| !this.jukeboxPos.isWithinDistance(this.getPos(), (double)GameEvent.JUKEBOX_PLAY.value().range())
 			|| !this.getWorld().getBlockState(this.jukeboxPos).isOf(Blocks.JUKEBOX);
 	}
 
@@ -549,11 +543,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return 0.04F;
-	}
-
-	@Override
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.ADD_BREEDING_PARTICLES) {
 			for (int i = 0; i < 3; i++) {
@@ -601,11 +590,11 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		}
 
 		@Override
-		public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
-			if (event == GameEvent.JUKEBOX_PLAY) {
+		public boolean listen(ServerWorld world, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos) {
+			if (event.method_55838(GameEvent.JUKEBOX_PLAY)) {
 				AllayEntity.this.updateJukeboxPos(BlockPos.ofFloored(emitterPos), true);
 				return true;
-			} else if (event == GameEvent.JUKEBOX_STOP_PLAY) {
+			} else if (event.method_55838(GameEvent.JUKEBOX_STOP_PLAY)) {
 				AllayEntity.this.updateJukeboxPos(BlockPos.ofFloored(emitterPos), false);
 				return true;
 			} else {
@@ -629,7 +618,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		}
 
 		@Override
-		public boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
+		public boolean accepts(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter) {
 			if (AllayEntity.this.isAiDisabled()) {
 				return false;
 			} else {
@@ -644,8 +633,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		}
 
 		@Override
-		public void accept(ServerWorld world, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
-			if (event == GameEvent.NOTE_BLOCK_PLAY) {
+		public void accept(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
+			if (event.method_55838(GameEvent.NOTE_BLOCK_PLAY)) {
 				AllayBrain.rememberNoteBlock(AllayEntity.this, new BlockPos(pos));
 			}
 		}

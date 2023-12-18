@@ -8,10 +8,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -214,6 +217,11 @@ public class MapState extends PersistentState {
 		);
 	}
 
+	private static Predicate<ItemStack> method_55784(ItemStack itemStack) {
+		Integer integer = FilledMapItem.getMapId(itemStack);
+		return itemStack2 -> itemStack2 == itemStack ? true : itemStack2.isOf(itemStack.getItem()) && Objects.equals(integer, FilledMapItem.getMapId(itemStack2));
+	}
+
 	public void update(PlayerEntity player, ItemStack stack) {
 		if (!this.updateTrackersByPlayer.containsKey(player)) {
 			MapState.PlayerUpdateTracker playerUpdateTracker = new MapState.PlayerUpdateTracker(player);
@@ -221,14 +229,15 @@ public class MapState extends PersistentState {
 			this.updateTrackers.add(playerUpdateTracker);
 		}
 
-		if (!player.getInventory().contains(stack)) {
+		Predicate<ItemStack> predicate = method_55784(stack);
+		if (!player.getInventory().method_55753(predicate)) {
 			this.removeIcon(player.getName().getString());
 		}
 
 		for (int i = 0; i < this.updateTrackers.size(); i++) {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
 			String string = playerUpdateTracker2.player.getName().getString();
-			if (!playerUpdateTracker2.player.isRemoved() && (playerUpdateTracker2.player.getInventory().contains(stack) || stack.isInFrame())) {
+			if (!playerUpdateTracker2.player.isRemoved() && (playerUpdateTracker2.player.getInventory().method_55753(predicate) || stack.isInFrame())) {
 				if (!stack.isInFrame() && playerUpdateTracker2.player.getWorld().getRegistryKey() == this.dimension && this.showIcons) {
 					this.addIcon(
 						MapIcon.Type.PLAYER,

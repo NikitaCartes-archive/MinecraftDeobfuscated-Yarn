@@ -1,5 +1,6 @@
 package net.minecraft.world.event.listener;
 
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
@@ -24,7 +25,7 @@ public interface GameEventListener {
 	 * 
 	 * @return {@code true} if the game event has been accepted by this listener
 	 */
-	boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos);
+	boolean listen(ServerWorld world, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos);
 
 	default GameEventListener.TriggerOrder getTriggerOrder() {
 		return GameEventListener.TriggerOrder.UNSPECIFIED;

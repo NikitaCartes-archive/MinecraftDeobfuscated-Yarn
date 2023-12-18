@@ -1,7 +1,6 @@
 package net.minecraft.entity.mob;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -16,7 +15,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import org.joml.Vector3f;
 
 public class HuskEntity extends ZombieEntity {
 	public HuskEntity(EntityType<? extends HuskEntity> entityType, World world) {
@@ -79,10 +77,5 @@ public class HuskEntity extends ZombieEntity {
 	@Override
 	protected ItemStack getSkull() {
 		return ItemStack.EMPTY;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.125F * scaleFactor, 0.0F);
 	}
 }

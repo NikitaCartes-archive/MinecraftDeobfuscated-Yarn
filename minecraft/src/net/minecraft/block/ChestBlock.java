@@ -40,7 +40,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
@@ -242,15 +241,15 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
+			NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(blockState, world, blockPos);
 			if (namedScreenHandlerFactory != null) {
-				player.openHandledScreen(namedScreenHandlerFactory);
-				player.incrementStat(this.getOpenStat());
-				PiglinBrain.onGuardedBlockInteracted(player, true);
+				playerEntity.openHandledScreen(namedScreenHandlerFactory);
+				playerEntity.incrementStat(this.getOpenStat());
+				PiglinBrain.onGuardedBlockInteracted(playerEntity, true);
 			}
 
 			return ActionResult.CONSUME;

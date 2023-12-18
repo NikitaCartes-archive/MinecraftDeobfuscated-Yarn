@@ -138,10 +138,6 @@ public class LocateCommand {
 		}
 	}
 
-	private static String getKeyString(Pair<BlockPos, ? extends RegistryEntry<?>> result) {
-		return (String)result.getSecond().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
-	}
-
 	public static int sendCoordinates(
 		ServerCommandSource source,
 		RegistryEntryPredicateArgumentType.EntryPredicate<?> predicate,
@@ -151,7 +147,7 @@ public class LocateCommand {
 		boolean includeY,
 		Duration timeTaken
 	) {
-		String string = predicate.getEntry().map(entry -> predicate.asString(), tag -> predicate.asString() + " (" + getKeyString(result) + ")");
+		String string = predicate.getEntry().map(entry -> predicate.asString(), tag -> predicate.asString() + " (" + result.getSecond().method_55840() + ")");
 		return sendCoordinates(source, currentPos, result, successMessage, includeY, string, timeTaken);
 	}
 
@@ -164,7 +160,7 @@ public class LocateCommand {
 		boolean includeY,
 		Duration timeTaken
 	) {
-		String string = structure.getKey().map(key -> key.getValue().toString(), key -> "#" + key.id() + " (" + getKeyString(result) + ")");
+		String string = structure.getKey().map(key -> key.getValue().toString(), key -> "#" + key.id() + " (" + result.getSecond().method_55840() + ")");
 		return sendCoordinates(source, currentPos, result, successMessage, includeY, string, timeTaken);
 	}
 

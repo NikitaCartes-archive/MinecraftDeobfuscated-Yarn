@@ -1,27 +1,25 @@
 package net.minecraft.network.packet.s2c.play;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {
 	private static final int AMBIENT_MASK = 1;
 	private static final int SHOW_PARTICLES_MASK = 2;
 	private static final int SHOW_ICON_MASK = 4;
+	private static final int field_47706 = 8;
 	private final int entityId;
-	private final StatusEffect effectId;
+	private final RegistryEntry<StatusEffect> effectId;
 	private final byte amplifier;
 	private final int duration;
 	private final byte flags;
-	@Nullable
-	private final StatusEffectInstance.FactorCalculationData factorCalculationData;
 
-	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect) {
+	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect, boolean bl) {
 		this.entityId = entityId;
 		this.effectId = effect.getEffectType();
 		this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
@@ -39,30 +37,28 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 			b = (byte)(b | 4);
 		}
 
+		if (bl) {
+			b = (byte)(b | 8);
+		}
+
 		this.flags = b;
-		this.factorCalculationData = (StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().orElse(null);
 	}
 
 	public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		this.effectId = buf.readRegistryValue(Registries.STATUS_EFFECT);
+		this.effectId = buf.readRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries());
 		this.amplifier = buf.readByte();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
-		this.factorCalculationData = buf.readNullable(buf2 -> buf2.decode(NbtOps.INSTANCE, StatusEffectInstance.FactorCalculationData.CODEC));
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeRegistryValue(Registries.STATUS_EFFECT, this.effectId);
+		buf.writeRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries(), this.effectId);
 		buf.writeByte(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);
-		buf.writeNullable(
-			this.factorCalculationData,
-			(buf2, factorCalculationData) -> buf2.encode(NbtOps.INSTANCE, StatusEffectInstance.FactorCalculationData.CODEC, factorCalculationData)
-		);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -73,7 +69,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		return this.entityId;
 	}
 
-	public StatusEffect getEffectId() {
+	public RegistryEntry<StatusEffect> getEffectId() {
 		return this.effectId;
 	}
 
@@ -86,19 +82,18 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public boolean shouldShowParticles() {
-		return (this.flags & 2) == 2;
+		return (this.flags & 2) != 0;
 	}
 
 	public boolean isAmbient() {
-		return (this.flags & 1) == 1;
+		return (this.flags & 1) != 0;
 	}
 
 	public boolean shouldShowIcon() {
-		return (this.flags & 4) == 4;
+		return (this.flags & 4) != 0;
 	}
 
-	@Nullable
-	public StatusEffectInstance.FactorCalculationData getFactorCalculationData() {
-		return this.factorCalculationData;
+	public boolean method_55629() {
+		return (this.flags & 8) != 0;
 	}
 }

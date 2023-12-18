@@ -22,6 +22,7 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class Camera {
+	private static final float field_47841 = 4.0F;
 	private boolean ready;
 	private BlockView area;
 	private Entity focusedEntity;
@@ -56,7 +57,8 @@ public class Camera {
 				this.setRotation(this.yaw + 180.0F, -this.pitch);
 			}
 
-			this.moveBy(-this.clipToSpace(4.0), 0.0, 0.0);
+			float f = focusedEntity instanceof LivingEntity livingEntity ? livingEntity.method_55693() : 1.0F;
+			this.moveBy(-this.clipToSpace((double)(4.0F * f)), 0.0, 0.0);
 		} else if (focusedEntity instanceof LivingEntity && ((LivingEntity)focusedEntity).isSleeping()) {
 			Direction direction = ((LivingEntity)focusedEntity).getSleepingDirection();
 			this.setRotation(direction != null ? direction.asRotation() - 180.0F : 0.0F, 0.0F);

@@ -9,6 +9,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -27,8 +28,8 @@ public class WitherRoseBlock extends FlowerBlock {
 		return CODEC;
 	}
 
-	public WitherRoseBlock(StatusEffect effect, int i, AbstractBlock.Settings settings) {
-		this(createStewEffectList(effect, i), settings);
+	public WitherRoseBlock(RegistryEntry<StatusEffect> registryEntry, int i, AbstractBlock.Settings settings) {
+		this(createStewEffectList(registryEntry, i), settings);
 	}
 
 	public WitherRoseBlock(List<SuspiciousStewIngredient.StewEffect> list, AbstractBlock.Settings settings) {

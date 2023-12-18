@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundCategory;
@@ -92,7 +91,7 @@ public class GoatHornItem extends Item {
 		if (nbtCompound != null && nbtCompound.contains("instrument", NbtElement.STRING_TYPE)) {
 			Identifier identifier = Identifier.tryParse(nbtCompound.getString("instrument"));
 			if (identifier != null) {
-				return Registries.INSTRUMENT.getEntry(RegistryKey.of(RegistryKeys.INSTRUMENT, identifier));
+				return Registries.INSTRUMENT.method_55841(identifier);
 			}
 		}
 

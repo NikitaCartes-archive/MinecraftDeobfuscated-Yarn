@@ -27,7 +27,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -80,25 +79,25 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		EnderChestInventory enderChestInventory = player.getEnderChestInventory();
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
-			BlockPos blockPos = pos.up();
-			if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
+			BlockPos blockPos2 = blockPos.up();
+			if (world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) {
 				return ActionResult.success(world.isClient);
 			} else if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {
 				EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
 				enderChestInventory.setActiveBlockEntity(enderChestBlockEntity);
-				player.openHandledScreen(
+				playerEntity.openHandledScreen(
 					new SimpleNamedScreenHandlerFactory(
-						(syncId, inventory, playerx) -> GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, enderChestInventory), CONTAINER_NAME
+						(i, playerInventory, playerEntityx) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
-				player.incrementStat(Stats.OPEN_ENDERCHEST);
-				PiglinBrain.onGuardedBlockInteracted(player, true);
+				playerEntity.incrementStat(Stats.OPEN_ENDERCHEST);
+				PiglinBrain.onGuardedBlockInteracted(playerEntity, true);
 				return ActionResult.CONSUME;
 			}
 		} else {

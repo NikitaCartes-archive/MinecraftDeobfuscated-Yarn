@@ -1393,6 +1393,7 @@ public class ItemGroups {
 						entries.add(Items.IRON_HORSE_ARMOR);
 						entries.add(Items.GOLDEN_HORSE_ARMOR);
 						entries.add(Items.DIAMOND_HORSE_ARMOR);
+						entries.add(Items.WOLF_ARMOR);
 						entries.add(Items.TOTEM_OF_UNDYING);
 						entries.add(Items.TNT);
 						entries.add(Items.END_CRYSTAL);
@@ -1506,7 +1507,8 @@ public class ItemGroups {
 					entries.add(Items.HONEYCOMB);
 					entries.add(Items.INK_SAC);
 					entries.add(Items.GLOW_INK_SAC);
-					entries.add(Items.SCUTE);
+					entries.add(Items.TURTLE_SCUTE);
+					entries.add(Items.ARMADILLO_SCUTE);
 					entries.add(Items.SLIME_BALL);
 					entries.add(Items.CLAY_BALL);
 					entries.add(Items.PRISMARINE_SHARD);
@@ -1625,6 +1627,7 @@ public class ItemGroups {
 					entries.add(Items.SPAWNER);
 					entries.add(Items.TRIAL_SPAWNER);
 					entries.add(Items.ALLAY_SPAWN_EGG);
+					entries.add(Items.ARMADILLO_SPAWN_EGG);
 					entries.add(Items.AXOLOTL_SPAWN_EGG);
 					entries.add(Items.BAT_SPAWN_EGG);
 					entries.add(Items.BEE_SPAWN_EGG);
@@ -1774,7 +1777,7 @@ public class ItemGroups {
 	private static void addPotions(ItemGroup.Entries entries, RegistryWrapper<Potion> registryWrapper, Item item, ItemGroup.StackVisibility visibility) {
 		registryWrapper.streamEntries()
 			.filter(entry -> !entry.matchesKey(Potions.EMPTY_KEY))
-			.map(entry -> PotionUtil.setPotion(new ItemStack(item), (Potion)entry.value()))
+			.map(entry -> PotionUtil.setPotion(new ItemStack(item), entry))
 			.forEach(stack -> entries.add(stack, visibility));
 	}
 

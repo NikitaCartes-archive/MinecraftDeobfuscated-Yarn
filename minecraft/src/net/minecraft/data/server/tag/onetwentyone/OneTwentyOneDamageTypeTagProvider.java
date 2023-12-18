@@ -17,5 +17,7 @@ public class OneTwentyOneDamageTypeTagProvider extends TagProvider<DamageType> {
 	@Override
 	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(DamageTypeTags.BREEZE_IMMUNE_TO).add(DamageTypes.ARROW, DamageTypes.TRIDENT);
+		this.getOrCreateTagBuilder(DamageTypeTags.IS_PROJECTILE).add(DamageTypes.field_47737);
+		this.getOrCreateTagBuilder(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS).add(DamageTypes.field_47737);
 	}
 }

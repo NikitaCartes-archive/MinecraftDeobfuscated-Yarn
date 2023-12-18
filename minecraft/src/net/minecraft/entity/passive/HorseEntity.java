@@ -2,7 +2,11 @@ package net.minecraft.entity.passive;
 
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
@@ -34,6 +38,10 @@ import net.minecraft.world.World;
 public class HorseEntity extends AbstractHorseEntity implements VariantHolder<HorseColor> {
 	private static final UUID HORSE_ARMOR_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HorseEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final EntityDimensions field_47807 = EntityType.HORSE
+		.getDimensions()
+		.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, EntityType.HORSE.getHeight() + 0.125F, 0.0F))
+		.scaled(0.5F);
 
 	public HorseEntity(EntityType<? extends HorseEntity> entityType, World world) {
 		super(entityType, world);
@@ -255,7 +263,11 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 	@Override
 	public boolean isHorseArmor(ItemStack item) {
-		return item.getItem() instanceof HorseArmorItem;
+		if (item.getItem() instanceof HorseArmorItem horseArmorItem && horseArmorItem.method_55756() == HorseArmorItem.class_9076.EQUESTRIAN) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Nullable
@@ -274,6 +286,11 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 		this.setHorseVariant(horseColor, Util.getRandom(HorseMarking.values(), random));
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+	}
+
+	@Override
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47807 : super.method_55694(entityPose);
 	}
 
 	public static class HorseData extends PassiveEntity.PassiveData {

@@ -1,9 +1,11 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.SkeletonHorseTrapTriggerGoal;
@@ -25,11 +27,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import org.joml.Vector3f;
 
 public class SkeletonHorseEntity extends AbstractHorseEntity {
 	private final SkeletonHorseTrapTriggerGoal trapTriggerGoal = new SkeletonHorseTrapTriggerGoal(this);
 	private static final int DESPAWN_AGE = 18000;
+	private static final EntityDimensions field_47809 = EntityType.SKELETON_HORSE
+		.getDimensions()
+		.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, EntityType.SKELETON_HORSE.getHeight() - 0.03125F, 0.0F))
+		.scaled(0.5F);
 	private boolean trapped;
 	private int trapTime;
 
@@ -115,8 +120,8 @@ public class SkeletonHorseEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - (this.isBaby() ? 0.03125F : 0.28125F) * scaleFactor, 0.0F);
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47809 : super.method_55694(entityPose);
 	}
 
 	@Override

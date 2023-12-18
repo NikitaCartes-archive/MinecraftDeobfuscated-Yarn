@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -231,22 +232,31 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		int i = (Integer)state.get(LEVEL);
-		ItemStack itemStack = player.getStackInHand(hand);
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
+		int i = (Integer)blockState.get(LEVEL);
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
-				BlockState blockState = addToComposter(player, state, world, pos, itemStack);
-				world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, state != blockState ? 1 : 0);
-				player.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
-				if (!player.getAbilities().creativeMode) {
+				BlockState blockState2 = addToComposter(playerEntity, blockState, world, blockPos, itemStack);
+				world.syncWorldEvent(WorldEvents.COMPOSTER_USED, blockPos, blockState != blockState2 ? 1 : 0);
+				playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
+				if (!playerEntity.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 			}
 
-			return ActionResult.success(world.isClient);
-		} else if (i == 8) {
-			emptyFullComposter(player, state, world, pos);
+			return class_9062.method_55644(world.isClient);
+		} else {
+			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+		}
+	}
+
+	@Override
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		int i = (Integer)blockState.get(LEVEL);
+		if (i == 8) {
+			emptyFullComposter(playerEntity, blockState, world, blockPos);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;

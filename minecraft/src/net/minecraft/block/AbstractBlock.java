@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -541,22 +542,16 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 	}
 
-	/**
-	 * Called when this block is used by a player.
-	 * This, by default, is bound to using the right mouse button.
-	 * 
-	 * <p>This method is called on both the logical client and logical server, so take caution when overriding this method.
-	 * The logical side can be checked using {@link net.minecraft.world.World#isClient() world.isClient()}.
-	 * 
-	 * <p>If the action result is successful on a logical client, then the action will be sent to the logical server for processing.
-	 * 
-	 * @return an action result that specifies if using the block was successful.
-	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onUse} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 */
 	@Deprecated
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
 		return ActionResult.PASS;
+	}
+
+	@Deprecated
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
+		return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 
 	/**
@@ -1481,8 +1476,12 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.getBlock().getDroppedStacks(this.asBlockState(), builder);
 		}
 
-		public ActionResult onUse(World world, PlayerEntity player, Hand hand, BlockHitResult hit) {
-			return this.getBlock().onUse(this.asBlockState(), world, hit.getBlockPos(), player, hand, hit);
+		public class_9062 method_55780(ItemStack itemStack, World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+			return this.getBlock().method_55765(itemStack, this.asBlockState(), world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
+		}
+
+		public ActionResult method_55781(World world, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+			return this.getBlock().method_55766(this.asBlockState(), world, blockHitResult.getBlockPos(), playerEntity, blockHitResult);
 		}
 
 		public void onBlockBreakStart(World world, BlockPos pos, PlayerEntity player) {

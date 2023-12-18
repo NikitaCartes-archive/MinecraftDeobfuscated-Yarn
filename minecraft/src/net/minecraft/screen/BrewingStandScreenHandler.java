@@ -10,6 +10,7 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -177,9 +178,9 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 
 		@Override
 		public void onTakeItem(PlayerEntity player, ItemStack stack) {
-			Potion potion = PotionUtil.getPotion(stack);
+			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(stack);
 			if (player instanceof ServerPlayerEntity) {
-				Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, potion.getRegistryEntry());
+				Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, registryEntry);
 			}
 
 			super.onTakeItem(player, stack);

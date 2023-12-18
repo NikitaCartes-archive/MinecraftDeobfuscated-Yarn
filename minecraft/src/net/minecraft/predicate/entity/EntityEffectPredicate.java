@@ -34,9 +34,9 @@ public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffec
 		return this.test(livingEntity.getActiveStatusEffects());
 	}
 
-	public boolean test(Map<StatusEffect, StatusEffectInstance> effects) {
+	public boolean test(Map<RegistryEntry<StatusEffect>, StatusEffectInstance> effects) {
 		for (Entry<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
-			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)effects.get(((RegistryEntry)entry.getKey()).value());
+			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)effects.get(entry.getKey());
 			if (!((EntityEffectPredicate.EffectData)entry.getValue()).test(statusEffectInstance)) {
 				return false;
 			}
@@ -52,13 +52,13 @@ public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffec
 			return new EntityEffectPredicate.Builder();
 		}
 
-		public EntityEffectPredicate.Builder addEffect(StatusEffect effect) {
-			this.EFFECTS.put(effect.getRegistryEntry(), new EntityEffectPredicate.EffectData());
+		public EntityEffectPredicate.Builder addEffect(RegistryEntry<StatusEffect> registryEntry) {
+			this.EFFECTS.put(registryEntry, new EntityEffectPredicate.EffectData());
 			return this;
 		}
 
-		public EntityEffectPredicate.Builder addEffect(StatusEffect effect, EntityEffectPredicate.EffectData effectData) {
-			this.EFFECTS.put(effect.getRegistryEntry(), effectData);
+		public EntityEffectPredicate.Builder addEffect(RegistryEntry<StatusEffect> registryEntry, EntityEffectPredicate.EffectData effectData) {
+			this.EFFECTS.put(registryEntry, effectData);
 			return this;
 		}
 

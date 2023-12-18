@@ -2,13 +2,16 @@ package net.minecraft.world.event;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.VibrationParticleEffect;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.registry.tag.TagKey;
@@ -29,68 +32,69 @@ import net.minecraft.world.event.listener.Vibration;
 import net.minecraft.world.event.listener.VibrationSelector;
 
 public interface Vibrations {
-	GameEvent[] RESONATIONS = new GameEvent[]{
-		GameEvent.RESONATE_1,
-		GameEvent.RESONATE_2,
-		GameEvent.RESONATE_3,
-		GameEvent.RESONATE_4,
-		GameEvent.RESONATE_5,
-		GameEvent.RESONATE_6,
-		GameEvent.RESONATE_7,
-		GameEvent.RESONATE_8,
-		GameEvent.RESONATE_9,
-		GameEvent.RESONATE_10,
-		GameEvent.RESONATE_11,
-		GameEvent.RESONATE_12,
-		GameEvent.RESONATE_13,
-		GameEvent.RESONATE_14,
-		GameEvent.RESONATE_15
-	};
-	ToIntFunction<GameEvent> FREQUENCIES = Util.make(new Object2IntOpenHashMap<>(), frequencies -> {
-		frequencies.defaultReturnValue(0);
-		frequencies.put(GameEvent.STEP, 1);
-		frequencies.put(GameEvent.SWIM, 1);
-		frequencies.put(GameEvent.FLAP, 1);
-		frequencies.put(GameEvent.PROJECTILE_LAND, 2);
-		frequencies.put(GameEvent.HIT_GROUND, 2);
-		frequencies.put(GameEvent.SPLASH, 2);
-		frequencies.put(GameEvent.ITEM_INTERACT_FINISH, 3);
-		frequencies.put(GameEvent.PROJECTILE_SHOOT, 3);
-		frequencies.put(GameEvent.INSTRUMENT_PLAY, 3);
-		frequencies.put(GameEvent.ENTITY_ACTION, 4);
-		frequencies.put(GameEvent.ELYTRA_GLIDE, 4);
-		frequencies.put(GameEvent.UNEQUIP, 4);
-		frequencies.put(GameEvent.ENTITY_DISMOUNT, 5);
-		frequencies.put(GameEvent.EQUIP, 5);
-		frequencies.put(GameEvent.ENTITY_INTERACT, 6);
-		frequencies.put(GameEvent.SHEAR, 6);
-		frequencies.put(GameEvent.ENTITY_MOUNT, 6);
-		frequencies.put(GameEvent.ENTITY_DAMAGE, 7);
-		frequencies.put(GameEvent.DRINK, 8);
-		frequencies.put(GameEvent.EAT, 8);
-		frequencies.put(GameEvent.CONTAINER_CLOSE, 9);
-		frequencies.put(GameEvent.BLOCK_CLOSE, 9);
-		frequencies.put(GameEvent.BLOCK_DEACTIVATE, 9);
-		frequencies.put(GameEvent.BLOCK_DETACH, 9);
-		frequencies.put(GameEvent.CONTAINER_OPEN, 10);
-		frequencies.put(GameEvent.BLOCK_OPEN, 10);
-		frequencies.put(GameEvent.BLOCK_ACTIVATE, 10);
-		frequencies.put(GameEvent.BLOCK_ATTACH, 10);
-		frequencies.put(GameEvent.PRIME_FUSE, 10);
-		frequencies.put(GameEvent.NOTE_BLOCK_PLAY, 10);
-		frequencies.put(GameEvent.BLOCK_CHANGE, 11);
-		frequencies.put(GameEvent.BLOCK_DESTROY, 12);
-		frequencies.put(GameEvent.FLUID_PICKUP, 12);
-		frequencies.put(GameEvent.BLOCK_PLACE, 13);
-		frequencies.put(GameEvent.FLUID_PLACE, 13);
-		frequencies.put(GameEvent.ENTITY_PLACE, 14);
-		frequencies.put(GameEvent.LIGHTNING_STRIKE, 14);
-		frequencies.put(GameEvent.TELEPORT, 14);
-		frequencies.put(GameEvent.ENTITY_DIE, 15);
-		frequencies.put(GameEvent.EXPLODE, 15);
+	List<RegistryKey<GameEvent>> RESONATIONS = List.of(
+		GameEvent.RESONATE_1.registryKey(),
+		GameEvent.RESONATE_2.registryKey(),
+		GameEvent.RESONATE_3.registryKey(),
+		GameEvent.RESONATE_4.registryKey(),
+		GameEvent.RESONATE_5.registryKey(),
+		GameEvent.RESONATE_6.registryKey(),
+		GameEvent.RESONATE_7.registryKey(),
+		GameEvent.RESONATE_8.registryKey(),
+		GameEvent.RESONATE_9.registryKey(),
+		GameEvent.RESONATE_10.registryKey(),
+		GameEvent.RESONATE_11.registryKey(),
+		GameEvent.RESONATE_12.registryKey(),
+		GameEvent.RESONATE_13.registryKey(),
+		GameEvent.RESONATE_14.registryKey(),
+		GameEvent.RESONATE_15.registryKey()
+	);
+	int field_47839 = 0;
+	ToIntFunction<RegistryKey<GameEvent>> FREQUENCIES = Util.make(new Reference2IntOpenHashMap<>(), reference2IntOpenHashMap -> {
+		reference2IntOpenHashMap.defaultReturnValue(0);
+		reference2IntOpenHashMap.put(GameEvent.STEP.registryKey(), 1);
+		reference2IntOpenHashMap.put(GameEvent.SWIM.registryKey(), 1);
+		reference2IntOpenHashMap.put(GameEvent.FLAP.registryKey(), 1);
+		reference2IntOpenHashMap.put(GameEvent.PROJECTILE_LAND.registryKey(), 2);
+		reference2IntOpenHashMap.put(GameEvent.HIT_GROUND.registryKey(), 2);
+		reference2IntOpenHashMap.put(GameEvent.SPLASH.registryKey(), 2);
+		reference2IntOpenHashMap.put(GameEvent.ITEM_INTERACT_FINISH.registryKey(), 3);
+		reference2IntOpenHashMap.put(GameEvent.PROJECTILE_SHOOT.registryKey(), 3);
+		reference2IntOpenHashMap.put(GameEvent.INSTRUMENT_PLAY.registryKey(), 3);
+		reference2IntOpenHashMap.put(GameEvent.ENTITY_ACTION.registryKey(), 4);
+		reference2IntOpenHashMap.put(GameEvent.ELYTRA_GLIDE.registryKey(), 4);
+		reference2IntOpenHashMap.put(GameEvent.UNEQUIP.registryKey(), 4);
+		reference2IntOpenHashMap.put(GameEvent.ENTITY_DISMOUNT.registryKey(), 5);
+		reference2IntOpenHashMap.put(GameEvent.EQUIP.registryKey(), 5);
+		reference2IntOpenHashMap.put(GameEvent.ENTITY_INTERACT.registryKey(), 6);
+		reference2IntOpenHashMap.put(GameEvent.SHEAR.registryKey(), 6);
+		reference2IntOpenHashMap.put(GameEvent.ENTITY_MOUNT.registryKey(), 6);
+		reference2IntOpenHashMap.put(GameEvent.ENTITY_DAMAGE.registryKey(), 7);
+		reference2IntOpenHashMap.put(GameEvent.DRINK.registryKey(), 8);
+		reference2IntOpenHashMap.put(GameEvent.EAT.registryKey(), 8);
+		reference2IntOpenHashMap.put(GameEvent.CONTAINER_CLOSE.registryKey(), 9);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_CLOSE.registryKey(), 9);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_DEACTIVATE.registryKey(), 9);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_DETACH.registryKey(), 9);
+		reference2IntOpenHashMap.put(GameEvent.CONTAINER_OPEN.registryKey(), 10);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_OPEN.registryKey(), 10);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_ACTIVATE.registryKey(), 10);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_ATTACH.registryKey(), 10);
+		reference2IntOpenHashMap.put(GameEvent.PRIME_FUSE.registryKey(), 10);
+		reference2IntOpenHashMap.put(GameEvent.NOTE_BLOCK_PLAY.registryKey(), 10);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_CHANGE.registryKey(), 11);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_DESTROY.registryKey(), 12);
+		reference2IntOpenHashMap.put(GameEvent.FLUID_PICKUP.registryKey(), 12);
+		reference2IntOpenHashMap.put(GameEvent.BLOCK_PLACE.registryKey(), 13);
+		reference2IntOpenHashMap.put(GameEvent.FLUID_PLACE.registryKey(), 13);
+		reference2IntOpenHashMap.put(GameEvent.ENTITY_PLACE.registryKey(), 14);
+		reference2IntOpenHashMap.put(GameEvent.LIGHTNING_STRIKE.registryKey(), 14);
+		reference2IntOpenHashMap.put(GameEvent.TELEPORT.registryKey(), 14);
+		reference2IntOpenHashMap.put(GameEvent.ENTITY_DIE.registryKey(), 15);
+		reference2IntOpenHashMap.put(GameEvent.EXPLODE.registryKey(), 15);
 
 		for (int i = 1; i <= 15; i++) {
-			frequencies.put(getResonation(i), i);
+			reference2IntOpenHashMap.put(getResonation(i), i);
 		}
 	});
 
@@ -98,12 +102,16 @@ public interface Vibrations {
 
 	Vibrations.Callback getVibrationCallback();
 
-	static int getFrequency(GameEvent event) {
-		return FREQUENCIES.applyAsInt(event);
+	static int method_55783(RegistryEntry<GameEvent> registryEntry) {
+		return (Integer)registryEntry.getKey().map(Vibrations::getFrequency).orElse(0);
 	}
 
-	static GameEvent getResonation(int frequency) {
-		return RESONATIONS[frequency - 1];
+	static int getFrequency(RegistryKey<GameEvent> registryKey) {
+		return FREQUENCIES.applyAsInt(registryKey);
+	}
+
+	static RegistryKey<GameEvent> getResonation(int frequency) {
+		return (RegistryKey<GameEvent>)RESONATIONS.get(frequency - 1);
 	}
 
 	static int getSignalStrength(float distance, int range) {
@@ -119,12 +127,12 @@ public interface Vibrations {
 		/**
 		 * Returns whether the callback wants to accept this event.
 		 */
-		boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, GameEvent.Emitter emitter);
+		boolean accepts(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter);
 
 		/**
 		 * Accepts a game event after delay.
 		 */
-		void accept(ServerWorld world, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance);
+		void accept(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance);
 
 		default TagKey<GameEvent> getTag() {
 			return GameEventTags.VIBRATIONS;
@@ -142,7 +150,7 @@ public interface Vibrations {
 			return MathHelper.floor(distance);
 		}
 
-		default boolean canAccept(GameEvent gameEvent, GameEvent.Emitter emitter) {
+		default boolean canAccept(RegistryEntry<GameEvent> gameEvent, GameEvent.Emitter emitter) {
 			if (!gameEvent.isIn(this.getTag())) {
 				return false;
 			} else {
@@ -341,7 +349,7 @@ public interface Vibrations {
 		}
 
 		@Override
-		public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
+		public boolean listen(ServerWorld world, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos) {
 			Vibrations.ListenerData listenerData = this.receiver.getVibrationListenerData();
 			Vibrations.Callback callback = this.receiver.getVibrationCallback();
 			if (listenerData.getVibration() != null) {
@@ -366,7 +374,7 @@ public interface Vibrations {
 			}
 		}
 
-		public void forceListen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
+		public void forceListen(ServerWorld world, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos) {
 			this.receiver
 				.getVibrationCallback()
 				.getPositionSource()
@@ -374,7 +382,9 @@ public interface Vibrations {
 				.ifPresent(pos -> this.listen(world, this.receiver.getVibrationListenerData(), event, emitter, emitterPos, pos));
 		}
 
-		private void listen(ServerWorld world, Vibrations.ListenerData listenerData, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos, Vec3d listenerPos) {
+		private void listen(
+			ServerWorld world, Vibrations.ListenerData listenerData, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos, Vec3d listenerPos
+		) {
 			listenerData.vibrationSelector
 				.tryAccept(new Vibration(event, (float)emitterPos.distanceTo(listenerPos), emitterPos, emitter.sourceEntity()), world.getTime());
 		}

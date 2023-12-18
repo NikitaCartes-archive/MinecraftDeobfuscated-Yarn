@@ -1,9 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -32,7 +29,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
-import org.joml.Vector3f;
 
 public class GhastEntity extends FlyingEntity implements Monster {
 	private static final TrackedData<Boolean> SHOOTING = DataTracker.registerData(GhastEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -139,16 +135,6 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.0625F * scaleFactor, 0.0F);
-	}
-
-	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return 0.5F;
-	}
-
-	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putByte("ExplosionPower", (byte)this.fireballStrength);
@@ -160,11 +146,6 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		if (nbt.contains("ExplosionPower", NbtElement.NUMBER_TYPE)) {
 			this.fireballStrength = nbt.getByte("ExplosionPower");
 		}
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 2.6F;
 	}
 
 	static class FlyRandomlyGoal extends Goal {

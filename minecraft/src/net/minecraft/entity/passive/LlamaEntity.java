@@ -3,6 +3,8 @@ package net.minecraft.entity.passive;
 import com.mojang.serialization.Codec;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,6 +12,7 @@ import net.minecraft.block.DyedCarpetBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -57,7 +60,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<LlamaEntity.Variant>, RangedAttackMob {
 	private static final int MAX_STRENGTH = 5;
@@ -65,6 +67,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final EntityDimensions field_47808 = EntityType.LLAMA
+		.getDimensions()
+		.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, EntityType.LLAMA.getHeight() - 0.8125F, -0.3F))
+		.scaled(0.5F);
 	boolean spit;
 	@Nullable
 	private LlamaEntity following;
@@ -482,8 +488,13 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - (this.isBaby() ? 0.8125F : 0.5F) * scaleFactor, -0.3F * scaleFactor);
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47808 : super.method_55694(entityPose);
+	}
+
+	@Override
+	protected Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return method_55665(this, passenger, dimensions.attachments());
 	}
 
 	static class ChaseWolvesGoal extends ActiveTargetGoal<WolfEntity> {

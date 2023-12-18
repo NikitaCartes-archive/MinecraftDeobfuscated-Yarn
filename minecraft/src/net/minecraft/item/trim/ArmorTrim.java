@@ -63,7 +63,7 @@ public class ArmorTrim {
 	}
 
 	public boolean equals(RegistryEntry<ArmorTrimPattern> pattern, RegistryEntry<ArmorTrimMaterial> material) {
-		return pattern == this.pattern && material == this.material;
+		return pattern.equals(this.pattern) && material.equals(this.material);
 	}
 
 	public RegistryEntry<ArmorTrimPattern> getPattern() {
@@ -83,7 +83,7 @@ public class ArmorTrim {
 	}
 
 	public boolean equals(Object o) {
-		return !(o instanceof ArmorTrim armorTrim) ? false : armorTrim.pattern == this.pattern && armorTrim.material == this.material;
+		return !(o instanceof ArmorTrim armorTrim) ? false : this.pattern.equals(armorTrim.pattern) && this.material.equals(armorTrim.material);
 	}
 
 	public static boolean apply(DynamicRegistryManager registryManager, ItemStack stack, ArmorTrim trim) {

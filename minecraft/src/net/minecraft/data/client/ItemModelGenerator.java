@@ -308,7 +308,9 @@ public class ItemModelGenerator {
 		this.register(Items.SADDLE, Models.GENERATED);
 		this.register(Items.SALMON, Models.GENERATED);
 		this.register(Items.SALMON_BUCKET, Models.GENERATED);
-		this.register(Items.SCUTE, Models.GENERATED);
+		this.register(Items.TURTLE_SCUTE, Models.GENERATED);
+		this.register(Items.ARMADILLO_SCUTE, Models.GENERATED);
+		this.register(Items.WOLF_ARMOR, Models.GENERATED);
 		this.register(Items.SHEARS, Models.GENERATED);
 		this.register(Items.SHULKER_SHELL, Models.GENERATED);
 		this.register(Items.SKULL_BANNER_PATTERN, Models.GENERATED);

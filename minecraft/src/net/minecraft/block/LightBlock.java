@@ -13,7 +13,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -47,9 +46,9 @@ public class LightBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (!world.isClient && player.isCreativeLevelTwoOp()) {
-			world.setBlockState(pos, state.cycle(LEVEL_15), Block.NOTIFY_LISTENERS);
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if (!world.isClient && playerEntity.isCreativeLevelTwoOp()) {
+			world.setBlockState(blockPos, blockState.cycle(LEVEL_15), Block.NOTIFY_LISTENERS);
 			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.CONSUME;

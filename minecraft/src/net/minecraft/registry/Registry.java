@@ -192,7 +192,7 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	default Codec<RegistryEntry<T>> createEntryCodec() {
 		Codec<RegistryEntry<T>> codec = Identifier.CODEC
 			.flatXmap(
-				id -> (DataResult)this.getEntry(RegistryKey.of(this.getKey(), id))
+				id -> (DataResult)this.method_55841(id)
 						.map(DataResult::success)
 						.orElseGet(() -> DataResult.error(() -> "Unknown registry key in " + this.getKey() + ": " + id)),
 				entry -> (DataResult)entry.getKey()
@@ -348,6 +348,8 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 * empty optional if there is no such value}
 	 */
 	Optional<RegistryEntry.Reference<T>> getEntry(int rawId);
+
+	Optional<RegistryEntry.Reference<T>> method_55841(Identifier identifier);
 
 	/**
 	 * {@return the reference registry entry for the value assigned {@code key}, or an

@@ -1,8 +1,11 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -23,6 +26,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class ZombieHorseEntity extends AbstractHorseEntity {
+	private static final EntityDimensions field_47810 = EntityType.ZOMBIE_HORSE
+		.getDimensions()
+		.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, EntityType.ZOMBIE_HORSE.getHeight() - 0.03125F, 0.0F))
+		.scaled(0.5F);
+
 	public ZombieHorseEntity(EntityType<? extends ZombieHorseEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -78,7 +86,7 @@ public class ZombieHorseEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected float getPassengerAttachmentY(EntityDimensions dimensions, float scaleFactor) {
-		return dimensions.height - (this.isBaby() ? 0.03125F : 0.28125F) * scaleFactor;
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47810 : super.method_55694(entityPose);
 	}
 }

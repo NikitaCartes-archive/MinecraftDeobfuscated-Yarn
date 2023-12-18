@@ -15,7 +15,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -122,15 +121,15 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (!player.getAbilities().allowModifyWorld) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if (!playerEntity.getAbilities().allowModifyWorld) {
 			return ActionResult.PASS;
 		} else {
-			state = state.cycle(MODE);
-			float f = state.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
-			world.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
-			this.update(world, pos, state);
+			blockState = blockState.cycle(MODE);
+			float f = blockState.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
+			world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
+			world.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);
+			this.update(world, blockPos, blockState);
 			return ActionResult.success(world.isClient);
 		}
 	}

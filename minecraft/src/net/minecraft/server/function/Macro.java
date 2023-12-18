@@ -49,14 +49,15 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 		return this.id;
 	}
 
-	public Procedure<T> withMacroReplaced(@Nullable NbtCompound nbtCompound, CommandDispatcher<T> commandDispatcher, T abstractServerCommandSource) throws MacroException {
-		if (nbtCompound == null) {
+	@Override
+	public Procedure<T> withMacroReplaced(@Nullable NbtCompound arguments, CommandDispatcher<T> dispatcher) throws MacroException {
+		if (arguments == null) {
 			throw new MacroException(Text.translatable("commands.function.error.missing_arguments", Text.of(this.id())));
 		} else {
 			List<String> list = new ArrayList(this.varNames.size());
 
 			for (String string : this.varNames) {
-				NbtElement nbtElement = nbtCompound.get(string);
+				NbtElement nbtElement = arguments.get(string);
 				if (nbtElement == null) {
 					throw new MacroException(Text.translatable("commands.function.error.missing_argument", Text.of(this.id()), string));
 				}
@@ -72,7 +73,7 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 					this.cache.removeFirst();
 				}
 
-				Procedure<T> procedure2 = this.withMacroReplaced(this.varNames, list, commandDispatcher, abstractServerCommandSource);
+				Procedure<T> procedure2 = this.withMacroReplaced(this.varNames, list, dispatcher);
 				this.cache.put(list, procedure2);
 				return procedure2;
 			}
@@ -98,13 +99,13 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 		indices.forEach(index -> out.add((String)arguments.get(index)));
 	}
 
-	private Procedure<T> withMacroReplaced(List<String> varNames, List<String> arguments, CommandDispatcher<T> dispatcher, T source) throws MacroException {
+	private Procedure<T> withMacroReplaced(List<String> varNames, List<String> arguments, CommandDispatcher<T> dispatcher) throws MacroException {
 		List<SourcedCommandAction<T>> list = new ArrayList(this.lines.size());
 		List<String> list2 = new ArrayList(arguments.size());
 
 		for (Macro.Line<T> line : this.lines) {
 			addArgumentsByIndices(arguments, line.getDependentVariables(), list2);
-			list.add(line.instantiate(list2, dispatcher, source, this.id));
+			list.add(line.instantiate(list2, dispatcher, this.id));
 		}
 
 		return new ExpandedMacro<>(this.id().withPath((UnaryOperator<String>)(path -> path + "/" + varNames.hashCode())), list);
@@ -123,7 +124,7 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 		}
 
 		@Override
-		public SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, T source, Identifier id) {
+		public SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier identifier) {
 			return this.action;
 		}
 	}
@@ -131,16 +132,18 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 	interface Line<T> {
 		IntList getDependentVariables();
 
-		SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, T source, Identifier id) throws MacroException;
+		SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier identifier) throws MacroException;
 	}
 
 	static class VariableLine<T extends AbstractServerCommandSource<T>> implements Macro.Line<T> {
 		private final MacroInvocation invocation;
 		private final IntList variableIndices;
+		private final T field_47891;
 
-		public VariableLine(MacroInvocation invocation, IntList variableIndices) {
+		public VariableLine(MacroInvocation invocation, IntList variableIndices, T abstractServerCommandSource) {
 			this.invocation = invocation;
 			this.variableIndices = variableIndices;
+			this.field_47891 = abstractServerCommandSource;
 		}
 
 		@Override
@@ -148,13 +151,14 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 			return this.variableIndices;
 		}
 
-		public SourcedCommandAction<T> instantiate(List<String> list, CommandDispatcher<T> commandDispatcher, T abstractServerCommandSource, Identifier identifier) throws MacroException {
-			String string = this.invocation.apply(list);
+		@Override
+		public SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier identifier) throws MacroException {
+			String string = this.invocation.apply(args);
 
 			try {
-				return CommandFunction.parse(commandDispatcher, abstractServerCommandSource, new StringReader(string));
-			} catch (CommandSyntaxException var7) {
-				throw new MacroException(Text.translatable("commands.function.error.parse", Text.of(identifier), string, var7.getMessage()));
+				return CommandFunction.parse(dispatcher, this.field_47891, new StringReader(string));
+			} catch (CommandSyntaxException var6) {
+				throw new MacroException(Text.translatable("commands.function.error.parse", Text.of(identifier), string, var6.getMessage()));
 			}
 		}
 	}

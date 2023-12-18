@@ -52,10 +52,13 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.OK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, this.height - 52, 200, 20).build()
-		);
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.OK, button -> this.close()).dimensions(this.width / 2 - 100, this.height - 52, 200, 20).build());
 		this.description = MultilineText.create(this.textRenderer, this.errorMessages.detail, this.width * 3 / 4);
+	}
+
+	@Override
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	@Override

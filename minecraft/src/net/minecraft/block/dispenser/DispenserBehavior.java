@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import net.minecraft.class_9069;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
@@ -53,6 +54,7 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -452,7 +454,7 @@ public interface DispenserBehavior {
 				if (!BoneMealItem.useOnFertilizable(stack, world, blockPos) && !BoneMealItem.useOnGround(stack, world, blockPos, null)) {
 					this.setSuccess(false);
 				} else if (!world.isClient) {
-					world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 0);
+					world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 15);
 				}
 
 				return stack;
@@ -603,6 +605,26 @@ public interface DispenserBehavior {
 			}
 		});
 		DispenserBlock.registerBehavior(Items.SHEARS.asItem(), new ShearsDispenserBehavior());
+		DispenserBlock.registerBehavior(Items.BRUSH.asItem(), new FallibleItemDispenserBehavior() {
+			@Override
+			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+				ServerWorld serverWorld = pointer.world();
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+				List<class_9069> list = serverWorld.getEntitiesByClass(class_9069.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR);
+				if (list.isEmpty()) {
+					this.setSuccess(false);
+					return stack;
+				} else {
+					((class_9069)list.get(0)).method_55716();
+					if (stack.damage(16, serverWorld.getRandom(), null)) {
+						stack.decrement(1);
+						stack.setDamage(0);
+					}
+
+					return stack;
+				}
+			}
+		});
 		DispenserBlock.registerBehavior(Items.HONEYCOMB, new FallibleItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
@@ -628,7 +650,7 @@ public interface DispenserBehavior {
 
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					if (PotionUtil.getPotion(stack) != Potions.WATER) {
+					if (!PotionUtil.getPotion(stack).method_55838(Potions.WATER)) {
 						return this.fallback.dispense(pointer, stack);
 					} else {
 						ServerWorld serverWorld = pointer.world();

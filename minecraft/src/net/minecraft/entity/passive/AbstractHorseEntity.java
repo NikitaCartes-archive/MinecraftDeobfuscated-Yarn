@@ -54,6 +54,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -75,7 +76,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public abstract class AbstractHorseEntity extends AnimalEntity implements InventoryChangedListener, RideableInventory, Tameable, JumpingMount, Saddleable {
 	public static final int field_30413 = 400;
@@ -131,7 +131,6 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> entityType, World world) {
 		super(entityType, world);
-		this.setStepHeight(1.0F);
 		this.onChestedStatusChanged();
 	}
 
@@ -413,7 +412,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		return MobEntity.createMobAttributes()
 			.add(EntityAttributes.HORSE_JUMP_STRENGTH)
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 53.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.225F);
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.225F)
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -876,9 +876,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		this.setChildAttribute(other, child, EntityAttributes.GENERIC_MOVEMENT_SPEED, (double)MIN_MOVEMENT_SPEED_BONUS, (double)MAX_MOVEMENT_SPEED_BONUS);
 	}
 
-	private void setChildAttribute(PassiveEntity other, AbstractHorseEntity child, EntityAttribute attribute, double min, double max) {
-		double d = calculateAttributeBaseValue(this.getAttributeBaseValue(attribute), other.getAttributeBaseValue(attribute), min, max, this.random);
-		child.getAttributeInstance(attribute).setBaseValue(d);
+	private void setChildAttribute(PassiveEntity other, AbstractHorseEntity child, RegistryEntry<EntityAttribute> registryEntry, double min, double max) {
+		double d = calculateAttributeBaseValue(this.getAttributeBaseValue(registryEntry), other.getAttributeBaseValue(registryEntry), min, max, this.random);
+		child.getAttributeInstance(registryEntry).setBaseValue(d);
 	}
 
 	static double calculateAttributeBaseValue(double parentBase, double otherParentBase, double min, double max, Random random) {
@@ -973,10 +973,10 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
-		super.updatePassengerPosition(passenger, positionUpdater);
-		if (passenger instanceof LivingEntity) {
-			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
+	protected void updatePassengerPosition(Entity entity, Entity.PositionUpdater positionUpdater) {
+		super.updatePassengerPosition(entity, positionUpdater);
+		if (entity instanceof LivingEntity) {
+			((LivingEntity)entity).bodyYaw = this.bodyYaw;
 		}
 	}
 
@@ -995,11 +995,6 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	@Override
 	public boolean isClimbing() {
 		return false;
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.95F;
 	}
 
 	/**
@@ -1164,15 +1159,11 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(
-			0.0F,
-			this.getPassengerAttachmentY(dimensions, scaleFactor) + 0.15F * this.lastAngryAnimationProgress * scaleFactor,
-			-0.7F * this.lastAngryAnimationProgress * scaleFactor
-		);
-	}
-
-	protected float getPassengerAttachmentY(EntityDimensions dimensions, float scaleFactor) {
-		return dimensions.height + (this.isBaby() ? 0.125F : -0.15625F) * scaleFactor;
+	protected Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return super.getPassengerAttachmentPos(passenger, dimensions, scaleFactor)
+			.add(
+				new Vec3d(0.0, 0.15 * (double)this.lastAngryAnimationProgress * (double)scaleFactor, -0.7 * (double)this.lastAngryAnimationProgress * (double)scaleFactor)
+					.rotateY(-this.getYaw() * (float) (Math.PI / 180.0))
+			);
 	}
 }

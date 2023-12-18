@@ -2,9 +2,7 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -27,7 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import org.joml.Vector3f;
 
 public class EndermiteEntity extends HostileEntity {
 	private static final int DESPAWN_TIME = 2400;
@@ -48,11 +45,6 @@ public class EndermiteEntity extends HostileEntity {
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.13F;
 	}
 
 	public static DefaultAttributeContainer.Builder createEndermiteAttributes() {
@@ -150,10 +142,5 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.ARTHROPOD;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - 0.0625F * scaleFactor, 0.0F);
 	}
 }

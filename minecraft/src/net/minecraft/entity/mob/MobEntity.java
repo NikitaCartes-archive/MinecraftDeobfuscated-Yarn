@@ -558,6 +558,13 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		this.setForwardSpeed(movementSpeed);
 	}
 
+	public void method_55695() {
+		this.getNavigation().stop();
+		this.setSidewaysSpeed(0.0F);
+		this.setUpwardSpeed(0.0F);
+		this.setMovementSpeed(0.0F);
+	}
+
 	@Override
 	public void tickMovement() {
 		super.tickMovement();

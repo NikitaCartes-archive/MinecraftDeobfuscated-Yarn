@@ -150,6 +150,14 @@ public abstract class TagProvider<T> implements DataProvider {
 			return this;
 		}
 
+		public final TagProvider.ProvidedTagBuilder<T> method_55842(List<RegistryKey<T>> list) {
+			for (RegistryKey<T> registryKey : list) {
+				this.builder.add(registryKey.getValue());
+			}
+
+			return this;
+		}
+
 		public TagProvider.ProvidedTagBuilder<T> addOptional(Identifier id) {
 			this.builder.addOptional(id);
 			return this;

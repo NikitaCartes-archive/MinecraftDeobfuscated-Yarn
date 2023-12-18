@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DeadCoralWallFanBlock;
 import net.minecraft.block.Fertilizable;
+import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -39,7 +40,7 @@ public class BoneMealItem extends Item {
 		if (useOnFertilizable(context.getStack(), world, blockPos)) {
 			if (!world.isClient) {
 				context.getPlayer().emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
-				world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 0);
+				world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 15);
 			}
 
 			return ActionResult.success(world.isClient);
@@ -49,7 +50,7 @@ public class BoneMealItem extends Item {
 			if (bl && useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
 				if (!world.isClient) {
 					context.getPlayer().emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
-					world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos2, 0);
+					world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos2, 15);
 				}
 
 				return ActionResult.success(world.isClient);
@@ -140,41 +141,14 @@ public class BoneMealItem extends Item {
 	}
 
 	public static void createParticles(WorldAccess world, BlockPos pos, int count) {
-		if (count == 0) {
-			count = 15;
-		}
-
-		BlockState blockState = world.getBlockState(pos);
-		if (!blockState.isAir()) {
-			double d = 0.5;
-			double e;
-			if (blockState.isOf(Blocks.WATER)) {
-				count *= 3;
-				e = 1.0;
-				d = 3.0;
-			} else if (blockState.isOpaqueFullCube(world, pos)) {
-				pos = pos.up();
-				count *= 3;
-				d = 3.0;
-				e = 1.0;
-			} else {
-				e = blockState.getOutlineShape(world, pos).getMax(Direction.Axis.Y);
-			}
-
-			world.addParticle(ParticleTypes.HAPPY_VILLAGER, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
-			Random random = world.getRandom();
-
-			for (int i = 0; i < count; i++) {
-				double f = random.nextGaussian() * 0.02;
-				double g = random.nextGaussian() * 0.02;
-				double h = random.nextGaussian() * 0.02;
-				double j = 0.5 - d;
-				double k = (double)pos.getX() + j + random.nextDouble() * d * 2.0;
-				double l = (double)pos.getY() + random.nextDouble() * e;
-				double m = (double)pos.getZ() + j + random.nextDouble() * d * 2.0;
-				if (!world.getBlockState(BlockPos.ofFloored(k, l, m).down()).isAir()) {
-					world.addParticle(ParticleTypes.HAPPY_VILLAGER, k, l, m, f, g, h);
-				}
+		if (world.getBlockState(pos).getBlock() instanceof Fertilizable fertilizable) {
+			BlockPos blockPos = fertilizable.method_55769(pos);
+			switch (fertilizable.method_55770()) {
+				case NEIGHBOR_SPREADER:
+					ParticleUtil.method_55635(world, blockPos, count * 3, 3.0, 1.0, false, ParticleTypes.HAPPY_VILLAGER);
+					break;
+				case GROWER:
+					ParticleUtil.method_55636(world, blockPos, count, ParticleTypes.HAPPY_VILLAGER);
 			}
 		}
 	}

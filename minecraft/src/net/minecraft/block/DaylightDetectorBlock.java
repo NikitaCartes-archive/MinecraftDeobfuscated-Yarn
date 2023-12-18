@@ -12,7 +12,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -73,19 +72,19 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (player.canModifyBlocks()) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if (playerEntity.canModifyBlocks()) {
 			if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {
-				BlockState blockState = state.cycle(INVERTED);
-				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
-				world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, blockState));
-				updateState(blockState, world, pos);
+				BlockState blockState2 = blockState.cycle(INVERTED);
+				world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
+				world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, blockState2));
+				updateState(blockState2, world, blockPos);
 				return ActionResult.CONSUME;
 			}
 		} else {
-			return super.onUse(state, world, pos, player, hand, hit);
+			return super.method_55766(blockState, world, blockPos, playerEntity, blockHitResult);
 		}
 	}
 

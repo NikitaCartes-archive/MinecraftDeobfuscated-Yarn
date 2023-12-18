@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -70,35 +71,43 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		if (hand == Hand.MAIN_HAND && !isChargeItem(itemStack) && isChargeItem(player.getStackInHand(Hand.OFF_HAND))) {
-			return ActionResult.PASS;
-		} else if (isChargeItem(itemStack) && canCharge(state)) {
-			charge(player, world, pos, state);
-			if (!player.getAbilities().creativeMode) {
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
+		if (isChargeItem(itemStack) && canCharge(blockState)) {
+			charge(playerEntity, world, blockPos, blockState);
+			if (!playerEntity.getAbilities().creativeMode) {
 				itemStack.decrement(1);
 			}
 
-			return ActionResult.success(world.isClient);
-		} else if ((Integer)state.get(CHARGES) == 0) {
+			return class_9062.method_55644(world.isClient);
+		} else {
+			return hand == Hand.MAIN_HAND && isChargeItem(playerEntity.getStackInHand(Hand.OFF_HAND)) && canCharge(blockState)
+				? class_9062.SKIP_DEFAULT_BLOCK_INTERACTION
+				: class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		}
+	}
+
+	@Override
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if ((Integer)blockState.get(CHARGES) == 0) {
 			return ActionResult.PASS;
 		} else if (!isNether(world)) {
 			if (!world.isClient) {
-				this.explode(state, world, pos);
+				this.explode(blockState, world, blockPos);
 			}
 
 			return ActionResult.success(world.isClient);
 		} else {
 			if (!world.isClient) {
-				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
-				if (serverPlayerEntity.getSpawnPointDimension() != world.getRegistryKey() || !pos.equals(serverPlayerEntity.getSpawnPointPosition())) {
-					serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), pos, 0.0F, false, true);
+				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)playerEntity;
+				if (serverPlayerEntity.getSpawnPointDimension() != world.getRegistryKey() || !blockPos.equals(serverPlayerEntity.getSpawnPointPosition())) {
+					serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), blockPos, 0.0F, false, true);
 					world.playSound(
 						null,
-						(double)pos.getX() + 0.5,
-						(double)pos.getY() + 0.5,
-						(double)pos.getZ() + 0.5,
+						(double)blockPos.getX() + 0.5,
+						(double)blockPos.getY() + 0.5,
+						(double)blockPos.getZ() + 0.5,
 						SoundEvents.BLOCK_RESPAWN_ANCHOR_SET_SPAWN,
 						SoundCategory.BLOCKS,
 						1.0F,
@@ -177,16 +186,7 @@ public class RespawnAnchorBlock extends Block {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Integer)state.get(CHARGES) != 0) {
 			if (random.nextInt(100) == 0) {
-				world.playSound(
-					null,
-					(double)pos.getX() + 0.5,
-					(double)pos.getY() + 0.5,
-					(double)pos.getZ() + 0.5,
-					SoundEvents.BLOCK_RESPAWN_ANCHOR_AMBIENT,
-					SoundCategory.BLOCKS,
-					1.0F,
-					1.0F
-				);
+				world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_RESPAWN_ANCHOR_AMBIENT, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 			}
 
 			double d = (double)pos.getX() + 0.5 + (0.5 - random.nextDouble());

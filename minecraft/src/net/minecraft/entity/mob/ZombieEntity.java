@@ -65,7 +65,6 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
-import org.joml.Vector3f;
 
 public class ZombieEntity extends HostileEntity {
 	private static final UUID BABY_SPEED_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
@@ -82,7 +81,7 @@ public class ZombieEntity extends HostileEntity {
 	public static final int field_30515 = 50;
 	public static final int field_30516 = 40;
 	public static final int field_30517 = 7;
-	protected static final float field_41028 = 0.81F;
+	private static final EntityDimensions field_47811 = EntityType.ZOMBIE.getDimensions().scaled(0.5F).method_55685(0.93F);
 	private static final float field_30518 = 0.1F;
 	private static final Predicate<Difficulty> DOOR_BREAK_DIFFICULTY_CHECKER = difficulty -> difficulty == Difficulty.HARD;
 	private final BreakDoorGoal breakDoorsGoal = new BreakDoorGoal(this, DOOR_BREAK_DIFFICULTY_CHECKER);
@@ -433,8 +432,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? 0.93F : 1.74F;
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47811 : super.method_55694(entityPose);
 	}
 
 	@Override
@@ -532,16 +531,6 @@ public class ZombieEntity extends HostileEntity {
 
 	protected void initAttributes() {
 		this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(this.random.nextDouble() * 0.1F);
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.0625F * scaleFactor, 0.0F);
-	}
-
-	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return -0.7F;
 	}
 
 	@Override

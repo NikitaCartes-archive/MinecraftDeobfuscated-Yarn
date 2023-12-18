@@ -3,8 +3,6 @@ package net.minecraft.entity.decoration;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,11 +55,6 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 	@Override
 	public int getHeightPixels() {
 		return 9;
-	}
-
-	@Override
-	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.0625F;
 	}
 
 	@Override

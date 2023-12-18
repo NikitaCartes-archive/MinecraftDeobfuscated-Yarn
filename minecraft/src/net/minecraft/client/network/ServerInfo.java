@@ -39,16 +39,16 @@ public class ServerInfo {
 	public long ping;
 	public int protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
 	public Text version = Text.literal(SharedConstants.getGameVersion().getName());
-	public boolean online;
 	public List<Text> playerListSummary = Collections.emptyList();
 	private ServerInfo.ResourcePackPolicy resourcePackPolicy = ServerInfo.ResourcePackPolicy.PROMPT;
 	@Nullable
 	private byte[] favicon;
 	private ServerInfo.ServerType serverType;
+	private ServerInfo.class_9083 field_47879 = ServerInfo.class_9083.INITIAL;
 	private boolean secureChatEnforced;
 
-	public ServerInfo(String name, String address, ServerInfo.ServerType serverType) {
-		this.name = name;
+	public ServerInfo(String string, String address, ServerInfo.ServerType serverType) {
+		this.name = string;
 		this.address = address;
 		this.serverType = serverType;
 	}
@@ -153,6 +153,14 @@ public class ServerInfo {
 		this.secureChatEnforced = serverInfo.secureChatEnforced;
 	}
 
+	public ServerInfo.class_9083 method_55825() {
+		return this.field_47879;
+	}
+
+	public void method_55824(ServerInfo.class_9083 arg) {
+		this.field_47879 = arg;
+	}
+
 	@Nullable
 	public static byte[] validateFavicon(@Nullable byte[] favicon) {
 		if (favicon != null) {
@@ -208,5 +216,14 @@ public class ServerInfo {
 		LAN,
 		REALM,
 		OTHER;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum class_9083 {
+		INITIAL,
+		PINGING,
+		UNREACHABLE,
+		INCOMPATIBLE,
+		SUCCESSFUL;
 	}
 }

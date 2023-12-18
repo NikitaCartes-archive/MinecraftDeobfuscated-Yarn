@@ -11,8 +11,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -389,7 +387,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				this.discard();
 			}
 		} else if (bl2) {
-			this.deflect();
+			this.deflect(entity);
 		} else {
 			entity.setFireTicks(j);
 			this.setVelocity(this.getVelocity().multiply(-0.1));
@@ -405,11 +403,12 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 	}
 
-	public void deflect() {
+	public void deflect(Entity entity) {
 		float f = this.random.nextFloat() * 360.0F;
 		this.setVelocity(this.getVelocity().rotateY(f * (float) (Math.PI / 180.0)).multiply(0.5));
 		this.setYaw(this.getYaw() + f);
 		this.prevYaw += f;
+		entity.method_55666(this);
 	}
 
 	@Override
@@ -569,11 +568,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Override
 	public boolean isAttackable() {
 		return false;
-	}
-
-	@Override
-	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.13F;
 	}
 
 	public void setCritical(boolean critical) {

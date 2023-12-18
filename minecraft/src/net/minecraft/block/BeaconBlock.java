@@ -12,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -46,14 +45,14 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
-				player.openHandledScreen((BeaconBlockEntity)blockEntity);
-				player.incrementStat(Stats.INTERACT_WITH_BEACON);
+				playerEntity.openHandledScreen((BeaconBlockEntity)blockEntity);
+				playerEntity.incrementStat(Stats.INTERACT_WITH_BEACON);
 			}
 
 			return ActionResult.CONSUME;

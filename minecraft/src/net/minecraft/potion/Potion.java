@@ -1,21 +1,22 @@
 package net.minecraft.potion;
 
-import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public class Potion {
 	@Nullable
 	private final String baseName;
-	private final ImmutableList<StatusEffectInstance> effects;
-	private final RegistryEntry.Reference<Potion> registryEntry = Registries.POTION.createEntry(this);
+	private final List<StatusEffectInstance> effects;
 
-	public static Potion byId(String id) {
-		return Registries.POTION.get(Identifier.tryParse(id));
+	public static RegistryEntry<Potion> byId(String id) {
+		Identifier identifier = Identifier.tryParse(id);
+		return identifier == null ? Potions.EMPTY : (RegistryEntry)Registries.POTION.method_55841(identifier).map(Function.identity()).orElse(Potions.EMPTY);
 	}
 
 	public Potion(StatusEffectInstance... effects) {
@@ -24,11 +25,17 @@ public class Potion {
 
 	public Potion(@Nullable String baseName, StatusEffectInstance... effects) {
 		this.baseName = baseName;
-		this.effects = ImmutableList.copyOf(effects);
+		this.effects = List.of(effects);
 	}
 
-	public String finishTranslationKey(String prefix) {
-		return prefix + (this.baseName == null ? Registries.POTION.getId(this).getPath() : this.baseName);
+	public static String finishTranslationKey(RegistryEntry<Potion> registryEntry, String string) {
+		String string2 = registryEntry.value().baseName;
+		if (string2 != null) {
+			return string + string2;
+		} else {
+			RegistryKey<Potion> registryKey = (RegistryKey<Potion>)registryEntry.getKey().orElse(Potions.EMPTY_KEY);
+			return string + registryKey.getValue().getPath();
+		}
 	}
 
 	public List<StatusEffectInstance> getEffects() {
@@ -38,17 +45,12 @@ public class Potion {
 	public boolean hasInstantEffect() {
 		if (!this.effects.isEmpty()) {
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				if (statusEffectInstance.getEffectType().isInstant()) {
+				if (statusEffectInstance.getEffectType().value().isInstant()) {
 					return true;
 				}
 			}
 		}
 
 		return false;
-	}
-
-	@Deprecated
-	public RegistryEntry.Reference<Potion> getRegistryEntry() {
-		return this.registryEntry;
 	}
 }

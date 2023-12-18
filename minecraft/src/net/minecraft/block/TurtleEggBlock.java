@@ -124,7 +124,7 @@ public class TurtleEggBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (isSandBelow(world, pos) && !world.isClient) {
-			world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, pos, 0);
+			world.syncWorldEvent(2012, pos, 15);
 		}
 	}
 

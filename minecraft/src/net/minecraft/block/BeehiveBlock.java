@@ -3,6 +3,7 @@ package net.minecraft.block;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -37,7 +38,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -118,50 +118,53 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		int i = (Integer)state.get(HONEY_LEVEL);
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
+		int i = (Integer)blockState.get(HONEY_LEVEL);
 		boolean bl = false;
 		if (i >= 5) {
 			Item item = itemStack.getItem();
 			if (itemStack.isOf(Items.SHEARS)) {
-				world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				dropHoneycomb(world, pos);
-				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+				world.playSound(
+					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F
+				);
+				dropHoneycomb(world, blockPos);
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				bl = true;
-				world.emitGameEvent(player, GameEvent.SHEAR, pos);
+				world.emitGameEvent(playerEntity, GameEvent.SHEAR, blockPos);
 			} else if (itemStack.isOf(Items.GLASS_BOTTLE)) {
 				itemStack.decrement(1);
-				world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				world.playSound(playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				if (itemStack.isEmpty()) {
-					player.setStackInHand(hand, new ItemStack(Items.HONEY_BOTTLE));
-				} else if (!player.getInventory().insertStack(new ItemStack(Items.HONEY_BOTTLE))) {
-					player.dropItem(new ItemStack(Items.HONEY_BOTTLE), false);
+					playerEntity.setStackInHand(hand, new ItemStack(Items.HONEY_BOTTLE));
+				} else if (!playerEntity.getInventory().insertStack(new ItemStack(Items.HONEY_BOTTLE))) {
+					playerEntity.dropItem(new ItemStack(Items.HONEY_BOTTLE), false);
 				}
 
 				bl = true;
-				world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
+				world.emitGameEvent(playerEntity, GameEvent.FLUID_PICKUP, blockPos);
 			}
 
 			if (!world.isClient() && bl) {
-				player.incrementStat(Stats.USED.getOrCreateStat(item));
+				playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
 			}
 		}
 
 		if (bl) {
-			if (!CampfireBlock.isLitCampfireInRange(world, pos)) {
-				if (this.hasBees(world, pos)) {
-					this.angerNearbyBees(world, pos);
+			if (!CampfireBlock.isLitCampfireInRange(world, blockPos)) {
+				if (this.hasBees(world, blockPos)) {
+					this.angerNearbyBees(world, blockPos);
 				}
 
-				this.takeHoney(world, state, pos, player, BeehiveBlockEntity.BeeState.EMERGENCY);
+				this.takeHoney(world, blockState, blockPos, playerEntity, BeehiveBlockEntity.BeeState.EMERGENCY);
 			} else {
-				this.takeHoney(world, state, pos);
+				this.takeHoney(world, blockState, blockPos);
 			}
 
-			return ActionResult.success(world.isClient);
+			return class_9062.method_55644(world.isClient);
 		} else {
-			return super.onUse(state, world, pos, player, hand, hit);
+			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 

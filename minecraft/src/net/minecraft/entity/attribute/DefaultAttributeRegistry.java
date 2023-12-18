@@ -3,16 +3,19 @@ package net.minecraft.entity.attribute;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
 import java.util.Map;
+import net.minecraft.class_9069;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
 import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.EndermiteEntity;
@@ -83,7 +86,8 @@ public class DefaultAttributeRegistry {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<EntityType<? extends LivingEntity>, DefaultAttributeContainer> DEFAULT_ATTRIBUTE_REGISTRY = ImmutableMap.<EntityType<? extends LivingEntity>, DefaultAttributeContainer>builder()
 		.put(EntityType.ALLAY, AllayEntity.createAllayAttributes().build())
-		.put(EntityType.ARMOR_STAND, LivingEntity.createLivingAttributes().build())
+		.put(EntityType.ARMADILLO, class_9069.method_55722().build())
+		.put(EntityType.ARMOR_STAND, ArmorStandEntity.method_55745().build())
 		.put(EntityType.AXOLOTL, AxolotlEntity.createAxolotlAttributes().build())
 		.put(EntityType.BAT, BatEntity.createBatAttributes().build())
 		.put(EntityType.BEE, BeeEntity.createBeeAttributes().build())
@@ -97,7 +101,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.CREEPER, CreeperEntity.createCreeperAttributes().build())
 		.put(EntityType.DOLPHIN, DolphinEntity.createDolphinAttributes().build())
 		.put(EntityType.DONKEY, AbstractDonkeyEntity.createAbstractDonkeyAttributes().build())
-		.put(EntityType.DROWNED, ZombieEntity.createZombieAttributes().build())
+		.put(EntityType.DROWNED, DrownedEntity.method_55746().build())
 		.put(EntityType.ELDER_GUARDIAN, ElderGuardianEntity.createElderGuardianAttributes().build())
 		.put(EntityType.ENDERMAN, EndermanEntity.createEndermanAttributes().build())
 		.put(EntityType.ENDERMITE, EndermiteEntity.createEndermiteAttributes().build())

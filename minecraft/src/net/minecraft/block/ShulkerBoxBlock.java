@@ -36,7 +36,6 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -103,16 +102,16 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
-		} else if (player.isSpectator()) {
+		} else if (playerEntity.isSpectator()) {
 			return ActionResult.CONSUME;
-		} else if (world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
-			if (canOpen(state, world, pos, shulkerBoxBlockEntity)) {
-				player.openHandledScreen(shulkerBoxBlockEntity);
-				player.incrementStat(Stats.OPEN_SHULKER_BOX);
-				PiglinBrain.onGuardedBlockInteracted(player, true);
+		} else if (world.getBlockEntity(blockPos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
+			if (canOpen(blockState, world, blockPos, shulkerBoxBlockEntity)) {
+				playerEntity.openHandledScreen(shulkerBoxBlockEntity);
+				playerEntity.incrementStat(Stats.OPEN_SHULKER_BOX);
+				PiglinBrain.onGuardedBlockInteracted(playerEntity, true);
 			}
 
 			return ActionResult.CONSUME;

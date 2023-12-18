@@ -212,7 +212,7 @@ public class BreezeAnimations {
 			)
 		)
 		.build();
-	public static final Animation SLIDING = Animation.Builder.create(1.0F)
+	public static final Animation SLIDING = Animation.Builder.create(0.2F)
 		.addBoneAnimation(
 			"body",
 			new Transformation(
@@ -235,6 +235,32 @@ public class BreezeAnimations {
 				Transformation.Targets.TRANSLATE,
 				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
 				new Keyframe(0.2F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, -2.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.build();
+	public static final Animation field_47846 = Animation.Builder.create(0.1F)
+		.addBoneAnimation(
+			"body",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, -6.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(0.1F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"wind_mid",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, -3.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(0.1F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"wind_top",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, -2.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(0.1F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
 			)
 		)
 		.build();

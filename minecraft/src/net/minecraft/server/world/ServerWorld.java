@@ -1100,7 +1100,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter) {
+	public void emitGameEvent(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter) {
 		this.gameEventDispatchManager.dispatch(event, emitterPos, emitter);
 	}
 

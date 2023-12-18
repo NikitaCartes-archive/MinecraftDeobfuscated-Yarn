@@ -1,8 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.List;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -16,7 +14,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 public class ElderGuardianEntity extends GuardianEntity {
 	public static final float SCALE = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
@@ -85,10 +82,5 @@ public class ElderGuardianEntity extends GuardianEntity {
 		if (!this.hasPositionTarget()) {
 			this.setPositionTarget(this.getBlockPos(), 16);
 		}
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.353125F * scaleFactor, 0.0F);
 	}
 }

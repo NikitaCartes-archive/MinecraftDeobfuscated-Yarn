@@ -2909,9 +2909,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					this.world.addParticle(ParticleTypes.FLAME, t, u, v, 0.0, 0.0, 0.0);
 				}
 				break;
-			case 2005:
-				BoneMealItem.createParticles(this.world, pos, data);
-				break;
 			case 2006:
 				for (int m = 0; m < 200; m++) {
 					float ab = random.nextFloat() * 4.0F;
@@ -2944,6 +2941,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				break;
 			case 2010:
 				this.shootParticles(data, pos, random, ParticleTypes.WHITE_SMOKE);
+				break;
+			case 2011:
+				ParticleUtil.method_55636(this.world, pos, data, ParticleTypes.HAPPY_VILLAGER);
+				break;
+			case 2012:
+				ParticleUtil.method_55636(this.world, pos, data, ParticleTypes.HAPPY_VILLAGER);
 				break;
 			case 3000:
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, true, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
