@@ -81,7 +81,7 @@ public class ZombieEntity extends HostileEntity {
 	public static final int field_30515 = 50;
 	public static final int field_30516 = 40;
 	public static final int field_30517 = 7;
-	private static final EntityDimensions field_47811 = EntityType.ZOMBIE.getDimensions().scaled(0.5F).method_55685(0.93F);
+	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.ZOMBIE.getDimensions().scaled(0.5F).withEyeHeight(0.93F);
 	private static final float field_30518 = 0.1F;
 	private static final Predicate<Difficulty> DOOR_BREAK_DIFFICULTY_CHECKER = difficulty -> difficulty == Difficulty.HARD;
 	private final BreakDoorGoal breakDoorsGoal = new BreakDoorGoal(this, DOOR_BREAK_DIFFICULTY_CHECKER);
@@ -432,8 +432,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return this.isBaby() ? field_47811 : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
 	}
 
 	@Override

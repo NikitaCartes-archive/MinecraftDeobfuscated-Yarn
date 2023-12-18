@@ -45,14 +45,14 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeaconBlockEntity) {
-				playerEntity.openHandledScreen((BeaconBlockEntity)blockEntity);
-				playerEntity.incrementStat(Stats.INTERACT_WITH_BEACON);
+				player.openHandledScreen((BeaconBlockEntity)blockEntity);
+				player.incrementStat(Stats.INTERACT_WITH_BEACON);
 			}
 
 			return ActionResult.CONSUME;

@@ -15,7 +15,7 @@ public class Schema1909 extends IdentifierNormalizingSchema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerBlockEntities(schema);
-		schema.register(map, "minecraft:jigsaw", (Supplier<TypeTemplate>)(() -> DSL.optionalFields("final_state", TypeReferences.field_47727.in(schema))));
+		schema.register(map, "minecraft:jigsaw", (Supplier<TypeTemplate>)(() -> DSL.optionalFields("final_state", TypeReferences.FLAT_BLOCK_STATE.in(schema))));
 		return map;
 	}
 }

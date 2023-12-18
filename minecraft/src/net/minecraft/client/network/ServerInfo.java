@@ -44,11 +44,11 @@ public class ServerInfo {
 	@Nullable
 	private byte[] favicon;
 	private ServerInfo.ServerType serverType;
-	private ServerInfo.class_9083 field_47879 = ServerInfo.class_9083.INITIAL;
+	private ServerInfo.Status status = ServerInfo.Status.INITIAL;
 	private boolean secureChatEnforced;
 
-	public ServerInfo(String string, String address, ServerInfo.ServerType serverType) {
-		this.name = string;
+	public ServerInfo(String name, String address, ServerInfo.ServerType serverType) {
+		this.name = name;
 		this.address = address;
 		this.serverType = serverType;
 	}
@@ -153,12 +153,12 @@ public class ServerInfo {
 		this.secureChatEnforced = serverInfo.secureChatEnforced;
 	}
 
-	public ServerInfo.class_9083 method_55825() {
-		return this.field_47879;
+	public ServerInfo.Status getStatus() {
+		return this.status;
 	}
 
-	public void method_55824(ServerInfo.class_9083 arg) {
-		this.field_47879 = arg;
+	public void setStatus(ServerInfo.Status status) {
+		this.status = status;
 	}
 
 	@Nullable
@@ -219,7 +219,7 @@ public class ServerInfo {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_9083 {
+	public static enum Status {
 		INITIAL,
 		PINGING,
 		UNREACHABLE,

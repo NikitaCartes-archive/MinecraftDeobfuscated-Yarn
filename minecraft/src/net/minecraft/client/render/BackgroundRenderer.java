@@ -302,14 +302,14 @@ public class BackgroundRenderer {
 
 		@Override
 		public void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta) {
-			float f = MathHelper.lerp(effect.method_55653(entity, tickDelta), viewDistance, 15.0F);
+			float f = MathHelper.lerp(effect.getFadeFactor(entity, tickDelta), viewDistance, 15.0F);
 			fogData.fogStart = fogData.fogType == BackgroundRenderer.FogType.FOG_SKY ? 0.0F : f * 0.75F;
 			fogData.fogEnd = f;
 		}
 
 		@Override
 		public float applyColorModifier(LivingEntity entity, StatusEffectInstance effect, float f, float tickDelta) {
-			return 1.0F - effect.method_55653(entity, tickDelta);
+			return 1.0F - effect.getFadeFactor(entity, tickDelta);
 		}
 	}
 

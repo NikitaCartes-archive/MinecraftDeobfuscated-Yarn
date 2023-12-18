@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.class_9062;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -15,6 +14,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -73,19 +73,17 @@ public class FenceBlock extends HorizontalConnectingBlock {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
-			return itemStack.isOf(Items.LEAD) ? class_9062.SUCCESS : class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return stack.isOf(Items.LEAD) ? ItemActionResult.SUCCESS : ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 		} else {
-			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		return !world.isClient() ? LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos) : ActionResult.PASS;
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		return !world.isClient() ? LeadItem.attachHeldMobsToBlock(player, world, pos) : ActionResult.PASS;
 	}
 
 	@Override

@@ -81,9 +81,9 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if (!world.isClient && world.getBlockEntity(blockPos) == null) {
-			world.removeBlock(blockPos, false);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if (!world.isClient && world.getBlockEntity(pos) == null) {
+			world.removeBlock(pos, false);
 			return ActionResult.CONSUME;
 		} else {
 			return ActionResult.PASS;

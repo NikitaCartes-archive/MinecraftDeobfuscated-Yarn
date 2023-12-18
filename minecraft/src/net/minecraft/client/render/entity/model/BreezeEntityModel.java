@@ -21,26 +21,26 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 	private static final float field_47433 = 1.0F;
 	private final ModelPart root;
 	private final ModelPart head;
-	private final ModelPart field_47874;
-	private final ModelPart field_47875;
+	private final ModelPart eyes;
+	private final ModelPart windBody;
 	private final ModelPart windTop;
 	private final ModelPart windMid;
 	private final ModelPart windBottom;
 	private final ModelPart rods;
 
-	public BreezeEntityModel(ModelPart modelPart) {
+	public BreezeEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityTranslucent);
-		this.root = modelPart;
-		this.field_47875 = modelPart.getChild(EntityModelPartNames.WIND_BODY);
-		this.windBottom = this.field_47875.getChild(EntityModelPartNames.WIND_BOTTOM);
+		this.root = root;
+		this.windBody = root.getChild(EntityModelPartNames.WIND_BODY);
+		this.windBottom = this.windBody.getChild(EntityModelPartNames.WIND_BOTTOM);
 		this.windMid = this.windBottom.getChild(EntityModelPartNames.WIND_MID);
 		this.windTop = this.windMid.getChild(EntityModelPartNames.WIND_TOP);
-		this.head = modelPart.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
-		this.field_47874 = this.head.getChild(EntityModelPartNames.EYES);
-		this.rods = modelPart.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.RODS);
+		this.head = root.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
+		this.eyes = this.head.getChild(EntityModelPartNames.EYES);
+		this.rods = root.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.RODS);
 	}
 
-	public static TexturedModelData getTexturedModelData(int i, int j) {
+	public static TexturedModelData getTexturedModelData(int textureWidth, int textureHeight) {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
@@ -106,7 +106,7 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 				.cuboid(-2.5F, -8.0F, -2.5F, 5.0F, 8.0F, 5.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(0.0F, -6.0F, 0.0F)
 		);
-		return TexturedModelData.of(modelData, i, j);
+		return TexturedModelData.of(modelData, textureWidth, textureHeight);
 	}
 
 	public void setAngles(T breezeEntity, float f, float g, float h, float i, float j) {
@@ -131,19 +131,19 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 		return this.root;
 	}
 
-	public ModelPart method_55819() {
+	public ModelPart getHead() {
 		return this.head;
 	}
 
-	public ModelPart method_55820() {
-		return this.field_47874;
+	public ModelPart getEyes() {
+		return this.eyes;
 	}
 
-	public ModelPart method_55821() {
+	public ModelPart getRods() {
 		return this.rods;
 	}
 
-	public ModelPart method_55822() {
-		return this.field_47875;
+	public ModelPart getWindBody() {
+		return this.windBody;
 	}
 }

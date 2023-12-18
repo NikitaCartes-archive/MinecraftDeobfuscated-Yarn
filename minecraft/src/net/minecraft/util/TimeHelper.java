@@ -23,7 +23,10 @@ public class TimeHelper {
 	 * The equivalent of 1 hour, in seconds. Is {@code 3600}.
 	 */
 	public static final long HOUR_IN_SECONDS = TimeUnit.HOURS.toSeconds(1L);
-	public static final int field_47726 = (int)TimeUnit.MINUTES.toSeconds(1L);
+	/**
+	 * The equivalent of 1 minute, in seconds. Is {@code 60}.
+	 */
+	public static final int MINUTE_IN_SECONDS = (int)TimeUnit.MINUTES.toSeconds(1L);
 
 	/**
 	 * {@return an int provider that provides a time in ticks, between {@code min * 20} and

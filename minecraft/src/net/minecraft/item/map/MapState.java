@@ -217,13 +217,13 @@ public class MapState extends PersistentState {
 		);
 	}
 
-	private static Predicate<ItemStack> method_55784(ItemStack itemStack) {
-		Integer integer = FilledMapItem.getMapId(itemStack);
-		return itemStack2 -> {
-			if (itemStack2 == itemStack) {
+	private static Predicate<ItemStack> getEqualPredicate(ItemStack stack) {
+		Integer integer = FilledMapItem.getMapId(stack);
+		return other -> {
+			if (other == stack) {
 				return true;
 			} else {
-				return itemStack2.isOf(itemStack.getItem()) && Objects.equals(integer, FilledMapItem.getMapId(itemStack2));
+				return other.isOf(stack.getItem()) && Objects.equals(integer, FilledMapItem.getMapId(other));
 			}
 		};
 	}
@@ -235,15 +235,15 @@ public class MapState extends PersistentState {
 			this.updateTrackers.add(playerUpdateTracker);
 		}
 
-		Predicate<ItemStack> predicate = method_55784(stack);
-		if (!player.getInventory().method_55753(predicate)) {
+		Predicate<ItemStack> predicate = getEqualPredicate(stack);
+		if (!player.getInventory().contains(predicate)) {
 			this.removeIcon(player.getName().getString());
 		}
 
 		for(int i = 0; i < this.updateTrackers.size(); ++i) {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
 			String string = playerUpdateTracker2.player.getName().getString();
-			if (!playerUpdateTracker2.player.isRemoved() && (playerUpdateTracker2.player.getInventory().method_55753(predicate) || stack.isInFrame())) {
+			if (!playerUpdateTracker2.player.isRemoved() && (playerUpdateTracker2.player.getInventory().contains(predicate) || stack.isInFrame())) {
 				if (!stack.isInFrame() && playerUpdateTracker2.player.getWorld().getRegistryKey() == this.dimension && this.showIcons) {
 					this.addIcon(
 						MapIcon.Type.PLAYER,

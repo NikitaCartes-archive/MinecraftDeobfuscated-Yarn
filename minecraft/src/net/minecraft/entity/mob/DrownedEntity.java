@@ -67,7 +67,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		this.landNavigation = new MobNavigation(this, world);
 	}
 
-	public static DefaultAttributeContainer.Builder method_55746() {
+	public static DefaultAttributeContainer.Builder createDrownedAttributes() {
 		return ZombieEntity.createZombieAttributes().add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 

@@ -391,7 +391,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		ItemStack itemStack = potion.getStack();
 		RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
 		List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-		boolean bl = registryEntry.method_55838(Potions.WATER) && list.isEmpty();
+		boolean bl = registryEntry.matches(Potions.WATER) && list.isEmpty();
 		return bl ? super.damage(source, amount) : false;
 	}
 

@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, StriderEntityModel<StriderEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/strider/strider.png");
 	private static final Identifier COLD_TEXTURE = new Identifier("textures/entity/strider/strider_cold.png");
-	private static final float field_47888 = 0.5F;
+	private static final float BABY_SHADOW_RADIUS_SCALE = 0.5F;
 
 	public StriderEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new StriderEntityModel<>(context.getPart(EntityModelLayers.STRIDER)), 0.5F);
@@ -27,8 +27,8 @@ public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, Stri
 		return striderEntity.isCold() ? COLD_TEXTURE : TEXTURE;
 	}
 
-	protected float method_55832(StriderEntity striderEntity) {
-		float f = super.method_55831(striderEntity);
+	protected float getShadowRadius(StriderEntity striderEntity) {
+		float f = super.getShadowRadius(striderEntity);
 		return striderEntity.isBaby() ? f * 0.5F : f;
 	}
 

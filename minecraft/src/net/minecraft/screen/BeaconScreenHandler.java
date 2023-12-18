@@ -135,8 +135,8 @@ public class BeaconScreenHandler extends ScreenHandler {
 		return this.propertyDelegate.get(0);
 	}
 
-	public static int getRawIdForStatusEffect(@Nullable RegistryEntry<StatusEffect> registryEntry) {
-		return registryEntry == null ? 0 : Registries.STATUS_EFFECT.getIndexedEntries().getRawId(registryEntry) + 1;
+	public static int getRawIdForStatusEffect(@Nullable RegistryEntry<StatusEffect> effect) {
+		return effect == null ? 0 : Registries.STATUS_EFFECT.getIndexedEntries().getRawId(effect) + 1;
 	}
 
 	@Nullable

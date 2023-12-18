@@ -12,14 +12,14 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	private static final int AMBIENT_MASK = 1;
 	private static final int SHOW_PARTICLES_MASK = 2;
 	private static final int SHOW_ICON_MASK = 4;
-	private static final int field_47706 = 8;
+	private static final int KEEP_FADING_MASK = 8;
 	private final int entityId;
 	private final RegistryEntry<StatusEffect> effectId;
 	private final byte amplifier;
 	private final int duration;
 	private final byte flags;
 
-	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect, boolean bl) {
+	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect, boolean keepFading) {
 		this.entityId = entityId;
 		this.effectId = effect.getEffectType();
 		this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
@@ -37,7 +37,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 			b = (byte)(b | 4);
 		}
 
-		if (bl) {
+		if (keepFading) {
 			b = (byte)(b | 8);
 		}
 
@@ -93,7 +93,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		return (this.flags & 4) != 0;
 	}
 
-	public boolean method_55629() {
+	public boolean keepFading() {
 		return (this.flags & 8) != 0;
 	}
 }

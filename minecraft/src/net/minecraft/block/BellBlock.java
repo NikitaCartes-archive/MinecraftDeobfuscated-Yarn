@@ -88,8 +88,8 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		return this.ring(world, blockState, blockHitResult, playerEntity, true) ? ActionResult.success(world.isClient) : ActionResult.PASS;
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		return this.ring(world, state, hit, player, true) ? ActionResult.success(world.isClient) : ActionResult.PASS;
 	}
 
 	public boolean ring(World world, BlockState state, BlockHitResult hitResult, @Nullable PlayerEntity player, boolean checkHitPos) {

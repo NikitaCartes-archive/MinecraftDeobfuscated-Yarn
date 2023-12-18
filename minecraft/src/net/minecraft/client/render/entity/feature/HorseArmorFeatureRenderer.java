@@ -11,8 +11,8 @@ import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.HorseEntity;
-import net.minecraft.item.DyeableHorseArmorItem;
-import net.minecraft.item.HorseArmorItem;
+import net.minecraft.item.AnimalArmorItem;
+import net.minecraft.item.DyeableAnimalArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -30,15 +30,15 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 	) {
 		ItemStack itemStack = horseEntity.getArmorType();
 		Item n = itemStack.getItem();
-		if (n instanceof HorseArmorItem horseArmorItem && horseArmorItem.method_55756() == HorseArmorItem.class_9076.EQUESTRIAN) {
+		if (n instanceof AnimalArmorItem animalArmorItem && animalArmorItem.getType() == AnimalArmorItem.Type.EQUESTRIAN) {
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(horseEntity, f, g, h);
 			this.model.setAngles(horseEntity, f, g, j, k, l);
 			float o;
 			float p;
 			float nx;
-			if (horseArmorItem instanceof DyeableHorseArmorItem) {
-				int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
+			if (animalArmorItem instanceof DyeableAnimalArmorItem) {
+				int m = ((DyeableAnimalArmorItem)animalArmorItem).getColor(itemStack);
 				nx = (float)(m >> 16 & 0xFF) / 255.0F;
 				o = (float)(m >> 8 & 0xFF) / 255.0F;
 				p = (float)(m & 0xFF) / 255.0F;
@@ -48,7 +48,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 				p = 1.0F;
 			}
 
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(animalArmorItem.getEntityTexture()));
 			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, nx, o, p, 1.0F);
 			return;
 		}

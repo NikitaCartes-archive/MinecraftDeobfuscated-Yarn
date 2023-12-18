@@ -3,7 +3,6 @@ package net.minecraft.server.network;
 import com.mojang.logging.LogUtils;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -18,6 +17,7 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -128,7 +128,7 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence) {
-		if (!this.player.method_55632(pos)) {
+		if (!this.player.isPosInBlockInteractionRange(pos)) {
 			this.method_41250(pos, false, sequence, "too far");
 		} else if (pos.getY() >= worldHeight) {
 			this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
@@ -307,14 +307,14 @@ public class ServerPlayerInteractionManager {
 			boolean bl2 = player.shouldCancelInteraction() && bl;
 			ItemStack itemStack = stack.copy();
 			if (!bl2) {
-				class_9062 lv = blockState.method_55780(player.getStackInHand(hand), world, player, hand, hitResult);
-				if (lv.method_55643()) {
+				ItemActionResult itemActionResult = blockState.onUseWithItem(player.getStackInHand(hand), world, player, hand, hitResult);
+				if (itemActionResult.isAccepted()) {
 					Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
-					return lv.method_55645();
+					return itemActionResult.toActionResult();
 				}
 
-				if (lv == class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
-					ActionResult actionResult = blockState.method_55781(world, player, hitResult);
+				if (itemActionResult == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
+					ActionResult actionResult = blockState.onUse(world, player, hitResult);
 					if (actionResult.isAccepted()) {
 						return actionResult;
 					}

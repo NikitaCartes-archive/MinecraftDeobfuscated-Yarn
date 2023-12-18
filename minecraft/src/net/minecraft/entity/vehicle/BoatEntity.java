@@ -659,16 +659,16 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 	}
 
 	@Override
-	protected void updatePassengerPosition(Entity entity, Entity.PositionUpdater positionUpdater) {
-		super.updatePassengerPosition(entity, positionUpdater);
-		if (!entity.getType().isIn(EntityTypeTags.CAN_TURN_IN_BOATS)) {
-			entity.setYaw(entity.getYaw() + this.yawVelocity);
-			entity.setHeadYaw(entity.getHeadYaw() + this.yawVelocity);
-			this.clampPassengerYaw(entity);
-			if (entity instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
-				int i = entity.getId() % 2 == 0 ? 90 : 270;
-				entity.setBodyYaw(((AnimalEntity)entity).bodyYaw + (float)i);
-				entity.setHeadYaw(entity.getHeadYaw() + (float)i);
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+		super.updatePassengerPosition(passenger, positionUpdater);
+		if (!passenger.getType().isIn(EntityTypeTags.CAN_TURN_IN_BOATS)) {
+			passenger.setYaw(passenger.getYaw() + this.yawVelocity);
+			passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
+			this.clampPassengerYaw(passenger);
+			if (passenger instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
+				int i = passenger.getId() % 2 == 0 ? 90 : 270;
+				passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)i);
+				passenger.setHeadYaw(passenger.getHeadYaw() + (float)i);
 			}
 		}
 	}

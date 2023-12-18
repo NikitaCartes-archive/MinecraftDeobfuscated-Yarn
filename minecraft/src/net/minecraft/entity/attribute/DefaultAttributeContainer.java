@@ -14,39 +14,39 @@ public class DefaultAttributeContainer {
 		this.instances = instances;
 	}
 
-	private EntityAttributeInstance require(RegistryEntry<EntityAttribute> registryEntry) {
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(registryEntry);
+	private EntityAttributeInstance require(RegistryEntry<EntityAttribute> attribute) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(attribute);
 		if (entityAttributeInstance == null) {
-			throw new IllegalArgumentException("Can't find attribute " + registryEntry.method_55840());
+			throw new IllegalArgumentException("Can't find attribute " + attribute.getIdAsString());
 		} else {
 			return entityAttributeInstance;
 		}
 	}
 
-	public double getValue(RegistryEntry<EntityAttribute> registryEntry) {
-		return this.require(registryEntry).getValue();
+	public double getValue(RegistryEntry<EntityAttribute> attribute) {
+		return this.require(attribute).getValue();
 	}
 
-	public double getBaseValue(RegistryEntry<EntityAttribute> registryEntry) {
-		return this.require(registryEntry).getBaseValue();
+	public double getBaseValue(RegistryEntry<EntityAttribute> attribute) {
+		return this.require(attribute).getBaseValue();
 	}
 
-	public double getModifierValue(RegistryEntry<EntityAttribute> registryEntry, UUID uuid) {
-		EntityAttributeModifier entityAttributeModifier = this.require(registryEntry).getModifier(uuid);
+	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
+		EntityAttributeModifier entityAttributeModifier = this.require(attribute).getModifier(uuid);
 		if (entityAttributeModifier == null) {
-			throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + registryEntry.method_55840());
+			throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + attribute.getIdAsString());
 		} else {
 			return entityAttributeModifier.getValue();
 		}
 	}
 
 	@Nullable
-	public EntityAttributeInstance createOverride(Consumer<EntityAttributeInstance> updateCallback, RegistryEntry<EntityAttribute> registryEntry) {
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(registryEntry);
+	public EntityAttributeInstance createOverride(Consumer<EntityAttributeInstance> updateCallback, RegistryEntry<EntityAttribute> attribute) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(attribute);
 		if (entityAttributeInstance == null) {
 			return null;
 		} else {
-			EntityAttributeInstance entityAttributeInstance2 = new EntityAttributeInstance(registryEntry, updateCallback);
+			EntityAttributeInstance entityAttributeInstance2 = new EntityAttributeInstance(attribute, updateCallback);
 			entityAttributeInstance2.setFrom(entityAttributeInstance);
 			return entityAttributeInstance2;
 		}
@@ -56,12 +56,12 @@ public class DefaultAttributeContainer {
 		return new DefaultAttributeContainer.Builder();
 	}
 
-	public boolean has(RegistryEntry<EntityAttribute> registryEntry) {
-		return this.instances.containsKey(registryEntry);
+	public boolean has(RegistryEntry<EntityAttribute> attribute) {
+		return this.instances.containsKey(attribute);
 	}
 
-	public boolean hasModifier(RegistryEntry<EntityAttribute> registryEntry, UUID uuid) {
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(registryEntry);
+	public boolean hasModifier(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(attribute);
 		return entityAttributeInstance != null && entityAttributeInstance.getModifier(uuid) != null;
 	}
 
@@ -69,23 +69,23 @@ public class DefaultAttributeContainer {
 		private final ImmutableMap.Builder<RegistryEntry<EntityAttribute>, EntityAttributeInstance> instances = ImmutableMap.builder();
 		private boolean unmodifiable;
 
-		private EntityAttributeInstance checkedAdd(RegistryEntry<EntityAttribute> registryEntry) {
-			EntityAttributeInstance entityAttributeInstance = new EntityAttributeInstance(registryEntry, attributex -> {
+		private EntityAttributeInstance checkedAdd(RegistryEntry<EntityAttribute> attribute) {
+			EntityAttributeInstance entityAttributeInstance = new EntityAttributeInstance(attribute, attributex -> {
 				if (this.unmodifiable) {
-					throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + registryEntry.method_55840());
+					throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + attribute.getIdAsString());
 				}
 			});
-			this.instances.put(registryEntry, entityAttributeInstance);
+			this.instances.put(attribute, entityAttributeInstance);
 			return entityAttributeInstance;
 		}
 
-		public DefaultAttributeContainer.Builder add(RegistryEntry<EntityAttribute> registryEntry) {
-			this.checkedAdd(registryEntry);
+		public DefaultAttributeContainer.Builder add(RegistryEntry<EntityAttribute> attribute) {
+			this.checkedAdd(attribute);
 			return this;
 		}
 
-		public DefaultAttributeContainer.Builder add(RegistryEntry<EntityAttribute> registryEntry, double baseValue) {
-			EntityAttributeInstance entityAttributeInstance = this.checkedAdd(registryEntry);
+		public DefaultAttributeContainer.Builder add(RegistryEntry<EntityAttribute> attribute, double baseValue) {
+			EntityAttributeInstance entityAttributeInstance = this.checkedAdd(attribute);
 			entityAttributeInstance.setBaseValue(baseValue);
 			return this;
 		}

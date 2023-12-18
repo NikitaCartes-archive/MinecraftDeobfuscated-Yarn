@@ -13,12 +13,12 @@ public class StayAboveWaterTask extends MultiTickTask<MobEntity> {
 		this.chance = chance;
 	}
 
-	public static boolean method_55700(MobEntity mobEntity) {
-		return mobEntity.isTouchingWater() && mobEntity.getFluidHeight(FluidTags.WATER) > mobEntity.getSwimHeight() || mobEntity.isInLava();
+	public static boolean isUnderwater(MobEntity entity) {
+		return entity.isTouchingWater() && entity.getFluidHeight(FluidTags.WATER) > entity.getSwimHeight() || entity.isInLava();
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-		return method_55700(mobEntity);
+		return isUnderwater(mobEntity);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {

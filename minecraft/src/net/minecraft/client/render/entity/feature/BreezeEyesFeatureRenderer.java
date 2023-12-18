@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BreezeEyesFeatureRenderer extends FeatureRenderer<BreezeEntity, BreezeEntityModel<BreezeEntity>> {
-	private static final RenderLayer field_47889 = RenderLayer.getEntityTranslucentEmissiveNoOutline(new Identifier("textures/entity/breeze/breeze_eyes.png"));
+	private static final RenderLayer TEXTURE = RenderLayer.getEntityTranslucentEmissiveNoOutline(new Identifier("textures/entity/breeze/breeze_eyes.png"));
 
 	public BreezeEyesFeatureRenderer(FeatureRendererContext<BreezeEntity, BreezeEntityModel<BreezeEntity>> featureRendererContext) {
 		super(featureRendererContext);
@@ -32,9 +32,9 @@ public class BreezeEyesFeatureRenderer extends FeatureRenderer<BreezeEntity, Bre
 		float k,
 		float l
 	) {
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_47889);
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(TEXTURE);
 		BreezeEntityModel<BreezeEntity> breezeEntityModel = this.getContextModel();
-		BreezeEntityRenderer.method_55830(breezeEntityModel, breezeEntityModel.method_55819(), breezeEntityModel.method_55820())
+		BreezeEntityRenderer.updatePartVisibility(breezeEntityModel, breezeEntityModel.getHead(), breezeEntityModel.getEyes())
 			.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

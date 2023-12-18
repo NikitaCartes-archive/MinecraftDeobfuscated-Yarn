@@ -42,8 +42,8 @@ import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.item.AnimalArmorItem;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -68,10 +68,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class WolfEntity extends TameableEntity implements Angerable {
-	private static final UUID field_47776 = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F296");
+	private static final UUID WOLF_ARMOR_BONUS_MODIFIER_UUID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F296");
 	private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Boolean> field_47777 = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> ARMORED = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> ANGER_TIME = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = entity -> {
 		EntityType<?> entityType = entity.getType();
@@ -132,7 +132,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		super.initDataTracker();
 		this.dataTracker.startTracking(BEGGING, false);
 		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
-		this.dataTracker.startTracking(field_47777, false);
+		this.dataTracker.startTracking(ARMORED, false);
 		this.dataTracker.startTracking(ANGER_TIME, 0);
 	}
 
@@ -145,7 +145,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
-		nbt.putBoolean("armor", this.method_55710());
+		nbt.putBoolean("armor", this.hasArmor());
 		this.writeAngerToNbt(nbt);
 	}
 
@@ -157,7 +157,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		}
 
 		if (nbt.contains("armor", NbtElement.BYTE_TYPE)) {
-			this.method_55708(nbt.getBoolean("armor"));
+			this.setArmored(nbt.getBoolean("armor"));
 		}
 
 		this.readAngerFromNbt(this.getWorld(), nbt);
@@ -380,22 +380,22 @@ public class WolfEntity extends TameableEntity implements Angerable {
 					return super.interactMob(player, hand);
 				}
 
-				if (itemStack.isOf(Items.WOLF_ARMOR) && this.isOwner(player) && !this.method_55710() && !this.isBaby()) {
+				if (itemStack.isOf(Items.WOLF_ARMOR) && this.isOwner(player) && !this.hasArmor() && !this.isBaby()) {
 					if (!player.getAbilities().creativeMode) {
 						itemStack.decrement(1);
 					}
 
-					this.method_55708(true);
+					this.setArmored(true);
 					this.getWorld().playSoundFromEntity(null, this, SoundEvents.ITEM_ARMOR_EQUIP_WOLF, this.getSoundCategory(), 1.0F, 1.0F);
 					this.emitGameEvent(GameEvent.EQUIP, player);
 					return ActionResult.SUCCESS;
-				} else if (itemStack.isOf(Items.SHEARS) && this.isOwner(player) && this.method_55710()) {
+				} else if (itemStack.isOf(Items.SHEARS) && this.isOwner(player) && this.hasArmor()) {
 					if (!player.getAbilities().creativeMode) {
-						itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+						itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 					}
 
 					this.getWorld().playSoundFromEntity(null, this, SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF, this.getSoundCategory(), 1.0F, 1.0F);
-					this.method_55708(false);
+					this.setArmored(false);
 					this.dropItem(Items.WOLF_ARMOR);
 					this.emitGameEvent(GameEvent.UNEQUIP, player);
 					return ActionResult.SUCCESS;
@@ -436,7 +436,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	@Override
 	protected void dropInventory() {
 		super.dropInventory();
-		if (this.method_55710()) {
+		if (this.hasArmor()) {
 			this.dropItem(Items.WOLF_ARMOR);
 		}
 	}
@@ -503,23 +503,25 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		return DyeColor.byId(this.dataTracker.get(COLLAR_COLOR));
 	}
 
-	public boolean method_55710() {
-		return this.dataTracker.get(field_47777);
+	public boolean hasArmor() {
+		return this.dataTracker.get(ARMORED);
 	}
 
 	public void setCollarColor(DyeColor color) {
 		this.dataTracker.set(COLLAR_COLOR, color.getId());
 	}
 
-	public void method_55708(boolean bl) {
-		if (!this.getWorld().isClient && bl != this.method_55710()) {
-			this.dataTracker.set(field_47777, bl);
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(field_47776);
-			if (bl) {
-				int i = ((HorseArmorItem)Items.WOLF_ARMOR).getBonus();
+	public void setArmored(boolean armored) {
+		if (!this.getWorld().isClient && armored != this.hasArmor()) {
+			this.dataTracker.set(ARMORED, armored);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(WOLF_ARMOR_BONUS_MODIFIER_UUID);
+			if (armored) {
+				int i = ((AnimalArmorItem)Items.WOLF_ARMOR).getBonus();
 				if (i != 0) {
 					this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)
-						.addTemporaryModifier(new EntityAttributeModifier(field_47776, "Wolf armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION));
+						.addTemporaryModifier(
+							new EntityAttributeModifier(WOLF_ARMOR_BONUS_MODIFIER_UUID, "Wolf armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION)
+						);
 				}
 			}
 		}

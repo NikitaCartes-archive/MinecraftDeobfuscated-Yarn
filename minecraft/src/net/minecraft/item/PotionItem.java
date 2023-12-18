@@ -86,7 +86,7 @@ public class PotionItem extends Item {
 		PlayerEntity playerEntity = context.getPlayer();
 		ItemStack itemStack = context.getStack();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (context.getSide() != Direction.DOWN && blockState.isIn(BlockTags.CONVERTABLE_TO_MUD) && PotionUtil.getPotion(itemStack).method_55838(Potions.WATER)) {
+		if (context.getSide() != Direction.DOWN && blockState.isIn(BlockTags.CONVERTABLE_TO_MUD) && PotionUtil.getPotion(itemStack).matches(Potions.WATER)) {
 			world.playSound(null, blockPos, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			playerEntity.setStackInHand(context.getHand(), ItemUsage.exchangeStack(itemStack, playerEntity, new ItemStack(Items.GLASS_BOTTLE)));
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));

@@ -154,7 +154,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 			matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
 			if (this.gameOptions.getEntityShadows().getValue() && this.renderShadows && !entity.isInvisible()) {
-				float g = entityRenderer.method_55831(entity);
+				float g = entityRenderer.getShadowRadius(entity);
 				if (g > 0.0F) {
 					double h = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ());
 					float i = (float)((1.0 - h / 256.0) * (double)entityRenderer.shadowOpacity);

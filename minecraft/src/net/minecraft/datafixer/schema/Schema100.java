@@ -13,7 +13,7 @@ public class Schema100 extends Schema {
 		super(versionKey, parent);
 	}
 
-	public static TypeTemplate targetItems(Schema schema) {
+	protected static TypeTemplate targetItems(Schema schema) {
 		return DSL.optionalFields("ArmorItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "HandItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)));
 	}
 
@@ -110,6 +110,6 @@ public class Schema100 extends Schema {
 				)
 		);
 		schema.registerType(false, TypeReferences.BLOCK_STATE, DSL::remainder);
-		schema.registerType(false, TypeReferences.field_47727, DSL::remainder);
+		schema.registerType(false, TypeReferences.FLAT_BLOCK_STATE, DSL::remainder);
 	}
 }

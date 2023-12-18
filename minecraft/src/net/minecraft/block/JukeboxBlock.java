@@ -47,9 +47,9 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if (blockState.get(HAS_RECORD)) {
-			BlockEntity var7 = world.getBlockEntity(blockPos);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if (state.get(HAS_RECORD)) {
+			BlockEntity var7 = world.getBlockEntity(pos);
 			if (var7 instanceof JukeboxBlockEntity jukeboxBlockEntity) {
 				jukeboxBlockEntity.dropRecord();
 				return ActionResult.success(world.isClient);

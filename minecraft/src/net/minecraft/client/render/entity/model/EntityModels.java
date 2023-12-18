@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9082;
 import net.minecraft.block.WoodType;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.TexturedModelData;
@@ -53,7 +52,7 @@ public class EntityModels {
 		TexturedModelData texturedModelData18 = TexturedModelData.of(VillagerResemblingModel.getModelData(), 64, 64);
 		TexturedModelData texturedModelData19 = SpiderEntityModel.getTexturedModelData();
 		builder.put(EntityModelLayers.ALLAY, AllayEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.ARMADILLO, class_9082.method_55818());
+		builder.put(EntityModelLayers.ARMADILLO, ArmadilloEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ARMOR_STAND, ArmorStandEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ARMOR_STAND_INNER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(HAT_DILATION));
 		builder.put(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(ARMOR_DILATION));

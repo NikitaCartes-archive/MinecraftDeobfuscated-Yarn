@@ -251,8 +251,8 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return entityPose == EntityPose.LONG_JUMPING ? LONG_JUMPING_DIMENSIONS.scaled(this.getScaleFactor()) : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return pose == EntityPose.LONG_JUMPING ? LONG_JUMPING_DIMENSIONS.scaled(this.getScaleFactor()) : super.getBaseDimensions(pose);
 	}
 
 	@Override

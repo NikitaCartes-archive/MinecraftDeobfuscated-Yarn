@@ -86,7 +86,7 @@ public class LightmapTextureManager implements AutoCloseable {
 
 	private float getDarknessFactor(float delta) {
 		StatusEffectInstance statusEffectInstance = this.client.player.getStatusEffect(StatusEffects.DARKNESS);
-		return statusEffectInstance != null ? statusEffectInstance.method_55653(this.client.player, delta) : 0.0F;
+		return statusEffectInstance != null ? statusEffectInstance.getFadeFactor(this.client.player, delta) : 0.0F;
 	}
 
 	private float getDarkness(LivingEntity entity, float factor, float delta) {

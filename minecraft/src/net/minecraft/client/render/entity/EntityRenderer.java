@@ -2,8 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9064;
-import net.minecraft.class_9066;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
@@ -11,6 +9,8 @@ import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAttachmentType;
+import net.minecraft.entity.EntityAttachments;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -86,11 +86,11 @@ public abstract class EntityRenderer<T extends Entity> {
 		return this.textRenderer;
 	}
 
-	protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float f) {
+	protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
-			class_9066 lv = entity.getDimensions(entity.getPose()).attachments();
-			Vec3d vec3d = lv.method_55675(class_9064.NAME_TAG, 0, entity.getYaw(f));
+			EntityAttachments entityAttachments = entity.getDimensions(entity.getPose()).attachments();
+			Vec3d vec3d = entityAttachments.getPointNullable(EntityAttachmentType.NAME_TAG, 0, entity.getYaw(tickDelta));
 			if (vec3d != null) {
 				boolean bl = !entity.isSneaky();
 				int i = "deadmau5".equals(text.getString()) ? -10 : 0;
@@ -99,15 +99,15 @@ public abstract class EntityRenderer<T extends Entity> {
 				matrices.multiply(this.dispatcher.getRotation());
 				matrices.scale(-0.025F, -0.025F, 0.025F);
 				Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-				float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
-				int j = (int)(g * 255.0F) << 24;
+				float f = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
+				int j = (int)(f * 255.0F) << 24;
 				TextRenderer textRenderer = this.getTextRenderer();
-				float h = (float)(-textRenderer.getWidth(text) / 2);
+				float g = (float)(-textRenderer.getWidth(text) / 2);
 				textRenderer.draw(
-					text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
+					text, g, (float)i, 553648127, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
 				);
 				if (bl) {
-					textRenderer.draw(text, h, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+					textRenderer.draw(text, g, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 				}
 
 				matrices.pop();
@@ -115,7 +115,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		}
 	}
 
-	protected float method_55831(T entity) {
+	protected float getShadowRadius(T entity) {
 		return this.shadowRadius;
 	}
 }

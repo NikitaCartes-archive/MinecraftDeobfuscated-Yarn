@@ -14,7 +14,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.LongStream;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -52,6 +51,7 @@ import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -186,9 +186,9 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		Hand hand = Hand.MAIN_HAND;
-		class_9062 lv = blockState.method_55780(player.getStackInHand(hand), this.getWorld(), player, hand, result);
-		if (!lv.method_55643()) {
-			if (lv != class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION || !blockState.method_55781(this.getWorld(), player, result).isAccepted()) {
+		ItemActionResult itemActionResult = blockState.onUseWithItem(player.getStackInHand(hand), this.getWorld(), player, hand, result);
+		if (!itemActionResult.isAccepted()) {
+			if (itemActionResult != ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION || !blockState.onUse(this.getWorld(), player, result).isAccepted()) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, result);
 				player.getStackInHand(hand).useOnBlock(itemUsageContext);
 			}
@@ -670,11 +670,11 @@ public class TestContext {
 		}
 	}
 
-	public void expectEntityHasEffect(LivingEntity entity, RegistryEntry<StatusEffect> registryEntry, int amplifier) {
-		StatusEffectInstance statusEffectInstance = entity.getStatusEffect(registryEntry);
+	public void expectEntityHasEffect(LivingEntity entity, RegistryEntry<StatusEffect> effect, int amplifier) {
+		StatusEffectInstance statusEffectInstance = entity.getStatusEffect(effect);
 		if (statusEffectInstance == null || statusEffectInstance.getAmplifier() != amplifier) {
 			int i = amplifier + 1;
-			throw new GameTestException("Entity " + entity + " failed has " + registryEntry.value().getTranslationKey() + " x " + i + " test");
+			throw new GameTestException("Entity " + entity + " failed has " + effect.value().getTranslationKey() + " x " + i + " test");
 		}
 	}
 

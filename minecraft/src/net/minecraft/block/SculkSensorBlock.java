@@ -234,7 +234,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 			BlockPos blockPos = pos.offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
 			if (blockState.isIn(BlockTags.VIBRATION_RESONATORS)) {
-				world.method_55764(Vibrations.getResonation(frequency), blockPos, GameEvent.Emitter.of(sourceEntity, blockState));
+				world.emitGameEvent(Vibrations.getResonation(frequency), blockPos, GameEvent.Emitter.of(sourceEntity, blockState));
 				float f = RESONATION_NOTE_PITCHES[frequency];
 				world.playSound(null, blockPos, SoundEvents.BLOCK_AMETHYST_BLOCK_RESONATE, SoundCategory.BLOCKS, 1.0F, f);
 			}

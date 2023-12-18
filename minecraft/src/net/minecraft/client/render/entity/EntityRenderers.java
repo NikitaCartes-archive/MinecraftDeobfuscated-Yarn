@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9084;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SquidEntityModel;
@@ -73,7 +72,7 @@ public class EntityRenderers {
 	static {
 		register(EntityType.ALLAY, AllayEntityRenderer::new);
 		register(EntityType.AREA_EFFECT_CLOUD, EmptyEntityRenderer::new);
-		register(EntityType.ARMADILLO, class_9084::new);
+		register(EntityType.ARMADILLO, ArmadilloEntityRenderer::new);
 		register(EntityType.ARMOR_STAND, ArmorStandEntityRenderer::new);
 		register(EntityType.ARROW, ArrowEntityRenderer::new);
 		register(EntityType.AXOLOTL, AxolotlEntityRenderer::new);

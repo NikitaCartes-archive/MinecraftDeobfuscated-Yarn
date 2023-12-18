@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
@@ -41,6 +40,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -93,54 +93,50 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		BlockEntity itemStack2 = world.getBlockEntity(blockPos);
-		if (itemStack2 instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		BlockEntity itemStack = world.getBlockEntity(pos);
+		if (itemStack instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
 			if (world.isClient) {
-				return class_9062.CONSUME;
+				return ItemActionResult.CONSUME;
 			} else {
-				ItemStack itemStack2x = decoratedPotBlockEntity.getStack();
-				if (!itemStack.isEmpty() && (itemStack2x.isEmpty() || ItemStack.canCombine(itemStack2x, itemStack) && itemStack2x.getCount() < itemStack2x.getMaxCount())) {
+				ItemStack itemStackx = decoratedPotBlockEntity.getStack();
+				if (!stack.isEmpty() && (itemStackx.isEmpty() || ItemStack.canCombine(itemStackx, stack) && itemStackx.getCount() < itemStackx.getMaxCount())) {
 					decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.POSITIVE);
-					playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
-					ItemStack itemStack3 = playerEntity.isCreative() ? itemStack.copyWithCount(1) : itemStack.split(1);
+					player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+					ItemStack itemStack2 = player.isCreative() ? stack.copyWithCount(1) : stack.split(1);
 					float f;
 					if (decoratedPotBlockEntity.isEmpty()) {
-						decoratedPotBlockEntity.setStack(itemStack3);
-						f = (float)itemStack3.getCount() / (float)itemStack3.getMaxCount();
+						decoratedPotBlockEntity.setStack(itemStack2);
+						f = (float)itemStack2.getCount() / (float)itemStack2.getMaxCount();
 					} else {
-						itemStack2x.increment(1);
-						f = (float)itemStack2x.getCount() / (float)itemStack2x.getMaxCount();
+						itemStackx.increment(1);
+						f = (float)itemStackx.getCount() / (float)itemStackx.getMaxCount();
 					}
 
-					world.playSound(null, blockPos, SoundEvents.BLOCK_DECORATED_POT_INSERT, SoundCategory.BLOCKS, 1.0F, 0.7F + 0.5F * f);
+					world.playSound(null, pos, SoundEvents.BLOCK_DECORATED_POT_INSERT, SoundCategory.BLOCKS, 1.0F, 0.7F + 0.5F * f);
 					if (world instanceof ServerWorld serverWorld) {
-						serverWorld.spawnParticles(
-							ParticleTypes.DUST_PLUME, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.2, (double)blockPos.getZ() + 0.5, 7, 0.0, 0.0, 0.0, 0.0
-						);
+						serverWorld.spawnParticles(ParticleTypes.DUST_PLUME, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, 7, 0.0, 0.0, 0.0, 0.0);
 					}
 
 					decoratedPotBlockEntity.markDirty();
-					world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
-					return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+					world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+					return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 				} else {
-					return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+					return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 				}
 			}
 		} else {
-			return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		BlockEntity var7 = world.getBlockEntity(blockPos);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		BlockEntity var7 = world.getBlockEntity(pos);
 		if (var7 instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
-			world.playSound(null, blockPos, SoundEvents.BLOCK_DECORATED_POT_INSERT_FAIL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.playSound(null, pos, SoundEvents.BLOCK_DECORATED_POT_INSERT_FAIL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.NEGATIVE);
-			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;

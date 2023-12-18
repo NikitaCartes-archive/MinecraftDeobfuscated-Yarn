@@ -37,10 +37,10 @@ public class StructureBlock extends BlockWithEntity implements OperatorBlock {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof StructureBlockBlockEntity) {
-			return ((StructureBlockBlockEntity)blockEntity).openScreen(playerEntity) ? ActionResult.success(world.isClient) : ActionResult.PASS;
+			return ((StructureBlockBlockEntity)blockEntity).openScreen(player) ? ActionResult.success(world.isClient) : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}

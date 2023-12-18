@@ -35,7 +35,7 @@ public class MangroveLeavesBlock extends LeavesBlock implements Fertilizable {
 	}
 
 	@Override
-	public BlockPos method_55769(BlockPos blockPos) {
-		return blockPos.down();
+	public BlockPos getFertilizeParticlePos(BlockPos pos) {
+		return pos.down();
 	}
 }

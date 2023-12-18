@@ -1,7 +1,7 @@
 package net.minecraft.registry;
 
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.class_9086;
+import net.minecraft.entity.damage.OneTwentyOneDamageTypes;
 import net.minecraft.structure.OneTwentyOneStructureSets;
 import net.minecraft.structure.pool.OneTwentyOneStructurePools;
 import net.minecraft.structure.processor.OneTwentyOneStructureProcessorLists;
@@ -13,7 +13,7 @@ public class OneTwentyOneBuiltinRegistries {
 		.addRegistry(RegistryKeys.STRUCTURE, OneTwentyOneStructures::bootstrap)
 		.addRegistry(RegistryKeys.STRUCTURE_SET, OneTwentyOneStructureSets::bootstrap)
 		.addRegistry(RegistryKeys.PROCESSOR_LIST, OneTwentyOneStructureProcessorLists::bootstrap)
-		.addRegistry(RegistryKeys.DAMAGE_TYPE, class_9086::method_55843);
+		.addRegistry(RegistryKeys.DAMAGE_TYPE, OneTwentyOneDamageTypes::bootstrap);
 
 	public static CompletableFuture<RegistryBuilder.FullPatchesRegistriesPair> createWrapperLookup(
 		CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture

@@ -1,14 +1,12 @@
-package net.minecraft;
+package net.minecraft.datafixer.schema;
 
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
-import net.minecraft.datafixer.schema.Schema100;
 
-public class class_9061 extends IdentifierNormalizingSchema {
-	public class_9061(int i, Schema schema) {
+public class Schema3799 extends IdentifierNormalizingSchema {
+	public Schema3799(int i, Schema schema) {
 		super(i, schema);
 	}
 

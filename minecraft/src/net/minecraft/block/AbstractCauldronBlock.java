@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.class_9062;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -11,6 +10,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -72,11 +72,9 @@ public abstract class AbstractCauldronBlock extends Block {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		CauldronBehavior cauldronBehavior = (CauldronBehavior)this.behaviorMap.map().get(itemStack.getItem());
-		return cauldronBehavior.interact(blockState, world, blockPos, playerEntity, hand, itemStack);
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		CauldronBehavior cauldronBehavior = (CauldronBehavior)this.behaviorMap.map().get(stack.getItem());
+		return cauldronBehavior.interact(state, world, pos, player, hand, stack);
 	}
 
 	@Override

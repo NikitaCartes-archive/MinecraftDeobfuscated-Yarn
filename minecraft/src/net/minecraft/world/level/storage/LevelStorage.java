@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
-import net.minecraft.class_9078;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.InvalidNbtException;
@@ -57,6 +56,7 @@ import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.SaveLoading;
 import net.minecraft.text.Text;
+import net.minecraft.util.DateTimeFormatters;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
@@ -82,7 +82,7 @@ import org.slf4j.Logger;
 
 public class LevelStorage {
 	static final Logger LOGGER = LogUtils.getLogger();
-	static final DateTimeFormatter TIME_FORMATTER = class_9078.method_55786();
+	static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatters.create();
 	private static final String DATA_KEY = "Data";
 	private static final PathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = path -> false;
 	public static final String ALLOWED_SYMLINKS_FILE_NAME = "allowed_symlinks.txt";

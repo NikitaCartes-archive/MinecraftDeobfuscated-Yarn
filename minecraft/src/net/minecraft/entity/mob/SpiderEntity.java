@@ -129,7 +129,7 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.method_55654(StatusEffects.POISON) ? false : super.canHaveStatusEffect(effect);
+		return effect.equals(StatusEffects.POISON) ? false : super.canHaveStatusEffect(effect);
 	}
 
 	public boolean isClimbingWall() {
@@ -181,8 +181,8 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public Vec3d method_55668(Entity entity) {
-		return entity.getWidth() <= this.getWidth() ? new Vec3d(0.0, 0.3125 * (double)this.method_55693(), 0.0) : super.method_55668(entity);
+	public Vec3d getVehicleAttachmentPos(Entity vehicle) {
+		return vehicle.getWidth() <= this.getWidth() ? new Vec3d(0.0, 0.3125 * (double)this.getScale(), 0.0) : super.getVehicleAttachmentPos(vehicle);
 	}
 
 	static class AttackGoal extends MeleeAttackGoal {

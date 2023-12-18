@@ -152,7 +152,7 @@ public class LocateCommand {
 		boolean includeY,
 		Duration timeTaken
 	) {
-		String string = predicate.getEntry().map(entry -> predicate.asString(), tag -> predicate.asString() + " (" + result.getSecond().method_55840() + ")");
+		String string = predicate.getEntry().map(entry -> predicate.asString(), tag -> predicate.asString() + " (" + result.getSecond().getIdAsString() + ")");
 		return sendCoordinates(source, currentPos, result, successMessage, includeY, string, timeTaken);
 	}
 
@@ -165,7 +165,7 @@ public class LocateCommand {
 		boolean includeY,
 		Duration timeTaken
 	) {
-		String string = structure.getKey().map(key -> key.getValue().toString(), key -> "#" + key.id() + " (" + result.getSecond().method_55840() + ")");
+		String string = structure.getKey().map(key -> key.getValue().toString(), key -> "#" + key.id() + " (" + result.getSecond().getIdAsString() + ")");
 		return sendCoordinates(source, currentPos, result, successMessage, includeY, string, timeTaken);
 	}
 

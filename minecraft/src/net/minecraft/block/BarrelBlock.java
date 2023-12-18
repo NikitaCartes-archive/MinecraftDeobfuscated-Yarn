@@ -42,15 +42,15 @@ public class BarrelBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BarrelBlockEntity) {
-				playerEntity.openHandledScreen((BarrelBlockEntity)blockEntity);
-				playerEntity.incrementStat(Stats.OPEN_BARREL);
-				PiglinBrain.onGuardedBlockInteracted(playerEntity, true);
+				player.openHandledScreen((BarrelBlockEntity)blockEntity);
+				player.incrementStat(Stats.OPEN_BARREL);
+				PiglinBrain.onGuardedBlockInteracted(player, true);
 			}
 
 			return ActionResult.CONSUME;

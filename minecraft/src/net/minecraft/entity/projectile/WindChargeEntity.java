@@ -62,7 +62,7 @@ public class WindChargeEntity extends ExplosiveProjectileEntity implements Flyin
 		if (!this.getWorld().isClient) {
 			Entity var10000 = entityHitResult.getEntity();
 			Entity var3 = this.getOwner();
-			var10000.damage(this.getDamageSources().method_55648(this, var3 instanceof LivingEntity livingEntity ? livingEntity : null), 1.0F);
+			var10000.damage(this.getDamageSources().windCharge(this, var3 instanceof LivingEntity livingEntity ? livingEntity : null), 1.0F);
 			this.createExplosion();
 		}
 	}

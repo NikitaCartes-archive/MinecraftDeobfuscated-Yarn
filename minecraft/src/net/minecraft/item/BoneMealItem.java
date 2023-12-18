@@ -146,13 +146,13 @@ public class BoneMealItem extends Item {
 	public static void createParticles(WorldAccess world, BlockPos pos, int count) {
 		Block blockPos = world.getBlockState(pos).getBlock();
 		if (blockPos instanceof Fertilizable fertilizable) {
-			BlockPos blockPosx = fertilizable.method_55769(pos);
-			switch(fertilizable.method_55770()) {
+			BlockPos blockPosx = fertilizable.getFertilizeParticlePos(pos);
+			switch(fertilizable.getFertilizableType()) {
 				case NEIGHBOR_SPREADER:
-					ParticleUtil.method_55635(world, blockPosx, count * 3, 3.0, 1.0, false, ParticleTypes.HAPPY_VILLAGER);
+					ParticleUtil.spawnParticlesAround(world, blockPosx, count * 3, 3.0, 1.0, false, ParticleTypes.HAPPY_VILLAGER);
 					break;
 				case GROWER:
-					ParticleUtil.method_55636(world, blockPosx, count, ParticleTypes.HAPPY_VILLAGER);
+					ParticleUtil.spawnParticlesAround(world, blockPosx, count, ParticleTypes.HAPPY_VILLAGER);
 			}
 		}
 	}

@@ -210,8 +210,8 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	}
 
 	@Override
-	public Optional<RegistryEntry.Reference<T>> method_55841(Identifier identifier) {
-		return Optional.ofNullable((RegistryEntry.Reference)this.idToEntry.get(identifier));
+	public Optional<RegistryEntry.Reference<T>> getEntry(Identifier id) {
+		return Optional.ofNullable((RegistryEntry.Reference)this.idToEntry.get(id));
 	}
 
 	@Override

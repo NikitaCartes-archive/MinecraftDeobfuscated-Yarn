@@ -8,7 +8,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -28,6 +27,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -73,15 +73,13 @@ public class HangingSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		BlockEntity var9 = world.getBlockEntity(blockPos);
-		if (var9 instanceof SignBlockEntity signBlockEntity && this.shouldTryAttaching(playerEntity, blockHitResult, signBlockEntity, itemStack)) {
-			return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		BlockEntity var9 = world.getBlockEntity(pos);
+		if (var9 instanceof SignBlockEntity signBlockEntity && this.shouldTryAttaching(player, hit, signBlockEntity, stack)) {
+			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 		}
 
-		return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+		return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 	}
 
 	private boolean shouldTryAttaching(PlayerEntity player, BlockHitResult hitResult, SignBlockEntity sign, ItemStack stack) {

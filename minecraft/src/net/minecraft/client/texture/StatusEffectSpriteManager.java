@@ -13,7 +13,7 @@ public class StatusEffectSpriteManager extends SpriteAtlasHolder {
 		super(textureManager, new Identifier("textures/atlas/mob_effects.png"), new Identifier("mob_effects"));
 	}
 
-	public Sprite getSprite(RegistryEntry<StatusEffect> registryEntry) {
-		return this.getSprite((Identifier)registryEntry.getKey().map(RegistryKey::getValue).orElseGet(MissingSprite::getMissingSpriteId));
+	public Sprite getSprite(RegistryEntry<StatusEffect> effect) {
+		return this.getSprite((Identifier)effect.getKey().map(RegistryKey::getValue).orElseGet(MissingSprite::getMissingSpriteId));
 	}
 }

@@ -354,8 +354,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return super.method_55694(entityPose).scaled(0.255F * (float)this.getSize());
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return super.getBaseDimensions(pose).scaled(0.255F * (float)this.getSize());
 	}
 
 	static class FaceTowardTargetGoal extends Goal {
