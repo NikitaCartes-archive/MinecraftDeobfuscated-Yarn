@@ -531,8 +531,8 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		EntityDimensions entityDimensions = super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		EntityDimensions entityDimensions = super.getBaseDimensions(pose);
 		return this.isDiggingOrEmerging() ? EntityDimensions.fixed(entityDimensions.width(), 1.0F) : entityDimensions;
 	}
 

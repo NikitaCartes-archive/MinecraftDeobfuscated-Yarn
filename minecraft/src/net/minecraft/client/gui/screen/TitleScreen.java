@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class TitleScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text field_47850 = Text.translatable("narrator.screen.title");
+	private static final Text NARRATOR_SCREEN_TITLE = Text.translatable("narrator.screen.title");
 	public static final Text COPYRIGHT = Text.translatable("title.credits");
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
@@ -76,7 +76,7 @@ public class TitleScreen extends Screen {
 	}
 
 	public TitleScreen(boolean doBackgroundFade, @Nullable LogoDrawer logoDrawer) {
-		super(field_47850);
+		super(NARRATOR_SCREEN_TITLE);
 		this.doBackgroundFade = doBackgroundFade;
 		this.logoDrawer = (LogoDrawer)Objects.requireNonNullElseGet(logoDrawer, () -> new LogoDrawer(false));
 	}

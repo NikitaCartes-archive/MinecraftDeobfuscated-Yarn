@@ -39,30 +39,30 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	 */
 	@Nullable
 	private StatusEffectInstance hiddenEffect;
-	private final StatusEffectInstance.class_9063 field_47739 = new StatusEffectInstance.class_9063();
+	private final StatusEffectInstance.Fading fading = new StatusEffectInstance.Fading();
 
-	public StatusEffectInstance(RegistryEntry<StatusEffect> registryEntry) {
-		this(registryEntry, 0, 0);
+	public StatusEffectInstance(RegistryEntry<StatusEffect> effect) {
+		this(effect, 0, 0);
 	}
 
-	public StatusEffectInstance(RegistryEntry<StatusEffect> registryEntry, int duration) {
-		this(registryEntry, duration, 0);
+	public StatusEffectInstance(RegistryEntry<StatusEffect> effect, int duration) {
+		this(effect, duration, 0);
 	}
 
-	public StatusEffectInstance(RegistryEntry<StatusEffect> registryEntry, int duration, int amplifier) {
-		this(registryEntry, duration, amplifier, false, true);
+	public StatusEffectInstance(RegistryEntry<StatusEffect> effect, int duration, int amplifier) {
+		this(effect, duration, amplifier, false, true);
 	}
 
-	public StatusEffectInstance(RegistryEntry<StatusEffect> registryEntry, int duration, int amplifier, boolean ambient, boolean visible) {
-		this(registryEntry, duration, amplifier, ambient, visible, visible);
+	public StatusEffectInstance(RegistryEntry<StatusEffect> effect, int duration, int amplifier, boolean ambient, boolean visible) {
+		this(effect, duration, amplifier, ambient, visible, visible);
 	}
 
-	public StatusEffectInstance(RegistryEntry<StatusEffect> registryEntry, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon) {
-		this(registryEntry, duration, amplifier, ambient, showParticles, showIcon, null);
+	public StatusEffectInstance(RegistryEntry<StatusEffect> effect, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon) {
+		this(effect, duration, amplifier, ambient, showParticles, showIcon, null);
 	}
 
 	public StatusEffectInstance(
-		RegistryEntry<StatusEffect> registryEntry,
+		RegistryEntry<StatusEffect> effect,
 		int duration,
 		int amplifier,
 		boolean ambient,
@@ -70,7 +70,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		boolean showIcon,
 		@Nullable StatusEffectInstance hiddenEffect
 	) {
-		this.type = registryEntry;
+		this.type = effect;
 		this.duration = duration;
 		this.amplifier = amplifier;
 		this.ambient = ambient;
@@ -84,8 +84,15 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		this.copyFrom(instance);
 	}
 
-	public float method_55653(LivingEntity livingEntity, float f) {
-		return this.field_47739.method_55660(livingEntity, f);
+	/**
+	 * {@return the factor (multiplier) for effect fade-in and fade-out}
+	 * 
+	 * <p>The return value is between {@code 0.0f} and {@code 1.0f} (both inclusive).
+	 * 
+	 * @see StatusEffect#fadeTicks(int)
+	 */
+	public float getFadeFactor(LivingEntity entity, float tickDelta) {
+		return this.fading.calculate(entity, tickDelta);
 	}
 
 	void copyFrom(StatusEffectInstance that) {
@@ -196,7 +203,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			}
 		}
 
-		this.field_47739.method_55661(this);
+		this.fading.update(this);
 		return this.isActive();
 	}
 
@@ -286,12 +293,10 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	@Nullable
 	public static StatusEffectInstance fromNbt(NbtCompound nbt) {
 		Identifier identifier = Identifier.tryParse(nbt.getString("id"));
-		return identifier == null
-			? null
-			: (StatusEffectInstance)Registries.STATUS_EFFECT.method_55841(identifier).map(reference -> fromNbt(reference, nbt)).orElse(null);
+		return identifier == null ? null : (StatusEffectInstance)Registries.STATUS_EFFECT.getEntry(identifier).map(effect -> fromNbt(effect, nbt)).orElse(null);
 	}
 
-	private static StatusEffectInstance fromNbt(RegistryEntry<StatusEffect> registryEntry, NbtCompound nbt) {
+	private static StatusEffectInstance fromNbt(RegistryEntry<StatusEffect> effect, NbtCompound nbt) {
 		int i = nbt.getByte("amplifier");
 		int j = nbt.getInt("duration");
 		boolean bl = nbt.getBoolean("ambient");
@@ -307,10 +312,10 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 
 		StatusEffectInstance statusEffectInstance = null;
 		if (nbt.contains("hidden_effect", NbtElement.COMPOUND_TYPE)) {
-			statusEffectInstance = fromNbt(registryEntry, nbt.getCompound("hidden_effect"));
+			statusEffectInstance = fromNbt(effect, nbt.getCompound("hidden_effect"));
 		}
 
-		return new StatusEffectInstance(registryEntry, j, Math.max(i, 0), bl, bl2, bl3, statusEffectInstance);
+		return new StatusEffectInstance(effect, j, Math.max(i, 0), bl, bl2, bl3, statusEffectInstance);
 	}
 
 	public int compareTo(StatusEffectInstance statusEffectInstance) {
@@ -328,61 +333,79 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 				.result();
 	}
 
-	public boolean method_55654(RegistryEntry<StatusEffect> registryEntry) {
-		return this.type.equals(registryEntry);
+	public boolean equals(RegistryEntry<StatusEffect> effect) {
+		return this.type.equals(effect);
 	}
 
-	public void method_55656(StatusEffectInstance statusEffectInstance) {
-		this.field_47739.method_55658(statusEffectInstance.field_47739);
+	public void copyFadingFrom(StatusEffectInstance effect) {
+		this.fading.copyFrom(effect.fading);
 	}
 
-	public void method_55657() {
-		this.field_47739.method_55659(this);
+	/**
+	 * Skips fade-in or fade-out currently in progress, instantly setting it
+	 * to the final state (factor {@code 1.0f} or {@code 0.0f}, depending on the
+	 * effect's duration).
+	 */
+	public void skipFading() {
+		this.fading.skipFading(this);
 	}
 
-	static class class_9063 {
-		private float field_47740;
-		private float field_47741;
+	/**
+	 * Computes the factor (multiplier) for effect fade-in and fade-out.
+	 * 
+	 * <p>This is used by {@link StatusEffects#DARKNESS} in vanilla.
+	 * 
+	 * @see StatusEffect#fadeTicks(int)
+	 * @see StatusEffect#getFadeTicks
+	 */
+	static class Fading {
+		private float factor;
+		private float prevFactor;
 
-		public void method_55659(StatusEffectInstance statusEffectInstance) {
-			this.field_47740 = method_55662(statusEffectInstance);
-			this.field_47741 = this.field_47740;
+		/**
+		 * Skips fade-in or fade-out currently in progress, instantly setting it
+		 * to the final state (factor {@code 1.0f} or {@code 0.0f}, depending on the
+		 * effect's duration).
+		 */
+		public void skipFading(StatusEffectInstance effect) {
+			this.factor = getTarget(effect);
+			this.prevFactor = this.factor;
 		}
 
-		public void method_55658(StatusEffectInstance.class_9063 arg) {
-			this.field_47740 = arg.field_47740;
-			this.field_47741 = arg.field_47741;
+		public void copyFrom(StatusEffectInstance.Fading fading) {
+			this.factor = fading.factor;
+			this.prevFactor = fading.prevFactor;
 		}
 
-		public void method_55661(StatusEffectInstance statusEffectInstance) {
-			this.field_47741 = this.field_47740;
-			int i = method_55663(statusEffectInstance);
+		public void update(StatusEffectInstance effect) {
+			this.prevFactor = this.factor;
+			int i = getFadeTicks(effect);
 			if (i == 0) {
-				this.field_47740 = 1.0F;
+				this.factor = 1.0F;
 			} else {
-				float f = method_55662(statusEffectInstance);
-				if (this.field_47740 != f) {
+				float f = getTarget(effect);
+				if (this.factor != f) {
 					float g = 1.0F / (float)i;
-					this.field_47740 = this.field_47740 + MathHelper.clamp(f - this.field_47740, -g, g);
+					this.factor = this.factor + MathHelper.clamp(f - this.factor, -g, g);
 				}
 			}
 		}
 
-		private static float method_55662(StatusEffectInstance statusEffectInstance) {
-			boolean bl = !statusEffectInstance.isDurationBelow(method_55663(statusEffectInstance));
+		private static float getTarget(StatusEffectInstance effect) {
+			boolean bl = !effect.isDurationBelow(getFadeTicks(effect));
 			return bl ? 1.0F : 0.0F;
 		}
 
-		private static int method_55663(StatusEffectInstance statusEffectInstance) {
-			return statusEffectInstance.getEffectType().value().method_55652();
+		private static int getFadeTicks(StatusEffectInstance effect) {
+			return effect.getEffectType().value().getFadeOutTicks();
 		}
 
-		public float method_55660(LivingEntity livingEntity, float f) {
-			if (livingEntity.isRemoved()) {
-				this.field_47741 = this.field_47740;
+		public float calculate(LivingEntity entity, float tickDelta) {
+			if (entity.isRemoved()) {
+				this.prevFactor = this.factor;
 			}
 
-			return MathHelper.lerp(f, this.field_47741, this.field_47740);
+			return MathHelper.lerp(tickDelta, this.prevFactor, this.factor);
 		}
 	}
 }

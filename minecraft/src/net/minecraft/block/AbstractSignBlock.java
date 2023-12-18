@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -23,6 +22,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.PlainTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -75,57 +75,52 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		if (world.getBlockEntity(blockPos) instanceof SignBlockEntity signBlockEntity) {
-			SignChangingItem signChangingItem2 = itemStack.getItem() instanceof SignChangingItem signChangingItem ? signChangingItem : null;
-			boolean bl = signChangingItem2 != null && playerEntity.canModifyBlocks();
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity) {
+			SignChangingItem signChangingItem2 = stack.getItem() instanceof SignChangingItem signChangingItem ? signChangingItem : null;
+			boolean bl = signChangingItem2 != null && player.canModifyBlocks();
 			if (!world.isClient) {
-				if (bl && !signBlockEntity.isWaxed() && !this.isOtherPlayerEditing(playerEntity, signBlockEntity)) {
-					boolean bl2 = signBlockEntity.isPlayerFacingFront(playerEntity);
-					if (signChangingItem2.canUseOnSignText(signBlockEntity.getText(bl2), playerEntity)
-						&& signChangingItem2.useOnSign(world, signBlockEntity, bl2, playerEntity)) {
-						signBlockEntity.runCommandClickEvent(playerEntity, world, blockPos, bl2);
-						playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
-						world.emitGameEvent(GameEvent.BLOCK_CHANGE, signBlockEntity.getPos(), GameEvent.Emitter.of(playerEntity, signBlockEntity.getCachedState()));
-						if (!playerEntity.isCreative()) {
-							itemStack.decrement(1);
+				if (bl && !signBlockEntity.isWaxed() && !this.isOtherPlayerEditing(player, signBlockEntity)) {
+					boolean bl2 = signBlockEntity.isPlayerFacingFront(player);
+					if (signChangingItem2.canUseOnSignText(signBlockEntity.getText(bl2), player) && signChangingItem2.useOnSign(world, signBlockEntity, bl2, player)) {
+						signBlockEntity.runCommandClickEvent(player, world, pos, bl2);
+						player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+						world.emitGameEvent(GameEvent.BLOCK_CHANGE, signBlockEntity.getPos(), GameEvent.Emitter.of(player, signBlockEntity.getCachedState()));
+						if (!player.isCreative()) {
+							stack.decrement(1);
 						}
 
-						return class_9062.SUCCESS;
+						return ItemActionResult.SUCCESS;
 					} else {
-						return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+						return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 					}
 				} else {
-					return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 				}
 			} else {
-				return !bl && !signBlockEntity.isWaxed() ? class_9062.CONSUME : class_9062.SUCCESS;
+				return !bl && !signBlockEntity.isWaxed() ? ItemActionResult.CONSUME : ItemActionResult.SUCCESS;
 			}
 		} else {
-			return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if (world.getBlockEntity(blockPos) instanceof SignBlockEntity signBlockEntity) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity) {
 			if (world.isClient) {
 				Util.throwOrPause(new IllegalStateException("Expected to only call this on server"));
 			}
 
-			boolean bl = signBlockEntity.isPlayerFacingFront(playerEntity);
-			boolean bl2 = signBlockEntity.runCommandClickEvent(playerEntity, world, blockPos, bl);
+			boolean bl = signBlockEntity.isPlayerFacingFront(player);
+			boolean bl2 = signBlockEntity.runCommandClickEvent(player, world, pos, bl);
 			if (signBlockEntity.isWaxed()) {
 				world.playSound(null, signBlockEntity.getPos(), signBlockEntity.getInteractionFailSound(), SoundCategory.BLOCKS);
 				return ActionResult.SUCCESS;
 			} else if (bl2) {
 				return ActionResult.SUCCESS;
-			} else if (!this.isOtherPlayerEditing(playerEntity, signBlockEntity)
-				&& playerEntity.canModifyBlocks()
-				&& this.isTextLiteralOrEmpty(playerEntity, signBlockEntity, bl)) {
-				this.openEditScreen(playerEntity, signBlockEntity, bl);
+			} else if (!this.isOtherPlayerEditing(player, signBlockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, signBlockEntity, bl)) {
+				this.openEditScreen(player, signBlockEntity, bl);
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.PASS;

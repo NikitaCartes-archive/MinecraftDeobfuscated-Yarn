@@ -52,13 +52,13 @@ public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffec
 			return new EntityEffectPredicate.Builder();
 		}
 
-		public EntityEffectPredicate.Builder addEffect(RegistryEntry<StatusEffect> registryEntry) {
-			this.EFFECTS.put(registryEntry, new EntityEffectPredicate.EffectData());
+		public EntityEffectPredicate.Builder addEffect(RegistryEntry<StatusEffect> effect) {
+			this.EFFECTS.put(effect, new EntityEffectPredicate.EffectData());
 			return this;
 		}
 
-		public EntityEffectPredicate.Builder addEffect(RegistryEntry<StatusEffect> registryEntry, EntityEffectPredicate.EffectData effectData) {
-			this.EFFECTS.put(registryEntry, effectData);
+		public EntityEffectPredicate.Builder addEffect(RegistryEntry<StatusEffect> effect, EntityEffectPredicate.EffectData effectData) {
+			this.EFFECTS.put(effect, effectData);
 			return this;
 		}
 

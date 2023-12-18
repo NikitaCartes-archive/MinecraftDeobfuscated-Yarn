@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -24,6 +23,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -232,31 +232,29 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		int i = (Integer)blockState.get(LEVEL);
-		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		int i = (Integer)state.get(LEVEL);
+		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem())) {
 			if (i < 7 && !world.isClient) {
-				BlockState blockState2 = addToComposter(playerEntity, blockState, world, blockPos, itemStack);
-				world.syncWorldEvent(WorldEvents.COMPOSTER_USED, blockPos, blockState != blockState2 ? 1 : 0);
-				playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
-				if (!playerEntity.getAbilities().creativeMode) {
-					itemStack.decrement(1);
+				BlockState blockState = addToComposter(player, state, world, pos, stack);
+				world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, state != blockState ? 1 : 0);
+				player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+				if (!player.getAbilities().creativeMode) {
+					stack.decrement(1);
 				}
 			}
 
-			return class_9062.method_55644(world.isClient);
+			return ItemActionResult.success(world.isClient);
 		} else {
-			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		int i = (Integer)blockState.get(LEVEL);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		int i = (Integer)state.get(LEVEL);
 		if (i == 8) {
-			emptyFullComposter(playerEntity, blockState, world, blockPos);
+			emptyFullComposter(player, state, world, pos);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;

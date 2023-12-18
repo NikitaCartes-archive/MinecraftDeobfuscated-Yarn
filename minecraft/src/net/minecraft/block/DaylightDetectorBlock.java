@@ -72,19 +72,19 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if (playerEntity.canModifyBlocks()) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if (player.canModifyBlocks()) {
 			if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {
-				BlockState blockState2 = blockState.cycle(INVERTED);
-				world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
-				world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, blockState2));
-				updateState(blockState2, world, blockPos);
+				BlockState blockState = state.cycle(INVERTED);
+				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+				world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, blockState));
+				updateState(blockState, world, pos);
 				return ActionResult.CONSUME;
 			}
 		} else {
-			return super.method_55766(blockState, world, blockPos, playerEntity, blockHitResult);
+			return super.onUse(state, world, pos, player, hit);
 		}
 	}
 

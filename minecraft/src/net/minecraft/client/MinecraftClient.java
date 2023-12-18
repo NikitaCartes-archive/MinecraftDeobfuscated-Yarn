@@ -1316,7 +1316,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.push("display");
 		RenderSystem.enableCull();
 		this.profiler.swap("mouse");
-		this.mouse.method_55793();
+		this.mouse.tick();
 		this.profiler.pop();
 		if (!this.skipGameRender) {
 			this.profiler.swap("gameRenderer");

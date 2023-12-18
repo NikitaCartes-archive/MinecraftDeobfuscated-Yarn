@@ -59,7 +59,7 @@ public class ChatHud {
 		}
 	}
 
-	public void render(DrawContext context, int currentTick, int mouseX, int mouseY, boolean bl) {
+	public void render(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused) {
 		if (!this.isChatHidden()) {
 			int i = this.getVisibleLineCount();
 			int j = this.visibleMessages.size();
@@ -85,8 +85,8 @@ public class ChatHud {
 					ChatHudLine.Visible visible = (ChatHudLine.Visible)this.visibleMessages.get(s);
 					if (visible != null) {
 						int t = currentTick - visible.addedTime();
-						if (t < 200 || bl) {
-							double h = bl ? 1.0 : getMessageOpacityMultiplier(t);
+						if (t < 200 || focused) {
+							double h = focused ? 1.0 : getMessageOpacityMultiplier(t);
 							int u = (int)(255.0 * h * d);
 							int v = (int)(255.0 * h * e);
 							q++;
@@ -127,7 +127,7 @@ public class ChatHud {
 					context.getMatrices().pop();
 				}
 
-				if (bl) {
+				if (focused) {
 					int ad = this.getLineHeight();
 					int t = j * ad;
 					int ae = q * ad;

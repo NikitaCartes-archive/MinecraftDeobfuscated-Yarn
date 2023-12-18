@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.entity.passive;
 
 import com.mojang.serialization.Dynamic;
 import javax.annotation.Nullable;
@@ -15,8 +15,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -35,22 +33,22 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class class_9069 extends AnimalEntity {
+public class ArmadilloEntity extends AnimalEntity {
 	public static final float field_47778 = 0.6F;
 	private static final int field_47782 = 5;
 	private static final int field_47783 = 8;
 	public static final int field_47779 = 60;
 	private static final double field_47784 = 7.0;
-	private static final TrackedData<class_9069.class_9070> field_47785 = DataTracker.registerData(class_9069.class, TrackedDataHandlerRegistry.field_47707);
-	private long field_47786 = 0L;
-	public final AnimationState field_47780 = new AnimationState();
-	public final AnimationState field_47781 = new AnimationState();
-	private int field_47787;
+	private static final TrackedData<ArmadilloEntity.State> STATE = DataTracker.registerData(ArmadilloEntity.class, TrackedDataHandlerRegistry.ARMADILLO_STATE);
+	private long currentStateTicks = 0L;
+	public final AnimationState scaredAnimationState = new AnimationState();
+	public final AnimationState rollingAnimationState = new AnimationState();
+	private int nextScuteShedCooldown;
 
-	public class_9069(EntityType<? extends AnimalEntity> entityType, World world) {
+	public ArmadilloEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 		super(entityType, world);
 		this.getNavigation().setCanSwim(true);
-		this.field_47787 = this.method_55719();
+		this.nextScuteShedCooldown = this.getNextScuteShedCooldown();
 	}
 
 	@Nullable
@@ -59,31 +57,31 @@ public class class_9069 extends AnimalEntity {
 		return EntityType.ARMADILLO.create(world);
 	}
 
-	public static DefaultAttributeContainer.Builder method_55722() {
+	public static DefaultAttributeContainer.Builder createArmadilloAttributes() {
 		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 12.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.14);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_47785, class_9069.class_9070.IDLE);
+		this.dataTracker.startTracking(STATE, ArmadilloEntity.State.IDLE);
 	}
 
-	public boolean method_55723() {
-		return this.dataTracker.get(field_47785) != class_9069.class_9070.IDLE;
+	public boolean isNotIdle() {
+		return this.dataTracker.get(STATE) != ArmadilloEntity.State.IDLE;
 	}
 
-	public boolean method_55711() {
-		class_9069.class_9070 lv = this.method_55718();
-		return lv == class_9069.class_9070.SCARED || lv == class_9069.class_9070.ROLLING && this.field_47786 > 5L;
+	public boolean isRolledUp() {
+		ArmadilloEntity.State state = this.getState();
+		return state == ArmadilloEntity.State.SCARED || state == ArmadilloEntity.State.ROLLING && this.currentStateTicks > 5L;
 	}
 
-	public boolean method_55714() {
-		return this.method_55718() == class_9069.class_9070.ROLLING && this.field_47786 > 8L;
+	public boolean shouldSwitchToScaredState() {
+		return this.getState() == ArmadilloEntity.State.ROLLING && this.currentStateTicks > 8L;
 	}
 
-	private class_9069.class_9070 method_55718() {
-		return this.dataTracker.get(field_47785);
+	private ArmadilloEntity.State getState() {
+		return this.dataTracker.get(STATE);
 	}
 
 	@Override
@@ -92,63 +90,63 @@ public class class_9069 extends AnimalEntity {
 		DebugInfoSender.sendBrainDebugData(this);
 	}
 
-	public void method_55713(class_9069.class_9070 arg) {
-		this.dataTracker.set(field_47785, arg);
+	public void setState(ArmadilloEntity.State state) {
+		this.dataTracker.set(STATE, state);
 	}
 
-	private void method_55725(boolean bl) {
-		this.method_55713(bl ? class_9069.class_9070.ROLLING : class_9069.class_9070.IDLE);
+	private void setRolling(boolean rolling) {
+		this.setState(rolling ? ArmadilloEntity.State.ROLLING : ArmadilloEntity.State.IDLE);
 	}
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
-		if (field_47785.equals(data)) {
-			this.field_47786 = 0L;
+		if (STATE.equals(data)) {
+			this.currentStateTicks = 0L;
 		}
 
 		super.onTrackedDataSet(data);
 	}
 
 	@Override
-	protected Brain.Profile<class_9069> createBrainProfile() {
-		return class_9071.method_55728();
+	protected Brain.Profile<ArmadilloEntity> createBrainProfile() {
+		return ArmadilloBrain.createBrainProfile();
 	}
 
 	@Override
 	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-		return class_9071.method_55731(this.createBrainProfile().deserialize(dynamic));
+		return ArmadilloBrain.create(this.createBrainProfile().deserialize(dynamic));
 	}
 
 	@Override
 	protected void mobTick() {
 		this.getWorld().getProfiler().push("armadilloBrain");
-		((Brain<class_9069>)this.brain).tick((ServerWorld)this.getWorld(), this);
+		((Brain<ArmadilloEntity>)this.brain).tick((ServerWorld)this.getWorld(), this);
 		this.getWorld().getProfiler().pop();
 		this.getWorld().getProfiler().push("armadilloActivityUpdate");
-		class_9071.method_55734(this);
+		ArmadilloBrain.updateActivities(this);
 		this.getWorld().getProfiler().pop();
-		if (this.isAlive() && !this.isBaby() && --this.field_47787 <= 0) {
+		if (this.isAlive() && !this.isBaby() && --this.nextScuteShedCooldown <= 0) {
 			this.playSound(SoundEvents.ENTITY_ARMADILLO_SCUTE_DROP, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			this.dropItem(Items.ARMADILLO_SCUTE);
 			this.emitGameEvent(GameEvent.ENTITY_PLACE);
-			this.field_47787 = this.method_55719();
+			this.nextScuteShedCooldown = this.getNextScuteShedCooldown();
 		}
 
 		super.mobTick();
 	}
 
-	private int method_55719() {
-		return this.random.nextInt(20 * TimeHelper.field_47726 * 5) + 20 * TimeHelper.field_47726 * 5;
+	private int getNextScuteShedCooldown() {
+		return this.random.nextInt(20 * TimeHelper.MINUTE_IN_SECONDS * 5) + 20 * TimeHelper.MINUTE_IN_SECONDS * 5;
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
 		if (this.getWorld().isClient()) {
-			this.method_55720();
+			this.updateAnimationStates();
 		}
 
-		this.field_47786++;
+		this.currentStateTicks++;
 	}
 
 	@Override
@@ -156,34 +154,34 @@ public class class_9069 extends AnimalEntity {
 		return this.isBaby() ? 0.6F : 1.0F;
 	}
 
-	private void method_55720() {
-		switch (this.method_55718()) {
+	private void updateAnimationStates() {
+		switch (this.getState()) {
 			case IDLE:
-				this.field_47780.stop();
-				this.field_47781.stop();
+				this.scaredAnimationState.stop();
+				this.rollingAnimationState.stop();
 				break;
 			case SCARED:
-				this.field_47780.startIfNotRunning(this.age);
-				this.field_47781.stop();
+				this.scaredAnimationState.startIfNotRunning(this.age);
+				this.rollingAnimationState.stop();
 				break;
 			case ROLLING:
-				this.field_47780.stop();
-				this.field_47781.startIfNotRunning(this.age);
+				this.scaredAnimationState.stop();
+				this.rollingAnimationState.startIfNotRunning(this.age);
 		}
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return class_9071.field_47796.test(stack);
+		return ArmadilloBrain.BREEDING_INGREDIENT.test(stack);
 	}
 
-	public boolean method_55721(LivingEntity livingEntity) {
-		if (!new Box(this.getPos(), this.getPos()).expand(7.0).contains(livingEntity.getPos())) {
+	public boolean isEntityThreatening(LivingEntity entity) {
+		if (!new Box(this.getPos(), this.getPos()).expand(7.0).contains(entity.getPos())) {
 			return false;
-		} else if (livingEntity.getType().isIn(EntityTypeTags.UNDEAD)) {
+		} else if (entity.getType().isIn(EntityTypeTags.UNDEAD)) {
 			return true;
 		} else {
-			if (livingEntity instanceof PlayerEntity playerEntity && (playerEntity.isSprinting() || playerEntity.hasVehicle())) {
+			if (entity instanceof PlayerEntity playerEntity && (playerEntity.isSprinting() || playerEntity.hasVehicle())) {
 				return true;
 			}
 
@@ -194,39 +192,39 @@ public class class_9069 extends AnimalEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putString("state", this.method_55718().asString());
+		nbt.putString("state", this.getState().asString());
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.method_55713(class_9069.class_9070.method_55727(nbt.getString("state")));
+		this.setState(ArmadilloEntity.State.fromName(nbt.getString("state")));
 	}
 
-	public void method_55715() {
-		if (!this.method_55723()) {
-			this.method_55695();
+	public void startRolling() {
+		if (!this.isNotIdle()) {
+			this.stopMovement();
 			this.resetLoveTicks();
 			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 			this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ENTITY_ARMADILLO_ROLL, this.getSoundCategory(), 1.0F, 1.0F);
-			this.method_55725(true);
+			this.setRolling(true);
 		}
 	}
 
-	public void method_55724(boolean bl) {
-		if (this.method_55723()) {
+	public void unroll(boolean bl) {
+		if (this.isNotIdle()) {
 			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 			if (!bl) {
 				this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ENTITY_ARMADILLO_UNROLL, this.getSoundCategory(), 1.0F, 1.0F);
 			}
 
-			this.method_55725(false);
+			this.setRolling(false);
 		}
 	}
 
 	@Override
 	protected void applyDamage(DamageSource source, float amount) {
-		this.method_55724(true);
+		this.unroll(true);
 		super.applyDamage(source, amount);
 	}
 
@@ -238,23 +236,23 @@ public class class_9069 extends AnimalEntity {
 			return bl ? ActionResult.CONSUME : ActionResult.PASS;
 		} else if (itemStack.isOf(Items.BRUSH)) {
 			if (!player.getAbilities().creativeMode) {
-				itemStack.damage(16, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				itemStack.damage(16, player, playerx -> playerx.sendToolBreakStatus(hand));
 			}
 
-			this.method_55716();
+			this.brushScute();
 			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
 		}
 	}
 
-	public void method_55716() {
+	public void brushScute() {
 		this.dropStack(new ItemStack(Items.ARMADILLO_SCUTE));
 		this.emitGameEvent(GameEvent.ENTITY_INTERACT);
 		this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ENTITY_ARMADILLO_BRUSH, this.getSoundCategory(), 1.0F, 1.0F);
 	}
 
-	public boolean method_55717() {
+	public boolean canRollUp() {
 		return !this.isPanicking() && !this.isInFluid() && !this.isLeashed();
 	}
 
@@ -266,7 +264,7 @@ public class class_9069 extends AnimalEntity {
 
 	@Override
 	public boolean canEat() {
-		return super.canEat() && !this.method_55723();
+		return super.canEat() && !this.isNotIdle();
 	}
 
 	@Override
@@ -276,7 +274,7 @@ public class class_9069 extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.method_55723() ? null : SoundEvents.ENTITY_ARMADILLO_AMBIENT;
+		return this.isNotIdle() ? null : SoundEvents.ENTITY_ARMADILLO_AMBIENT;
 	}
 
 	@Override
@@ -299,32 +297,32 @@ public class class_9069 extends AnimalEntity {
 		return new BodyControl(this) {
 			@Override
 			public void tick() {
-				if (!class_9069.this.method_55723()) {
+				if (!ArmadilloEntity.this.isNotIdle()) {
 					super.tick();
 				}
 			}
 		};
 	}
 
-	public static enum class_9070 implements StringIdentifiable {
+	public static enum State implements StringIdentifiable {
 		IDLE("idle"),
 		ROLLING("rolling"),
 		SCARED("scared");
 
-		private static StringIdentifiable.EnumCodec<class_9069.class_9070> field_47794 = StringIdentifiable.createCodec(class_9069.class_9070::values);
-		final String field_47793;
+		private static StringIdentifiable.EnumCodec<ArmadilloEntity.State> CODEC = StringIdentifiable.createCodec(ArmadilloEntity.State::values);
+		final String name;
 
-		private class_9070(String string2) {
-			this.field_47793 = string2;
+		private State(String name) {
+			this.name = name;
 		}
 
-		public static class_9069.class_9070 method_55727(String string) {
-			return (class_9069.class_9070)field_47794.byId(string, IDLE);
+		public static ArmadilloEntity.State fromName(String name) {
+			return (ArmadilloEntity.State)CODEC.byId(name, IDLE);
 		}
 
 		@Override
 		public String asString() {
-			return this.field_47793;
+			return this.name;
 		}
 	}
 }

@@ -57,7 +57,7 @@ public class CaveSpiderEntity extends SpiderEntity {
 	}
 
 	@Override
-	public Vec3d method_55668(Entity entity) {
-		return entity.getWidth() <= this.getWidth() ? new Vec3d(0.0, 0.21875 * (double)this.method_55693(), 0.0) : super.method_55668(entity);
+	public Vec3d getVehicleAttachmentPos(Entity vehicle) {
+		return vehicle.getWidth() <= this.getWidth() ? new Vec3d(0.0, 0.21875 * (double)this.getScale(), 0.0) : super.getVehicleAttachmentPos(vehicle);
 	}
 }

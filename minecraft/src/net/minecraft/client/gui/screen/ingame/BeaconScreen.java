@@ -238,21 +238,21 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		private RegistryEntry<StatusEffect> effect;
 		private Sprite sprite;
 
-		public EffectButtonWidget(int x, int y, RegistryEntry<StatusEffect> registryEntry, boolean primary, int level) {
+		public EffectButtonWidget(int x, int y, RegistryEntry<StatusEffect> effect, boolean primary, int level) {
 			super(x, y);
 			this.primary = primary;
 			this.level = level;
-			this.init(registryEntry);
+			this.init(effect);
 		}
 
-		protected void init(RegistryEntry<StatusEffect> registryEntry) {
-			this.effect = registryEntry;
-			this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(registryEntry);
-			this.setTooltip(Tooltip.of(this.getEffectName(registryEntry), null));
+		protected void init(RegistryEntry<StatusEffect> effect) {
+			this.effect = effect;
+			this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(effect);
+			this.setTooltip(Tooltip.of(this.getEffectName(effect), null));
 		}
 
-		protected MutableText getEffectName(RegistryEntry<StatusEffect> registryEntry) {
-			return Text.translatable(registryEntry.value().getTranslationKey());
+		protected MutableText getEffectName(RegistryEntry<StatusEffect> effect) {
+			return Text.translatable(effect.value().getTranslationKey());
 		}
 
 		@Override
@@ -302,13 +302,13 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Environment(EnvType.CLIENT)
 	class LevelTwoEffectButtonWidget extends BeaconScreen.EffectButtonWidget {
-		public LevelTwoEffectButtonWidget(int x, int y, RegistryEntry<StatusEffect> registryEntry) {
-			super(x, y, registryEntry, false, 3);
+		public LevelTwoEffectButtonWidget(int x, int y, RegistryEntry<StatusEffect> effect) {
+			super(x, y, effect, false, 3);
 		}
 
 		@Override
-		protected MutableText getEffectName(RegistryEntry<StatusEffect> registryEntry) {
-			return Text.translatable(registryEntry.value().getTranslationKey()).append(" II");
+		protected MutableText getEffectName(RegistryEntry<StatusEffect> effect) {
+			return Text.translatable(effect.value().getTranslationKey()).append(" II");
 		}
 
 		@Override

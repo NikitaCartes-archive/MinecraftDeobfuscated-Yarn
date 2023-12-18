@@ -36,7 +36,8 @@ public class BreezeWindFeatureRenderer extends FeatureRenderer<BreezeEntity, Bre
 		float m = (float)breezeEntity.age + h;
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getBreezeWind(texture, this.getXOffset(m) % 1.0F, 0.0F));
 		model.setAngles(breezeEntity, f, g, j, k, l);
-		BreezeEntityRenderer.method_55830(model, model.method_55822()).render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		BreezeEntityRenderer.updatePartVisibility(model, model.getWindBody())
+			.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private float getXOffset(float tickDelta) {

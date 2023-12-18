@@ -48,8 +48,7 @@ public class AttributeContainer {
 
 	@Nullable
 	public EntityAttributeInstance getCustomInstance(RegistryEntry<EntityAttribute> attribute) {
-		return (EntityAttributeInstance)this.custom
-			.computeIfAbsent(attribute, registryEntry -> this.fallback.createOverride(this::updateTrackedStatus, registryEntry));
+		return (EntityAttributeInstance)this.custom.computeIfAbsent(attribute, attributex -> this.fallback.createOverride(this::updateTrackedStatus, attributex));
 	}
 
 	public boolean hasAttribute(RegistryEntry<EntityAttribute> attribute) {
@@ -61,14 +60,14 @@ public class AttributeContainer {
 		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid) != null : this.fallback.hasModifier(attribute, uuid);
 	}
 
-	public double getValue(RegistryEntry<EntityAttribute> registryEntry) {
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(registryEntry);
-		return entityAttributeInstance != null ? entityAttributeInstance.getValue() : this.fallback.getValue(registryEntry);
+	public double getValue(RegistryEntry<EntityAttribute> attribute) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
+		return entityAttributeInstance != null ? entityAttributeInstance.getValue() : this.fallback.getValue(attribute);
 	}
 
-	public double getBaseValue(RegistryEntry<EntityAttribute> registryEntry) {
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(registryEntry);
-		return entityAttributeInstance != null ? entityAttributeInstance.getBaseValue() : this.fallback.getBaseValue(registryEntry);
+	public double getBaseValue(RegistryEntry<EntityAttribute> attribute) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
+		return entityAttributeInstance != null ? entityAttributeInstance.getBaseValue() : this.fallback.getBaseValue(attribute);
 	}
 
 	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
@@ -77,8 +76,8 @@ public class AttributeContainer {
 	}
 
 	public void removeModifiers(Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifiers) {
-		attributeModifiers.asMap().forEach((registryEntry, modifiers) -> {
-			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(registryEntry);
+		attributeModifiers.asMap().forEach((attribute, modifiers) -> {
+			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
 			if (entityAttributeInstance != null) {
 				modifiers.forEach(modifier -> entityAttributeInstance.removeModifier(modifier.getId()));
 			}
@@ -86,8 +85,8 @@ public class AttributeContainer {
 	}
 
 	public void addTemporaryModifiers(Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifiers) {
-		attributeModifiers.forEach((registryEntry, attributeModifier) -> {
-			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(registryEntry);
+		attributeModifiers.forEach((attribute, attributeModifier) -> {
+			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
 			if (entityAttributeInstance != null) {
 				entityAttributeInstance.removeModifier(attributeModifier.getId());
 				entityAttributeInstance.addTemporaryModifier(attributeModifier);
@@ -120,8 +119,8 @@ public class AttributeContainer {
 			String string = nbtCompound.getString("Name");
 			Identifier identifier = Identifier.tryParse(string);
 			if (identifier != null) {
-				Util.ifPresentOrElse(Registries.ATTRIBUTE.method_55841(identifier), reference -> {
-					EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(reference);
+				Util.ifPresentOrElse(Registries.ATTRIBUTE.getEntry(identifier), attribute -> {
+					EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
 					if (entityAttributeInstance != null) {
 						entityAttributeInstance.readNbt(nbtCompound);
 					}

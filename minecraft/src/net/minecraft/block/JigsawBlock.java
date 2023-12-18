@@ -66,10 +66,10 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
-		if (blockEntity instanceof JigsawBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
-			playerEntity.openJigsawScreen((JigsawBlockEntity)blockEntity);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if (blockEntity instanceof JigsawBlockEntity && player.isCreativeLevelTwoOp()) {
+			player.openJigsawScreen((JigsawBlockEntity)blockEntity);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;

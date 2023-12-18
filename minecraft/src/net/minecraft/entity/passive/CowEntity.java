@@ -31,7 +31,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CowEntity extends AnimalEntity {
-	private static final EntityDimensions field_47771 = EntityType.COW.getDimensions().scaled(0.5F).method_55685(0.665F);
+	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.COW.getDimensions().scaled(0.5F).withEyeHeight(0.665F);
 
 	public CowEntity(EntityType<? extends CowEntity> entityType, World world) {
 		super(entityType, world);
@@ -97,7 +97,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return this.isBaby() ? field_47771 : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
 	}
 }

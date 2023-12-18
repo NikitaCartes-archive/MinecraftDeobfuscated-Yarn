@@ -1162,8 +1162,8 @@ public class TradeOffers {
 		return new Int2ObjectOpenHashMap<>(map);
 	}
 
-	private static ItemStack createPotionStack(RegistryEntry<Potion> registryEntry) {
-		return PotionUtil.setPotion(new ItemStack(Items.POTION), registryEntry);
+	private static ItemStack createPotionStack(RegistryEntry<Potion> potion) {
+		return PotionUtil.setPotion(new ItemStack(Items.POTION), potion);
 	}
 
 	private static ItemStack enchant(Item item, Enchantment enchantment, int level) {
@@ -1470,7 +1470,7 @@ public class TradeOffers {
 			ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
 			List<RegistryEntry<Potion>> list = (List<RegistryEntry<Potion>>)Registries.POTION
 				.streamEntries()
-				.filter(reference -> !((Potion)reference.value()).getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(reference))
+				.filter(potion -> !((Potion)potion.value()).getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potion))
 				.collect(Collectors.toList());
 			RegistryEntry<Potion> registryEntry = Util.getRandom(list, random);
 			ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(this.sell.getItem(), this.sellCount), registryEntry);
@@ -1483,8 +1483,8 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public SellSuspiciousStewFactory(RegistryEntry<StatusEffect> registryEntry, int duration, int experience) {
-			this(List.of(new SuspiciousStewIngredient.StewEffect(registryEntry, duration)), experience, 0.05F);
+		public SellSuspiciousStewFactory(RegistryEntry<StatusEffect> effect, int duration, int experience) {
+			this(List.of(new SuspiciousStewIngredient.StewEffect(effect, duration)), experience, 0.05F);
 		}
 
 		public SellSuspiciousStewFactory(List<SuspiciousStewIngredient.StewEffect> stewEffects, int experience, float multiplier) {

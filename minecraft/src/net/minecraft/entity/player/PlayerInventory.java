@@ -586,7 +586,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		return false;
 	}
 
-	public boolean method_55753(Predicate<ItemStack> predicate) {
+	public boolean contains(Predicate<ItemStack> predicate) {
 		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack : list) {
 				if (predicate.test(itemStack)) {

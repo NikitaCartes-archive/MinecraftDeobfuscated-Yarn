@@ -69,7 +69,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	public final AnimationState idlingAnimationState = new AnimationState();
 	public final AnimationState dashingAnimationState = new AnimationState();
 	private static final EntityDimensions SITTING_DIMENSIONS = EntityDimensions.changing(EntityType.CAMEL.getWidth(), EntityType.CAMEL.getHeight() - 1.43F)
-		.method_55685(0.845F);
+		.withEyeHeight(0.845F);
 	private int dashCooldown = 0;
 	private int idleAnimationCooldown = 0;
 
@@ -138,8 +138,8 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return entityPose == EntityPose.SITTING ? SITTING_DIMENSIONS.scaled(this.getScaleFactor()) : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return pose == EntityPose.SITTING ? SITTING_DIMENSIONS.scaled(this.getScaleFactor()) : super.getBaseDimensions(pose);
 	}
 
 	@Override

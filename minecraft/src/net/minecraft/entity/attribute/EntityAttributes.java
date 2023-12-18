@@ -65,7 +65,7 @@ public class EntityAttributes {
 		return Registry.registerReference(Registries.ATTRIBUTE, new Identifier(id), attribute);
 	}
 
-	public static RegistryEntry<EntityAttribute> method_55699(Registry<EntityAttribute> registry) {
+	public static RegistryEntry<EntityAttribute> registerAndGetDefault(Registry<EntityAttribute> registry) {
 		return GENERIC_MAX_HEALTH;
 	}
 }

@@ -41,7 +41,7 @@ public class MultiplayerServerListPinger {
 	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(Colors.RED);
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
-	public void add(ServerInfo entry, Runnable saver, Runnable runnable) throws UnknownHostException {
+	public void add(ServerInfo entry, Runnable saver, Runnable pingCallback) throws UnknownHostException {
 		final ServerAddress serverAddress = ServerAddress.parse(entry.address);
 		Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
 		if (optional.isEmpty()) {
@@ -109,7 +109,7 @@ public class MultiplayerServerListPinger {
 					long m = Util.getMeasuringTimeMs();
 					entry.ping = m - l;
 					clientConnection.disconnect(Text.translatable("multiplayer.status.finished"));
-					runnable.run();
+					pingCallback.run();
 				}
 
 				@Override
@@ -151,7 +151,7 @@ public class MultiplayerServerListPinger {
 				}
 
 				channel.pipeline().addLast(new LegacyServerPinger(address, (protocolVersion, version, label, currentPlayers, maxPlayers) -> {
-					serverInfo.method_55824(ServerInfo.class_9083.INCOMPATIBLE);
+					serverInfo.setStatus(ServerInfo.Status.INCOMPATIBLE);
 					serverInfo.version = Text.literal(version);
 					serverInfo.label = Text.literal(label);
 					serverInfo.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(currentPlayers, maxPlayers);

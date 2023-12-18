@@ -204,12 +204,12 @@ public class DamageSources {
 		return this.create(DamageTypes.MOB_PROJECTILE, source, attacker);
 	}
 
-	public DamageSource method_55647(Entity entity, @Nullable LivingEntity livingEntity) {
-		return this.create(DamageTypes.field_47736, entity, livingEntity);
+	public DamageSource spit(Entity source, @Nullable LivingEntity attacker) {
+		return this.create(DamageTypes.SPIT, source, attacker);
 	}
 
-	public DamageSource method_55648(Entity entity, @Nullable LivingEntity livingEntity) {
-		return this.create(DamageTypes.field_47737, entity, livingEntity);
+	public DamageSource windCharge(Entity source, @Nullable LivingEntity attacker) {
+		return this.create(DamageTypes.WIND_CHARGE, source, attacker);
 	}
 
 	public DamageSource fireworks(FireworkRocketEntity source, @Nullable Entity attacker) {

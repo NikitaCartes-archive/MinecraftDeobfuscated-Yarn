@@ -1,15 +1,11 @@
-package net.minecraft;
+package net.minecraft.client.render.entity.animation;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.animation.Animation;
-import net.minecraft.client.render.entity.animation.AnimationHelper;
-import net.minecraft.client.render.entity.animation.Keyframe;
-import net.minecraft.client.render.entity.animation.Transformation;
 
 @Environment(EnvType.CLIENT)
-public class class_9079 {
-	public static final Animation field_47843 = Animation.Builder.create(0.375F)
+public class ArmadilloAnimations {
+	public static final Animation ROLLING = Animation.Builder.create(0.375F)
 		.addBoneAnimation(
 			"body",
 			new Transformation(
@@ -164,7 +160,7 @@ public class class_9079 {
 			)
 		)
 		.build();
-	public static final Animation field_47844 = Animation.Builder.create(1.45833F)
+	public static final Animation IDLE = Animation.Builder.create(1.45833F)
 		.looping()
 		.addBoneAnimation(
 			"body",
@@ -310,7 +306,7 @@ public class class_9079 {
 			)
 		)
 		.build();
-	public static final Animation field_47845 = Animation.Builder.create(1.5F)
+	public static final Animation SCARED = Animation.Builder.create(1.5F)
 		.looping()
 		.addBoneAnimation(
 			"body",

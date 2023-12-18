@@ -16,7 +16,7 @@ public class Potion {
 
 	public static RegistryEntry<Potion> byId(String id) {
 		Identifier identifier = Identifier.tryParse(id);
-		return identifier == null ? Potions.EMPTY : (RegistryEntry)Registries.POTION.method_55841(identifier).map(Function.identity()).orElse(Potions.EMPTY);
+		return identifier == null ? Potions.EMPTY : (RegistryEntry)Registries.POTION.getEntry(identifier).map(Function.identity()).orElse(Potions.EMPTY);
 	}
 
 	public Potion(StatusEffectInstance... effects) {
@@ -28,13 +28,13 @@ public class Potion {
 		this.effects = List.of(effects);
 	}
 
-	public static String finishTranslationKey(RegistryEntry<Potion> registryEntry, String string) {
-		String string2 = registryEntry.value().baseName;
-		if (string2 != null) {
-			return string + string2;
+	public static String finishTranslationKey(RegistryEntry<Potion> potion, String prefix) {
+		String string = potion.value().baseName;
+		if (string != null) {
+			return prefix + string;
 		} else {
-			RegistryKey<Potion> registryKey = (RegistryKey<Potion>)registryEntry.getKey().orElse(Potions.EMPTY_KEY);
-			return string + registryKey.getValue().getPath();
+			RegistryKey<Potion> registryKey = (RegistryKey<Potion>)potion.getKey().orElse(Potions.EMPTY_KEY);
+			return prefix + registryKey.getValue().getPath();
 		}
 	}
 

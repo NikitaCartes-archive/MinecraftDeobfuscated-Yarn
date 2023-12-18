@@ -8,7 +8,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9062;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.OperatorBlock;
@@ -46,6 +45,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
@@ -305,13 +305,13 @@ public class ClientPlayerInteractionManager {
 					return ActionResult.FAIL;
 				}
 
-				class_9062 lv = blockState.method_55780(player.getStackInHand(hand), this.client.world, player, hand, hitResult);
-				if (lv.method_55643()) {
-					return lv.method_55645();
+				ItemActionResult itemActionResult = blockState.onUseWithItem(player.getStackInHand(hand), this.client.world, player, hand, hitResult);
+				if (itemActionResult.isAccepted()) {
+					return itemActionResult.toActionResult();
 				}
 
-				if (lv == class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
-					ActionResult actionResult = blockState.method_55781(this.client.world, player, hitResult);
+				if (itemActionResult == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
+					ActionResult actionResult = blockState.onUse(this.client.world, player, hitResult);
 					if (actionResult.isAccepted()) {
 						return actionResult;
 					}

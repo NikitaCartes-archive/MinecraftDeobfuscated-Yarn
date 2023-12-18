@@ -76,38 +76,38 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.CONSUME;
 		} else {
-			if (blockState.get(PART) != BedPart.HEAD) {
-				blockPos = blockPos.offset(blockState.get(FACING));
-				blockState = world.getBlockState(blockPos);
-				if (!blockState.isOf(this)) {
+			if (state.get(PART) != BedPart.HEAD) {
+				pos = pos.offset(state.get(FACING));
+				state = world.getBlockState(pos);
+				if (!state.isOf(this)) {
 					return ActionResult.CONSUME;
 				}
 			}
 
 			if (!isBedWorking(world)) {
-				world.removeBlock(blockPos, false);
-				BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
-				if (world.getBlockState(blockPos2).isOf(this)) {
-					world.removeBlock(blockPos2, false);
+				world.removeBlock(pos, false);
+				BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
+				if (world.getBlockState(blockPos).isOf(this)) {
+					world.removeBlock(blockPos, false);
 				}
 
-				Vec3d vec3d = blockPos.toCenterPos();
+				Vec3d vec3d = pos.toCenterPos();
 				world.createExplosion(null, world.getDamageSources().badRespawnPoint(vec3d), null, vec3d, 5.0F, true, World.ExplosionSourceType.BLOCK);
 				return ActionResult.SUCCESS;
-			} else if ((Boolean)blockState.get(OCCUPIED)) {
-				if (!this.wakeVillager(world, blockPos)) {
-					playerEntity.sendMessage(Text.translatable("block.minecraft.bed.occupied"), true);
+			} else if ((Boolean)state.get(OCCUPIED)) {
+				if (!this.wakeVillager(world, pos)) {
+					player.sendMessage(Text.translatable("block.minecraft.bed.occupied"), true);
 				}
 
 				return ActionResult.SUCCESS;
 			} else {
-				playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
-					if (sleepFailureReason.getMessage() != null) {
-						playerEntity.sendMessage(sleepFailureReason.getMessage(), true);
+				player.trySleep(pos).ifLeft(reason -> {
+					if (reason.getMessage() != null) {
+						player.sendMessage(reason.getMessage(), true);
 					}
 				});
 				return ActionResult.SUCCESS;

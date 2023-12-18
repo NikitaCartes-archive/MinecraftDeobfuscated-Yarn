@@ -76,7 +76,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 
 	private void initColor() {
 		this.colorSet = false;
-		if (this.potion.method_55838(Potions.EMPTY) && this.effects.isEmpty()) {
+		if (this.potion.matches(Potions.EMPTY) && this.effects.isEmpty()) {
 			this.dataTracker.set(COLOR, -1);
 		} else {
 			this.dataTracker.set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
@@ -139,7 +139,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		Optional<RegistryKey<Potion>> optional = this.potion.getKey();
-		if (optional.isPresent() && !this.potion.method_55838(Potions.EMPTY)) {
+		if (optional.isPresent() && !this.potion.matches(Potions.EMPTY)) {
 			nbt.putString("Potion", ((RegistryKey)optional.get()).getValue().toString());
 		}
 
@@ -204,7 +204,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	@Override
 	protected ItemStack asItemStack() {
 		ItemStack itemStack = super.asItemStack();
-		if (this.effects.isEmpty() && this.potion.method_55838(Potions.EMPTY)) {
+		if (this.effects.isEmpty() && this.potion.matches(Potions.EMPTY)) {
 			return itemStack;
 		} else {
 			PotionUtil.setPotion(itemStack, this.potion);

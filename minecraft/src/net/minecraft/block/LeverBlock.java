@@ -84,19 +84,19 @@ public class LeverBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
-			BlockState blockState2 = blockState.cycle(POWERED);
-			if ((Boolean)blockState2.get(POWERED)) {
-				spawnParticles(blockState2, world, blockPos, 1.0F);
+			BlockState blockState = state.cycle(POWERED);
+			if ((Boolean)blockState.get(POWERED)) {
+				spawnParticles(blockState, world, pos, 1.0F);
 			}
 
 			return ActionResult.SUCCESS;
 		} else {
-			BlockState blockState2 = this.togglePower(blockState, world, blockPos);
-			float f = blockState2.get(POWERED) ? 0.6F : 0.5F;
-			world.playSound(null, blockPos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-			world.emitGameEvent(playerEntity, blockState2.get(POWERED) ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, blockPos);
+			BlockState blockState = this.togglePower(state, world, pos);
+			float f = blockState.get(POWERED) ? 0.6F : 0.5F;
+			world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
+			world.emitGameEvent(player, blockState.get(POWERED) ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, pos);
 			return ActionResult.CONSUME;
 		}
 	}

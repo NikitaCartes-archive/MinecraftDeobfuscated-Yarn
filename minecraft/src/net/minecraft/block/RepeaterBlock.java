@@ -40,11 +40,11 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if (!playerEntity.getAbilities().allowModifyWorld) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if (!player.getAbilities().allowModifyWorld) {
 			return ActionResult.PASS;
 		} else {
-			world.setBlockState(blockPos, blockState.cycle(DELAY), Block.NOTIFY_ALL);
+			world.setBlockState(pos, state.cycle(DELAY), Block.NOTIFY_ALL);
 			return ActionResult.success(world.isClient);
 		}
 	}

@@ -107,6 +107,6 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.method_55654(StatusEffects.WITHER) ? false : super.canHaveStatusEffect(effect);
+		return effect.equals(StatusEffects.WITHER) ? false : super.canHaveStatusEffect(effect);
 	}
 }

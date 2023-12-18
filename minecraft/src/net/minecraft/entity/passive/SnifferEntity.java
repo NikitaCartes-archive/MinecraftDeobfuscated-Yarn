@@ -63,8 +63,8 @@ public class SnifferEntity extends AnimalEntity {
 	private static final int field_42659 = 120;
 	private static final int field_42661 = 48000;
 	private static final float field_44785 = 0.4F;
-	private static final EntityDimensions field_44786 = EntityDimensions.changing(EntityType.SNIFFER.getWidth(), EntityType.SNIFFER.getHeight() - 0.4F)
-		.method_55685(0.81F);
+	private static final EntityDimensions DIMENSIONS = EntityDimensions.changing(EntityType.SNIFFER.getWidth(), EntityType.SNIFFER.getHeight() - 0.4F)
+		.withEyeHeight(0.81F);
 	private static final TrackedData<SnifferEntity.State> STATE = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.SNIFFER_STATE);
 	private static final TrackedData<Integer> FINISH_DIG_TIME = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public final AnimationState feelingHappyAnimationState = new AnimationState();
@@ -101,10 +101,10 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
 		return this.dataTracker.containsKey(STATE) && this.getState() == SnifferEntity.State.DIGGING
-			? field_44786.scaled(this.getScaleFactor())
-			: super.method_55694(entityPose);
+			? DIMENSIONS.scaled(this.getScaleFactor())
+			: super.getBaseDimensions(pose);
 	}
 
 	public boolean isSearching() {

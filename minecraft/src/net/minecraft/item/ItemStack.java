@@ -1082,7 +1082,7 @@ public final class ItemStack {
 						if (entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE
 							|| entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
 							e = d * 100.0;
-						} else if (((RegistryEntry)entry.getKey()).method_55838(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
+						} else if (((RegistryEntry)entry.getKey()).matches(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
 							e = d * 10.0;
 						} else {
 							e = d;
@@ -1366,7 +1366,7 @@ public final class ItemStack {
 				if (!nbtCompound.contains("Slot", NbtElement.STRING_TYPE) || nbtCompound.getString("Slot").equals(slot.getName())) {
 					Identifier identifier = Identifier.tryParse(nbtCompound.getString("AttributeName"));
 					if (identifier != null) {
-						Optional<RegistryEntry.Reference<EntityAttribute>> optional = Registries.ATTRIBUTE.method_55841(identifier);
+						Optional<RegistryEntry.Reference<EntityAttribute>> optional = Registries.ATTRIBUTE.getEntry(identifier);
 						if (!optional.isEmpty()) {
 							EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtCompound);
 							if (entityAttributeModifier != null
@@ -1390,7 +1390,7 @@ public final class ItemStack {
 	 * 
 	 * @see #getAttributeModifiers
 	 */
-	public void addAttributeModifier(RegistryEntry<EntityAttribute> registryEntry, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
+	public void addAttributeModifier(RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
 		this.getOrCreateNbt();
 		if (!this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
 			this.nbt.put("AttributeModifiers", new NbtList());
@@ -1400,7 +1400,7 @@ public final class ItemStack {
 		NbtCompound nbtCompound = modifier.toNbt();
 		nbtCompound.putString(
 			"AttributeName",
-			((RegistryKey)registryEntry.getKey().orElseThrow(() -> new IllegalArgumentException("Cannot add unregistered attribute"))).getValue().toString()
+			((RegistryKey)attribute.getKey().orElseThrow(() -> new IllegalArgumentException("Cannot add unregistered attribute"))).getValue().toString()
 		);
 		if (slot != null) {
 			nbtCompound.putString("Slot", slot.getName());

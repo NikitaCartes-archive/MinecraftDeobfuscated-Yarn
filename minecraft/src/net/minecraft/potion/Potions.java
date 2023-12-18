@@ -114,7 +114,7 @@ public class Potions {
 		return Registry.registerReference(Registries.POTION, key, potion);
 	}
 
-	public static RegistryEntry<Potion> method_55763(Registry<Potion> registry) {
+	public static RegistryEntry<Potion> registerAndGetDefault(Registry<Potion> registry) {
 		return EMPTY;
 	}
 }

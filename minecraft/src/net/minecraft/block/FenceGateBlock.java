@@ -146,25 +146,25 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if ((Boolean)blockState.get(OPEN)) {
-			blockState = blockState.with(OPEN, Boolean.valueOf(false));
-			world.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if ((Boolean)state.get(OPEN)) {
+			state = state.with(OPEN, Boolean.valueOf(false));
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
 		} else {
-			Direction direction = playerEntity.getHorizontalFacing();
-			if (blockState.get(FACING) == direction.getOpposite()) {
-				blockState = blockState.with(FACING, direction);
+			Direction direction = player.getHorizontalFacing();
+			if (state.get(FACING) == direction.getOpposite()) {
+				state = state.with(FACING, direction);
 			}
 
-			blockState = blockState.with(OPEN, Boolean.valueOf(true));
-			world.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+			state = state.with(OPEN, Boolean.valueOf(true));
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
 		}
 
-		boolean bl = (Boolean)blockState.get(OPEN);
+		boolean bl = (Boolean)state.get(OPEN);
 		world.playSound(
-			playerEntity, blockPos, bl ? this.type.fenceGateOpen() : this.type.fenceGateClose(), SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F
+			player, pos, bl ? this.type.fenceGateOpen() : this.type.fenceGateClose(), SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F
 		);
-		world.emitGameEvent(playerEntity, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, blockPos);
+		world.emitGameEvent(player, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 		return ActionResult.success(world.isClient);
 	}
 

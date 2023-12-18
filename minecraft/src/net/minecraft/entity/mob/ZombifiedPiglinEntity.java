@@ -40,7 +40,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
-	private static final EntityDimensions field_47812 = EntityType.ZOMBIFIED_PIGLIN.getDimensions().scaled(0.5F).method_55685(0.97F);
+	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.ZOMBIFIED_PIGLIN.getDimensions().scaled(0.5F).withEyeHeight(0.97F);
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
 		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
@@ -82,8 +82,8 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return this.isBaby() ? field_47812 : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
 	}
 
 	@Override

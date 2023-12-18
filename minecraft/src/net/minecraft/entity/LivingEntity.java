@@ -162,7 +162,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private static final TrackedData<Optional<BlockPos>> SLEEPING_POSITION = DataTracker.registerData(
 		LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS
 	);
-	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F).method_55685(0.2F);
+	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(0.2F);
 	public static final float BABY_SCALE_FACTOR = 0.5F;
 	public static final float field_47756 = 0.5F;
 	private final AttributeContainer attributes;
@@ -568,7 +568,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.isBaby() ? 0.5F : 1.0F;
 	}
 
-	public float method_55693() {
+	public float getScale() {
 		AttributeContainer attributeContainer = this.getAttributes();
 		return attributeContainer == null ? 1.0F : (float)attributeContainer.getValue(EntityAttributes.GENERIC_SCALE);
 	}
@@ -968,13 +968,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.activeStatusEffects;
 	}
 
-	public boolean hasStatusEffect(RegistryEntry<StatusEffect> registryEntry) {
-		return this.activeStatusEffects.containsKey(registryEntry);
+	public boolean hasStatusEffect(RegistryEntry<StatusEffect> effect) {
+		return this.activeStatusEffects.containsKey(effect);
 	}
 
 	@Nullable
-	public StatusEffectInstance getStatusEffect(RegistryEntry<StatusEffect> registryEntry) {
-		return (StatusEffectInstance)this.activeStatusEffects.get(registryEntry);
+	public StatusEffectInstance getStatusEffect(RegistryEntry<StatusEffect> effect) {
+		return (StatusEffectInstance)this.activeStatusEffects.get(effect);
 	}
 
 	/**
@@ -1024,7 +1024,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return this.getGroup() != EntityGroup.UNDEAD ? true : !effect.method_55654(StatusEffects.REGENERATION) && !effect.method_55654(StatusEffects.POISON);
+		return this.getGroup() != EntityGroup.UNDEAD ? true : !effect.equals(StatusEffects.REGENERATION) && !effect.equals(StatusEffects.POISON);
 	}
 
 	/**
@@ -1048,7 +1048,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			if (statusEffectInstance == null) {
 				this.onStatusEffectApplied(effect, source);
 			} else {
-				effect.method_55656(statusEffectInstance);
+				effect.copyFadingFrom(statusEffectInstance);
 				this.onStatusEffectUpgraded(effect, true, source);
 			}
 		}
@@ -1062,13 +1062,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * Removes a status effect from this entity without calling any listener.
 	 * 
 	 * <p>This method does not perform any cleanup or synchronization operation.
-	 * Under most circumstances, calling {@link #removeStatusEffect(StatusEffect)} is highly preferable.
+	 * Under most circumstances, calling {@link #removeStatusEffect(RegistryEntry)} is highly preferable.
 	 * 
 	 * @return the status effect removed
 	 */
 	@Nullable
-	public StatusEffectInstance removeStatusEffectInternal(RegistryEntry<StatusEffect> registryEntry) {
-		return (StatusEffectInstance)this.activeStatusEffects.remove(registryEntry);
+	public StatusEffectInstance removeStatusEffectInternal(RegistryEntry<StatusEffect> effect) {
+		return (StatusEffectInstance)this.activeStatusEffects.remove(effect);
 	}
 
 	/**
@@ -1080,8 +1080,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * @return whether the active status effects on this entity has been changed by
 	 * this call
 	 */
-	public boolean removeStatusEffect(RegistryEntry<StatusEffect> registryEntry) {
-		StatusEffectInstance statusEffectInstance = this.removeStatusEffectInternal(registryEntry);
+	public boolean removeStatusEffect(RegistryEntry<StatusEffect> effect) {
+		StatusEffectInstance statusEffectInstance = this.removeStatusEffectInternal(effect);
 		if (statusEffectInstance != null) {
 			this.onStatusEffectRemoved(statusEffectInstance);
 			return true;
@@ -1140,13 +1140,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	private void updateAttribute(RegistryEntry<EntityAttribute> registryEntry) {
-		if (registryEntry.method_55838(EntityAttributes.GENERIC_MAX_HEALTH)) {
+	private void updateAttribute(RegistryEntry<EntityAttribute> attribute) {
+		if (attribute.matches(EntityAttributes.GENERIC_MAX_HEALTH)) {
 			float f = this.getMaxHealth();
 			if (this.getHealth() > f) {
 				this.setHealth(f);
 			}
-		} else if (registryEntry.method_55838(EntityAttributes.GENERIC_MAX_ABSORPTION)) {
+		} else if (attribute.matches(EntityAttributes.GENERIC_MAX_ABSORPTION)) {
 			float f = this.getMaxAbsorption();
 			if (this.getAbsorptionAmount() > f) {
 				this.setAbsorptionAmount(f);
@@ -1615,7 +1615,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			return false;
 		} else {
 			BlockPos blockPos = this.getBlockPos();
-			BlockState blockState = this.method_55667();
+			BlockState blockState = this.getBlockStateAtPos();
 			if (blockState.isIn(BlockTags.CLIMBABLE)) {
 				this.climbingPos = Optional.of(blockPos);
 				return true;
@@ -1960,8 +1960,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Nullable
-	public EntityAttributeInstance getAttributeInstance(RegistryEntry<EntityAttribute> registryEntry) {
-		return this.getAttributes().getCustomInstance(registryEntry);
+	public EntityAttributeInstance getAttributeInstance(RegistryEntry<EntityAttribute> attribute) {
+		return this.getAttributes().getCustomInstance(attribute);
 	}
 
 	public double getAttributeValue(RegistryEntry<EntityAttribute> attribute) {
@@ -2328,7 +2328,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.move(MovementType.SELF, this.getVelocity());
 		Vec3d vec3d = this.getVelocity();
 		if ((this.horizontalCollision || this.jumping)
-			&& (this.isClimbing() || this.method_55667().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
+			&& (this.isClimbing() || this.getBlockStateAtPos().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
 			vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
 		}
 
@@ -2357,7 +2357,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			double d = MathHelper.clamp(motion.x, -0.15F, 0.15F);
 			double e = MathHelper.clamp(motion.z, -0.15F, 0.15F);
 			double g = Math.max(motion.y, -0.15F);
-			if (g < 0.0 && !this.method_55667().isOf(Blocks.SCAFFOLDING) && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
+			if (g < 0.0 && !this.getBlockStateAtPos().isOf(Blocks.SCAFFOLDING) && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
 				g = 0.0;
 			}
 
@@ -2510,7 +2510,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		this.updateAttributes();
-		float l = this.method_55693();
+		float l = this.getScale();
 		if (l != this.field_47757) {
 			this.field_47757 = l;
 			this.calculateDimensions();
@@ -3319,10 +3319,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public final EntityDimensions getDimensions(EntityPose pose) {
-		return pose == EntityPose.SLEEPING ? SLEEPING_DIMENSIONS : this.method_55694(pose).scaled(this.method_55693());
+		return pose == EntityPose.SLEEPING ? SLEEPING_DIMENSIONS : this.getBaseDimensions(pose).scaled(this.getScale());
 	}
 
-	protected EntityDimensions method_55694(EntityPose entityPose) {
+	protected EntityDimensions getBaseDimensions(EntityPose pose) {
 		return this.getType().getDimensions().scaled(this.getScaleFactor());
 	}
 
@@ -3594,7 +3594,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public Vec3d getPassengerRidingPos(Entity passenger) {
-		return this.getPos().add(this.getPassengerAttachmentPos(passenger, this.getDimensions(this.getPose()), this.method_55693() * this.getScaleFactor()));
+		return this.getPos().add(this.getPassengerAttachmentPos(passenger, this.getDimensions(this.getPose()), this.getScale() * this.getScaleFactor()));
 	}
 
 	protected void method_52539(int i, double d) {

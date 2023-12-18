@@ -114,10 +114,10 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
-		if (blockEntity instanceof CommandBlockBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
-			playerEntity.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if (blockEntity instanceof CommandBlockBlockEntity && player.isCreativeLevelTwoOp()) {
+			player.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;

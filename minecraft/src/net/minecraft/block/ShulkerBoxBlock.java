@@ -102,16 +102,16 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
-		} else if (playerEntity.isSpectator()) {
+		} else if (player.isSpectator()) {
 			return ActionResult.CONSUME;
-		} else if (world.getBlockEntity(blockPos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
-			if (canOpen(blockState, world, blockPos, shulkerBoxBlockEntity)) {
-				playerEntity.openHandledScreen(shulkerBoxBlockEntity);
-				playerEntity.incrementStat(Stats.OPEN_SHULKER_BOX);
-				PiglinBrain.onGuardedBlockInteracted(playerEntity, true);
+		} else if (world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
+			if (canOpen(state, world, pos, shulkerBoxBlockEntity)) {
+				player.openHandledScreen(shulkerBoxBlockEntity);
+				player.incrementStat(Stats.OPEN_SHULKER_BOX);
+				PiglinBrain.onGuardedBlockInteracted(player, true);
 			}
 
 			return ActionResult.CONSUME;

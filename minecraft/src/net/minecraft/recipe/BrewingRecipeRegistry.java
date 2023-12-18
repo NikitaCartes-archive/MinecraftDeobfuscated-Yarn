@@ -52,9 +52,9 @@ public class BrewingRecipeRegistry {
 		return false;
 	}
 
-	public static boolean isBrewable(RegistryEntry<Potion> registryEntry) {
+	public static boolean isBrewable(RegistryEntry<Potion> potion) {
 		for (BrewingRecipeRegistry.Recipe<Potion> recipe : POTION_RECIPES) {
-			if (recipe.output.method_55838(registryEntry)) {
+			if (recipe.to.matches(potion)) {
 				return true;
 			}
 		}
@@ -68,7 +68,7 @@ public class BrewingRecipeRegistry {
 
 	protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredient) {
 		for (BrewingRecipeRegistry.Recipe<Item> recipe : ITEM_RECIPES) {
-			if (input.itemMatches(recipe.input) && recipe.ingredient.test(ingredient)) {
+			if (input.itemMatches(recipe.from) && recipe.ingredient.test(ingredient)) {
 				return true;
 			}
 		}
@@ -80,7 +80,7 @@ public class BrewingRecipeRegistry {
 		RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(input);
 
 		for (BrewingRecipeRegistry.Recipe<Potion> recipe : POTION_RECIPES) {
-			if (recipe.input.method_55838(registryEntry) && recipe.ingredient.test(ingredient)) {
+			if (recipe.from.matches(registryEntry) && recipe.ingredient.test(ingredient)) {
 				return true;
 			}
 		}
@@ -95,14 +95,14 @@ public class BrewingRecipeRegistry {
 			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(input);
 
 			for (BrewingRecipeRegistry.Recipe<Item> recipe : ITEM_RECIPES) {
-				if (input.itemMatches(recipe.input) && recipe.ingredient.test(ingredient)) {
-					return PotionUtil.setPotion(new ItemStack(recipe.output), registryEntry);
+				if (input.itemMatches(recipe.from) && recipe.ingredient.test(ingredient)) {
+					return PotionUtil.setPotion(new ItemStack(recipe.to), registryEntry);
 				}
 			}
 
 			for (BrewingRecipeRegistry.Recipe<Potion> recipex : POTION_RECIPES) {
-				if (recipex.input.method_55838(registryEntry) && recipex.ingredient.test(ingredient)) {
-					return PotionUtil.setPotion(new ItemStack(input.getItem()), recipex.output);
+				if (recipex.from.matches(registryEntry) && recipex.ingredient.test(ingredient)) {
+					return PotionUtil.setPotion(new ItemStack(input.getItem()), recipex.to);
 				}
 			}
 
@@ -191,10 +191,10 @@ public class BrewingRecipeRegistry {
 		}
 	}
 
-	private static void registerPotionRecipe(RegistryEntry<Potion> registryEntry, Item item, RegistryEntry<Potion> registryEntry2) {
-		POTION_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(registryEntry, Ingredient.ofItems(item), registryEntry2));
+	private static void registerPotionRecipe(RegistryEntry<Potion> input, Item item, RegistryEntry<Potion> output) {
+		POTION_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(input, Ingredient.ofItems(item), output));
 	}
 
-	static record Recipe<T>(RegistryEntry<T> input, Ingredient ingredient, RegistryEntry<T> output) {
+	static record Recipe<T>(RegistryEntry<T> from, Ingredient ingredient, RegistryEntry<T> to) {
 	}
 }

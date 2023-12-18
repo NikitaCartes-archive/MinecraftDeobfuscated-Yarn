@@ -24,7 +24,7 @@ public class BreezeEntityRenderer extends MobEntityRenderer<BreezeEntity, Breeze
 
 	public void render(BreezeEntity breezeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		BreezeEntityModel<BreezeEntity> breezeEntityModel = this.getModel();
-		method_55830(breezeEntityModel, breezeEntityModel.method_55819(), breezeEntityModel.method_55821());
+		updatePartVisibility(breezeEntityModel, breezeEntityModel.getHead(), breezeEntityModel.getRods());
 		super.render(breezeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
@@ -32,16 +32,16 @@ public class BreezeEntityRenderer extends MobEntityRenderer<BreezeEntity, Breeze
 		return TEXTURE;
 	}
 
-	public static BreezeEntityModel<BreezeEntity> method_55830(BreezeEntityModel<BreezeEntity> breezeEntityModel, ModelPart... modelParts) {
-		breezeEntityModel.method_55819().visible = false;
-		breezeEntityModel.method_55820().visible = false;
-		breezeEntityModel.method_55821().visible = false;
-		breezeEntityModel.method_55822().visible = false;
+	public static BreezeEntityModel<BreezeEntity> updatePartVisibility(BreezeEntityModel<BreezeEntity> model, ModelPart... modelParts) {
+		model.getHead().visible = false;
+		model.getEyes().visible = false;
+		model.getRods().visible = false;
+		model.getWindBody().visible = false;
 
 		for (ModelPart modelPart : modelParts) {
 			modelPart.visible = true;
 		}
 
-		return breezeEntityModel;
+		return model;
 	}
 }

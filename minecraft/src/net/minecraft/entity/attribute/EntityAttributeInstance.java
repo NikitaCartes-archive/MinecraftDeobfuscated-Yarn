@@ -33,10 +33,10 @@ public class EntityAttributeInstance {
 	private double value;
 	private final Consumer<EntityAttributeInstance> updateCallback;
 
-	public EntityAttributeInstance(RegistryEntry<EntityAttribute> registryEntry, Consumer<EntityAttributeInstance> updateCallback) {
-		this.type = registryEntry;
+	public EntityAttributeInstance(RegistryEntry<EntityAttribute> type, Consumer<EntityAttributeInstance> updateCallback) {
+		this.type = type;
 		this.updateCallback = updateCallback;
-		this.baseValue = registryEntry.value().getDefaultValue();
+		this.baseValue = type.value().getDefaultValue();
 	}
 
 	public RegistryEntry<EntityAttribute> getAttribute() {
@@ -85,16 +85,15 @@ public class EntityAttributeInstance {
 		}
 	}
 
-	public void method_55696(EntityAttributeModifier entityAttributeModifier) {
-		EntityAttributeModifier entityAttributeModifier2 = (EntityAttributeModifier)this.idToModifiers
-			.putIfAbsent(entityAttributeModifier.getId(), entityAttributeModifier);
-		if (entityAttributeModifier != entityAttributeModifier2) {
-			Set<EntityAttributeModifier> set = this.getModifiers(entityAttributeModifier.getOperation());
-			if (entityAttributeModifier2 != null) {
-				set.remove(entityAttributeModifier2);
+	public void updateModifier(EntityAttributeModifier modifier) {
+		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.putIfAbsent(modifier.getId(), modifier);
+		if (modifier != entityAttributeModifier) {
+			Set<EntityAttributeModifier> set = this.getModifiers(modifier.getOperation());
+			if (entityAttributeModifier != null) {
+				set.remove(entityAttributeModifier);
 			}
 
-			set.add(entityAttributeModifier);
+			set.add(modifier);
 			this.onUpdate();
 		}
 	}

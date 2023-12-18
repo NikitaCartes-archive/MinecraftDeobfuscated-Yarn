@@ -46,7 +46,7 @@ import net.minecraft.world.BlockLocating;
 import net.minecraft.world.World;
 
 public abstract class AbstractMinecartEntity extends VehicleEntity {
-	private static final Vec3d field_47822 = new Vec3d(0.0, 0.0, 0.0);
+	private static final Vec3d VILLAGER_PASSENGER_ATTACHMENT_POS = new Vec3d(0.0, 0.0, 0.0);
 	private static final TrackedData<Integer> CUSTOM_BLOCK_ID = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -144,7 +144,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	@Override
 	protected Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
 		boolean bl = passenger instanceof VillagerEntity || passenger instanceof WanderingTraderEntity;
-		return bl ? field_47822 : super.getPassengerAttachmentPos(passenger, dimensions, scaleFactor);
+		return bl ? VILLAGER_PASSENGER_ATTACHMENT_POS : super.getPassengerAttachmentPos(passenger, dimensions, scaleFactor);
 	}
 
 	@Override

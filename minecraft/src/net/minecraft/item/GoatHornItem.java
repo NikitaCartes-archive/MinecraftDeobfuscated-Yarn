@@ -91,7 +91,7 @@ public class GoatHornItem extends Item {
 		if (nbtCompound != null && nbtCompound.contains("instrument", NbtElement.STRING_TYPE)) {
 			Identifier identifier = Identifier.tryParse(nbtCompound.getString("instrument"));
 			if (identifier != null) {
-				return Registries.INSTRUMENT.method_55841(identifier);
+				return Registries.INSTRUMENT.getEntry(identifier);
 			}
 		}
 

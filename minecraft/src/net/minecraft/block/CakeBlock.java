@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.class_9062;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -15,6 +14,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -58,38 +58,36 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		Item item = itemStack.getItem();
-		if (itemStack.isIn(ItemTags.CANDLES) && (Integer)blockState.get(BITES) == 0 && Block.getBlockFromItem(item) instanceof CandleBlock candleBlock) {
-			if (!playerEntity.isCreative()) {
-				itemStack.decrement(1);
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		Item item = stack.getItem();
+		if (stack.isIn(ItemTags.CANDLES) && (Integer)state.get(BITES) == 0 && Block.getBlockFromItem(item) instanceof CandleBlock candleBlock) {
+			if (!player.isCreative()) {
+				stack.decrement(1);
 			}
 
-			world.playSound(null, blockPos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-			world.setBlockState(blockPos, CandleCakeBlock.getCandleCakeFromCandle(candleBlock));
-			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
-			playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
-			return class_9062.SUCCESS;
+			world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.setBlockState(pos, CandleCakeBlock.getCandleCakeFromCandle(candleBlock));
+			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+			player.incrementStat(Stats.USED.getOrCreateStat(item));
+			return ItemActionResult.SUCCESS;
 		} else {
-			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
-			if (tryEat(world, blockPos, blockState, playerEntity).isAccepted()) {
+			if (tryEat(world, pos, state, player).isAccepted()) {
 				return ActionResult.SUCCESS;
 			}
 
-			if (playerEntity.getStackInHand(Hand.MAIN_HAND).isEmpty()) {
+			if (player.getStackInHand(Hand.MAIN_HAND).isEmpty()) {
 				return ActionResult.CONSUME;
 			}
 		}
 
-		return tryEat(world, blockPos, blockState, playerEntity);
+		return tryEat(world, pos, state, player);
 	}
 
 	protected static ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {

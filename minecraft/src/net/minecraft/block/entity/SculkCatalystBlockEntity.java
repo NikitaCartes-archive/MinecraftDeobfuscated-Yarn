@@ -80,7 +80,7 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 
 		@Override
 		public boolean listen(ServerWorld world, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos) {
-			if (event.method_55838(GameEvent.ENTITY_DIE) && emitter.sourceEntity() instanceof LivingEntity livingEntity) {
+			if (event.matches(GameEvent.ENTITY_DIE) && emitter.sourceEntity() instanceof LivingEntity livingEntity) {
 				if (!livingEntity.isExperienceDroppingDisabled()) {
 					int i = livingEntity.getXpToDrop();
 					if (livingEntity.shouldDropXp() && i > 0) {

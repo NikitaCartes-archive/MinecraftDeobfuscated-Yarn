@@ -127,8 +127,8 @@ public record ItemPredicate(
 			return this;
 		}
 
-		public ItemPredicate.Builder potion(RegistryEntry<Potion> registryEntry) {
-			this.potion = Optional.of(registryEntry);
+		public ItemPredicate.Builder potion(RegistryEntry<Potion> potion) {
+			this.potion = Optional.of(potion);
 			return this;
 		}
 

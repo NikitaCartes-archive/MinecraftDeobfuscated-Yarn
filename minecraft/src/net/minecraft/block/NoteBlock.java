@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.entity.Entity;
@@ -23,6 +22,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -93,23 +93,21 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		return itemStack.isIn(ItemTags.NOTEBLOCK_TOP_INSTRUMENTS) && blockHitResult.getSide() == Direction.UP
-			? class_9062.SKIP_DEFAULT_BLOCK_INTERACTION
-			: super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		return stack.isIn(ItemTags.NOTEBLOCK_TOP_INSTRUMENTS) && hit.getSide() == Direction.UP
+			? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION
+			: super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			blockState = blockState.cycle(NOTE);
-			world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
-			this.playNote(playerEntity, blockState, world, blockPos);
-			playerEntity.incrementStat(Stats.TUNE_NOTEBLOCK);
+			state = state.cycle(NOTE);
+			world.setBlockState(pos, state, Block.NOTIFY_ALL);
+			this.playNote(player, state, world, pos);
+			player.incrementStat(Stats.TUNE_NOTEBLOCK);
 			return ActionResult.CONSUME;
 		}
 	}

@@ -72,25 +72,27 @@ public class ParticleUtil {
 		world.addParticle(effect, d, e, f, 0.0, 0.0, 0.0);
 	}
 
-	public static void method_55636(WorldAccess worldAccess, BlockPos blockPos, int i, ParticleEffect particleEffect) {
+	public static void spawnParticlesAround(WorldAccess world, BlockPos pos, int count, ParticleEffect effect) {
 		double d = 0.5;
-		double e = worldAccess.getBlockState(blockPos).getOutlineShape(worldAccess, blockPos).getMax(Direction.Axis.Y);
-		method_55635(worldAccess, blockPos, i, 0.5, e, true, particleEffect);
+		double e = world.getBlockState(pos).getOutlineShape(world, pos).getMax(Direction.Axis.Y);
+		spawnParticlesAround(world, pos, count, 0.5, e, true, effect);
 	}
 
-	public static void method_55635(WorldAccess worldAccess, BlockPos blockPos, int i, double d, double e, boolean bl, ParticleEffect particleEffect) {
-		Random random = worldAccess.getRandom();
+	public static void spawnParticlesAround(
+		WorldAccess world, BlockPos pos, int count, double horizontalOffset, double verticalOffset, boolean force, ParticleEffect effect
+	) {
+		Random random = world.getRandom();
 
-		for (int j = 0; j < i; j++) {
+		for (int i = 0; i < count; i++) {
+			double d = random.nextGaussian() * 0.02;
+			double e = random.nextGaussian() * 0.02;
 			double f = random.nextGaussian() * 0.02;
-			double g = random.nextGaussian() * 0.02;
-			double h = random.nextGaussian() * 0.02;
-			double k = 0.5 - d;
-			double l = (double)blockPos.getX() + k + random.nextDouble() * d * 2.0;
-			double m = (double)blockPos.getY() + random.nextDouble() * e;
-			double n = (double)blockPos.getZ() + k + random.nextDouble() * d * 2.0;
-			if (bl || !worldAccess.getBlockState(BlockPos.ofFloored(l, m, n).down()).isAir()) {
-				worldAccess.addParticle(particleEffect, l, m, n, f, g, h);
+			double g = 0.5 - horizontalOffset;
+			double h = (double)pos.getX() + g + random.nextDouble() * horizontalOffset * 2.0;
+			double j = (double)pos.getY() + random.nextDouble() * verticalOffset;
+			double k = (double)pos.getZ() + g + random.nextDouble() * horizontalOffset * 2.0;
+			if (force || !world.getBlockState(BlockPos.ofFloored(h, j, k).down()).isAir()) {
+				world.addParticle(effect, h, j, k, d, e, f);
 			}
 		}
 	}

@@ -408,7 +408,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.setVelocity(this.getVelocity().rotateY(f * (float) (Math.PI / 180.0)).multiply(0.5));
 		this.setYaw(this.getYaw() + f);
 		this.prevYaw += f;
-		entity.method_55666(this);
+		entity.onDeflectProjectile(this);
 	}
 
 	@Override

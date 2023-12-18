@@ -109,8 +109,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	};
 
 	@Nullable
-	static RegistryEntry<StatusEffect> getEffectOrNull(@Nullable RegistryEntry<StatusEffect> registryEntry) {
-		return EFFECTS.contains(registryEntry) ? registryEntry : null;
+	static RegistryEntry<StatusEffect> getEffectOrNull(@Nullable RegistryEntry<StatusEffect> effect) {
+		return EFFECTS.contains(effect) ? effect : null;
 	}
 
 	public BeaconBlockEntity(BlockPos pos, BlockState state) {
@@ -235,12 +235,12 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	private static void applyPlayerEffects(
-		World world, BlockPos pos, int beaconLevel, @Nullable RegistryEntry<StatusEffect> registryEntry, @Nullable RegistryEntry<StatusEffect> registryEntry2
+		World world, BlockPos pos, int beaconLevel, @Nullable RegistryEntry<StatusEffect> primaryEffect, @Nullable RegistryEntry<StatusEffect> secondaryEffect
 	) {
-		if (!world.isClient && registryEntry != null) {
+		if (!world.isClient && primaryEffect != null) {
 			double d = (double)(beaconLevel * 10 + 10);
 			int i = 0;
-			if (beaconLevel >= 4 && Objects.equals(registryEntry, registryEntry2)) {
+			if (beaconLevel >= 4 && Objects.equals(primaryEffect, secondaryEffect)) {
 				i = 1;
 			}
 
@@ -249,12 +249,12 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
 
 			for (PlayerEntity playerEntity : list) {
-				playerEntity.addStatusEffect(new StatusEffectInstance(registryEntry, j, i, true, true));
+				playerEntity.addStatusEffect(new StatusEffectInstance(primaryEffect, j, i, true, true));
 			}
 
-			if (beaconLevel >= 4 && Objects.equals(registryEntry, registryEntry2) && registryEntry2 != null) {
+			if (beaconLevel >= 4 && Objects.equals(primaryEffect, secondaryEffect) && secondaryEffect != null) {
 				for (PlayerEntity playerEntity : list) {
-					playerEntity.addStatusEffect(new StatusEffectInstance(registryEntry2, j, 0, true, true));
+					playerEntity.addStatusEffect(new StatusEffectInstance(secondaryEffect, j, 0, true, true));
 				}
 			}
 		}
@@ -277,9 +277,9 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		return this.createNbt();
 	}
 
-	private static void writeStatusEffect(NbtCompound nbt, String key, @Nullable RegistryEntry<StatusEffect> registryEntry) {
-		if (registryEntry != null) {
-			registryEntry.getKey().ifPresent(registryKey -> nbt.putString(key, registryKey.getValue().toString()));
+	private static void writeStatusEffect(NbtCompound nbt, String key, @Nullable RegistryEntry<StatusEffect> effect) {
+		if (effect != null) {
+			effect.getKey().ifPresent(entryKey -> nbt.putString(key, entryKey.getValue().toString()));
 		}
 	}
 
@@ -287,7 +287,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	private static RegistryEntry<StatusEffect> readStatusEffect(NbtCompound nbt, String key) {
 		if (nbt.contains(key, NbtElement.STRING_TYPE)) {
 			Identifier identifier = Identifier.tryParse(nbt.getString(key));
-			return identifier == null ? null : (RegistryEntry)Registries.STATUS_EFFECT.method_55841(identifier).map(BeaconBlockEntity::getEffectOrNull).orElse(null);
+			return identifier == null ? null : (RegistryEntry)Registries.STATUS_EFFECT.getEntry(identifier).map(BeaconBlockEntity::getEffectOrNull).orElse(null);
 		} else {
 			return null;
 		}

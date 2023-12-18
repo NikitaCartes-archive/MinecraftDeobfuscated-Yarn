@@ -67,7 +67,7 @@ public interface RegistryEntry<T> {
 	boolean isIn(TagKey<T> tag);
 
 	@Deprecated
-	boolean method_55838(RegistryEntry<T> registryEntry);
+	boolean matches(RegistryEntry<T> entry);
 
 	/**
 	 * {@return a stream of the tags of this entry, or an empty stream if this is a direct entry}
@@ -97,8 +97,8 @@ public interface RegistryEntry<T> {
 
 	boolean ownerEquals(RegistryEntryOwner<T> owner);
 
-	default String method_55840() {
-		return (String)this.getKey().map(registryKey -> registryKey.getValue().toString()).orElse("[unregistered]");
+	default String getIdAsString() {
+		return (String)this.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
 	}
 
 	/**
@@ -137,8 +137,8 @@ public interface RegistryEntry<T> {
 		}
 
 		@Override
-		public boolean method_55838(RegistryEntry<T> registryEntry) {
-			return this.value.equals(registryEntry.value());
+		public boolean matches(RegistryEntry<T> entry) {
+			return this.value.equals(entry.value());
 		}
 
 		@Override
@@ -293,8 +293,8 @@ public interface RegistryEntry<T> {
 		}
 
 		@Override
-		public boolean method_55838(RegistryEntry<T> registryEntry) {
-			return registryEntry.matchesKey(this.registryKey());
+		public boolean matches(RegistryEntry<T> entry) {
+			return entry.matchesKey(this.registryKey());
 		}
 
 		@Override

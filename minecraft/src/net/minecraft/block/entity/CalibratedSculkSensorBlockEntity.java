@@ -34,7 +34,7 @@ public class CalibratedSculkSensorBlockEntity extends SculkSensorBlockEntity {
 		@Override
 		public boolean accepts(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable GameEvent.Emitter emitter) {
 			int i = this.getCalibrationFrequency(world, this.pos, CalibratedSculkSensorBlockEntity.this.getCachedState());
-			return i != 0 && Vibrations.method_55783(event) != i ? false : super.accepts(world, pos, event, emitter);
+			return i != 0 && Vibrations.getFrequency(event) != i ? false : super.accepts(world, pos, event, emitter);
 		}
 
 		private int getCalibrationFrequency(World world, BlockPos pos, BlockState state) {

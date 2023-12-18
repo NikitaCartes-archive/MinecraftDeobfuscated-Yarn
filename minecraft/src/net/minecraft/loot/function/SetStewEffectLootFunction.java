@@ -90,8 +90,8 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public SetStewEffectLootFunction.Builder withEffect(RegistryEntry<StatusEffect> registryEntry, LootNumberProvider durationRange) {
-			this.map.add(new SetStewEffectLootFunction.StewEffect(registryEntry, durationRange));
+		public SetStewEffectLootFunction.Builder withEffect(RegistryEntry<StatusEffect> effect, LootNumberProvider durationRange) {
+			this.map.add(new SetStewEffectLootFunction.StewEffect(effect, durationRange));
 			return this;
 		}
 

@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.class_9062;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -16,6 +15,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -88,30 +88,28 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		int i = (Integer)blockState.get(AGE);
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		int i = (Integer)state.get(AGE);
 		boolean bl = i == 3;
-		return !bl && itemStack.isOf(Items.BONE_MEAL)
-			? class_9062.SKIP_DEFAULT_BLOCK_INTERACTION
-			: super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+		return !bl && stack.isOf(Items.BONE_MEAL)
+			? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION
+			: super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		int i = (Integer)blockState.get(AGE);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		int i = (Integer)state.get(AGE);
 		boolean bl = i == 3;
 		if (i > 1) {
 			int j = 1 + world.random.nextInt(2);
-			dropStack(world, blockPos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
-			world.playSound(null, blockPos, SoundEvents.BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
-			BlockState blockState2 = blockState.with(AGE, Integer.valueOf(1));
-			world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
-			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, blockState2));
+			dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
+			world.playSound(null, pos, SoundEvents.BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+			BlockState blockState = state.with(AGE, Integer.valueOf(1));
+			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, blockState));
 			return ActionResult.success(world.isClient);
 		} else {
-			return super.method_55766(blockState, world, blockPos, playerEntity, blockHitResult);
+			return super.onUse(state, world, pos, player, hit);
 		}
 	}
 

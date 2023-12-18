@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.entity.Entity;
@@ -27,6 +26,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -268,25 +268,21 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		if ((Boolean)blockState.get(HAS_BOOK)) {
-			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		} else if (itemStack.isIn(ItemTags.LECTERN_BOOKS)) {
-			return putBookIfAbsent(playerEntity, world, blockPos, blockState, itemStack)
-				? class_9062.method_55644(world.isClient)
-				: class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if ((Boolean)state.get(HAS_BOOK)) {
+			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		} else if (stack.isIn(ItemTags.LECTERN_BOOKS)) {
+			return putBookIfAbsent(player, world, pos, state, stack) ? ItemActionResult.success(world.isClient) : ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 		} else {
-			return itemStack.isEmpty() && hand == Hand.MAIN_HAND ? class_9062.SKIP_DEFAULT_BLOCK_INTERACTION : class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return stack.isEmpty() && hand == Hand.MAIN_HAND ? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if ((Boolean)blockState.get(HAS_BOOK)) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if ((Boolean)state.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				this.openScreen(world, blockPos, playerEntity);
+				this.openScreen(world, pos, player);
 			}
 
 			return ActionResult.success(world.isClient);

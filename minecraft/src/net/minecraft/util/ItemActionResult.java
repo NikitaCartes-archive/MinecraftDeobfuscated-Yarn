@@ -1,8 +1,6 @@
-package net.minecraft;
+package net.minecraft.util;
 
-import net.minecraft.util.ActionResult;
-
-public enum class_9062 {
+public enum ItemActionResult {
 	SUCCESS,
 	CONSUME,
 	CONSUME_PARTIAL,
@@ -10,15 +8,15 @@ public enum class_9062 {
 	SKIP_DEFAULT_BLOCK_INTERACTION,
 	FAIL;
 
-	public boolean method_55643() {
-		return this.method_55645().isAccepted();
+	public boolean isAccepted() {
+		return this.toActionResult().isAccepted();
 	}
 
-	public static class_9062 method_55644(boolean bl) {
-		return bl ? SUCCESS : CONSUME;
+	public static ItemActionResult success(boolean swingHand) {
+		return swingHand ? SUCCESS : CONSUME;
 	}
 
-	public ActionResult method_55645() {
+	public ActionResult toActionResult() {
 		return switch (this) {
 			case SUCCESS -> ActionResult.SUCCESS;
 			case CONSUME -> ActionResult.CONSUME;

@@ -31,25 +31,27 @@ public abstract class BlockNameFix extends DataFix {
 		} else {
 			TypeRewriteRule typeRewriteRule = this.fixTypeEverywhere(this.name + " for block", type2, dynamicOps -> pair -> pair.mapSecond(this::rename));
 			TypeRewriteRule typeRewriteRule2 = this.fixTypeEverywhereTyped(
-				this.name + " for block_state", this.getInputSchema().getType(TypeReferences.BLOCK_STATE), typed -> typed.update(DSL.remainderFinder(), this::method_15588)
+				this.name + " for block_state",
+				this.getInputSchema().getType(TypeReferences.BLOCK_STATE),
+				typed -> typed.update(DSL.remainderFinder(), this::fixBlockState)
 			);
 			TypeRewriteRule typeRewriteRule3 = this.fixTypeEverywhereTyped(
 				this.name + " for flat_block_state",
-				this.getInputSchema().getType(TypeReferences.field_47727),
+				this.getInputSchema().getType(TypeReferences.FLAT_BLOCK_STATE),
 				typed -> typed.update(
-						DSL.remainderFinder(), dynamic -> DataFixUtils.orElse(dynamic.asString().result().map(this::method_55639).map(dynamic::createString), dynamic)
+						DSL.remainderFinder(), dynamic -> DataFixUtils.orElse(dynamic.asString().result().map(this::fixFlatBlockState).map(dynamic::createString), dynamic)
 					)
 			);
 			return TypeRewriteRule.seq(typeRewriteRule, typeRewriteRule2, typeRewriteRule3);
 		}
 	}
 
-	private Dynamic<?> method_15588(Dynamic<?> dynamic) {
+	private Dynamic<?> fixBlockState(Dynamic<?> dynamic) {
 		Optional<String> optional = dynamic.get("Name").asString().result();
 		return optional.isPresent() ? dynamic.set("Name", dynamic.createString(this.rename((String)optional.get()))) : dynamic;
 	}
 
-	private String method_55639(String string) {
+	private String fixFlatBlockState(String string) {
 		int i = string.indexOf(91);
 		int j = string.indexOf(123);
 		int k = string.length();

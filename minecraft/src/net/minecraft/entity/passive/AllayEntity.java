@@ -121,7 +121,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		this.vibrationListenerData = new Vibrations.ListenerData();
 		this.gameEventHandler = new EntityGameEventHandler<>(new Vibrations.VibrationListener(this));
 		this.jukeboxEventHandler = new EntityGameEventHandler<>(
-			new AllayEntity.JukeboxEventListener(this.vibrationCallback.getPositionSource(), GameEvent.JUKEBOX_PLAY.value().range())
+			new AllayEntity.JukeboxEventListener(this.vibrationCallback.getPositionSource(), GameEvent.JUKEBOX_PLAY.value().notificationRadius())
 		);
 	}
 
@@ -427,7 +427,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 	private boolean shouldStopDancing() {
 		return this.jukeboxPos == null
-			|| !this.jukeboxPos.isWithinDistance(this.getPos(), (double)GameEvent.JUKEBOX_PLAY.value().range())
+			|| !this.jukeboxPos.isWithinDistance(this.getPos(), (double)GameEvent.JUKEBOX_PLAY.value().notificationRadius())
 			|| !this.getWorld().getBlockState(this.jukeboxPos).isOf(Blocks.JUKEBOX);
 	}
 
@@ -591,10 +591,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 		@Override
 		public boolean listen(ServerWorld world, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos) {
-			if (event.method_55838(GameEvent.JUKEBOX_PLAY)) {
+			if (event.matches(GameEvent.JUKEBOX_PLAY)) {
 				AllayEntity.this.updateJukeboxPos(BlockPos.ofFloored(emitterPos), true);
 				return true;
-			} else if (event.method_55838(GameEvent.JUKEBOX_STOP_PLAY)) {
+			} else if (event.matches(GameEvent.JUKEBOX_STOP_PLAY)) {
 				AllayEntity.this.updateJukeboxPos(BlockPos.ofFloored(emitterPos), false);
 				return true;
 			} else {
@@ -634,7 +634,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 		@Override
 		public void accept(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
-			if (event.method_55838(GameEvent.NOTE_BLOCK_PLAY)) {
+			if (event.matches(GameEvent.NOTE_BLOCK_PLAY)) {
 				AllayBrain.rememberNoteBlock(AllayEntity.this, new BlockPos(pos));
 			}
 		}

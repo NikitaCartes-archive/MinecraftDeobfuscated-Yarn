@@ -27,12 +27,12 @@ public class CraftingTableBlock extends Block {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			playerEntity.openHandledScreen(blockState.createScreenHandlerFactory(world, blockPos));
-			playerEntity.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+			player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 			return ActionResult.CONSUME;
 		}
 	}

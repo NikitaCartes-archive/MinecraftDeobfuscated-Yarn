@@ -108,7 +108,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
 	private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity);
 	private static final int EATING_DURATION = 600;
-	private static final EntityDimensions field_47772 = EntityType.FOX.getDimensions().scaled(0.5F).method_55685(0.2975F);
+	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.FOX.getDimensions().scaled(0.5F).withEyeHeight(0.2975F);
 	private Goal followChickenAndRabbitGoal;
 	private Goal followBabyTurtleGoal;
 	private Goal followFishGoal;
@@ -352,8 +352,8 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return this.isBaby() ? field_47772 : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
 	}
 
 	public FoxEntity.Type getVariant() {

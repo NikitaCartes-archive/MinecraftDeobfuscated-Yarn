@@ -67,7 +67,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	private static final float field_30552 = 0.1F;
 	private static final int field_30553 = 3;
 	private static final float field_30554 = 0.2F;
-	private static final EntityDimensions field_47818 = EntityType.PIGLIN.getDimensions().scaled(0.5F).method_55685(0.97F);
+	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.PIGLIN.getDimensions().scaled(0.5F).withEyeHeight(0.97F);
 	private static final double field_30556 = 0.5;
 	private final SimpleInventory inventory = new SimpleInventory(8);
 	private boolean cannotHunt;
@@ -271,8 +271,8 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return this.isBaby() ? field_47818 : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
 	}
 
 	@Override

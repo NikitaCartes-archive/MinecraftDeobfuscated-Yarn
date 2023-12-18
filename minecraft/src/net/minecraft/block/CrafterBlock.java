@@ -137,13 +137,13 @@ public class CrafterBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof CrafterBlockEntity) {
-				playerEntity.openHandledScreen((CrafterBlockEntity)blockEntity);
+				player.openHandledScreen((CrafterBlockEntity)blockEntity);
 			}
 
 			return ActionResult.CONSUME;

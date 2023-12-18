@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.stream.Stream;
-import net.minecraft.class_9062;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -14,6 +13,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -56,45 +56,43 @@ public class FlowerPotBlock extends Block {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		BlockState blockState2 = (itemStack.getItem() instanceof BlockItem blockItem
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		BlockState blockState = (stack.getItem() instanceof BlockItem blockItem
 				? (Block)CONTENT_TO_POTTED.getOrDefault(blockItem.getBlock(), Blocks.AIR)
 				: Blocks.AIR)
 			.getDefaultState();
-		if (blockState2.isAir()) {
-			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		if (blockState.isAir()) {
+			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else if (!this.isEmpty()) {
-			return class_9062.CONSUME;
+			return ItemActionResult.CONSUME;
 		} else {
-			world.setBlockState(blockPos, blockState2, Block.NOTIFY_ALL);
-			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
-			playerEntity.incrementStat(Stats.POT_FLOWER);
-			if (!playerEntity.getAbilities().creativeMode) {
-				itemStack.decrement(1);
+			world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
+			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+			player.incrementStat(Stats.POT_FLOWER);
+			if (!player.getAbilities().creativeMode) {
+				stack.decrement(1);
 			}
 
-			return class_9062.method_55644(world.isClient);
+			return ItemActionResult.success(world.isClient);
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (this.isEmpty()) {
 			return ActionResult.CONSUME;
 		} else {
 			ItemStack itemStack = new ItemStack(this.content);
 			Stream.of(Hand.MAIN_HAND, Hand.OFF_HAND)
-				.filter(hand -> playerEntity.getStackInHand(hand).isEmpty())
+				.filter(hand -> player.getStackInHand(hand).isEmpty())
 				.findFirst()
-				.ifPresentOrElse(hand -> playerEntity.setStackInHand(hand, itemStack), () -> {
-					if (!playerEntity.giveItemStack(itemStack)) {
-						playerEntity.dropItem(itemStack, false);
+				.ifPresentOrElse(hand -> player.setStackInHand(hand, itemStack), () -> {
+					if (!player.giveItemStack(itemStack)) {
+						player.dropItem(itemStack, false);
 					}
 				});
-			world.setBlockState(blockPos, Blocks.FLOWER_POT.getDefaultState(), Block.NOTIFY_ALL);
-			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+			world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), Block.NOTIFY_ALL);
+			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 			return ActionResult.success(world.isClient);
 		}
 	}

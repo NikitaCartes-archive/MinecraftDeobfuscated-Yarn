@@ -171,7 +171,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (entityAttributeInstance != null) {
 			if (cold) {
-				entityAttributeInstance.method_55696(SUFFOCATING_MODIFIER);
+				entityAttributeInstance.updateModifier(SUFFOCATING_MODIFIER);
 			} else {
 				entityAttributeInstance.removeModifier(SUFFOCATING_MODIFIER);
 			}

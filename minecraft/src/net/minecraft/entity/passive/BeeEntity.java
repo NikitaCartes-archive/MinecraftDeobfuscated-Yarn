@@ -82,6 +82,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -854,7 +855,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 						}
 
 						if (blockState2 != null) {
-							BeeEntity.this.getWorld().syncWorldEvent(2011, blockPos, 15);
+							BeeEntity.this.getWorld().syncWorldEvent(WorldEvents.BEE_FERTILIZES_PLANT, blockPos, 15);
 							BeeEntity.this.getWorld().setBlockState(blockPos, blockState2);
 							BeeEntity.this.addCropCounter();
 						}

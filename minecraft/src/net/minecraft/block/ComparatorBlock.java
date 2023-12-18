@@ -121,15 +121,15 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if (!playerEntity.getAbilities().allowModifyWorld) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if (!player.getAbilities().allowModifyWorld) {
 			return ActionResult.PASS;
 		} else {
-			blockState = blockState.cycle(MODE);
-			float f = blockState.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
-			world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-			world.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);
-			this.update(world, blockPos, blockState);
+			state = state.cycle(MODE);
+			float f = state.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
+			world.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
+			this.update(world, pos, state);
 			return ActionResult.success(world.isClient);
 		}
 	}

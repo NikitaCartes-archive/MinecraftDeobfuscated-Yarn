@@ -10,7 +10,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 
-public record RemoveEntityStatusEffectS2CPacket(int entityId, RegistryEntry<StatusEffect> effectType) implements Packet<ClientPlayPacketListener> {
+public record RemoveEntityStatusEffectS2CPacket(int entityId, RegistryEntry<StatusEffect> effect) implements Packet<ClientPlayPacketListener> {
 	public RemoveEntityStatusEffectS2CPacket(PacketByteBuf buf) {
 		this(buf.readVarInt(), buf.readRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries()));
 	}
@@ -18,7 +18,7 @@ public record RemoveEntityStatusEffectS2CPacket(int entityId, RegistryEntry<Stat
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries(), this.effectType);
+		buf.writeRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries(), this.effect);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

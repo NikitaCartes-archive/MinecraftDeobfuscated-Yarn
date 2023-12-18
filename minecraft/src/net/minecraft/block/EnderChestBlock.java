@@ -79,25 +79,25 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		EnderChestInventory enderChestInventory = player.getEnderChestInventory();
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
-			BlockPos blockPos2 = blockPos.up();
-			if (world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) {
+			BlockPos blockPos = pos.up();
+			if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
 				return ActionResult.success(world.isClient);
 			} else if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {
 				EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
 				enderChestInventory.setActiveBlockEntity(enderChestBlockEntity);
-				playerEntity.openHandledScreen(
+				player.openHandledScreen(
 					new SimpleNamedScreenHandlerFactory(
-						(i, playerInventory, playerEntityx) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
+						(i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
-				playerEntity.incrementStat(Stats.OPEN_ENDERCHEST);
-				PiglinBrain.onGuardedBlockInteracted(playerEntity, true);
+				player.incrementStat(Stats.OPEN_ENDERCHEST);
+				PiglinBrain.onGuardedBlockInteracted(player, true);
 				return ActionResult.CONSUME;
 			}
 		} else {

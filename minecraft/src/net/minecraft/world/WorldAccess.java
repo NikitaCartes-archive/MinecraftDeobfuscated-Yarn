@@ -120,7 +120,7 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 		this.emitGameEvent(event, Vec3d.ofCenter(pos), emitter);
 	}
 
-	default void method_55764(RegistryKey<GameEvent> registryKey, BlockPos blockPos, GameEvent.Emitter emitter) {
-		this.emitGameEvent(this.getRegistryManager().get(RegistryKeys.GAME_EVENT).entryOf(registryKey), blockPos, emitter);
+	default void emitGameEvent(RegistryKey<GameEvent> event, BlockPos pos, GameEvent.Emitter emitter) {
+		this.emitGameEvent(this.getRegistryManager().get(RegistryKeys.GAME_EVENT).entryOf(event), pos, emitter);
 	}
 }

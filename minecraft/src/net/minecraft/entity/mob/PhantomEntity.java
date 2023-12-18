@@ -221,9 +221,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
 		int i = this.getPhantomSize();
-		EntityDimensions entityDimensions = super.method_55694(entityPose);
+		EntityDimensions entityDimensions = super.getBaseDimensions(pose);
 		return entityDimensions.scaled(1.0F + 0.15F * (float)i);
 	}
 

@@ -341,7 +341,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private WorldLoadingState worldLoadingState;
 	private boolean displayedUnsecureChatWarning = false;
 	private volatile boolean worldCleared;
-	private final Scoreboard field_47878 = new Scoreboard();
+	private final Scoreboard scoreboard = new Scoreboard();
 
 	public ClientPlayNetworkHandler(MinecraftClient client, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
 		super(client, clientConnection, clientConnectionState);
@@ -1523,8 +1523,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			StatusEffectInstance statusEffectInstance = new StatusEffectInstance(
 				registryEntry, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon(), null
 			);
-			if (!packet.method_55629()) {
-				statusEffectInstance.method_55657();
+			if (!packet.keepFading()) {
+				statusEffectInstance.skipFading();
 			}
 
 			((LivingEntity)entity).setStatusEffect(statusEffectInstance, null);
@@ -1695,7 +1695,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onRemoveEntityStatusEffect(RemoveEntityStatusEffectS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (packet.getEntity(this.world) instanceof LivingEntity livingEntity) {
-			livingEntity.removeStatusEffectInternal(packet.effectType());
+			livingEntity.removeStatusEffectInternal(packet.effect());
 		}
 	}
 
@@ -1953,12 +1953,12 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		String string = packet.getName();
 		if (packet.getMode() == 0) {
-			this.field_47878.addObjective(string, ScoreboardCriterion.DUMMY, packet.getDisplayName(), packet.getType(), false, packet.getNumberFormat());
+			this.scoreboard.addObjective(string, ScoreboardCriterion.DUMMY, packet.getDisplayName(), packet.getType(), false, packet.getNumberFormat());
 		} else {
-			ScoreboardObjective scoreboardObjective = this.field_47878.getNullableObjective(string);
+			ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 			if (scoreboardObjective != null) {
 				if (packet.getMode() == ScoreboardObjectiveUpdateS2CPacket.REMOVE_MODE) {
-					this.field_47878.removeObjective(scoreboardObjective);
+					this.scoreboard.removeObjective(scoreboardObjective);
 				} else if (packet.getMode() == ScoreboardObjectiveUpdateS2CPacket.UPDATE_MODE) {
 					scoreboardObjective.setRenderType(packet.getType());
 					scoreboardObjective.setDisplayName(packet.getDisplayName());
@@ -1973,9 +1973,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		String string = packet.objectiveName();
 		ScoreHolder scoreHolder = ScoreHolder.fromName(packet.scoreHolderName());
-		ScoreboardObjective scoreboardObjective = this.field_47878.getNullableObjective(string);
+		ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 		if (scoreboardObjective != null) {
-			ScoreAccess scoreAccess = this.field_47878.getOrCreateScore(scoreHolder, scoreboardObjective, true);
+			ScoreAccess scoreAccess = this.scoreboard.getOrCreateScore(scoreHolder, scoreboardObjective, true);
 			scoreAccess.setScore(packet.score());
 			scoreAccess.setDisplayText(packet.display());
 			scoreAccess.setNumberFormat(packet.numberFormat());
@@ -1990,11 +1990,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		String string = packet.objectiveName();
 		ScoreHolder scoreHolder = ScoreHolder.fromName(packet.scoreHolderName());
 		if (string == null) {
-			this.field_47878.removeScores(scoreHolder);
+			this.scoreboard.removeScores(scoreHolder);
 		} else {
-			ScoreboardObjective scoreboardObjective = this.field_47878.getNullableObjective(string);
+			ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 			if (scoreboardObjective != null) {
-				this.field_47878.removeScore(scoreHolder, scoreboardObjective);
+				this.scoreboard.removeScore(scoreHolder, scoreboardObjective);
 			} else {
 				LOGGER.warn("Received packet for unknown scoreboard objective: {}", string);
 			}
@@ -2005,8 +2005,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onScoreboardDisplay(ScoreboardDisplayS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		String string = packet.getName();
-		ScoreboardObjective scoreboardObjective = string == null ? null : this.field_47878.getNullableObjective(string);
-		this.field_47878.setObjectiveSlot(packet.getSlot(), scoreboardObjective);
+		ScoreboardObjective scoreboardObjective = string == null ? null : this.scoreboard.getNullableObjective(string);
+		this.scoreboard.setObjectiveSlot(packet.getSlot(), scoreboardObjective);
 	}
 
 	@Override
@@ -2015,9 +2015,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		TeamS2CPacket.Operation operation = packet.getTeamOperation();
 		Team team;
 		if (operation == TeamS2CPacket.Operation.ADD) {
-			team = this.field_47878.addTeam(packet.getTeamName());
+			team = this.scoreboard.addTeam(packet.getTeamName());
 		} else {
-			team = this.field_47878.getTeam(packet.getTeamName());
+			team = this.scoreboard.getTeam(packet.getTeamName());
 			if (team == null) {
 				LOGGER.warn(
 					"Received packet for unknown team {}: team action: {}, player action: {}",
@@ -2050,16 +2050,16 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		TeamS2CPacket.Operation operation2 = packet.getPlayerListOperation();
 		if (operation2 == TeamS2CPacket.Operation.ADD) {
 			for (String string : packet.getPlayerNames()) {
-				this.field_47878.addScoreHolderToTeam(string, team);
+				this.scoreboard.addScoreHolderToTeam(string, team);
 			}
 		} else if (operation2 == TeamS2CPacket.Operation.REMOVE) {
 			for (String string : packet.getPlayerNames()) {
-				this.field_47878.removeScoreHolderFromTeam(string, team);
+				this.scoreboard.removeScoreHolderFromTeam(string, team);
 			}
 		}
 
 		if (operation == TeamS2CPacket.Operation.REMOVE) {
-			this.field_47878.removeTeam(team);
+			this.scoreboard.removeTeam(team);
 		}
 	}
 
@@ -2108,9 +2108,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				for (EntityAttributesS2CPacket.Entry entry : packet.getEntries()) {
 					EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(entry.attribute());
 					if (entityAttributeInstance == null) {
-						LOGGER.warn("Entity {} does not have attribute {}", entity, entry.attribute().method_55840());
+						LOGGER.warn("Entity {} does not have attribute {}", entity, entry.attribute().getIdAsString());
 					} else {
-						entityAttributeInstance.setBaseValue(entry.baseValue());
+						entityAttributeInstance.setBaseValue(entry.base());
 						entityAttributeInstance.clearModifiers();
 
 						for (EntityAttributeModifier entityAttributeModifier : entry.modifiers()) {
@@ -2399,7 +2399,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		return feature.isSubsetOf(this.getEnabledFeatures());
 	}
 
-	public Scoreboard method_55823() {
-		return this.field_47878;
+	public Scoreboard getScoreboard() {
+		return this.scoreboard;
 	}
 }

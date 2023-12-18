@@ -35,7 +35,7 @@ public class SetPotionLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(RegistryEntry<Potion> registryEntry) {
-		return builder(conditions -> new SetPotionLootFunction(conditions, registryEntry));
+	public static ConditionalLootFunction.Builder<?> builder(RegistryEntry<Potion> potion) {
+		return builder(conditions -> new SetPotionLootFunction(conditions, potion));
 	}
 }

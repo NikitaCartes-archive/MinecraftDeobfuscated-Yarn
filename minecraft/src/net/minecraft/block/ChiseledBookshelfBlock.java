@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChiseledBookshelfBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,6 +24,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -69,38 +69,36 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		if (world.getBlockEntity(blockPos) instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity) {
-			if (!itemStack.isIn(ItemTags.BOOKSHELF_BOOKS)) {
-				return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (world.getBlockEntity(pos) instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity) {
+			if (!stack.isIn(ItemTags.BOOKSHELF_BOOKS)) {
+				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 			} else {
-				OptionalInt optionalInt = this.getSlotForHitPos(blockHitResult, blockState);
+				OptionalInt optionalInt = this.getSlotForHitPos(hit, state);
 				if (optionalInt.isEmpty()) {
-					return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
-				} else if ((Boolean)blockState.get((Property)SLOT_OCCUPIED_PROPERTIES.get(optionalInt.getAsInt()))) {
-					return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+				} else if ((Boolean)state.get((Property)SLOT_OCCUPIED_PROPERTIES.get(optionalInt.getAsInt()))) {
+					return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 				} else {
-					tryAddBook(world, blockPos, playerEntity, chiseledBookshelfBlockEntity, itemStack, optionalInt.getAsInt());
-					return class_9062.method_55644(world.isClient);
+					tryAddBook(world, pos, player, chiseledBookshelfBlockEntity, stack, optionalInt.getAsInt());
+					return ItemActionResult.success(world.isClient);
 				}
 			}
 		} else {
-			return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if (world.getBlockEntity(blockPos) instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity) {
-			OptionalInt optionalInt = this.getSlotForHitPos(blockHitResult, blockState);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if (world.getBlockEntity(pos) instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity) {
+			OptionalInt optionalInt = this.getSlotForHitPos(hit, state);
 			if (optionalInt.isEmpty()) {
 				return ActionResult.PASS;
-			} else if (!(Boolean)blockState.get((Property)SLOT_OCCUPIED_PROPERTIES.get(optionalInt.getAsInt()))) {
+			} else if (!(Boolean)state.get((Property)SLOT_OCCUPIED_PROPERTIES.get(optionalInt.getAsInt()))) {
 				return ActionResult.CONSUME;
 			} else {
-				tryRemoveBook(world, blockPos, playerEntity, chiseledBookshelfBlockEntity, optionalInt.getAsInt());
+				tryRemoveBook(world, pos, player, chiseledBookshelfBlockEntity, optionalInt.getAsInt());
 				return ActionResult.success(world.isClient);
 			}
 		} else {
@@ -108,10 +106,10 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 		}
 	}
 
-	private OptionalInt getSlotForHitPos(BlockHitResult blockHitResult, BlockState blockState) {
-		return (OptionalInt)getHitPos(blockHitResult, blockState.get(HorizontalFacingBlock.FACING)).map(vec2f -> {
-			int i = vec2f.y >= 0.5F ? 0 : 1;
-			int j = getColumn(vec2f.x);
+	private OptionalInt getSlotForHitPos(BlockHitResult hit, BlockState state) {
+		return (OptionalInt)getHitPos(hit, state.get(HorizontalFacingBlock.FACING)).map(hitPos -> {
+			int i = hitPos.y >= 0.5F ? 0 : 1;
+			int j = getColumn(hitPos.x);
 			return OptionalInt.of(j + i * 3);
 		}).orElseGet(OptionalInt::empty);
 	}

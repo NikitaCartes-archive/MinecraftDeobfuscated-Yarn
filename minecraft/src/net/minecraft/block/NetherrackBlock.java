@@ -70,7 +70,7 @@ public class NetherrackBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public Fertilizable.class_9077 method_55770() {
-		return Fertilizable.class_9077.NEIGHBOR_SPREADER;
+	public Fertilizable.FertilizableType getFertilizableType() {
+		return Fertilizable.FertilizableType.NEIGHBOR_SPREADER;
 	}
 }

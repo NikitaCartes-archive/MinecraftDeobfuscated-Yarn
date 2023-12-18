@@ -56,7 +56,7 @@ public class ArmorStandEntity extends LivingEntity {
 	private static final EulerAngle DEFAULT_LEFT_LEG_ROTATION = new EulerAngle(-1.0F, 0.0F, -1.0F);
 	private static final EulerAngle DEFAULT_RIGHT_LEG_ROTATION = new EulerAngle(1.0F, 0.0F, 1.0F);
 	private static final EntityDimensions MARKER_DIMENSIONS = EntityDimensions.fixed(0.0F, 0.0F);
-	private static final EntityDimensions SMALL_DIMENSIONS = EntityType.ARMOR_STAND.getDimensions().scaled(0.5F).method_55685(0.9875F);
+	private static final EntityDimensions SMALL_DIMENSIONS = EntityType.ARMOR_STAND.getDimensions().scaled(0.5F).withEyeHeight(0.9875F);
 	private static final double field_30447 = 0.1;
 	private static final double field_30448 = 0.9;
 	private static final double field_30449 = 0.4;
@@ -97,7 +97,7 @@ public class ArmorStandEntity extends LivingEntity {
 		this.setPosition(x, y, z);
 	}
 
-	public static DefaultAttributeContainer.Builder method_55745() {
+	public static DefaultAttributeContainer.Builder createArmorStandAttributes() {
 		return createLivingAttributes().add(EntityAttributes.GENERIC_STEP_HEIGHT, 0.0);
 	}
 
@@ -776,7 +776,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
 		return this.getDimensions(this.isMarker());
 	}
 

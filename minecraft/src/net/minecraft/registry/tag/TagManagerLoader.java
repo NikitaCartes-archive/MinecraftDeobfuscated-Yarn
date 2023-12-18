@@ -71,7 +71,7 @@ public class TagManagerLoader implements ResourceReloader {
 	) {
 		RegistryKey<? extends Registry<T>> registryKey = requirement.key();
 		Registry<T> registry = requirement.value();
-		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(registry::method_55841, getPath(registryKey));
+		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(registry::getEntry, getPath(registryKey));
 		return CompletableFuture.supplyAsync(() -> new TagManagerLoader.RegistryTags<>(registryKey, tagGroupLoader.load(resourceManager)), prepareExecutor);
 	}
 

@@ -1,8 +1,8 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_9064;
-import net.minecraft.class_9066;
+import net.minecraft.entity.EntityAttachmentType;
+import net.minecraft.entity.EntityAttachments;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -26,9 +26,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class ZombieHorseEntity extends AbstractHorseEntity {
-	private static final EntityDimensions field_47810 = EntityType.ZOMBIE_HORSE
+	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.ZOMBIE_HORSE
 		.getDimensions()
-		.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, EntityType.ZOMBIE_HORSE.getHeight() - 0.03125F, 0.0F))
+		.withAttachments(EntityAttachments.builder().add(EntityAttachmentType.PASSENGER, 0.0F, EntityType.ZOMBIE_HORSE.getHeight() - 0.03125F, 0.0F))
 		.scaled(0.5F);
 
 	public ZombieHorseEntity(EntityType<? extends ZombieHorseEntity> entityType, World world) {
@@ -86,7 +86,7 @@ public class ZombieHorseEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return this.isBaby() ? field_47810 : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
 	}
 }

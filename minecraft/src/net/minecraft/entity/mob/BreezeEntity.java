@@ -129,7 +129,7 @@ public class BreezeEntity extends HostileEntity {
 
 		this.field_47815 = this.field_47815 == 0 ? this.random.nextBetween(1, 80) : this.field_47815 - 1;
 		if (this.field_47815 == 0) {
-			this.method_55747();
+			this.playWhirlSound();
 		}
 
 		super.tick();
@@ -152,7 +152,7 @@ public class BreezeEntity extends HostileEntity {
 
 	public void addLongJumpingParticles() {
 		if (++this.longJumpingParticleAddCount <= 5) {
-			BlockState blockState = !this.method_55667().isAir() ? this.method_55667() : this.getSteppingBlockState();
+			BlockState blockState = !this.getBlockStateAtPos().isAir() ? this.getBlockStateAtPos() : this.getSteppingBlockState();
 			Vec3d vec3d = this.getVelocity();
 			Vec3d vec3d2 = this.getPos().add(vec3d).add(0.0, 0.1F, 0.0);
 
@@ -166,7 +166,7 @@ public class BreezeEntity extends HostileEntity {
 		if (!this.hasVehicle()) {
 			Vec3d vec3d = this.getBoundingBox().getCenter();
 			Vec3d vec3d2 = new Vec3d(vec3d.x, this.getPos().y, vec3d.z);
-			BlockState blockState = !this.method_55667().isAir() ? this.method_55667() : this.getSteppingBlockState();
+			BlockState blockState = !this.getBlockStateAtPos().isAir() ? this.getBlockStateAtPos() : this.getSteppingBlockState();
 			if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 				for (int i = 0; i < count; i++) {
 					this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), vec3d2.x, vec3d2.y, vec3d2.z, 0.0, 0.0, 0.0);
@@ -182,14 +182,14 @@ public class BreezeEntity extends HostileEntity {
 		}
 	}
 
-	public void method_55747() {
+	public void playWhirlSound() {
 		float f = 0.7F + 0.4F * this.random.nextFloat();
 		float g = 0.8F + 0.2F * this.random.nextFloat();
 		this.getWorld().playSoundFromEntity(this, SoundEvents.ENTITY_BREEZE_WHIRL, this.getSoundCategory(), g, f);
 	}
 
 	@Override
-	public void method_55666(ProjectileEntity projectileEntity) {
+	public void onDeflectProjectile(ProjectileEntity projectile) {
 		this.getWorld().playSoundFromEntity(this, SoundEvents.ENTITY_BREEZE_DEFLECT, this.getSoundCategory(), 1.0F, 1.0F);
 	}
 
@@ -223,7 +223,7 @@ public class BreezeEntity extends HostileEntity {
 		this.getWorld().getProfiler().push("breezeBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
 		this.getWorld().getProfiler().swap("breezeActivityUpdate");
-		BreezeBrain.method_55748(this);
+		BreezeBrain.updateActivities(this);
 		this.getWorld().getProfiler().pop();
 		super.mobTick();
 	}

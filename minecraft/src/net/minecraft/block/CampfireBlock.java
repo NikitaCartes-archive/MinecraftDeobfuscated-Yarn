@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -35,6 +34,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -90,28 +90,26 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		if (world.getBlockEntity(blockPos) instanceof CampfireBlockEntity campfireBlockEntity) {
-			ItemStack itemStack2 = playerEntity.getStackInHand(hand);
-			Optional<RecipeEntry<CampfireCookingRecipe>> optional = campfireBlockEntity.getRecipeFor(itemStack2);
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (world.getBlockEntity(pos) instanceof CampfireBlockEntity campfireBlockEntity) {
+			ItemStack itemStack = player.getStackInHand(hand);
+			Optional<RecipeEntry<CampfireCookingRecipe>> optional = campfireBlockEntity.getRecipeFor(itemStack);
 			if (optional.isPresent()) {
 				if (!world.isClient
 					&& campfireBlockEntity.addItem(
-						playerEntity,
-						playerEntity.getAbilities().creativeMode ? itemStack2.copy() : itemStack2,
+						player,
+						player.getAbilities().creativeMode ? itemStack.copy() : itemStack,
 						((CampfireCookingRecipe)((RecipeEntry)optional.get()).value()).getCookingTime()
 					)) {
-					playerEntity.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
-					return class_9062.SUCCESS;
+					player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
+					return ItemActionResult.SUCCESS;
 				}
 
-				return class_9062.CONSUME;
+				return ItemActionResult.CONSUME;
 			}
 		}
 
-		return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 
 	@Override

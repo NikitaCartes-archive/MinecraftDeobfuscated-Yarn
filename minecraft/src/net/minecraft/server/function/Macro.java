@@ -124,7 +124,7 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 		}
 
 		@Override
-		public SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier identifier) {
+		public SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier id) {
 			return this.action;
 		}
 	}
@@ -132,18 +132,18 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 	interface Line<T> {
 		IntList getDependentVariables();
 
-		SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier identifier) throws MacroException;
+		SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier id) throws MacroException;
 	}
 
 	static class VariableLine<T extends AbstractServerCommandSource<T>> implements Macro.Line<T> {
 		private final MacroInvocation invocation;
 		private final IntList variableIndices;
-		private final T field_47891;
+		private final T source;
 
-		public VariableLine(MacroInvocation invocation, IntList variableIndices, T abstractServerCommandSource) {
+		public VariableLine(MacroInvocation invocation, IntList variableIndices, T source) {
 			this.invocation = invocation;
 			this.variableIndices = variableIndices;
-			this.field_47891 = abstractServerCommandSource;
+			this.source = source;
 		}
 
 		@Override
@@ -152,13 +152,13 @@ public class Macro<T extends AbstractServerCommandSource<T>> implements CommandF
 		}
 
 		@Override
-		public SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier identifier) throws MacroException {
+		public SourcedCommandAction<T> instantiate(List<String> args, CommandDispatcher<T> dispatcher, Identifier id) throws MacroException {
 			String string = this.invocation.apply(args);
 
 			try {
-				return CommandFunction.parse(dispatcher, this.field_47891, new StringReader(string));
+				return CommandFunction.parse(dispatcher, this.source, new StringReader(string));
 			} catch (CommandSyntaxException var6) {
-				throw new MacroException(Text.translatable("commands.function.error.parse", Text.of(identifier), string, var6.getMessage()));
+				throw new MacroException(Text.translatable("commands.function.error.parse", Text.of(id), string, var6.getMessage()));
 			}
 		}
 	}

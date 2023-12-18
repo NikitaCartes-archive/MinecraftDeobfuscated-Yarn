@@ -67,7 +67,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			ItemStack itemStack = this.getStack();
 			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = registryEntry.method_55838(Potions.WATER) && list.isEmpty();
+			boolean bl = registryEntry.matches(Potions.WATER) && list.isEmpty();
 			Direction direction = blockHitResult.getSide();
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			BlockPos blockPos2 = blockPos.offset(direction);
@@ -89,7 +89,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			ItemStack itemStack = this.getStack();
 			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = registryEntry.method_55838(Potions.WATER) && list.isEmpty();
+			boolean bl = registryEntry.matches(Potions.WATER) && list.isEmpty();
 			if (bl) {
 				this.applyWater();
 			} else if (!list.isEmpty()) {
@@ -164,7 +164,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void applyLingeringPotion(ItemStack stack, RegistryEntry<Potion> registryEntry) {
+	private void applyLingeringPotion(ItemStack stack, RegistryEntry<Potion> potion) {
 		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.getWorld(), this.getX(), this.getY(), this.getZ());
 		if (this.getOwner() instanceof LivingEntity livingEntity) {
 			areaEffectCloudEntity.setOwner(livingEntity);
@@ -174,7 +174,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 		areaEffectCloudEntity.setWaitTime(10);
 		areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
-		areaEffectCloudEntity.setPotion(registryEntry);
+		areaEffectCloudEntity.setPotion(potion);
 
 		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(stack)) {
 			areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));

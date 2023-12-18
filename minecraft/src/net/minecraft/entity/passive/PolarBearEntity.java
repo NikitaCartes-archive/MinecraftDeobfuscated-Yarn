@@ -203,13 +203,13 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
 		if (this.warningAnimationProgress > 0.0F) {
 			float f = this.warningAnimationProgress / 6.0F;
 			float g = 1.0F + f;
-			return super.method_55694(entityPose).scaled(1.0F, g);
+			return super.getBaseDimensions(pose).scaled(1.0F, g);
 		} else {
-			return super.method_55694(entityPose);
+			return super.getBaseDimensions(pose);
 		}
 	}
 

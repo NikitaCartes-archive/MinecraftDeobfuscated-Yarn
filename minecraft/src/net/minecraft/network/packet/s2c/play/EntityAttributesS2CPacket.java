@@ -54,7 +54,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		buf.writeVarInt(this.entityId);
 		buf.writeCollection(this.entries, (buf2, attribute) -> {
 			buf2.writeRegistryValue(Registries.ATTRIBUTE.getIndexedEntries(), attribute.attribute());
-			buf2.writeDouble(attribute.baseValue());
+			buf2.writeDouble(attribute.base());
 			buf2.writeCollection(attribute.modifiers(), (buf3, modifier) -> {
 				buf3.writeUuid(modifier.getId());
 				buf3.writeDouble(modifier.getValue());
@@ -75,6 +75,6 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		return this.entries;
 	}
 
-	public static record Entry(RegistryEntry<EntityAttribute> attribute, double baseValue, Collection<EntityAttributeModifier> modifiers) {
+	public static record Entry(RegistryEntry<EntityAttribute> attribute, double base, Collection<EntityAttributeModifier> modifiers) {
 	}
 }

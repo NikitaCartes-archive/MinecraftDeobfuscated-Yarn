@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -37,18 +37,18 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-public class class_9071 {
-	public static final Ingredient field_47796 = Ingredient.ofItems(Items.SPIDER_EYE);
+public class ArmadilloBrain {
+	public static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.SPIDER_EYE);
 	private static final float field_47797 = 2.0F;
 	private static final float field_47798 = 1.0F;
 	private static final float field_47799 = 1.25F;
 	private static final float field_47800 = 1.1F;
 	private static final float field_47801 = 1.0F;
 	private static final UniformIntProvider field_47802 = UniformIntProvider.create(5, 16);
-	private static final ImmutableList<SensorType<? extends Sensor<? super class_9069>>> field_47803 = ImmutableList.of(
+	private static final ImmutableList<SensorType<? extends Sensor<? super ArmadilloEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY, SensorType.ARMADILLO_TEMPTATIONS, SensorType.NEAREST_ADULT, SensorType.ARMADILLO_SCARE_DETECTED
 	);
-	private static final ImmutableList<MemoryModuleType<?>> field_47804 = ImmutableList.of(
+	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(
 		MemoryModuleType.IS_PANICKING,
 		MemoryModuleType.HURT_BY,
 		MemoryModuleType.HURT_BY_ENTITY,
@@ -65,11 +65,11 @@ public class class_9071 {
 		MemoryModuleType.NEAREST_VISIBLE_ADULT,
 		MemoryModuleType.DANGER_DETECTED_RECENTLY
 	);
-	private static final SingleTickTask<class_9069> field_47805 = TaskTriggerer.task(
+	private static final SingleTickTask<ArmadilloEntity> field_47805 = TaskTriggerer.task(
 		taskContext -> taskContext.group(taskContext.queryMemoryAbsent(MemoryModuleType.DANGER_DETECTED_RECENTLY))
-				.apply(taskContext, memoryQueryResult -> (serverWorld, arg, l) -> {
-						if (arg.method_55723()) {
-							arg.method_55724(arg.method_55717());
+				.apply(taskContext, memoryQueryResult -> (serverWorld, armadillo, l) -> {
+						if (armadillo.isNotIdle()) {
+							armadillo.unroll(armadillo.canRollUp());
 							return true;
 						} else {
 							return false;
@@ -77,26 +77,26 @@ public class class_9071 {
 					})
 	);
 
-	public static Brain.Profile<class_9069> method_55728() {
-		return Brain.createProfile(field_47804, field_47803);
+	public static Brain.Profile<ArmadilloEntity> createBrainProfile() {
+		return Brain.createProfile(MEMORY_MODULE_TYPES, SENSOR_TYPES);
 	}
 
-	protected static Brain<?> method_55731(Brain<class_9069> brain) {
-		method_55737(brain);
-		method_55738(brain);
-		method_55739(brain);
+	protected static Brain<?> create(Brain<ArmadilloEntity> brain) {
+		addCoreActivities(brain);
+		addIdleActivities(brain);
+		addPanicActivities(brain);
 		brain.setCoreActivities(Set.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();
 		return brain;
 	}
 
-	private static void method_55737(Brain<class_9069> brain) {
+	private static void addCoreActivities(Brain<ArmadilloEntity> brain) {
 		brain.setTaskList(
-			Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new class_9071.class_9073(2.0F), new LookAroundTask(45, 90), new WanderAroundTask() {
+			Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new ArmadilloBrain.class_9073(2.0F), new LookAroundTask(45, 90), new WanderAroundTask() {
 				@Override
 				protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-					if (mobEntity instanceof class_9069 lv && lv.method_55723()) {
+					if (mobEntity instanceof ArmadilloEntity armadilloEntity && armadilloEntity.isNotIdle()) {
 						return false;
 					}
 
@@ -106,7 +106,7 @@ public class class_9071 {
 		);
 	}
 
-	private static void method_55738(Brain<class_9069> brain) {
+	private static void addIdleActivities(Brain<ArmadilloEntity> brain) {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
@@ -133,52 +133,53 @@ public class class_9071 {
 		);
 	}
 
-	private static void method_55739(Brain<class_9069> brain) {
+	private static void addPanicActivities(Brain<ArmadilloEntity> brain) {
 		brain.setTaskList(
 			Activity.PANIC,
-			ImmutableList.of(Pair.of(0, new class_9071.class_9072())),
+			ImmutableList.of(Pair.of(0, new ArmadilloBrain.class_9072())),
 			Set.of(Pair.of(MemoryModuleType.DANGER_DETECTED_RECENTLY, MemoryModuleState.VALUE_PRESENT))
 		);
 	}
 
-	public static void method_55734(class_9069 arg) {
-		arg.getBrain().resetPossibleActivities(ImmutableList.of(Activity.PANIC, Activity.IDLE));
+	public static void updateActivities(ArmadilloEntity armadillo) {
+		armadillo.getBrain().resetPossibleActivities(ImmutableList.of(Activity.PANIC, Activity.IDLE));
 	}
 
-	public static Ingredient method_55735() {
-		return field_47796;
+	public static Ingredient getBreedingIngredient() {
+		return BREEDING_INGREDIENT;
 	}
 
-	public static class class_9072 extends MultiTickTask<class_9069> {
+	public static class class_9072 extends MultiTickTask<ArmadilloEntity> {
 		public class_9072() {
 			super(Map.of());
 		}
 
-		protected void keepRunning(ServerWorld serverWorld, class_9069 arg, long l) {
-			super.keepRunning(serverWorld, arg, l);
-			if (arg.method_55714()) {
-				arg.method_55713(class_9069.class_9070.SCARED);
-				if (arg.isOnGround()) {
-					arg.getWorld().playSound(null, arg.getBlockPos(), SoundEvents.ENTITY_ARMADILLO_LAND, arg.getSoundCategory(), 1.0F, 1.0F);
+		protected void keepRunning(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
+			super.keepRunning(serverWorld, armadilloEntity, l);
+			if (armadilloEntity.shouldSwitchToScaredState()) {
+				armadilloEntity.setState(ArmadilloEntity.State.SCARED);
+				if (armadilloEntity.isOnGround()) {
+					armadilloEntity.getWorld()
+						.playSound(null, armadilloEntity.getBlockPos(), SoundEvents.ENTITY_ARMADILLO_LAND, armadilloEntity.getSoundCategory(), 1.0F, 1.0F);
 				}
 			}
 		}
 
-		protected boolean shouldRun(ServerWorld serverWorld, class_9069 arg) {
-			return arg.isOnGround();
+		protected boolean shouldRun(ServerWorld serverWorld, ArmadilloEntity armadilloEntity) {
+			return armadilloEntity.isOnGround();
 		}
 
-		protected boolean shouldKeepRunning(ServerWorld serverWorld, class_9069 arg, long l) {
+		protected boolean shouldKeepRunning(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
 			return true;
 		}
 
-		protected void run(ServerWorld serverWorld, class_9069 arg, long l) {
-			arg.method_55715();
+		protected void run(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
+			armadilloEntity.startRolling();
 		}
 
-		protected void finishRunning(ServerWorld serverWorld, class_9069 arg, long l) {
-			if (!arg.method_55717()) {
-				arg.method_55724(false);
+		protected void finishRunning(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
+			if (!armadilloEntity.canRollUp()) {
+				armadilloEntity.unroll(false);
 			}
 		}
 	}
@@ -190,8 +191,8 @@ public class class_9071 {
 
 		@Override
 		protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-			if (pathAwareEntity instanceof class_9069 lv) {
-				lv.method_55724(true);
+			if (pathAwareEntity instanceof ArmadilloEntity armadilloEntity) {
+				armadilloEntity.unroll(true);
 			}
 
 			super.run(serverWorld, pathAwareEntity, l);

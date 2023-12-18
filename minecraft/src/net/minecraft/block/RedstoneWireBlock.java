@@ -513,17 +513,17 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if (!playerEntity.getAbilities().allowModifyWorld) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if (!player.getAbilities().allowModifyWorld) {
 			return ActionResult.PASS;
 		} else {
-			if (isFullyConnected(blockState) || isNotConnected(blockState)) {
-				BlockState blockState2 = isFullyConnected(blockState) ? this.getDefaultState() : this.dotState;
-				blockState2 = blockState2.with(POWER, (Integer)blockState.get(POWER));
-				blockState2 = this.getPlacementState(world, blockState2, blockPos);
-				if (blockState2 != blockState) {
-					world.setBlockState(blockPos, blockState2, Block.NOTIFY_ALL);
-					this.updateForNewState(world, blockPos, blockState, blockState2);
+			if (isFullyConnected(state) || isNotConnected(state)) {
+				BlockState blockState = isFullyConnected(state) ? this.getDefaultState() : this.dotState;
+				blockState = blockState.with(POWER, (Integer)state.get(POWER));
+				blockState = this.getPlacementState(world, blockState, pos);
+				if (blockState != state) {
+					world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
+					this.updateForNewState(world, pos, state, blockState);
 					return ActionResult.SUCCESS;
 				}
 			}

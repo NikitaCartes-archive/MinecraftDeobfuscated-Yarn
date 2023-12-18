@@ -52,7 +52,7 @@ public class WorldEvents {
 	/**
 	 * Fire is extinguished.
 	 * <br>Plays the appropriate fire extinguish sound event.
-	 * <br>A {@code 1} should be supplied as extra data if an entity was extinguished, and {@code 0} for a block.
+	 * <p>A {@code 1} should be supplied as extra data if an entity was extinguished, and {@code 0} for a block.
 	 * <p>Called by {@link net.minecraft.block.AbstractFireBlock#onBreak(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, net.minecraft.entity.player.PlayerEntity) AbstractFireBlock#onBreak},
 	 * {@link net.minecraft.entity.projectile.thrown.PotionEntity#extinguishFire(net.minecraft.util.math.BlockPos) PotionEntity#extinguishFire},
 	 * and {@link net.minecraft.item.ShovelItem#useOnBlock(net.minecraft.item.ItemUsageContext) ShovelItem#useOnBlock}
@@ -123,7 +123,7 @@ public class WorldEvents {
 	/**
 	 * A wither is spawned.
 	 * <br>Plays the wither spawn sound event.
-	 * <br>This is a global event.
+	 * <p>This is a global event.
 	 * <p>Called by {@link net.minecraft.entity.boss.WitherEntity#mobTick() WitherEntity#mobTick}
 	 */
 	public static final int WITHER_SPAWNS = 1023;
@@ -154,7 +154,7 @@ public class WorldEvents {
 	/**
 	 * An ender dragon dies.
 	 * <br>Plays the ender dragon death sound event.
-	 * <br>This is a global event.
+	 * <p>This is a global event.
 	 * <p>Called by {@link net.minecraft.entity.boss.dragon.EnderDragonEntity#updatePostDeath() EnderDragonEntity#updatePostDeath}
 	 */
 	public static final int ENDER_DRAGON_DIES = 1028;
@@ -204,7 +204,7 @@ public class WorldEvents {
 	/**
 	 * An end portal is opened.
 	 * <br>Plays the end portal spawn sound event.
-	 * <br>This is a global event.
+	 * <p>This is a global event.
 	 * <p>Called by {@link net.minecraft.item.EnderEyeItem#useOnBlock(net.minecraft.item.ItemUsageContext) EnderEyeItem#useOnBlock}
 	 */
 	public static final int END_PORTAL_OPENED = 1038;
@@ -318,6 +318,7 @@ public class WorldEvents {
 	/**
 	 * Bone meal is used.
 	 * <br>Plays the bone meal item used sound event and spawns happy villager particles.
+	 * <p>The amount of particles to spawn must be supplied as extra data.
 	 * <p>Called by {@link net.minecraft.item.BoneMealItem#useOnBlock(net.minecraft.item.ItemUsageContext) BoneMealItem#useOnBlock},
 	 * an anonymous class in {@link net.minecraft.block.dispenser.DispenserBehavior#registerDefaults() DispenserBehavior#registerDefaults},
 	 * and {@link net.minecraft.entity.ai.brain.task.BoneMealTask#keepRunning(net.minecraft.server.world.ServerWorld, net.minecraft.entity.passive.VillagerEntity, long) BoneMealTask#keepRunning}
@@ -326,7 +327,7 @@ public class WorldEvents {
 	/**
 	 * A dispenser is activated.
 	 * <br>Shoots smoke particles.
-	 * <br>The ordinal direction the dispenser is facing must be supplied as extra data.
+	 * <p>The ordinal direction the dispenser is facing must be supplied as extra data.
 	 * <p>Called by {@link net.minecraft.block.dispenser.ItemDispenserBehavior#spawnParticles(net.minecraft.util.math.BlockPointer, net.minecraft.util.math.Direction) ItemDispenserBehavior#spawnParticles}
 	 */
 	public static final int DISPENSER_ACTIVATED = 2000;
@@ -404,8 +405,20 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.CrafterBlock#transferOrSpawnStack(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.entity.CrafterBlockEntity, net.minecraft.item.ItemStack, net.minecraft.block.BlockState) CrafterBlock#transferOrSpawnStack}
 	 */
 	public static final int CRAFTER_SHOOTS = 2010;
-	public static final int field_47837 = 2011;
-	public static final int field_47838 = 2012;
+	/**
+	 * A plant is fertilized by a bee.
+	 * <br>Spawns happy villager particles.
+	 * <p>The amount of particles to spawn must be supplied as extra data.
+	 * <p>Called by {@link net.minecraft.entity.passive.BeeEntity.GrowCropsGoal#tick() BeeEntity.GrowCropsGoal#tick}
+	 */
+	public static final int BEE_FERTILIZES_PLANT = 2011;
+	/**
+	 * A turtle egg is placed on sand.
+	 * <br>Spawns happy villager particles.
+	 * <p>The amount of particles to spawn must be supplied as extra data.
+	 * <p>Called by {@link net.minecraft.block.TurtleEggBlock#onBlockAdded(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, boolean) TurtleEggBlock#onBlockAdded}
+	 */
+	public static final int TURTLE_EGG_PLACED = 2012;
 	/**
 	 * An end gateway spawns.
 	 * <br>Plays the end gateway spawn sound event and spawns an explosion emitter particle.

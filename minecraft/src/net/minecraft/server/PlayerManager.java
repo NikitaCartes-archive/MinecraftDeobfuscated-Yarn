@@ -151,7 +151,7 @@ public abstract class PlayerManager {
 
 		Optional<NbtCompound> optional = this.loadPlayerData(player);
 		RegistryKey<World> registryKey = (RegistryKey<World>)optional.flatMap(
-				nbtCompound -> DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.get("Dimension"))).resultOrPartial(LOGGER::error)
+				nbt -> DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Dimension"))).resultOrPartial(LOGGER::error)
 			)
 			.orElse(World.OVERWORLD);
 		ServerWorld serverWorld = this.server.getWorld(registryKey);
@@ -326,7 +326,7 @@ public abstract class PlayerManager {
 			player.readNbt(nbtCompound);
 			LOGGER.debug("loading single player");
 		} else {
-			optional = this.saveHandler.method_55789(player);
+			optional = this.saveHandler.loadPlayerData(player);
 		}
 
 		return optional;

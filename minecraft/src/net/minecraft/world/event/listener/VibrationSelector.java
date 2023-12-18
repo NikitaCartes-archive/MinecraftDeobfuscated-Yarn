@@ -48,7 +48,7 @@ public class VibrationSelector {
 				} else {
 					return vibration.distance() > vibration2.distance()
 						? false
-						: Vibrations.method_55783(vibration.gameEvent()) > Vibrations.method_55783(vibration2.gameEvent());
+						: Vibrations.getFrequency(vibration.gameEvent()) > Vibrations.getFrequency(vibration2.gameEvent());
 				}
 			}
 		}

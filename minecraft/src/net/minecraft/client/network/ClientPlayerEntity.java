@@ -394,10 +394,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.recipeBook;
 	}
 
-	public void onRecipeDisplayed(RecipeEntry<?> recipeEntry) {
-		if (this.recipeBook.shouldDisplay(recipeEntry)) {
-			this.recipeBook.onRecipeDisplayed(recipeEntry);
-			this.networkHandler.sendPacket(new RecipeBookDataC2SPacket(recipeEntry));
+	public void onRecipeDisplayed(RecipeEntry<?> recipe) {
+		if (this.recipeBook.shouldDisplay(recipe)) {
+			this.recipeBook.onRecipeDisplayed(recipe);
+			this.networkHandler.sendPacket(new RecipeBookDataC2SPacket(recipe));
 		}
 	}
 
@@ -873,13 +873,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Nullable
 	@Override
-	public StatusEffectInstance removeStatusEffectInternal(RegistryEntry<StatusEffect> registryEntry) {
-		if (registryEntry.method_55838(StatusEffects.NAUSEA)) {
+	public StatusEffectInstance removeStatusEffectInternal(RegistryEntry<StatusEffect> effect) {
+		if (effect.matches(StatusEffects.NAUSEA)) {
 			this.prevNauseaIntensity = 0.0F;
 			this.nauseaIntensity = 0.0F;
 		}
 
-		return super.removeStatusEffectInternal(registryEntry);
+		return super.removeStatusEffectInternal(effect);
 	}
 
 	@Override

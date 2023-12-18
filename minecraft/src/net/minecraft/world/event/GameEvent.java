@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.listener.GameEventListener;
 
-public record GameEvent(int range) {
+public record GameEvent(int notificationRadius) {
 	public static final RegistryEntry.Reference<GameEvent> BLOCK_ACTIVATE = register("block_activate");
 	public static final RegistryEntry.Reference<GameEvent> BLOCK_ATTACH = register("block_attach");
 	public static final RegistryEntry.Reference<GameEvent> BLOCK_CHANGE = register("block_change");
@@ -73,7 +73,7 @@ public record GameEvent(int range) {
 	public static final RegistryEntry.Reference<GameEvent> RESONATE_15 = register("resonate_15");
 	public static final int DEFAULT_RANGE = 16;
 
-	public static RegistryEntry<GameEvent> method_55782(Registry<GameEvent> registry) {
+	public static RegistryEntry<GameEvent> registerAndGetDefault(Registry<GameEvent> registry) {
 		return BLOCK_ACTIVATE;
 	}
 

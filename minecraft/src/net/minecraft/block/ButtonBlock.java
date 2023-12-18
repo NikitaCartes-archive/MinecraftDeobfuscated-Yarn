@@ -102,13 +102,13 @@ public class ButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if ((Boolean)blockState.get(POWERED)) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if ((Boolean)state.get(POWERED)) {
 			return ActionResult.CONSUME;
 		} else {
-			this.powerOn(blockState, world, blockPos);
-			this.playClickSound(playerEntity, world, blockPos, true);
-			world.emitGameEvent(playerEntity, GameEvent.BLOCK_ACTIVATE, blockPos);
+			this.powerOn(state, world, pos);
+			this.playClickSound(player, world, pos, true);
+			world.emitGameEvent(player, GameEvent.BLOCK_ACTIVATE, pos);
 			return ActionResult.success(world.isClient);
 		}
 	}

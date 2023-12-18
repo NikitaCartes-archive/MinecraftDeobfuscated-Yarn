@@ -97,15 +97,15 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		return this.getDataTracker().get(RADIUS);
 	}
 
-	public void setPotion(RegistryEntry<Potion> registryEntry) {
-		this.potion = registryEntry;
+	public void setPotion(RegistryEntry<Potion> potion) {
+		this.potion = potion;
 		if (!this.customColor) {
 			this.updateColor();
 		}
 	}
 
 	private void updateColor() {
-		if (this.potion.method_55838(Potions.EMPTY) && this.effects.isEmpty()) {
+		if (this.potion.matches(Potions.EMPTY) && this.effects.isEmpty()) {
 			this.getDataTracker().set(COLOR, 0);
 		} else {
 			this.getDataTracker().set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
@@ -400,7 +400,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		}
 
 		Optional<RegistryKey<Potion>> optional = this.potion.getKey();
-		if (optional.isPresent() && !this.potion.method_55838(Potions.EMPTY)) {
+		if (optional.isPresent() && !this.potion.matches(Potions.EMPTY)) {
 			nbt.putString("Potion", ((RegistryKey)optional.get()).getValue().toString());
 		}
 

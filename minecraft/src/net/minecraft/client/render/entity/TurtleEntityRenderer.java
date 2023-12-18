@@ -15,8 +15,8 @@ public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, Turtle
 		super(context, new TurtleEntityModel<>(context.getPart(EntityModelLayers.TURTLE)), 0.7F);
 	}
 
-	protected float method_55833(TurtleEntity turtleEntity) {
-		float f = super.method_55831(turtleEntity);
+	protected float getShadowRadius(TurtleEntity turtleEntity) {
+		float f = super.getShadowRadius(turtleEntity);
 		return turtleEntity.isBaby() ? f * 0.83F : f;
 	}
 

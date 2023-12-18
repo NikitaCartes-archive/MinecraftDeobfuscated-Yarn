@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.class_9075;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -61,7 +60,7 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 	protected boolean shouldRun(ServerWorld serverWorld, BreezeEntity breezeEntity) {
 		if (!breezeEntity.isOnGround() && !breezeEntity.isTouchingWater()) {
 			return false;
-		} else if (StayAboveWaterTask.method_55700(breezeEntity)) {
+		} else if (StayAboveWaterTask.isUnderwater(breezeEntity)) {
 			return false;
 		} else if (breezeEntity.getBrain().isMemoryInState(MemoryModuleType.BREEZE_JUMP_TARGET, MemoryModuleState.VALUE_PRESENT)) {
 			return true;
@@ -77,10 +76,12 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 			} else if (!hasRoomToJump(serverWorld, breezeEntity)) {
 				return false;
 			} else {
-				BlockPos blockPos = getPosToJumpTo(breezeEntity, class_9075.method_55751(livingEntity, breezeEntity.getRandom()));
+				BlockPos blockPos = getPosToJumpTo(breezeEntity, BreezeMovementUtil.getRandomPosBehindTarget(livingEntity, breezeEntity.getRandom()));
 				if (blockPos == null) {
 					return false;
-				} else if (!class_9075.method_55752(breezeEntity, blockPos.toCenterPos()) && !class_9075.method_55752(breezeEntity, blockPos.up(4).toCenterPos())) {
+				} else if (!BreezeMovementUtil.canMoveTo(breezeEntity, blockPos.toCenterPos()) && !BreezeMovementUtil.canMoveTo(breezeEntity, blockPos.up(4).toCenterPos())
+					)
+				 {
 					return false;
 				} else {
 					breezeEntity.getBrain().remember(MemoryModuleType.BREEZE_JUMP_TARGET, blockPos);

@@ -844,7 +844,7 @@ public class Items {
 	public static final Item TURTLE_HELMET = register("turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings()));
 	public static final Item TURTLE_SCUTE = register("turtle_scute", new Item(new Item.Settings()));
 	public static final Item ARMADILLO_SCUTE = register("armadillo_scute", new Item(new Item.Settings()));
-	public static final Item WOLF_ARMOR = register("wolf_armor", new HorseArmorItem(11, HorseArmorItem.class_9076.CANINE, null, new Item.Settings().maxCount(1)));
+	public static final Item WOLF_ARMOR = register("wolf_armor", new AnimalArmorItem(11, AnimalArmorItem.Type.CANINE, null, new Item.Settings().maxCount(1)));
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64)));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().food(FoodComponents.APPLE)));
 	public static final Item BOW = register("bow", new BowItem(new Item.Settings().maxDamage(384)));
@@ -1279,16 +1279,16 @@ public class Items {
 	public static final Item RABBIT_HIDE = register("rabbit_hide", new Item(new Item.Settings()));
 	public static final Item ARMOR_STAND = register("armor_stand", new ArmorStandItem(new Item.Settings().maxCount(16)));
 	public static final Item IRON_HORSE_ARMOR = register(
-		"iron_horse_armor", new HorseArmorItem(5, HorseArmorItem.class_9076.EQUESTRIAN, "iron", new Item.Settings().maxCount(1))
+		"iron_horse_armor", new AnimalArmorItem(5, AnimalArmorItem.Type.EQUESTRIAN, "iron", new Item.Settings().maxCount(1))
 	);
 	public static final Item GOLDEN_HORSE_ARMOR = register(
-		"golden_horse_armor", new HorseArmorItem(7, HorseArmorItem.class_9076.EQUESTRIAN, "gold", new Item.Settings().maxCount(1))
+		"golden_horse_armor", new AnimalArmorItem(7, AnimalArmorItem.Type.EQUESTRIAN, "gold", new Item.Settings().maxCount(1))
 	);
 	public static final Item DIAMOND_HORSE_ARMOR = register(
-		"diamond_horse_armor", new HorseArmorItem(11, HorseArmorItem.class_9076.EQUESTRIAN, "diamond", new Item.Settings().maxCount(1))
+		"diamond_horse_armor", new AnimalArmorItem(11, AnimalArmorItem.Type.EQUESTRIAN, "diamond", new Item.Settings().maxCount(1))
 	);
 	public static final Item LEATHER_HORSE_ARMOR = register(
-		"leather_horse_armor", new DyeableHorseArmorItem(3, HorseArmorItem.class_9076.EQUESTRIAN, "leather", new Item.Settings().maxCount(1))
+		"leather_horse_armor", new DyeableAnimalArmorItem(3, AnimalArmorItem.Type.EQUESTRIAN, "leather", new Item.Settings().maxCount(1))
 	);
 	public static final Item LEAD = register("lead", new LeadItem(new Item.Settings()));
 	public static final Item NAME_TAG = register("name_tag", new NameTagItem(new Item.Settings()));

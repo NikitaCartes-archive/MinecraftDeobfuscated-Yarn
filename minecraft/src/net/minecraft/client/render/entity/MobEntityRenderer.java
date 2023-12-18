@@ -116,7 +116,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		vertexConsumer.vertex(positionMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0F).light(p).next();
 	}
 
-	protected float method_55831(T mobEntity) {
-		return super.method_55831(mobEntity) * mobEntity.getScaleFactor();
+	protected float getShadowRadius(T mobEntity) {
+		return super.getShadowRadius(mobEntity) * mobEntity.getScaleFactor();
 	}
 }

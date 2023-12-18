@@ -22,8 +22,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_9064;
-import net.minecraft.class_9066;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -375,7 +373,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	private int lastChimeAge;
 	private boolean hasVisualFire;
 	@Nullable
-	private BlockState field_47742 = null;
+	private BlockState stateAtPos = null;
 
 	public Entity(EntityType<?> type, World world) {
 		this.type = type;
@@ -666,7 +664,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 
 	public void baseTick() {
 		this.getWorld().getProfiler().push("entityBaseTick");
-		this.field_47742 = null;
+		this.stateAtPos = null;
 		if (this.hasVehicle() && this.getVehicle().isRemoved()) {
 			this.stopRiding();
 		}
@@ -1356,7 +1354,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 * <p>A common example is a game event called in {@link #interact}, where the player
 	 * interacting with the entity is the emitter of the event.
 	 * 
-	 * @see #emitGameEvent(GameEvent)
+	 * @see #emitGameEvent(RegistryEntry)
 	 * 
 	 * @param entity the entity that emitted the game event, or {@code null} if there is none
 	 */
@@ -2533,17 +2531,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		}
 	}
 
-	protected void updatePassengerPosition(Entity entity, Entity.PositionUpdater positionUpdater) {
-		Vec3d vec3d = this.getPassengerRidingPos(entity);
-		Vec3d vec3d2 = entity.method_55668(this);
-		positionUpdater.accept(entity, vec3d.x - vec3d2.x, vec3d.y - vec3d2.y, vec3d.z - vec3d2.z);
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+		Vec3d vec3d = this.getPassengerRidingPos(passenger);
+		Vec3d vec3d2 = passenger.getVehicleAttachmentPos(this);
+		positionUpdater.accept(passenger, vec3d.x - vec3d2.x, vec3d.y - vec3d2.y, vec3d.z - vec3d2.z);
 	}
 
 	public void onPassengerLookAround(Entity passenger) {
 	}
 
-	public Vec3d method_55668(Entity entity) {
-		return this.dimensions.attachments().method_55678(class_9064.VEHICLE, 0, this.yaw);
+	public Vec3d getVehicleAttachmentPos(Entity vehicle) {
+		return this.dimensions.attachments().getPoint(EntityAttachmentType.VEHICLE, 0, this.yaw);
 	}
 
 	public Vec3d getPassengerRidingPos(Entity passenger) {
@@ -2551,12 +2549,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	}
 
 	protected Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return method_55665(this, passenger, dimensions.attachments());
+		return getPassengerAttachmentPos(this, passenger, dimensions.attachments());
 	}
 
-	protected static Vec3d method_55665(Entity entity, Entity entity2, class_9066 arg) {
-		int i = entity.getPassengerList().indexOf(entity2);
-		return arg.method_55679(class_9064.PASSENGER, i, entity.yaw);
+	protected static Vec3d getPassengerAttachmentPos(Entity vehicle, Entity passenger, EntityAttachments attachments) {
+		int i = vehicle.getPassengerList().indexOf(passenger);
+		return attachments.getPointOrDefault(EntityAttachmentType.PASSENGER, i, vehicle.yaw);
 	}
 
 	/**
@@ -4487,7 +4485,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		return false;
 	}
 
-	public void method_55666(ProjectileEntity projectileEntity) {
+	public void onDeflectProjectile(ProjectileEntity projectile) {
 	}
 
 	/**
@@ -5025,12 +5023,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		return this.blockPos;
 	}
 
-	public BlockState method_55667() {
-		if (this.field_47742 == null) {
-			this.field_47742 = this.getWorld().getBlockState(this.getBlockPos());
+	/**
+	 * {@return the block state at the entity's position}
+	 * 
+	 * <p>The result is cached.
+	 * 
+	 * @see #getBlockPos
+	 * @see #getLandingBlockState
+	 * @see #getSteppingBlockState
+	 */
+	public BlockState getBlockStateAtPos() {
+		if (this.stateAtPos == null) {
+			this.stateAtPos = this.getWorld().getBlockState(this.getBlockPos());
 		}
 
-		return this.field_47742;
+		return this.stateAtPos;
 	}
 
 	/**
@@ -5126,7 +5133,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 			int k = MathHelper.floor(z);
 			if (i != this.blockPos.getX() || j != this.blockPos.getY() || k != this.blockPos.getZ()) {
 				this.blockPos = new BlockPos(i, j, k);
-				this.field_47742 = null;
+				this.stateAtPos = null;
 				if (ChunkSectionPos.getSectionCoord(i) != this.chunkPos.x || ChunkSectionPos.getSectionCoord(k) != this.chunkPos.z) {
 					this.chunkPos = new ChunkPos(this.blockPos);
 				}

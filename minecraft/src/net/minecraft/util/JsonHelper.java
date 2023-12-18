@@ -111,7 +111,7 @@ public class JsonHelper {
 		if (element.isJsonPrimitive()) {
 			String string = element.getAsString();
 			return (RegistryEntry<Item>)Registries.ITEM
-				.method_55841(new Identifier(string))
+				.getEntry(new Identifier(string))
 				.orElseThrow(() -> new JsonSyntaxException("Expected " + name + " to be an item, was unknown string '" + string + "'"));
 		} else {
 			throw new JsonSyntaxException("Expected " + name + " to be an item, was " + getType(element));

@@ -39,11 +39,11 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 	protected abstract MapCodec<? extends AbstractFurnaceBlock> getCodec();
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			this.openScreen(world, blockPos, playerEntity);
+			this.openScreen(world, pos, player);
 			return ActionResult.CONSUME;
 		}
 	}

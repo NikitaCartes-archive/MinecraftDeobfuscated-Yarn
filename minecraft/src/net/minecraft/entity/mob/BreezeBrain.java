@@ -59,7 +59,7 @@ public class BreezeBrain {
 
 	protected static Brain<?> create(Brain<BreezeEntity> brain) {
 		addCoreTasks(brain);
-		method_55750(brain);
+		addIdleTasks(brain);
 		addFightTasks(brain);
 		brain.setCoreActivities(Set.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.FIGHT);
@@ -71,11 +71,11 @@ public class BreezeBrain {
 		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new LookAroundTask(45, 90)));
 	}
 
-	private static void method_55750(Brain<BreezeEntity> brain) {
+	private static void addIdleTasks(Brain<BreezeEntity> brain) {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, UpdateAttackTargetTask.create(breezeEntity -> breezeEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
+				Pair.of(0, UpdateAttackTargetTask.create(breeze -> breeze.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
 				Pair.of(2, new BreezeBrain.SlideAroundTask(20, 40)),
 				Pair.of(3, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
 			)
@@ -98,8 +98,8 @@ public class BreezeBrain {
 		);
 	}
 
-	static void method_55748(BreezeEntity breezeEntity) {
-		breezeEntity.getBrain().resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
+	static void updateActivities(BreezeEntity breeze) {
+		breeze.getBrain().resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
 	}
 
 	public static class SlideAroundTask extends WanderAroundTask {

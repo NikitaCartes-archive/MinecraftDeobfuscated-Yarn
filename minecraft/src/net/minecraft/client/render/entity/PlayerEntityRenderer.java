@@ -72,7 +72,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 	public Vec3d getPositionOffset(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
 		return abstractClientPlayerEntity.isInSneakingPose()
-			? new Vec3d(0.0, (double)(abstractClientPlayerEntity.method_55693() * -2.0F) / 16.0, 0.0)
+			? new Vec3d(0.0, (double)(abstractClientPlayerEntity.getScale() * -2.0F) / 16.0, 0.0)
 			: super.getPositionOffset(abstractClientPlayerEntity, f);
 	}
 

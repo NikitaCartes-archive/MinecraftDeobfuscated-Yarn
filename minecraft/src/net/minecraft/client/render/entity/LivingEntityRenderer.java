@@ -51,7 +51,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	public void render(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		float h = livingEntity.method_55693();
+		float h = livingEntity.getScale();
 		matrixStack.scale(h, h, h);
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, g);
 		this.model.riding = livingEntity.hasVehicle();
@@ -283,7 +283,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return false;
 	}
 
-	protected float method_55831(T livingEntity) {
-		return super.method_55831(livingEntity) * livingEntity.method_55693();
+	protected float getShadowRadius(T livingEntity) {
+		return super.getShadowRadius(livingEntity) * livingEntity.getScale();
 	}
 }

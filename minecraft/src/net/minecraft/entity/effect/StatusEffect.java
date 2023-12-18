@@ -23,15 +23,15 @@ public class StatusEffect {
 	private final int color;
 	@Nullable
 	private String translationKey;
-	private int field_47738;
+	private int fadeTicks;
 
 	protected StatusEffect(StatusEffectCategory category, int color) {
 		this.category = category;
 		this.color = color;
 	}
 
-	public int method_55652() {
-		return this.field_47738;
+	public int getFadeOutTicks() {
+		return this.fadeTicks;
 	}
 
 	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
@@ -77,23 +77,24 @@ public class StatusEffect {
 		return this.color;
 	}
 
-	public StatusEffect addAttributeModifier(RegistryEntry<EntityAttribute> registryEntry, String uuid, double amount, EntityAttributeModifier.Operation operation) {
-		this.attributeModifiers.put(registryEntry, new StatusEffect.EffectAttributeModifierCreator(UUID.fromString(uuid), amount, operation));
+	public StatusEffect addAttributeModifier(RegistryEntry<EntityAttribute> attribute, String uuid, double amount, EntityAttributeModifier.Operation operation) {
+		this.attributeModifiers.put(attribute, new StatusEffect.EffectAttributeModifierCreator(UUID.fromString(uuid), amount, operation));
 		return this;
 	}
 
-	public StatusEffect method_55649(int i) {
-		this.field_47738 = i;
+	/**
+	 * Sets the duration of effect fade-in and fade-out.
+	 * 
+	 * @return this effect, for chaining
+	 * @see StatusEffectInstance#getFadeFactor
+	 */
+	public StatusEffect fadeTicks(int fadeTicks) {
+		this.fadeTicks = fadeTicks;
 		return this;
 	}
 
-	public void method_55650(int i, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> biConsumer) {
-		this.attributeModifiers
-			.forEach(
-				(registryEntry, effectAttributeModifierCreator) -> biConsumer.accept(
-						registryEntry, effectAttributeModifierCreator.createAttributeModifier(this.getTranslationKey(), i)
-					)
-			);
+	public void forEachAttributeModifier(int amplifier, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> consumer) {
+		this.attributeModifiers.forEach((attribute, modifier) -> consumer.accept(attribute, modifier.createAttributeModifier(this.getTranslationKey(), amplifier)));
 	}
 
 	public void onRemoved(AttributeContainer attributeContainer) {
@@ -122,8 +123,8 @@ public class StatusEffect {
 	}
 
 	static record EffectAttributeModifierCreator(UUID uuid, double baseValue, EntityAttributeModifier.Operation operation) {
-		public EntityAttributeModifier createAttributeModifier(String string, int i) {
-			return new EntityAttributeModifier(this.uuid, string + " " + i, this.baseValue * (double)(i + 1), this.operation);
+		public EntityAttributeModifier createAttributeModifier(String translationKey, int amplifier) {
+			return new EntityAttributeModifier(this.uuid, translationKey + " " + amplifier, this.baseValue * (double)(amplifier + 1), this.operation);
 		}
 	}
 }

@@ -195,14 +195,14 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (!this.blockSetType.canOpenByHand()) {
 			return ActionResult.PASS;
 		} else {
-			blockState = blockState.cycle(OPEN);
-			world.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
-			this.playOpenCloseSound(playerEntity, world, blockPos, (Boolean)blockState.get(OPEN));
-			world.emitGameEvent(playerEntity, this.isOpen(blockState) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, blockPos);
+			state = state.cycle(OPEN);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+			this.playOpenCloseSound(player, world, pos, (Boolean)state.get(OPEN));
+			world.emitGameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			return ActionResult.success(world.isClient);
 		}
 	}

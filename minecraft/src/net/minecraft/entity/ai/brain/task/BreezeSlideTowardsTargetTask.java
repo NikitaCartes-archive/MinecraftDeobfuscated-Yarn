@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
 import java.util.Map;
-import net.minecraft.class_9075;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
@@ -42,7 +41,7 @@ public class BreezeSlideTowardsTargetTask extends MultiTickTask<BreezeEntity> {
 			if (bl) {
 				Vec3d vec3d2 = NoPenaltyTargeting.findFrom(breezeEntity, 5, 5, livingEntity.getPos());
 				if (vec3d2 != null
-					&& class_9075.method_55752(breezeEntity, vec3d2)
+					&& BreezeMovementUtil.canMoveTo(breezeEntity, vec3d2)
 					&& livingEntity.squaredDistanceTo(vec3d2.x, vec3d2.y, vec3d2.z) > livingEntity.squaredDistanceTo(breezeEntity)) {
 					vec3d = vec3d2;
 				}
@@ -50,7 +49,7 @@ public class BreezeSlideTowardsTargetTask extends MultiTickTask<BreezeEntity> {
 
 			if (vec3d == null) {
 				vec3d = breezeEntity.getRandom().nextBoolean()
-					? class_9075.method_55751(livingEntity, breezeEntity.getRandom())
+					? BreezeMovementUtil.getRandomPosBehindTarget(livingEntity, breezeEntity.getRandom())
 					: getRandomPosInMediumRange(breezeEntity, livingEntity);
 			}
 

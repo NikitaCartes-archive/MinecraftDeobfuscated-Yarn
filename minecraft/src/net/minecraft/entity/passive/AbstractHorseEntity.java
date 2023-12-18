@@ -876,9 +876,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		this.setChildAttribute(other, child, EntityAttributes.GENERIC_MOVEMENT_SPEED, (double)MIN_MOVEMENT_SPEED_BONUS, (double)MAX_MOVEMENT_SPEED_BONUS);
 	}
 
-	private void setChildAttribute(PassiveEntity other, AbstractHorseEntity child, RegistryEntry<EntityAttribute> registryEntry, double min, double max) {
-		double d = calculateAttributeBaseValue(this.getAttributeBaseValue(registryEntry), other.getAttributeBaseValue(registryEntry), min, max, this.random);
-		child.getAttributeInstance(registryEntry).setBaseValue(d);
+	private void setChildAttribute(PassiveEntity other, AbstractHorseEntity child, RegistryEntry<EntityAttribute> attribute, double min, double max) {
+		double d = calculateAttributeBaseValue(this.getAttributeBaseValue(attribute), other.getAttributeBaseValue(attribute), min, max, this.random);
+		child.getAttributeInstance(attribute).setBaseValue(d);
 	}
 
 	static double calculateAttributeBaseValue(double parentBase, double otherParentBase, double min, double max, Random random) {
@@ -973,10 +973,10 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected void updatePassengerPosition(Entity entity, Entity.PositionUpdater positionUpdater) {
-		super.updatePassengerPosition(entity, positionUpdater);
-		if (entity instanceof LivingEntity) {
-			((LivingEntity)entity).bodyYaw = this.bodyYaw;
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+		super.updatePassengerPosition(passenger, positionUpdater);
+		if (passenger instanceof LivingEntity) {
+			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
 		}
 	}
 

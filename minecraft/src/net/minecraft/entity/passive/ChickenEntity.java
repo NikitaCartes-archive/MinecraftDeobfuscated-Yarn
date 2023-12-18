@@ -38,7 +38,7 @@ public class ChickenEntity extends AnimalEntity {
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
 		Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD
 	);
-	private static final EntityDimensions field_47770 = EntityType.CHICKEN.getDimensions().scaled(0.5F).method_55685(0.2975F);
+	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.CHICKEN.getDimensions().scaled(0.5F).withEyeHeight(0.2975F);
 	public float flapProgress;
 	public float maxWingDeviation;
 	public float prevMaxWingDeviation;
@@ -66,8 +66,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return this.isBaby() ? field_47770 : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
 	}
 
 	public static DefaultAttributeContainer.Builder createChickenAttributes() {
@@ -167,10 +167,10 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void updatePassengerPosition(Entity entity, Entity.PositionUpdater positionUpdater) {
-		super.updatePassengerPosition(entity, positionUpdater);
-		if (entity instanceof LivingEntity) {
-			((LivingEntity)entity).bodyYaw = this.bodyYaw;
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+		super.updatePassengerPosition(passenger, positionUpdater);
+		if (passenger instanceof LivingEntity) {
+			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
 		}
 	}
 

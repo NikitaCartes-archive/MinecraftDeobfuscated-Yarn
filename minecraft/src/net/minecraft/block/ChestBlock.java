@@ -241,15 +241,15 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(blockState, world, blockPos);
+			NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
 			if (namedScreenHandlerFactory != null) {
-				playerEntity.openHandledScreen(namedScreenHandlerFactory);
-				playerEntity.incrementStat(this.getOpenStat());
-				PiglinBrain.onGuardedBlockInteracted(playerEntity, true);
+				player.openHandledScreen(namedScreenHandlerFactory);
+				player.incrementStat(this.getOpenStat());
+				PiglinBrain.onGuardedBlockInteracted(player, true);
 			}
 
 			return ActionResult.CONSUME;

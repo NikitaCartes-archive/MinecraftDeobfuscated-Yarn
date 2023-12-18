@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
-import net.minecraft.class_9062;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -16,6 +15,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -68,24 +68,22 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		if (itemStack.isOf(Items.FLINT_AND_STEEL) || itemStack.isOf(Items.FIRE_CHARGE)) {
-			return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
-		} else if (isHittingCandle(blockHitResult) && itemStack.isEmpty() && (Boolean)blockState.get(LIT)) {
-			extinguish(playerEntity, blockState, world, blockPos);
-			return class_9062.method_55644(world.isClient);
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (stack.isOf(Items.FLINT_AND_STEEL) || stack.isOf(Items.FIRE_CHARGE)) {
+			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+		} else if (isHittingCandle(hit) && stack.isEmpty() && (Boolean)state.get(LIT)) {
+			extinguish(player, state, world, pos);
+			return ItemActionResult.success(world.isClient);
 		} else {
-			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		ActionResult actionResult = CakeBlock.tryEat(world, blockPos, Blocks.CAKE.getDefaultState(), playerEntity);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		ActionResult actionResult = CakeBlock.tryEat(world, pos, Blocks.CAKE.getDefaultState(), player);
 		if (actionResult.isAccepted()) {
-			dropStacks(blockState, world, blockPos);
+			dropStacks(state, world, pos);
 		}
 
 		return actionResult;
@@ -134,8 +132,8 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 		return false;
 	}
 
-	public static BlockState getCandleCakeFromCandle(CandleBlock candleBlock) {
-		return ((CandleCakeBlock)CANDLES_TO_CANDLE_CAKES.get(candleBlock)).getDefaultState();
+	public static BlockState getCandleCakeFromCandle(CandleBlock candle) {
+		return ((CandleCakeBlock)CANDLES_TO_CANDLE_CAKES.get(candle)).getDefaultState();
 	}
 
 	public static boolean canBeLit(BlockState state) {

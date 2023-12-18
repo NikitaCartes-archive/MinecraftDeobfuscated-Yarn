@@ -93,13 +93,13 @@ public class StatusEffects {
 	public static final RegistryEntry<StatusEffect> HERO_OF_THE_VILLAGE = register(
 		"hero_of_the_village", new StatusEffect(StatusEffectCategory.BENEFICIAL, 4521796)
 	);
-	public static final RegistryEntry<StatusEffect> DARKNESS = register("darkness", new StatusEffect(StatusEffectCategory.HARMFUL, 2696993).method_55649(22));
+	public static final RegistryEntry<StatusEffect> DARKNESS = register("darkness", new StatusEffect(StatusEffectCategory.HARMFUL, 2696993).fadeTicks(22));
 
 	private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
 		return Registry.registerReference(Registries.STATUS_EFFECT, new Identifier(id), statusEffect);
 	}
 
-	public static RegistryEntry<StatusEffect> method_55664(Registry<StatusEffect> registry) {
+	public static RegistryEntry<StatusEffect> registerAndGetDefault(Registry<StatusEffect> registry) {
 		return SPEED;
 	}
 }

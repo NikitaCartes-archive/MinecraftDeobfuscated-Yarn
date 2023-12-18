@@ -59,7 +59,7 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!(entity instanceof LivingEntity) || entity.method_55667().isOf(this)) {
+		if (!(entity instanceof LivingEntity) || entity.getBlockStateAtPos().isOf(this)) {
 			entity.slowMovement(state, new Vec3d(0.9F, 1.5, 0.9F));
 			if (world.isClient) {
 				Random random = world.getRandom();

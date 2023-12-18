@@ -2,13 +2,13 @@ package net.minecraft.entity.passive;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_9064;
-import net.minecraft.class_9066;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
+import net.minecraft.entity.EntityAttachmentType;
+import net.minecraft.entity.EntityAttachments;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -71,10 +71,10 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> LAND_BOUND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> ACTIVELY_TRAVELING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final Ingredient BREEDING_ITEM = Ingredient.ofItems(Blocks.SEAGRASS.asItem());
-	private static final float field_47774 = 0.3F;
-	private static final EntityDimensions field_47775 = EntityType.TURTLE
+	private static final float BABY_SCALE = 0.3F;
+	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.TURTLE
 		.getDimensions()
-		.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, EntityType.TURTLE.getHeight(), -0.25F))
+		.withAttachments(EntityAttachments.builder().add(EntityAttachmentType.PASSENGER, 0.0F, EntityType.TURTLE.getHeight(), -0.25F))
 		.scaled(0.3F);
 	int sandDiggingCounter;
 	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = entity -> entity.isBaby() && !entity.isTouchingWater();
@@ -342,8 +342,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return this.isBaby() ? field_47775 : super.method_55694(entityPose);
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
 	}
 
 	static class GoHomeGoal extends Goal {

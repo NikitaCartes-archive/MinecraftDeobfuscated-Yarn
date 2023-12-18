@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
@@ -18,6 +17,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -89,25 +89,23 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		if (!itemStack.isOf(Items.FLINT_AND_STEEL) && !itemStack.isOf(Items.FIRE_CHARGE)) {
-			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (!stack.isOf(Items.FLINT_AND_STEEL) && !stack.isOf(Items.FIRE_CHARGE)) {
+			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		} else {
-			primeTnt(world, blockPos, playerEntity);
-			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL_AND_REDRAW);
-			Item item = itemStack.getItem();
-			if (!playerEntity.isCreative()) {
-				if (itemStack.isOf(Items.FLINT_AND_STEEL)) {
-					itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+			primeTnt(world, pos, player);
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL_AND_REDRAW);
+			Item item = stack.getItem();
+			if (!player.isCreative()) {
+				if (stack.isOf(Items.FLINT_AND_STEEL)) {
+					stack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 				} else {
-					itemStack.decrement(1);
+					stack.decrement(1);
 				}
 			}
 
-			playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
-			return class_9062.method_55644(world.isClient);
+			player.incrementStat(Stats.USED.getOrCreateStat(item));
+			return ItemActionResult.success(world.isClient);
 		}
 	}
 

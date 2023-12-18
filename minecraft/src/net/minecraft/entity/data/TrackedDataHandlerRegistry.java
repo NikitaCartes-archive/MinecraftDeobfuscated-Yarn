@@ -4,11 +4,11 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_9069;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
+import net.minecraft.entity.passive.ArmadilloEntity;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.entity.passive.SnifferEntity;
@@ -146,7 +146,7 @@ public class TrackedDataHandlerRegistry {
 		Registries.PAINTING_VARIANT.getIndexedEntries()
 	);
 	public static final TrackedDataHandler<SnifferEntity.State> SNIFFER_STATE = TrackedDataHandler.ofEnum(SnifferEntity.State.class);
-	public static final TrackedDataHandler<class_9069.class_9070> field_47707 = TrackedDataHandler.ofEnum(class_9069.class_9070.class);
+	public static final TrackedDataHandler<ArmadilloEntity.State> ARMADILLO_STATE = TrackedDataHandler.ofEnum(ArmadilloEntity.State.class);
 	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.of(PacketByteBuf::writeVector3f, PacketByteBuf::readVector3f);
 	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.of(PacketByteBuf::writeQuaternionf, PacketByteBuf::readQuaternionf);
 
@@ -193,7 +193,7 @@ public class TrackedDataHandlerRegistry {
 		register(OPTIONAL_GLOBAL_POS);
 		register(PAINTING_VARIANT);
 		register(SNIFFER_STATE);
-		register(field_47707);
+		register(ARMADILLO_STATE);
 		register(VECTOR3F);
 		register(QUATERNIONF);
 	}

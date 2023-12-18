@@ -13,18 +13,18 @@ public interface Fertilizable {
 
 	void grow(ServerWorld world, Random random, BlockPos pos, BlockState state);
 
-	default BlockPos method_55769(BlockPos blockPos) {
-		return switch (this.method_55770()) {
-			case NEIGHBOR_SPREADER -> blockPos.up();
-			case GROWER -> blockPos;
+	default BlockPos getFertilizeParticlePos(BlockPos pos) {
+		return switch (this.getFertilizableType()) {
+			case NEIGHBOR_SPREADER -> pos.up();
+			case GROWER -> pos;
 		};
 	}
 
-	default Fertilizable.class_9077 method_55770() {
-		return Fertilizable.class_9077.GROWER;
+	default Fertilizable.FertilizableType getFertilizableType() {
+		return Fertilizable.FertilizableType.GROWER;
 	}
 
-	public static enum class_9077 {
+	public static enum FertilizableType {
 		NEIGHBOR_SPREADER,
 		GROWER;
 	}

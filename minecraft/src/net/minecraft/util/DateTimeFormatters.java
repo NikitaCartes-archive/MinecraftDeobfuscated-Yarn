@@ -1,12 +1,12 @@
-package net.minecraft;
+package net.minecraft.util;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
 
-public class class_9078 {
-	public static DateTimeFormatter method_55786() {
+public class DateTimeFormatters {
+	public static DateTimeFormatter create() {
 		return new DateTimeFormatterBuilder()
 			.appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
 			.appendLiteral('-')

@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.class_9062;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -24,6 +23,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -71,43 +71,41 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	public class_9062 method_55765(
-		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
-	) {
-		if (isChargeItem(itemStack) && canCharge(blockState)) {
-			charge(playerEntity, world, blockPos, blockState);
-			if (!playerEntity.getAbilities().creativeMode) {
-				itemStack.decrement(1);
+	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (isChargeItem(stack) && canCharge(state)) {
+			charge(player, world, pos, state);
+			if (!player.getAbilities().creativeMode) {
+				stack.decrement(1);
 			}
 
-			return class_9062.method_55644(world.isClient);
+			return ItemActionResult.success(world.isClient);
 		} else {
-			return hand == Hand.MAIN_HAND && isChargeItem(playerEntity.getStackInHand(Hand.OFF_HAND)) && canCharge(blockState)
-				? class_9062.SKIP_DEFAULT_BLOCK_INTERACTION
-				: class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return hand == Hand.MAIN_HAND && isChargeItem(player.getStackInHand(Hand.OFF_HAND)) && canCharge(state)
+				? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION
+				: ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
-		if ((Integer)blockState.get(CHARGES) == 0) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+		if ((Integer)state.get(CHARGES) == 0) {
 			return ActionResult.PASS;
 		} else if (!isNether(world)) {
 			if (!world.isClient) {
-				this.explode(blockState, world, blockPos);
+				this.explode(state, world, pos);
 			}
 
 			return ActionResult.success(world.isClient);
 		} else {
 			if (!world.isClient) {
-				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)playerEntity;
-				if (serverPlayerEntity.getSpawnPointDimension() != world.getRegistryKey() || !blockPos.equals(serverPlayerEntity.getSpawnPointPosition())) {
-					serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), blockPos, 0.0F, false, true);
+				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
+				if (serverPlayerEntity.getSpawnPointDimension() != world.getRegistryKey() || !pos.equals(serverPlayerEntity.getSpawnPointPosition())) {
+					serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), pos, 0.0F, false, true);
 					world.playSound(
 						null,
-						(double)blockPos.getX() + 0.5,
-						(double)blockPos.getY() + 0.5,
-						(double)blockPos.getZ() + 0.5,
+						(double)pos.getX() + 0.5,
+						(double)pos.getY() + 0.5,
+						(double)pos.getZ() + 0.5,
 						SoundEvents.BLOCK_RESPAWN_ANCHOR_SET_SPAWN,
 						SoundCategory.BLOCKS,
 						1.0F,

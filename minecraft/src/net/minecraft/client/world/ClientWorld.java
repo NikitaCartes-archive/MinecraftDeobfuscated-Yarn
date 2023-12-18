@@ -560,7 +560,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public Scoreboard getScoreboard() {
-		return this.networkHandler.method_55823();
+		return this.networkHandler.getScoreboard();
 	}
 
 	@Override

@@ -10,13 +10,13 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import net.minecraft.class_9078;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.util.DateTimeFormatters;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -26,7 +26,7 @@ public class WorldSaveHandler {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final File playerDataDir;
 	protected final DataFixer dataFixer;
-	private static final DateTimeFormatter field_47840 = class_9078.method_55786();
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatters.create();
 
 	public WorldSaveHandler(LevelStorage.Session session, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
@@ -48,21 +48,21 @@ public class WorldSaveHandler {
 		}
 	}
 
-	private void method_55787(PlayerEntity playerEntity, String string) {
+	private void backupCorruptedPlayerData(PlayerEntity player, String extension) {
 		Path path = this.playerDataDir.toPath();
-		Path path2 = path.resolve(playerEntity.getUuidAsString() + string);
-		Path path3 = path.resolve(playerEntity.getUuidAsString() + "_corrupted_" + LocalDateTime.now().format(field_47840) + string);
+		Path path2 = path.resolve(player.getUuidAsString() + extension);
+		Path path3 = path.resolve(player.getUuidAsString() + "_corrupted_" + LocalDateTime.now().format(DATE_TIME_FORMATTER) + extension);
 		if (Files.isRegularFile(path2, new LinkOption[0])) {
 			try {
 				Files.copy(path2, path3, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
 			} catch (Exception var7) {
-				LOGGER.warn("Failed to copy the player.dat file for {}", playerEntity.getName().getString(), var7);
+				LOGGER.warn("Failed to copy the player.dat file for {}", player.getName().getString(), var7);
 			}
 		}
 	}
 
-	private Optional<NbtCompound> loadPlayerData(PlayerEntity player, String string) {
-		File file = new File(this.playerDataDir, player.getUuidAsString() + string);
+	private Optional<NbtCompound> loadPlayerData(PlayerEntity player, String extension) {
+		File file = new File(this.playerDataDir, player.getUuidAsString() + extension);
 		if (file.exists() && file.isFile()) {
 			try {
 				return Optional.of(NbtIo.readCompressed(file.toPath(), NbtSizeTracker.ofUnlimitedBytes()));
@@ -74,17 +74,17 @@ public class WorldSaveHandler {
 		return Optional.empty();
 	}
 
-	public Optional<NbtCompound> method_55789(PlayerEntity playerEntity) {
-		Optional<NbtCompound> optional = this.loadPlayerData(playerEntity, ".dat");
+	public Optional<NbtCompound> loadPlayerData(PlayerEntity player) {
+		Optional<NbtCompound> optional = this.loadPlayerData(player, ".dat");
 		if (optional.isEmpty()) {
-			this.method_55787(playerEntity, ".dat");
+			this.backupCorruptedPlayerData(player, ".dat");
 		}
 
-		return optional.or(() -> this.loadPlayerData(playerEntity, ".dat_old")).map(nbtCompound -> {
-			int i = NbtHelper.getDataVersion(nbtCompound, -1);
-			nbtCompound = DataFixTypes.PLAYER.update(this.dataFixer, nbtCompound, i);
-			playerEntity.readNbt(nbtCompound);
-			return nbtCompound;
+		return optional.or(() -> this.loadPlayerData(player, ".dat_old")).map(nbt -> {
+			int i = NbtHelper.getDataVersion(nbt, -1);
+			nbt = DataFixTypes.PLAYER.update(this.dataFixer, nbt, i);
+			player.readNbt(nbt);
+			return nbt;
 		});
 	}
 }

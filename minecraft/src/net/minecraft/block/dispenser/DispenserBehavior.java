@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import net.minecraft.class_9069;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
@@ -32,6 +31,7 @@ import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.ArmadilloEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -610,12 +610,12 @@ public interface DispenserBehavior {
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				ServerWorld serverWorld = pointer.world();
 				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
-				List<class_9069> list = serverWorld.getEntitiesByClass(class_9069.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR);
+				List<ArmadilloEntity> list = serverWorld.getEntitiesByClass(ArmadilloEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR);
 				if (list.isEmpty()) {
 					this.setSuccess(false);
 					return stack;
 				} else {
-					((class_9069)list.get(0)).method_55716();
+					((ArmadilloEntity)list.get(0)).brushScute();
 					if (stack.damage(16, serverWorld.getRandom(), null)) {
 						stack.decrement(1);
 						stack.setDamage(0);
@@ -650,7 +650,7 @@ public interface DispenserBehavior {
 
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					if (!PotionUtil.getPotion(stack).method_55838(Potions.WATER)) {
+					if (!PotionUtil.getPotion(stack).matches(Potions.WATER)) {
 						return this.fallback.dispense(pointer, stack);
 					} else {
 						ServerWorld serverWorld = pointer.world();

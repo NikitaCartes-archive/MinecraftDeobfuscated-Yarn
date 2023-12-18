@@ -240,22 +240,22 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private byte[] favicon;
 		private long time;
 		@Nullable
-		private List<Text> field_47855;
-		private Identifier field_47856;
-		private Text field_47857;
+		private List<Text> playerListSummary;
+		private Identifier statusIconTexture;
+		private Text statusTooltipText;
 
 		protected ServerEntry(MultiplayerScreen screen, ServerInfo server) {
 			this.screen = screen;
 			this.server = server;
 			this.client = MinecraftClient.getInstance();
 			this.icon = WorldIcon.forServer(this.client.getTextureManager(), server.address);
-			this.method_55815();
+			this.update();
 		}
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			if (this.server.method_55825() == ServerInfo.class_9083.INITIAL) {
-				this.server.method_55824(ServerInfo.class_9083.PINGING);
+			if (this.server.getStatus() == ServerInfo.Status.INITIAL) {
+				this.server.setStatus(ServerInfo.Status.PINGING);
 				this.server.label = ScreenTexts.EMPTY;
 				this.server.playerCountLabel = ScreenTexts.EMPTY;
 				MultiplayerServerListWidget.SERVER_PINGER_THREAD_POOL
@@ -269,22 +269,22 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 										() -> this.client.execute(this::saveFile),
 										() -> {
 											this.server
-												.method_55824(
+												.setStatus(
 													this.server.protocolVersion == SharedConstants.getGameVersion().getProtocolVersion()
-														? ServerInfo.class_9083.SUCCESSFUL
-														: ServerInfo.class_9083.INCOMPATIBLE
+														? ServerInfo.Status.SUCCESSFUL
+														: ServerInfo.Status.INCOMPATIBLE
 												);
-											this.client.execute(this::method_55815);
+											this.client.execute(this::update);
 										}
 									);
 							} catch (UnknownHostException var2) {
-								this.server.method_55824(ServerInfo.class_9083.UNREACHABLE);
+								this.server.setStatus(ServerInfo.Status.UNREACHABLE);
 								this.server.label = MultiplayerServerListWidget.CANNOT_RESOLVE_TEXT;
-								this.client.execute(this::method_55815);
+								this.client.execute(this::update);
 							} catch (Exception var3) {
-								this.server.method_55824(ServerInfo.class_9083.UNREACHABLE);
+								this.server.setStatus(ServerInfo.Status.UNREACHABLE);
 								this.server.label = MultiplayerServerListWidget.CANNOT_CONNECT_TEXT;
-								this.client.execute(this::method_55815);
+								this.client.execute(this::update);
 							}
 						}
 					);
@@ -298,12 +298,12 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			this.draw(context, x, y, this.icon.getTextureId());
-			if (this.server.method_55825() == ServerInfo.class_9083.PINGING) {
+			if (this.server.getStatus() == ServerInfo.Status.PINGING) {
 				int i = (int)(Util.getMeasuringTimeMs() / 100L + (long)(index * 2) & 7L);
 				if (i > 4) {
 					i = 8 - i;
 				}
-				this.field_47856 = switch (i) {
+				this.statusIconTexture = switch (i) {
 					case 1 -> MultiplayerServerListWidget.PINGING_2_TEXTURE;
 					case 2 -> MultiplayerServerListWidget.PINGING_3_TEXTURE;
 					case 3 -> MultiplayerServerListWidget.PINGING_4_TEXTURE;
@@ -313,7 +313,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			int i = x + entryWidth - 10 - 5;
-			context.drawGuiTexture(this.field_47856, i, y, 10, 8);
+			context.drawGuiTexture(this.statusIconTexture, i, y, 10, 8);
 			byte[] bs = this.server.getFavicon();
 			if (!Arrays.equals(bs, this.favicon)) {
 				if (this.uploadFavicon(bs)) {
@@ -324,16 +324,16 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 			}
 
-			Text text = (Text)(this.server.method_55825() == ServerInfo.class_9083.INCOMPATIBLE
+			Text text = (Text)(this.server.getStatus() == ServerInfo.Status.INCOMPATIBLE
 				? this.server.version.copy().formatted(Formatting.RED)
 				: this.server.playerCountLabel);
 			int j = this.client.textRenderer.getWidth(text);
 			int k = i - j - 5;
 			context.drawText(this.client.textRenderer, text, k, y + 1, Colors.GRAY, false);
 			if (mouseX >= i && mouseX <= i + 10 && mouseY >= y && mouseY <= y + 8) {
-				this.screen.setTooltip(this.field_47857);
-			} else if (this.field_47855 != null && mouseX >= k && mouseX <= k + j && mouseY >= y && mouseY <= y - 1 + 9) {
-				this.screen.setTooltip(Lists.transform(this.field_47855, Text::asOrderedText));
+				this.screen.setTooltip(this.statusTooltipText);
+			} else if (this.playerListSummary != null && mouseX >= k && mouseX <= k + j && mouseY >= y && mouseY <= y - 1 + 9) {
+				this.screen.setTooltip(Lists.transform(this.playerListSummary, Text::asOrderedText));
 			}
 
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
@@ -366,37 +366,37 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 		}
 
-		private void method_55815() {
-			this.field_47855 = null;
-			switch (this.server.method_55825()) {
+		private void update() {
+			this.playerListSummary = null;
+			switch (this.server.getStatus()) {
 				case INITIAL:
 				case PINGING:
-					this.field_47857 = MultiplayerServerListWidget.PINGING_TEXT;
+					this.statusTooltipText = MultiplayerServerListWidget.PINGING_TEXT;
 					break;
 				case INCOMPATIBLE:
-					this.field_47856 = MultiplayerServerListWidget.INCOMPATIBLE_TEXTURE;
-					this.field_47857 = MultiplayerServerListWidget.INCOMPATIBLE_TEXT;
-					this.field_47855 = this.server.playerListSummary;
+					this.statusIconTexture = MultiplayerServerListWidget.INCOMPATIBLE_TEXTURE;
+					this.statusTooltipText = MultiplayerServerListWidget.INCOMPATIBLE_TEXT;
+					this.playerListSummary = this.server.playerListSummary;
 					break;
 				case UNREACHABLE:
-					this.field_47856 = MultiplayerServerListWidget.UNREACHABLE_TEXTURE;
-					this.field_47857 = MultiplayerServerListWidget.NO_CONNECTION_TEXT;
+					this.statusIconTexture = MultiplayerServerListWidget.UNREACHABLE_TEXTURE;
+					this.statusTooltipText = MultiplayerServerListWidget.NO_CONNECTION_TEXT;
 					break;
 				case SUCCESSFUL:
 					if (this.server.ping < 150L) {
-						this.field_47856 = MultiplayerServerListWidget.PING_5_TEXTURE;
+						this.statusIconTexture = MultiplayerServerListWidget.PING_5_TEXTURE;
 					} else if (this.server.ping < 300L) {
-						this.field_47856 = MultiplayerServerListWidget.PING_4_TEXTURE;
+						this.statusIconTexture = MultiplayerServerListWidget.PING_4_TEXTURE;
 					} else if (this.server.ping < 600L) {
-						this.field_47856 = MultiplayerServerListWidget.PING_3_TEXTURE;
+						this.statusIconTexture = MultiplayerServerListWidget.PING_3_TEXTURE;
 					} else if (this.server.ping < 1000L) {
-						this.field_47856 = MultiplayerServerListWidget.PING_2_TEXTURE;
+						this.statusIconTexture = MultiplayerServerListWidget.PING_2_TEXTURE;
 					} else {
-						this.field_47856 = MultiplayerServerListWidget.PING_1_TEXTURE;
+						this.statusIconTexture = MultiplayerServerListWidget.PING_1_TEXTURE;
 					}
 
-					this.field_47857 = Text.translatable("multiplayer.status.ping", this.server.ping);
-					this.field_47855 = this.server.playerListSummary;
+					this.statusTooltipText = Text.translatable("multiplayer.status.ping", this.server.ping);
+					this.playerListSummary = this.server.playerListSummary;
 			}
 		}
 
@@ -496,7 +496,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			MutableText mutableText = Text.empty();
 			mutableText.append(Text.translatable("narrator.select", this.server.name));
 			mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-			switch (this.server.method_55825()) {
+			switch (this.server.getStatus()) {
 				case PINGING:
 					mutableText.append(MultiplayerServerListWidget.PINGING_TEXT);
 					break;

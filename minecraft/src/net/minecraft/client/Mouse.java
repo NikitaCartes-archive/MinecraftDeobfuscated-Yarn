@@ -35,7 +35,7 @@ public class Mouse {
 	private double cursorDeltaY;
 	private double eventDeltaHorizontalWheel;
 	private double eventDeltaVerticalWheel;
-	private double field_47842 = Double.MIN_VALUE;
+	private double lastTickTime = Double.MIN_VALUE;
 	private boolean cursorLocked;
 
 	public Mouse(MinecraftClient client) {
@@ -213,10 +213,10 @@ public class Mouse {
 		}
 	}
 
-	public void method_55793() {
+	public void tick() {
 		double d = GlfwUtil.getTime();
-		double e = d - this.field_47842;
-		this.field_47842 = d;
+		double e = d - this.lastTickTime;
+		this.lastTickTime = d;
 		if (this.client.isWindowFocused()) {
 			Screen screen = this.client.currentScreen;
 			if (screen != null && this.client.getOverlay() == null) {
@@ -241,37 +241,37 @@ public class Mouse {
 		this.cursorDeltaY = 0.0;
 	}
 
-	private void updateMouse(double d) {
-		double e = this.client.options.getMouseSensitivity().getValue() * 0.6F + 0.2F;
-		double f = e * e * e;
-		double g = f * 8.0;
+	private void updateMouse(double timeDelta) {
+		double d = this.client.options.getMouseSensitivity().getValue() * 0.6F + 0.2F;
+		double e = d * d * d;
+		double f = e * 8.0;
+		double i;
 		double j;
-		double k;
 		if (this.client.options.smoothCameraEnabled) {
-			double h = this.cursorXSmoother.smooth(this.cursorDeltaX * g, d * g);
-			double i = this.cursorYSmoother.smooth(this.cursorDeltaY * g, d * g);
+			double g = this.cursorXSmoother.smooth(this.cursorDeltaX * f, timeDelta * f);
+			double h = this.cursorYSmoother.smooth(this.cursorDeltaY * f, timeDelta * f);
+			i = g;
 			j = h;
-			k = i;
 		} else if (this.client.options.getPerspective().isFirstPerson() && this.client.player.isUsingSpyglass()) {
 			this.cursorXSmoother.clear();
 			this.cursorYSmoother.clear();
-			j = this.cursorDeltaX * f;
-			k = this.cursorDeltaY * f;
+			i = this.cursorDeltaX * e;
+			j = this.cursorDeltaY * e;
 		} else {
 			this.cursorXSmoother.clear();
 			this.cursorYSmoother.clear();
-			j = this.cursorDeltaX * g;
-			k = this.cursorDeltaY * g;
+			i = this.cursorDeltaX * f;
+			j = this.cursorDeltaY * f;
 		}
 
-		int l = 1;
+		int k = 1;
 		if (this.client.options.getInvertYMouse().getValue()) {
-			l = -1;
+			k = -1;
 		}
 
-		this.client.getTutorialManager().onUpdateMouse(j, k);
+		this.client.getTutorialManager().onUpdateMouse(i, j);
 		if (this.client.player != null) {
-			this.client.player.changeLookDirection(j, k * (double)l);
+			this.client.player.changeLookDirection(i, j * (double)k);
 		}
 	}
 

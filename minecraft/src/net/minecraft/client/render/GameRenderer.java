@@ -779,8 +779,8 @@ public class GameRenderer implements AutoCloseable {
 			if (this.client.world != null && this.client.player != null) {
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
-				double d = this.client.player.method_55754();
-				double e = this.client.player.method_55755();
+				double d = this.client.player.getBlockInteractionRange();
+				double e = this.client.player.getEntityInteractionRange();
 				double f = Math.max(d, e);
 				this.client.crosshairTarget = entity.raycast(d, tickDelta, false);
 				Vec3d vec3d = entity.getCameraPosVec(tickDelta);

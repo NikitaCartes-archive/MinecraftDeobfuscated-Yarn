@@ -2943,10 +2943,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.shootParticles(data, pos, random, ParticleTypes.WHITE_SMOKE);
 				break;
 			case 2011:
-				ParticleUtil.method_55636(this.world, pos, data, ParticleTypes.HAPPY_VILLAGER);
+				ParticleUtil.spawnParticlesAround(this.world, pos, data, ParticleTypes.HAPPY_VILLAGER);
 				break;
 			case 2012:
-				ParticleUtil.method_55636(this.world, pos, data, ParticleTypes.HAPPY_VILLAGER);
+				ParticleUtil.spawnParticlesAround(this.world, pos, data, ParticleTypes.HAPPY_VILLAGER);
 				break;
 			case 3000:
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, true, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);

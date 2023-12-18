@@ -64,7 +64,7 @@ public class PointOfInterestSet {
 
 	public void add(BlockPos pos, RegistryEntry<PointOfInterestType> type) {
 		if (this.add(new PointOfInterest(pos, type, this.updateListener))) {
-			LOGGER.debug("Added POI of type {} @ {}", type.method_55840(), pos);
+			LOGGER.debug("Added POI of type {} @ {}", type.getIdAsString(), pos);
 			this.updateListener.run();
 		}
 	}

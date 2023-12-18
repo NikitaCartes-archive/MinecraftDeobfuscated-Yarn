@@ -34,9 +34,9 @@ public class PotionUtil {
 		return getPotionEffects(stack.getNbt());
 	}
 
-	public static List<StatusEffectInstance> getPotionEffects(RegistryEntry<Potion> registryEntry, Collection<StatusEffectInstance> custom) {
+	public static List<StatusEffectInstance> getPotionEffects(RegistryEntry<Potion> potion, Collection<StatusEffectInstance> custom) {
 		List<StatusEffectInstance> list = new ArrayList();
-		list.addAll(registryEntry.value().getEffects());
+		list.addAll(potion.value().getEffects());
 		list.addAll(custom);
 		return list;
 	}
@@ -77,12 +77,12 @@ public class PotionUtil {
 		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE)) {
 			return nbtCompound.getInt("CustomPotionColor");
 		} else {
-			return getPotion(stack).method_55838(Potions.EMPTY) ? 16253176 : getColor(getPotionEffects(stack));
+			return getPotion(stack).matches(Potions.EMPTY) ? 16253176 : getColor(getPotionEffects(stack));
 		}
 	}
 
-	public static int getColor(RegistryEntry<Potion> registryEntry) {
-		return registryEntry.method_55838(Potions.EMPTY) ? 16253176 : getColor(registryEntry.value().getEffects());
+	public static int getColor(RegistryEntry<Potion> potion) {
+		return potion.matches(Potions.EMPTY) ? 16253176 : getColor(potion.value().getEffects());
 	}
 
 	public static int getColor(Collection<StatusEffectInstance> effects) {
@@ -125,9 +125,9 @@ public class PotionUtil {
 		return compound == null ? Potions.EMPTY : Potion.byId(compound.getString("Potion"));
 	}
 
-	public static ItemStack setPotion(ItemStack stack, RegistryEntry<Potion> registryEntry) {
-		Optional<RegistryKey<Potion>> optional = registryEntry.getKey();
-		if (!optional.isEmpty() && !registryEntry.method_55838(Potions.EMPTY)) {
+	public static ItemStack setPotion(ItemStack stack, RegistryEntry<Potion> potion) {
+		Optional<RegistryKey<Potion>> optional = potion.getKey();
+		if (!optional.isEmpty() && !potion.matches(Potions.EMPTY)) {
 			stack.getOrCreateNbt().putString("Potion", ((RegistryKey)optional.get()).getValue().toString());
 		} else {
 			stack.removeSubNbt("Potion");
@@ -164,10 +164,7 @@ public class PotionUtil {
 			for (StatusEffectInstance statusEffectInstance : statusEffects) {
 				MutableText mutableText = Text.translatable(statusEffectInstance.getTranslationKey());
 				RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
-				registryEntry.value()
-					.method_55650(
-						statusEffectInstance.getAmplifier(), (registryEntryx, entityAttributeModifierx) -> list2.add(new Pair<>(registryEntryx, entityAttributeModifierx))
-					);
+				registryEntry.value().forEachAttributeModifier(statusEffectInstance.getAmplifier(), (attribute, modifier) -> list2.add(new Pair<>(attribute, modifier)));
 				if (statusEffectInstance.getAmplifier() > 0) {
 					mutableText = Text.translatable("potion.withAmplifier", mutableText, Text.translatable("potion.potency." + statusEffectInstance.getAmplifier()));
 				}

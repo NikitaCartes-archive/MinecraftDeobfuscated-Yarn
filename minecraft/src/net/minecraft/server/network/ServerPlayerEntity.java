@@ -165,10 +165,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private static final int field_29770 = 10;
 	private static final int field_46928 = 25;
 	private static final double field_47708 = 1.0;
-	private static final EntityAttributeModifier field_47709 = new EntityAttributeModifier(
+	private static final EntityAttributeModifier CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
 		UUID.fromString("736565d2-e1a7-403d-a3f8-1aeb3e302542"), "Creative block interaction range modifier", 0.5, EntityAttributeModifier.Operation.ADDITION
 	);
-	private static final EntityAttributeModifier field_47710 = new EntityAttributeModifier(
+	private static final EntityAttributeModifier CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
 		UUID.fromString("98491ef6-97b1-4584-ae82-71a8cc85cf73"), "Creative entity interaction range modifier", 2.0, EntityAttributeModifier.Operation.ADDITION
 	);
 	public ServerPlayNetworkHandler networkHandler;
@@ -500,26 +500,26 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 		this.tickFallStartPos();
 		this.tickVehicleInLavaRiding();
-		this.method_55633();
+		this.updateCreativeInteractionRangeModifiers();
 		this.advancementTracker.sendUpdate(this);
 	}
 
-	private void method_55633() {
+	private void updateCreativeInteractionRangeModifiers() {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_BLOCK_INTERACTION_RANGE);
 		if (entityAttributeInstance != null) {
 			if (this.isCreative()) {
-				entityAttributeInstance.method_55696(field_47709);
+				entityAttributeInstance.updateModifier(CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID);
 			} else {
-				entityAttributeInstance.removeModifier(field_47709);
+				entityAttributeInstance.removeModifier(CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID);
 			}
 		}
 
 		EntityAttributeInstance entityAttributeInstance2 = this.getAttributeInstance(EntityAttributes.GENERIC_ENTITY_INTERACTION_RANGE);
 		if (entityAttributeInstance2 != null) {
 			if (this.isCreative()) {
-				entityAttributeInstance2.method_55696(field_47710);
+				entityAttributeInstance2.updateModifier(CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID);
 			} else {
-				entityAttributeInstance2.removeModifier(field_47710);
+				entityAttributeInstance2.removeModifier(CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID);
 			}
 		}
 	}
@@ -1318,7 +1318,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity source) {
 		super.onStatusEffectApplied(effect, source);
 		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect, true));
-		if (effect.method_55654(StatusEffects.LEVITATION)) {
+		if (effect.equals(StatusEffects.LEVITATION)) {
 			this.levitationStartTick = this.age;
 			this.levitationStartPos = this.getPos();
 		}
@@ -1337,7 +1337,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	protected void onStatusEffectRemoved(StatusEffectInstance effect) {
 		super.onStatusEffectRemoved(effect);
 		this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), effect.getEffectType()));
-		if (effect.method_55654(StatusEffects.LEVITATION)) {
+		if (effect.equals(StatusEffects.LEVITATION)) {
 			this.levitationStartPos = null;
 		}
 
@@ -1885,13 +1885,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 		);
 	}
 
-	public boolean method_55631(Box box) {
-		double d = this.method_55755() + 1.0;
+	public boolean isBoxInEntityInteractionRange(Box box) {
+		double d = this.getEntityInteractionRange() + 1.0;
 		return box.squaredMagnitude(this.getEyePos()) < d * d;
 	}
 
-	public boolean method_55632(BlockPos blockPos) {
-		double d = this.method_55754() + 1.0;
-		return this.getEyePos().isInRange(Vec3d.ofCenter(blockPos), d);
+	public boolean isPosInBlockInteractionRange(BlockPos pos) {
+		double d = this.getBlockInteractionRange() + 1.0;
+		return this.getEyePos().isInRange(Vec3d.ofCenter(pos), d);
 	}
 }

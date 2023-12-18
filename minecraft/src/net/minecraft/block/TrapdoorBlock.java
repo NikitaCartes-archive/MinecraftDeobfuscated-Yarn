@@ -98,11 +98,11 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (!this.blockSetType.canOpenByHand()) {
 			return ActionResult.PASS;
 		} else {
-			this.flip(blockState, world, blockPos, playerEntity);
+			this.flip(state, world, pos, player);
 			return ActionResult.success(world.isClient);
 		}
 	}

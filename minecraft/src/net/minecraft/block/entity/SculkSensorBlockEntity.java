@@ -111,7 +111,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements GameEventList
 
 		@Override
 		public boolean accepts(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable GameEvent.Emitter emitter) {
-			return !pos.equals(this.pos) || !event.method_55838(GameEvent.BLOCK_DESTROY) && !event.method_55838(GameEvent.BLOCK_PLACE)
+			return !pos.equals(this.pos) || !event.matches(GameEvent.BLOCK_DESTROY) && !event.matches(GameEvent.BLOCK_PLACE)
 				? SculkSensorBlock.isInactive(SculkSensorBlockEntity.this.getCachedState())
 				: false;
 		}
@@ -120,7 +120,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements GameEventList
 		public void accept(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
 			BlockState blockState = SculkSensorBlockEntity.this.getCachedState();
 			if (SculkSensorBlock.isInactive(blockState)) {
-				SculkSensorBlockEntity.this.setLastVibrationFrequency(Vibrations.method_55783(event));
+				SculkSensorBlockEntity.this.setLastVibrationFrequency(Vibrations.getFrequency(event));
 				int i = Vibrations.getSignalStrength(distance, this.getRange());
 				if (blockState.getBlock() instanceof SculkSensorBlock sculkSensorBlock) {
 					sculkSensorBlock.setActive(sourceEntity, world, this.pos, blockState, i, SculkSensorBlockEntity.this.getLastVibrationFrequency());

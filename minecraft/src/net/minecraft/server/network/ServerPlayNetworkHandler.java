@@ -623,7 +623,7 @@ public class ServerPlayNetworkHandler
 				return;
 			}
 
-			beaconScreenHandler.setEffects(packet.primaryEffectId(), packet.secondaryEffectId());
+			beaconScreenHandler.setEffects(packet.primary(), packet.secondary());
 		}
 	}
 
@@ -1052,7 +1052,7 @@ public class ServerPlayNetworkHandler
 			BlockHitResult blockHitResult = packet.getBlockHitResult();
 			Vec3d vec3d = blockHitResult.getPos();
 			BlockPos blockPos = blockHitResult.getBlockPos();
-			if (this.player.method_55632(blockPos)) {
+			if (this.player.isPosInBlockInteractionRange(blockPos)) {
 				Vec3d vec3d2 = vec3d.subtract(Vec3d.ofCenter(blockPos));
 				double d = 1.0000001;
 				if (Math.abs(vec3d2.getX()) < 1.0000001 && Math.abs(vec3d2.getY()) < 1.0000001 && Math.abs(vec3d2.getZ()) < 1.0000001) {
@@ -1447,7 +1447,7 @@ public class ServerPlayNetworkHandler
 			}
 
 			Box box = entity.getBoundingBox();
-			if (this.player.method_55631(box)) {
+			if (this.player.isBoxInEntityInteractionRange(box)) {
 				packet.handle(
 					new PlayerInteractEntityC2SPacket.Handler() {
 						private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {

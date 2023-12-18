@@ -1,16 +1,15 @@
 package net.minecraft.entity;
 
-import net.minecraft.class_9066;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-public record EntityDimensions(float width, float height, float eyeHeight, class_9066 attachments, boolean fixed) {
+public record EntityDimensions(float width, float height, float eyeHeight, EntityAttachments attachments, boolean fixed) {
 	private EntityDimensions(float width, float height, boolean fixed) {
-		this(width, height, method_55686(height), class_9066.field_47751, fixed);
+		this(width, height, getDefaultEyeHeight(height), EntityAttachments.of(width, height), fixed);
 	}
 
-	private static float method_55686(float f) {
-		return f * 0.85F;
+	private static float getDefaultEyeHeight(float height) {
+		return height * 0.85F;
 	}
 
 	public Box getBoxAt(Vec3d pos) {
@@ -30,7 +29,7 @@ public record EntityDimensions(float width, float height, float eyeHeight, class
 	public EntityDimensions scaled(float widthRatio, float heightRatio) {
 		return !this.fixed && (widthRatio != 1.0F || heightRatio != 1.0F)
 			? new EntityDimensions(
-				this.width * widthRatio, this.height * heightRatio, this.eyeHeight * heightRatio, this.attachments.method_55674(widthRatio, heightRatio, widthRatio), false
+				this.width * widthRatio, this.height * heightRatio, this.eyeHeight * heightRatio, this.attachments.scale(widthRatio, heightRatio, widthRatio), false
 			)
 			: this;
 	}
@@ -43,11 +42,11 @@ public record EntityDimensions(float width, float height, float eyeHeight, class
 		return new EntityDimensions(width, height, true);
 	}
 
-	public EntityDimensions method_55685(float f) {
-		return new EntityDimensions(this.width, this.height, f, this.attachments, this.fixed);
+	public EntityDimensions withEyeHeight(float eyeHeight) {
+		return new EntityDimensions(this.width, this.height, eyeHeight, this.attachments, this.fixed);
 	}
 
-	public EntityDimensions method_55684(class_9066.class_9067 arg) {
-		return new EntityDimensions(this.width, this.height, this.eyeHeight, arg.method_55680(this.width, this.height), this.fixed);
+	public EntityDimensions withAttachments(EntityAttachments.Builder attachments) {
+		return new EntityDimensions(this.width, this.height, this.eyeHeight, attachments.build(this.width, this.height), this.fixed);
 	}
 }

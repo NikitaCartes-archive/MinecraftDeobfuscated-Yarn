@@ -177,8 +177,8 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public EntityDimensions method_55694(EntityPose entityPose) {
-		return super.method_55694(entityPose).scaled(getScaleForPuffState(this.getPuffState()));
+	public EntityDimensions getBaseDimensions(EntityPose pose) {
+		return super.getBaseDimensions(pose).scaled(getScaleForPuffState(this.getPuffState()));
 	}
 
 	private static float getScaleForPuffState(int puffState) {
