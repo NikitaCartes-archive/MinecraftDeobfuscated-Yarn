@@ -14,7 +14,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -148,25 +147,30 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (state.get(OPEN)) {
-			state = state.with(OPEN, Boolean.valueOf(false));
-			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if (blockState.get(OPEN)) {
+			blockState = blockState.with(OPEN, Boolean.valueOf(false));
+			world.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
 		} else {
-			Direction direction = player.getHorizontalFacing();
-			if (state.get(FACING) == direction.getOpposite()) {
-				state = state.with(FACING, direction);
+			Direction direction = playerEntity.getHorizontalFacing();
+			if (blockState.get(FACING) == direction.getOpposite()) {
+				blockState = blockState.with(FACING, direction);
 			}
 
-			state = state.with(OPEN, Boolean.valueOf(true));
-			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+			blockState = blockState.with(OPEN, Boolean.valueOf(true));
+			world.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
 		}
 
-		boolean bl = state.get(OPEN);
+		boolean bl = blockState.get(OPEN);
 		world.playSound(
-			player, pos, bl ? this.type.fenceGateOpen() : this.type.fenceGateClose(), SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F
+			playerEntity,
+			blockPos,
+			bl ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
+			SoundCategory.BLOCKS,
+			1.0F,
+			world.getRandom().nextFloat() * 0.1F + 0.9F
 		);
-		world.emitGameEvent(player, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
+		world.emitGameEvent(playerEntity, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, blockPos);
 		return ActionResult.success(world.isClient);
 	}
 

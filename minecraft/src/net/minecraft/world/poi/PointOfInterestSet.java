@@ -19,7 +19,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
@@ -70,7 +69,7 @@ public class PointOfInterestSet {
 
 	public void add(BlockPos pos, RegistryEntry<PointOfInterestType> type) {
 		if (this.add(new PointOfInterest(pos, type, this.updateListener))) {
-			LOGGER.debug("Added POI of type {} @ {}", type.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]"), pos);
+			LOGGER.debug("Added POI of type {} @ {}", type.method_55840(), pos);
 			this.updateListener.run();
 		}
 	}

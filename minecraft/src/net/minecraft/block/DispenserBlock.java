@@ -26,7 +26,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -65,17 +64,17 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				player.openHandledScreen((DispenserBlockEntity)blockEntity);
+				playerEntity.openHandledScreen((DispenserBlockEntity)blockEntity);
 				if (blockEntity instanceof DropperBlockEntity) {
-					player.incrementStat(Stats.INSPECT_DROPPER);
+					playerEntity.incrementStat(Stats.INSPECT_DROPPER);
 				} else {
-					player.incrementStat(Stats.INSPECT_DISPENSER);
+					playerEntity.incrementStat(Stats.INSPECT_DISPENSER);
 				}
 			}
 

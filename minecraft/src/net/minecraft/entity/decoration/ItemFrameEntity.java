@@ -7,8 +7,6 @@ import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
@@ -61,11 +59,6 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public ItemFrameEntity(EntityType<? extends ItemFrameEntity> type, World world, BlockPos pos, Direction facing) {
 		super(type, world, pos);
 		this.setFacing(facing);
-	}
-
-	@Override
-	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.0F;
 	}
 
 	@Override

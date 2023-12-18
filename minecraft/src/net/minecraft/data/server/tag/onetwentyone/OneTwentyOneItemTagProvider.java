@@ -25,5 +25,27 @@ public class OneTwentyOneItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.STAIRS).add(Items.TUFF_STAIRS, Items.POLISHED_TUFF_STAIRS, Items.TUFF_BRICK_STAIRS);
 		this.getOrCreateTagBuilder(ItemTags.SLABS).add(Items.TUFF_SLAB, Items.POLISHED_TUFF_SLAB, Items.TUFF_BRICK_SLAB);
 		this.getOrCreateTagBuilder(ItemTags.WALLS).add(Items.TUFF_WALL, Items.POLISHED_TUFF_WALL, Items.TUFF_BRICK_WALL);
+		this.getOrCreateTagBuilder(ItemTags.DOORS)
+			.add(
+				Items.COPPER_DOOR,
+				Items.EXPOSED_COPPER_DOOR,
+				Items.WEATHERED_COPPER_DOOR,
+				Items.OXIDIZED_COPPER_DOOR,
+				Items.WAXED_COPPER_DOOR,
+				Items.WAXED_EXPOSED_COPPER_DOOR,
+				Items.WAXED_WEATHERED_COPPER_DOOR,
+				Items.WAXED_OXIDIZED_COPPER_DOOR
+			);
+		this.getOrCreateTagBuilder(ItemTags.TRAPDOORS)
+			.add(
+				Items.COPPER_TRAPDOOR,
+				Items.EXPOSED_COPPER_TRAPDOOR,
+				Items.WEATHERED_COPPER_TRAPDOOR,
+				Items.OXIDIZED_COPPER_TRAPDOOR,
+				Items.WAXED_COPPER_TRAPDOOR,
+				Items.WAXED_EXPOSED_COPPER_TRAPDOOR,
+				Items.WAXED_WEATHERED_COPPER_TRAPDOOR,
+				Items.WAXED_OXIDIZED_COPPER_TRAPDOOR
+			);
 	}
 }

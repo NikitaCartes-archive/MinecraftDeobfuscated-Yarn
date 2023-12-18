@@ -37,6 +37,8 @@ public interface DamageTypes {
 	RegistryKey<DamageType> ARROW = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("arrow"));
 	RegistryKey<DamageType> TRIDENT = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("trident"));
 	RegistryKey<DamageType> MOB_PROJECTILE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("mob_projectile"));
+	RegistryKey<DamageType> field_47736 = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("spit"));
+	RegistryKey<DamageType> field_47737 = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("wind_charge"));
 	RegistryKey<DamageType> FIREWORKS = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("fireworks"));
 	RegistryKey<DamageType> FIREBALL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("fireball"));
 	RegistryKey<DamageType> UNATTRIBUTED_FIREBALL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("unattributed_fireball"));
@@ -85,6 +87,7 @@ public interface DamageTypes {
 		damageTypeRegisterable.register(ARROW, new DamageType("arrow", 0.1F));
 		damageTypeRegisterable.register(TRIDENT, new DamageType("trident", 0.1F));
 		damageTypeRegisterable.register(MOB_PROJECTILE, new DamageType("mob", 0.1F));
+		damageTypeRegisterable.register(field_47736, new DamageType("mob", 0.1F));
 		damageTypeRegisterable.register(FIREWORKS, new DamageType("fireworks", 0.1F));
 		damageTypeRegisterable.register(UNATTRIBUTED_FIREBALL, new DamageType("onFire", 0.1F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(FIREBALL, new DamageType("fireball", 0.1F, DamageEffects.BURNING));

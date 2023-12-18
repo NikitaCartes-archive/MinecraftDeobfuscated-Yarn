@@ -6,9 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InfestedBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -32,7 +30,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import org.joml.Vector3f;
 
 public class SilverfishEntity extends HostileEntity {
 	@Nullable
@@ -52,11 +49,6 @@ public class SilverfishEntity extends HostileEntity {
 		this.goalSelector.add(5, new SilverfishEntity.WanderAndInfestGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.13F;
 	}
 
 	public static DefaultAttributeContainer.Builder createSilverfishAttributes() {
@@ -133,11 +125,6 @@ public class SilverfishEntity extends HostileEntity {
 	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.ARTHROPOD;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - 0.0625F * scaleFactor, 0.0F);
 	}
 
 	static class CallForHelpGoal extends Goal {

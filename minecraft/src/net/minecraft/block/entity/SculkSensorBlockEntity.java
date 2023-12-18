@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.BlockPositionSource;
@@ -110,17 +111,17 @@ public class SculkSensorBlockEntity extends BlockEntity implements GameEventList
 		}
 
 		@Override
-		public boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
-			return !pos.equals(this.pos) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE
+		public boolean accepts(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable GameEvent.Emitter emitter) {
+			return !pos.equals(this.pos) || !event.method_55838(GameEvent.BLOCK_DESTROY) && !event.method_55838(GameEvent.BLOCK_PLACE)
 				? SculkSensorBlock.isInactive(SculkSensorBlockEntity.this.getCachedState())
 				: false;
 		}
 
 		@Override
-		public void accept(ServerWorld world, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
+		public void accept(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
 			BlockState blockState = SculkSensorBlockEntity.this.getCachedState();
 			if (SculkSensorBlock.isInactive(blockState)) {
-				SculkSensorBlockEntity.this.setLastVibrationFrequency(Vibrations.getFrequency(event));
+				SculkSensorBlockEntity.this.setLastVibrationFrequency(Vibrations.method_55783(event));
 				int i = Vibrations.getSignalStrength(distance, this.getRange());
 				Block var10 = blockState.getBlock();
 				if (var10 instanceof SculkSensorBlock sculkSensorBlock) {

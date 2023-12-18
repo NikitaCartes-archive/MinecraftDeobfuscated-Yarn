@@ -325,6 +325,7 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 		schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.constType(getIdentifierType()));
 		schema.registerType(false, TypeReferences.ITEM_NAME, () -> DSL.constType(getIdentifierType()));
 		schema.registerType(false, TypeReferences.BLOCK_STATE, DSL::remainder);
+		schema.registerType(false, TypeReferences.field_47727, DSL::remainder);
 		Supplier<TypeTemplate> supplier = () -> DSL.compoundList(TypeReferences.ITEM_NAME.in(schema), DSL.constType(DSL.intType()));
 		schema.registerType(
 			false,

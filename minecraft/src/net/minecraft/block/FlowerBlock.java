@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
@@ -25,8 +26,8 @@ public class FlowerBlock extends PlantBlock implements SuspiciousStewIngredient 
 		return CODEC;
 	}
 
-	public FlowerBlock(StatusEffect stewEffect, int duration, AbstractBlock.Settings settings) {
-		this(createStewEffectList(stewEffect, duration), settings);
+	public FlowerBlock(RegistryEntry<StatusEffect> registryEntry, int duration, AbstractBlock.Settings settings) {
+		this(createStewEffectList(registryEntry, duration), settings);
 	}
 
 	public FlowerBlock(List<SuspiciousStewIngredient.StewEffect> stewEffects, AbstractBlock.Settings settings) {
@@ -34,15 +35,8 @@ public class FlowerBlock extends PlantBlock implements SuspiciousStewIngredient 
 		this.stewEffects = stewEffects;
 	}
 
-	protected static List<SuspiciousStewIngredient.StewEffect> createStewEffectList(StatusEffect stewEffect, int duration) {
-		int i;
-		if (stewEffect.isInstant()) {
-			i = duration;
-		} else {
-			i = duration * 20;
-		}
-
-		return List.of(new SuspiciousStewIngredient.StewEffect(stewEffect, i));
+	protected static List<SuspiciousStewIngredient.StewEffect> createStewEffectList(RegistryEntry<StatusEffect> registryEntry, int duration) {
+		return List.of(new SuspiciousStewIngredient.StewEffect(registryEntry, duration * 20));
 	}
 
 	@Override

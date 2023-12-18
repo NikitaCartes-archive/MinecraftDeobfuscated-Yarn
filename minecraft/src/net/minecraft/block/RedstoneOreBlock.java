@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.class_9062;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -12,7 +13,6 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -50,17 +50,18 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
 		if (world.isClient) {
-			spawnParticles(world, pos);
+			spawnParticles(world, blockPos);
 		} else {
-			light(state, world, pos);
+			light(blockState, world, blockPos);
 		}
 
-		ItemStack itemStack = player.getStackInHand(hand);
-		return itemStack.getItem() instanceof BlockItem && new ItemPlacementContext(player, hand, itemStack, hit).canPlace()
-			? ActionResult.PASS
-			: ActionResult.SUCCESS;
+		return itemStack.getItem() instanceof BlockItem && new ItemPlacementContext(playerEntity, hand, itemStack, blockHitResult).canPlace()
+			? class_9062.SKIP_DEFAULT_BLOCK_INTERACTION
+			: class_9062.SUCCESS;
 	}
 
 	private static void light(BlockState state, World world, BlockPos pos) {

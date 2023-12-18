@@ -60,7 +60,7 @@ public final class LongJumpUtil {
 
 	private static boolean isPathClear(MobEntity entity, EntityDimensions dimensions, Vec3d prevPos, Vec3d nextPos) {
 		Vec3d vec3d = nextPos.subtract(prevPos);
-		double d = (double)Math.min(dimensions.width, dimensions.height);
+		double d = (double)Math.min(dimensions.width(), dimensions.height());
 		int i = MathHelper.ceil(vec3d.length() / d);
 		Vec3d vec3d2 = vec3d.normalize();
 		Vec3d vec3d3 = prevPos;

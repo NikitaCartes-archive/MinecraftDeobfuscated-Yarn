@@ -1,5 +1,6 @@
 package net.minecraft.world.event.listener;
 
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 
@@ -25,7 +26,7 @@ public interface GameEventDispatcher {
 		}
 
 		@Override
-		public boolean dispatch(GameEvent event, Vec3d pos, GameEvent.Emitter emitter, GameEventDispatcher.DispatchCallback callback) {
+		public boolean dispatch(RegistryEntry<GameEvent> event, Vec3d pos, GameEvent.Emitter emitter, GameEventDispatcher.DispatchCallback callback) {
 			return false;
 		}
 	};
@@ -54,7 +55,7 @@ public interface GameEventDispatcher {
 	 * 
 	 * @param event the event
 	 */
-	boolean dispatch(GameEvent event, Vec3d pos, GameEvent.Emitter emitter, GameEventDispatcher.DispatchCallback callback);
+	boolean dispatch(RegistryEntry<GameEvent> event, Vec3d pos, GameEvent.Emitter emitter, GameEventDispatcher.DispatchCallback callback);
 
 	@FunctionalInterface
 	public interface DispatchCallback {

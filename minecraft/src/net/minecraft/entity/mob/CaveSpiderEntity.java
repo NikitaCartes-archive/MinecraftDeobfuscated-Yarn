@@ -3,8 +3,6 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -13,11 +11,11 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 public class CaveSpiderEntity extends SpiderEntity {
 	public CaveSpiderEntity(EntityType<? extends CaveSpiderEntity> entityType, World world) {
@@ -59,17 +57,7 @@ public class CaveSpiderEntity extends SpiderEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.45F;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height, 0.0F);
-	}
-
-	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return vehicle.getWidth() <= this.getWidth() ? -0.21875F : 0.0F;
+	public Vec3d method_55668(Entity entity) {
+		return entity.getWidth() <= this.getWidth() ? new Vec3d(0.0, 0.21875 * (double)this.method_55693(), 0.0) : super.method_55668(entity);
 	}
 }

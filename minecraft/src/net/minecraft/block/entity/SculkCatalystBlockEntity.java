@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -79,8 +80,8 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 		}
 
 		@Override
-		public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
-			if (event == GameEvent.ENTITY_DIE) {
+		public boolean listen(ServerWorld world, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos) {
+			if (event.method_55838(GameEvent.ENTITY_DIE)) {
 				Entity i = emitter.sourceEntity();
 				if (i instanceof LivingEntity livingEntity) {
 					if (!livingEntity.isExperienceDroppingDisabled()) {

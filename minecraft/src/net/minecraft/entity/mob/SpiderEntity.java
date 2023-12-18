@@ -5,9 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -33,6 +31,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +41,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 public class SpiderEntity extends HostileEntity {
 	/**
@@ -67,11 +65,6 @@ public class SpiderEntity extends HostileEntity {
 		this.targetSelector.add(1, new RevengeGoal(this));
 		this.targetSelector.add(2, new SpiderEntity.TargetGoal(this, PlayerEntity.class));
 		this.targetSelector.add(3, new SpiderEntity.TargetGoal(this, IronGolemEntity.class));
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height * 0.85F, 0.0F);
 	}
 
 	@Override
@@ -136,7 +129,7 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.getEffectType() == StatusEffects.POISON ? false : super.canHaveStatusEffect(effect);
+		return effect.method_55654(StatusEffects.POISON) ? false : super.canHaveStatusEffect(effect);
 	}
 
 	public boolean isClimbingWall() {
@@ -178,9 +171,9 @@ public class SpiderEntity extends HostileEntity {
 		}
 
 		if (entityData instanceof SpiderEntity.SpiderData spiderData) {
-			StatusEffect statusEffect = spiderData.effect;
-			if (statusEffect != null) {
-				this.addStatusEffect(new StatusEffectInstance(statusEffect, -1));
+			RegistryEntry<StatusEffect> registryEntry = spiderData.effect;
+			if (registryEntry != null) {
+				this.addStatusEffect(new StatusEffectInstance(registryEntry, -1));
 			}
 		}
 
@@ -188,13 +181,8 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.65F;
-	}
-
-	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return vehicle.getWidth() <= this.getWidth() ? -0.3125F : 0.0F;
+	public Vec3d method_55668(Entity entity) {
+		return entity.getWidth() <= this.getWidth() ? new Vec3d(0.0, 0.3125 * (double)this.method_55693(), 0.0) : super.method_55668(entity);
 	}
 
 	static class AttackGoal extends MeleeAttackGoal {
@@ -221,7 +209,7 @@ public class SpiderEntity extends HostileEntity {
 
 	public static class SpiderData implements EntityData {
 		@Nullable
-		public StatusEffect effect;
+		public RegistryEntry<StatusEffect> effect;
 
 		public void setEffect(Random random) {
 			int i = random.nextInt(5);

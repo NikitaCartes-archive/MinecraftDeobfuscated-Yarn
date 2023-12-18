@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.LongStream;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -40,6 +41,7 @@ import net.minecraft.network.NetworkState;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.command.FillBiomeCommand;
 import net.minecraft.server.network.ConnectedClientData;
@@ -47,7 +49,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.structure.StructureTemplate;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -184,10 +185,13 @@ public class TestContext {
 	public void useBlock(BlockPos pos, PlayerEntity player, BlockHitResult result) {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
-		ActionResult actionResult = blockState.onUse(this.getWorld(), player, Hand.MAIN_HAND, result);
-		if (!actionResult.isAccepted()) {
-			ItemUsageContext itemUsageContext = new ItemUsageContext(player, Hand.MAIN_HAND, result);
-			player.getStackInHand(Hand.MAIN_HAND).useOnBlock(itemUsageContext);
+		Hand hand = Hand.MAIN_HAND;
+		class_9062 lv = blockState.method_55780(player.getStackInHand(hand), this.getWorld(), player, hand, result);
+		if (!lv.method_55643()) {
+			if (lv != class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION || !blockState.method_55781(this.getWorld(), player, result).isAccepted()) {
+				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, result);
+				player.getStackInHand(hand).useOnBlock(itemUsageContext);
+			}
 		}
 	}
 
@@ -666,11 +670,11 @@ public class TestContext {
 		}
 	}
 
-	public void expectEntityHasEffect(LivingEntity entity, StatusEffect effect, int amplifier) {
-		StatusEffectInstance statusEffectInstance = entity.getStatusEffect(effect);
+	public void expectEntityHasEffect(LivingEntity entity, RegistryEntry<StatusEffect> registryEntry, int amplifier) {
+		StatusEffectInstance statusEffectInstance = entity.getStatusEffect(registryEntry);
 		if (statusEffectInstance == null || statusEffectInstance.getAmplifier() != amplifier) {
 			int i = amplifier + 1;
-			throw new GameTestException("Entity " + entity + " failed has " + effect.getTranslationKey() + " x " + i + " test");
+			throw new GameTestException("Entity " + entity + " failed has " + registryEntry.value().getTranslationKey() + " x " + i + " test");
 		}
 	}
 

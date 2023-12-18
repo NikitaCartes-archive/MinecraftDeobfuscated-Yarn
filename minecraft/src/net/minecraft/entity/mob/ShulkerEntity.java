@@ -8,8 +8,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -498,11 +496,6 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 
 	public float getOpenProgress(float delta) {
 		return MathHelper.lerp(delta, this.prevOpenProgress, this.openProgress);
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.5F;
 	}
 
 	@Override

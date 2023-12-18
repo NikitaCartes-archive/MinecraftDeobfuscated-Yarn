@@ -26,7 +26,7 @@ public class WindChargeEntityRenderer extends EntityRenderer<WindChargeEntity> {
 		float h = (float)windChargeEntity.age + g;
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getBreezeWind(TEXTURE, this.getXOffset(h) % 1.0F, 0.0F));
 		this.model.setAngles(windChargeEntity, 0.0F, 0.0F, h, 0.0F, 0.0F);
-		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 0.5F);
+		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		super.render(windChargeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 

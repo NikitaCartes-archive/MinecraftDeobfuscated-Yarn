@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.class_9062;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -72,13 +73,19 @@ public class FenceBlock extends HorizontalConnectingBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
 		if (world.isClient) {
-			ItemStack itemStack = player.getStackInHand(hand);
-			return itemStack.isOf(Items.LEAD) ? ActionResult.SUCCESS : ActionResult.PASS;
+			return itemStack.isOf(Items.LEAD) ? class_9062.SUCCESS : class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
 		} else {
-			return LeadItem.attachHeldMobsToBlock(player, world, pos);
+			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
+	}
+
+	@Override
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		return !world.isClient() ? LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos) : ActionResult.PASS;
 	}
 
 	@Override

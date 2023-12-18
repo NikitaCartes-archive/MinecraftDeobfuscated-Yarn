@@ -40,8 +40,6 @@ public class MultiplayerScreen extends Screen {
 	private ButtonWidget buttonEdit;
 	private ButtonWidget buttonJoin;
 	private ButtonWidget buttonDelete;
-	@Nullable
-	private List<Text> multiplayerScreenTooltip;
 	private ServerInfo selectedEntry;
 	private LanServerQueryManager.LanServerEntryList lanServers;
 	@Nullable
@@ -74,7 +72,7 @@ public class MultiplayerScreen extends Screen {
 			this.serverListWidget.setServers(this.serverList);
 		}
 
-		this.addSelectableChild(this.serverListWidget);
+		this.addDrawableChild(this.serverListWidget);
 		this.buttonJoin = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.select"), button -> this.connect()).width(100).build());
 		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.direct"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", ServerInfo.ServerType.OTHER);
@@ -109,7 +107,7 @@ public class MultiplayerScreen extends Screen {
 		ButtonWidget buttonWidget3 = this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("selectServer.refresh"), button -> this.refresh()).width(74).build()
 		);
-		ButtonWidget buttonWidget4 = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).width(74).build());
+		ButtonWidget buttonWidget4 = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(74).build());
 		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.vertical();
 		AxisGridWidget axisGridWidget = directionalLayoutWidget.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL));
 		axisGridWidget.add(this.buttonJoin);
@@ -124,6 +122,11 @@ public class MultiplayerScreen extends Screen {
 		directionalLayoutWidget.refreshPositions();
 		SimplePositioningWidget.setPos(directionalLayoutWidget, 0, this.height - 64, this.width, 64);
 		this.updateButtonActivationStates();
+	}
+
+	@Override
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	@Override
@@ -233,12 +236,7 @@ public class MultiplayerScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		this.multiplayerScreenTooltip = null;
-		this.serverListWidget.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
-		if (this.multiplayerScreenTooltip != null) {
-			context.drawTooltip(this.textRenderer, this.multiplayerScreenTooltip, mouseX, mouseY);
-		}
 	}
 
 	public void connect() {
@@ -276,10 +274,6 @@ public class MultiplayerScreen extends Screen {
 
 	public MultiplayerServerListPinger getServerListPinger() {
 		return this.serverListPinger;
-	}
-
-	public void setMultiplayerScreenTooltip(List<Text> tooltip) {
-		this.multiplayerScreenTooltip = tooltip;
 	}
 
 	public ServerList getServerList() {

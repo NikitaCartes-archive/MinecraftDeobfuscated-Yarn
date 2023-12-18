@@ -8,11 +8,12 @@ class PoisonStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		super.applyUpdateEffect(entity, amplifier);
+	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (entity.getHealth() > 1.0F) {
 			entity.damage(entity.getDamageSources().magic(), 1.0F);
 		}
+
+		return true;
 	}
 
 	@Override

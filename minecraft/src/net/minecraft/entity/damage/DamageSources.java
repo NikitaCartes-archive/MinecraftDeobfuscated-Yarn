@@ -204,6 +204,14 @@ public class DamageSources {
 		return this.create(DamageTypes.MOB_PROJECTILE, source, attacker);
 	}
 
+	public DamageSource method_55647(Entity entity, @Nullable LivingEntity livingEntity) {
+		return this.create(DamageTypes.field_47736, entity, livingEntity);
+	}
+
+	public DamageSource method_55648(Entity entity, @Nullable LivingEntity livingEntity) {
+		return this.create(DamageTypes.field_47737, entity, livingEntity);
+	}
+
 	public DamageSource fireworks(FireworkRocketEntity source, @Nullable Entity attacker) {
 		return this.create(DamageTypes.FIREWORKS, source, attacker);
 	}

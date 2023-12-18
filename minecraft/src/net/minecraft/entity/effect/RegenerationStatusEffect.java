@@ -8,11 +8,12 @@ class RegenerationStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		super.applyUpdateEffect(entity, amplifier);
+	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (entity.getHealth() < entity.getMaxHealth()) {
 			entity.heal(1.0F);
 		}
+
+		return true;
 	}
 
 	@Override

@@ -26,17 +26,17 @@ public class OneTwentyOneStructureProcessorLists {
 						new StructureProcessorRule(
 							new RandomBlockMatchRuleTest(Blocks.WAXED_COPPER_BULB, 0.1F),
 							AlwaysTrueRuleTest.INSTANCE,
-							Blocks.OXIDIZED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
+							Blocks.WAXED_OXIDIZED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
 						),
 						new StructureProcessorRule(
 							new RandomBlockMatchRuleTest(Blocks.WAXED_COPPER_BULB, 0.33333334F),
 							AlwaysTrueRuleTest.INSTANCE,
-							Blocks.WEATHERED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
+							Blocks.WAXED_WEATHERED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
 						),
 						new StructureProcessorRule(
 							new RandomBlockMatchRuleTest(Blocks.WAXED_COPPER_BULB, 0.5F),
 							AlwaysTrueRuleTest.INSTANCE,
-							Blocks.EXPOSED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
+							Blocks.WAXED_EXPOSED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
 						)
 					)
 				),

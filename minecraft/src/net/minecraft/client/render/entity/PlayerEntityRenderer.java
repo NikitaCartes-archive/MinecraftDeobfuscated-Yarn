@@ -71,7 +71,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	public Vec3d getPositionOffset(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
-		return abstractClientPlayerEntity.isInSneakingPose() ? new Vec3d(0.0, -0.125, 0.0) : super.getPositionOffset(abstractClientPlayerEntity, f);
+		return abstractClientPlayerEntity.isInSneakingPose()
+			? new Vec3d(0.0, (double)(abstractClientPlayerEntity.method_55693() * -2.0F) / 16.0, 0.0)
+			: super.getPositionOffset(abstractClientPlayerEntity, f);
 	}
 
 	private void setModelPose(AbstractClientPlayerEntity player) {
@@ -157,7 +159,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	protected void renderLabelIfPresent(
-		AbstractClientPlayerEntity abstractClientPlayerEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
+		AbstractClientPlayerEntity abstractClientPlayerEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, float f
 	) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(abstractClientPlayerEntity);
 		matrixStack.push();
@@ -172,13 +174,14 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 					Text.empty().append(text2).append(ScreenTexts.SPACE).append(scoreboardObjective.getDisplayName()),
 					matrixStack,
 					vertexConsumerProvider,
-					i
+					i,
+					f
 				);
 				matrixStack.translate(0.0F, 9.0F * 1.15F * 0.025F, 0.0F);
 			}
 		}
 
-		super.renderLabelIfPresent(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i);
+		super.renderLabelIfPresent(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i, f);
 		matrixStack.pop();
 	}
 

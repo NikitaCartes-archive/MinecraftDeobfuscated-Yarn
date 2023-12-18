@@ -16,8 +16,8 @@ import net.minecraft.util.Identifier;
 public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>> {
 	private final FeatureRendererContext<T, M> context;
 
-	public FeatureRenderer(FeatureRendererContext<T, M> context) {
-		this.context = context;
+	public FeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		this.context = featureRendererContext;
 	}
 
 	protected static <T extends LivingEntity> void render(

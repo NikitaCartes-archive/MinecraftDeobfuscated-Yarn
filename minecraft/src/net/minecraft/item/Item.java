@@ -312,7 +312,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * also be overridden.
 	 */
 	public int getItemBarStep(ItemStack stack) {
-		return Math.round(13.0F - (float)stack.getDamage() * 13.0F / (float)this.maxDamage);
+		return MathHelper.clamp(Math.round(13.0F - (float)stack.getDamage() * 13.0F / (float)this.maxDamage), 0, 13);
 	}
 
 	/**
@@ -653,7 +653,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * 
 	 * <p>Tools and armor should override this to specify the attack damage or armor points.
 	 */
-	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
 		return ImmutableMultimap.of();
 	}
 

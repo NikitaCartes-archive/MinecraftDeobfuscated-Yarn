@@ -33,4 +33,9 @@ public class MangroveLeavesBlock extends LeavesBlock implements Fertilizable {
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		world.setBlockState(pos.down(), PropaguleBlock.getDefaultHangingState(), Block.NOTIFY_LISTENERS);
 	}
+
+	@Override
+	public BlockPos method_55769(BlockPos blockPos) {
+		return blockPos.down();
+	}
 }

@@ -1794,10 +1794,17 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_string", conditionsFromItem(Items.STRING))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.TURTLE_HELMET)
-			.input('X', Items.SCUTE)
+			.input('X', Items.TURTLE_SCUTE)
 			.pattern("XXX")
 			.pattern("X X")
-			.criterion("has_scute", conditionsFromItem(Items.SCUTE))
+			.criterion("has_turtle_scute", conditionsFromItem(Items.TURTLE_SCUTE))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.WOLF_ARMOR)
+			.input('X', Items.ARMADILLO_SCUTE)
+			.pattern("X  ")
+			.pattern("XXX")
+			.pattern("X X")
+			.criterion("has_armadillo_scute", conditionsFromItem(Items.ARMADILLO_SCUTE))
 			.offerTo(exporter);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.WHEAT, 9)
 			.input(Blocks.HAY_BLOCK)

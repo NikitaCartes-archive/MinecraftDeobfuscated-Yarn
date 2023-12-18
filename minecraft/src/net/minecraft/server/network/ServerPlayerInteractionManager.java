@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import com.mojang.logging.LogUtils;
 import java.util.Objects;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,7 +22,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -128,7 +128,7 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence) {
-		if (this.player.getEyePos().squaredDistanceTo(Vec3d.ofCenter(pos)) > ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE) {
+		if (!this.player.method_55632(pos)) {
 			this.method_41250(pos, false, sequence, "too far");
 		} else if (pos.getY() >= worldHeight) {
 			this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
@@ -276,13 +276,6 @@ public class ServerPlayerInteractionManager {
 					player.setStackInHand(hand, itemStack);
 				}
 
-				if (this.isCreative() && itemStack != ItemStack.EMPTY) {
-					itemStack.setCount(i);
-					if (itemStack.isDamageable() && itemStack.getDamage() != j) {
-						itemStack.setDamage(j);
-					}
-				}
-
 				if (itemStack.isEmpty()) {
 					player.setStackInHand(hand, ItemStack.EMPTY);
 				}
@@ -314,29 +307,36 @@ public class ServerPlayerInteractionManager {
 			boolean bl2 = player.shouldCancelInteraction() && bl;
 			ItemStack itemStack = stack.copy();
 			if (!bl2) {
-				ActionResult actionResult = blockState.onUse(world, player, hand, hitResult);
-				if (actionResult.isAccepted()) {
+				class_9062 lv = blockState.method_55780(player.getStackInHand(hand), world, player, hand, hitResult);
+				if (lv.method_55643()) {
 					Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
-					return actionResult;
+					return lv.method_55645();
+				}
+
+				if (lv == class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
+					ActionResult actionResult = blockState.method_55781(world, player, hitResult);
+					if (actionResult.isAccepted()) {
+						return actionResult;
+					}
 				}
 			}
 
 			if (!stack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, hitResult);
-				ActionResult actionResult2;
+				ActionResult actionResult;
 				if (this.isCreative()) {
 					int i = stack.getCount();
-					actionResult2 = stack.useOnBlock(itemUsageContext);
+					actionResult = stack.useOnBlock(itemUsageContext);
 					stack.setCount(i);
 				} else {
-					actionResult2 = stack.useOnBlock(itemUsageContext);
+					actionResult = stack.useOnBlock(itemUsageContext);
 				}
 
-				if (actionResult2.isAccepted()) {
+				if (actionResult.isAccepted()) {
 					Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
 				}
 
-				return actionResult2;
+				return actionResult;
 			} else {
 				return ActionResult.PASS;
 			}

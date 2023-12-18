@@ -2,10 +2,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.TurtleEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.util.Identifier;
 
@@ -17,12 +15,9 @@ public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, Turtle
 		super(context, new TurtleEntityModel<>(context.getPart(EntityModelLayers.TURTLE)), 0.7F);
 	}
 
-	public void render(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		if (turtleEntity.isBaby()) {
-			this.shadowRadius *= 0.5F;
-		}
-
-		super.render(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);
+	protected float method_55833(TurtleEntity turtleEntity) {
+		float f = super.method_55831(turtleEntity);
+		return turtleEntity.isBaby() ? f * 0.83F : f;
 	}
 
 	public Identifier getTexture(TurtleEntity turtleEntity) {

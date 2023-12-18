@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -29,6 +30,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -162,6 +166,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private static final int field_29769 = 32;
 	private static final int field_29770 = 10;
 	private static final int field_46928 = 25;
+	private static final double field_47708 = 1.0;
+	private static final EntityAttributeModifier field_47709 = new EntityAttributeModifier(
+		UUID.fromString("736565d2-e1a7-403d-a3f8-1aeb3e302542"), "Creative block interaction range modifier", 0.5, EntityAttributeModifier.Operation.ADDITION
+	);
+	private static final EntityAttributeModifier field_47710 = new EntityAttributeModifier(
+		UUID.fromString("98491ef6-97b1-4584-ae82-71a8cc85cf73"), "Creative entity interaction range modifier", 2.0, EntityAttributeModifier.Operation.ADDITION
+	);
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
 	public final ServerPlayerInteractionManager interactionManager;
@@ -273,7 +284,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.server = server;
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
-		this.setStepHeight(1.0F);
 		this.moveToSpawn(world);
 		this.setClientOptions(clientOptions);
 	}
@@ -492,7 +502,28 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 		this.tickFallStartPos();
 		this.tickVehicleInLavaRiding();
+		this.method_55633();
 		this.advancementTracker.sendUpdate(this);
+	}
+
+	private void method_55633() {
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_BLOCK_INTERACTION_RANGE);
+		if (entityAttributeInstance != null) {
+			if (this.isCreative()) {
+				entityAttributeInstance.method_55696(field_47709);
+			} else {
+				entityAttributeInstance.removeModifier(field_47709);
+			}
+		}
+
+		EntityAttributeInstance entityAttributeInstance2 = this.getAttributeInstance(EntityAttributes.GENERIC_ENTITY_INTERACTION_RANGE);
+		if (entityAttributeInstance2 != null) {
+			if (this.isCreative()) {
+				entityAttributeInstance2.method_55696(field_47710);
+			} else {
+				entityAttributeInstance2.removeModifier(field_47710);
+			}
+		}
 	}
 
 	public void playerTick() {
@@ -793,7 +824,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				playerManager.sendPlayerStatus(this);
 
 				for(StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffectInstance));
+					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffectInstance, false));
 				}
 
 				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
@@ -1287,8 +1318,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity source) {
 		super.onStatusEffectApplied(effect, source);
-		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
-		if (effect.getEffectType() == StatusEffects.LEVITATION) {
+		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect, true));
+		if (effect.method_55654(StatusEffects.LEVITATION)) {
 			this.levitationStartTick = this.age;
 			this.levitationStartPos = this.getPos();
 		}
@@ -1299,7 +1330,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity source) {
 		super.onStatusEffectUpgraded(effect, reapplyEffect, source);
-		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
+		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect, false));
 		Criteria.EFFECTS_CHANGED.trigger(this, source);
 	}
 
@@ -1307,7 +1338,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	protected void onStatusEffectRemoved(StatusEffectInstance effect) {
 		super.onStatusEffectRemoved(effect);
 		this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), effect.getEffectType()));
-		if (effect.getEffectType() == StatusEffects.LEVITATION) {
+		if (effect.method_55654(StatusEffects.LEVITATION)) {
 			this.levitationStartPos = null;
 		}
 
@@ -1827,7 +1858,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			if (entity instanceof LivingEntity livingEntity) {
 				for(StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
-					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(entity.getId(), statusEffectInstance));
+					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(entity.getId(), statusEffectInstance, false));
 				}
 			}
 
@@ -1858,5 +1889,15 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.getLastDeathPos(),
 			this.getPortalCooldown()
 		);
+	}
+
+	public boolean method_55631(Box box) {
+		double d = this.method_55755() + 1.0;
+		return box.squaredMagnitude(this.getEyePos()) < d * d;
+	}
+
+	public boolean method_55632(BlockPos blockPos) {
+		double d = this.method_55754() + 1.0;
+		return this.getEyePos().isInRange(Vec3d.ofCenter(blockPos), d);
 	}
 }

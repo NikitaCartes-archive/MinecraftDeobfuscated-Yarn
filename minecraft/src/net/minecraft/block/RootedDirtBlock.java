@@ -33,4 +33,9 @@ public class RootedDirtBlock extends Block implements Fertilizable {
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		world.setBlockState(pos.down(), Blocks.HANGING_ROOTS.getDefaultState());
 	}
+
+	@Override
+	public BlockPos method_55769(BlockPos blockPos) {
+		return blockPos.down();
+	}
 }

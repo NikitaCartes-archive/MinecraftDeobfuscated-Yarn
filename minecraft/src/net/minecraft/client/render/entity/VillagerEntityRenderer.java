@@ -27,14 +27,12 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 	}
 
 	protected void scale(VillagerEntity villagerEntity, MatrixStack matrixStack, float f) {
-		float g = 0.9375F;
-		if (villagerEntity.isBaby()) {
-			g *= 0.5F;
-			this.shadowRadius = 0.25F;
-		} else {
-			this.shadowRadius = 0.5F;
-		}
-
+		float g = 0.9375F * villagerEntity.getScaleFactor();
 		matrixStack.scale(g, g, g);
+	}
+
+	protected float method_55833(VillagerEntity villagerEntity) {
+		float f = super.method_55831(villagerEntity);
+		return villagerEntity.isBaby() ? f * 0.5F : f;
 	}
 }

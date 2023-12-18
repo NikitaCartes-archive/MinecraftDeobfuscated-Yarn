@@ -49,7 +49,7 @@ public class VibrationSelector {
 				} else if (vibration.distance() > vibration2.distance()) {
 					return false;
 				} else {
-					return Vibrations.getFrequency(vibration.gameEvent()) > Vibrations.getFrequency(vibration2.gameEvent());
+					return Vibrations.method_55783(vibration.gameEvent()) > Vibrations.method_55783(vibration2.gameEvent());
 				}
 			}
 		}

@@ -33,12 +33,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class ChickenEntity extends AnimalEntity {
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
 		Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD
 	);
+	private static final EntityDimensions field_47770 = EntityType.CHICKEN.getDimensions().scaled(0.5F).method_55685(0.2975F);
 	public float flapProgress;
 	public float maxWingDeviation;
 	public float prevMaxWingDeviation;
@@ -66,8 +66,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? dimensions.height * 0.85F : dimensions.height * 0.92F;
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47770 : super.method_55694(entityPose);
 	}
 
 	public static DefaultAttributeContainer.Builder createChickenAttributes() {
@@ -167,16 +167,11 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
-		super.updatePassengerPosition(passenger, positionUpdater);
-		if (passenger instanceof LivingEntity) {
-			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
+	protected void updatePassengerPosition(Entity entity, Entity.PositionUpdater positionUpdater) {
+		super.updatePassengerPosition(entity, positionUpdater);
+		if (entity instanceof LivingEntity) {
+			((LivingEntity)entity).bodyYaw = this.bodyYaw;
 		}
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height, -0.1F * scaleFactor);
 	}
 
 	public boolean hasJockey() {

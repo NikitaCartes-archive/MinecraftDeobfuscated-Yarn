@@ -4,8 +4,6 @@ import java.util.EnumSet;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -40,7 +38,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 public class VexEntity extends HostileEntity implements Ownable {
 	public static final float field_30502 = 45.836624F;
@@ -58,11 +55,6 @@ public class VexEntity extends HostileEntity implements Ownable {
 		super(entityType, world);
 		this.moveControl = new VexEntity.VexMoveControl(this);
 		this.experiencePoints = 3;
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height - 0.28125F;
 	}
 
 	@Override
@@ -227,16 +219,6 @@ public class VexEntity extends HostileEntity implements Ownable {
 	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
 		this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
-	}
-
-	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return 0.04F;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - 0.0625F * scaleFactor, 0.0F);
 	}
 
 	class ChargeTargetGoal extends Goal {

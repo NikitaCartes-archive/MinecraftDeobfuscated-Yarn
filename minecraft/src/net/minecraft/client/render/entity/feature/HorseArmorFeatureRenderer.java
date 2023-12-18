@@ -13,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.DyeableHorseArmorItem;
 import net.minecraft.item.HorseArmorItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
@@ -28,27 +29,28 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = horseEntity.getArmorType();
-		if (itemStack.getItem() instanceof HorseArmorItem) {
-			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
+		Item n = itemStack.getItem();
+		if (n instanceof HorseArmorItem horseArmorItem && horseArmorItem.method_55756() == HorseArmorItem.class_9076.EQUESTRIAN) {
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(horseEntity, f, g, h);
 			this.model.setAngles(horseEntity, f, g, j, k, l);
-			float n;
 			float o;
 			float p;
+			float nx;
 			if (horseArmorItem instanceof DyeableHorseArmorItem) {
 				int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
-				n = (float)(m >> 16 & 0xFF) / 255.0F;
+				nx = (float)(m >> 16 & 0xFF) / 255.0F;
 				o = (float)(m >> 8 & 0xFF) / 255.0F;
 				p = (float)(m & 0xFF) / 255.0F;
 			} else {
-				n = 1.0F;
+				nx = 1.0F;
 				o = 1.0F;
 				p = 1.0F;
 			}
 
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
-			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, n, o, p, 1.0F);
+			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, nx, o, p, 1.0F);
+			return;
 		}
 	}
 }

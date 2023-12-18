@@ -436,7 +436,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter) {
+	public void emitGameEvent(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter) {
 	}
 
 	@Override

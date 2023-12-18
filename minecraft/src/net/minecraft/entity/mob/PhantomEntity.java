@@ -38,7 +38,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import org.joml.Vector3f;
 
 public class PhantomEntity extends FlyingEntity implements Monster {
 	public static final float field_30475 = 7.448451F;
@@ -90,11 +89,6 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	public int getPhantomSize() {
 		return this.dataTracker.get(SIZE);
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.35F;
 	}
 
 	@Override
@@ -227,20 +221,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
+	public EntityDimensions method_55694(EntityPose entityPose) {
 		int i = this.getPhantomSize();
-		EntityDimensions entityDimensions = super.getDimensions(pose);
+		EntityDimensions entityDimensions = super.method_55694(entityPose);
 		return entityDimensions.scaled(1.0F + 0.15F * (float)i);
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height * 0.675F, 0.0F);
-	}
-
-	@Override
-	protected float getUnscaledRidingOffset(Entity vehicle) {
-		return -0.125F;
 	}
 
 	class CircleMovementGoal extends PhantomEntity.MovementGoal {

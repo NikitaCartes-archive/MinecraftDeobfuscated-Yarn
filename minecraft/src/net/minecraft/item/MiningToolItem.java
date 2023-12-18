@@ -11,6 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
@@ -20,14 +21,14 @@ public class MiningToolItem extends ToolItem implements Vanishable {
 	private final TagKey<Block> effectiveBlocks;
 	protected final float miningSpeed;
 	private final float attackDamage;
-	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
+	private final Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifiers;
 
 	protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, TagKey<Block> effectiveBlocks, Item.Settings settings) {
 		super(material, settings);
 		this.effectiveBlocks = effectiveBlocks;
 		this.miningSpeed = material.getMiningSpeedMultiplier();
 		this.attackDamage = attackDamage + material.getAttackDamage();
-		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
+		Builder<RegistryEntry<EntityAttribute>, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 		builder.put(
 			EntityAttributes.GENERIC_ATTACK_DAMAGE,
 			new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION)
@@ -60,7 +61,7 @@ public class MiningToolItem extends ToolItem implements Vanishable {
 	}
 
 	@Override
-	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
 		return slot == EquipmentSlot.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 

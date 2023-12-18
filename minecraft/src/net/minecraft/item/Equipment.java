@@ -35,7 +35,7 @@ public interface Equipment extends Vanishable {
 			}
 
 			ItemStack itemStack3 = itemStack2.isEmpty() ? itemStack : itemStack2.copyAndEmpty();
-			ItemStack itemStack4 = itemStack.copyAndEmpty();
+			ItemStack itemStack4 = user.isCreative() ? itemStack.copy() : itemStack.copyAndEmpty();
 			user.equipStack(equipmentSlot, itemStack4);
 			return TypedActionResult.success(itemStack3, world.isClient());
 		} else {

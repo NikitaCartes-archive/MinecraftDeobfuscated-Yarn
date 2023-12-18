@@ -2,15 +2,17 @@ package net.minecraft.entity.passive;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_9064;
+import net.minecraft.class_9066;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LightningEntity;
@@ -60,7 +62,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<BlockPos> HOME_POS = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
@@ -70,6 +71,11 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> LAND_BOUND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> ACTIVELY_TRAVELING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final Ingredient BREEDING_ITEM = Ingredient.ofItems(Blocks.SEAGRASS.asItem());
+	private static final float field_47774 = 0.3F;
+	private static final EntityDimensions field_47775 = EntityType.TURTLE
+		.getDimensions()
+		.method_55684(class_9066.method_55673().method_55682(class_9064.PASSENGER, 0.0F, EntityType.TURTLE.getHeight(), -0.25F))
+		.scaled(0.3F);
 	int sandDiggingCounter;
 	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = entity -> entity.isBaby() && !entity.isTouchingWater();
 
@@ -80,7 +86,6 @@ public class TurtleEntity extends AnimalEntity {
 		this.setPathfindingPenalty(PathNodeType.DOOR_WOOD_CLOSED, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.DOOR_OPEN, -1.0F);
 		this.moveControl = new TurtleEntity.TurtleMoveControl(this);
-		this.setStepHeight(1.0F);
 	}
 
 	public void setHomePos(BlockPos pos) {
@@ -197,7 +202,10 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createTurtleAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
+		return MobEntity.createMobAttributes()
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -305,7 +313,7 @@ public class TurtleEntity extends AnimalEntity {
 	protected void onGrowUp() {
 		super.onGrowUp();
 		if (!this.isBaby() && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			this.dropItem(Items.SCUTE, 1);
+			this.dropItem(Items.TURTLE_SCUTE, 1);
 		}
 	}
 
@@ -334,8 +342,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + (this.isBaby() ? 0.0F : 0.15625F) * scaleFactor, -0.25F * scaleFactor);
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47775 : super.method_55694(entityPose);
 	}
 
 	static class GoHomeGoal extends Goal {

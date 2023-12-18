@@ -11,11 +11,12 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class BrewingRecipeRegistry {
 	public static final int field_30942 = 20;
-	private static final List<BrewingRecipeRegistry.Recipe<Potion>> POTION_RECIPES = Lists.<BrewingRecipeRegistry.Recipe<Potion>>newArrayList();
-	private static final List<BrewingRecipeRegistry.Recipe<Item>> ITEM_RECIPES = Lists.<BrewingRecipeRegistry.Recipe<Item>>newArrayList();
+	private static final List<BrewingRecipeRegistry.Recipe<Potion>> POTION_RECIPES = Lists.newArrayList();
+	private static final List<BrewingRecipeRegistry.Recipe<Item>> ITEM_RECIPES = Lists.newArrayList();
 	private static final List<Ingredient> POTION_TYPES = Lists.<Ingredient>newArrayList();
 	private static final Predicate<ItemStack> POTION_TYPE_PREDICATE = stack -> {
 		for(Ingredient ingredient : POTION_TYPES) {
@@ -51,9 +52,9 @@ public class BrewingRecipeRegistry {
 		return false;
 	}
 
-	public static boolean isBrewable(Potion potion) {
+	public static boolean isBrewable(RegistryEntry<Potion> registryEntry) {
 		for(BrewingRecipeRegistry.Recipe<Potion> recipe : POTION_RECIPES) {
-			if (recipe.output == potion) {
+			if (recipe.output.method_55838(registryEntry)) {
 				return true;
 			}
 		}
@@ -70,10 +71,8 @@ public class BrewingRecipeRegistry {
 	}
 
 	protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredient) {
-		Item item = input.getItem();
-
 		for(BrewingRecipeRegistry.Recipe<Item> recipe : ITEM_RECIPES) {
-			if (recipe.input == item && recipe.ingredient.test(ingredient)) {
+			if (input.itemMatches(recipe.input) && recipe.ingredient.test(ingredient)) {
 				return true;
 			}
 		}
@@ -82,10 +81,10 @@ public class BrewingRecipeRegistry {
 	}
 
 	protected static boolean hasPotionRecipe(ItemStack input, ItemStack ingredient) {
-		Potion potion = PotionUtil.getPotion(input);
+		RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(input);
 
 		for(BrewingRecipeRegistry.Recipe<Potion> recipe : POTION_RECIPES) {
-			if (recipe.input == potion && recipe.ingredient.test(ingredient)) {
+			if (recipe.input.method_55838(registryEntry) && recipe.ingredient.test(ingredient)) {
 				return true;
 			}
 		}
@@ -94,24 +93,25 @@ public class BrewingRecipeRegistry {
 	}
 
 	public static ItemStack craft(ItemStack ingredient, ItemStack input) {
-		if (!input.isEmpty()) {
-			Potion potion = PotionUtil.getPotion(input);
-			Item item = input.getItem();
+		if (input.isEmpty()) {
+			return input;
+		} else {
+			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(input);
 
 			for(BrewingRecipeRegistry.Recipe<Item> recipe : ITEM_RECIPES) {
-				if (recipe.input == item && recipe.ingredient.test(ingredient)) {
-					return PotionUtil.setPotion(new ItemStack(recipe.output), potion);
+				if (input.itemMatches(recipe.input) && recipe.ingredient.test(ingredient)) {
+					return PotionUtil.setPotion(new ItemStack(recipe.output), registryEntry);
 				}
 			}
 
 			for(BrewingRecipeRegistry.Recipe<Potion> recipe : POTION_RECIPES) {
-				if (recipe.input == potion && recipe.ingredient.test(ingredient)) {
-					return PotionUtil.setPotion(new ItemStack(item), recipe.output);
+				if (recipe.input.method_55838(registryEntry) && recipe.ingredient.test(ingredient)) {
+					return PotionUtil.setPotion(new ItemStack(input.getItem()), recipe.output);
 				}
 			}
-		}
 
-		return input;
+			return input;
+		}
 	}
 
 	public static void registerDefaults() {
@@ -183,7 +183,7 @@ public class BrewingRecipeRegistry {
 		} else if (!(output instanceof PotionItem)) {
 			throw new IllegalArgumentException("Expected a potion, got: " + Registries.ITEM.getId(output));
 		} else {
-			ITEM_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(input, Ingredient.ofItems(ingredient), output));
+			ITEM_RECIPES.add(new BrewingRecipeRegistry.Recipe<Item>(input.getRegistryEntry(), Ingredient.ofItems(ingredient), output.getRegistryEntry()));
 		}
 	}
 
@@ -195,19 +195,13 @@ public class BrewingRecipeRegistry {
 		}
 	}
 
-	private static void registerPotionRecipe(Potion input, Item item, Potion output) {
-		POTION_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(input, Ingredient.ofItems(item), output));
+	private static void registerPotionRecipe(RegistryEntry<Potion> registryEntry, Item item, RegistryEntry<Potion> registryEntry2) {
+		POTION_RECIPES.add(new BrewingRecipeRegistry.Recipe<Potion>(registryEntry, Ingredient.ofItems(item), registryEntry2));
 	}
 
-	static class Recipe<T> {
-		final T input;
+	static record Recipe<T>(RegistryEntry<T> input, Ingredient ingredient, RegistryEntry<T> output) {
+		final RegistryEntry<T> input;
 		final Ingredient ingredient;
-		final T output;
-
-		public Recipe(T input, Ingredient ingredient, T output) {
-			this.input = input;
-			this.ingredient = ingredient;
-			this.output = output;
-		}
+		final RegistryEntry<T> output;
 	}
 }

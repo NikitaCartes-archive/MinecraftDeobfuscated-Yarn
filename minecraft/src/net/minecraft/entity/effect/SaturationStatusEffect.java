@@ -9,10 +9,11 @@ class SaturationStatusEffect extends InstantStatusEffect {
 	}
 
 	@Override
-	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		super.applyUpdateEffect(entity, amplifier);
+	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (!entity.getWorld().isClient && entity instanceof PlayerEntity playerEntity) {
 			playerEntity.getHungerManager().add(amplifier + 1, 1.0F);
 		}
+
+		return true;
 	}
 }

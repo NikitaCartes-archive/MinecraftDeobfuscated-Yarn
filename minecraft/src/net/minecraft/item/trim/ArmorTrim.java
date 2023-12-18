@@ -66,7 +66,7 @@ public class ArmorTrim {
 	}
 
 	public boolean equals(RegistryEntry<ArmorTrimPattern> pattern, RegistryEntry<ArmorTrimMaterial> material) {
-		return pattern == this.pattern && material == this.material;
+		return pattern.equals(this.pattern) && material.equals(this.material);
 	}
 
 	public RegistryEntry<ArmorTrimPattern> getPattern() {
@@ -90,7 +90,7 @@ public class ArmorTrim {
 			return false;
 		} else {
 			ArmorTrim armorTrim = (ArmorTrim)o;
-			return armorTrim.pattern == this.pattern && armorTrim.material == this.material;
+			return this.pattern.equals(armorTrim.pattern) && this.material.equals(armorTrim.material);
 		}
 	}
 

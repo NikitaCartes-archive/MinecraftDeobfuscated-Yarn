@@ -6,36 +6,24 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 
-public class UpdateBeaconC2SPacket implements Packet<ServerPlayPacketListener> {
-	private final Optional<StatusEffect> primaryEffectId;
-	private final Optional<StatusEffect> secondaryEffectId;
-
-	public UpdateBeaconC2SPacket(Optional<StatusEffect> primaryEffectId, Optional<StatusEffect> secondaryEffectId) {
-		this.primaryEffectId = primaryEffectId;
-		this.secondaryEffectId = secondaryEffectId;
-	}
-
+public record UpdateBeaconC2SPacket(Optional<RegistryEntry<StatusEffect>> primaryEffectId, Optional<RegistryEntry<StatusEffect>> secondaryEffectId)
+	implements Packet<ServerPlayPacketListener> {
 	public UpdateBeaconC2SPacket(PacketByteBuf buf) {
-		this.primaryEffectId = buf.readOptional(buf2 -> buf2.readRegistryValue(Registries.STATUS_EFFECT));
-		this.secondaryEffectId = buf.readOptional(buf2 -> buf2.readRegistryValue(Registries.STATUS_EFFECT));
+		this(
+			buf.readOptional(buf2 -> buf2.readRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries())),
+			buf.readOptional(buf2 -> buf2.readRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries()))
+		);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeOptional(this.primaryEffectId, (buf2, primaryEffectId) -> buf2.writeRegistryValue(Registries.STATUS_EFFECT, primaryEffectId));
-		buf.writeOptional(this.secondaryEffectId, (buf2, secondaryEffectId) -> buf2.writeRegistryValue(Registries.STATUS_EFFECT, secondaryEffectId));
+		buf.writeOptional(this.primaryEffectId, (buf2, registryEntry) -> buf2.writeRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries(), registryEntry));
+		buf.writeOptional(this.secondaryEffectId, (buf2, registryEntry) -> buf2.writeRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries(), registryEntry));
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateBeacon(this);
-	}
-
-	public Optional<StatusEffect> getPrimaryEffectId() {
-		return this.primaryEffectId;
-	}
-
-	public Optional<StatusEffect> getSecondaryEffectId() {
-		return this.secondaryEffectId;
 	}
 }

@@ -5,6 +5,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Map;
+import java.util.stream.Stream;
+import net.minecraft.class_9062;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -56,35 +58,45 @@ public class FlowerPotBlock extends Block {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		Item item = itemStack.getItem();
-		BlockState blockState = (item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR)
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
+		Item var10 = itemStack.getItem();
+		BlockState blockState2 = (var10 instanceof BlockItem blockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(blockItem.getBlock(), Blocks.AIR) : Blocks.AIR)
 			.getDefaultState();
-		boolean bl = blockState.isOf(Blocks.AIR);
-		boolean bl2 = this.isEmpty();
-		if (bl != bl2) {
-			if (bl2) {
-				world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
-				player.incrementStat(Stats.POT_FLOWER);
-				if (!player.getAbilities().creativeMode) {
-					itemStack.decrement(1);
-				}
-			} else {
-				ItemStack itemStack2 = new ItemStack(this.content);
-				if (itemStack.isEmpty()) {
-					player.setStackInHand(hand, itemStack2);
-				} else if (!player.giveItemStack(itemStack2)) {
-					player.dropItem(itemStack2, false);
-				}
-
-				world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), Block.NOTIFY_ALL);
+		if (blockState2.isAir()) {
+			return class_9062.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		} else if (!this.isEmpty()) {
+			return class_9062.CONSUME;
+		} else {
+			world.setBlockState(blockPos, blockState2, Block.NOTIFY_ALL);
+			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+			playerEntity.incrementStat(Stats.POT_FLOWER);
+			if (!playerEntity.getAbilities().creativeMode) {
+				itemStack.decrement(1);
 			}
 
-			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-			return ActionResult.success(world.isClient);
-		} else {
+			return class_9062.method_55644(world.isClient);
+		}
+	}
+
+	@Override
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		if (this.isEmpty()) {
 			return ActionResult.CONSUME;
+		} else {
+			ItemStack itemStack = new ItemStack(this.content);
+			Stream.of(Hand.MAIN_HAND, Hand.OFF_HAND)
+				.filter(hand -> playerEntity.getStackInHand(hand).isEmpty())
+				.findFirst()
+				.ifPresentOrElse(hand -> playerEntity.setStackInHand(hand, itemStack), () -> {
+					if (!playerEntity.giveItemStack(itemStack)) {
+						playerEntity.dropItem(itemStack, false);
+					}
+				});
+			world.setBlockState(blockPos, Blocks.FLOWER_POT.getDefaultState(), Block.NOTIFY_ALL);
+			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+			return ActionResult.success(world.isClient);
 		}
 	}
 

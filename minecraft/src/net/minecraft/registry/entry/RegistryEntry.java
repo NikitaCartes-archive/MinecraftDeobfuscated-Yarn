@@ -66,6 +66,9 @@ public interface RegistryEntry<T> {
 	 */
 	boolean isIn(TagKey<T> tag);
 
+	@Deprecated
+	boolean method_55838(RegistryEntry<T> registryEntry);
+
 	/**
 	 * {@return a stream of the tags of this entry, or an empty stream if this is a direct entry}
 	 */
@@ -93,6 +96,10 @@ public interface RegistryEntry<T> {
 	RegistryEntry.Type getType();
 
 	boolean ownerEquals(RegistryEntryOwner<T> owner);
+
+	default String method_55840() {
+		return (String)this.getKey().map(registryKey -> registryKey.getValue().toString()).orElse("[unregistered]");
+	}
 
 	/**
 	 * {@return a new direct registry entry of {@code value}}
@@ -127,6 +134,11 @@ public interface RegistryEntry<T> {
 		@Override
 		public boolean isIn(TagKey<T> tag) {
 			return false;
+		}
+
+		@Override
+		public boolean method_55838(RegistryEntry<T> registryEntry) {
+			return this.value.equals(registryEntry.value());
 		}
 
 		@Override
@@ -278,6 +290,11 @@ public interface RegistryEntry<T> {
 		@Override
 		public boolean isIn(TagKey<T> tag) {
 			return this.tags.contains(tag);
+		}
+
+		@Override
+		public boolean method_55838(RegistryEntry<T> registryEntry) {
+			return registryEntry.matchesKey(this.registryKey());
 		}
 
 		@Override

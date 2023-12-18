@@ -8,7 +8,7 @@ public class BlockTypes {
 	public static final MapCodec<Block> CODEC = Registries.BLOCK_TYPE.getCodec().dispatchMap(Block::getCodec, MapCodec::codec);
 
 	public static MapCodec<? extends Block> registerAndGetDefault(Registry<MapCodec<? extends Block>> registry) {
-		MapCodec<? extends Block> mapCodec = Registry.register(registry, "block", Block.CODEC);
+		Registry.register(registry, "block", Block.CODEC);
 		Registry.register(registry, "air", AirBlock.CODEC);
 		Registry.register(registry, "amethyst", AmethystBlock.CODEC);
 		Registry.register(registry, "amethyst_cluster", AmethystClusterBlock.CODEC);
@@ -246,7 +246,6 @@ public class BlockTypes {
 		Registry.register(registry, "wither_rose", WitherRoseBlock.CODEC);
 		Registry.register(registry, "wither_skull", WitherSkullBlock.CODEC);
 		Registry.register(registry, "wither_wall_skull", WallWitherSkullBlock.CODEC);
-		Registry.register(registry, "wool_carpet", DyedCarpetBlock.CODEC);
-		return mapCodec;
+		return Registry.register(registry, "wool_carpet", DyedCarpetBlock.CODEC);
 	}
 }

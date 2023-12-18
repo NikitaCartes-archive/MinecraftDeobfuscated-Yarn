@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -46,15 +47,15 @@ public final class StatusEffectUtil {
 	public static List<ServerPlayerEntity> addEffectToPlayersWithinDistance(
 		ServerWorld world, @Nullable Entity entity, Vec3d origin, double range, StatusEffectInstance statusEffectInstance, int duration
 	) {
-		StatusEffect statusEffect = statusEffectInstance.getEffectType();
+		RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
 		List<ServerPlayerEntity> list = world.getPlayers(
 			player -> player.interactionManager.isSurvivalLike()
 					&& (entity == null || !entity.isTeammate(player))
 					&& origin.isInRange(player.getPos(), range)
 					&& (
-						!player.hasStatusEffect(statusEffect)
-							|| player.getStatusEffect(statusEffect).getAmplifier() < statusEffectInstance.getAmplifier()
-							|| player.getStatusEffect(statusEffect).isDurationBelow(duration - 1)
+						!player.hasStatusEffect(registryEntry)
+							|| player.getStatusEffect(registryEntry).getAmplifier() < statusEffectInstance.getAmplifier()
+							|| player.getStatusEffect(registryEntry).isDurationBelow(duration - 1)
 					)
 		);
 		list.forEach(player -> player.addStatusEffect(new StatusEffectInstance(statusEffectInstance), entity));

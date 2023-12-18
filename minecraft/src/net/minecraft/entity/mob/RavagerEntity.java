@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -39,7 +38,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class RavagerEntity extends RaiderEntity {
 	private static final Predicate<Entity> IS_NOT_RAVAGER = entity -> entity.isAlive() && !(entity instanceof RavagerEntity);
@@ -57,7 +55,6 @@ public class RavagerEntity extends RaiderEntity {
 
 	public RavagerEntity(EntityType<? extends RavagerEntity> entityType, World world) {
 		super(entityType, world);
-		this.setStepHeight(1.0F);
 		this.experiencePoints = 20;
 		this.setPathfindingPenalty(PathNodeType.LEAVES, 0.0F);
 	}
@@ -93,7 +90,8 @@ public class RavagerEntity extends RaiderEntity {
 			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.75)
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 12.0)
 			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0);
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -120,11 +118,6 @@ public class RavagerEntity extends RaiderEntity {
 	@Override
 	public int getMaxHeadRotation() {
 		return 45;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.0625F * scaleFactor, -0.0625F * scaleFactor);
 	}
 
 	@Override

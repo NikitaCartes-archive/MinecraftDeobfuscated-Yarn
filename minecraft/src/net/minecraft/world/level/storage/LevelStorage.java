@@ -21,9 +21,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.SignStyle;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +35,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
+import net.minecraft.class_9078;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.InvalidNbtException;
@@ -84,19 +82,7 @@ import org.slf4j.Logger;
 
 public class LevelStorage {
 	static final Logger LOGGER = LogUtils.getLogger();
-	static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder()
-		.appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
-		.appendLiteral('-')
-		.appendValue(ChronoField.MONTH_OF_YEAR, 2)
-		.appendLiteral('-')
-		.appendValue(ChronoField.DAY_OF_MONTH, 2)
-		.appendLiteral('_')
-		.appendValue(ChronoField.HOUR_OF_DAY, 2)
-		.appendLiteral('-')
-		.appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-		.appendLiteral('-')
-		.appendValue(ChronoField.SECOND_OF_MINUTE, 2)
-		.toFormatter();
+	static final DateTimeFormatter TIME_FORMATTER = class_9078.method_55786();
 	private static final String DATA_KEY = "Data";
 	private static final PathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = path -> false;
 	public static final String ALLOWED_SYMLINKS_FILE_NAME = "allowed_symlinks.txt";

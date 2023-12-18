@@ -83,7 +83,7 @@ public class CommandFunctionManager {
 		profiler.push((Supplier<String>)(() -> "function " + function.id()));
 
 		try {
-			Procedure<ServerCommandSource> procedure = function.withMacroReplaced(null, this.getDispatcher(), source);
+			Procedure<ServerCommandSource> procedure = function.withMacroReplaced(null, this.getDispatcher());
 			CommandManager.callWithContext(source, context -> CommandExecutionContext.enqueueProcedureCall(context, procedure, source, ReturnValueConsumer.EMPTY));
 		} catch (MacroException var9) {
 		} catch (Exception var10) {

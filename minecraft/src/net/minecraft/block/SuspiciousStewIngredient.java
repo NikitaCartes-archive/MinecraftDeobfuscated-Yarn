@@ -13,6 +13,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public interface SuspiciousStewIngredient {
 	List<SuspiciousStewIngredient.StewEffect> getStewEffects();
@@ -35,10 +36,10 @@ public interface SuspiciousStewIngredient {
 		return suspiciousStewIngredient instanceof SuspiciousStewIngredient suspiciousStewIngredient2 ? suspiciousStewIngredient2 : null;
 	}
 
-	public static record StewEffect(StatusEffect effect, int duration) {
+	public static record StewEffect(RegistryEntry<StatusEffect> effect, int duration) {
 		public static final Codec<SuspiciousStewIngredient.StewEffect> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registries.STATUS_EFFECT.getCodec().fieldOf("id").forGetter(SuspiciousStewIngredient.StewEffect::effect),
+						Registries.STATUS_EFFECT.createEntryCodec().fieldOf("id").forGetter(SuspiciousStewIngredient.StewEffect::effect),
 						Codec.INT.optionalFieldOf("duration", Integer.valueOf(160)).forGetter(SuspiciousStewIngredient.StewEffect::duration)
 					)
 					.apply(instance, SuspiciousStewIngredient.StewEffect::new)

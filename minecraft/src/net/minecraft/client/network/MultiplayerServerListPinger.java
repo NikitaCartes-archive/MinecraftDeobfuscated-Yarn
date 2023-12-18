@@ -41,7 +41,7 @@ public class MultiplayerServerListPinger {
 	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(Colors.RED);
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
-	public void add(ServerInfo entry, Runnable saver) throws UnknownHostException {
+	public void add(ServerInfo entry, Runnable saver, Runnable runnable) throws UnknownHostException {
 		final ServerAddress serverAddress = ServerAddress.parse(entry.address);
 		Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
 		if (optional.isEmpty()) {
@@ -51,7 +51,6 @@ public class MultiplayerServerListPinger {
 			final ClientConnection clientConnection = ClientConnection.connect(inetSocketAddress, false, null);
 			this.clientConnections.add(clientConnection);
 			entry.label = Text.translatable("multiplayer.status.pinging");
-			entry.ping = -1L;
 			entry.playerListSummary = Collections.emptyList();
 			ClientQueryPacketListener clientQueryPacketListener = new ClientQueryPacketListener() {
 				private boolean sentQuery;
@@ -110,6 +109,7 @@ public class MultiplayerServerListPinger {
 					long m = Util.getMeasuringTimeMs();
 					entry.ping = m - l;
 					clientConnection.disconnect(Text.translatable("multiplayer.status.finished"));
+					runnable.run();
 				}
 
 				@Override
@@ -129,8 +129,8 @@ public class MultiplayerServerListPinger {
 			try {
 				clientConnection.connect(serverAddress.getAddress(), serverAddress.getPort(), clientQueryPacketListener);
 				clientConnection.send(new QueryRequestC2SPacket());
-			} catch (Throwable var9) {
-				LOGGER.error("Failed to ping server {}", serverAddress, var9);
+			} catch (Throwable var10) {
+				LOGGER.error("Failed to ping server {}", serverAddress, var10);
 			}
 		}
 	}
@@ -151,7 +151,7 @@ public class MultiplayerServerListPinger {
 				}
 
 				channel.pipeline().addLast(new LegacyServerPinger(address, (protocolVersion, version, label, currentPlayers, maxPlayers) -> {
-					serverInfo.protocolVersion = -1;
+					serverInfo.method_55824(ServerInfo.class_9083.INCOMPATIBLE);
 					serverInfo.version = Text.literal(version);
 					serverInfo.label = Text.literal(label);
 					serverInfo.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(currentPlayers, maxPlayers);

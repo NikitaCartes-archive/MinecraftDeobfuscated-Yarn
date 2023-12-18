@@ -1,9 +1,11 @@
 package net.minecraft.datafixer.schema;
 
+import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.datafixer.TypeReferences;
 
 public class Schema1909 extends IdentifierNormalizingSchema {
 	public Schema1909(int i, Schema schema) {
@@ -13,7 +15,7 @@ public class Schema1909 extends IdentifierNormalizingSchema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerBlockEntities(schema);
-		schema.registerSimple(map, "minecraft:jigsaw");
+		schema.register(map, "minecraft:jigsaw", (Supplier<TypeTemplate>)(() -> DSL.optionalFields("final_state", TypeReferences.field_47727.in(schema))));
 		return map;
 	}
 }

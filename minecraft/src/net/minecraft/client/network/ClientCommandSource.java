@@ -76,7 +76,7 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public Collection<String> getTeamNames() {
-		return this.networkHandler.getWorld().getScoreboard().getTeamNames();
+		return this.networkHandler.method_55823().getTeamNames();
 	}
 
 	@Override

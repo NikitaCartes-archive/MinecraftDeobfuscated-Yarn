@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
@@ -56,7 +55,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.joml.Vector3f;
 
 public class SnifferEntity extends AnimalEntity {
 	private static final int field_42656 = 1700;
@@ -65,7 +63,8 @@ public class SnifferEntity extends AnimalEntity {
 	private static final int field_42659 = 120;
 	private static final int field_42661 = 48000;
 	private static final float field_44785 = 0.4F;
-	private static final EntityDimensions field_44786 = EntityDimensions.changing(EntityType.SNIFFER.getWidth(), EntityType.SNIFFER.getHeight() - 0.4F);
+	private static final EntityDimensions field_44786 = EntityDimensions.changing(EntityType.SNIFFER.getWidth(), EntityType.SNIFFER.getHeight() - 0.4F)
+		.method_55685(0.81F);
 	private static final TrackedData<SnifferEntity.State> STATE = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.SNIFFER_STATE);
 	private static final TrackedData<Integer> FINISH_DIG_TIME = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public final AnimationState feelingHappyAnimationState = new AnimationState();
@@ -89,11 +88,6 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.getDimensions(pose).height * 0.6F;
-	}
-
-	@Override
 	public void onStartPathfinding() {
 		super.onStartPathfinding();
 		if (this.isOnFire() || this.isTouchingWater()) {
@@ -107,10 +101,10 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
+	public EntityDimensions method_55694(EntityPose entityPose) {
 		return this.dataTracker.containsKey(STATE) && this.getState() == SnifferEntity.State.DIGGING
 			? field_44786.scaled(this.getScaleFactor())
-			: super.getDimensions(pose);
+			: super.method_55694(entityPose);
 	}
 
 	public boolean isSearching() {
@@ -373,16 +367,6 @@ public class SnifferEntity extends AnimalEntity {
 		}
 
 		return actionResult;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height + 0.34375F * scaleFactor, 0.0F);
-	}
-
-	@Override
-	public float getNameLabelHeight() {
-		return super.getNameLabelHeight() + 0.3F;
 	}
 
 	private void playSearchingSound() {

@@ -92,10 +92,8 @@ public class ChatScreen extends Screen {
 			this.client.setScreen(null);
 			return true;
 		} else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-			if (this.sendMessage(this.chatField.getText(), true)) {
-				this.client.setScreen(null);
-			}
-
+			this.sendMessage(this.chatField.getText(), true);
+			this.client.setScreen(null);
 			return true;
 		} else if (keyCode == GLFW.GLFW_KEY_UP) {
 			this.setChatFromHistory(-1);
@@ -182,10 +180,14 @@ public class ChatScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.client.inGameHud.getChatHud().render(context, this.client.inGameHud.getTicks(), mouseX, mouseY, true);
 		context.fill(2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
 		this.chatField.render(context, mouseX, mouseY, delta);
 		super.render(context, mouseX, mouseY, delta);
+		context.getMatrices().push();
+		context.getMatrices().translate(0.0F, 0.0F, 200.0F);
 		this.chatInputSuggestor.render(context, mouseX, mouseY);
+		context.getMatrices().pop();
 		MessageIndicator messageIndicator = this.client.inGameHud.getChatHud().getIndicatorAt((double)mouseX, (double)mouseY);
 		if (messageIndicator != null && messageIndicator.text() != null) {
 			context.drawOrderedTooltip(this.textRenderer, this.textRenderer.wrapLines(messageIndicator.text(), 210), mouseX, mouseY);
@@ -225,11 +227,9 @@ public class ChatScreen extends Screen {
 		return this.client.inGameHud.getChatHud().getTextStyleAt(x, y);
 	}
 
-	public boolean sendMessage(String chatText, boolean addToHistory) {
+	public void sendMessage(String chatText, boolean addToHistory) {
 		chatText = this.normalize(chatText);
-		if (chatText.isEmpty()) {
-			return true;
-		} else {
+		if (!chatText.isEmpty()) {
 			if (addToHistory) {
 				this.client.inGameHud.getChatHud().addToMessageHistory(chatText);
 			}
@@ -239,8 +239,6 @@ public class ChatScreen extends Screen {
 			} else {
 				this.client.player.networkHandler.sendChatMessage(chatText);
 			}
-
-			return true;
 		}
 	}
 

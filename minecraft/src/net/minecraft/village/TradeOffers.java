@@ -39,6 +39,7 @@ import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
@@ -373,7 +374,7 @@ public class TradeOffers {
 						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.RABBIT_FOOT, 2, 12, 20), new TradeOffers.SellItemFactory(Blocks.GLOWSTONE, 4, 1, 12, 10)},
 						4,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyItemFactory(Items.SCUTE, 4, 12, 30),
+							new TradeOffers.BuyItemFactory(Items.TURTLE_SCUTE, 4, 12, 30),
 							new TradeOffers.BuyItemFactory(Items.GLASS_BOTTLE, 9, 12, 30),
 							new TradeOffers.SellItemFactory(Items.ENDER_PEARL, 5, 1, 15)
 						},
@@ -532,7 +533,7 @@ public class TradeOffers {
 						},
 						4,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyItemFactory(Items.SCUTE, 4, 12, 30), new TradeOffers.SellDyedArmorFactory(Items.LEATHER_HORSE_ARMOR, 6, 12, 15)
+							new TradeOffers.BuyItemFactory(Items.TURTLE_SCUTE, 4, 12, 30), new TradeOffers.SellDyedArmorFactory(Items.LEATHER_HORSE_ARMOR, 6, 12, 15)
 						},
 						5,
 						new TradeOffers.Factory[]{
@@ -1170,8 +1171,8 @@ public class TradeOffers {
 		return new Int2ObjectOpenHashMap<>(map);
 	}
 
-	private static ItemStack createPotionStack(Potion potion) {
-		return PotionUtil.setPotion(new ItemStack(Items.POTION), potion);
+	private static ItemStack createPotionStack(RegistryEntry<Potion> registryEntry) {
+		return PotionUtil.setPotion(new ItemStack(Items.POTION), registryEntry);
 	}
 
 	private static ItemStack enchant(Item item, Enchantment enchantment, int level) {
@@ -1476,12 +1477,12 @@ public class TradeOffers {
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
-			List<Potion> list = (List)Registries.POTION
-				.stream()
-				.filter(potionx -> !potionx.getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potionx))
+			List<RegistryEntry<Potion>> list = (List)Registries.POTION
+				.streamEntries()
+				.filter(reference -> !((Potion)reference.value()).getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(reference))
 				.collect(Collectors.toList());
-			Potion potion = (Potion)list.get(random.nextInt(list.size()));
-			ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(this.sell.getItem(), this.sellCount), potion);
+			RegistryEntry<Potion> registryEntry = Util.getRandom(list, random);
+			ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(this.sell.getItem(), this.sellCount), registryEntry);
 			return new TradeOffer(itemStack, new ItemStack(this.secondBuy, this.secondCount), itemStack2, this.maxUses, this.experience, this.priceMultiplier);
 		}
 	}
@@ -1491,8 +1492,8 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public SellSuspiciousStewFactory(StatusEffect effect, int duration, int experience) {
-			this(List.of(new SuspiciousStewIngredient.StewEffect(effect, duration)), experience, 0.05F);
+		public SellSuspiciousStewFactory(RegistryEntry<StatusEffect> registryEntry, int duration, int experience) {
+			this(List.of(new SuspiciousStewIngredient.StewEffect(registryEntry, duration)), experience, 0.05F);
 		}
 
 		public SellSuspiciousStewFactory(List<SuspiciousStewIngredient.StewEffect> stewEffects, int experience, float multiplier) {

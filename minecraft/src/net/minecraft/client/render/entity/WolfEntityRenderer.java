@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9085;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.WolfCollarFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -18,6 +19,7 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 
 	public WolfEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WolfEntityModel<>(context.getPart(EntityModelLayers.WOLF)), 0.5F);
+		this.addFeature(new class_9085(this, context.getModelLoader()));
 		this.addFeature(new WolfCollarFeatureRenderer(this));
 	}
 

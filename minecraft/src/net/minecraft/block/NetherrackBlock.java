@@ -68,4 +68,9 @@ public class NetherrackBlock extends Block implements Fertilizable {
 			world.setBlockState(pos, Blocks.CRIMSON_NYLIUM.getDefaultState(), Block.NOTIFY_ALL);
 		}
 	}
+
+	@Override
+	public Fertilizable.class_9077 method_55770() {
+		return Fertilizable.class_9077.NEIGHBOR_SPREADER;
+	}
 }

@@ -45,7 +45,7 @@ class FunctionBuilder<T extends AbstractServerCommandSource<T>> {
 		return intArrayList;
 	}
 
-	public void addMacroCommand(String command, int lineNum) {
+	public void addMacroCommand(String command, int lineNum, T abstractServerCommandSource) {
 		MacroInvocation macroInvocation = MacroInvocation.parse(command, lineNum);
 		if (this.actions != null) {
 			this.macroLines = new ArrayList(this.actions.size() + 1);
@@ -57,7 +57,7 @@ class FunctionBuilder<T extends AbstractServerCommandSource<T>> {
 			this.actions = null;
 		}
 
-		this.macroLines.add(new Macro.VariableLine(macroInvocation, this.indicesOfVariables(macroInvocation.variables())));
+		this.macroLines.add(new Macro.VariableLine(macroInvocation, this.indicesOfVariables(macroInvocation.variables()), abstractServerCommandSource));
 	}
 
 	public CommandFunction<T> toCommandFunction(Identifier id) {

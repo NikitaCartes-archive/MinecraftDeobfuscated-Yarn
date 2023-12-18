@@ -2,7 +2,6 @@ package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -30,9 +29,10 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 public class CowEntity extends AnimalEntity {
+	private static final EntityDimensions field_47771 = EntityType.COW.getDimensions().scaled(0.5F).method_55685(0.665F);
+
 	public CowEntity(EntityType<? extends CowEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -97,12 +97,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? dimensions.height * 0.95F : 1.3F;
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - 0.03125F * scaleFactor, 0.0F);
+	public EntityDimensions method_55694(EntityPose entityPose) {
+		return this.isBaby() ? field_47771 : super.method_55694(entityPose);
 	}
 }

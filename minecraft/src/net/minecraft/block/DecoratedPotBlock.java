@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
@@ -92,41 +93,55 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		BlockEntity itemStack = world.getBlockEntity(pos);
-		if (itemStack instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
+		BlockEntity itemStack2 = world.getBlockEntity(blockPos);
+		if (itemStack2 instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
 			if (world.isClient) {
-				return ActionResult.CONSUME;
+				return class_9062.CONSUME;
 			} else {
-				ItemStack itemStackx = player.getStackInHand(hand);
-				ItemStack itemStack2 = decoratedPotBlockEntity.getStack();
-				if (!itemStackx.isEmpty() && (itemStack2.isEmpty() || ItemStack.canCombine(itemStack2, itemStackx) && itemStack2.getCount() < itemStack2.getMaxCount())) {
+				ItemStack itemStack2x = decoratedPotBlockEntity.getStack();
+				if (!itemStack.isEmpty() && (itemStack2x.isEmpty() || ItemStack.canCombine(itemStack2x, itemStack) && itemStack2x.getCount() < itemStack2x.getMaxCount())) {
 					decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.POSITIVE);
-					player.incrementStat(Stats.USED.getOrCreateStat(itemStackx.getItem()));
-					ItemStack itemStack3 = player.isCreative() ? itemStackx.copyWithCount(1) : itemStackx.split(1);
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
+					ItemStack itemStack3 = playerEntity.isCreative() ? itemStack.copyWithCount(1) : itemStack.split(1);
 					float f;
 					if (decoratedPotBlockEntity.isEmpty()) {
 						decoratedPotBlockEntity.setStack(itemStack3);
 						f = (float)itemStack3.getCount() / (float)itemStack3.getMaxCount();
 					} else {
-						itemStack2.increment(1);
-						f = (float)itemStack2.getCount() / (float)itemStack2.getMaxCount();
+						itemStack2x.increment(1);
+						f = (float)itemStack2x.getCount() / (float)itemStack2x.getMaxCount();
 					}
 
-					world.playSound(null, pos, SoundEvents.BLOCK_DECORATED_POT_INSERT, SoundCategory.BLOCKS, 1.0F, 0.7F + 0.5F * f);
+					world.playSound(null, blockPos, SoundEvents.BLOCK_DECORATED_POT_INSERT, SoundCategory.BLOCKS, 1.0F, 0.7F + 0.5F * f);
 					if (world instanceof ServerWorld serverWorld) {
-						serverWorld.spawnParticles(ParticleTypes.DUST_PLUME, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, 7, 0.0, 0.0, 0.0, 0.0);
+						serverWorld.spawnParticles(
+							ParticleTypes.DUST_PLUME, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.2, (double)blockPos.getZ() + 0.5, 7, 0.0, 0.0, 0.0, 0.0
+						);
 					}
 
 					decoratedPotBlockEntity.markDirty();
+					world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+					return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
 				} else {
-					world.playSound(null, pos, SoundEvents.BLOCK_DECORATED_POT_INSERT_FAIL, SoundCategory.BLOCKS, 1.0F, 1.0F);
-					decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.NEGATIVE);
+					return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
 				}
-
-				world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-				return ActionResult.SUCCESS;
 			}
+		} else {
+			return class_9062.SKIP_DEFAULT_BLOCK_INTERACTION;
+		}
+	}
+
+	@Override
+	public ActionResult method_55766(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, BlockHitResult blockHitResult) {
+		BlockEntity var7 = world.getBlockEntity(blockPos);
+		if (var7 instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
+			world.playSound(null, blockPos, SoundEvents.BLOCK_DECORATED_POT_INSERT_FAIL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.NEGATIVE);
+			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}

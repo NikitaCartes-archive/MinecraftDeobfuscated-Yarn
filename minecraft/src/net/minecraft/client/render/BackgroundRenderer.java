@@ -276,7 +276,7 @@ public class BackgroundRenderer {
 	@Environment(EnvType.CLIENT)
 	static class BlindnessFogModifier implements BackgroundRenderer.StatusEffectFogModifier {
 		@Override
-		public StatusEffect getStatusEffect() {
+		public RegistryEntry<StatusEffect> getStatusEffect() {
 			return StatusEffects.BLINDNESS;
 		}
 
@@ -296,26 +296,20 @@ public class BackgroundRenderer {
 	@Environment(EnvType.CLIENT)
 	static class DarknessFogModifier implements BackgroundRenderer.StatusEffectFogModifier {
 		@Override
-		public StatusEffect getStatusEffect() {
+		public RegistryEntry<StatusEffect> getStatusEffect() {
 			return StatusEffects.DARKNESS;
 		}
 
 		@Override
 		public void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta) {
-			if (!effect.getFactorCalculationData().isEmpty()) {
-				float f = MathHelper.lerp(
-					((StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().get()).lerp(entity, tickDelta), viewDistance, 15.0F
-				);
-				fogData.fogStart = fogData.fogType == BackgroundRenderer.FogType.FOG_SKY ? 0.0F : f * 0.75F;
-				fogData.fogEnd = f;
-			}
+			float f = MathHelper.lerp(effect.method_55653(entity, tickDelta), viewDistance, 15.0F);
+			fogData.fogStart = fogData.fogType == BackgroundRenderer.FogType.FOG_SKY ? 0.0F : f * 0.75F;
+			fogData.fogEnd = f;
 		}
 
 		@Override
 		public float applyColorModifier(LivingEntity entity, StatusEffectInstance effect, float f, float tickDelta) {
-			return effect.getFactorCalculationData().isEmpty()
-				? 0.0F
-				: 1.0F - ((StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().get()).lerp(entity, tickDelta);
+			return 1.0F - effect.method_55653(entity, tickDelta);
 		}
 	}
 
@@ -339,7 +333,7 @@ public class BackgroundRenderer {
 
 	@Environment(EnvType.CLIENT)
 	interface StatusEffectFogModifier {
-		StatusEffect getStatusEffect();
+		RegistryEntry<StatusEffect> getStatusEffect();
 
 		void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta);
 

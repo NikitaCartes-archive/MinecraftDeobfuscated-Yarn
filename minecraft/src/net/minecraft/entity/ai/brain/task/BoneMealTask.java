@@ -110,7 +110,7 @@ public class BoneMealTask extends MultiTickTask<VillagerEntity> {
 			}
 
 			if (!itemStack.isEmpty() && BoneMealItem.useOnFertilizable(itemStack, serverWorld, blockPos)) {
-				serverWorld.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 0);
+				serverWorld.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 15);
 				this.pos = this.findBoneMealPos(serverWorld, villagerEntity);
 				this.addLookWalkTargets(villagerEntity);
 				this.startTime = l + 40L;

@@ -13,13 +13,14 @@ class InstantHealthOrDamageStatusEffect extends InstantStatusEffect {
 	}
 
 	@Override
-	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		super.applyUpdateEffect(entity, amplifier);
+	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (this.damage == entity.isUndead()) {
 			entity.heal((float)Math.max(4 << amplifier, 0));
 		} else {
 			entity.damage(entity.getDamageSources().magic(), (float)(6 << amplifier));
 		}
+
+		return true;
 	}
 
 	@Override

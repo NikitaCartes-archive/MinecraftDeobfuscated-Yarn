@@ -10,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -62,7 +61,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
-import org.joml.Vector3f;
 
 public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVariant> {
 	public static final Ingredient SLIME_BALL = Ingredient.ofItems(Items.SLIME_BALL);
@@ -106,7 +104,6 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		this.setPathfindingPenalty(PathNodeType.WATER, 4.0F);
 		this.setPathfindingPenalty(PathNodeType.TRAPDOOR, -1.0F);
 		this.moveControl = new AquaticMoveControl(this, 85, 10, 0.02F, 0.1F, true);
-		this.setStepHeight(1.0F);
 	}
 
 	@Override
@@ -281,7 +278,8 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		return MobEntity.createMobAttributes()
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.0)
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10.0)
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
 	}
 
 	@Nullable
@@ -345,11 +343,6 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	@Override
 	protected EntityNavigation createNavigation(World world) {
 		return new FrogEntity.FrogSwimNavigation(this, world);
-	}
-
-	@Override
-	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		return new Vector3f(0.0F, dimensions.height - 0.125F * scaleFactor, -0.25F * scaleFactor);
 	}
 
 	@Override

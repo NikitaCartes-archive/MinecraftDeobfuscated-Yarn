@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
+import net.minecraft.class_9062;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
@@ -16,7 +17,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -89,24 +89,25 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getStackInHand(hand);
+	public class_9062 method_55765(
+		ItemStack itemStack, BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult
+	) {
 		if (!itemStack.isOf(Items.FLINT_AND_STEEL) && !itemStack.isOf(Items.FIRE_CHARGE)) {
-			return super.onUse(state, world, pos, player, hand, hit);
+			return super.method_55765(itemStack, blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		} else {
-			primeTnt(world, pos, player);
-			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL_AND_REDRAW);
+			primeTnt(world, blockPos, playerEntity);
+			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL_AND_REDRAW);
 			Item item = itemStack.getItem();
-			if (!player.isCreative()) {
+			if (!playerEntity.isCreative()) {
 				if (itemStack.isOf(Items.FLINT_AND_STEEL)) {
-					itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+					itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				} else {
 					itemStack.decrement(1);
 				}
 			}
 
-			player.incrementStat(Stats.USED.getOrCreateStat(item));
-			return ActionResult.success(world.isClient);
+			playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
+			return class_9062.method_55644(world.isClient);
 		}
 	}
 

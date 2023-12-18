@@ -6,8 +6,6 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.Npc;
@@ -76,11 +74,6 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	@Override
 	public int getExperience() {
 		return 0;
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? 0.81F : 1.62F;
 	}
 
 	@Override

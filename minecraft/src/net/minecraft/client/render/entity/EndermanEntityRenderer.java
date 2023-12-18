@@ -35,8 +35,8 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 
 	public Vec3d getPositionOffset(EndermanEntity endermanEntity, float f) {
 		if (endermanEntity.isAngry()) {
-			double d = 0.02;
-			return new Vec3d(this.random.nextGaussian() * 0.02, 0.0, this.random.nextGaussian() * 0.02);
+			double d = 0.02 * (double)endermanEntity.method_55693();
+			return new Vec3d(this.random.nextGaussian() * d, 0.0, this.random.nextGaussian() * d);
 		} else {
 			return super.getPositionOffset(endermanEntity, f);
 		}

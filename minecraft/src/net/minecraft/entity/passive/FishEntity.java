@@ -2,8 +2,6 @@ package net.minecraft.entity.passive;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Bucketable;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -39,11 +37,6 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 	public FishEntity(EntityType<? extends FishEntity> entityType, World world) {
 		super(entityType, world);
 		this.moveControl = new FishEntity.FishMoveControl(this);
-	}
-
-	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.65F;
 	}
 
 	public static DefaultAttributeContainer.Builder createFishAttributes() {

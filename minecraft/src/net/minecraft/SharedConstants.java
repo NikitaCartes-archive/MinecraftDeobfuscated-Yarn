@@ -13,24 +13,24 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3700;
+	public static final int WORLD_VERSION = 3801;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.20.4";
+	public static final String VERSION_NAME = "23w51a";
 	@Deprecated
-	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 765;
+	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 766;
 	@Deprecated
 	public static final int field_29736 = 169;
-	public static final int SNBT_TOO_OLD_THRESHOLD = 3678;
+	public static final int SNBT_TOO_OLD_THRESHOLD = 3798;
 	private static final int field_29708 = 30;
-	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = false;
+	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
 	public static final int RESOURCE_PACK_VERSION = 22;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 26;
+	public static final int DATA_PACK_VERSION = 27;
 	@Deprecated
 	public static final int field_39963 = 1;
 	public static final int field_39964 = 1;
@@ -218,7 +218,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 765;
+		return 1073741993;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {
