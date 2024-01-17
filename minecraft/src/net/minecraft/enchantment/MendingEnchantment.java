@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class MendingEnchantment extends Enchantment {
 	public MendingEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.BREAKABLE, slotTypes);
+		super(weight, ItemTags.DURABILITY_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

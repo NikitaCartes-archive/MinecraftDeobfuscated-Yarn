@@ -27,27 +27,27 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return COLLISION_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.fullCube();
 	}
 
 	@Override
-	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.fullCube();
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		BubbleColumnBlock.update(world, pos.up(), state);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (direction == Direction.UP && neighborState.isOf(Blocks.WATER)) {
@@ -58,17 +58,17 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		world.scheduleBlockTick(pos, this, 20);
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 
 	@Override
-	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+	protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
 		return 0.2F;
 	}
 }

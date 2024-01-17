@@ -4,12 +4,16 @@ import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.book.RecipeBookOptions;
 import net.minecraft.util.Identifier;
 
 public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, UnlockRecipesS2CPacket> CODEC = Packet.createCodec(UnlockRecipesS2CPacket::write, UnlockRecipesS2CPacket::new);
 	private final UnlockRecipesS2CPacket.Action action;
 	private final List<Identifier> recipeIdsToChange;
 	private final List<Identifier> recipeIdsToInit;
@@ -24,7 +28,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.options = options;
 	}
 
-	public UnlockRecipesS2CPacket(PacketByteBuf buf) {
+	private UnlockRecipesS2CPacket(PacketByteBuf buf) {
 		this.action = buf.readEnumConstant(UnlockRecipesS2CPacket.Action.class);
 		this.options = RecipeBookOptions.fromPacket(buf);
 		this.recipeIdsToChange = buf.readList(PacketByteBuf::readIdentifier);
@@ -35,14 +39,18 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.action);
 		this.options.toPacket(buf);
 		buf.writeCollection(this.recipeIdsToChange, PacketByteBuf::writeIdentifier);
 		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
 			buf.writeCollection(this.recipeIdsToInit, PacketByteBuf::writeIdentifier);
 		}
+	}
+
+	@Override
+	public PacketIdentifier<UnlockRecipesS2CPacket> getPacketId() {
+		return PlayPackets.RECIPE;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

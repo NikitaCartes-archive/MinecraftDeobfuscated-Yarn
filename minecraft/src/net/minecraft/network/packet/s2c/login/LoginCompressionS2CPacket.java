@@ -1,23 +1,33 @@
 package net.minecraft.network.packet.s2c.login;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientLoginPacketListener;
+import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
 public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListener> {
+	public static final PacketCodec<PacketByteBuf, LoginCompressionS2CPacket> CODEC = Packet.createCodec(
+		LoginCompressionS2CPacket::write, LoginCompressionS2CPacket::new
+	);
 	private final int compressionThreshold;
 
 	public LoginCompressionS2CPacket(int compressionThreshold) {
 		this.compressionThreshold = compressionThreshold;
 	}
 
-	public LoginCompressionS2CPacket(PacketByteBuf buf) {
+	private LoginCompressionS2CPacket(PacketByteBuf buf) {
 		this.compressionThreshold = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.compressionThreshold);
+	}
+
+	@Override
+	public PacketIdentifier<LoginCompressionS2CPacket> getPacketId() {
+		return LoginPackets.LOGIN_COMPRESSION;
 	}
 
 	public void apply(ClientLoginPacketListener clientLoginPacketListener) {

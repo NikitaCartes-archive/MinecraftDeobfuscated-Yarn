@@ -7,19 +7,34 @@ import net.minecraft.world.chunk.ChunkStatus;
 
 public class WorldGenerationProgressTracker implements WorldGenerationProgressListener {
 	private final WorldGenerationProgressLogger progressLogger;
-	private final Long2ObjectOpenHashMap<ChunkStatus> chunkStatuses;
+	private final Long2ObjectOpenHashMap<ChunkStatus> chunkStatuses = new Long2ObjectOpenHashMap<>();
 	private ChunkPos spawnPos = new ChunkPos(0, 0);
 	private final int centerSize;
 	private final int radius;
 	private final int size;
 	private boolean running;
 
-	public WorldGenerationProgressTracker(int radius) {
-		this.progressLogger = new WorldGenerationProgressLogger(radius);
-		this.centerSize = radius * 2 + 1;
-		this.radius = radius + ChunkStatus.getMaxDistanceFromFull();
-		this.size = this.radius * 2 + 1;
-		this.chunkStatuses = new Long2ObjectOpenHashMap<>();
+	private WorldGenerationProgressTracker(WorldGenerationProgressLogger progressLogger, int centerSize, int radius, int size) {
+		this.progressLogger = progressLogger;
+		this.centerSize = centerSize;
+		this.radius = radius;
+		this.size = size;
+	}
+
+	public static WorldGenerationProgressTracker create(int spawnChunkRadius) {
+		return spawnChunkRadius > 0 ? forSpawnChunks(spawnChunkRadius + 1) : noSpawnChunks();
+	}
+
+	public static WorldGenerationProgressTracker forSpawnChunks(int spawnChunkRadius) {
+		WorldGenerationProgressLogger worldGenerationProgressLogger = WorldGenerationProgressLogger.forSpawnChunks(spawnChunkRadius);
+		int i = WorldGenerationProgressListener.getStartRegionSize(spawnChunkRadius);
+		int j = spawnChunkRadius + ChunkStatus.getMaxDistanceFromFull();
+		int k = WorldGenerationProgressListener.getStartRegionSize(j);
+		return new WorldGenerationProgressTracker(worldGenerationProgressLogger, i, j, k);
+	}
+
+	public static WorldGenerationProgressTracker noSpawnChunks() {
+		return new WorldGenerationProgressTracker(WorldGenerationProgressLogger.noSpawnChunks(), 0, 0, 0);
 	}
 
 	@Override

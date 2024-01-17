@@ -20,7 +20,7 @@ public class FletchingTableBlock extends CraftingTableBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		return ActionResult.PASS;
 	}
 }

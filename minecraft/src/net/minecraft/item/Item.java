@@ -613,17 +613,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	protected static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
-		float f = player.getPitch();
-		float g = player.getYaw();
 		Vec3d vec3d = player.getEyePos();
-		float h = MathHelper.cos(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
-		float i = MathHelper.sin(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
-		float j = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
-		float k = MathHelper.sin(-f * (float) (Math.PI / 180.0));
-		float l = i * j;
-		float n = h * j;
-		double d = 5.0;
-		Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)k * 5.0, (double)n * 5.0);
+		Vec3d vec3d2 = vec3d.add(player.getRotationVec(1.0F).multiply(player.getBlockInteractionRange()));
 		return world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
 	}
 

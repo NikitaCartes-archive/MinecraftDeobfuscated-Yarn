@@ -28,6 +28,7 @@ import jdk.jfr.Recording;
 import jdk.jfr.RecordingState;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.packet.PacketIdentifier;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
@@ -192,9 +193,9 @@ public class JfrProfiler implements FlightProfiler {
 	}
 
 	@Override
-	public void onPacketReceived(NetworkState state, int packetId, SocketAddress remoteAddress, int bytes) {
+	public void onPacketReceived(NetworkState state, PacketIdentifier<?> packetIdentifier, SocketAddress remoteAddress, int bytes) {
 		if (PacketReceivedEvent.TYPE.isEnabled()) {
-			new PacketReceivedEvent(state.getId(), packetId, remoteAddress, bytes).commit();
+			new PacketReceivedEvent(state.getId(), packetIdentifier.side().getName(), packetIdentifier.id().toString(), remoteAddress, bytes).commit();
 		}
 
 		if (NetworkSummaryEvent.TYPE.isEnabled()) {
@@ -203,9 +204,9 @@ public class JfrProfiler implements FlightProfiler {
 	}
 
 	@Override
-	public void onPacketSent(NetworkState state, int packetId, SocketAddress remoteAddress, int bytes) {
+	public void onPacketSent(NetworkState state, PacketIdentifier<?> packetIdentifier, SocketAddress remoteAddress, int bytes) {
 		if (PacketSentEvent.TYPE.isEnabled()) {
-			new PacketSentEvent(state.getId(), packetId, remoteAddress, bytes).commit();
+			new PacketSentEvent(state.getId(), packetIdentifier.side().getName(), packetIdentifier.id().toString(), remoteAddress, bytes).commit();
 		}
 
 		if (NetworkSummaryEvent.TYPE.isEnabled()) {

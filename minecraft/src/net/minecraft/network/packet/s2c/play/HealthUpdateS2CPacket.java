@@ -1,10 +1,14 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class HealthUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, HealthUpdateS2CPacket> CODEC = Packet.createCodec(HealthUpdateS2CPacket::write, HealthUpdateS2CPacket::new);
 	private final float health;
 	private final int food;
 	private final float saturation;
@@ -15,17 +19,21 @@ public class HealthUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.saturation = saturation;
 	}
 
-	public HealthUpdateS2CPacket(PacketByteBuf buf) {
+	private HealthUpdateS2CPacket(PacketByteBuf buf) {
 		this.health = buf.readFloat();
 		this.food = buf.readVarInt();
 		this.saturation = buf.readFloat();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeFloat(this.health);
 		buf.writeVarInt(this.food);
 		buf.writeFloat(this.saturation);
+	}
+
+	@Override
+	public PacketIdentifier<HealthUpdateS2CPacket> getPacketId() {
+		return PlayPackets.SET_HEALTH;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

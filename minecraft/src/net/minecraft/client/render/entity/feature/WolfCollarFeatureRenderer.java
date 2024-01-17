@@ -2,6 +2,9 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -21,7 +24,8 @@ public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntity, WolfE
 	) {
 		if (wolfEntity.isTamed() && !wolfEntity.isInvisible()) {
 			float[] fs = wolfEntity.getCollarColor().getColorComponents();
-			renderModel(this.getContextModel(), SKIN, matrixStack, vertexConsumerProvider, i, wolfEntity, fs[0], fs[1], fs[2]);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
+			this.getContextModel().render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, fs[0], fs[1], fs[2], 1.0F);
 		}
 	}
 }

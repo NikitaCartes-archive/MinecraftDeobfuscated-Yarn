@@ -162,6 +162,16 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		return new GuiNavigation.Arrow(direction);
 	}
 
+	protected void method_56131() {
+		if (this.client.getNavigationType().isKeyboard()) {
+			GuiNavigation.Tab tab = new GuiNavigation.Tab(true);
+			GuiNavigationPath guiNavigationPath = super.getNavigationPath(tab);
+			if (guiNavigationPath != null) {
+				this.switchFocus(guiNavigationPath);
+			}
+		}
+	}
+
 	/**
 	 * Sets the initial focus of this screen. This should be called inside the overridden
 	 * {@link #init()} method by screen implementations.
@@ -310,6 +320,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.height = height;
 		if (!this.screenInitialized) {
 			this.init();
+			this.method_56131();
 		} else {
 			this.initTabNavigation();
 		}
@@ -323,6 +334,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.clearChildren();
 		this.blur();
 		this.init();
+		this.method_56131();
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public abstract class AbstractFireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return BASE_SHAPE;
 	}
 
@@ -122,7 +122,7 @@ public abstract class AbstractFireBlock extends Block {
 	protected abstract boolean isFlammable(BlockState state);
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!entity.isFireImmune()) {
 			entity.setFireTicks(entity.getFireTicks() + 1);
 			if (entity.getFireTicks() == 0) {
@@ -135,7 +135,7 @@ public abstract class AbstractFireBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			if (isOverworldOrNether(world)) {
 				Optional<NetherPortal> optional = NetherPortal.getNewPortal(world, pos, Direction.Axis.X);

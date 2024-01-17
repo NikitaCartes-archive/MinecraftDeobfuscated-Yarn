@@ -20,7 +20,7 @@ public class ForgetBellRingTask {
 							long l = context.getValue(heardBellTime);
 							boolean bl = l + 300L <= time;
 							if (mutableInt.getValue() <= i && !bl) {
-								BlockPos blockPos = context.<GlobalPos>getValue(hidingPlace).getPos();
+								BlockPos blockPos = ((GlobalPos)context.getValue(hidingPlace)).pos();
 								if (blockPos.isWithinDistance(entity.getBlockPos(), (double)distance)) {
 									mutableInt.increment();
 								}

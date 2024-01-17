@@ -17,12 +17,12 @@ public class TintedGlassBlock extends TransparentBlock {
 	}
 
 	@Override
-	public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 
 	@Override
-	public int getOpacity(BlockState state, BlockView world, BlockPos pos) {
+	protected int getOpacity(BlockState state, BlockView world, BlockPos pos) {
 		return world.getMaxLightLevel();
 	}
 }

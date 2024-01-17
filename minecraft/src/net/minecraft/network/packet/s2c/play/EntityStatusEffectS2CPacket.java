@@ -2,13 +2,20 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, EntityStatusEffectS2CPacket> CODEC = Packet.createCodec(
+		EntityStatusEffectS2CPacket::write, EntityStatusEffectS2CPacket::new
+	);
 	private static final int AMBIENT_MASK = 1;
 	private static final int SHOW_PARTICLES_MASK = 2;
 	private static final int SHOW_ICON_MASK = 4;
@@ -44,21 +51,25 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		this.flags = b;
 	}
 
-	public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
+	private EntityStatusEffectS2CPacket(RegistryByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		this.effectId = buf.readRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries());
+		this.effectId = PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).decode(buf);
 		this.amplifier = buf.readByte();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeRegistryValue(Registries.STATUS_EFFECT.getIndexedEntries(), this.effectId);
+		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).encode(buf, this.effectId);
 		buf.writeByte(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);
+	}
+
+	@Override
+	public PacketIdentifier<EntityStatusEffectS2CPacket> getPacketId() {
+		return PlayPackets.UPDATE_MOB_EFFECT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

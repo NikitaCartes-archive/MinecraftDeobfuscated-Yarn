@@ -6,9 +6,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 
 public class TradeOfferList extends ArrayList<TradeOffer> {
+	public static final PacketCodec<RegistryByteBuf, TradeOfferList> PACKET_CODEC = TradeOffer.PACKET_CODEC
+		.mapResult(PacketCodecs.collectionMapper(TradeOfferList::new));
+
 	public TradeOfferList() {
 	}
 
@@ -39,43 +44,6 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 
 			return null;
 		}
-	}
-
-	public void toPacket(PacketByteBuf buf) {
-		buf.writeCollection(this, (buf2, offer) -> {
-			buf2.writeItemStack(offer.getOriginalFirstBuyItem());
-			buf2.writeItemStack(offer.getSellItem());
-			buf2.writeItemStack(offer.getSecondBuyItem());
-			buf2.writeBoolean(offer.isDisabled());
-			buf2.writeInt(offer.getUses());
-			buf2.writeInt(offer.getMaxUses());
-			buf2.writeInt(offer.getMerchantExperience());
-			buf2.writeInt(offer.getSpecialPrice());
-			buf2.writeFloat(offer.getPriceMultiplier());
-			buf2.writeInt(offer.getDemandBonus());
-		});
-	}
-
-	public static TradeOfferList fromPacket(PacketByteBuf buf) {
-		return buf.readCollection(TradeOfferList::new, buf2 -> {
-			ItemStack itemStack = buf2.readItemStack();
-			ItemStack itemStack2 = buf2.readItemStack();
-			ItemStack itemStack3 = buf2.readItemStack();
-			boolean bl = buf2.readBoolean();
-			int i = buf2.readInt();
-			int j = buf2.readInt();
-			int k = buf2.readInt();
-			int l = buf2.readInt();
-			float f = buf2.readFloat();
-			int m = buf2.readInt();
-			TradeOffer tradeOffer = new TradeOffer(itemStack, itemStack3, itemStack2, i, j, k, f, m);
-			if (bl) {
-				tradeOffer.disable();
-			}
-
-			tradeOffer.setSpecialPrice(l);
-			return tradeOffer;
-		});
 	}
 
 	public NbtCompound toNbt() {

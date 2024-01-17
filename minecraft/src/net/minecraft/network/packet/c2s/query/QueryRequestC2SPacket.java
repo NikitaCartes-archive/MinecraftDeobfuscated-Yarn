@@ -1,18 +1,22 @@
 package net.minecraft.network.packet.c2s.query;
 
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerQueryPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.StatusPackets;
 
 public class QueryRequestC2SPacket implements Packet<ServerQueryPacketListener> {
-	public QueryRequestC2SPacket() {
-	}
+	public static final QueryRequestC2SPacket INSTANCE = new QueryRequestC2SPacket();
+	public static final PacketCodec<ByteBuf, QueryRequestC2SPacket> CODEC = PacketCodec.unit(INSTANCE);
 
-	public QueryRequestC2SPacket(PacketByteBuf buf) {
+	private QueryRequestC2SPacket() {
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
+	public PacketIdentifier<QueryRequestC2SPacket> getPacketId() {
+		return StatusPackets.STATUS_REQUEST;
 	}
 
 	public void apply(ServerQueryPacketListener serverQueryPacketListener) {

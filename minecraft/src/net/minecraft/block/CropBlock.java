@@ -45,7 +45,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return AGE_TO_SHAPE[this.getAge(state)];
 	}
 
@@ -75,12 +75,12 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean hasRandomTicks(BlockState state) {
+	protected boolean hasRandomTicks(BlockState state) {
 		return !this.isMature(state);
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getBaseLightLevel(pos, 0) >= 9) {
 			int i = this.getAge(state);
 			if (i < this.getMaxAge()) {
@@ -151,7 +151,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		return hasEnoughLightAt(world, pos) && super.canPlaceAt(state, world, pos);
 	}
 
@@ -160,7 +160,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 			world.breakBlock(pos, true, entity);
 		}

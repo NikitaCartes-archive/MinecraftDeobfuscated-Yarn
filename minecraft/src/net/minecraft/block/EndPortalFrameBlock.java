@@ -41,12 +41,12 @@ public class EndPortalFrameBlock extends Block {
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState state) {
+	protected boolean hasSidedTransparency(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return state.get(EYE) ? FRAME_WITH_EYE_SHAPE : FRAME_SHAPE;
 	}
 
@@ -56,22 +56,22 @@ public class EndPortalFrameBlock extends Block {
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	protected boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		return state.get(EYE) ? 15 : 0;
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
 
@@ -116,7 +116,7 @@ public class EndPortalFrameBlock extends Block {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

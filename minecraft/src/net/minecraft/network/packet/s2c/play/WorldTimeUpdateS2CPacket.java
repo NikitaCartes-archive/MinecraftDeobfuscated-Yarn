@@ -1,10 +1,16 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class WorldTimeUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, WorldTimeUpdateS2CPacket> CODEC = Packet.createCodec(
+		WorldTimeUpdateS2CPacket::write, WorldTimeUpdateS2CPacket::new
+	);
 	private final long time;
 	private final long timeOfDay;
 
@@ -21,15 +27,19 @@ public class WorldTimeUpdateS2CPacket implements Packet<ClientPlayPacketListener
 		this.timeOfDay = l;
 	}
 
-	public WorldTimeUpdateS2CPacket(PacketByteBuf buf) {
+	private WorldTimeUpdateS2CPacket(PacketByteBuf buf) {
 		this.time = buf.readLong();
 		this.timeOfDay = buf.readLong();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeLong(this.time);
 		buf.writeLong(this.timeOfDay);
+	}
+
+	@Override
+	public PacketIdentifier<WorldTimeUpdateS2CPacket> getPacketId() {
+		return PlayPackets.SET_TIME;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

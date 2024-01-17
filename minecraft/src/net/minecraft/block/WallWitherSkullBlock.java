@@ -21,6 +21,6 @@ public class WallWitherSkullBlock extends WallSkullBlock {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		Blocks.WITHER_SKELETON_SKULL.onPlaced(world, pos, state, placer, itemStack);
+		WitherSkullBlock.onPlaced(world, pos);
 	}
 }

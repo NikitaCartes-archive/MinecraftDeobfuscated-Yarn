@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.ArmadilloEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.ArmadilloEntity;
 import net.minecraft.util.Identifier;
 
@@ -18,9 +17,5 @@ public class ArmadilloEntityRenderer extends MobEntityRenderer<ArmadilloEntity, 
 
 	public Identifier getTexture(ArmadilloEntity armadilloEntity) {
 		return TEXTURE;
-	}
-
-	protected void setupTransforms(ArmadilloEntity armadilloEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(armadilloEntity, matrixStack, f, g, h);
 	}
 }

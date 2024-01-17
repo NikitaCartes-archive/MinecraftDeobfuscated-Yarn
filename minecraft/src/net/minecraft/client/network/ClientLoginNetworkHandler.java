@@ -12,6 +12,8 @@ import com.mojang.logging.LogUtils;
 import java.math.BigInteger;
 import java.security.PublicKey;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -20,6 +22,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9157;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
@@ -31,10 +34,12 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.BrandCustomPayload;
 import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
+import net.minecraft.network.packet.c2s.common.CookieResponseC2SPacket;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.login.EnterConfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.packet.s2c.common.CookieRequestS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginCompressionS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
@@ -43,6 +48,7 @@ import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -63,6 +69,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private final Duration worldLoadTime;
 	@Nullable
 	private String minigameName;
+	private final Map<Identifier, byte[]> field_48400;
+	private final boolean field_48401;
 	private final AtomicReference<ClientLoginNetworkHandler.State> state = new AtomicReference(ClientLoginNetworkHandler.State.CONNECTING);
 
 	public ClientLoginNetworkHandler(
@@ -72,7 +80,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		@Nullable Screen parentScreen,
 		boolean newWorld,
 		@Nullable Duration worldLoadTime,
-		Consumer<Text> statusConsumer
+		Consumer<Text> statusConsumer,
+		@Nullable CookieStorage cookieStorage
 	) {
 		this.connection = connection;
 		this.client = client;
@@ -81,6 +90,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		this.statusConsumer = statusConsumer;
 		this.newWorld = newWorld;
 		this.worldLoadTime = worldLoadTime;
+		this.field_48400 = cookieStorage != null ? new HashMap(cookieStorage.cookies()) : new HashMap();
+		this.field_48401 = cookieStorage != null;
 	}
 
 	private void switchTo(ClientLoginNetworkHandler.State state) {
@@ -114,20 +125,28 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			throw new IllegalStateException("Protocol error", var9);
 		}
 
-		Util.getIoWorkerExecutor().submit(() -> {
-			Text text = this.joinServerSession(string);
-			if (text != null) {
-				if (this.serverInfo == null || !this.serverInfo.isLocal()) {
-					this.connection.disconnect(text);
-					return;
+		if (packet.method_56013()) {
+			Util.getIoWorkerExecutor().submit(() -> {
+				Text text = this.joinServerSession(string);
+				if (text != null) {
+					if (this.serverInfo == null || !this.serverInfo.isLocal()) {
+						this.connection.disconnect(text);
+						return;
+					}
+
+					LOGGER.warn(text.getString());
 				}
 
-				LOGGER.warn(text.getString());
-			}
+				this.method_56151(loginKeyC2SPacket, cipher, cipher2);
+			});
+		} else {
+			this.method_56151(loginKeyC2SPacket, cipher, cipher2);
+		}
+	}
 
-			this.switchTo(ClientLoginNetworkHandler.State.ENCRYPTING);
-			this.connection.send(loginKeyC2SPacket, PacketCallbacks.always(() -> this.connection.setupEncryption(cipher, cipher2)));
-		});
+	private void method_56151(LoginKeyC2SPacket loginKeyC2SPacket, Cipher cipher, Cipher cipher2) {
+		this.switchTo(ClientLoginNetworkHandler.State.ENCRYPTING);
+		this.connection.send(loginKeyC2SPacket, PacketCallbacks.always(() -> this.connection.setupEncryption(cipher, cipher2)));
 	}
 
 	@Nullable
@@ -156,9 +175,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	public void onSuccess(LoginSuccessS2CPacket packet) {
 		this.switchTo(ClientLoginNetworkHandler.State.JOINING);
 		GameProfile gameProfile = packet.getProfile();
-		this.connection.send(new EnterConfigurationC2SPacket());
 		this.connection
-			.setPacketListener(
+			.method_56330(
+				class_9157.field_48699,
 				new ClientConfigurationNetworkHandler(
 					this.client,
 					this.connection,
@@ -169,20 +188,24 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 						FeatureFlags.DEFAULT_ENABLED_FEATURES,
 						null,
 						this.serverInfo,
-						this.parentScreen
+						this.parentScreen,
+						this.field_48400
 					)
 				)
 			);
+		this.connection.send(EnterConfigurationC2SPacket.INSTANCE);
+		this.connection.method_56329(class_9157.field_48698);
 		this.connection.send(new CustomPayloadC2SPacket(new BrandCustomPayload(ClientBrandRetriever.getClientModName())));
 		this.connection.send(new ClientOptionsC2SPacket(this.client.options.getSyncedOptions()));
 	}
 
 	@Override
 	public void onDisconnected(Text reason) {
+		Text text = this.field_48401 ? ScreenTexts.CONNECT_FAILED_TRANSFER : ScreenTexts.CONNECT_FAILED;
 		if (this.serverInfo != null && this.serverInfo.isRealm()) {
-			this.client.setScreen(new DisconnectedRealmsScreen(this.parentScreen, ScreenTexts.CONNECT_FAILED, reason));
+			this.client.setScreen(new DisconnectedRealmsScreen(this.parentScreen, text, reason));
 		} else {
-			this.client.setScreen(new DisconnectedScreen(this.parentScreen, ScreenTexts.CONNECT_FAILED, reason));
+			this.client.setScreen(new DisconnectedScreen(this.parentScreen, text, reason));
 		}
 	}
 
@@ -211,6 +234,11 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	public void setMinigameName(String minigameName) {
 		this.minigameName = minigameName;
+	}
+
+	@Override
+	public void onCookieRequest(CookieRequestS2CPacket packet) {
+		this.connection.send(new CookieResponseC2SPacket(packet.key(), (byte[])this.field_48400.get(packet.key())));
 	}
 
 	@Override

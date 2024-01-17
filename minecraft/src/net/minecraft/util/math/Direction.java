@@ -3,18 +3,23 @@ package net.minecraft.util.math;
 import com.google.common.collect.Iterators;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import io.netty.buffer.ByteBuf;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -38,6 +43,10 @@ public enum Direction implements StringIdentifiable {
 
 	public static final StringIdentifiable.EnumCodec<Direction> CODEC = StringIdentifiable.createCodec(Direction::values);
 	public static final Codec<Direction> VERTICAL_CODEC = Codecs.validate(CODEC, Direction::validateVertical);
+	public static final IntFunction<Direction> ID_TO_VALUE_FUNCTION = ValueLists.createIdToValueFunction(
+		Direction::getId, values(), ValueLists.OutOfBoundsHandling.WRAP
+	);
+	public static final PacketCodec<ByteBuf, Direction> PACKET_CODEC = PacketCodecs.indexed(ID_TO_VALUE_FUNCTION, Direction::getId);
 	private final int id;
 	private final int idOpposite;
 	private final int idHorizontal;

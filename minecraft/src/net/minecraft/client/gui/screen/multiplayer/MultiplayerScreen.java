@@ -250,7 +250,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	private void connect(ServerInfo entry) {
-		ConnectScreen.connect(this, this.client, ServerAddress.parse(entry.address), entry, false);
+		ConnectScreen.connect(this, this.client, ServerAddress.parse(entry.address), entry, false, null);
 	}
 
 	public void select(MultiplayerServerListWidget.Entry entry) {

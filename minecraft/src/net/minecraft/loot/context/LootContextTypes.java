@@ -60,6 +60,9 @@ public class LootContextTypes {
 				.require(LootContextParameters.TOOL)
 				.require(LootContextParameters.BLOCK_STATE)
 	);
+	public static final LootContextType BLOCK_USE = register(
+		"block_use", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN).require(LootContextParameters.BLOCK_STATE)
+	);
 	public static final LootContextType GENERIC = register(
 		"generic",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)

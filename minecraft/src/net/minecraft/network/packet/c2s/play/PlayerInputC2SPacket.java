@@ -1,10 +1,14 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerInputC2SPacket> CODEC = Packet.createCodec(PlayerInputC2SPacket::write, PlayerInputC2SPacket::new);
 	private static final int JUMPING_MASK = 1;
 	private static final int SNEAKING_MASK = 2;
 	private final float sideways;
@@ -19,7 +23,7 @@ public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.sneaking = sneaking;
 	}
 
-	public PlayerInputC2SPacket(PacketByteBuf buf) {
+	private PlayerInputC2SPacket(PacketByteBuf buf) {
 		this.sideways = buf.readFloat();
 		this.forward = buf.readFloat();
 		byte b = buf.readByte();
@@ -27,8 +31,7 @@ public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.sneaking = (b & 2) > 0;
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeFloat(this.sideways);
 		buf.writeFloat(this.forward);
 		byte b = 0;
@@ -41,6 +44,11 @@ public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
 		}
 
 		buf.writeByte(b);
+	}
+
+	@Override
+	public PacketIdentifier<PlayerInputC2SPacket> getPacketId() {
+		return PlayPackets.PLAYER_INPUT;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

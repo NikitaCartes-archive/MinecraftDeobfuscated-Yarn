@@ -56,7 +56,7 @@ public class MushroomBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		return neighborState.isOf(this)
@@ -65,7 +65,7 @@ public class MushroomBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.NORTH)), (Boolean)state.get(NORTH))
 			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.SOUTH)), (Boolean)state.get(SOUTH))
 			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.EAST)), (Boolean)state.get(EAST))
@@ -75,7 +75,7 @@ public class MushroomBlock extends Block {
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.NORTH)), (Boolean)state.get(NORTH))
 			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.SOUTH)), (Boolean)state.get(SOUTH))
 			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.EAST)), (Boolean)state.get(EAST))

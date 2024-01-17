@@ -4,16 +4,22 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.util.List;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 
 public record ChunkBiomeDataS2CPacket(List<ChunkBiomeDataS2CPacket.Serialized> chunkBiomeData) implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ChunkBiomeDataS2CPacket> CODEC = Packet.createCodec(
+		ChunkBiomeDataS2CPacket::write, ChunkBiomeDataS2CPacket::new
+	);
 	private static final int MAX_SIZE = 2097152;
 
-	public ChunkBiomeDataS2CPacket(PacketByteBuf buf) {
+	private ChunkBiomeDataS2CPacket(PacketByteBuf buf) {
 		this(buf.readList(ChunkBiomeDataS2CPacket.Serialized::new));
 	}
 
@@ -21,9 +27,13 @@ public record ChunkBiomeDataS2CPacket(List<ChunkBiomeDataS2CPacket.Serialized> c
 		return new ChunkBiomeDataS2CPacket(chunks.stream().map(ChunkBiomeDataS2CPacket.Serialized::new).toList());
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeCollection(this.chunkBiomeData, (bufx, data) -> data.write(bufx));
+	}
+
+	@Override
+	public PacketIdentifier<ChunkBiomeDataS2CPacket> getPacketId() {
+		return PlayPackets.CHUNKS_BIOMES;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

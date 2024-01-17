@@ -60,6 +60,10 @@ public class ChatScreen extends Screen {
 		this.chatInputSuggestor = new ChatInputSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
 		this.chatInputSuggestor.setCanLeave(false);
 		this.chatInputSuggestor.refresh();
+	}
+
+	@Override
+	protected void method_56131() {
 		this.setInitialFocus(this.chatField);
 	}
 

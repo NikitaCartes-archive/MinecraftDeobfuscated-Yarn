@@ -6,7 +6,7 @@ import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 
-public interface ServerLoginPacketListener extends ServerCrashSafePacketListener {
+public interface ServerLoginPacketListener extends ServerCookieResponsePacketListener, ServerCrashSafePacketListener {
 	@Override
 	default NetworkState getState() {
 		return NetworkState.LOGIN;

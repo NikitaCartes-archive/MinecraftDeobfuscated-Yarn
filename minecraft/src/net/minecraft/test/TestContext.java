@@ -36,7 +36,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
-import net.minecraft.network.NetworkState;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -124,6 +123,39 @@ public class TestContext {
 			serverWorld.spawnEntity(entity);
 			return entity;
 		}
+	}
+
+	public <E extends Entity> E expectEntityAtOrigin(EntityType<E> type) {
+		return this.expectEntity(type, 0, 0, 0, 2.147483647E9);
+	}
+
+	public <E extends Entity> E expectEntity(EntityType<E> type, int x, int y, int z, double margin) {
+		List<E> list = this.getEntitiesAround(type, x, y, z, margin);
+		if (list.isEmpty()) {
+			throw new GameTestException("Expected " + type.getUntranslatedName() + " to exist around " + x + "," + y + "," + z);
+		} else if (list.size() > 1) {
+			throw new GameTestException("Expected only one " + type.getUntranslatedName() + " to exist around " + x + "," + y + "," + z + ", but found " + list.size());
+		} else {
+			Vec3d vec3d = this.getAbsolute(new Vec3d((double)x, (double)y, (double)z));
+			list.sort((a, b) -> {
+				double d = a.getPos().distanceTo(vec3d);
+				double e = b.getPos().distanceTo(vec3d);
+				return Double.compare(d, e);
+			});
+			return (E)list.get(0);
+		}
+	}
+
+	public <E extends Entity> List<E> getEntitiesAround(EntityType<E> type, int x, int y, int z, double margin) {
+		return this.getEntitiesAround(type, Vec3d.ofBottomCenter(new BlockPos(x, y, z)), margin);
+	}
+
+	public <E extends Entity> List<E> getEntitiesAround(EntityType<E> type, Vec3d pos, double margin) {
+		ServerWorld serverWorld = this.getWorld();
+		Vec3d vec3d = this.getAbsolute(pos);
+		Box box = this.test.getBoundingBox();
+		Box box2 = new Box(vec3d.add(-margin, -margin, -margin), vec3d.add(margin, margin, margin));
+		return serverWorld.getEntitiesByType(type, box, entity -> entity.getBoundingBox().intersects(box2) && entity.isAlive());
 	}
 
 	public <E extends Entity> E spawnEntity(EntityType<E> type, int x, int y, int z) {
@@ -243,7 +275,7 @@ public class TestContext {
 		forRemoval = true
 	)
 	public ServerPlayerEntity createMockCreativeServerPlayerInWorld() {
-		ConnectedClientData connectedClientData = ConnectedClientData.createDefault(new GameProfile(UUID.randomUUID(), "test-mock-player"));
+		ConnectedClientData connectedClientData = ConnectedClientData.createDefault(new GameProfile(UUID.randomUUID(), "test-mock-player"), false);
 		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(
 			this.getWorld().getServer(), this.getWorld(), connectedClientData.gameProfile(), connectedClientData.syncedOptions()
 		) {
@@ -258,8 +290,7 @@ public class TestContext {
 			}
 		};
 		ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
-		EmbeddedChannel embeddedChannel = new EmbeddedChannel(clientConnection);
-		embeddedChannel.attr(ClientConnection.SERVERBOUND_PROTOCOL_KEY).set(NetworkState.PLAY.getHandler(NetworkSide.SERVERBOUND));
+		new EmbeddedChannel(clientConnection);
 		this.getWorld().getServer().getPlayerManager().onPlayerConnect(clientConnection, serverPlayerEntity, connectedClientData);
 		return serverPlayerEntity;
 	}
@@ -439,6 +470,10 @@ public class TestContext {
 	public <T extends Entity> List<T> getEntitiesAround(EntityType<T> type, BlockPos pos, double radius) {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		return this.getWorld().getEntitiesByType(type, new Box(blockPos).expand(radius), Entity::isAlive);
+	}
+
+	public <T extends Entity> List<T> getEntities(EntityType<T> type) {
+		return this.getWorld().getEntitiesByType(type, this.getTestBox(), Entity::isAlive);
 	}
 
 	public void expectEntityAt(Entity entity, int x, int y, int z) {
@@ -776,7 +811,7 @@ public class TestContext {
 	}
 
 	public void runAtEveryTick(Runnable task) {
-		LongStream.range(this.test.getTick(), (long)this.test.getTicksLeft()).forEach(tick -> this.test.runAtTick(tick, task::run));
+		LongStream.range(this.test.getTick(), (long)this.test.getTickLimit()).forEach(tick -> this.test.runAtTick(tick, task::run));
 	}
 
 	public TimedTaskRunner createTimedTaskRunner() {
@@ -812,6 +847,12 @@ public class TestContext {
 		}
 	}
 
+	public <N extends Number> void assertEquals(N actual, N expected, String name) {
+		if (!actual.equals(expected)) {
+			throw new GameTestException("Expected " + name + " to be " + expected + ", but was " + actual);
+		}
+	}
+
 	public void assertFalse(boolean condition, String message) {
 		if (condition) {
 			throw new GameTestException(message);
@@ -832,12 +873,12 @@ public class TestContext {
 	}
 
 	public void forEachRelativePos(Consumer<BlockPos> posConsumer) {
-		Box box = this.getRelativeTestBox();
-		BlockPos.Mutable.stream(box.offset(0.0, 1.0, 0.0)).forEach(posConsumer);
+		Box box = this.getRelativeTestBox().shrink(1.0, 1.0, 1.0);
+		BlockPos.Mutable.stream(box).forEach(posConsumer);
 	}
 
 	public void forEachRemainingTick(Runnable runnable) {
-		LongStream.range(this.test.getTick(), (long)this.test.getTicksLeft()).forEach(tick -> this.test.runAtTick(tick, runnable::run));
+		LongStream.range(this.test.getTick(), (long)this.test.getTickLimit()).forEach(tick -> this.test.runAtTick(tick, runnable::run));
 	}
 
 	public void useStackOnBlock(PlayerEntity player, ItemStack stack, BlockPos pos, Direction direction) {

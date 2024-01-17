@@ -29,7 +29,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
@@ -78,7 +78,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+	protected boolean canReplace(BlockState state, ItemPlacementContext context) {
 		boolean bl = super.canReplace(state, context);
 		return bl && context.getStack().isOf(this.getStem().asItem()) ? false : bl;
 	}

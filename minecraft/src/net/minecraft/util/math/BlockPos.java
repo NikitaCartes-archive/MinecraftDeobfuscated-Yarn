@@ -3,6 +3,7 @@ package net.minecraft.util.math;
 import com.google.common.collect.AbstractIterator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.ArrayDeque;
@@ -15,6 +16,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
@@ -39,6 +42,15 @@ public class BlockPos extends Vec3i {
 			pos -> IntStream.of(new int[]{pos.getX(), pos.getY(), pos.getZ()})
 		)
 		.stable();
+	public static final PacketCodec<ByteBuf, BlockPos> PACKET_CODEC = new PacketCodec<ByteBuf, BlockPos>() {
+		public BlockPos decode(ByteBuf byteBuf) {
+			return PacketByteBuf.readBlockPos(byteBuf);
+		}
+
+		public void encode(ByteBuf byteBuf, BlockPos blockPos) {
+			PacketByteBuf.writeBlockPos(byteBuf, blockPos);
+		}
+	};
 	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * The block position which x, y, and z values are all zero.

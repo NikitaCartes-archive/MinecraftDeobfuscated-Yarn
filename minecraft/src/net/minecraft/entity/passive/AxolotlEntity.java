@@ -14,7 +14,6 @@ import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -257,11 +256,6 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	@Override
 	public boolean isPushedByFluids() {
 		return false;
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.AQUATIC;
 	}
 
 	public void setPlayingDead(boolean playingDead) {

@@ -64,12 +64,12 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	protected BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
 	}
 
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		BlockEntity optionalInt = world.getBlockEntity(pos);
 		if (optionalInt instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity) {
 			if (!stack.isIn(ItemTags.BOOKSHELF_BOOKS)) {
@@ -91,7 +91,7 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		BlockEntity optionalInt = world.getBlockEntity(pos);
 		if (optionalInt instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity) {
 			OptionalInt optionalIntx = this.getSlotForHitPos(hit, state);
@@ -190,7 +190,7 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity && !chiseledBookshelfBlockEntity.isEmpty()) {
@@ -225,12 +225,12 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	protected boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		if (world.isClient()) {
 			return 0;
 		} else {

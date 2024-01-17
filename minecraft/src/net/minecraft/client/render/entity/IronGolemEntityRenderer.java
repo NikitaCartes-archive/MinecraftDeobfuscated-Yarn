@@ -25,13 +25,13 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 		return TEXTURE;
 	}
 
-	protected void setupTransforms(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(ironGolemEntity, matrixStack, f, g, h);
+	protected void setupTransforms(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		super.setupTransforms(ironGolemEntity, matrixStack, f, g, h, i);
 		if (!((double)ironGolemEntity.limbAnimator.getSpeed() < 0.01)) {
-			float i = 13.0F;
-			float j = ironGolemEntity.limbAnimator.getPos(h) + 6.0F;
-			float k = (Math.abs(j % 13.0F - 6.5F) - 3.25F) / 3.25F;
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.5F * k));
+			float j = 13.0F;
+			float k = ironGolemEntity.limbAnimator.getPos(h) + 6.0F;
+			float l = (Math.abs(k % 13.0F - 6.5F) - 3.25F) / 3.25F;
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.5F * l));
 		}
 	}
 }

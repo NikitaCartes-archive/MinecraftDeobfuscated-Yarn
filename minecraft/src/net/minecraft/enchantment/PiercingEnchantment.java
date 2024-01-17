@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class PiercingEnchantment extends Enchantment {
 	public PiercingEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.CROSSBOW, slotTypes);
+		super(weight, ItemTags.CROSSBOW_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

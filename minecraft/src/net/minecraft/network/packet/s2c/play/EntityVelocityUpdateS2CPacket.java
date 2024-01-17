@@ -2,8 +2,11 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -15,6 +18,9 @@ import net.minecraft.util.math.Vec3d;
  * a replacement.
  */
 public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, EntityVelocityUpdateS2CPacket> CODEC = Packet.createCodec(
+		EntityVelocityUpdateS2CPacket::write, EntityVelocityUpdateS2CPacket::new
+	);
 	private final int id;
 	private final int velocityX;
 	private final int velocityY;
@@ -35,19 +41,23 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 		this.velocityZ = (int)(g * 8000.0);
 	}
 
-	public EntityVelocityUpdateS2CPacket(PacketByteBuf buf) {
+	private EntityVelocityUpdateS2CPacket(PacketByteBuf buf) {
 		this.id = buf.readVarInt();
 		this.velocityX = buf.readShort();
 		this.velocityY = buf.readShort();
 		this.velocityZ = buf.readShort();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeShort(this.velocityX);
 		buf.writeShort(this.velocityY);
 		buf.writeShort(this.velocityZ);
+	}
+
+	@Override
+	public PacketIdentifier<EntityVelocityUpdateS2CPacket> getPacketId() {
+		return PlayPackets.SET_ENTITY_MOTION;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

@@ -45,8 +45,12 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 		this.nameField.setChangedListener(this::onRenamed);
 		this.nameField.setText("");
 		this.addSelectableChild(this.nameField);
-		this.setInitialFocus(this.nameField);
 		this.nameField.setEditable(this.handler.getSlot(0).hasStack());
+	}
+
+	@Override
+	protected void method_56131() {
+		this.setInitialFocus(this.nameField);
 	}
 
 	@Override

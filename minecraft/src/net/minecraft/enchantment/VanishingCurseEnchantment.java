@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class VanishingCurseEnchantment extends Enchantment {
 	public VanishingCurseEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.VANISHABLE, slotTypes);
+		super(weight, ItemTags.VANISHING_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

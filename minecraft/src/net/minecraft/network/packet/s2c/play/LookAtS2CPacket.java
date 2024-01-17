@@ -4,12 +4,16 @@ import javax.annotation.Nullable;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, LookAtS2CPacket> CODEC = Packet.createCodec(LookAtS2CPacket::write, LookAtS2CPacket::new);
 	private final double targetX;
 	private final double targetY;
 	private final double targetZ;
@@ -39,7 +43,7 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.lookAtEntity = true;
 	}
 
-	public LookAtS2CPacket(PacketByteBuf buf) {
+	private LookAtS2CPacket(PacketByteBuf buf) {
 		this.selfAnchor = buf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
 		this.targetX = buf.readDouble();
 		this.targetY = buf.readDouble();
@@ -54,8 +58,7 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.selfAnchor);
 		buf.writeDouble(this.targetX);
 		buf.writeDouble(this.targetY);
@@ -65,6 +68,11 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 			buf.writeVarInt(this.entityId);
 			buf.writeEnumConstant(this.targetAnchor);
 		}
+	}
+
+	@Override
+	public PacketIdentifier<LookAtS2CPacket> getPacketId() {
+		return PlayPackets.PLAYER_LOOK_AT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

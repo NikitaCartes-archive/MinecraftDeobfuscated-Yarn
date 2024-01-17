@@ -7,6 +7,8 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface Font extends AutoCloseable {
+	float field_48382 = 7.0F;
+
 	default void close() {
 	}
 

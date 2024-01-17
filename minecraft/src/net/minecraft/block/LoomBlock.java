@@ -30,7 +30,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
@@ -41,7 +41,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+	protected NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
 			(syncId, inventory, player) -> new LoomScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);

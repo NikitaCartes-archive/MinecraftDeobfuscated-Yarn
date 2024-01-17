@@ -4,13 +4,15 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -20,7 +22,7 @@ import net.minecraft.util.Util;
 public abstract class Enchantment {
 	private final EquipmentSlot[] slotTypes;
 	private final Enchantment.Rarity rarity;
-	public final EnchantmentTarget target;
+	private final TagKey<Item> applicableItems;
 	@Nullable
 	protected String translationKey;
 	private final RegistryEntry.Reference<Enchantment> registryEntry = Registries.ENCHANTMENT.createEntry(this);
@@ -30,9 +32,9 @@ public abstract class Enchantment {
 		return Registries.ENCHANTMENT.get(id);
 	}
 
-	protected Enchantment(Enchantment.Rarity rarity, EnchantmentTarget target, EquipmentSlot[] slotTypes) {
+	protected Enchantment(Enchantment.Rarity rarity, TagKey<Item> applicableItems, EquipmentSlot[] slotTypes) {
 		this.rarity = rarity;
-		this.target = target;
+		this.applicableItems = applicableItems;
 		this.slotTypes = slotTypes;
 	}
 
@@ -47,6 +49,10 @@ public abstract class Enchantment {
 		}
 
 		return map;
+	}
+
+	public TagKey<Item> getApplicableItems() {
+		return this.applicableItems;
 	}
 
 	public Enchantment.Rarity getRarity() {
@@ -73,7 +79,7 @@ public abstract class Enchantment {
 		return 0;
 	}
 
-	public float getAttackDamage(int level, EntityGroup group) {
+	public float getAttackDamage(int level, @Nullable EntityType<?> entityType) {
 		return 0.0F;
 	}
 
@@ -122,7 +128,7 @@ public abstract class Enchantment {
 	}
 
 	public boolean isAcceptableItem(ItemStack stack) {
-		return this.target.isAcceptableItem(stack.getItem());
+		return stack.getItem().getRegistryEntry().isIn(this.applicableItems);
 	}
 
 	public void onTargetDamaged(LivingEntity user, Entity target, int level) {

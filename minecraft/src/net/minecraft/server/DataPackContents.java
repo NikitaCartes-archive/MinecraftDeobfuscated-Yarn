@@ -9,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.loot.LootManager;
 import net.minecraft.recipe.RecipeManager;
@@ -124,6 +125,7 @@ public class DataPackContents {
 
 	public void refresh(DynamicRegistryManager dynamicRegistryManager) {
 		this.registryTagManager.getRegistryTags().forEach(tags -> repopulateTags(dynamicRegistryManager, tags));
+		AbstractFurnaceBlockEntity.clearFuelTimes();
 		Blocks.refreshShapeCache();
 	}
 

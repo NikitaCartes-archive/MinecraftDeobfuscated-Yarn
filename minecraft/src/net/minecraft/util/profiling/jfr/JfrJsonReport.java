@@ -175,7 +175,6 @@ public class JfrJsonReport {
 			NetworkIoStatistics.PacketStatistics packetStatistics = (NetworkIoStatistics.PacketStatistics)pair.getSecond();
 			jsonObjectxx.addProperty("protocolId", packet.protocolId());
 			jsonObjectxx.addProperty("packetId", packet.packetId());
-			jsonObjectxx.addProperty("packetName", packet.getName());
 			jsonObjectxx.addProperty("totalBytes", packetStatistics.totalSize());
 			jsonObjectxx.addProperty("count", packetStatistics.totalCount());
 		});

@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -21,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -31,11 +31,11 @@ public class PufferfishEntity extends FishEntity {
 	int inflateTicks;
 	int deflateTicks;
 	private static final Predicate<LivingEntity> BLOW_UP_FILTER = entity -> {
-		if (entity instanceof PlayerEntity && ((PlayerEntity)entity).isCreative()) {
+		if (entity instanceof PlayerEntity playerEntity && playerEntity.isCreative()) {
 			return false;
-		} else {
-			return entity.getType() == EntityType.AXOLOTL || entity.getGroup() != EntityGroup.AQUATIC;
 		}
+
+		return !entity.getType().isIn(EntityTypeTags.NOT_SCARY_FOR_PUFFERFISH);
 	};
 	static final TargetPredicate BLOW_UP_TARGET_PREDICATE = TargetPredicate.createNonAttackable()
 		.ignoreDistanceScalingFactor()
@@ -101,20 +101,20 @@ public class PufferfishEntity extends FishEntity {
 		if (!this.getWorld().isClient && this.isAlive() && this.canMoveVoluntarily()) {
 			if (this.inflateTicks > 0) {
 				if (this.getPuffState() == 0) {
-					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
+					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP);
 					this.setPuffState(SEMI_PUFFED);
 				} else if (this.inflateTicks > 40 && this.getPuffState() == 1) {
-					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
+					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP);
 					this.setPuffState(FULLY_PUFFED);
 				}
 
 				++this.inflateTicks;
 			} else if (this.getPuffState() != 0) {
 				if (this.deflateTicks > 60 && this.getPuffState() == 2) {
-					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT, this.getSoundVolume(), this.getSoundPitch());
+					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT);
 					this.setPuffState(SEMI_PUFFED);
 				} else if (this.deflateTicks > 100 && this.getPuffState() == 1) {
-					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT, this.getSoundVolume(), this.getSoundPitch());
+					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT);
 					this.setPuffState(NOT_PUFFED);
 				}
 

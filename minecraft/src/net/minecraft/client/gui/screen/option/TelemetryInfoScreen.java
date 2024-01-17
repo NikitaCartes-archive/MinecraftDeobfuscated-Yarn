@@ -75,13 +75,17 @@ public class TelemetryInfoScreen extends Screen {
 		this.telemetryEventWidget = new TelemetryEventWidget(0, 0, this.width - 40, k, this.client.textRenderer);
 		this.telemetryEventWidget.setScrollY(this.scroll);
 		this.telemetryEventWidget.setScrollConsumer(scroll -> this.scroll = scroll);
-		this.setInitialFocus(this.telemetryEventWidget);
 		directionalLayoutWidget.add(this.telemetryEventWidget);
 		directionalLayoutWidget.add(layoutWidget);
 		simplePositioningWidget.refreshPositions();
 		SimplePositioningWidget.setPos(simplePositioningWidget, 0, 0, this.width, this.height, 0.5F, 0.0F);
 		simplePositioningWidget.forEachChild(child -> {
 		});
+	}
+
+	@Override
+	protected void method_56131() {
+		this.setInitialFocus(this.telemetryEventWidget);
 	}
 
 	private LayoutWidget getLayout() {

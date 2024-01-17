@@ -128,7 +128,7 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence) {
-		if (!this.player.isPosInBlockInteractionRange(pos)) {
+		if (!this.player.canInteractWithBlockAt(pos, 1.0)) {
 			this.method_41250(pos, false, sequence, "too far");
 		} else if (pos.getY() >= worldHeight) {
 			this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
@@ -316,6 +316,7 @@ public class ServerPlayerInteractionManager {
 				if (itemActionResult == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
 					ActionResult actionResult = blockState.onUse(world, player, hitResult);
 					if (actionResult.isAccepted()) {
+						Criteria.DEFAULT_BLOCK_USE.trigger(player, blockPos);
 						return actionResult;
 					}
 				}

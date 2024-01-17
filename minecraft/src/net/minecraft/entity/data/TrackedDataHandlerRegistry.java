@@ -1,5 +1,6 @@
 package net.minecraft.entity.data;
 
+import io.netty.buffer.ByteBuf;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.UUID;
@@ -14,12 +15,17 @@ import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
+import net.minecraft.network.encoding.VarInts;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.registry.Registries;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -31,124 +37,85 @@ import org.joml.Vector3f;
 
 public class TrackedDataHandlerRegistry {
 	private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = Int2ObjectBiMap.create(16);
-	public static final TrackedDataHandler<Byte> BYTE = TrackedDataHandler.of((buf, byte_) -> buf.writeByte(byte_), PacketByteBuf::readByte);
-	public static final TrackedDataHandler<Integer> INTEGER = TrackedDataHandler.of(PacketByteBuf::writeVarInt, PacketByteBuf::readVarInt);
-	public static final TrackedDataHandler<Long> LONG = TrackedDataHandler.of(PacketByteBuf::writeVarLong, PacketByteBuf::readVarLong);
-	public static final TrackedDataHandler<Float> FLOAT = TrackedDataHandler.of(PacketByteBuf::writeFloat, PacketByteBuf::readFloat);
-	public static final TrackedDataHandler<String> STRING = TrackedDataHandler.of(PacketByteBuf::writeString, PacketByteBuf::readString);
-	public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.of(PacketByteBuf::writeText, PacketByteBuf::readUnlimitedText);
-	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = TrackedDataHandler.ofOptional(
-		PacketByteBuf::writeText, PacketByteBuf::readUnlimitedText
+	public static final TrackedDataHandler<Byte> BYTE = TrackedDataHandler.create(PacketCodecs.BYTE);
+	public static final TrackedDataHandler<Integer> INTEGER = TrackedDataHandler.create(PacketCodecs.VAR_INT);
+	public static final TrackedDataHandler<Long> LONG = TrackedDataHandler.create(PacketCodecs.VAR_LONG);
+	public static final TrackedDataHandler<Float> FLOAT = TrackedDataHandler.create(PacketCodecs.FLOAT);
+	public static final TrackedDataHandler<String> STRING = TrackedDataHandler.create(PacketCodecs.STRING);
+	public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.PACKET_CODEC);
+	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = TrackedDataHandler.create(
+		TextCodecs.PACKET_CODEC.mapResult(PacketCodecs::optional)
 	);
 	public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>() {
-		public void write(PacketByteBuf packetByteBuf, ItemStack itemStack) {
-			packetByteBuf.writeItemStack(itemStack);
-		}
-
-		public ItemStack read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readItemStack();
+		@Override
+		public PacketCodec<? super RegistryByteBuf, ItemStack> codec() {
+			return ItemStack.PACKET_CODEC;
 		}
 
 		public ItemStack copy(ItemStack itemStack) {
 			return itemStack.copy();
 		}
 	};
-	public static final TrackedDataHandler<BlockState> BLOCK_STATE = TrackedDataHandler.of(Block.STATE_IDS);
-	public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = new TrackedDataHandler.ImmutableHandler<Optional<BlockState>>() {
-		public void write(PacketByteBuf packetByteBuf, Optional<BlockState> optional) {
+	public static final TrackedDataHandler<BlockState> BLOCK_STATE = TrackedDataHandler.create(PacketCodecs.ofIterable(Block.STATE_IDS));
+	private static final PacketCodec<ByteBuf, Optional<BlockState>> OPTIONAL_BLOCK_STATE_CODEC = new PacketCodec<ByteBuf, Optional<BlockState>>() {
+		public void encode(ByteBuf byteBuf, Optional<BlockState> optional) {
 			if (optional.isPresent()) {
-				packetByteBuf.writeVarInt(Block.getRawIdFromState((BlockState)optional.get()));
+				VarInts.write(byteBuf, Block.getRawIdFromState((BlockState)optional.get()));
 			} else {
-				packetByteBuf.writeVarInt(0);
+				VarInts.write(byteBuf, 0);
 			}
 		}
 
-		public Optional<BlockState> read(PacketByteBuf packetByteBuf) {
-			int i = packetByteBuf.readVarInt();
+		public Optional<BlockState> decode(ByteBuf byteBuf) {
+			int i = VarInts.read(byteBuf);
 			return i == 0 ? Optional.empty() : Optional.of(Block.getStateFromRawId(i));
 		}
 	};
-	public static final TrackedDataHandler<Boolean> BOOLEAN = TrackedDataHandler.of(PacketByteBuf::writeBoolean, PacketByteBuf::readBoolean);
-	public static final TrackedDataHandler<ParticleEffect> PARTICLE = new TrackedDataHandler.ImmutableHandler<ParticleEffect>() {
-		public void write(PacketByteBuf packetByteBuf, ParticleEffect particleEffect) {
-			packetByteBuf.writeRegistryValue(Registries.PARTICLE_TYPE, particleEffect.getType());
-			particleEffect.write(packetByteBuf);
-		}
-
-		public ParticleEffect read(PacketByteBuf packetByteBuf) {
-			return this.read(packetByteBuf, packetByteBuf.readRegistryValue(Registries.PARTICLE_TYPE));
-		}
-
-		private <T extends ParticleEffect> T read(PacketByteBuf buf, ParticleType<T> type) {
-			return type.getParametersFactory().read(type, buf);
-		}
-	};
-	public static final TrackedDataHandler<EulerAngle> ROTATION = new TrackedDataHandler.ImmutableHandler<EulerAngle>() {
-		public void write(PacketByteBuf packetByteBuf, EulerAngle eulerAngle) {
-			packetByteBuf.writeFloat(eulerAngle.getPitch());
-			packetByteBuf.writeFloat(eulerAngle.getYaw());
-			packetByteBuf.writeFloat(eulerAngle.getRoll());
-		}
-
-		public EulerAngle read(PacketByteBuf packetByteBuf) {
-			return new EulerAngle(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
-		}
-	};
-	public static final TrackedDataHandler<BlockPos> BLOCK_POS = TrackedDataHandler.of(PacketByteBuf::writeBlockPos, PacketByteBuf::readBlockPos);
-	public static final TrackedDataHandler<Optional<BlockPos>> OPTIONAL_BLOCK_POS = TrackedDataHandler.ofOptional(
-		PacketByteBuf::writeBlockPos, PacketByteBuf::readBlockPos
+	public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = TrackedDataHandler.create(OPTIONAL_BLOCK_STATE_CODEC);
+	public static final TrackedDataHandler<Boolean> BOOLEAN = TrackedDataHandler.create(PacketCodecs.BOOL);
+	public static final TrackedDataHandler<ParticleEffect> PARTICLE = TrackedDataHandler.create(ParticleTypes.PACKET_CODEC);
+	public static final TrackedDataHandler<EulerAngle> ROTATION = TrackedDataHandler.create(EulerAngle.PACKET_CODEC);
+	public static final TrackedDataHandler<BlockPos> BLOCK_POS = TrackedDataHandler.create(BlockPos.PACKET_CODEC);
+	public static final TrackedDataHandler<Optional<BlockPos>> OPTIONAL_BLOCK_POS = TrackedDataHandler.create(
+		BlockPos.PACKET_CODEC.mapResult(PacketCodecs::optional)
 	);
-	public static final TrackedDataHandler<Direction> FACING = TrackedDataHandler.ofEnum(Direction.class);
-	public static final TrackedDataHandler<Optional<UUID>> OPTIONAL_UUID = TrackedDataHandler.ofOptional(PacketByteBuf::writeUuid, PacketByteBuf::readUuid);
-	public static final TrackedDataHandler<Optional<GlobalPos>> OPTIONAL_GLOBAL_POS = TrackedDataHandler.ofOptional(
-		PacketByteBuf::writeGlobalPos, PacketByteBuf::readGlobalPos
+	public static final TrackedDataHandler<Direction> FACING = TrackedDataHandler.create(Direction.PACKET_CODEC);
+	public static final TrackedDataHandler<Optional<UUID>> OPTIONAL_UUID = TrackedDataHandler.create(Uuids.PACKET_CODEC.mapResult(PacketCodecs::optional));
+	public static final TrackedDataHandler<Optional<GlobalPos>> OPTIONAL_GLOBAL_POS = TrackedDataHandler.create(
+		GlobalPos.PACKET_CODEC.mapResult(PacketCodecs::optional)
 	);
 	public static final TrackedDataHandler<NbtCompound> NBT_COMPOUND = new TrackedDataHandler<NbtCompound>() {
-		public void write(PacketByteBuf packetByteBuf, NbtCompound nbtCompound) {
-			packetByteBuf.writeNbt(nbtCompound);
-		}
-
-		public NbtCompound read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readNbt();
+		@Override
+		public PacketCodec<? super RegistryByteBuf, NbtCompound> codec() {
+			return PacketCodecs.NBT_COMPUND;
 		}
 
 		public NbtCompound copy(NbtCompound nbtCompound) {
 			return nbtCompound.copy();
 		}
 	};
-	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler.ImmutableHandler<VillagerData>() {
-		public void write(PacketByteBuf packetByteBuf, VillagerData villagerData) {
-			packetByteBuf.writeRegistryValue(Registries.VILLAGER_TYPE, villagerData.getType());
-			packetByteBuf.writeRegistryValue(Registries.VILLAGER_PROFESSION, villagerData.getProfession());
-			packetByteBuf.writeVarInt(villagerData.getLevel());
-		}
-
-		public VillagerData read(PacketByteBuf packetByteBuf) {
-			return new VillagerData(
-				packetByteBuf.readRegistryValue(Registries.VILLAGER_TYPE), packetByteBuf.readRegistryValue(Registries.VILLAGER_PROFESSION), packetByteBuf.readVarInt()
-			);
-		}
-	};
-	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = new TrackedDataHandler.ImmutableHandler<OptionalInt>() {
-		public void write(PacketByteBuf packetByteBuf, OptionalInt optionalInt) {
-			packetByteBuf.writeVarInt(optionalInt.orElse(-1) + 1);
-		}
-
-		public OptionalInt read(PacketByteBuf packetByteBuf) {
-			int i = packetByteBuf.readVarInt();
+	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = TrackedDataHandler.create(VillagerData.PACKET_CODEC);
+	private static final PacketCodec<ByteBuf, OptionalInt> OPTIONAL_INT_CODEC = new PacketCodec<ByteBuf, OptionalInt>() {
+		public OptionalInt decode(ByteBuf byteBuf) {
+			int i = VarInts.read(byteBuf);
 			return i == 0 ? OptionalInt.empty() : OptionalInt.of(i - 1);
 		}
+
+		public void encode(ByteBuf byteBuf, OptionalInt optionalInt) {
+			VarInts.write(byteBuf, optionalInt.orElse(-1) + 1);
+		}
 	};
-	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.ofEnum(EntityPose.class);
-	public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.of(Registries.CAT_VARIANT);
-	public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.of(Registries.FROG_VARIANT);
-	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.of(
-		Registries.PAINTING_VARIANT.getIndexedEntries()
+	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = TrackedDataHandler.create(OPTIONAL_INT_CODEC);
+	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.create(EntityPose.PACKET_CODEC);
+	public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.create(PacketCodecs.registry(RegistryKeys.CAT_VARIANT));
+	public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.create(PacketCodecs.registry(RegistryKeys.FROG_VARIANT));
+	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.create(
+		PacketCodecs.registryEntry(RegistryKeys.PAINTING_VARIANT)
 	);
-	public static final TrackedDataHandler<SnifferEntity.State> SNIFFER_STATE = TrackedDataHandler.ofEnum(SnifferEntity.State.class);
-	public static final TrackedDataHandler<ArmadilloEntity.State> ARMADILLO_STATE = TrackedDataHandler.ofEnum(ArmadilloEntity.State.class);
-	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.of(PacketByteBuf::writeVector3f, PacketByteBuf::readVector3f);
-	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.of(PacketByteBuf::writeQuaternionf, PacketByteBuf::readQuaternionf);
+	public static final TrackedDataHandler<ArmadilloEntity.State> ARMADILLO_STATE = TrackedDataHandler.create(ArmadilloEntity.State.PACKET_CODEC);
+	public static final TrackedDataHandler<SnifferEntity.State> SNIFFER_STATE = TrackedDataHandler.create(SnifferEntity.State.PACKET_CODEC);
+	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.create(PacketCodecs.VECTOR3F);
+	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.create(PacketCodecs.QUATERNION);
 
 	public static void register(TrackedDataHandler<?> handler) {
 		DATA_HANDLERS.add(handler);

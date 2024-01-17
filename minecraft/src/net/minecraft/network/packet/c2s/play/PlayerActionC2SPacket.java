@@ -1,12 +1,16 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public class PlayerActionC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerActionC2SPacket> CODEC = Packet.createCodec(PlayerActionC2SPacket::write, PlayerActionC2SPacket::new);
 	private final BlockPos pos;
 	private final Direction direction;
 	private final PlayerActionC2SPacket.Action action;
@@ -23,19 +27,23 @@ public class PlayerActionC2SPacket implements Packet<ServerPlayPacketListener> {
 		this(action, pos, direction, 0);
 	}
 
-	public PlayerActionC2SPacket(PacketByteBuf buf) {
+	private PlayerActionC2SPacket(PacketByteBuf buf) {
 		this.action = buf.readEnumConstant(PlayerActionC2SPacket.Action.class);
 		this.pos = buf.readBlockPos();
 		this.direction = Direction.byId(buf.readUnsignedByte());
 		this.sequence = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.action);
 		buf.writeBlockPos(this.pos);
 		buf.writeByte(this.direction.getId());
 		buf.writeVarInt(this.sequence);
+	}
+
+	@Override
+	public PacketIdentifier<PlayerActionC2SPacket> getPacketId() {
+		return PlayPackets.PLAYER_ACTION;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

@@ -15,22 +15,22 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3802;
+	public static final int WORLD_VERSION = 3804;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "23w51b";
+	public static final String VERSION_NAME = "24w03a";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 766;
 	@Deprecated
-	public static final int field_29736 = 170;
+	public static final int field_29736 = 171;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3798;
 	private static final int field_29708 = 30;
 	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 22;
+	public static final int RESOURCE_PACK_VERSION = 24;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 27;
+	public static final int DATA_PACK_VERSION = 28;
 	@Deprecated
 	public static final int field_39963 = 1;
 	public static final int field_39964 = 1;
@@ -77,7 +77,6 @@ public class SharedConstants {
 	public static final boolean field_29696 = false;
 	public static final boolean field_29697 = false;
 	public static final boolean field_29698 = false;
-	public static final boolean field_29699 = false;
 	public static final boolean field_29700 = false;
 	public static final boolean field_33554 = false;
 	public static final boolean field_37273 = false;
@@ -89,7 +88,6 @@ public class SharedConstants {
 	public static final boolean field_47177 = false;
 	public static final boolean field_47178 = false;
 	public static final boolean field_34368 = false;
-	public static final boolean field_29701 = false;
 	public static final boolean field_29710 = false;
 	public static final boolean field_34369 = false;
 	public static final boolean field_34370 = false;
@@ -218,7 +216,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741994;
+		return 1073741995;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {

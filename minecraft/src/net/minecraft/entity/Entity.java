@@ -33,7 +33,6 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
@@ -241,7 +240,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	public static final float field_44870 = 0.2F;
 	public static final double field_44871 = 0.500001;
 	public static final double field_44872 = 0.999999;
-	public static final float field_29991 = 0.11111111F;
 	/**
 	 * @see Entity#getMinFreezeDamageTicks
 	 */
@@ -801,14 +799,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 * 
 	 * @see net.minecraft.enchantment.ProtectionEnchantment#transformFireDuration
 	 */
-	public void setOnFireFor(int seconds) {
-		int i = seconds * 20;
-		if (this instanceof LivingEntity) {
-			i = ProtectionEnchantment.transformFireDuration((LivingEntity)this, i);
-		}
+	public final void setOnFireFor(int seconds) {
+		this.setOnFireForTicks(seconds * 20);
+	}
 
-		if (this.fireTicks < i) {
-			this.setFireTicks(i);
+	public void setOnFireForTicks(int ticks) {
+		if (this.fireTicks < ticks) {
+			this.setFireTicks(ticks);
 		}
 	}
 
@@ -1706,7 +1703,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	private void updateSubmergedInWaterState() {
 		this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
 		this.submergedFluidTag.clear();
-		double d = this.getEyeY() - 0.11111111F;
+		double d = this.getEyeY();
 		Entity entity = this.getVehicle();
 		if (entity instanceof BoatEntity boatEntity
 			&& !boatEntity.isSubmergedInWater()
@@ -2550,7 +2547,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	}
 
 	public Vec3d getVehicleAttachmentPos(Entity vehicle) {
-		return this.dimensions.attachments().getPoint(EntityAttachmentType.VEHICLE, 0, this.yaw);
+		return this.getAttachments().getPoint(EntityAttachmentType.VEHICLE, 0, this.yaw);
 	}
 
 	public Vec3d getPassengerRidingPos(Entity passenger) {
@@ -3901,6 +3898,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 				blockPos = destination.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, destination.getSpawnPos());
 			}
 
+			destination.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
 			return new TeleportTarget(
 				new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
 			);
@@ -4495,7 +4493,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		return false;
 	}
 
-	public void onDeflectProjectile(ProjectileEntity projectile) {
+	public ProjectileDeflector getProjectileDeflector(ProjectileEntity projectile) {
+		return this.getType().isIn(EntityTypeTags.DEFLECTS_PROJECTILES) ? ProjectileDeflector.SIMPLE : ProjectileDeflector.NONE;
 	}
 
 	/**
@@ -5002,6 +5001,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 */
 	public EntityDimensions getDimensions(EntityPose pose) {
 		return this.type.getDimensions();
+	}
+
+	public final EntityAttachments getAttachments() {
+		return this.dimensions.attachments();
 	}
 
 	/**

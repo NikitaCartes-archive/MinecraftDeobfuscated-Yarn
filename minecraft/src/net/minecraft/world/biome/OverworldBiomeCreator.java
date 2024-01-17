@@ -329,6 +329,8 @@ public class OverworldBiomeCreator {
 	public static Biome createBadlands(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup, boolean plateau) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.ARMADILLO, 1, 1, 2));
+		builder.creatureSpawnProbability(0.03F);
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
 		addBasicFeatures(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDefaultOres(lookupBackedBuilder);

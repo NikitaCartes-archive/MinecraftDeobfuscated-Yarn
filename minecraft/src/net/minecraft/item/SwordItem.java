@@ -16,7 +16,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SwordItem extends ToolItem implements Vanishable {
+public class SwordItem extends ToolItem {
 	private final float attackDamage;
 	private final Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifiers;
 
@@ -55,14 +55,14 @@ public class SwordItem extends ToolItem implements Vanishable {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
 		return true;
 	}
 
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		if (state.getHardness(world, pos) != 0.0F) {
-			stack.damage(2, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+			stack.damage(2, miner, EquipmentSlot.MAINHAND);
 		}
 
 		return true;

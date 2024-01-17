@@ -11,7 +11,6 @@ import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
@@ -103,8 +102,7 @@ public class BoneMealItem extends Item {
 					if (registryEntry.isIn(BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL)) {
 						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
 							blockState = (BlockState)Registries.BLOCK
-								.getEntryList(BlockTags.WALL_CORALS)
-								.flatMap(blocks -> blocks.getRandom(world.random))
+								.getRandomEntry(BlockTags.WALL_CORALS, world.random)
 								.map(blockEntry -> ((Block)blockEntry.value()).getDefaultState())
 								.orElse(blockState);
 							if (blockState.contains(DeadCoralWallFanBlock.FACING)) {
@@ -112,8 +110,7 @@ public class BoneMealItem extends Item {
 							}
 						} else if (random.nextInt(4) == 0) {
 							blockState = (BlockState)Registries.BLOCK
-								.getEntryList(BlockTags.UNDERWATER_BONEMEALS)
-								.flatMap(blocks -> blocks.getRandom(world.random))
+								.getRandomEntry(BlockTags.UNDERWATER_BONEMEALS, world.random)
 								.map(blockEntry -> ((Block)blockEntry.value()).getDefaultState())
 								.orElse(blockState);
 						}
@@ -144,7 +141,8 @@ public class BoneMealItem extends Item {
 	}
 
 	public static void createParticles(WorldAccess world, BlockPos pos, int count) {
-		Block blockPos = world.getBlockState(pos).getBlock();
+		BlockState blockState = world.getBlockState(pos);
+		Block blockPos = blockState.getBlock();
 		if (blockPos instanceof Fertilizable fertilizable) {
 			BlockPos blockPosx = fertilizable.getFertilizeParticlePos(pos);
 			switch(fertilizable.getFertilizableType()) {
@@ -154,6 +152,8 @@ public class BoneMealItem extends Item {
 				case GROWER:
 					ParticleUtil.spawnParticlesAround(world, blockPosx, count, ParticleTypes.HAPPY_VILLAGER);
 			}
+		} else if (blockState.isOf(Blocks.WATER)) {
+			ParticleUtil.spawnParticlesAround(world, pos, count * 3, 3.0, 1.0, false, ParticleTypes.HAPPY_VILLAGER);
 		}
 	}
 }

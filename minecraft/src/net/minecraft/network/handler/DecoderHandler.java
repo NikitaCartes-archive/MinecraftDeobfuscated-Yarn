@@ -4,59 +4,51 @@ import com.mojang.logging.LogUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
 import java.io.IOException;
 import java.util.List;
+import net.minecraft.class_9127;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import org.slf4j.Logger;
 
-public class DecoderHandler extends ByteToMessageDecoder implements NetworkStateTransitionHandler {
+public class DecoderHandler<T extends PacketListener> extends ByteToMessageDecoder implements NetworkStateTransitionHandler {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final AttributeKey<NetworkState.PacketHandler<?>> protocolKey;
+	private final class_9127<T> field_48536;
 
-	public DecoderHandler(AttributeKey<NetworkState.PacketHandler<?>> protocolKey) {
-		this.protocolKey = protocolKey;
+	public DecoderHandler(class_9127<T> arg) {
+		this.field_48536 = arg;
 	}
 
 	@Override
-	protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> objects) throws Exception {
+	protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf buf, List<Object> objects) throws Exception {
 		int i = buf.readableBytes();
 		if (i != 0) {
-			Attribute<NetworkState.PacketHandler<?>> attribute = ctx.channel().attr(this.protocolKey);
-			NetworkState.PacketHandler<?> packetHandler = attribute.get();
-			PacketByteBuf packetByteBuf = new PacketByteBuf(buf);
-			int j = packetByteBuf.readVarInt();
-			Packet<?> packet = packetHandler.createPacket(j, packetByteBuf);
-			if (packet == null) {
-				throw new IOException("Bad packet id " + j);
+			Packet<? super T> packet = this.field_48536.codec().decode(buf);
+			PacketIdentifier<? extends Packet<? super T>> packetIdentifier = packet.getPacketId();
+			FlightProfiler.INSTANCE.onPacketReceived(this.field_48536.id(), packetIdentifier, channelHandlerContext.channel().remoteAddress(), i);
+			if (buf.readableBytes() > 0) {
+				throw new IOException(
+					"Packet "
+						+ this.field_48536.id().getId()
+						+ "/"
+						+ packetIdentifier
+						+ " ("
+						+ packet.getClass().getSimpleName()
+						+ ") was larger than I expected, found "
+						+ buf.readableBytes()
+						+ " bytes extra whilst reading packet "
+						+ packetIdentifier
+				);
 			} else {
-				FlightProfiler.INSTANCE.onPacketReceived(packetHandler.getState(), j, ctx.channel().remoteAddress(), i);
-				if (packetByteBuf.readableBytes() > 0) {
-					throw new IOException(
-						"Packet "
-							+ packetHandler.getState().getId()
-							+ "/"
-							+ j
-							+ " ("
-							+ packet.getClass().getSimpleName()
-							+ ") was larger than I expected, found "
-							+ packetByteBuf.readableBytes()
-							+ " bytes extra whilst reading packet "
-							+ j
-					);
-				} else {
-					objects.add(packet);
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug(ClientConnection.PACKET_RECEIVED_MARKER, " IN: [{}:{}] {}", packetHandler.getState().getId(), j, packet.getClass().getName());
-					}
-
-					NetworkStateTransitionHandler.handle(attribute, packet);
+				objects.add(packet);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(ClientConnection.PACKET_RECEIVED_MARKER, " IN: [{}:{}] {}", this.field_48536.id().getId(), packetIdentifier, packet.getClass().getName());
 				}
+
+				NetworkStateTransitionHandler.method_56347(channelHandlerContext, packet);
 			}
 		}
 	}

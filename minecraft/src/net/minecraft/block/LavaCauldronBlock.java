@@ -32,14 +32,14 @@ public class LavaCauldronBlock extends AbstractCauldronBlock {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (this.isEntityTouchingFluid(state, pos, entity)) {
 			entity.setOnFireFromLava();
 		}
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		return 3;
 	}
 }

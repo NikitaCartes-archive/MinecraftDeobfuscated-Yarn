@@ -1,12 +1,16 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, CraftRequestC2SPacket> CODEC = Packet.createCodec(CraftRequestC2SPacket::write, CraftRequestC2SPacket::new);
 	private final int syncId;
 	private final Identifier recipe;
 	private final boolean craftAll;
@@ -17,17 +21,21 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.craftAll = craftAll;
 	}
 
-	public CraftRequestC2SPacket(PacketByteBuf buf) {
+	private CraftRequestC2SPacket(PacketByteBuf buf) {
 		this.syncId = buf.readByte();
 		this.recipe = buf.readIdentifier();
 		this.craftAll = buf.readBoolean();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeIdentifier(this.recipe);
 		buf.writeBoolean(this.craftAll);
+	}
+
+	@Override
+	public PacketIdentifier<CraftRequestC2SPacket> getPacketId() {
+		return PlayPackets.PLACE_RECIPE;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

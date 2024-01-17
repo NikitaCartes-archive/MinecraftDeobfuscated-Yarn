@@ -35,7 +35,7 @@ public class SignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		return world.getBlockState(pos.down()).isSolid();
 	}
 
@@ -48,7 +48,7 @@ public class SignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		return direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)
@@ -62,12 +62,12 @@ public class SignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with(ROTATION, Integer.valueOf(rotation.rotate(state.get(ROTATION), 16)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.with(ROTATION, Integer.valueOf(mirror.mirror(state.get(ROTATION), 16)));
 	}
 

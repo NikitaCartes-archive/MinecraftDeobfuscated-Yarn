@@ -2,12 +2,16 @@ package net.minecraft.network.packet.s2c.play;
 
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 
 public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, StopSoundS2CPacket> CODEC = Packet.createCodec(StopSoundS2CPacket::write, StopSoundS2CPacket::new);
 	private static final int CATEGORY_MASK = 1;
 	private static final int SOUND_ID_MASK = 2;
 	@Nullable
@@ -20,7 +24,7 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.category = category;
 	}
 
-	public StopSoundS2CPacket(PacketByteBuf buf) {
+	private StopSoundS2CPacket(PacketByteBuf buf) {
 		int i = buf.readByte();
 		if ((i & 1) > 0) {
 			this.category = buf.readEnumConstant(SoundCategory.class);
@@ -35,8 +39,7 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		if (this.category != null) {
 			if (this.soundId != null) {
 				buf.writeByte(3);
@@ -54,6 +57,15 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
+	@Override
+	public PacketIdentifier<StopSoundS2CPacket> getPacketId() {
+		return PlayPackets.STOP_SOUND;
+	}
+
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+		clientPlayPacketListener.onStopSound(this);
+	}
+
 	@Nullable
 	public Identifier getSoundId() {
 		return this.soundId;
@@ -62,9 +74,5 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Nullable
 	public SoundCategory getCategory() {
 		return this.category;
-	}
-
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onStopSound(this);
 	}
 }

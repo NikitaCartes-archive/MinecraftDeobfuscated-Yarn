@@ -391,6 +391,10 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 		return DataFixUtils.orElse(this.getEntryList(tag), List.of());
 	}
 
+	default Optional<RegistryEntry<T>> getRandomEntry(TagKey<T> tag, Random random) {
+		return this.getEntryList(tag).flatMap(entryList -> entryList.getRandom(random));
+	}
+
 	RegistryEntryList.Named<T> getOrCreateEntryList(TagKey<T> tag);
 
 	Stream<Pair<TagKey<T>, RegistryEntryList.Named<T>>> streamTagsAndEntries();

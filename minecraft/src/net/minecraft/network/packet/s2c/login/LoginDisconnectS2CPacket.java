@@ -1,24 +1,34 @@
 package net.minecraft.network.packet.s2c.login;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientLoginPacketListener;
+import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 import net.minecraft.text.Text;
 
 public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListener> {
+	public static final PacketCodec<PacketByteBuf, LoginDisconnectS2CPacket> CODEC = Packet.createCodec(
+		LoginDisconnectS2CPacket::write, LoginDisconnectS2CPacket::new
+	);
 	private final Text reason;
 
 	public LoginDisconnectS2CPacket(Text reason) {
 		this.reason = reason;
 	}
 
-	public LoginDisconnectS2CPacket(PacketByteBuf buf) {
+	private LoginDisconnectS2CPacket(PacketByteBuf buf) {
 		this.reason = Text.Serialization.fromLenientJson(buf.readString(PacketByteBuf.MAX_TEXT_LENGTH));
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeString(Text.Serialization.toJsonString(this.reason));
+	}
+
+	@Override
+	public PacketIdentifier<LoginDisconnectS2CPacket> getPacketId() {
+		return LoginPackets.LOGIN_DISCONNECT;
 	}
 
 	public void apply(ClientLoginPacketListener clientLoginPacketListener) {

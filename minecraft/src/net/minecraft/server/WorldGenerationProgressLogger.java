@@ -16,9 +16,21 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 	private long startTime;
 	private long nextMessageTime = Long.MAX_VALUE;
 
-	public WorldGenerationProgressLogger(int radius) {
-		int i = radius * 2 + 1;
-		this.totalCount = i * i;
+	private WorldGenerationProgressLogger(int radius) {
+		this.totalCount = radius;
+	}
+
+	public static WorldGenerationProgressLogger create(int spawnChunkRadius) {
+		return spawnChunkRadius > 0 ? forSpawnChunks(spawnChunkRadius + 1) : noSpawnChunks();
+	}
+
+	public static WorldGenerationProgressLogger forSpawnChunks(int spawnChunkRadius) {
+		int i = WorldGenerationProgressListener.getStartRegionSize(spawnChunkRadius);
+		return new WorldGenerationProgressLogger(i * i);
+	}
+
+	public static WorldGenerationProgressLogger noSpawnChunks() {
+		return new WorldGenerationProgressLogger(0);
 	}
 
 	@Override
@@ -51,6 +63,6 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 	}
 
 	public int getProgressPercentage() {
-		return MathHelper.floor((float)this.generatedCount * 100.0F / (float)this.totalCount);
+		return this.totalCount == 0 ? 100 : MathHelper.floor((float)this.generatedCount * 100.0F / (float)this.totalCount);
 	}
 }

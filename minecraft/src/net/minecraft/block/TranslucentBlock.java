@@ -16,7 +16,7 @@ public class TranslucentBlock extends Block {
 	}
 
 	@Override
-	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+	protected boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
 		return stateFrom.isOf(this) ? true : super.isSideInvisible(state, stateFrom, direction);
 	}
 }

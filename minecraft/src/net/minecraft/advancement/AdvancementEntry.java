@@ -1,17 +1,16 @@
 package net.minecraft.advancement;
 
-import net.minecraft.network.PacketByteBuf;
+import java.util.List;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.util.Identifier;
 
 public record AdvancementEntry(Identifier id, Advancement value) {
-	public void write(PacketByteBuf buf) {
-		buf.writeIdentifier(this.id);
-		this.value.write(buf);
-	}
-
-	public static AdvancementEntry read(PacketByteBuf buf) {
-		return new AdvancementEntry(buf.readIdentifier(), Advancement.read(buf));
-	}
+	public static final PacketCodec<RegistryByteBuf, AdvancementEntry> PACKET_CODEC = PacketCodec.tuple(
+		Identifier.PACKET_CODEC, AdvancementEntry::id, Advancement.PACKET_CODEC, AdvancementEntry::value, AdvancementEntry::new
+	);
+	public static final PacketCodec<RegistryByteBuf, List<AdvancementEntry>> LIST_PACKET_CODEC = PACKET_CODEC.mapResult(PacketCodecs.listMapper());
 
 	public boolean equals(Object o) {
 		if (this == o) {

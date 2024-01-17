@@ -2,10 +2,14 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, VehicleMoveS2CPacket> CODEC = Packet.createCodec(VehicleMoveS2CPacket::write, VehicleMoveS2CPacket::new);
 	private final double x;
 	private final double y;
 	private final double z;
@@ -20,7 +24,7 @@ public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pitch = entity.getPitch();
 	}
 
-	public VehicleMoveS2CPacket(PacketByteBuf buf) {
+	private VehicleMoveS2CPacket(PacketByteBuf buf) {
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
 		this.z = buf.readDouble();
@@ -28,13 +32,17 @@ public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pitch = buf.readFloat();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
 		buf.writeDouble(this.z);
 		buf.writeFloat(this.yaw);
 		buf.writeFloat(this.pitch);
+	}
+
+	@Override
+	public PacketIdentifier<VehicleMoveS2CPacket> getPacketId() {
+		return PlayPackets.MOVE_VEHICLE_S2C;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

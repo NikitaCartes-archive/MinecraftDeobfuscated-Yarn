@@ -59,6 +59,10 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 		this.layout.forEachChild(child -> {
 		});
 		this.initTabNavigation();
+	}
+
+	@Override
+	protected void method_56131() {
 		this.setInitialFocus(this.nameBox);
 	}
 

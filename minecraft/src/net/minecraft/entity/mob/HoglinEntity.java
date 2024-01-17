@@ -109,7 +109,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		} else {
 			this.movementCooldownTicks = 10;
 			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
-			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK);
 			HoglinBrain.onAttacking(this, (LivingEntity)target);
 			return Hoglin.tryAttack(this, (LivingEntity)target);
 		}
@@ -232,7 +232,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.movementCooldownTicks = 10;
-			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK);
 		} else {
 			super.handleStatus(status);
 		}
@@ -365,10 +365,6 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_HOGLIN_STEP, 0.15F, 1.0F);
-	}
-
-	protected void playSound(SoundEvent sound) {
-		this.playSound(sound, this.getSoundVolume(), this.getSoundPitch());
 	}
 
 	@Override

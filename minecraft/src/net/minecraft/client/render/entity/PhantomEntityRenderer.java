@@ -30,8 +30,8 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 		matrixStack.translate(0.0F, 1.3125F, 0.1875F);
 	}
 
-	protected void setupTransforms(PhantomEntity phantomEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(phantomEntity, matrixStack, f, g, h);
+	protected void setupTransforms(PhantomEntity phantomEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		super.setupTransforms(phantomEntity, matrixStack, f, g, h, i);
 		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(phantomEntity.getPitch()));
 	}
 }

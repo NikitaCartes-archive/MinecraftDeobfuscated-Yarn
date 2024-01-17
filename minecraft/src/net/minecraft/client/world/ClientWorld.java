@@ -876,9 +876,7 @@ public class ClientWorld extends World {
 		private final boolean hardcore;
 		private final GameRules gameRules;
 		private final boolean flatWorld;
-		private int spawnX;
-		private int spawnY;
-		private int spawnZ;
+		private BlockPos field_48402;
 		private float spawnAngle;
 		private long time;
 		private long timeOfDay;
@@ -894,18 +892,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public int getSpawnX() {
-			return this.spawnX;
-		}
-
-		@Override
-		public int getSpawnY() {
-			return this.spawnY;
-		}
-
-		@Override
-		public int getSpawnZ() {
-			return this.spawnZ;
+		public BlockPos getSpawnPos() {
+			return this.field_48402;
 		}
 
 		@Override
@@ -923,26 +911,6 @@ public class ClientWorld extends World {
 			return this.timeOfDay;
 		}
 
-		@Override
-		public void setSpawnX(int spawnX) {
-			this.spawnX = spawnX;
-		}
-
-		@Override
-		public void setSpawnY(int spawnY) {
-			this.spawnY = spawnY;
-		}
-
-		@Override
-		public void setSpawnZ(int spawnZ) {
-			this.spawnZ = spawnZ;
-		}
-
-		@Override
-		public void setSpawnAngle(float spawnAngle) {
-			this.spawnAngle = spawnAngle;
-		}
-
 		public void setTime(long time) {
 			this.time = time;
 		}
@@ -953,9 +921,7 @@ public class ClientWorld extends World {
 
 		@Override
 		public void setSpawnPos(BlockPos pos, float angle) {
-			this.spawnX = pos.getX();
-			this.spawnY = pos.getY();
-			this.spawnZ = pos.getZ();
+			this.field_48402 = pos.toImmutable();
 			this.spawnAngle = angle;
 		}
 

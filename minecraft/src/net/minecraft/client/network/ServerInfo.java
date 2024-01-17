@@ -45,7 +45,6 @@ public class ServerInfo {
 	private byte[] favicon;
 	private ServerInfo.ServerType serverType;
 	private ServerInfo.Status status = ServerInfo.Status.INITIAL;
-	private boolean secureChatEnforced;
 
 	public ServerInfo(String name, String address, ServerInfo.ServerType serverType) {
 		this.name = name;
@@ -132,14 +131,6 @@ public class ServerInfo {
 		return this.serverType;
 	}
 
-	public void setSecureChatEnforced(boolean secureChatEnforced) {
-		this.secureChatEnforced = secureChatEnforced;
-	}
-
-	public boolean isSecureChatEnforced() {
-		return this.secureChatEnforced;
-	}
-
 	public void copyFrom(ServerInfo serverInfo) {
 		this.address = serverInfo.address;
 		this.name = serverInfo.name;
@@ -150,7 +141,6 @@ public class ServerInfo {
 		this.copyFrom(serverInfo);
 		this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
 		this.serverType = serverInfo.serverType;
-		this.secureChatEnforced = serverInfo.secureChatEnforced;
 	}
 
 	public ServerInfo.Status getStatus() {

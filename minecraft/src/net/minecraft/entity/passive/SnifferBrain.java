@@ -127,7 +127,7 @@ public class SnifferBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, new BreedTask(EntityType.SNIFFER, 1.0F) {
+				Pair.of(0, new BreedTask(EntityType.SNIFFER) {
 					@Override
 					protected void run(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
 						SnifferBrain.stopDiggingOrSniffing((SnifferEntity)animalEntity);

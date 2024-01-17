@@ -70,7 +70,7 @@ public class EndGatewayBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canBucketPlace(BlockState state, Fluid fluid) {
+	protected boolean canBucketPlace(BlockState state, Fluid fluid) {
 		return false;
 	}
 }

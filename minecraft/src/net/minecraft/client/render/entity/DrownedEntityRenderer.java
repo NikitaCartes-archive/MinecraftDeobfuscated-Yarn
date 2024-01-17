@@ -31,13 +31,13 @@ public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntit
 		return TEXTURE;
 	}
 
-	protected void setupTransforms(DrownedEntity drownedEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(drownedEntity, matrixStack, f, g, h);
-		float i = drownedEntity.getLeaningPitch(h);
-		if (i > 0.0F) {
-			float j = -10.0F - drownedEntity.getPitch();
-			float k = MathHelper.lerp(i, 0.0F, j);
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(k), 0.0F, drownedEntity.getHeight() / 2.0F, 0.0F);
+	protected void setupTransforms(DrownedEntity drownedEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		super.setupTransforms(drownedEntity, matrixStack, f, g, h, i);
+		float j = drownedEntity.getLeaningPitch(h);
+		if (j > 0.0F) {
+			float k = -10.0F - drownedEntity.getPitch();
+			float l = MathHelper.lerp(j, 0.0F, k);
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(l), 0.0F, drownedEntity.getHeight() / 2.0F / i, 0.0F);
 		}
 	}
 }

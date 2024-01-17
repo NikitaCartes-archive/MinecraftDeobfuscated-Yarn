@@ -237,7 +237,7 @@ public class Main {
 			final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(
 				threadx -> {
 					MinecraftDedicatedServer minecraftDedicatedServerxx = new MinecraftDedicatedServer(
-						threadx, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), apiServices, WorldGenerationProgressLogger::new
+						threadx, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), apiServices, WorldGenerationProgressLogger::create
 					);
 					minecraftDedicatedServerxx.setServerPort(optionSet.valueOf(optionSpec11));
 					minecraftDedicatedServerxx.setDemo(optionSet.has(optionSpec3));

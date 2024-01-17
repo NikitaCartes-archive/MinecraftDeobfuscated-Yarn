@@ -6,13 +6,14 @@ import net.minecraft.block.FrostedIceBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class FrostWalkerEnchantment extends Enchantment {
 	public FrostWalkerEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ARMOR_FEET, slotTypes);
+		super(weight, ItemTags.FOOT_ARMOR_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

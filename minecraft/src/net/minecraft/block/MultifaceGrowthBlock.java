@@ -116,7 +116,7 @@ public abstract class MultifaceGrowthBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (!hasAnyDirection(state)) {
@@ -127,12 +127,12 @@ public abstract class MultifaceGrowthBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.SHAPES.get(state);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		boolean bl = false;
 
 		for(Direction direction : DIRECTIONS) {
@@ -150,7 +150,7 @@ public abstract class MultifaceGrowthBlock extends Block {
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+	protected boolean canReplace(BlockState state, ItemPlacementContext context) {
 		return isNotFullBlock(state);
 	}
 
@@ -195,12 +195,12 @@ public abstract class MultifaceGrowthBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return !this.hasAllHorizontalDirections ? state : this.mirror(state, rotation::rotate);
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		if (mirror == BlockMirror.FRONT_BACK && !this.canMirrorX) {
 			return state;
 		} else {

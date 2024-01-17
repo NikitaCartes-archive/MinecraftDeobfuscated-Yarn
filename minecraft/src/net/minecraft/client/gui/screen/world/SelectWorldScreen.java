@@ -72,6 +72,10 @@ public class SelectWorldScreen extends Screen {
 			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 82, this.height - 28, 72, 20).build()
 		);
 		this.worldSelected(null);
+	}
+
+	@Override
+	protected void method_56131() {
 		this.setInitialFocus(this.searchBox);
 	}
 

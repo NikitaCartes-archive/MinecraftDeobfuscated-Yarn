@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
@@ -62,7 +63,7 @@ public class ShovelItem extends MiningToolItem {
 					world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL_AND_REDRAW);
 					world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, blockState3));
 					if (playerEntity != null) {
-						context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+						context.getStack().damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 					}
 				}
 

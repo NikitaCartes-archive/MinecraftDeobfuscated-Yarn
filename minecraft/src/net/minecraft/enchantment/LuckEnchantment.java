@@ -1,10 +1,12 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.Item;
+import net.minecraft.registry.tag.TagKey;
 
 public class LuckEnchantment extends Enchantment {
-	protected LuckEnchantment(Enchantment.Rarity rarity, EnchantmentTarget enchantmentTarget, EquipmentSlot... equipmentSlots) {
-		super(rarity, enchantmentTarget, equipmentSlots);
+	protected LuckEnchantment(Enchantment.Rarity rarity, TagKey<Item> tagKey, EquipmentSlot... equipmentSlots) {
+		super(rarity, tagKey, equipmentSlots);
 	}
 
 	@Override

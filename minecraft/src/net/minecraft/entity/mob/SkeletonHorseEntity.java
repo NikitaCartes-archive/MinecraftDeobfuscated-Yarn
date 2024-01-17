@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityAttachmentType;
 import net.minecraft.entity.EntityAttachments;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -114,11 +113,6 @@ public class SkeletonHorseEntity extends AbstractHorseEntity {
 		} else {
 			super.playJumpSound();
 		}
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.UNDEAD;
 	}
 
 	@Override

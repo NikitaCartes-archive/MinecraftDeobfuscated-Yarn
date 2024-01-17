@@ -34,7 +34,7 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
@@ -63,7 +63,7 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		if (state.get(HALF) == DoubleBlockHalf.UPPER) {
 			BlockState blockState = world.getBlockState(pos.down());
 			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
@@ -74,7 +74,7 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return Fluids.WATER.getStill(false);
 	}
 

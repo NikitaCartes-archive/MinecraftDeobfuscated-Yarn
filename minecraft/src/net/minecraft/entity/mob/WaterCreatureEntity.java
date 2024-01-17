@@ -1,7 +1,6 @@
 package net.minecraft.entity.mob;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -17,11 +16,6 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 	protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> entityType, World world) {
 		super(entityType, world);
 		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.AQUATIC;
 	}
 
 	@Override

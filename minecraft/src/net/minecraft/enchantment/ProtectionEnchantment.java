@@ -4,13 +4,14 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.MathHelper;
 
 public class ProtectionEnchantment extends Enchantment {
 	public final ProtectionEnchantment.Type protectionType;
 
 	public ProtectionEnchantment(Enchantment.Rarity weight, ProtectionEnchantment.Type protectionType, EquipmentSlot... slotTypes) {
-		super(weight, protectionType == ProtectionEnchantment.Type.FALL ? EnchantmentTarget.ARMOR_FEET : EnchantmentTarget.ARMOR, slotTypes);
+		super(weight, protectionType == ProtectionEnchantment.Type.FALL ? ItemTags.FOOT_ARMOR_ENCHANTABLE : ItemTags.ARMOR_ENCHANTABLE, slotTypes);
 		this.protectionType = protectionType;
 	}
 

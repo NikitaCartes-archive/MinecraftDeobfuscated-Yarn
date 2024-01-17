@@ -52,53 +52,54 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	public void render(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		float h = livingEntity.getScale();
-		matrixStack.scale(h, h, h);
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, g);
 		this.model.riding = livingEntity.hasVehicle();
 		this.model.child = livingEntity.isBaby();
-		float j = MathHelper.lerpAngleDegrees(g, livingEntity.prevBodyYaw, livingEntity.bodyYaw);
-		float k = MathHelper.lerpAngleDegrees(g, livingEntity.prevHeadYaw, livingEntity.headYaw);
-		float l = k - j;
+		float h = MathHelper.lerpAngleDegrees(g, livingEntity.prevBodyYaw, livingEntity.bodyYaw);
+		float j = MathHelper.lerpAngleDegrees(g, livingEntity.prevHeadYaw, livingEntity.headYaw);
+		float k = j - h;
 		if (livingEntity.hasVehicle()) {
-			Entity m = livingEntity.getVehicle();
-			if (m instanceof LivingEntity livingEntity2) {
-				j = MathHelper.lerpAngleDegrees(g, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
-				l = k - j;
-				float mx = MathHelper.wrapDegrees(l);
-				if (mx < -85.0F) {
-					mx = -85.0F;
+			Entity l = livingEntity.getVehicle();
+			if (l instanceof LivingEntity livingEntity2) {
+				h = MathHelper.lerpAngleDegrees(g, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
+				k = j - h;
+				float lx = MathHelper.wrapDegrees(k);
+				if (lx < -85.0F) {
+					lx = -85.0F;
 				}
 
-				if (mx >= 85.0F) {
-					mx = 85.0F;
+				if (lx >= 85.0F) {
+					lx = 85.0F;
 				}
 
-				j = k - mx;
-				if (mx * mx > 2500.0F) {
-					j += mx * 0.2F;
+				h = j - lx;
+				if (lx * lx > 2500.0F) {
+					h += lx * 0.2F;
 				}
 
-				l = k - j;
+				k = j - h;
 			}
 		}
 
-		float n = MathHelper.lerp(g, livingEntity.prevPitch, livingEntity.getPitch());
+		float m = MathHelper.lerp(g, livingEntity.prevPitch, livingEntity.getPitch());
 		if (shouldFlipUpsideDown(livingEntity)) {
-			n *= -1.0F;
-			l *= -1.0F;
+			m *= -1.0F;
+			k *= -1.0F;
 		}
 
+		k = MathHelper.wrapDegrees(k);
 		if (livingEntity.isInPose(EntityPose.SLEEPING)) {
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
-				float o = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
-				matrixStack.translate((float)(-direction.getOffsetX()) * o, 0.0F, (float)(-direction.getOffsetZ()) * o);
+				float n = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
+				matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0F, (float)(-direction.getOffsetZ()) * n);
 			}
 		}
 
-		float m = this.getAnimationProgress(livingEntity, g);
-		this.setupTransforms(livingEntity, matrixStack, m, j, g);
+		float l = livingEntity.getScale();
+		matrixStack.scale(l, l, l);
+		float n = this.getAnimationProgress(livingEntity, g);
+		this.setupTransforms(livingEntity, matrixStack, n, h, g, l);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.scale(livingEntity, matrixStack, g);
 		matrixStack.translate(0.0F, -1.501F, 0.0F);
@@ -117,7 +118,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		this.model.animateModel(livingEntity, p, o, g);
-		this.model.setAngles(livingEntity, p, o, m, l, n);
+		this.model.setAngles(livingEntity, p, o, n, k, m);
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		boolean bl = this.isVisible(livingEntity);
 		boolean bl2 = !bl && !livingEntity.isInvisibleTo(minecraftClient.player);
@@ -131,7 +132,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 		if (!livingEntity.isSpectator()) {
 			for(FeatureRenderer<T, M> featureRenderer : this.features) {
-				featureRenderer.render(matrixStack, vertexConsumerProvider, i, livingEntity, p, o, g, m, l, n);
+				featureRenderer.render(matrixStack, vertexConsumerProvider, i, livingEntity, p, o, g, n, k, m);
 			}
 		}
 
@@ -188,7 +189,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return entity.isFrozen();
 	}
 
-	protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
+	protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta, float scale) {
 		if (this.isShaking(entity)) {
 			bodyYaw += (float)(Math.cos((double)entity.age * 3.25) * Math.PI * 0.4F);
 		}
@@ -215,7 +216,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(this.getLyingAngle(entity)));
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270.0F));
 		} else if (shouldFlipUpsideDown(entity)) {
-			matrices.translate(0.0F, entity.getHeight() + 0.1F, 0.0F);
+			matrices.translate(0.0F, (entity.getHeight() + 0.1F) / scale, 0.0F);
 			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 		}
 	}

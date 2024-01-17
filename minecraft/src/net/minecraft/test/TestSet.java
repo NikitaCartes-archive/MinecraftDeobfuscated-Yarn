@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 public class TestSet {
 	private static final char NOT_STARTED = ' ';
@@ -13,7 +12,6 @@ public class TestSet {
 	private static final char OPTIONAL_FAIL = 'x';
 	private static final char REQUIRED_FAIL = 'X';
 	private final Collection<GameTestState> tests = Lists.<GameTestState>newArrayList();
-	@Nullable
 	private final Collection<TestListener> listeners = Lists.<TestListener>newArrayList();
 
 	public TestSet() {
@@ -40,12 +38,16 @@ public class TestSet {
 			}
 
 			@Override
-			public void onPassed(GameTestState test) {
+			public void onPassed(GameTestState test, TestRunContext context) {
 			}
 
 			@Override
-			public void onFailed(GameTestState test) {
+			public void onFailed(GameTestState test, TestRunContext context) {
 				onFailed.accept(test);
+			}
+
+			@Override
+			public void onRetry(GameTestState prevState, GameTestState nextState, TestRunContext context) {
 			}
 		});
 	}
@@ -106,5 +108,9 @@ public class TestSet {
 
 	public String toString() {
 		return this.getResultString();
+	}
+
+	public void remove(GameTestState state) {
+		this.tests.remove(state);
 	}
 }

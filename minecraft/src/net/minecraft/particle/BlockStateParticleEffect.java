@@ -6,7 +6,9 @@ import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.BlockArgumentParser;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 
 public class BlockStateParticleEffect implements ParticleEffect {
@@ -14,10 +16,6 @@ public class BlockStateParticleEffect implements ParticleEffect {
 		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			return new BlockStateParticleEffect(particleType, BlockArgumentParser.block(Registries.BLOCK.getReadOnlyWrapper(), stringReader, false).blockState());
-		}
-
-		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, PacketByteBuf packetByteBuf) {
-			return new BlockStateParticleEffect(particleType, packetByteBuf.readRegistryValue(Block.STATE_IDS));
 		}
 	};
 	private final ParticleType<BlockStateParticleEffect> type;
@@ -27,14 +25,13 @@ public class BlockStateParticleEffect implements ParticleEffect {
 		return BlockState.CODEC.xmap(state -> new BlockStateParticleEffect(type, state), effect -> effect.blockState);
 	}
 
+	public static PacketCodec<? super RegistryByteBuf, BlockStateParticleEffect> createPacketCodec(ParticleType<BlockStateParticleEffect> type) {
+		return PacketCodecs.ofIterable(Block.STATE_IDS).xmap(state -> new BlockStateParticleEffect(type, state), effect -> effect.blockState);
+	}
+
 	public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> type, BlockState blockState) {
 		this.type = type;
 		this.blockState = blockState;
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeRegistryValue(Block.STATE_IDS, this.blockState);
 	}
 
 	@Override

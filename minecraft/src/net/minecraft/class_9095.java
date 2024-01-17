@@ -1,0 +1,367 @@
+package net.minecraft;
+
+import net.minecraft.network.NetworkState;
+import net.minecraft.network.codec.RegistryByteBuf;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.packet.CommonPackets;
+import net.minecraft.network.packet.CookiePackets;
+import net.minecraft.network.packet.PingPackets;
+import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
+import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
+import net.minecraft.network.packet.c2s.common.CookieResponseC2SPacket;
+import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
+import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
+import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
+import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
+import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
+import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
+import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
+import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerSessionC2SPacket;
+import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
+import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
+import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
+import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
+import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SlotChangedStateC2SPacket;
+import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
+import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockMinecartC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateJigsawC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
+import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
+import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
+import net.minecraft.network.packet.s2c.common.CookieRequestS2CPacket;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
+import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
+import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
+import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
+import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.BundleDelimiterS2CPacket;
+import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkSentS2CPacket;
+import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
+import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
+import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
+import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterReconfigurationS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
+import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
+import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
+import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreResetS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardScoreUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
+import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
+import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
+import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
+import net.minecraft.network.packet.s2c.play.StartChunkSendS2CPacket;
+import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
+import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
+import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.network.packet.s2c.play.TickStepS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
+import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateTickRateS2CPacket;
+import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderSizeChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
+
+public class class_9095 {
+	public static final class_9127.class_9128<ServerPlayPacketListener, RegistryByteBuf> field_48172 = class_9147.method_56457(
+		NetworkState.PLAY,
+		arg -> arg.method_56454(PlayPackets.ACCEPT_TELEPORTATION, TeleportConfirmC2SPacket.CODEC)
+				.method_56454(PlayPackets.BLOCK_ENTITY_TAG_QUERY, QueryBlockNbtC2SPacket.CODEC)
+				.method_56454(PlayPackets.CHANGE_DIFFICULTY_C2S, UpdateDifficultyC2SPacket.CODEC)
+				.method_56454(PlayPackets.CHAT_ACK, MessageAcknowledgmentC2SPacket.CODEC)
+				.method_56454(PlayPackets.CHAT_COMMAND, CommandExecutionC2SPacket.CODEC)
+				.method_56454(PlayPackets.CHAT, ChatMessageC2SPacket.CODEC)
+				.method_56454(PlayPackets.CHAT_SESSION_UPDATE, PlayerSessionC2SPacket.CODEC)
+				.method_56454(PlayPackets.CHUNK_BATCH_RECEIVED, AcknowledgeChunksC2SPacket.CODEC)
+				.method_56454(PlayPackets.CLIENT_COMMAND, ClientStatusC2SPacket.CODEC)
+				.method_56454(CommonPackets.CLIENT_INFORMATION, ClientOptionsC2SPacket.CODEC)
+				.method_56454(PlayPackets.COMMAND_SUGGESTION, RequestCommandCompletionsC2SPacket.CODEC)
+				.method_56454(PlayPackets.CONFIGURATION_ACKNOWLEDGED, AcknowledgeReconfigurationC2SPacket.CODEC)
+				.method_56454(PlayPackets.CONTAINER_BUTTON_CLICK, ButtonClickC2SPacket.CODEC)
+				.method_56454(PlayPackets.CONTAINER_CLICK, ClickSlotC2SPacket.CODEC)
+				.method_56454(PlayPackets.CONTAINER_CLOSE_C2S, CloseHandledScreenC2SPacket.CODEC)
+				.method_56454(PlayPackets.CONTAINER_SLOT_STATE_CHANGED, SlotChangedStateC2SPacket.CODEC)
+				.method_56454(CookiePackets.COOKIE_RESPONSE, CookieResponseC2SPacket.CODEC)
+				.method_56454(CommonPackets.CUSTOM_PAYLOAD_C2S, CustomPayloadC2SPacket.CODEC)
+				.method_56454(PlayPackets.EDIT_BOOK, BookUpdateC2SPacket.CODEC)
+				.method_56454(PlayPackets.ENTITY_TAG_QUERY, QueryEntityNbtC2SPacket.CODEC)
+				.method_56454(PlayPackets.INTERACT, PlayerInteractEntityC2SPacket.CODEC)
+				.method_56454(PlayPackets.JIGSAW_GENERATE, JigsawGeneratingC2SPacket.CODEC)
+				.method_56454(CommonPackets.KEEP_ALIVE_C2S, KeepAliveC2SPacket.CODEC)
+				.method_56454(PlayPackets.LOCK_DIFFICULTY, UpdateDifficultyLockC2SPacket.CODEC)
+				.method_56454(PlayPackets.MOVE_PLAYER_POS, PlayerMoveC2SPacket.PositionAndOnGround.CODEC)
+				.method_56454(PlayPackets.MOVE_PLAYER_POS_ROT, PlayerMoveC2SPacket.Full.CODEC)
+				.method_56454(PlayPackets.MOVE_PLAYER_ROT, PlayerMoveC2SPacket.LookAndOnGround.CODEC)
+				.method_56454(PlayPackets.MOVE_PLAYER_STATUS_ONLY, PlayerMoveC2SPacket.OnGroundOnly.CODEC)
+				.method_56454(PlayPackets.MOVE_VEHICLE_C2S, VehicleMoveC2SPacket.CODEC)
+				.method_56454(PlayPackets.PADDLE_BOAT, BoatPaddleStateC2SPacket.CODEC)
+				.method_56454(PlayPackets.PICK_ITEM, PickFromInventoryC2SPacket.CODEC)
+				.method_56454(PingPackets.PING_REQUEST, QueryPingC2SPacket.CODEC)
+				.method_56454(PlayPackets.PLACE_RECIPE, CraftRequestC2SPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_ABILITIES_C2S, UpdatePlayerAbilitiesC2SPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_ACTION, PlayerActionC2SPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_COMMAND, ClientCommandC2SPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_INPUT, PlayerInputC2SPacket.CODEC)
+				.method_56454(CommonPackets.PONG, CommonPongC2SPacket.CODEC)
+				.method_56454(PlayPackets.RECIPE_BOOK_CHANGE_SETTINGS, RecipeCategoryOptionsC2SPacket.CODEC)
+				.method_56454(PlayPackets.RECIPE_BOOK_SEEN_RECIPE, RecipeBookDataC2SPacket.CODEC)
+				.method_56454(PlayPackets.RENAME_ITEM, RenameItemC2SPacket.CODEC)
+				.method_56454(CommonPackets.RESOURCE_PACK, ResourcePackStatusC2SPacket.CODEC)
+				.method_56454(PlayPackets.SEEN_ADVANCEMENTS, AdvancementTabC2SPacket.CODEC)
+				.method_56454(PlayPackets.SELECT_TRADE, SelectMerchantTradeC2SPacket.CODEC)
+				.method_56454(PlayPackets.SET_BEACON, UpdateBeaconC2SPacket.CODEC)
+				.method_56454(PlayPackets.SET_CARRIED_ITEM_C2S, UpdateSelectedSlotC2SPacket.CODEC)
+				.method_56454(PlayPackets.SET_COMMAND_BLOCK, UpdateCommandBlockC2SPacket.CODEC)
+				.method_56454(PlayPackets.SET_COMMAND_MINECART, UpdateCommandBlockMinecartC2SPacket.CODEC)
+				.method_56454(PlayPackets.SET_CREATIVE_MODE_SLOT, CreativeInventoryActionC2SPacket.CODEC)
+				.method_56454(PlayPackets.SET_JIGSAW_BLOCK, UpdateJigsawC2SPacket.CODEC)
+				.method_56454(PlayPackets.SET_STRUCTURE_BLOCK, UpdateStructureBlockC2SPacket.CODEC)
+				.method_56454(PlayPackets.SIGN_UPDATE, UpdateSignC2SPacket.CODEC)
+				.method_56454(PlayPackets.SWING, HandSwingC2SPacket.CODEC)
+				.method_56454(PlayPackets.TELEPORT_TO_ENTITY, SpectatorTeleportC2SPacket.CODEC)
+				.method_56454(PlayPackets.USE_ITEM_ON, PlayerInteractBlockC2SPacket.CODEC)
+				.method_56454(PlayPackets.USE_ITEM, PlayerInteractItemC2SPacket.CODEC)
+	);
+	public static final class_9127.class_9128<ClientPlayPacketListener, RegistryByteBuf> field_48173 = class_9147.method_56458(
+		NetworkState.PLAY,
+		arg -> arg.method_56453(PlayPackets.BUNDLE, BundleS2CPacket::new, new BundleDelimiterS2CPacket())
+				.method_56454(PlayPackets.ADD_ENTITY, EntitySpawnS2CPacket.CODEC)
+				.method_56454(PlayPackets.ADD_EXPERIENCE_ORB, ExperienceOrbSpawnS2CPacket.CODEC)
+				.method_56454(PlayPackets.ANIMATE, EntityAnimationS2CPacket.CODEC)
+				.method_56454(PlayPackets.AWARD_STATS, StatisticsS2CPacket.field_47899)
+				.method_56454(PlayPackets.BLOCK_CHANGED_ACK, PlayerActionResponseS2CPacket.CODEC)
+				.method_56454(PlayPackets.BLOCK_DESTRUCTION, BlockBreakingProgressS2CPacket.CODEC)
+				.method_56454(PlayPackets.BLOCK_ENTITY_DATA, BlockEntityUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.BLOCK_EVENT, BlockEventS2CPacket.CODEC)
+				.method_56454(PlayPackets.BLOCK_UPDATE, BlockUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.BOSS_EVENT, BossBarS2CPacket.CODEC)
+				.method_56454(PlayPackets.CHANGE_DIFFICULTY_S2C, DifficultyS2CPacket.CODEC)
+				.method_56454(PlayPackets.CHUNK_BATCH_FINISHED, ChunkSentS2CPacket.CODEC)
+				.method_56454(PlayPackets.CHUNK_BATCH_START, StartChunkSendS2CPacket.CODEC)
+				.method_56454(PlayPackets.CHUNKS_BIOMES, ChunkBiomeDataS2CPacket.CODEC)
+				.method_56454(PlayPackets.CLEAR_TITLES, ClearTitleS2CPacket.CODEC)
+				.method_56454(PlayPackets.COMMAND_SUGGESTIONS, CommandSuggestionsS2CPacket.CODEC)
+				.method_56454(PlayPackets.COMMANDS, CommandTreeS2CPacket.CODEC)
+				.method_56454(PlayPackets.CONTAINER_CLOSE_S2C, CloseScreenS2CPacket.CODEC)
+				.method_56454(PlayPackets.CONTAINER_SET_CONTENT, InventoryS2CPacket.CODEC)
+				.method_56454(PlayPackets.CONTAINER_SET_DATA, ScreenHandlerPropertyUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.CONTAINER_SET_SLOT, ScreenHandlerSlotUpdateS2CPacket.CODEC)
+				.method_56454(CookiePackets.COOKIE_REQUEST, CookieRequestS2CPacket.CODEC)
+				.method_56454(PlayPackets.COOLDOWN, CooldownUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.CUSTOM_CHAT_COMPLETIONS, ChatSuggestionsS2CPacket.CODEC)
+				.method_56454(CommonPackets.CUSTOM_PAYLOAD_S2C, CustomPayloadS2CPacket.field_48620)
+				.method_56454(PlayPackets.DAMAGE_EVENT, EntityDamageS2CPacket.CODEC)
+				.method_56454(PlayPackets.DELETE_CHAT, RemoveMessageS2CPacket.CODEC)
+				.method_56454(CommonPackets.DISCONNECT, DisconnectS2CPacket.CODEC)
+				.method_56454(PlayPackets.DISGUISED_CHAT, ProfilelessChatMessageS2CPacket.CODEC)
+				.method_56454(PlayPackets.ENTITY_EVENT, EntityStatusS2CPacket.CODEC)
+				.method_56454(PlayPackets.EXPLODE, ExplosionS2CPacket.CODEC)
+				.method_56454(PlayPackets.FORGET_LEVEL_CHUNK, UnloadChunkS2CPacket.CODEC)
+				.method_56454(PlayPackets.GAME_EVENT, GameStateChangeS2CPacket.CODEC)
+				.method_56454(PlayPackets.HORSE_SCREEN_OPEN, OpenHorseScreenS2CPacket.CODEC)
+				.method_56454(PlayPackets.HURT_ANIMATION, DamageTiltS2CPacket.CODEC)
+				.method_56454(PlayPackets.INITIALIZE_BORDER, WorldBorderInitializeS2CPacket.CODEC)
+				.method_56454(CommonPackets.KEEP_ALIVE_S2C, KeepAliveS2CPacket.CODEC)
+				.method_56454(PlayPackets.LEVEL_CHUNK_WITH_LIGHT, ChunkDataS2CPacket.CODEC)
+				.method_56454(PlayPackets.LEVEL_EVENT, WorldEventS2CPacket.CODEC)
+				.method_56454(PlayPackets.LEVEL_PARTICLES, ParticleS2CPacket.CODEC)
+				.method_56454(PlayPackets.LIGHT_UPDATE, LightUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.LOGIN, GameJoinS2CPacket.CODEC)
+				.method_56454(PlayPackets.MAP_ITEM_DATA, MapUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.MERCHANT_OFFERS, SetTradeOffersS2CPacket.CODEC)
+				.method_56454(PlayPackets.MOVE_ENTITY_POS, EntityS2CPacket.MoveRelative.CODEC)
+				.method_56454(PlayPackets.MOVE_ENTITY_POS_ROT, EntityS2CPacket.RotateAndMoveRelative.CODEC)
+				.method_56454(PlayPackets.MOVE_ENTITY_ROT, EntityS2CPacket.Rotate.CODEC)
+				.method_56454(PlayPackets.MOVE_VEHICLE_S2C, VehicleMoveS2CPacket.CODEC)
+				.method_56454(PlayPackets.OPEN_BOOK, OpenWrittenBookS2CPacket.CODEC)
+				.method_56454(PlayPackets.OPEN_SCREEN, OpenScreenS2CPacket.CODEC)
+				.method_56454(PlayPackets.OPEN_SIGN_EDITOR, SignEditorOpenS2CPacket.CODEC)
+				.method_56454(CommonPackets.PING, CommonPingS2CPacket.CODEC)
+				.method_56454(PingPackets.PONG_RESPONSE, PingResultS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLACE_GHOST_RECIPE, CraftFailedResponseS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_ABILITIES_S2C, PlayerAbilitiesS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_CHAT, ChatMessageS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_COMBAT_END, EndCombatS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_COMBAT_ENTER, EnterCombatS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_COMBAT_KILL, DeathMessageS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_INFO_REMOVE, PlayerRemoveS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_INFO_UPDATE, PlayerListS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_LOOK_AT, LookAtS2CPacket.CODEC)
+				.method_56454(PlayPackets.PLAYER_POSITION, PlayerPositionLookS2CPacket.CODEC)
+				.method_56454(PlayPackets.RECIPE, UnlockRecipesS2CPacket.CODEC)
+				.method_56454(PlayPackets.REMOVE_ENTITIES, EntitiesDestroyS2CPacket.CODEC)
+				.method_56454(PlayPackets.REMOVE_MOB_EFFECT, RemoveEntityStatusEffectS2CPacket.CODEC)
+				.method_56454(PlayPackets.RESET_SCORE, ScoreboardScoreResetS2CPacket.CODEC)
+				.method_56454(CommonPackets.RESOURCE_PACK_POP, ResourcePackRemoveS2CPacket.CODEC)
+				.method_56454(CommonPackets.RESOURCE_PACK_PUSH, ResourcePackSendS2CPacket.CODEC)
+				.method_56454(PlayPackets.RESPAWN, PlayerRespawnS2CPacket.CODEC)
+				.method_56454(PlayPackets.ROTATE_HEAD, EntitySetHeadYawS2CPacket.CODEC)
+				.method_56454(PlayPackets.SECTION_BLOCKS_UPDATE, ChunkDeltaUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SELECT_ADVANCEMENTS_TAB, SelectAdvancementTabS2CPacket.CODEC)
+				.method_56454(PlayPackets.SERVER_DATA, ServerMetadataS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_ACTION_BAR_TEXT, OverlayMessageS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_BORDER_CENTER, WorldBorderCenterChangedS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_BORDER_LERP_SIZE, WorldBorderInterpolateSizeS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_BORDER_SIZE, WorldBorderSizeChangedS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_BORDER_WARNING_DELAY, WorldBorderWarningTimeChangedS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_BORDER_WARNING_DISTANCE, WorldBorderWarningBlocksChangedS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_CAMERA, SetCameraEntityS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_CARRIED_ITEM_S2C, UpdateSelectedSlotS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_CHUNK_CACHE_CENTER, ChunkRenderDistanceCenterS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_CHUNK_CACHE_RADIUS, ChunkLoadDistanceS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_DEFAULT_SPAWN_POSITION, PlayerSpawnPositionS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_DISPLAY_OBJECTIVE, ScoreboardDisplayS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_ENTITY_DATA, EntityTrackerUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_ENTITY_LINK, EntityAttachS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_ENTITY_MOTION, EntityVelocityUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_EQUIPMENT, EntityEquipmentUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_EXPERIENCE, ExperienceBarUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_HEALTH, HealthUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_OBJECTIVE, ScoreboardObjectiveUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_PASSENGERS, EntityPassengersSetS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_PLAYER_TEAM, TeamS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_SCORE, ScoreboardScoreUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_SIMULATION_DISTANCE, SimulationDistanceS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_SUBTITLE_TEXT, SubtitleS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_TIME, WorldTimeUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_TITLE_TEXT, TitleS2CPacket.CODEC)
+				.method_56454(PlayPackets.SET_TITLES_ANIMATION, TitleFadeS2CPacket.CODEC)
+				.method_56454(PlayPackets.SOUND_ENTITY, PlaySoundFromEntityS2CPacket.CODEC)
+				.method_56454(PlayPackets.SOUND, PlaySoundS2CPacket.CODEC)
+				.method_56454(PlayPackets.START_CONFIGURATION, EnterReconfigurationS2CPacket.CODEC)
+				.method_56454(PlayPackets.STOP_SOUND, StopSoundS2CPacket.CODEC)
+				.method_56454(CommonPackets.STORE_COOKIE, StoreCookieS2CPacket.CODEC)
+				.method_56454(PlayPackets.SYSTEM_CHAT, GameMessageS2CPacket.CODEC)
+				.method_56454(PlayPackets.TAB_LIST, PlayerListHeaderS2CPacket.CODEC)
+				.method_56454(PlayPackets.TAG_QUERY, NbtQueryResponseS2CPacket.CODEC)
+				.method_56454(PlayPackets.TAKE_ITEM_ENTITY, ItemPickupAnimationS2CPacket.CODEC)
+				.method_56454(PlayPackets.TELEPORT_ENTITY, EntityPositionS2CPacket.CODEC)
+				.method_56454(PlayPackets.TICKING_STATE, UpdateTickRateS2CPacket.CODEC)
+				.method_56454(PlayPackets.TICKING_STEP, TickStepS2CPacket.CODEC)
+				.method_56454(CommonPackets.TRANSFER, ServerTransferS2CPacket.CODEC)
+				.method_56454(PlayPackets.UPDATE_ADVANCEMENTS, AdvancementUpdateS2CPacket.CODEC)
+				.method_56454(PlayPackets.UPDATE_ATTRIBUTES, EntityAttributesS2CPacket.CODEC)
+				.method_56454(PlayPackets.UPDATE_MOB_EFFECT, EntityStatusEffectS2CPacket.CODEC)
+				.method_56454(PlayPackets.UPDATE_RECIPES, SynchronizeRecipesS2CPacket.CODEC)
+				.method_56454(CommonPackets.UPDATE_TAGS, SynchronizeTagsS2CPacket.CODEC)
+	);
+}

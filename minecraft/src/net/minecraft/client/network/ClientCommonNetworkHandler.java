@@ -22,6 +22,7 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
@@ -36,14 +37,18 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.UnknownCustomPayload;
 import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
+import net.minecraft.network.packet.c2s.common.CookieResponseC2SPacket;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
+import net.minecraft.network.packet.s2c.common.CookieRequestS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
+import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
@@ -54,6 +59,7 @@ import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -72,7 +78,9 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	protected final WorldSession worldSession;
 	@Nullable
 	protected final Screen postDisconnectScreen;
+	protected boolean transferring;
 	private final List<ClientCommonNetworkHandler.QueuedPacket> queuedPackets = new ArrayList();
+	protected final Map<Identifier, byte[]> serverCookies;
 
 	protected ClientCommonNetworkHandler(MinecraftClient client, ClientConnection connection, ClientConnectionState connectionState) {
 		this.client = client;
@@ -81,6 +89,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		this.brand = connectionState.serverBrand();
 		this.worldSession = connectionState.worldSession();
 		this.postDisconnectScreen = connectionState.postDisconnectScreen();
+		this.serverCookies = connectionState.serverCookies();
 	}
 
 	@Override
@@ -153,6 +162,40 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	@Override
+	public void onCookieRequest(CookieRequestS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.connection.send(new CookieResponseC2SPacket(packet.key(), (byte[])this.serverCookies.get(packet.key())));
+	}
+
+	@Override
+	public void onStoreCookie(StoreCookieS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.serverCookies.put(packet.key(), packet.payload());
+	}
+
+	@Override
+	public void onServerTransfer(ServerTransferS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		if (this.serverInfo == null) {
+			throw new IllegalStateException("Cannot transfer to server from singleplayer");
+		} else {
+			this.transferring = true;
+			this.connection.disconnect(Text.translatable("disconnect.transfer"));
+			this.connection.tryDisableAutoRead();
+			this.connection.handleDisconnection();
+			ServerAddress serverAddress = new ServerAddress(packet.host(), packet.port());
+			ConnectScreen.connect(
+				(Screen)Objects.requireNonNullElseGet(this.postDisconnectScreen, TitleScreen::new),
+				this.client,
+				serverAddress,
+				this.serverInfo,
+				false,
+				new CookieStorage(this.serverCookies)
+			);
+		}
+	}
+
+	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		packet.getGroups().forEach(this::handleSynchronizedTagGroup);
@@ -195,7 +238,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	@Override
 	public void onDisconnected(Text reason) {
 		this.worldSession.onUnload();
-		this.client.disconnect(this.createDisconnectedScreen(reason));
+		this.client.disconnect(this.createDisconnectedScreen(reason), this.transferring);
 		LOGGER.warn("Client disconnected with reason: {}", reason.getString());
 	}
 

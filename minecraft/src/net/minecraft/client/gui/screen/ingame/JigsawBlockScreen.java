@@ -163,8 +163,12 @@ public class JigsawBlockScreen extends Screen {
 			ButtonWidget.builder(ScreenTexts.DONE, button -> this.onDone()).dimensions(this.width / 2 - 4 - 150, 210, 150, 20).build()
 		);
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel()).dimensions(this.width / 2 + 4, 210, 150, 20).build());
-		this.setInitialFocus(this.poolField);
 		this.updateDoneButtonState();
+	}
+
+	@Override
+	protected void method_56131() {
+		this.setInitialFocus(this.poolField);
 	}
 
 	private void updateDoneButtonState() {

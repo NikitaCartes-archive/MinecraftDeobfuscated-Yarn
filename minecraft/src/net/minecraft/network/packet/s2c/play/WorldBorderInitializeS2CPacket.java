@@ -1,11 +1,17 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.border.WorldBorder;
 
 public class WorldBorderInitializeS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, WorldBorderInitializeS2CPacket> CODEC = Packet.createCodec(
+		WorldBorderInitializeS2CPacket::write, WorldBorderInitializeS2CPacket::new
+	);
 	private final double centerX;
 	private final double centerZ;
 	private final double size;
@@ -15,7 +21,7 @@ public class WorldBorderInitializeS2CPacket implements Packet<ClientPlayPacketLi
 	private final int warningBlocks;
 	private final int warningTime;
 
-	public WorldBorderInitializeS2CPacket(PacketByteBuf buf) {
+	private WorldBorderInitializeS2CPacket(PacketByteBuf buf) {
 		this.centerX = buf.readDouble();
 		this.centerZ = buf.readDouble();
 		this.size = buf.readDouble();
@@ -37,8 +43,7 @@ public class WorldBorderInitializeS2CPacket implements Packet<ClientPlayPacketLi
 		this.warningTime = worldBorder.getWarningTime();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeDouble(this.centerX);
 		buf.writeDouble(this.centerZ);
 		buf.writeDouble(this.size);
@@ -47,6 +52,11 @@ public class WorldBorderInitializeS2CPacket implements Packet<ClientPlayPacketLi
 		buf.writeVarInt(this.maxRadius);
 		buf.writeVarInt(this.warningBlocks);
 		buf.writeVarInt(this.warningTime);
+	}
+
+	@Override
+	public PacketIdentifier<WorldBorderInitializeS2CPacket> getPacketId() {
+		return PlayPackets.INITIALIZE_BORDER;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

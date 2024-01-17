@@ -3,12 +3,15 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.FilterMask;
 import net.minecraft.network.message.MessageBody;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 
 /**
@@ -42,7 +45,9 @@ public record ChatMessageS2CPacket(
 	FilterMask filterMask,
 	MessageType.Serialized serializedParameters
 ) implements Packet<ClientPlayPacketListener> {
-	public ChatMessageS2CPacket(PacketByteBuf buf) {
+	public static final PacketCodec<PacketByteBuf, ChatMessageS2CPacket> CODEC = Packet.createCodec(ChatMessageS2CPacket::write, ChatMessageS2CPacket::new);
+
+	private ChatMessageS2CPacket(PacketByteBuf buf) {
 		this(
 			buf.readUuid(),
 			buf.readVarInt(),
@@ -54,8 +59,7 @@ public record ChatMessageS2CPacket(
 		);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeUuid(this.sender);
 		buf.writeVarInt(this.index);
 		buf.writeNullable(this.signature, MessageSignatureData::write);
@@ -63,6 +67,11 @@ public record ChatMessageS2CPacket(
 		buf.writeNullable(this.unsignedContent, PacketByteBuf::writeText);
 		FilterMask.writeMask(buf, this.filterMask);
 		this.serializedParameters.write(buf);
+	}
+
+	@Override
+	public PacketIdentifier<ChatMessageS2CPacket> getPacketId() {
+		return PlayPackets.PLAYER_CHAT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

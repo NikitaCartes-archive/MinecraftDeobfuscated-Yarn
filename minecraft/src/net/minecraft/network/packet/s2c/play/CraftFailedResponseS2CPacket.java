@@ -1,12 +1,18 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 public class CraftFailedResponseS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, CraftFailedResponseS2CPacket> CODEC = Packet.createCodec(
+		CraftFailedResponseS2CPacket::write, CraftFailedResponseS2CPacket::new
+	);
 	private final int syncId;
 	private final Identifier recipeId;
 
@@ -15,15 +21,19 @@ public class CraftFailedResponseS2CPacket implements Packet<ClientPlayPacketList
 		this.recipeId = recipe.id();
 	}
 
-	public CraftFailedResponseS2CPacket(PacketByteBuf buf) {
+	private CraftFailedResponseS2CPacket(PacketByteBuf buf) {
 		this.syncId = buf.readByte();
 		this.recipeId = buf.readIdentifier();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeIdentifier(this.recipeId);
+	}
+
+	@Override
+	public PacketIdentifier<CraftFailedResponseS2CPacket> getPacketId() {
+		return PlayPackets.PLACE_GHOST_RECIPE;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

@@ -14,7 +14,7 @@ class InstantHealthOrDamageStatusEffect extends InstantStatusEffect {
 
 	@Override
 	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
-		if (this.damage == entity.isUndead()) {
+		if (this.damage == entity.hasInvertedHealingAndHarm()) {
 			entity.heal((float)Math.max(4 << amplifier, 0));
 		} else {
 			entity.damage(entity.getDamageSources().magic(), (float)(6 << amplifier));
@@ -25,7 +25,7 @@ class InstantHealthOrDamageStatusEffect extends InstantStatusEffect {
 
 	@Override
 	public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
-		if (this.damage == target.isUndead()) {
+		if (this.damage == target.hasInvertedHealingAndHarm()) {
 			int i = (int)(proximity * (double)(4 << amplifier) + 0.5);
 			target.heal((float)i);
 		} else {

@@ -53,6 +53,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9111;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -1254,6 +1255,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.guiAtlasManager.close();
 			this.textureManager.close();
 			this.resourceManager.close();
+			class_9111.method_56148();
 			Util.shutdownExecutors();
 		} catch (Throwable var5) {
 			LOGGER.error("Shutdown failure!", var5);
@@ -1396,7 +1398,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				"%d fps T: %s%s%s%s B: %d%s",
 				currentFps,
 				k == 260 ? "inf" : k,
-				this.options.getEnableVsync().getValue() ? " vsync" : " ",
+				this.options.getEnableVsync().getValue() ? " vsync " : " ",
 				this.options.getGraphicsMode().getValue(),
 				this.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF
 					? ""
@@ -2200,7 +2202,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			UserCache.setUseRemote(false);
 			this.server = MinecraftServer.startServer(
 				thread -> new IntegratedServer(thread, this, session, dataPackManager, saveLoader, apiServices, spawnChunkRadius -> {
-						WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
+						WorldGenerationProgressTracker worldGenerationProgressTracker = WorldGenerationProgressTracker.create(spawnChunkRadius + 0);
 						this.worldGenProgressTracker.set(worldGenerationProgressTracker);
 						return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
 					})
@@ -2239,7 +2241,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
 		clientConnection.connect(socketAddress.toString(), 0, new ClientLoginNetworkHandler(clientConnection, this, null, null, newWorld, duration, status -> {
-		}));
+		}, null));
 		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), this.getSession().getUuidOrNull()));
 		this.integratedServerConnection = clientConnection;
 	}
@@ -2259,15 +2261,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void disconnect() {
-		this.disconnect(new ProgressScreen(true));
+		this.disconnect(new ProgressScreen(true), false);
 	}
 
 	public void disconnect(Screen disconnectionScreen) {
+		this.disconnect(disconnectionScreen, false);
+	}
+
+	public void disconnect(Screen disconnectionScreen, boolean transferring) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			this.cancelTasks();
 			clientPlayNetworkHandler.unloadWorld();
-			this.onDisconnected();
+			if (!transferring) {
+				this.onDisconnected();
+			}
 		}
 
 		this.socialInteractionsManager.unloadBlockList();

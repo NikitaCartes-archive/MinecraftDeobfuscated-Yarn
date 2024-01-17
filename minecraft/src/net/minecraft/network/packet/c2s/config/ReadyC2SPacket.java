@@ -1,17 +1,22 @@
 package net.minecraft.network.packet.c2s.config;
 
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerConfigurationPacketListener;
+import net.minecraft.network.packet.ConfigPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
-public record ReadyC2SPacket() implements Packet<ServerConfigurationPacketListener> {
-	public ReadyC2SPacket(PacketByteBuf buf) {
-		this();
+public class ReadyC2SPacket implements Packet<ServerConfigurationPacketListener> {
+	public static final ReadyC2SPacket INSTANCE = new ReadyC2SPacket();
+	public static final PacketCodec<ByteBuf, ReadyC2SPacket> CODEC = PacketCodec.unit(INSTANCE);
+
+	private ReadyC2SPacket() {
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
+	public PacketIdentifier<ReadyC2SPacket> getPacketId() {
+		return ConfigPackets.FINISH_CONFIGURATION_C2S;
 	}
 
 	public void apply(ServerConfigurationPacketListener serverConfigurationPacketListener) {
@@ -19,7 +24,7 @@ public record ReadyC2SPacket() implements Packet<ServerConfigurationPacketListen
 	}
 
 	@Override
-	public NetworkState getNewNetworkState() {
-		return NetworkState.PLAY;
+	public boolean transitionsNetworkState() {
+		return true;
 	}
 }

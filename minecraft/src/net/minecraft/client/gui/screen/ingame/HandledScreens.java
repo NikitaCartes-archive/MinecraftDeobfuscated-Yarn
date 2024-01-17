@@ -22,16 +22,12 @@ public class HandledScreens {
 		
 	);
 
-	public static <T extends ScreenHandler> void open(@Nullable ScreenHandlerType<T> type, MinecraftClient client, int id, Text title) {
-		if (type == null) {
-			LOGGER.warn("Trying to open invalid screen with name: {}", title.getString());
+	public static <T extends ScreenHandler> void open(ScreenHandlerType<T> type, MinecraftClient client, int id, Text title) {
+		HandledScreens.Provider<T, ?> provider = getProvider(type);
+		if (provider == null) {
+			LOGGER.warn("Failed to create screen for menu type: {}", Registries.SCREEN_HANDLER.getId(type));
 		} else {
-			HandledScreens.Provider<T, ?> provider = getProvider(type);
-			if (provider == null) {
-				LOGGER.warn("Failed to create screen for menu type: {}", Registries.SCREEN_HANDLER.getId(type));
-			} else {
-				provider.open(title, type, client, id);
-			}
+			provider.open(title, type, client, id);
 		}
 	}
 

@@ -9,6 +9,7 @@ import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.listener.ServerCommonPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
+import net.minecraft.network.packet.c2s.common.CookieResponseC2SPacket;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
@@ -29,8 +30,10 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int KEEP_ALIVE_INTERVAL = 15000;
 	private static final Text TIMEOUT_TEXT = Text.translatable("disconnect.timeout");
+	static final Text UNEXPECTED_QUERY_RESPONSE_TEXT = Text.translatable("multiplayer.disconnect.unexpected_query_response");
 	protected final MinecraftServer server;
 	protected final ClientConnection connection;
+	private final boolean transferred;
 	private long lastKeepAliveTime;
 	private boolean waitingForKeepAlive;
 	private long keepAliveId;
@@ -42,6 +45,7 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 		this.connection = connection;
 		this.lastKeepAliveTime = Util.getMeasuringTimeMs();
 		this.latency = clientData.latency();
+		this.transferred = clientData.transferred();
 	}
 
 	@Override
@@ -78,6 +82,11 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 			LOGGER.info("Disconnecting {} due to resource pack {} rejection", this.getProfile().getName(), packet.id());
 			this.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
 		}
+	}
+
+	@Override
+	public void onCookieResponse(CookieResponseC2SPacket packet) {
+		this.disconnect(UNEXPECTED_QUERY_RESPONSE_TEXT);
 	}
 
 	protected void baseTick() {
@@ -145,6 +154,6 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	}
 
 	protected ConnectedClientData createClientData(SyncedClientOptions syncedOptions) {
-		return new ConnectedClientData(this.getProfile(), this.latency, syncedOptions);
+		return new ConnectedClientData(this.getProfile(), this.latency, syncedOptions, this.transferred);
 	}
 }

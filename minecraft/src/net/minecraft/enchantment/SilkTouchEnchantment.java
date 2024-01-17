@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class SilkTouchEnchantment extends Enchantment {
 	protected SilkTouchEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.DIGGER, slotTypes);
+		super(weight, ItemTags.MINING_LOOT_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

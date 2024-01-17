@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityAttachmentType;
 import net.minecraft.entity.EntityAttachments;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -211,11 +210,6 @@ public class TurtleEntity extends AnimalEntity {
 	@Override
 	public boolean isPushedByFluids() {
 		return false;
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.AQUATIC;
 	}
 
 	@Override

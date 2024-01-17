@@ -23,12 +23,12 @@ public abstract class FallingBlock extends Block implements LandingBlock {
 	protected abstract MapCodec<? extends FallingBlock> getCodec();
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		world.scheduleBlockTick(pos, this, this.getFallDelay());
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		world.scheduleBlockTick(pos, this, this.getFallDelay());
@@ -36,7 +36,7 @@ public abstract class FallingBlock extends Block implements LandingBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (canFallThrough(world.getBlockState(pos.down())) && pos.getY() >= world.getBottomY()) {
 			FallingBlockEntity fallingBlockEntity = FallingBlockEntity.spawnFromBlock(world, pos, state);
 			this.configureFallingBlockEntity(fallingBlockEntity);

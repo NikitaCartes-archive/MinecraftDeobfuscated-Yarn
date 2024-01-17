@@ -151,6 +151,7 @@ public final class BlockTags {
 	public static final TagKey<Block> ANCIENT_CITY_REPLACEABLE = of("ancient_city_replaceable");
 	public static final TagKey<Block> VIBRATION_RESONATORS = of("vibration_resonators");
 	public static final TagKey<Block> ANIMALS_SPAWNABLE_ON = of("animals_spawnable_on");
+	public static final TagKey<Block> ARMADILLO_SPAWNABLE_ON = of("armadillo_spawnable_on");
 	public static final TagKey<Block> AXOLOTLS_SPAWNABLE_ON = of("axolotls_spawnable_on");
 	public static final TagKey<Block> GOATS_SPAWNABLE_ON = of("goats_spawnable_on");
 	public static final TagKey<Block> MOOSHROOMS_SPAWNABLE_ON = of("mooshrooms_spawnable_on");

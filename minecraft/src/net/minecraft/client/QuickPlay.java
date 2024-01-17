@@ -65,7 +65,7 @@ public class QuickPlay {
 		}
 
 		ServerAddress serverAddress2 = ServerAddress.parse(serverAddress);
-		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), client, serverAddress2, serverInfo, true);
+		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), client, serverAddress2, serverInfo, true, null);
 	}
 
 	private static void startRealms(MinecraftClient client, RealmsClient realmsClient, String realmId) {

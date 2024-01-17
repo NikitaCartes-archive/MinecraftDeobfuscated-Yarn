@@ -83,12 +83,12 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState state) {
+	protected boolean hasSidedTransparency(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return (state.get(SHORT) ? SHORT_HEAD_SHAPES : HEAD_SHAPES)[((Direction)state.get(FACING)).ordinal()];
 	}
 
@@ -110,7 +110,7 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			super.onStateReplaced(state, world, pos, newState, moved);
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
@@ -121,7 +121,7 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
@@ -130,13 +130,13 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite()));
 		return this.isAttached(state, blockState) || blockState.isOf(Blocks.MOVING_PISTON) && blockState.get(FACING) == state.get(FACING);
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (state.canPlaceAt(world, pos)) {
 			world.updateNeighbor(pos.offset(((Direction)state.get(FACING)).getOpposite()), sourceBlock, sourcePos);
 		}
@@ -148,12 +148,12 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
 
@@ -163,7 +163,7 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

@@ -221,7 +221,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 				if (!itemStack.isDamageable()) {
 					itemStack.decrement(1);
 				} else {
-					itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+					itemStack.damage(1, player, getSlotForHand(hand));
 				}
 			}
 

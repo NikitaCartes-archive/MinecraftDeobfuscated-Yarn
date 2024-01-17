@@ -23,11 +23,11 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 		this.addFeature(new FoxHeldItemFeatureRenderer(this, context.getHeldItemRenderer()));
 	}
 
-	protected void setupTransforms(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(foxEntity, matrixStack, f, g, h);
+	protected void setupTransforms(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		super.setupTransforms(foxEntity, matrixStack, f, g, h, i);
 		if (foxEntity.isChasing() || foxEntity.isWalking()) {
-			float i = -MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.getPitch());
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(i));
+			float j = -MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.getPitch());
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(j));
 		}
 	}
 

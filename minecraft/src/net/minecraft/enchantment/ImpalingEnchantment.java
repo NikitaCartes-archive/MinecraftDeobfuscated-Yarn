@@ -1,11 +1,14 @@
 package net.minecraft.enchantment;
 
-import net.minecraft.entity.EntityGroup;
+import javax.annotation.Nullable;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 
 public class ImpalingEnchantment extends Enchantment {
 	public ImpalingEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.TRIDENT, slotTypes);
+		super(weight, ItemTags.TRIDENT_ENCHANTABLE, slotTypes);
 	}
 
 	@Override
@@ -24,7 +27,7 @@ public class ImpalingEnchantment extends Enchantment {
 	}
 
 	@Override
-	public float getAttackDamage(int level, EntityGroup group) {
-		return group == EntityGroup.AQUATIC ? (float)level * 2.5F : 0.0F;
+	public float getAttackDamage(int level, @Nullable EntityType<?> entityType) {
+		return entityType != null && entityType.isIn(EntityTypeTags.AQUATIC) ? (float)level * 2.5F : 0.0F;
 	}
 }

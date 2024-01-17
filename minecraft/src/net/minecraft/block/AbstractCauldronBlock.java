@@ -72,28 +72,28 @@ public abstract class AbstractCauldronBlock extends Block {
 	}
 
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		CauldronBehavior cauldronBehavior = (CauldronBehavior)this.behaviorMap.map().get(stack.getItem());
 		return cauldronBehavior.interact(state, world, pos, player, hand, stack);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return OUTLINE_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
 		return RAYCAST_SHAPE;
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	protected boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 
@@ -106,7 +106,7 @@ public abstract class AbstractCauldronBlock extends Block {
 	public abstract boolean isFull(BlockState state);
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		BlockPos blockPos = PointedDripstoneBlock.getDripPos(world, pos);
 		if (blockPos != null) {
 			Fluid fluid = PointedDripstoneBlock.getDripFluid(world, blockPos);

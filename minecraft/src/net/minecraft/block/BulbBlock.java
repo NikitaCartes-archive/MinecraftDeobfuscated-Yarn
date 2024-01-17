@@ -26,14 +26,14 @@ public class BulbBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (oldState.getBlock() != state.getBlock() && world instanceof ServerWorld serverWorld) {
 			this.update(state, serverWorld, pos);
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (world instanceof ServerWorld serverWorld) {
 			this.update(state, serverWorld, pos);
 		}
@@ -58,12 +58,12 @@ public class BulbBlock extends Block {
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	protected boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		return world.getBlockState(pos).get(LIT) ? 15 : 0;
 	}
 }

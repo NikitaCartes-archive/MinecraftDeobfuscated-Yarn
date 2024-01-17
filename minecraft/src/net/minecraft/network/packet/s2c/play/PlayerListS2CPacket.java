@@ -9,15 +9,19 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nullables;
 import net.minecraft.world.GameMode;
 
 public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerListS2CPacket> CODEC = Packet.createCodec(PlayerListS2CPacket::write, PlayerListS2CPacket::new);
 	private final EnumSet<PlayerListS2CPacket.Action> actions;
 	private final List<PlayerListS2CPacket.Entry> entries;
 
@@ -43,7 +47,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		return new PlayerListS2CPacket(enumSet, players);
 	}
 
-	public PlayerListS2CPacket(PacketByteBuf buf) {
+	private PlayerListS2CPacket(PacketByteBuf buf) {
 		this.actions = buf.readEnumSet(PlayerListS2CPacket.Action.class);
 		this.entries = buf.readList(buf2 -> {
 			PlayerListS2CPacket.Serialized serialized = new PlayerListS2CPacket.Serialized(buf2.readUuid());
@@ -56,8 +60,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		});
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeEnumSet(this.actions, PlayerListS2CPacket.Action.class);
 		buf.writeCollection(this.entries, (buf2, entry) -> {
 			buf2.writeUuid(entry.profileId());
@@ -66,6 +69,11 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				action.writer.write(buf2, entry);
 			}
 		});
+	}
+
+	@Override
+	public PacketIdentifier<PlayerListS2CPacket> getPacketId() {
+		return PlayPackets.PLAYER_INFO_UPDATE;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

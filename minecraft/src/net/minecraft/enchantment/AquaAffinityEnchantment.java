@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class AquaAffinityEnchantment extends Enchantment {
 	public AquaAffinityEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ARMOR_HEAD, slotTypes);
+		super(weight, ItemTags.HEAD_ARMOR_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

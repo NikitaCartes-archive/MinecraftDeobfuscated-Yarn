@@ -7,11 +7,15 @@ import javax.annotation.Nullable;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 
 public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, MapUpdateS2CPacket> CODEC = Packet.createCodec(MapUpdateS2CPacket::write, MapUpdateS2CPacket::new);
 	private final int id;
 	private final byte scale;
 	private final boolean locked;
@@ -28,7 +32,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.updateData = updateData;
 	}
 
-	public MapUpdateS2CPacket(PacketByteBuf buf) {
+	private MapUpdateS2CPacket(PacketByteBuf buf) {
 		this.id = buf.readVarInt();
 		this.scale = buf.readByte();
 		this.locked = buf.readBoolean();
@@ -52,8 +56,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeByte(this.scale);
 		buf.writeBoolean(this.locked);
@@ -73,6 +76,11 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		} else {
 			buf.writeByte(0);
 		}
+	}
+
+	@Override
+	public PacketIdentifier<MapUpdateS2CPacket> getPacketId() {
+		return PlayPackets.MAP_ITEM_DATA;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

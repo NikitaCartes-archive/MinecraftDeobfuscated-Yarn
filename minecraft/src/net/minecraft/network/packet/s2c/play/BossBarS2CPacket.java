@@ -4,11 +4,15 @@ import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 
 public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, BossBarS2CPacket> CODEC = Packet.createCodec(BossBarS2CPacket::write, BossBarS2CPacket::new);
 	private static final int DARKEN_SKY_MASK = 1;
 	private static final int DRAGON_MUSIC_MASK = 2;
 	private static final int THICKEN_FOG_MASK = 4;
@@ -35,7 +39,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.action = action;
 	}
 
-	public BossBarS2CPacket(PacketByteBuf buf) {
+	private BossBarS2CPacket(PacketByteBuf buf) {
 		this.uuid = buf.readUuid();
 		BossBarS2CPacket.Type type = buf.readEnumConstant(BossBarS2CPacket.Type.class);
 		this.action = (BossBarS2CPacket.Action)type.parser.apply(buf);
@@ -65,8 +69,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		return new BossBarS2CPacket(bar.getUuid(), new BossBarS2CPacket.UpdatePropertiesAction(bar.shouldDarkenSky(), bar.hasDragonMusic(), bar.shouldThickenFog()));
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeUuid(this.uuid);
 		buf.writeEnumConstant(this.action.getType());
 		this.action.toPacket(buf);
@@ -87,6 +90,11 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		return i;
+	}
+
+	@Override
+	public PacketIdentifier<BossBarS2CPacket> getPacketId() {
+		return PlayPackets.BOSS_EVENT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

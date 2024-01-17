@@ -2,13 +2,19 @@ package net.minecraft.network.packet.c2s.login;
 
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerLoginPacketListener;
+import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
 public record LoginQueryResponseC2SPacket(int queryId, @Nullable LoginQueryResponsePayload response) implements Packet<ServerLoginPacketListener> {
+	public static final PacketCodec<PacketByteBuf, LoginQueryResponseC2SPacket> CODEC = Packet.createCodec(
+		LoginQueryResponseC2SPacket::write, LoginQueryResponseC2SPacket::read
+	);
 	private static final int MAX_PAYLOAD_SIZE = 1048576;
 
-	public static LoginQueryResponseC2SPacket read(PacketByteBuf buf) {
+	private static LoginQueryResponseC2SPacket read(PacketByteBuf buf) {
 		int i = buf.readVarInt();
 		return new LoginQueryResponseC2SPacket(i, readPayload(i, buf));
 	}
@@ -34,10 +40,14 @@ public record LoginQueryResponseC2SPacket(int queryId, @Nullable LoginQueryRespo
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.queryId);
 		buf.writeNullable(this.response, (bufx, response) -> response.write(bufx));
+	}
+
+	@Override
+	public PacketIdentifier<LoginQueryResponseC2SPacket> getPacketId() {
+		return LoginPackets.CUSTOM_QUERY_ANSWER;
 	}
 
 	public void apply(ServerLoginPacketListener serverLoginPacketListener) {

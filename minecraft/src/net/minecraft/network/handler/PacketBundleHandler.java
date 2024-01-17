@@ -9,29 +9,18 @@ import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.BundlePacket;
 import net.minecraft.network.packet.BundleSplitterPacket;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
 public interface PacketBundleHandler {
 	int MAX_PACKETS = 4096;
-	PacketBundleHandler NOOP = new PacketBundleHandler() {
-		@Override
-		public void forEachPacket(Packet<?> packet, Consumer<Packet<?>> consumer) {
-			consumer.accept(packet);
-		}
 
-		@Nullable
-		@Override
-		public PacketBundleHandler.Bundler createBundler(Packet<?> splitter) {
-			return null;
-		}
-	};
-
-	static <T extends PacketListener, P extends BundlePacket<T>> PacketBundleHandler create(
-		Class<P> bundlePacketType, Function<Iterable<Packet<T>>, P> bundleFunction, BundleSplitterPacket<T> splitter
+	static <T extends PacketListener, P extends BundlePacket<? super T>> PacketBundleHandler create(
+		PacketIdentifier<P> packetIdentifier, Function<Iterable<Packet<? super T>>, P> bundleFunction, BundleSplitterPacket<? super T> splitter
 	) {
 		return new PacketBundleHandler() {
 			@Override
 			public void forEachPacket(Packet<?> packet, Consumer<Packet<?>> consumer) {
-				if (packet.getClass() == bundlePacketType) {
+				if (packet.getPacketId() == packetIdentifier) {
 					P bundlePacket = (P)packet;
 					consumer.accept(splitter);
 					bundlePacket.getPackets().forEach(consumer);
@@ -45,7 +34,7 @@ public interface PacketBundleHandler {
 			@Override
 			public PacketBundleHandler.Bundler createBundler(Packet<?> splitter) {
 				return splitter == splitter ? new PacketBundleHandler.Bundler() {
-					private final List<Packet<T>> packets = new ArrayList();
+					private final List<Packet<? super T>> packets = new ArrayList();
 
 					@Nullable
 					@Override
@@ -72,9 +61,5 @@ public interface PacketBundleHandler {
 	public interface Bundler {
 		@Nullable
 		Packet<?> add(Packet<?> packet);
-	}
-
-	public interface BundlerGetter {
-		PacketBundleHandler getBundler();
 	}
 }

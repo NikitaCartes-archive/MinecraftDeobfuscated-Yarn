@@ -128,7 +128,7 @@ public class MultiplayerServerListPinger {
 
 			try {
 				clientConnection.connect(serverAddress.getAddress(), serverAddress.getPort(), clientQueryPacketListener);
-				clientConnection.send(new QueryRequestC2SPacket());
+				clientConnection.send(QueryRequestC2SPacket.INSTANCE);
 			} catch (Throwable var10) {
 				LOGGER.error("Failed to ping server {}", serverAddress, var10);
 			}

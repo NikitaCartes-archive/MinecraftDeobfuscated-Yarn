@@ -17,8 +17,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.VillagerProfession;
 
 public class GatherItemsVillagerTask extends MultiTickTask<VillagerEntity> {
-	private static final int MAX_RANGE = 5;
-	private static final float WALK_TOGETHER_SPEED = 0.5F;
 	private Set<Item> items = ImmutableSet.of();
 
 	public GatherItemsVillagerTask() {
@@ -35,14 +33,14 @@ public class GatherItemsVillagerTask extends MultiTickTask<VillagerEntity> {
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F);
+		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F, 2);
 		this.items = getGatherableItems(villagerEntity, villagerEntity2);
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
-			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F);
+			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F, 2);
 			villagerEntity.talkWithVillager(serverWorld, villagerEntity2, l);
 			if (villagerEntity.wantsToStartBreeding() && (villagerEntity.getVillagerData().getProfession() == VillagerProfession.FARMER || villagerEntity2.canBreed())) {
 				giveHalfOfStack(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet(), villagerEntity2);

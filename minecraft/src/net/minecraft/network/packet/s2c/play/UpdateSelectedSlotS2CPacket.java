@@ -1,23 +1,33 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class UpdateSelectedSlotS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, UpdateSelectedSlotS2CPacket> CODEC = Packet.createCodec(
+		UpdateSelectedSlotS2CPacket::write, UpdateSelectedSlotS2CPacket::new
+	);
 	private final int slot;
 
 	public UpdateSelectedSlotS2CPacket(int slot) {
 		this.slot = slot;
 	}
 
-	public UpdateSelectedSlotS2CPacket(PacketByteBuf buf) {
+	private UpdateSelectedSlotS2CPacket(PacketByteBuf buf) {
 		this.slot = buf.readByte();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.slot);
+	}
+
+	@Override
+	public PacketIdentifier<UpdateSelectedSlotS2CPacket> getPacketId() {
+		return PlayPackets.SET_CARRIED_ITEM_S2C;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

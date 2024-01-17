@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class QuickChargeEnchantment extends Enchantment {
 	public QuickChargeEnchantment(Enchantment.Rarity weight, EquipmentSlot... slot) {
-		super(weight, EnchantmentTarget.CROSSBOW, slot);
+		super(weight, ItemTags.CROSSBOW_ENCHANTABLE, slot);
 	}
 
 	@Override

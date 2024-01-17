@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class CrossbowItem extends RangedWeaponItem implements Vanishable {
+public class CrossbowItem extends RangedWeaponItem {
 	private static final String CHARGED_KEY = "Charged";
 	private static final String CHARGED_PROJECTILES_KEY = "ChargedProjectiles";
 	private static final int DEFAULT_PULL_TIME = 25;
@@ -237,7 +237,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 				projectileEntity.setVelocity((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), speed, divergence);
 			}
 
-			crossbow.damage(bl ? 3 : 1, shooter, e -> e.sendToolBreakStatus(hand));
+			crossbow.damage(bl ? 3 : 1, shooter, LivingEntity.getSlotForHand(hand));
 			world.spawnEntity(projectileEntity);
 			world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
 		}

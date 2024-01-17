@@ -9,6 +9,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.util.UndashedUuid;
+import io.netty.buffer.ByteBuf;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +17,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.IntStream;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 
 public final class Uuids {
 	public static final Codec<UUID> INT_STREAM_CODEC = Codec.INT_STREAM
@@ -36,6 +39,15 @@ public final class Uuids {
 		}
 	}, UndashedUuid::toString)).xmap(either -> either.map(uuid -> uuid, uuid -> uuid), Either::right);
 	public static Codec<UUID> STRICT_CODEC = Codec.either(INT_STREAM_CODEC, STRING_CODEC).xmap(either -> either.map(uuid -> uuid, uuid -> uuid), Either::left);
+	public static PacketCodec<ByteBuf, UUID> PACKET_CODEC = new PacketCodec<ByteBuf, UUID>() {
+		public UUID decode(ByteBuf byteBuf) {
+			return PacketByteBuf.readUuid(byteBuf);
+		}
+
+		public void encode(ByteBuf byteBuf, UUID uUID) {
+			PacketByteBuf.writeUuid(byteBuf, uUID);
+		}
+	};
 	public static final int BYTE_ARRAY_SIZE = 16;
 	private static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
 

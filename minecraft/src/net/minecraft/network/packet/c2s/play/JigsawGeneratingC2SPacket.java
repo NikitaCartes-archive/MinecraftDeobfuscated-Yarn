@@ -1,11 +1,17 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 
 public class JigsawGeneratingC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, JigsawGeneratingC2SPacket> CODEC = Packet.createCodec(
+		JigsawGeneratingC2SPacket::write, JigsawGeneratingC2SPacket::new
+	);
 	private final BlockPos pos;
 	private final int maxDepth;
 	private final boolean keepJigsaws;
@@ -16,17 +22,21 @@ public class JigsawGeneratingC2SPacket implements Packet<ServerPlayPacketListene
 		this.keepJigsaws = keepJigsaws;
 	}
 
-	public JigsawGeneratingC2SPacket(PacketByteBuf buf) {
+	private JigsawGeneratingC2SPacket(PacketByteBuf buf) {
 		this.pos = buf.readBlockPos();
 		this.maxDepth = buf.readVarInt();
 		this.keepJigsaws = buf.readBoolean();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
 		buf.writeVarInt(this.maxDepth);
 		buf.writeBoolean(this.keepJigsaws);
+	}
+
+	@Override
+	public PacketIdentifier<JigsawGeneratingC2SPacket> getPacketId() {
+		return PlayPackets.JIGSAW_GENERATE;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

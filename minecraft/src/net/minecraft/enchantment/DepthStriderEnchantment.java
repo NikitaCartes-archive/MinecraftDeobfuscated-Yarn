@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class DepthStriderEnchantment extends Enchantment {
 	public DepthStriderEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ARMOR_FEET, slotTypes);
+		super(weight, ItemTags.FOOT_ARMOR_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

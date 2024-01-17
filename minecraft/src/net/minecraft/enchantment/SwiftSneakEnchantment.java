@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class SwiftSneakEnchantment extends Enchantment {
 	public SwiftSneakEnchantment(Enchantment.Rarity rarity, EquipmentSlot... slots) {
-		super(rarity, EnchantmentTarget.ARMOR_LEGS, slots);
+		super(rarity, ItemTags.LEG_ARMOR_ENCHANTABLE, slots);
 	}
 
 	@Override

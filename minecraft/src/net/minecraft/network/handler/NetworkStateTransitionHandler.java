@@ -1,19 +1,22 @@
 package net.minecraft.network.handler;
 
-import io.netty.util.Attribute;
-import net.minecraft.network.NetworkState;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.class_9130;
 import net.minecraft.network.packet.Packet;
 
 public interface NetworkStateTransitionHandler {
-	static void handle(Attribute<NetworkState.PacketHandler<?>> protocolAttribute, Packet<?> packet) {
-		NetworkState networkState = packet.getNewNetworkState();
-		if (networkState != null) {
-			NetworkState.PacketHandler<?> packetHandler = protocolAttribute.get();
-			NetworkState networkState2 = packetHandler.getState();
-			if (networkState != networkState2) {
-				NetworkState.PacketHandler<?> packetHandler2 = networkState.getHandler(packetHandler.getSide());
-				protocolAttribute.set(packetHandler2);
-			}
+	static void method_56347(ChannelHandlerContext channelHandlerContext, Packet<?> packet) {
+		if (packet.transitionsNetworkState()) {
+			channelHandlerContext.channel().config().setAutoRead(false);
+			channelHandlerContext.pipeline().addBefore(channelHandlerContext.name(), "inbound_config", new class_9130.class_9131());
+			channelHandlerContext.pipeline().remove(channelHandlerContext.name());
+		}
+	}
+
+	static void method_56348(ChannelHandlerContext channelHandlerContext, Packet<?> packet) {
+		if (packet.transitionsNetworkState()) {
+			channelHandlerContext.pipeline().addAfter(channelHandlerContext.name(), "outbound_config", new class_9130.class_9133());
+			channelHandlerContext.pipeline().remove(channelHandlerContext.name());
 		}
 	}
 }

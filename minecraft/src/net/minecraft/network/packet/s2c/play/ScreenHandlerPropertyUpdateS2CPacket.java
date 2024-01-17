@@ -1,10 +1,16 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class ScreenHandlerPropertyUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ScreenHandlerPropertyUpdateS2CPacket> CODEC = Packet.createCodec(
+		ScreenHandlerPropertyUpdateS2CPacket::write, ScreenHandlerPropertyUpdateS2CPacket::new
+	);
 	private final int syncId;
 	private final int propertyId;
 	private final int value;
@@ -15,17 +21,21 @@ public class ScreenHandlerPropertyUpdateS2CPacket implements Packet<ClientPlayPa
 		this.value = value;
 	}
 
-	public ScreenHandlerPropertyUpdateS2CPacket(PacketByteBuf buf) {
+	private ScreenHandlerPropertyUpdateS2CPacket(PacketByteBuf buf) {
 		this.syncId = buf.readUnsignedByte();
 		this.propertyId = buf.readShort();
 		this.value = buf.readShort();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeShort(this.propertyId);
 		buf.writeShort(this.value);
+	}
+
+	@Override
+	public PacketIdentifier<ScreenHandlerPropertyUpdateS2CPacket> getPacketId() {
+		return PlayPackets.CONTAINER_SET_DATA;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

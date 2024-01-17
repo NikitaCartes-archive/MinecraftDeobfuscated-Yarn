@@ -1,17 +1,22 @@
 package net.minecraft.network.packet.s2c.config;
 
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientConfigurationPacketListener;
+import net.minecraft.network.packet.ConfigPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
-public record ReadyS2CPacket() implements Packet<ClientConfigurationPacketListener> {
-	public ReadyS2CPacket(PacketByteBuf buf) {
-		this();
+public class ReadyS2CPacket implements Packet<ClientConfigurationPacketListener> {
+	public static final ReadyS2CPacket INSTANCE = new ReadyS2CPacket();
+	public static final PacketCodec<ByteBuf, ReadyS2CPacket> CODEC = PacketCodec.unit(INSTANCE);
+
+	private ReadyS2CPacket() {
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
+	public PacketIdentifier<ReadyS2CPacket> getPacketId() {
+		return ConfigPackets.FINISH_CONFIGURATION_S2C;
 	}
 
 	public void apply(ClientConfigurationPacketListener clientConfigurationPacketListener) {
@@ -19,7 +24,7 @@ public record ReadyS2CPacket() implements Packet<ClientConfigurationPacketListen
 	}
 
 	@Override
-	public NetworkState getNewNetworkState() {
-		return NetworkState.PLAY;
+	public boolean transitionsNetworkState() {
+		return true;
 	}
 }

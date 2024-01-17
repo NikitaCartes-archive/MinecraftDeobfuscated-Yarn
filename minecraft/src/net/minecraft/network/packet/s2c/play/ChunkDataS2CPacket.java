@@ -2,14 +2,18 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.BitSet;
 import javax.annotation.Nullable;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, ChunkDataS2CPacket> CODEC = Packet.createCodec(ChunkDataS2CPacket::method_55883, ChunkDataS2CPacket::new);
 	private final int chunkX;
 	private final int chunkZ;
 	private final ChunkData chunkData;
@@ -23,19 +27,23 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.lightData = new LightData(chunkPos, lightProvider, skyBits, blockBits);
 	}
 
-	public ChunkDataS2CPacket(PacketByteBuf buf) {
+	private ChunkDataS2CPacket(RegistryByteBuf buf) {
 		this.chunkX = buf.readInt();
 		this.chunkZ = buf.readInt();
 		this.chunkData = new ChunkData(buf, this.chunkX, this.chunkZ);
 		this.lightData = new LightData(buf, this.chunkX, this.chunkZ);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void method_55883(RegistryByteBuf buf) {
 		buf.writeInt(this.chunkX);
 		buf.writeInt(this.chunkZ);
 		this.chunkData.write(buf);
 		this.lightData.write(buf);
+	}
+
+	@Override
+	public PacketIdentifier<ChunkDataS2CPacket> getPacketId() {
+		return PlayPackets.LEVEL_CHUNK_WITH_LIGHT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

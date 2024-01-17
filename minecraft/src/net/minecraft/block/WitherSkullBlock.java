@@ -39,10 +39,13 @@ public class WitherSkullBlock extends SkullBlock {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		super.onPlaced(world, pos, state, placer, itemStack);
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof SkullBlockEntity) {
-			onPlaced(world, pos, (SkullBlockEntity)blockEntity);
+		onPlaced(world, pos);
+	}
+
+	public static void onPlaced(World world, BlockPos pos) {
+		BlockEntity var3 = world.getBlockEntity(pos);
+		if (var3 instanceof SkullBlockEntity skullBlockEntity) {
+			onPlaced(world, pos, skullBlockEntity);
 		}
 	}
 

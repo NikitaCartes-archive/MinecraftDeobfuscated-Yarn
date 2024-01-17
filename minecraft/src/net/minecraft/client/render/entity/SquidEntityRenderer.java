@@ -21,13 +21,13 @@ public class SquidEntityRenderer<T extends SquidEntity> extends MobEntityRendere
 		return TEXTURE;
 	}
 
-	protected void setupTransforms(T squidEntity, MatrixStack matrixStack, float f, float g, float h) {
-		float i = MathHelper.lerp(h, squidEntity.prevTiltAngle, squidEntity.tiltAngle);
-		float j = MathHelper.lerp(h, squidEntity.prevRollAngle, squidEntity.rollAngle);
+	protected void setupTransforms(T squidEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		float j = MathHelper.lerp(h, squidEntity.prevTiltAngle, squidEntity.tiltAngle);
+		float k = MathHelper.lerp(h, squidEntity.prevRollAngle, squidEntity.rollAngle);
 		matrixStack.translate(0.0F, 0.5F, 0.0F);
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - g));
-		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(i));
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(j));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(k));
 		matrixStack.translate(0.0F, -1.2F, 0.0F);
 	}
 

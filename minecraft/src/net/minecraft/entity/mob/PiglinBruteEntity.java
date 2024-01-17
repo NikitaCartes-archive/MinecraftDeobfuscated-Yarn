@@ -159,11 +159,11 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	}
 
 	protected void playAngrySound() {
-		this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_ANGRY, 1.0F, this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_ANGRY);
 	}
 
 	@Override
 	protected void playZombificationSound() {
-		this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_CONVERTED_TO_ZOMBIFIED, 1.0F, this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_CONVERTED_TO_ZOMBIFIED);
 	}
 }

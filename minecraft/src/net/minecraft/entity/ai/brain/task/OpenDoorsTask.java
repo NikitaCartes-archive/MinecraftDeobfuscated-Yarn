@@ -93,7 +93,7 @@ public class OpenDoorsTask {
 
 		while(iterator.hasNext()) {
 			GlobalPos globalPos = (GlobalPos)iterator.next();
-			BlockPos blockPos = globalPos.getPos();
+			BlockPos blockPos = globalPos.pos();
 			if ((lastNode == null || !lastNode.getBlockPos().equals(blockPos)) && (currentNode == null || !currentNode.getBlockPos().equals(blockPos))) {
 				if (cannotReachDoor(world, entity, globalPos)) {
 					iterator.remove();
@@ -147,7 +147,7 @@ public class OpenDoorsTask {
 	}
 
 	private static boolean cannotReachDoor(ServerWorld world, LivingEntity entity, GlobalPos doorPos) {
-		return doorPos.getDimension() != world.getRegistryKey() || !doorPos.getPos().isWithinDistance(entity.getPos(), 3.0);
+		return doorPos.dimension() != world.getRegistryKey() || !doorPos.pos().isWithinDistance(entity.getPos(), 3.0);
 	}
 
 	private static Optional<Set<GlobalPos>> storePos(
@@ -158,7 +158,7 @@ public class OpenDoorsTask {
 			doorSet.add(globalPos);
 			return doorSet;
 		}).orElseGet(() -> {
-			Set<GlobalPos> set = Sets.<GlobalPos>newHashSet(globalPos);
+			Set<GlobalPos> set = Sets.newHashSet(globalPos);
 			queryResult.remember(set);
 			return set;
 		}));

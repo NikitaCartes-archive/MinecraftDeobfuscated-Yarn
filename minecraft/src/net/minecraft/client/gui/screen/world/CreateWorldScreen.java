@@ -212,6 +212,10 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Override
+	protected void method_56131() {
+	}
+
+	@Override
 	public void initTabNavigation() {
 		if (this.tabNavigation != null && this.grid != null) {
 			this.tabNavigation.setWidth(this.width);

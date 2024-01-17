@@ -1,10 +1,16 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ItemPickupAnimationS2CPacket> CODEC = Packet.createCodec(
+		ItemPickupAnimationS2CPacket::write, ItemPickupAnimationS2CPacket::new
+	);
 	private final int entityId;
 	private final int collectorEntityId;
 	private final int stackAmount;
@@ -15,17 +21,21 @@ public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketList
 		this.stackAmount = stackAmount;
 	}
 
-	public ItemPickupAnimationS2CPacket(PacketByteBuf buf) {
+	private ItemPickupAnimationS2CPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
 		this.collectorEntityId = buf.readVarInt();
 		this.stackAmount = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeVarInt(this.collectorEntityId);
 		buf.writeVarInt(this.stackAmount);
+	}
+
+	@Override
+	public PacketIdentifier<ItemPickupAnimationS2CPacket> getPacketId() {
+		return PlayPackets.TAKE_ITEM_ENTITY;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

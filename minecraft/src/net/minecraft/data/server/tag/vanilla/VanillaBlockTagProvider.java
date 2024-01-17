@@ -1448,6 +1448,10 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.LOGS);
 		this.getOrCreateTagBuilder(BlockTags.GEODE_INVALID_BLOCKS).add(Blocks.BEDROCK, Blocks.WATER, Blocks.LAVA, Blocks.ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE);
 		this.getOrCreateTagBuilder(BlockTags.ANIMALS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK);
+		this.getOrCreateTagBuilder(BlockTags.ARMADILLO_SPAWNABLE_ON)
+			.addTag(BlockTags.ANIMALS_SPAWNABLE_ON)
+			.addTag(BlockTags.TERRACOTTA)
+			.add(Blocks.RED_SAND, Blocks.COARSE_DIRT);
 		this.getOrCreateTagBuilder(BlockTags.AXOLOTLS_SPAWNABLE_ON).add(Blocks.CLAY);
 		this.getOrCreateTagBuilder(BlockTags.GOATS_SPAWNABLE_ON)
 			.addTag(BlockTags.ANIMALS_SPAWNABLE_ON)

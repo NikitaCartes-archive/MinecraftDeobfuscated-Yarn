@@ -2,6 +2,9 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
@@ -27,7 +30,8 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(wolfEntity, f, g, h);
 			this.model.setAngles(wolfEntity, f, g, j, k, l);
-			renderModel(this.model, ((AnimalArmorItem)Items.WOLF_ARMOR).getEntityTexture(), matrixStack, vertexConsumerProvider, i, wolfEntity, 1.0F, 1.0F, 1.0F);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(((AnimalArmorItem)Items.WOLF_ARMOR).getEntityTexture()));
+			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 }

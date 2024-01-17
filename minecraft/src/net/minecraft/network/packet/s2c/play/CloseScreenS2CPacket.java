@@ -1,23 +1,31 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class CloseScreenS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, CloseScreenS2CPacket> CODEC = Packet.createCodec(CloseScreenS2CPacket::write, CloseScreenS2CPacket::new);
 	private final int syncId;
 
 	public CloseScreenS2CPacket(int syncId) {
 		this.syncId = syncId;
 	}
 
-	public CloseScreenS2CPacket(PacketByteBuf buf) {
+	private CloseScreenS2CPacket(PacketByteBuf buf) {
 		this.syncId = buf.readUnsignedByte();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
+	}
+
+	@Override
+	public PacketIdentifier<CloseScreenS2CPacket> getPacketId() {
+		return PlayPackets.CONTAINER_CLOSE_S2C;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

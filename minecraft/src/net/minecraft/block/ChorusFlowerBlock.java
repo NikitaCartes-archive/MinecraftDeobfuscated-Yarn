@@ -43,14 +43,14 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
 		}
 	}
 
 	@Override
-	public boolean hasRandomTicks(BlockState state) {
+	protected boolean hasRandomTicks(BlockState state) {
 		return state.get(AGE) < 5;
 	}
 
@@ -60,7 +60,7 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		BlockPos blockPos = pos.up();
 		if (world.isAir(blockPos) && blockPos.getY() < world.getTopY()) {
 			int i = state.get(AGE);
@@ -145,7 +145,7 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (direction != Direction.UP && !state.canPlaceAt(world, pos)) {
@@ -156,7 +156,7 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.down());
 		if (!blockState.isOf(this.plantBlock) && !blockState.isOf(Blocks.END_STONE)) {
 			if (!blockState.isAir()) {
@@ -244,7 +244,7 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+	protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		BlockPos blockPos = hit.getBlockPos();
 		if (!world.isClient && projectile.canModifyAt(world, blockPos) && projectile.canBreakBlocks(world)) {
 			world.breakBlock(blockPos, true, projectile);

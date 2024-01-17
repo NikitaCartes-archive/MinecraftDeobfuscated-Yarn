@@ -75,7 +75,7 @@ public class ButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
 		boolean bl = state.get(POWERED);
 		switch((BlockFace)state.get(FACE)) {
@@ -103,7 +103,7 @@ public class ButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (state.get(POWERED)) {
 			return ActionResult.CONSUME;
 		} else {
@@ -115,7 +115,7 @@ public class ButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && !state.get(POWERED)) {
 			this.powerOn(state, world, pos);
 		}
@@ -138,7 +138,7 @@ public class ButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!moved && !state.isOf(newState.getBlock())) {
 			if (state.get(POWERED)) {
 				this.updateNeighbors(state, world, pos);
@@ -149,29 +149,29 @@ public class ButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return state.get(POWERED) && getDirection(state) == direction ? 15 : 0;
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState state) {
+	protected boolean emitsRedstonePower(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (state.get(POWERED)) {
 			this.tryPowerWithProjectiles(state, world, pos);
 		}
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient && this.blockSetType.canButtonBeActivatedByArrows() && !state.get(POWERED)) {
 			this.tryPowerWithProjectiles(state, world, pos);
 		}

@@ -46,7 +46,6 @@ public class RealmsInviteScreen extends RealmsScreen {
 			this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, Text.translatable("mco.configure.world.invite.profile.name")
 		);
 		this.addSelectableChild(this.nameWidget);
-		this.setInitialFocus(this.nameWidget);
 		this.inviteButton = this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.invite"), button -> this.onInvite())
 				.dimensions(this.width / 2 - 100, row(10), 200, 20)
@@ -55,6 +54,11 @@ public class RealmsInviteScreen extends RealmsScreen {
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, row(12), 200, 20).build()
 		);
+	}
+
+	@Override
+	protected void method_56131() {
+		this.setInitialFocus(this.nameWidget);
 	}
 
 	private void onInvite() {

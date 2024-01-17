@@ -40,7 +40,7 @@ public class HoneyBlock extends TranslucentBlock {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
@@ -57,7 +57,7 @@ public class HoneyBlock extends TranslucentBlock {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (this.isSliding(pos, entity)) {
 			this.triggerAdvancement(entity, pos);
 			this.updateSlidingVelocity(entity);

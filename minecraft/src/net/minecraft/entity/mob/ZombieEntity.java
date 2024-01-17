@@ -11,7 +11,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -363,11 +362,6 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(this.getStepSound(), 0.15F, 1.0F);
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.UNDEAD;
 	}
 
 	@Override

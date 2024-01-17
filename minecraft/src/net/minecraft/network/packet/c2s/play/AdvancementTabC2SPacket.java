@@ -3,11 +3,17 @@ package net.minecraft.network.packet.c2s.play;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Identifier;
 
 public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, AdvancementTabC2SPacket> CODEC = Packet.createCodec(
+		AdvancementTabC2SPacket::write, AdvancementTabC2SPacket::new
+	);
 	private final AdvancementTabC2SPacket.Action action;
 	@Nullable
 	private final Identifier tabToOpen;
@@ -25,7 +31,7 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.CLOSED_SCREEN, null);
 	}
 
-	public AdvancementTabC2SPacket(PacketByteBuf buf) {
+	private AdvancementTabC2SPacket(PacketByteBuf buf) {
 		this.action = buf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
 		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
 			this.tabToOpen = buf.readIdentifier();
@@ -34,12 +40,16 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.action);
 		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
 			buf.writeIdentifier(this.tabToOpen);
 		}
+	}
+
+	@Override
+	public PacketIdentifier<AdvancementTabC2SPacket> getPacketId() {
+		return PlayPackets.SEEN_ADVANCEMENTS;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

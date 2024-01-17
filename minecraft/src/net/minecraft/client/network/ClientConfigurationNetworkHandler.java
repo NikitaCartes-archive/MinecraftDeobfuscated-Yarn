@@ -4,9 +4,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9095;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientConfigurationPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.CustomPayload;
@@ -50,7 +52,7 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	}
 
 	private void handleCustomPayload(CustomPayload payload) {
-		LOGGER.warn("Unknown custom packet payload: {}", payload.id());
+		LOGGER.warn("Unknown custom packet payload: {}", payload.getId().id());
 	}
 
 	@Override
@@ -73,20 +75,20 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 
 	@Override
 	public void onReady(ReadyS2CPacket packet) {
-		this.connection.disableAutoRead();
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.connection
-			.setPacketListener(
+			.method_56330(
+				class_9095.field_48173.bind(RegistryByteBuf.makeFactory(this.registryManager)),
 				new ClientPlayNetworkHandler(
 					this.client,
 					this.connection,
 					new ClientConnectionState(
-						this.profile, this.worldSession, this.registryManager, this.enabledFeatures, this.brand, this.serverInfo, this.postDisconnectScreen
+						this.profile, this.worldSession, this.registryManager, this.enabledFeatures, this.brand, this.serverInfo, this.postDisconnectScreen, this.serverCookies
 					)
 				)
 			);
-		this.connection.enableAutoRead();
-		this.connection.send(new ReadyC2SPacket());
+		this.connection.send(ReadyC2SPacket.INSTANCE);
+		this.connection.method_56329(class_9095.field_48172.bind(RegistryByteBuf.makeFactory(this.registryManager)));
 	}
 
 	@Override

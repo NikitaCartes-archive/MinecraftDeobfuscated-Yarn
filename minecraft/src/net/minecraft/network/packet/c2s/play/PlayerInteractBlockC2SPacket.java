@@ -1,12 +1,18 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 
 public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerInteractBlockC2SPacket> CODEC = Packet.createCodec(
+		PlayerInteractBlockC2SPacket::write, PlayerInteractBlockC2SPacket::new
+	);
 	private final BlockHitResult blockHitResult;
 	private final Hand hand;
 	private final int sequence;
@@ -17,17 +23,21 @@ public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketList
 		this.sequence = sequence;
 	}
 
-	public PlayerInteractBlockC2SPacket(PacketByteBuf buf) {
+	private PlayerInteractBlockC2SPacket(PacketByteBuf buf) {
 		this.hand = buf.readEnumConstant(Hand.class);
 		this.blockHitResult = buf.readBlockHitResult();
 		this.sequence = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.hand);
 		buf.writeBlockHitResult(this.blockHitResult);
 		buf.writeVarInt(this.sequence);
+	}
+
+	@Override
+	public PacketIdentifier<PlayerInteractBlockC2SPacket> getPacketId() {
+		return PlayPackets.USE_ITEM_ON;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

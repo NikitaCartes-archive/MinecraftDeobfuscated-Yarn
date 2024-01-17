@@ -7,7 +7,7 @@ import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 
-public interface ClientLoginPacketListener extends ClientPacketListener {
+public interface ClientLoginPacketListener extends ClientCookieRequestPacketListener, ClientPacketListener {
 	@Override
 	default NetworkState getState() {
 		return NetworkState.LOGIN;

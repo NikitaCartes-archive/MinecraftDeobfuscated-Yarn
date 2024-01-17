@@ -47,7 +47,7 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (state.get(HAS_RECORD)) {
 			BlockEntity var7 = world.getBlockEntity(pos);
 			if (var7 instanceof JukeboxBlockEntity jukeboxBlockEntity) {
@@ -60,7 +60,7 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			BlockEntity var7 = world.getBlockEntity(pos);
 			if (var7 instanceof JukeboxBlockEntity jukeboxBlockEntity) {
@@ -92,12 +92,12 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	protected boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		BlockEntity var6 = world.getBlockEntity(pos);
 		if (var6 instanceof JukeboxBlockEntity jukeboxBlockEntity) {
 			Item var7 = jukeboxBlockEntity.getStack().getItem();
@@ -110,7 +110,7 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	protected BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
 	}
 

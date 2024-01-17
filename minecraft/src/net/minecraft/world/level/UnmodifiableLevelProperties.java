@@ -22,18 +22,8 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	}
 
 	@Override
-	public int getSpawnX() {
-		return this.worldProperties.getSpawnX();
-	}
-
-	@Override
-	public int getSpawnY() {
-		return this.worldProperties.getSpawnY();
-	}
-
-	@Override
-	public int getSpawnZ() {
-		return this.worldProperties.getSpawnZ();
+	public BlockPos getSpawnPos() {
+		return this.worldProperties.getSpawnPos();
 	}
 
 	@Override
@@ -88,22 +78,6 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	@Override
 	public GameMode getGameMode() {
 		return this.saveProperties.getGameMode();
-	}
-
-	@Override
-	public void setSpawnX(int spawnX) {
-	}
-
-	@Override
-	public void setSpawnY(int spawnY) {
-	}
-
-	@Override
-	public void setSpawnZ(int spawnZ) {
-	}
-
-	@Override
-	public void setSpawnAngle(float spawnAngle) {
 	}
 
 	@Override

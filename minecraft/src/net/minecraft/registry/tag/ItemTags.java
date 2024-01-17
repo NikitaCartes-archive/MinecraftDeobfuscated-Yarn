@@ -90,6 +90,11 @@ public final class ItemTags {
 	public static final TagKey<Item> HANGING_SIGNS = of("hanging_signs");
 	public static final TagKey<Item> CREEPER_IGNITERS = of("creeper_igniters");
 	public static final TagKey<Item> NOTEBLOCK_TOP_INSTRUMENTS = of("noteblock_top_instruments");
+	public static final TagKey<Item> FOOT_ARMOR = of("foot_armor");
+	public static final TagKey<Item> LEG_ARMOR = of("leg_armor");
+	public static final TagKey<Item> CHEST_ARMOR = of("chest_armor");
+	public static final TagKey<Item> HEAD_ARMOR = of("head_armor");
+	public static final TagKey<Item> SKULLS = of("skulls");
 	public static final TagKey<Item> TRIMMABLE_ARMOR = of("trimmable_armor");
 	public static final TagKey<Item> TRIM_MATERIALS = of("trim_materials");
 	public static final TagKey<Item> TRIM_TEMPLATES = of("trim_templates");
@@ -104,6 +109,22 @@ public final class ItemTags {
 	public static final TagKey<Item> TOOLS = of("tools");
 	public static final TagKey<Item> BREAKS_DECORATED_POTS = of("breaks_decorated_pots");
 	public static final TagKey<Item> VILLAGER_PLANTABLE_SEEDS = of("villager_plantable_seeds");
+	public static final TagKey<Item> FOOT_ARMOR_ENCHANTABLE = of("enchantable/foot_armor");
+	public static final TagKey<Item> LEG_ARMOR_ENCHANTABLE = of("enchantable/leg_armor");
+	public static final TagKey<Item> CHEST_ARMOR_ENCHANTABLE = of("enchantable/chest_armor");
+	public static final TagKey<Item> HEAD_ARMOR_ENCHANTABLE = of("enchantable/head_armor");
+	public static final TagKey<Item> ARMOR_ENCHANTABLE = of("enchantable/armor");
+	public static final TagKey<Item> SWORD_ENCHANTABLE = of("enchantable/sword");
+	public static final TagKey<Item> WEAPON_ENCHANTABLE = of("enchantable/weapon");
+	public static final TagKey<Item> MINING_ENCHANTABLE = of("enchantable/mining");
+	public static final TagKey<Item> MINING_LOOT_ENCHANTABLE = of("enchantable/mining_loot");
+	public static final TagKey<Item> FISHING_ENCHANTABLE = of("enchantable/fishing");
+	public static final TagKey<Item> TRIDENT_ENCHANTABLE = of("enchantable/trident");
+	public static final TagKey<Item> DURABILITY_ENCHANTABLE = of("enchantable/durability");
+	public static final TagKey<Item> BOW_ENCHANTABLE = of("enchantable/bow");
+	public static final TagKey<Item> EQUIPPABLE_ENCHANTABLE = of("enchantable/equippable");
+	public static final TagKey<Item> CROSSBOW_ENCHANTABLE = of("enchantable/crossbow");
+	public static final TagKey<Item> VANISHING_ENCHANTABLE = of("enchantable/vanishing");
 
 	private ItemTags() {
 	}

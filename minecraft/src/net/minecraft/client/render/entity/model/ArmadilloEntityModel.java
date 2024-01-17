@@ -16,7 +16,6 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class ArmadilloEntityModel extends SinglePartEntityModelWithChildTransform<ArmadilloEntity> {
 	private static final float field_47858 = 16.02F;
-	private static final float field_47859 = 32.5F;
 	private static final float field_47860 = 25.0F;
 	private static final float field_47861 = 22.5F;
 	private static final float field_47862 = 16.5F;

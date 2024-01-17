@@ -38,7 +38,7 @@ public class CompassAnglePredicateProvider implements ClampedModelPredicateProvi
 	private float getAngle(ItemStack stack, ClientWorld world, int seed, Entity entity) {
 		GlobalPos globalPos = this.compassTarget.getPos(world, stack, entity);
 		long l = world.getTime();
-		return !this.canPointTo(entity, globalPos) ? this.getAimlessAngle(seed, l) : this.getAngleTo(entity, l, globalPos.getPos());
+		return !this.canPointTo(entity, globalPos) ? this.getAimlessAngle(seed, l) : this.getAngleTo(entity, l, globalPos.pos());
 	}
 
 	private float getAimlessAngle(int seed, long time) {
@@ -53,7 +53,7 @@ public class CompassAnglePredicateProvider implements ClampedModelPredicateProvi
 	private float getAngleTo(Entity entity, long time, BlockPos pos) {
 		double d = this.getAngleTo(entity, pos);
 		double e = this.getBodyYaw(entity);
-		if (entity instanceof PlayerEntity playerEntity && playerEntity.isMainPlayer()) {
+		if (entity instanceof PlayerEntity playerEntity && playerEntity.isMainPlayer() && playerEntity.getWorld().getTickManager().shouldTick()) {
 			if (this.aimedInterpolator.shouldUpdate(time)) {
 				this.aimedInterpolator.update(time, 0.5 - (e - 0.25));
 			}
@@ -72,7 +72,7 @@ public class CompassAnglePredicateProvider implements ClampedModelPredicateProvi
 	}
 
 	private boolean canPointTo(Entity entity, @Nullable GlobalPos pos) {
-		return pos != null && pos.getDimension() == entity.getWorld().getRegistryKey() && !(pos.getPos().getSquaredDistance(entity.getPos()) < 1.0E-5F);
+		return pos != null && pos.dimension() == entity.getWorld().getRegistryKey() && !(pos.pos().getSquaredDistance(entity.getPos()) < 1.0E-5F);
 	}
 
 	private double getAngleTo(Entity entity, BlockPos pos) {

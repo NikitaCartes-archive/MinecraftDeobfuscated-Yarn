@@ -24,5 +24,14 @@ public interface IndexedIterable<T> extends Iterable<T> {
 		}
 	}
 
+	default int getRawIdOrThrow(T value) {
+		int i = this.getRawId(value);
+		if (i == -1) {
+			throw new IllegalArgumentException("Can't find id for '" + value + "' in map " + this);
+		} else {
+			return i;
+		}
+	}
+
 	int size();
 }

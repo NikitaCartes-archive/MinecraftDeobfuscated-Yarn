@@ -530,7 +530,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			for(int i : slots) {
 				ItemStack itemStack = this.armor.get(i);
 				if ((!damageSource.isIn(DamageTypeTags.IS_FIRE) || !itemStack.getItem().isFireproof()) && itemStack.getItem() instanceof ArmorItem) {
-					itemStack.damage((int)amount, this.player, player -> player.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, i)));
+					itemStack.damage((int)amount, this.player, EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, i));
 				}
 			}
 		}
@@ -559,11 +559,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	@Override
 	public boolean canPlayerUse(PlayerEntity player) {
-		if (this.player.isRemoved()) {
-			return false;
-		} else {
-			return !(player.squaredDistanceTo(this.player) > 64.0);
-		}
+		return player.canInteractWithEntity(this.player, 4.0);
 	}
 
 	public boolean contains(ItemStack stack) {

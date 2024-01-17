@@ -351,7 +351,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	private void sayNo() {
 		this.setHeadRollingTimeLeft(40);
 		if (!this.getWorld().isClient()) {
-			this.playSound(SoundEvents.ENTITY_VILLAGER_NO, this.getSoundVolume(), this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_VILLAGER_NO);
 		}
 	}
 
@@ -590,10 +590,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	public void playWorkSound() {
-		SoundEvent soundEvent = this.getVillagerData().getProfession().workSound();
-		if (soundEvent != null) {
-			this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
-		}
+		this.playSound(this.getVillagerData().getProfession().workSound());
 	}
 
 	@Override
@@ -682,14 +679,14 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		if (this.getWorld() instanceof ServerWorld) {
 			MinecraftServer minecraftServer = ((ServerWorld)this.getWorld()).getServer();
 			this.brain.getOptionalRegisteredMemory(pos).ifPresent(posx -> {
-				ServerWorld serverWorld = minecraftServer.getWorld(posx.getDimension());
+				ServerWorld serverWorld = minecraftServer.getWorld(posx.dimension());
 				if (serverWorld != null) {
 					PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-					Optional<RegistryEntry<PointOfInterestType>> optional = pointOfInterestStorage.getType(posx.getPos());
+					Optional<RegistryEntry<PointOfInterestType>> optional = pointOfInterestStorage.getType(posx.pos());
 					BiPredicate<VillagerEntity, RegistryEntry<PointOfInterestType>> biPredicate = (BiPredicate)POINTS_OF_INTEREST.get(pos);
 					if (optional.isPresent() && biPredicate.test(this, (RegistryEntry)optional.get())) {
-						pointOfInterestStorage.releaseTicket(posx.getPos());
-						DebugInfoSender.sendPointOfInterest(serverWorld, posx.getPos());
+						pointOfInterestStorage.releaseTicket(posx.pos());
+						DebugInfoSender.sendPointOfInterest(serverWorld, posx.pos());
 					}
 				}
 			});

@@ -23,7 +23,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 	protected void sense(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		BlockPos blockPos = villagerEntity.getBlockPos();
-		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
+		List<GlobalPos> list = Lists.newArrayList();
 		int i = 4;
 
 		for(int j = -4; j <= 4; ++j) {

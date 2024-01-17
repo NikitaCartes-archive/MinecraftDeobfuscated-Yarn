@@ -8,27 +8,27 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.NameGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public record DebugBeeCustomPayload(DebugBeeCustomPayload.Bee beeInfo) implements CustomPayload {
-	public static final Identifier ID = new Identifier("debug/bee");
+	public static final PacketCodec<PacketByteBuf, DebugBeeCustomPayload> CODEC = CustomPayload.codecOf(DebugBeeCustomPayload::write, DebugBeeCustomPayload::new);
+	public static final CustomPayload.Id<DebugBeeCustomPayload> KEY = CustomPayload.id("debug/bee");
 
-	public DebugBeeCustomPayload(PacketByteBuf buf) {
+	private DebugBeeCustomPayload(PacketByteBuf buf) {
 		this(new DebugBeeCustomPayload.Bee(buf));
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		this.beeInfo.write(buf);
 	}
 
 	@Override
-	public Identifier id() {
-		return ID;
+	public CustomPayload.Id<DebugBeeCustomPayload> getId() {
+		return KEY;
 	}
 
 	public static record Bee(
@@ -48,11 +48,11 @@ public record DebugBeeCustomPayload(DebugBeeCustomPayload.Bee beeInfo) implement
 				buf.readInt(),
 				buf.readVec3d(),
 				buf.readNullable(Path::fromBuf),
-				buf.readNullable(PacketByteBuf::readBlockPos),
-				buf.readNullable(PacketByteBuf::readBlockPos),
+				buf.readNullable(BlockPos.PACKET_CODEC),
+				buf.readNullable(BlockPos.PACKET_CODEC),
 				buf.readInt(),
 				buf.readCollection(HashSet::new, PacketByteBuf::readString),
-				buf.readList(PacketByteBuf::readBlockPos)
+				buf.readList(BlockPos.PACKET_CODEC)
 			);
 		}
 
@@ -61,11 +61,11 @@ public record DebugBeeCustomPayload(DebugBeeCustomPayload.Bee beeInfo) implement
 			buf.writeInt(this.entityId);
 			buf.writeVec3d(this.pos);
 			buf.writeNullable(this.path, (bufx, path) -> path.toBuf(bufx));
-			buf.writeNullable(this.hivePos, PacketByteBuf::writeBlockPos);
-			buf.writeNullable(this.flowerPos, PacketByteBuf::writeBlockPos);
+			buf.writeNullable(this.hivePos, BlockPos.PACKET_CODEC);
+			buf.writeNullable(this.flowerPos, BlockPos.PACKET_CODEC);
 			buf.writeInt(this.travelTicks);
 			buf.writeCollection(this.goals, PacketByteBuf::writeString);
-			buf.writeCollection(this.disallowedHives, PacketByteBuf::writeBlockPos);
+			buf.writeCollection(this.disallowedHives, BlockPos.PACKET_CODEC);
 		}
 
 		public boolean isHiveAt(BlockPos pos) {

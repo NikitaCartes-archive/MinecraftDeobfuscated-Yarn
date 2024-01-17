@@ -10,7 +10,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAttachmentType;
-import net.minecraft.entity.EntityAttachments;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -89,8 +88,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
-			EntityAttachments entityAttachments = entity.getDimensions(entity.getPose()).attachments();
-			Vec3d vec3d = entityAttachments.getPointNullable(EntityAttachmentType.NAME_TAG, 0, entity.getYaw(tickDelta));
+			Vec3d vec3d = entity.getAttachments().getPointNullable(EntityAttachmentType.NAME_TAG, 0, entity.getYaw(tickDelta));
 			if (vec3d != null) {
 				boolean bl = !entity.isSneaky();
 				int i = "deadmau5".equals(text.getString()) ? -10 : 0;
