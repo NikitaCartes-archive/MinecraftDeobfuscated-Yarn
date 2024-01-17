@@ -69,7 +69,7 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	}
 
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (stack.isEmpty() && player.getAbilities().allowModifyWorld && (Boolean)state.get(LIT)) {
 			extinguish(player, state, world, pos);
 			return ItemActionResult.success(world.isClient);
@@ -79,7 +79,7 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+	protected boolean canReplace(BlockState state, ItemPlacementContext context) {
 		return !context.shouldCancelInteraction() && context.getStack().getItem() == this.asItem() && state.get(CANDLES) < 4
 			? true
 			: super.canReplace(state, context);
@@ -98,7 +98,7 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
@@ -109,12 +109,12 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch (state.get(CANDLES)) {
 			case 1:
 			default:
@@ -167,7 +167,7 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		return Block.sideCoversSmallSquare(world, pos.down(), Direction.UP);
 	}
 }

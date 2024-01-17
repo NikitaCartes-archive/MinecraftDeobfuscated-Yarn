@@ -14,7 +14,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class BowItem extends RangedWeaponItem implements Vanishable {
+public class BowItem extends RangedWeaponItem {
 	public static final int TICKS_PER_SECOND = 20;
 	public static final int RANGE = 15;
 
@@ -58,7 +58,7 @@ public class BowItem extends RangedWeaponItem implements Vanishable {
 							persistentProjectileEntity.setOnFireFor(100);
 						}
 
-						stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
+						stack.damage(1, playerEntity, LivingEntity.getSlotForHand(playerEntity.getActiveHand()));
 						if (bl2 || playerEntity.getAbilities().creativeMode && (itemStack.isOf(Items.SPECTRAL_ARROW) || itemStack.isOf(Items.TIPPED_ARROW))) {
 							persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 						}

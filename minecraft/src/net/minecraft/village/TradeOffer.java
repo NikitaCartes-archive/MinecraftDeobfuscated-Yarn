@@ -4,9 +4,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.util.math.MathHelper;
 
 public class TradeOffer {
+	public static final PacketCodec<RegistryByteBuf, TradeOffer> PACKET_CODEC = PacketCodec.of(TradeOffer::read, TradeOffer::write);
 	private final ItemStack firstBuyItem;
 	private final ItemStack secondBuyItem;
 	private final ItemStack sellItem;
@@ -17,6 +20,7 @@ public class TradeOffer {
 	private int demandBonus;
 	private float priceMultiplier;
 	private int merchantExperience = 1;
+	private final boolean ignoreNbt;
 
 	public TradeOffer(NbtCompound nbt) {
 		this.firstBuyItem = ItemStack.fromNbt(nbt.getCompound("buy"));
@@ -43,6 +47,7 @@ public class TradeOffer {
 
 		this.specialPrice = nbt.getInt("specialPrice");
 		this.demandBonus = nbt.getInt("demand");
+		this.ignoreNbt = nbt.getBoolean("ignore_tags");
 	}
 
 	public TradeOffer(ItemStack buyItem, ItemStack sellItem, int maxUses, int merchantExperience, float priceMultiplier) {
@@ -60,6 +65,20 @@ public class TradeOffer {
 	public TradeOffer(
 		ItemStack firstBuyItem, ItemStack secondBuyItem, ItemStack sellItem, int uses, int maxUses, int merchantExperience, float priceMultiplier, int demandBonus
 	) {
+		this(firstBuyItem, secondBuyItem, sellItem, uses, maxUses, merchantExperience, priceMultiplier, demandBonus, false);
+	}
+
+	public TradeOffer(
+		ItemStack firstBuyItem,
+		ItemStack secondBuyItem,
+		ItemStack sellItem,
+		int uses,
+		int maxUses,
+		int merchantExperience,
+		float priceMultiplier,
+		int demandBonus,
+		boolean ignoreNbt
+	) {
 		this.firstBuyItem = firstBuyItem;
 		this.secondBuyItem = secondBuyItem;
 		this.sellItem = sellItem;
@@ -68,6 +87,7 @@ public class TradeOffer {
 		this.merchantExperience = merchantExperience;
 		this.priceMultiplier = priceMultiplier;
 		this.demandBonus = demandBonus;
+		this.ignoreNbt = ignoreNbt;
 	}
 
 	private TradeOffer(TradeOffer offer) {
@@ -81,6 +101,7 @@ public class TradeOffer {
 		this.demandBonus = offer.demandBonus;
 		this.priceMultiplier = offer.priceMultiplier;
 		this.merchantExperience = offer.merchantExperience;
+		this.ignoreNbt = offer.ignoreNbt;
 	}
 
 	/**
@@ -180,6 +201,10 @@ public class TradeOffer {
 		return this.demandBonus;
 	}
 
+	public boolean shouldIgnoreNbt() {
+		return this.ignoreNbt;
+	}
+
 	/**
 	 * Increases the special price of this trade offer by {@code increment}.
 	 * 
@@ -277,27 +302,31 @@ public class TradeOffer {
 		nbtCompound.putFloat("priceMultiplier", this.priceMultiplier);
 		nbtCompound.putInt("specialPrice", this.specialPrice);
 		nbtCompound.putInt("demand", this.demandBonus);
+		nbtCompound.putBoolean("ignore_tags", this.ignoreNbt);
 		return nbtCompound;
 	}
 
-	public boolean matchesBuyItems(ItemStack first, ItemStack second) {
-		return this.acceptsBuy(first, this.getAdjustedFirstBuyItem())
-			&& first.getCount() >= this.getAdjustedFirstBuyItem().getCount()
-			&& this.acceptsBuy(second, this.secondBuyItem)
-			&& second.getCount() >= this.secondBuyItem.getCount();
+	public boolean matchesBuyItems(ItemStack offered, ItemStack buyItem) {
+		return acceptsBuy(offered, this.getAdjustedFirstBuyItem(), this.ignoreNbt)
+			&& offered.getCount() >= this.getAdjustedFirstBuyItem().getCount()
+			&& acceptsBuy(buyItem, this.secondBuyItem, this.ignoreNbt)
+			&& buyItem.getCount() >= this.secondBuyItem.getCount();
 	}
 
-	private boolean acceptsBuy(ItemStack given, ItemStack sample) {
-		if (sample.isEmpty() && given.isEmpty()) {
+	public static boolean acceptsBuy(ItemStack offered, ItemStack buyItem, boolean ignoreNbt) {
+		if (buyItem.isEmpty() && offered.isEmpty()) {
 			return true;
 		} else {
-			ItemStack itemStack = given.copy();
+			ItemStack itemStack = offered.copy();
+			ItemStack itemStack2 = buyItem.copy();
 			if (itemStack.getItem().isDamageable()) {
 				itemStack.setDamage(itemStack.getDamage());
 			}
 
-			return ItemStack.areItemsEqual(itemStack, sample)
-				&& (!sample.hasNbt() || itemStack.hasNbt() && NbtHelper.matches(sample.getNbt(), itemStack.getNbt(), false));
+			return ignoreNbt
+				? ItemStack.areItemsEqual(itemStack, itemStack2)
+				: ItemStack.areItemsEqual(itemStack, itemStack2)
+					&& (!itemStack2.hasNbt() || itemStack.hasNbt() && NbtHelper.matches(itemStack2.getNbt(), itemStack.getNbt(), false));
 		}
 	}
 
@@ -316,5 +345,40 @@ public class TradeOffer {
 
 	public TradeOffer copy() {
 		return new TradeOffer(this);
+	}
+
+	private static void read(RegistryByteBuf buf, TradeOffer offer) {
+		ItemStack.PACKET_CODEC.encode(buf, offer.getOriginalFirstBuyItem());
+		ItemStack.PACKET_CODEC.encode(buf, offer.getSellItem());
+		ItemStack.PACKET_CODEC.encode(buf, offer.getSecondBuyItem());
+		buf.writeBoolean(offer.isDisabled());
+		buf.writeInt(offer.getUses());
+		buf.writeInt(offer.getMaxUses());
+		buf.writeInt(offer.getMerchantExperience());
+		buf.writeInt(offer.getSpecialPrice());
+		buf.writeFloat(offer.getPriceMultiplier());
+		buf.writeInt(offer.getDemandBonus());
+		buf.writeBoolean(offer.shouldIgnoreNbt());
+	}
+
+	public static TradeOffer write(RegistryByteBuf buf) {
+		ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
+		ItemStack itemStack2 = ItemStack.PACKET_CODEC.decode(buf);
+		ItemStack itemStack3 = ItemStack.PACKET_CODEC.decode(buf);
+		boolean bl = buf.readBoolean();
+		int i = buf.readInt();
+		int j = buf.readInt();
+		int k = buf.readInt();
+		int l = buf.readInt();
+		float f = buf.readFloat();
+		int m = buf.readInt();
+		boolean bl2 = buf.readBoolean();
+		TradeOffer tradeOffer = new TradeOffer(itemStack, itemStack3, itemStack2, i, j, k, f, m, bl2);
+		if (bl) {
+			tradeOffer.disable();
+		}
+
+		tradeOffer.setSpecialPrice(l);
+		return tradeOffer;
 	}
 }

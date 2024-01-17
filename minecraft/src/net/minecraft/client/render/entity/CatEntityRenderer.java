@@ -30,17 +30,17 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 		matrixStack.scale(0.8F, 0.8F, 0.8F);
 	}
 
-	protected void setupTransforms(CatEntity catEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(catEntity, matrixStack, f, g, h);
-		float i = catEntity.getSleepAnimation(h);
-		if (i > 0.0F) {
-			matrixStack.translate(0.4F * i, 0.15F * i, 0.1F * i);
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerpAngleDegrees(i, 0.0F, 90.0F)));
+	protected void setupTransforms(CatEntity catEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		super.setupTransforms(catEntity, matrixStack, f, g, h, i);
+		float j = catEntity.getSleepAnimation(h);
+		if (j > 0.0F) {
+			matrixStack.translate(0.4F * j, 0.15F * j, 0.1F * j);
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerpAngleDegrees(j, 0.0F, 90.0F)));
 			BlockPos blockPos = catEntity.getBlockPos();
 
 			for (PlayerEntity playerEntity : catEntity.getWorld().getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
 				if (playerEntity.isSleeping()) {
-					matrixStack.translate(0.15F * i, 0.0F, 0.0F);
+					matrixStack.translate(0.15F * j, 0.0F, 0.0F);
 					break;
 				}
 			}

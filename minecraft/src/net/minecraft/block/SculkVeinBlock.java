@@ -150,7 +150,7 @@ public class SculkVeinBlock extends MultifaceGrowthBlock implements SculkSpreada
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
@@ -167,12 +167,12 @@ public class SculkVeinBlock extends MultifaceGrowthBlock implements SculkSpreada
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+	protected boolean canReplace(BlockState state, ItemPlacementContext context) {
 		return !context.getStack().isOf(Items.SCULK_VEIN) || super.canReplace(state, context);
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 

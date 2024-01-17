@@ -5,11 +5,17 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, EntityEquipmentUpdateS2CPacket> CODEC = Packet.createCodec(
+		EntityEquipmentUpdateS2CPacket::write, EntityEquipmentUpdateS2CPacket::new
+	);
 	private static final byte field_33342 = -128;
 	private final int id;
 	private final List<Pair<EquipmentSlot, ItemStack>> equipmentList;
@@ -19,7 +25,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 		this.equipmentList = equipmentList;
 	}
 
-	public EntityEquipmentUpdateS2CPacket(PacketByteBuf buf) {
+	private EntityEquipmentUpdateS2CPacket(RegistryByteBuf buf) {
 		this.id = buf.readVarInt();
 		EquipmentSlot[] equipmentSlots = EquipmentSlot.values();
 		this.equipmentList = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
@@ -28,13 +34,12 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 		do {
 			i = buf.readByte();
 			EquipmentSlot equipmentSlot = equipmentSlots[i & 127];
-			ItemStack itemStack = buf.readItemStack();
+			ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
 			this.equipmentList.add(Pair.of(equipmentSlot, itemStack));
 		} while ((i & -128) != 0);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeVarInt(this.id);
 		int i = this.equipmentList.size();
 
@@ -44,8 +49,13 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 			boolean bl = j != i - 1;
 			int k = equipmentSlot.ordinal();
 			buf.writeByte(bl ? k | -128 : k);
-			buf.writeItemStack(pair.getSecond());
+			ItemStack.PACKET_CODEC.encode(buf, pair.getSecond());
 		}
+	}
+
+	@Override
+	public PacketIdentifier<EntityEquipmentUpdateS2CPacket> getPacketId() {
+		return PlayPackets.SET_EQUIPMENT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

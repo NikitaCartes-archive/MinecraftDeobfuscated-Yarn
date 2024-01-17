@@ -60,7 +60,6 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(
 		5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build()
 	);
-	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	static final Text LAN_SCANNING_TEXT = Text.translatable("lanServer.scanning");
 	static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").withColor(Colors.RED);
 	static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").withColor(Colors.RED);
@@ -241,7 +240,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private long time;
 		@Nullable
 		private List<Text> playerListSummary;
+		@Nullable
 		private Identifier statusIconTexture;
+		@Nullable
 		private Text statusTooltipText;
 
 		protected ServerEntry(MultiplayerScreen screen, ServerInfo server) {
@@ -313,7 +314,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			int i = x + entryWidth - 10 - 5;
-			context.drawGuiTexture(this.statusIconTexture, i, y, 10, 8);
+			if (this.statusIconTexture != null) {
+				context.drawGuiTexture(this.statusIconTexture, i, y, 10, 8);
+			}
+
 			byte[] bs = this.server.getFavicon();
 			if (!Arrays.equals(bs, this.favicon)) {
 				if (this.uploadFavicon(bs)) {
@@ -330,7 +334,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			int j = this.client.textRenderer.getWidth(text);
 			int k = i - j - 5;
 			context.drawText(this.client.textRenderer, text, k, y + 1, Colors.GRAY, false);
-			if (mouseX >= i && mouseX <= i + 10 && mouseY >= y && mouseY <= y + 8) {
+			if (this.statusTooltipText != null && mouseX >= i && mouseX <= i + 10 && mouseY >= y && mouseY <= y + 8) {
 				this.screen.setTooltip(this.statusTooltipText);
 			} else if (this.playerListSummary != null && mouseX >= k && mouseX <= k + j && mouseY >= y && mouseY <= y - 1 + 9) {
 				this.screen.setTooltip(Lists.transform(this.playerListSummary, Text::asOrderedText));
@@ -371,6 +375,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			switch (this.server.getStatus()) {
 				case INITIAL:
 				case PINGING:
+					this.statusIconTexture = MultiplayerServerListWidget.PING_1_TEXTURE;
 					this.statusTooltipText = MultiplayerServerListWidget.PINGING_TEXT;
 					break;
 				case INCOMPATIBLE:

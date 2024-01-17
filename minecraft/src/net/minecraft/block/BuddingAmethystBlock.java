@@ -22,7 +22,7 @@ public class BuddingAmethystBlock extends AmethystBlock {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (random.nextInt(5) == 0) {
 			Direction direction = DIRECTIONS[random.nextInt(DIRECTIONS.length)];
 			BlockPos blockPos = pos.offset(direction);

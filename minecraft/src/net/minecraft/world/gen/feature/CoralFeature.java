@@ -27,7 +27,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		Optional<Block> optional = Registries.BLOCK.getEntryList(BlockTags.CORAL_BLOCKS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value);
+		Optional<Block> optional = Registries.BLOCK.getRandomEntry(BlockTags.CORAL_BLOCKS, random).map(RegistryEntry::value);
 		return optional.isEmpty() ? false : this.generateCoral(structureWorldAccess, random, blockPos, ((Block)optional.get()).getDefaultState());
 	}
 
@@ -40,8 +40,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 			world.setBlockState(pos, state, Block.NOTIFY_ALL);
 			if (random.nextFloat() < 0.25F) {
 				Registries.BLOCK
-					.getEntryList(BlockTags.CORALS)
-					.flatMap(blocks -> blocks.getRandom(random))
+					.getRandomEntry(BlockTags.CORALS, random)
 					.map(RegistryEntry::value)
 					.ifPresent(block -> world.setBlockState(blockPos, block.getDefaultState(), Block.NOTIFY_LISTENERS));
 			} else if (random.nextFloat() < 0.05F) {
@@ -54,7 +53,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 				if (random.nextFloat() < 0.2F) {
 					BlockPos blockPos2 = pos.offset(direction);
 					if (world.getBlockState(blockPos2).isOf(Blocks.WATER)) {
-						Registries.BLOCK.getEntryList(BlockTags.WALL_CORALS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value).ifPresent(block -> {
+						Registries.BLOCK.getRandomEntry(BlockTags.WALL_CORALS, random).map(RegistryEntry::value).ifPresent(block -> {
 							BlockState blockStatex = block.getDefaultState();
 							if (blockStatex.contains(DeadCoralWallFanBlock.FACING)) {
 								blockStatex = blockStatex.with(DeadCoralWallFanBlock.FACING, direction);

@@ -60,10 +60,8 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		return shulkerColor == null ? TEXTURE : COLORED_TEXTURES[shulkerColor.getId()];
 	}
 
-	protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(shulkerEntity, matrixStack, f, g + 180.0F, h);
-		matrixStack.translate(0.0, 0.5, 0.0);
-		matrixStack.multiply(shulkerEntity.getAttachedFace().getOpposite().getRotationQuaternion());
-		matrixStack.translate(0.0, -0.5, 0.0);
+	protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		super.setupTransforms(shulkerEntity, matrixStack, f, g + 180.0F, h, i);
+		matrixStack.multiply(shulkerEntity.getAttachedFace().getOpposite().getRotationQuaternion(), 0.0F, 0.5F, 0.0F);
 	}
 }

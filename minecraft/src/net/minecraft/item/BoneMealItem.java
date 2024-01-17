@@ -100,8 +100,7 @@ public class BoneMealItem extends Item {
 					if (registryEntry.isIn(BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL)) {
 						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
 							blockState = (BlockState)Registries.BLOCK
-								.getEntryList(BlockTags.WALL_CORALS)
-								.flatMap(blocks -> blocks.getRandom(world.random))
+								.getRandomEntry(BlockTags.WALL_CORALS, world.random)
 								.map(blockEntry -> ((Block)blockEntry.value()).getDefaultState())
 								.orElse(blockState);
 							if (blockState.contains(DeadCoralWallFanBlock.FACING)) {
@@ -109,8 +108,7 @@ public class BoneMealItem extends Item {
 							}
 						} else if (random.nextInt(4) == 0) {
 							blockState = (BlockState)Registries.BLOCK
-								.getEntryList(BlockTags.UNDERWATER_BONEMEALS)
-								.flatMap(blocks -> blocks.getRandom(world.random))
+								.getRandomEntry(BlockTags.UNDERWATER_BONEMEALS, world.random)
 								.map(blockEntry -> ((Block)blockEntry.value()).getDefaultState())
 								.orElse(blockState);
 						}
@@ -141,7 +139,8 @@ public class BoneMealItem extends Item {
 	}
 
 	public static void createParticles(WorldAccess world, BlockPos pos, int count) {
-		if (world.getBlockState(pos).getBlock() instanceof Fertilizable fertilizable) {
+		BlockState blockState = world.getBlockState(pos);
+		if (blockState.getBlock() instanceof Fertilizable fertilizable) {
 			BlockPos blockPos = fertilizable.getFertilizeParticlePos(pos);
 			switch (fertilizable.getFertilizableType()) {
 				case NEIGHBOR_SPREADER:
@@ -150,6 +149,8 @@ public class BoneMealItem extends Item {
 				case GROWER:
 					ParticleUtil.spawnParticlesAround(world, blockPos, count, ParticleTypes.HAPPY_VILLAGER);
 			}
+		} else if (blockState.isOf(Blocks.WATER)) {
+			ParticleUtil.spawnParticlesAround(world, pos, count * 3, 3.0, 1.0, false, ParticleTypes.HAPPY_VILLAGER);
 		}
 	}
 }

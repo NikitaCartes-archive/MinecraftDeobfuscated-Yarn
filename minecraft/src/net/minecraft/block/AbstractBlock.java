@@ -86,15 +86,10 @@ import net.minecraft.world.explosion.Explosion;
  * {@link WorldAccess} as a parameter. In this case, a {@link net.minecraft.world.ChunkRegion}
  * is passed to the parameter, which is not a subclass of {@link World}.
  * 
- * <p id="deprecated-methods">Deprecated methods in this class mean they
- * should only be called from the corresponding method in {@link
- * AbstractBlockState} or subclasses of this class. <strong>Overriding the
- * methods is an expected usage and is not deprecated in any way.</strong>
- * 
  * @apiNote In vanilla subclasses, these methods are called either to do the
- * default behavior (e.g. {@code super.onUse(...)}) or to delegate logic to
- * other blocks (e.g. {@link net.minecraft.block.StairsBlock#randomTick
- * StairsBlock#randomTick} calls {@code randomTick} of its base block).
+ * default behavior (e.g. {@code super.onUse(...)}). Because the methods are {@code protected},
+ * you must use these methods via the corresponding method in {@link
+ * AbstractBlockState}.
  * 
  * <p>Many methods of this class are called on both the logical client and logical server,
  * so take caution when using those methods. The logical side can be checked using
@@ -359,13 +354,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * @apiNote This is used by {@link RedstoneWireBlock} to update connected redstone wire.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#prepare(WorldAccess, BlockPos, int, int)} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#prepare(WorldAccess, BlockPos, int, int)
 	 * @see #getStateForNeighborUpdate
 	 * @see #neighborUpdate
 	 */
-	@Deprecated
-	public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
+	protected void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
 	}
 
 	/**
@@ -374,10 +367,9 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @apiNote Subclasses may override this to prevent or restrict pathfinding through the
 	 * block. For example, {@link DoorBlock} restricts it to open doors only.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#canPathfindThrough} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#canPathfindThrough
 	 */
-	@Deprecated
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		switch (type) {
 			case LAND:
 				return !state.isFullCube(world, pos);
@@ -420,8 +412,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * fall if needed.</li>
 	 * </ul>
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getStateForNeighborUpdate} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#getStateForNeighborUpdate
 	 * @see #neighborUpdate
 	 * @see #prepare
 	 * @see #canPlaceAt
@@ -434,18 +425,16 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @param pos the position of this block
 	 * @param world the world
 	 */
-	@Deprecated
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		return state;
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#isSideInvisible} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#isSideInvisible
 	 */
-	@Deprecated
-	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+	protected boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
 		return false;
 	}
 
@@ -462,13 +451,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * when overriding this method. The logical side can be checked using {@link
 	 * World#isClient}.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#neighborUpdate} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#neighborUpdate
 	 * @see #getStateForNeighborUpdate
 	 * @see net.minecraft.world.RedstoneView#isReceivingRedstonePower
 	 */
-	@Deprecated
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		DebugInfoSender.sendNeighborUpdate(world, pos);
 	}
 
@@ -485,12 +472,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <li>When {@linkplain AbstractFireBlock fire} lights a portal</li>
 	 * </ul>
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onBlockAdded} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#onBlockAdded
 	 * @see #onStateReplaced
 	 */
-	@Deprecated
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 	}
 
 	/**
@@ -504,21 +489,19 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * super.onStateReplaced(state, world, pos, newState, moved);} <strong>after</strong>
 	 * invoking {@code ItemScatterer} methods.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onStateReplaced} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#onStateReplaced
 	 * 
 	 * @see net.minecraft.util.ItemScatterer#onStateReplaced
 	 * @see net.minecraft.util.ItemScatterer#spawn(World, BlockPos, net.minecraft.inventory.Inventory)
 	 * @see #onBlockAdded
 	 */
-	@Deprecated
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (state.hasBlockEntity() && !state.isOf(newState.getBlock())) {
 			world.removeBlockEntity(pos);
 		}
 	}
 
-	@Deprecated
-	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (!state.isAir() && explosion.getDestructionType() != Explosion.DestructionType.TRIGGER_BLOCK) {
 			Block block = state.getBlock();
 			boolean bl = explosion.getCausingEntity() instanceof PlayerEntity;
@@ -542,13 +525,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 	}
 
-	@Deprecated
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		return ActionResult.PASS;
 	}
 
-	@Deprecated
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 
@@ -557,12 +538,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * @return whether the event was handled successfully
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onSyncedBlockEvent} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#onSyncedBlockEvent
 	 * @see World#addSyncedBlockEvent
 	 */
-	@Deprecated
-	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+	protected boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 		return false;
 	}
 
@@ -572,20 +551,18 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @apiNote {@link BlockWithEntity} overrides this to return {@link BlockRenderType#INVISIBLE};
 	 * therefore, custom blocks extending that class must override it again to render the block.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getRenderType} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getRenderType
 	 */
-	@Deprecated
-	public BlockRenderType getRenderType(BlockState state) {
+	protected BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
 	}
 
 	/**
 	 * {@return whether the block's transparency depends on the side of the block, like slabs}
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#hasSidedTransparency} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#hasSidedTransparency
 	 */
-	@Deprecated
-	public boolean hasSidedTransparency(BlockState state) {
+	protected boolean hasSidedTransparency(BlockState state) {
 		return false;
 	}
 
@@ -595,12 +572,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <p>This does not return whether the block is currently emitting redstone power.
 	 * Use {@link World#isEmittingRedstonePower} in that case.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#emitsRedstonePower} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#emitsRedstonePower
 	 * 
 	 * @see World#isEmittingRedstonePower
 	 */
-	@Deprecated
-	public boolean emitsRedstonePower(BlockState state) {
+	protected boolean emitsRedstonePower(BlockState state) {
 		return false;
 	}
 
@@ -610,12 +586,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <p>{@linkplain Waterloggable Waterloggable blocks} must override this to return {@code Fluids.WATER.getStill(false)}
 	 * when waterlogged.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getFluidState} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#getFluidState
 	 * @see net.minecraft.fluid.Fluids#WATER
 	 */
-	@Deprecated
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return Fluids.EMPTY.getDefaultState();
 	}
 
@@ -625,20 +599,19 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <p>This does not check the current comparator output of the block.
 	 * Use {@link #getComparatorOutput} in that case.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#hasComparatorOutput} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#hasComparatorOutput
 	 * 
 	 * @see #getComparatorOutput
 	 */
-	@Deprecated
-	public boolean hasComparatorOutput(BlockState state) {
+	protected boolean hasComparatorOutput(BlockState state) {
 		return false;
 	}
 
-	public float getMaxHorizontalModelOffset() {
+	protected float getMaxHorizontalModelOffset() {
 		return 0.25F;
 	}
 
-	public float getVerticalModelOffsetMultiplier() {
+	protected float getVerticalModelOffsetMultiplier() {
 		return 0.2F;
 	}
 
@@ -652,10 +625,9 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * <p>By default, this returns the provided block state.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#rotate} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#rotate
 	 */
-	@Deprecated
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state;
 	}
 
@@ -664,10 +636,9 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * <p>By default, this returns the provided block state.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#mirror} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#mirror
 	 */
-	@Deprecated
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state;
 	}
 
@@ -682,13 +653,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * when overriding this method. The logical side can be checked using {@link
 	 * World#isClient}.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#canReplace} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#canReplace
 	 * @see #canBucketPlace
 	 * @see AbstractBlockState#isReplaceable
 	 */
-	@Deprecated
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+	protected boolean canReplace(BlockState state, ItemPlacementContext context) {
 		return state.isReplaceable() && (context.getStack().isEmpty() || !context.getStack().isOf(this.asItem()));
 	}
 
@@ -702,13 +671,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * when overriding this method. The logical side can be checked using {@link
 	 * World#isClient}.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#canBucketPlace} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#canBucketPlace
 	 * @see #canReplace
 	 * @see AbstractBlockState#isReplaceable
 	 */
-	@Deprecated
-	public boolean canBucketPlace(BlockState state, Fluid fluid) {
+	protected boolean canBucketPlace(BlockState state, Fluid fluid) {
 		return state.isReplaceable() || !state.isSolid();
 	}
 
@@ -726,15 +693,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * #onStateReplaced} should be used instead) or to drop experience orbs ({@link
 	 * #onStacksDropped} should be used instead).
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getDroppedStacks} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#getDroppedStacks
 	 * @see #onStateReplaced
 	 * @see #onStacksDropped
 	 * @see ItemStack#split
 	 * @see net.minecraft.loot.context.LootContextParameters
 	 */
-	@Deprecated
-	public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
 		Identifier identifier = this.getLootTableId();
 		if (identifier == LootTables.EMPTY) {
 			return Collections.emptyList();
@@ -752,42 +717,37 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <p>This is usually the hash code of {@code pos}. Tall or wide blocks (such as doors or
 	 * beds) should override this to make sure both parts of the block have the same seed.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getRenderingSeed} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getRenderingSeed
 	 */
-	@Deprecated
-	public long getRenderingSeed(BlockState state, BlockPos pos) {
+	protected long getRenderingSeed(BlockState state, BlockPos pos) {
 		return MathHelper.hashCode(pos);
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getCullingShape} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getCullingShape
 	 */
-	@Deprecated
-	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
 		return state.getOutlineShape(world, pos);
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getSidesShape} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getSidesShape
 	 */
-	@Deprecated
-	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
 		return this.getCollisionShape(state, world, pos, ShapeContext.absent());
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getRaycastShape} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see @link AbstractBlockState#getRaycastShape
 	 */
-	@Deprecated
-	public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.empty();
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getOpacity} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getOpacity
 	 */
-	@Deprecated
-	public int getOpacity(BlockState state, BlockView world, BlockPos pos) {
+	protected int getOpacity(BlockState state, BlockView world, BlockPos pos) {
 		if (state.isOpaqueFullCube(world, pos)) {
 			return world.getMaxLightLevel();
 		} else {
@@ -811,14 +771,12 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * when overriding this method. The logical side can be checked using {@link
 	 * World#isClient}.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#createScreenHandlerFactory} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#createScreenHandlerFactory
 	 * @see net.minecraft.screen.SimpleNamedScreenHandlerFactory
 	 * @see net.minecraft.block.entity.LockableContainerBlockEntity
 	 */
 	@Nullable
-	@Deprecated
-	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+	protected NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return null;
 	}
 
@@ -838,20 +796,17 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * when overriding this method. The logical side can be checked using {@link
 	 * World#isClient}.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#canPlaceAt} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#canPlaceAt
 	 * @see #getStateForNeighborUpdate
 	 */
-	@Deprecated
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		return true;
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getAmbientOcclusionLightLevel} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getAmbientOcclusionLightLevel
 	 */
-	@Deprecated
-	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+	protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
 		return state.isFullCube(world, pos) ? 0.2F : 1.0F;
 	}
 
@@ -860,49 +815,42 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * <p>When overriding this, {@link #hasComparatorOutput} must also be overridden.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getComparatorOutput} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#getComparatorOutput
 	 * @see #hasComparatorOutput
 	 */
-	@Deprecated
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		return 0;
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getOutlineShape(BlockView, BlockPos, ShapeContext)} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getOutlineShape(BlockView, BlockPos, ShapeContext)
 	 */
-	@Deprecated
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.fullCube();
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getCollisionShape(BlockView, BlockPos, ShapeContext)} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getCollisionShape(BlockView, BlockPos, ShapeContext)
 	 */
-	@Deprecated
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.collidable ? state.getOutlineShape(world, pos) : VoxelShapes.empty();
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#isFullCube} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#isFullCube
 	 */
-	@Deprecated
-	public boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
 		return Block.isShapeFullCube(state.getCollisionShape(world, pos));
 	}
 
-	@Deprecated
-	public boolean isCullingShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isCullingShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
 		return Block.isShapeFullCube(state.getCullingShape(world, pos));
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getCameraCollisionShape} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getCameraCollisionShape
 	 */
-	@Deprecated
-	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.getCollisionShape(state, world, pos, context);
 	}
 
@@ -927,13 +875,12 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <li>{@link LeavesBlock} uses this to decay when far from logs.</li>
 	 * </ul>
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#randomTick} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#randomTick
 	 * 
 	 * @see CropBlock
 	 * @see #scheduledTick
 	 */
-	@Deprecated
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 	}
 
 	/**
@@ -955,21 +902,18 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <li>{@link FallingBlock} tries to fall.</li>
 	 * </ul>
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#scheduledTick} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#scheduledTick
 	 * @see WorldAccess#scheduleBlockTick(BlockPos, Block, int)
 	 * @see #getStateForNeighborUpdate
 	 * @see #randomTick
 	 */
-	@Deprecated
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#calcBlockBreakingDelta} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#calcBlockBreakingDelta
 	 */
-	@Deprecated
-	public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+	protected float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
 		float f = state.getHardness(world, pos);
 		if (f == -1.0F) {
 			return 0.0F;
@@ -989,15 +933,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * {@link Block#dropExperienceWhenMined} can be used to drop experience orbs.
 	 * {@link ExperienceDroppingBlock} provides the implementation for experience-dropping blocks.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onStacksDropped} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#onStacksDropped
 	 * @see ExperienceDroppingBlock
 	 * @see Block#dropExperienceWhenMined
 	 * @see #getDroppedStacks
 	 * @see #onStateReplaced
 	 */
-	@Deprecated
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
+	protected void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
 	}
 
 	/**
@@ -1007,10 +949,9 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * when overriding this method. The logical side can be checked using {@link
 	 * World#isClient}.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onBlockBreakStart} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#onBlockBreakStart
 	 */
-	@Deprecated
-	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
+	protected void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
 	}
 
 	/**
@@ -1024,14 +965,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * redstone power only. {@link LeverBlock} and {@link ButtonBlock} emits both
 	 * weak and strong redstone power depending on the direction.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getWeakRedstonePower} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getWeakRedstonePower
 	 * 
 	 * @see #emitsRedstonePower
 	 * @see #getStrongRedstonePower
 	 * @see net.minecraft.world.RedstoneView#isReceivingRedstonePower
 	 */
-	@Deprecated
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return 0;
 	}
 
@@ -1053,13 +993,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <li>{@link HopperBlock} collects the item entity.</li>
 	 * </ul>
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onEntityCollision} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#onEntityCollision
 	 * @see Block#onSteppedOn
 	 * @see #onProjectileHit
 	 */
-	@Deprecated
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 	}
 
 	/**
@@ -1073,14 +1011,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * redstone power only. {@link LeverBlock} and {@link ButtonBlock} emits both
 	 * weak and strong redstone power.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getStrongRedstonePower} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * @see AbstractBlockState#getStrongRedstonePower
 	 * 
 	 * @see #emitsRedstonePower
 	 * @see #getWeakRedstonePower
 	 * @see net.minecraft.world.RedstoneView#isReceivingRedstonePower
 	 */
-	@Deprecated
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return 0;
 	}
 
@@ -1108,13 +1045,23 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <li>{@link AbstractCandleBlock} lights on fire when hit by a projectile on fire.</li>
 	 * </ul>
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onProjectileHit} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
+	 * @see AbstractBlockState#onProjectileHit
 	 * @see ProjectileEntity#onBlockHit
 	 * @see #onEntityCollision
 	 */
-	@Deprecated
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+	protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+	}
+
+	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+		return !Block.isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
+	}
+
+	protected boolean hasRandomTicks(BlockState state) {
+		return this.randomTicks;
+	}
+
+	protected BlockSoundGroup getSoundGroup(BlockState state) {
+		return this.soundGroup;
 	}
 
 	/**
@@ -1416,7 +1363,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.getBlock().onSyncedBlockEvent(this.asBlockState(), world, pos, type, data);
 		}
 
-		@Deprecated
 		public void neighborUpdate(World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 			this.getBlock().neighborUpdate(this.asBlockState(), world, pos, sourceBlock, sourcePos, notify);
 		}

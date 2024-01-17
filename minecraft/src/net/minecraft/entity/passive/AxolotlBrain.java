@@ -147,7 +147,7 @@ public class AxolotlBrain {
 			Activity.IDLE,
 			ImmutableList.of(
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
-				Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2F)),
+				Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2F, 2)),
 				Pair.of(
 					2,
 					new RandomTask<>(

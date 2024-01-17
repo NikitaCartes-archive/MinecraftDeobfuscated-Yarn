@@ -20,6 +20,7 @@ import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -148,8 +149,8 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.downloadTitle, this.width / 2, 20, 16777215);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.status, this.width / 2, 50, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.downloadTitle, this.width / 2, 20, Colors.WHITE);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.status, this.width / 2, 50, Colors.WHITE);
 		if (this.showDots) {
 			this.drawDots(context);
 		}
@@ -160,7 +161,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		}
 
 		if (this.downloadError != null) {
-			context.drawCenteredTextWithShadow(this.textRenderer, this.downloadError, this.width / 2, 110, 16711680);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.downloadError, this.width / 2, 110, Colors.RED);
 		}
 	}
 
@@ -170,7 +171,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 			this.dotIndex++;
 		}
 
-		context.drawText(this.textRenderer, DOTS[this.dotIndex % DOTS.length], this.width / 2 + i / 2 + 5, 50, 16777215, false);
+		context.drawText(this.textRenderer, DOTS[this.dotIndex % DOTS.length], this.width / 2 + i / 2 + 5, 50, Colors.WHITE, false);
 	}
 
 	private void drawProgressBar(DrawContext context) {
@@ -178,9 +179,9 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
 		int i = (this.width - 200) / 2;
 		int j = i + (int)Math.round(200.0 * d);
-		context.fill(i - 1, 79, j + 1, 96, -2501934);
+		context.fill(i - 1, 79, j + 1, 96, -1);
 		context.fill(i, 80, j, 95, -8355712);
-		context.drawCenteredTextWithShadow(this.textRenderer, Text.translatable("mco.download.percent", this.progress), this.width / 2, 84, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, Text.translatable("mco.download.percent", this.progress), this.width / 2, 84, Colors.WHITE);
 	}
 
 	private void drawDownloadSpeed(DrawContext context) {
@@ -210,7 +211,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 				Text.translatable("mco.download.speed", SizeUnit.getUserFriendlyString(bytesPerSecond)),
 				this.width / 2 + i / 2 + 15,
 				84,
-				16777215,
+				Colors.WHITE,
 				false
 			);
 		}

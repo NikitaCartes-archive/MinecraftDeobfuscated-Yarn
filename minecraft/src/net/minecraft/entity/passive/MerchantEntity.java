@@ -136,7 +136,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	public void onSellingItem(ItemStack stack) {
 		if (!this.getWorld().isClient && this.ambientSoundChance > -this.getMinAmbientSoundDelay() + 20) {
 			this.ambientSoundChance = -this.getMinAmbientSoundDelay();
-			this.playSound(this.getTradingSound(!stack.isEmpty()), this.getSoundVolume(), this.getSoundPitch());
+			this.playSound(this.getTradingSound(!stack.isEmpty()));
 		}
 	}
 
@@ -150,7 +150,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	}
 
 	public void playCelebrateSound() {
-		this.playSound(SoundEvents.ENTITY_VILLAGER_CELEBRATE, this.getSoundVolume(), this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_VILLAGER_CELEBRATE);
 	}
 
 	@Override

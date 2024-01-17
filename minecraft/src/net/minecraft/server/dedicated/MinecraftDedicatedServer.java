@@ -583,4 +583,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	public Optional<MinecraftServer.ServerResourcePackProperties> getResourcePackProperties() {
 		return this.propertiesLoader.getPropertiesHandler().serverResourcePackProperties;
 	}
+
+	@Override
+	public boolean method_56040() {
+		return this.propertiesLoader.getPropertiesHandler().field_48270;
+	}
 }

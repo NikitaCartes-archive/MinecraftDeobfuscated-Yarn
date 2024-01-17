@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -88,11 +87,6 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	abstract SoundEvent getStepSound();
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.UNDEAD;
-	}
 
 	@Override
 	public void tickMovement() {

@@ -79,7 +79,7 @@ public class BrushItem extends Item {
 						boolean bl2 = brushableBlockEntity.brush(world.getTime(), playerEntity, blockHitResult.getSide());
 						if (bl2) {
 							EquipmentSlot equipmentSlot = stack.equals(playerEntity.getEquippedStack(EquipmentSlot.OFFHAND)) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
-							stack.damage(1, user, userx -> userx.sendEquipmentBreakStatus(equipmentSlot));
+							stack.damage(1, user, equipmentSlot);
 						}
 					}
 				}

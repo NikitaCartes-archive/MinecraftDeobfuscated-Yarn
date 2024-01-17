@@ -65,7 +65,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return state.get(ATTACHED) ? ATTACHED_SHAPE : DETACHED_SHAPE;
 	}
 
@@ -81,7 +81,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		return direction.getAxis().isHorizontal()
@@ -90,14 +90,14 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			this.update(world, pos, state);
 		}
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!moved && !state.isOf(newState.getBlock())) {
 			this.update(world, pos, state.with(POWERED, Boolean.valueOf(true)));
 		}
@@ -133,7 +133,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient) {
 			if (!(Boolean)state.get(POWERED)) {
 				this.updatePowered(world, pos);
@@ -142,7 +142,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Boolean)world.getBlockState(pos).get(POWERED)) {
 			this.updatePowered(world, pos);
 		}
@@ -178,7 +178,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
 			case CLOCKWISE_180:
 				return state.with(NORTH, (Boolean)state.get(SOUTH))
@@ -201,7 +201,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		switch (mirror) {
 			case LEFT_RIGHT:
 				return state.with(NORTH, (Boolean)state.get(SOUTH)).with(SOUTH, (Boolean)state.get(NORTH));

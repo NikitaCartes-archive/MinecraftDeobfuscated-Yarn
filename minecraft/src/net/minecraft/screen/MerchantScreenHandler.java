@@ -200,19 +200,21 @@ public class MerchantScreenHandler extends ScreenHandler {
 			}
 
 			if (this.merchantInventory.getStack(0).isEmpty() && this.merchantInventory.getStack(1).isEmpty()) {
-				ItemStack itemStack3 = ((TradeOffer)this.getRecipes().get(recipeIndex)).getAdjustedFirstBuyItem();
-				this.autofill(0, itemStack3);
-				ItemStack itemStack4 = ((TradeOffer)this.getRecipes().get(recipeIndex)).getSecondBuyItem();
-				this.autofill(1, itemStack4);
+				TradeOffer tradeOffer = (TradeOffer)this.getRecipes().get(recipeIndex);
+				boolean bl = tradeOffer.shouldIgnoreNbt();
+				ItemStack itemStack3 = tradeOffer.getAdjustedFirstBuyItem();
+				this.autofill(0, itemStack3, bl);
+				ItemStack itemStack4 = tradeOffer.getSecondBuyItem();
+				this.autofill(1, itemStack4, bl);
 			}
 		}
 	}
 
-	private void autofill(int slot, ItemStack stack) {
+	private void autofill(int slot, ItemStack stack, boolean ignoreTags) {
 		if (!stack.isEmpty()) {
 			for (int i = 3; i < 39; i++) {
 				ItemStack itemStack = this.slots.get(i).getStack();
-				if (!itemStack.isEmpty() && ItemStack.canCombine(stack, itemStack)) {
+				if (!itemStack.isEmpty() && TradeOffer.acceptsBuy(stack, itemStack, ignoreTags)) {
 					ItemStack itemStack2 = this.merchantInventory.getStack(slot);
 					int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
 					int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());

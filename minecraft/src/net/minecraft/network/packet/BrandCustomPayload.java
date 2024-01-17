@@ -1,22 +1,22 @@
 package net.minecraft.network.packet;
 
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.codec.PacketCodec;
 
 public record BrandCustomPayload(String brand) implements CustomPayload {
-	public static final Identifier ID = new Identifier("brand");
+	public static final PacketCodec<PacketByteBuf, BrandCustomPayload> CODEC = CustomPayload.codecOf(BrandCustomPayload::write, BrandCustomPayload::new);
+	public static final CustomPayload.Id<BrandCustomPayload> KEY = CustomPayload.id("brand");
 
-	public BrandCustomPayload(PacketByteBuf buf) {
+	private BrandCustomPayload(PacketByteBuf buf) {
 		this(buf.readString());
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeString(this.brand);
 	}
 
 	@Override
-	public Identifier id() {
-		return ID;
+	public CustomPayload.Id<BrandCustomPayload> getId() {
+		return KEY;
 	}
 }

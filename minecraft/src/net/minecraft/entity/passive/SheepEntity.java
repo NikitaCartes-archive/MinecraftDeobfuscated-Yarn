@@ -205,7 +205,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 			if (!this.getWorld().isClient && this.isShearable()) {
 				this.sheared(SoundCategory.PLAYERS);
 				this.emitGameEvent(GameEvent.SHEAR, player);
-				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+				itemStack.damage(1, player, getSlotForHand(hand));
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.CONSUME;
@@ -347,7 +347,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		return (DyeColor)this.getWorld()
 			.getRecipeManager()
 			.getFirstMatch(RecipeType.CRAFTING, recipeInputInventory, this.getWorld())
-			.map(recipeEntry -> ((CraftingRecipe)recipeEntry.value()).craft(recipeInputInventory, this.getWorld().getRegistryManager()))
+			.map(recipe -> ((CraftingRecipe)recipe.value()).craft(recipeInputInventory, this.getWorld().getRegistryManager()))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)

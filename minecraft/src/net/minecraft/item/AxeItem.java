@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Oxidizable;
 import net.minecraft.block.PillarBlock;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -69,7 +70,7 @@ public class AxeItem extends MiningToolItem {
 			world.setBlockState(blockPos, (BlockState)optional.get(), Block.NOTIFY_ALL_AND_REDRAW);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, (BlockState)optional.get()));
 			if (playerEntity != null) {
-				itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+				itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 			}
 
 			return ActionResult.success(world.isClient);

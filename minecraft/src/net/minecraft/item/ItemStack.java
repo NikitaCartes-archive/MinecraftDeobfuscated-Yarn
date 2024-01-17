@@ -17,7 +17,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,7 +33,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -49,6 +47,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -76,6 +78,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -197,6 +200,41 @@ public final class ItemStack {
 					Registries.ITEM.getCodec().fieldOf("result").forGetter(ItemStack::getItem), Codec.INT.fieldOf("count").forGetter(ItemStack::getCount)
 				)
 				.apply(instance, ItemStack::new)
+	);
+	public static final PacketCodec<RegistryByteBuf, ItemStack> PACKET_CODEC = new PacketCodec<RegistryByteBuf, ItemStack>() {
+		private static final PacketCodec<RegistryByteBuf, Item> ITEM_PACKET_CODEC = PacketCodecs.registry(RegistryKeys.ITEM);
+
+		public ItemStack decode(RegistryByteBuf registryByteBuf) {
+			if (!registryByteBuf.readBoolean()) {
+				return ItemStack.EMPTY;
+			} else {
+				Item item = ITEM_PACKET_CODEC.decode(registryByteBuf);
+				int i = registryByteBuf.readByte();
+				ItemStack itemStack = new ItemStack(item, i);
+				itemStack.setNbt(PacketByteBuf.readNbt(registryByteBuf));
+				return itemStack;
+			}
+		}
+
+		public void encode(RegistryByteBuf registryByteBuf, ItemStack itemStack) {
+			if (itemStack.isEmpty()) {
+				registryByteBuf.writeBoolean(false);
+			} else {
+				registryByteBuf.writeBoolean(true);
+				Item item = itemStack.getItem();
+				ITEM_PACKET_CODEC.encode(registryByteBuf, item);
+				registryByteBuf.writeByte(itemStack.getCount());
+				NbtCompound nbtCompound = null;
+				if (item.isDamageable() || item.isNbtSynced()) {
+					nbtCompound = itemStack.getNbt();
+				}
+
+				PacketByteBuf.writeNbt(registryByteBuf, nbtCompound);
+			}
+		}
+	};
+	public static final PacketCodec<RegistryByteBuf, List<ItemStack>> LIST_PACKET_CODEC = PACKET_CODEC.mapResult(
+		PacketCodecs.collectionMapper(DefaultedList::ofSize)
 	);
 	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
@@ -512,12 +550,12 @@ public final class ItemStack {
 	 * @see #getDamage
 	 */
 	public boolean isDamageable() {
-		if (!this.isEmpty() && this.getItem().getMaxDamage() > 0) {
-			NbtCompound nbtCompound = this.getNbt();
-			return nbtCompound == null || !nbtCompound.getBoolean("Unbreakable");
-		} else {
-			return false;
-		}
+		return !this.isEmpty() && this.getItem().getMaxDamage() > 0 ? !this.isUnbreakable() : false;
+	}
+
+	public boolean isUnbreakable() {
+		NbtCompound nbtCompound = this.getNbt();
+		return nbtCompound != null && nbtCompound.getBoolean("Unbreakable");
 	}
 
 	/**
@@ -564,53 +602,6 @@ public final class ItemStack {
 	}
 
 	/**
-	 * Damages this item stack. This method should be used when a non-entity, such as a
-	 * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
-	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
-	 * unbreaking enchantment} is applied to {@code amount} before damaging.
-	 * 
-	 * <p>If {@code player} is not {@code null}, this triggers {@link
-	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
-	 * 
-	 * <p>This method does not decrement the item count when the item "breaks". Callers should
-	 * check the returned value and decrement themselves.
-	 * 
-	 * @return whether the stack's damage is equal to or above {@linkplain Item#getMaxDamage
-	 * the maximum damage} (i.e. whether the item is "broken")
-	 * 
-	 * @param player the player that holds the stack to be damaged, or {@code null} if inapplicable
-	 */
-	public boolean damage(int amount, Random random, @Nullable ServerPlayerEntity player) {
-		if (!this.isDamageable()) {
-			return false;
-		} else {
-			if (amount > 0) {
-				int i = EnchantmentHelper.getLevel(Enchantments.UNBREAKING, this);
-				int j = 0;
-
-				for (int k = 0; i > 0 && k < amount; k++) {
-					if (UnbreakingEnchantment.shouldPreventDamage(this, i, random)) {
-						j++;
-					}
-				}
-
-				amount -= j;
-				if (amount <= 0) {
-					return false;
-				}
-			}
-
-			if (player != null && amount != 0) {
-				Criteria.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
-			}
-
-			int i = this.getDamage() + amount;
-			this.setDamage(i);
-			return i >= this.getMaxDamage();
-		}
-	}
-
-	/**
 	 * Damages this item stack. This method should be used when an entity, including a player,
 	 * damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
 	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
@@ -625,25 +616,64 @@ public final class ItemStack {
 	 * stack, and increment {@link net.minecraft.stat.Stats#BROKEN} if the stack is held
 	 * by a player. The callback should call {@link LivingEntity#sendEquipmentBreakStatus}
 	 * or {@link LivingEntity#sendToolBreakStatus}.
-	 * 
-	 * @param breakCallback the callback that takes the entity holding the stack and is executed
-	 * when the item breaks
-	 * @param entity the entity that holds the stack to be damaged
 	 */
-	public <T extends LivingEntity> void damage(int amount, T entity, Consumer<T> breakCallback) {
-		if (!entity.getWorld().isClient && (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).getAbilities().creativeMode)) {
-			if (this.isDamageable()) {
-				if (this.damage(amount, entity.getRandom(), entity instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity : null)) {
-					breakCallback.accept(entity);
-					Item item = this.getItem();
-					this.decrement(1);
-					if (entity instanceof PlayerEntity) {
-						((PlayerEntity)entity).incrementStat(Stats.BROKEN.getOrCreateStat(item));
-					}
+	public void damage(int amount, Random random, @Nullable ServerPlayerEntity entity, Runnable breakCallback) {
+		if (this.isDamageable()) {
+			if (amount > 0) {
+				int i = EnchantmentHelper.getLevel(Enchantments.UNBREAKING, this);
+				int j = 0;
 
-					this.setDamage(0);
+				for (int k = 0; i > 0 && k < amount; k++) {
+					if (UnbreakingEnchantment.shouldPreventDamage(this, i, random)) {
+						j++;
+					}
+				}
+
+				amount -= j;
+				if (amount <= 0) {
+					return;
 				}
 			}
+
+			if (entity != null && amount != 0) {
+				Criteria.ITEM_DURABILITY_CHANGED.trigger(entity, this, this.getDamage() + amount);
+			}
+
+			int i = this.getDamage() + amount;
+			this.setDamage(i);
+			if (i >= this.getMaxDamage()) {
+				breakCallback.run();
+			}
+		}
+	}
+
+	/**
+	 * Damages this item stack. This method should be used when a non-entity, such as a
+	 * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
+	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
+	 * unbreaking enchantment} is applied to {@code amount} before damaging.
+	 * 
+	 * <p>If {@code player} is not {@code null}, this triggers {@link
+	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
+	 * 
+	 * <p>This method does not decrement the item count when the item "breaks". Callers should
+	 * check the returned value and decrement themselves.
+	 * 
+	 * @return whether the stack's damage is equal to or above {@linkplain Item#getMaxDamage
+	 * the maximum damage} (i.e. whether the item is "broken")
+	 */
+	public void damage(int amount, LivingEntity entity, EquipmentSlot slot) {
+		if (!entity.getWorld().isClient && (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).getAbilities().creativeMode)) {
+			this.damage(amount, entity.getRandom(), entity instanceof ServerPlayerEntity serverPlayerEntity ? serverPlayerEntity : null, () -> {
+				entity.sendEquipmentBreakStatus(slot);
+				Item item = this.getItem();
+				this.decrement(1);
+				if (entity instanceof PlayerEntity) {
+					((PlayerEntity)entity).incrementStat(Stats.BROKEN.getOrCreateStat(item));
+				}
+
+				this.setDamage(0);
+			});
 		}
 	}
 
@@ -1070,7 +1100,7 @@ public final class ItemStack {
 						if (player != null) {
 							if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
 								d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-								d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
+								d += (double)EnchantmentHelper.getAttackDamage(this, null);
 								bl = true;
 							} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_ID) {
 								d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);

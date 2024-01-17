@@ -5,13 +5,17 @@ import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, TeamS2CPacket> CODEC = Packet.createCodec(TeamS2CPacket::write, TeamS2CPacket::new);
 	/**
 	 * The {@link #packetType} that creates a new team with a few players. Has value
 	 * {@value}.
@@ -78,7 +82,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		);
 	}
 
-	public TeamS2CPacket(PacketByteBuf buf) {
+	private TeamS2CPacket(PacketByteBuf buf) {
 		this.teamName = buf.readString();
 		this.packetType = buf.readByte();
 		if (containsTeamInfo(this.packetType)) {
@@ -94,8 +98,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeString(this.teamName);
 		buf.writeByte(this.packetType);
 		if (containsTeamInfo(this.packetType)) {
@@ -141,6 +144,11 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 			default:
 				return null;
 		}
+	}
+
+	@Override
+	public PacketIdentifier<TeamS2CPacket> getPacketId() {
+		return PlayPackets.SET_PLAYER_TEAM;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

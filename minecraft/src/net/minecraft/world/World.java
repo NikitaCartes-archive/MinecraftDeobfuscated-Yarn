@@ -668,11 +668,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	/**
 	 * Creates an explosion.
 	 * 
-	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
 	 * @param createFire whether the explosion should create fire
-	 * @param behavior the explosion behavior, or {@code null} to use the default
+	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
 	 * @param damageSource the custom damage source, or {@code null} to use the default
 	 * ({@link net.minecraft.entity.damage.DamageSources#explosion(Explosion)})
+	 * @param behavior the explosion behavior, or {@code null} to use the default
 	 */
 	public Explosion createExplosion(
 		@Nullable Entity entity,
@@ -686,7 +686,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		World.ExplosionSourceType explosionSourceType,
 		ParticleEffect particle,
 		ParticleEffect emitterParticle,
-		SoundEvent soundEvent
+		RegistryEntry<SoundEvent> soundEvent
 	) {
 		return this.createExplosion(entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, true, particle, emitterParticle, soundEvent);
 	}
@@ -704,7 +704,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		boolean particles,
 		ParticleEffect particle,
 		ParticleEffect emitterParticle,
-		SoundEvent soundEvent
+		RegistryEntry<SoundEvent> soundEvent
 	) {
 		Explosion.DestructionType destructionType = switch (explosionSourceType) {
 			case NONE -> Explosion.DestructionType.KEEP;
@@ -784,7 +784,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public BlockPos getSpawnPos() {
-		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
+		BlockPos blockPos = this.properties.getSpawnPos();
 		if (!this.getWorldBorder().contains(blockPos)) {
 			blockPos = this.getTopPosition(
 				Heightmap.Type.MOTION_BLOCKING, BlockPos.ofFloored(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ())

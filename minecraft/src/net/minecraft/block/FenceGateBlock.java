@@ -67,7 +67,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if ((Boolean)state.get(IN_WALL)) {
 			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_SHAPE : IN_WALL_Z_AXIS_SHAPE;
 		} else {
@@ -76,7 +76,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		Direction.Axis axis = direction.getAxis();
@@ -89,7 +89,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
 		if ((Boolean)state.get(OPEN)) {
 			return VoxelShapes.empty();
 		} else {
@@ -98,7 +98,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if ((Boolean)state.get(OPEN)) {
 			return VoxelShapes.empty();
 		} else {
@@ -107,7 +107,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
 		if ((Boolean)state.get(IN_WALL)) {
 			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_CULL_SHAPE : IN_WALL_Z_AXIS_CULL_SHAPE;
 		} else {
@@ -116,7 +116,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		switch (type) {
 			case LAND:
 				return (Boolean)state.get(OPEN);
@@ -146,7 +146,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if ((Boolean)state.get(OPEN)) {
 			state = state.with(OPEN, Boolean.valueOf(false));
 			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
@@ -169,7 +169,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && !(Boolean)state.get(POWERED)) {
 			boolean bl = (Boolean)state.get(OPEN);
 			world.setBlockState(pos, state.with(OPEN, Boolean.valueOf(!bl)));
@@ -183,7 +183,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (!world.isClient) {
 			boolean bl = world.isReceivingRedstonePower(pos);
 			if ((Boolean)state.get(POWERED) != bl) {

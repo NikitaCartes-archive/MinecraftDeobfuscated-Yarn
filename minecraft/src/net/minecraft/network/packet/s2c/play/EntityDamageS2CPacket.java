@@ -5,8 +5,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Vec3d;
@@ -14,6 +17,8 @@ import net.minecraft.world.World;
 
 public record EntityDamageS2CPacket(int entityId, int sourceTypeId, int sourceCauseId, int sourceDirectId, Optional<Vec3d> sourcePosition)
 	implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, EntityDamageS2CPacket> CODEC = Packet.createCodec(EntityDamageS2CPacket::write, EntityDamageS2CPacket::new);
+
 	public EntityDamageS2CPacket(Entity entity, DamageSource damageSource) {
 		this(
 			entity.getId(),
@@ -24,7 +29,7 @@ public record EntityDamageS2CPacket(int entityId, int sourceTypeId, int sourceCa
 		);
 	}
 
-	public EntityDamageS2CPacket(PacketByteBuf buf) {
+	private EntityDamageS2CPacket(PacketByteBuf buf) {
 		this(
 			buf.readVarInt(),
 			buf.readVarInt(),
@@ -42,8 +47,7 @@ public record EntityDamageS2CPacket(int entityId, int sourceTypeId, int sourceCa
 		return buf.readVarInt() - 1;
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeVarInt(this.sourceTypeId);
 		writeOffsetVarInt(buf, this.sourceCauseId);
@@ -53,6 +57,11 @@ public record EntityDamageS2CPacket(int entityId, int sourceTypeId, int sourceCa
 			bufx.writeDouble(pos.getY());
 			bufx.writeDouble(pos.getZ());
 		});
+	}
+
+	@Override
+	public PacketIdentifier<EntityDamageS2CPacket> getPacketId() {
+		return PlayPackets.DAMAGE_EVENT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

@@ -1,20 +1,31 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.function.Function;
-import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
 
 public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, BlockEntityUpdateS2CPacket> CODEC = PacketCodec.tuple(
+		BlockPos.PACKET_CODEC,
+		BlockEntityUpdateS2CPacket::getPos,
+		PacketCodecs.registry(RegistryKeys.BLOCK_ENTITY_TYPE),
+		BlockEntityUpdateS2CPacket::getBlockEntityType,
+		PacketCodecs.NBT_COMPUND,
+		BlockEntityUpdateS2CPacket::getNbt,
+		BlockEntityUpdateS2CPacket::new
+	);
 	private final BlockPos pos;
 	private final BlockEntityType<?> blockEntityType;
-	@Nullable
 	private final NbtCompound nbt;
 
 	public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity, Function<BlockEntity, NbtCompound> nbtGetter) {
@@ -28,20 +39,12 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	private BlockEntityUpdateS2CPacket(BlockPos pos, BlockEntityType<?> blockEntityType, NbtCompound nbt) {
 		this.pos = pos;
 		this.blockEntityType = blockEntityType;
-		this.nbt = nbt.isEmpty() ? null : nbt;
-	}
-
-	public BlockEntityUpdateS2CPacket(PacketByteBuf buf) {
-		this.pos = buf.readBlockPos();
-		this.blockEntityType = buf.readRegistryValue(Registries.BLOCK_ENTITY_TYPE);
-		this.nbt = buf.readNbt();
+		this.nbt = nbt;
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeBlockPos(this.pos);
-		buf.writeRegistryValue(Registries.BLOCK_ENTITY_TYPE, this.blockEntityType);
-		buf.writeNbt(this.nbt);
+	public PacketIdentifier<BlockEntityUpdateS2CPacket> getPacketId() {
+		return PlayPackets.BLOCK_ENTITY_DATA;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -56,7 +59,6 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		return this.blockEntityType;
 	}
 
-	@Nullable
 	public NbtCompound getNbt() {
 		return this.nbt;
 	}

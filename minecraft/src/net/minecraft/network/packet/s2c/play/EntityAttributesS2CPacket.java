@@ -1,19 +1,32 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
-import io.netty.handler.codec.DecoderException;
+import io.netty.buffer.ByteBuf;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Uuids;
 
 public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, EntityAttributesS2CPacket> CODEC = PacketCodec.tuple(
+		PacketCodecs.VAR_INT,
+		EntityAttributesS2CPacket::getEntityId,
+		EntityAttributesS2CPacket.Entry.CODEC.mapResult(PacketCodecs.listMapper()),
+		EntityAttributesS2CPacket::getEntries,
+		EntityAttributesS2CPacket::new
+	);
 	private final int entityId;
 	private final List<EntityAttributesS2CPacket.Entry> entries;
 
@@ -29,38 +42,14 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	public EntityAttributesS2CPacket(PacketByteBuf buf) {
-		this.entityId = buf.readVarInt();
-		this.entries = buf.readList(
-			buf2 -> {
-				RegistryEntry<EntityAttribute> registryEntry = buf2.readRegistryValue(Registries.ATTRIBUTE.getIndexedEntries());
-				if (registryEntry == null) {
-					throw new DecoderException("Received unrecognized attribute id");
-				} else {
-					double d = buf2.readDouble();
-					List<EntityAttributeModifier> list = buf2.readList(
-						modifiers -> new EntityAttributeModifier(
-								modifiers.readUuid(), "Unknown synced attribute modifier", modifiers.readDouble(), EntityAttributeModifier.Operation.fromId(modifiers.readByte())
-							)
-					);
-					return new EntityAttributesS2CPacket.Entry(registryEntry, d, list);
-				}
-			}
-		);
+	private EntityAttributesS2CPacket(int entityId, List<EntityAttributesS2CPacket.Entry> attributes) {
+		this.entityId = entityId;
+		this.entries = attributes;
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.entityId);
-		buf.writeCollection(this.entries, (buf2, attribute) -> {
-			buf2.writeRegistryValue(Registries.ATTRIBUTE.getIndexedEntries(), attribute.attribute());
-			buf2.writeDouble(attribute.base());
-			buf2.writeCollection(attribute.modifiers(), (buf3, modifier) -> {
-				buf3.writeUuid(modifier.getId());
-				buf3.writeDouble(modifier.getValue());
-				buf3.writeByte(modifier.getOperation().getId());
-			});
-		});
+	public PacketIdentifier<EntityAttributesS2CPacket> getPacketId() {
+		return PlayPackets.UPDATE_ATTRIBUTES;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -76,5 +65,23 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public static record Entry(RegistryEntry<EntityAttribute> attribute, double base, Collection<EntityAttributeModifier> modifiers) {
+		public static final PacketCodec<ByteBuf, EntityAttributeModifier> MODIFIER_CODEC = PacketCodec.tuple(
+			Uuids.PACKET_CODEC,
+			EntityAttributeModifier::getId,
+			PacketCodecs.DOUBLE,
+			EntityAttributeModifier::getValue,
+			EntityAttributeModifier.Operation.PACKET_CODEC,
+			EntityAttributeModifier::getOperation,
+			(uUID, double_, operation) -> new EntityAttributeModifier(uUID, "Unknown synced attribute modifier", double_, operation)
+		);
+		public static final PacketCodec<RegistryByteBuf, EntityAttributesS2CPacket.Entry> CODEC = PacketCodec.tuple(
+			PacketCodecs.registryEntry(RegistryKeys.ATTRIBUTE),
+			EntityAttributesS2CPacket.Entry::attribute,
+			PacketCodecs.DOUBLE,
+			EntityAttributesS2CPacket.Entry::base,
+			MODIFIER_CODEC.mapResult(PacketCodecs.collectionMapper(ArrayList::new)),
+			EntityAttributesS2CPacket.Entry::modifiers,
+			EntityAttributesS2CPacket.Entry::new
+		);
 	}
 }

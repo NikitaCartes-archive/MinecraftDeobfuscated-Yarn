@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class InfinityEnchantment extends Enchantment {
 	public InfinityEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.BOW, slotTypes);
+		super(weight, ItemTags.BOW_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

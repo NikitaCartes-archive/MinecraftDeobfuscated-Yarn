@@ -38,7 +38,7 @@ public class TargetBlock extends Block {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+	protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		int i = trigger(world, state, hit, projectile);
 		if (projectile.getOwner() instanceof ServerPlayerEntity serverPlayerEntity) {
 			serverPlayerEntity.incrementStat(Stats.TARGET_HIT);
@@ -80,19 +80,19 @@ public class TargetBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Integer)state.get(POWER) != 0) {
 			world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), Block.NOTIFY_ALL);
 		}
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return (Integer)state.get(POWER);
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState state) {
+	protected boolean emitsRedstonePower(BlockState state) {
 		return true;
 	}
 
@@ -102,7 +102,7 @@ public class TargetBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!world.isClient() && !state.isOf(oldState.getBlock())) {
 			if ((Integer)state.get(POWER) > 0 && !world.getBlockTickScheduler().isQueued(pos, this)) {
 				world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);

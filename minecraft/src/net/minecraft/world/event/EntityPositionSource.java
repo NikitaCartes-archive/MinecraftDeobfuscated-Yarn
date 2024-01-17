@@ -7,7 +7,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Vec3d;
@@ -21,14 +23,21 @@ public class EntityPositionSource implements PositionSource {
 				)
 				.apply(instance, (uuid, yOffset) -> new EntityPositionSource(Either.right(Either.left(uuid)), yOffset))
 	);
+	public static final PacketCodec<RegistryByteBuf, EntityPositionSource> PACKET_CODEC = PacketCodec.tuple(
+		PacketCodecs.VAR_INT,
+		EntityPositionSource::getEntityId,
+		PacketCodecs.FLOAT,
+		source -> source.yOffset,
+		(entityId, yOffset) -> new EntityPositionSource(Either.right(Either.right(entityId)), yOffset)
+	);
 	private Either<Entity, Either<UUID, Integer>> source;
-	final float yOffset;
+	private final float yOffset;
 
 	public EntityPositionSource(Entity entity, float yOffset) {
 		this(Either.left(entity), yOffset);
 	}
 
-	EntityPositionSource(Either<Entity, Either<UUID, Integer>> source, float yOffset) {
+	private EntityPositionSource(Either<Entity, Either<UUID, Integer>> source, float yOffset) {
 		this.source = source;
 		this.yOffset = yOffset;
 	}
@@ -59,30 +68,26 @@ public class EntityPositionSource implements PositionSource {
 			}));
 	}
 
-	int getEntityId() {
+	private int getEntityId() {
 		return this.source.<Integer>map(Entity::getId, entityId -> entityId.map(uuid -> {
 				throw new IllegalStateException("Unable to get entityId from uuid");
 			}, Function.identity()));
 	}
 
 	@Override
-	public PositionSourceType<?> getType() {
+	public PositionSourceType<EntityPositionSource> getType() {
 		return PositionSourceType.ENTITY;
 	}
 
 	public static class Type implements PositionSourceType<EntityPositionSource> {
-		public EntityPositionSource readFromBuf(PacketByteBuf packetByteBuf) {
-			return new EntityPositionSource(Either.right(Either.right(packetByteBuf.readVarInt())), packetByteBuf.readFloat());
-		}
-
-		public void writeToBuf(PacketByteBuf packetByteBuf, EntityPositionSource entityPositionSource) {
-			packetByteBuf.writeVarInt(entityPositionSource.getEntityId());
-			packetByteBuf.writeFloat(entityPositionSource.yOffset);
-		}
-
 		@Override
 		public Codec<EntityPositionSource> getCodec() {
 			return EntityPositionSource.CODEC;
+		}
+
+		@Override
+		public PacketCodec<RegistryByteBuf, EntityPositionSource> getPacketCodec() {
+			return EntityPositionSource.PACKET_CODEC;
 		}
 	}
 }

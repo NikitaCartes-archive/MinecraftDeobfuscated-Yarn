@@ -778,36 +778,45 @@ public class GameRenderer implements AutoCloseable {
 		if (entity != null) {
 			if (this.client.world != null && this.client.player != null) {
 				this.client.getProfiler().push("pick");
-				this.client.targetedEntity = null;
 				double d = this.client.player.getBlockInteractionRange();
 				double e = this.client.player.getEntityInteractionRange();
-				double f = Math.max(d, e);
-				this.client.crosshairTarget = entity.raycast(d, tickDelta, false);
-				Vec3d vec3d = entity.getCameraPosVec(tickDelta);
-				double g = f;
-				double h = MathHelper.square(f);
-				if (this.client.crosshairTarget != null) {
-					h = this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d);
-					g = Math.sqrt(h);
-				}
-
-				Vec3d vec3d2 = entity.getRotationVec(1.0F);
-				Vec3d vec3d3 = vec3d.add(vec3d2.x * f, vec3d2.y * f, vec3d2.z * f);
-				float i = 1.0F;
-				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(g)).expand(1.0, 1.0, 1.0);
-				EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.canHit(), h);
-				if (entityHitResult != null) {
-					Vec3d vec3d4 = entityHitResult.getPos();
-					if (vec3d.isInRange(vec3d4, e)) {
-						this.client.crosshairTarget = entityHitResult;
-						this.client.targetedEntity = entityHitResult.getEntity();
-					} else {
-						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), BlockPos.ofFloored(vec3d4));
-					}
-				}
-
+				HitResult hitResult = this.method_56153(entity, d, e, tickDelta);
+				this.client.crosshairTarget = hitResult;
+				this.client.targetedEntity = hitResult instanceof EntityHitResult entityHitResult ? entityHitResult.getEntity() : null;
 				this.client.getProfiler().pop();
 			}
+		}
+	}
+
+	private HitResult method_56153(Entity entity, double d, double e, float f) {
+		double g = Math.max(d, e);
+		double h = MathHelper.square(g);
+		Vec3d vec3d = entity.getCameraPosVec(f);
+		HitResult hitResult = entity.raycast(g, f, false);
+		double i = hitResult.getPos().squaredDistanceTo(vec3d);
+		if (hitResult.getType() != HitResult.Type.MISS) {
+			h = i;
+			g = Math.sqrt(i);
+		}
+
+		Vec3d vec3d2 = entity.getRotationVec(f);
+		Vec3d vec3d3 = vec3d.add(vec3d2.x * g, vec3d2.y * g, vec3d2.z * g);
+		float j = 1.0F;
+		Box box = entity.getBoundingBox().stretch(vec3d2.multiply(g)).expand(1.0, 1.0, 1.0);
+		EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.canHit(), h);
+		return entityHitResult != null && entityHitResult.getPos().squaredDistanceTo(vec3d) < i
+			? method_56154(entityHitResult, vec3d, e)
+			: method_56154(hitResult, vec3d, d);
+	}
+
+	private static HitResult method_56154(HitResult hitResult, Vec3d vec3d, double d) {
+		Vec3d vec3d2 = hitResult.getPos();
+		if (!vec3d2.isInRange(vec3d, d)) {
+			Vec3d vec3d3 = hitResult.getPos();
+			Direction direction = Direction.getFacing(vec3d3.x - vec3d.x, vec3d3.y - vec3d.y, vec3d3.z - vec3d.z);
+			return BlockHitResult.createMissed(vec3d3, direction, BlockPos.ofFloored(vec3d3));
+		} else {
+			return hitResult;
 		}
 	}
 

@@ -64,7 +64,7 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if ((Boolean)state.get(EXTENDED)) {
 			switch ((Direction)state.get(FACING)) {
 				case DOWN:
@@ -94,14 +94,14 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (!world.isClient) {
 			this.tryMove(world, pos, state);
 		}
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			if (!world.isClient && world.getBlockEntity(pos) == null) {
 				this.tryMove(world, pos, state);
@@ -160,7 +160,7 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+	protected boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 		Direction direction = state.get(FACING);
 		BlockState blockState = state.with(EXTENDED, Boolean.valueOf(true));
 		if (!world.isClient) {
@@ -363,12 +363,12 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
 
@@ -378,12 +378,12 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState state) {
+	protected boolean hasSidedTransparency(BlockState state) {
 		return (Boolean)state.get(EXTENDED);
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

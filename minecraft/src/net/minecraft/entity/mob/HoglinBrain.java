@@ -74,7 +74,7 @@ public class HoglinBrain {
 			10,
 			ImmutableList.of(
 				PacifyTask.create(MemoryModuleType.NEAREST_REPELLENT, 200),
-				new BreedTask(EntityType.HOGLIN, 0.6F),
+				new BreedTask(EntityType.HOGLIN, 0.6F, 2),
 				GoToRememberedPositionTask.createPosBased(MemoryModuleType.NEAREST_REPELLENT, 1.0F, 8, true),
 				UpdateAttackTargetTask.create(HoglinBrain::getNearestVisibleTargetablePlayer),
 				TaskTriggerer.runIf(HoglinEntity::isAdult, GoToRememberedPositionTask.createEntityBased(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4F, 8, false)),
@@ -91,7 +91,7 @@ public class HoglinBrain {
 			10,
 			ImmutableList.of(
 				PacifyTask.create(MemoryModuleType.NEAREST_REPELLENT, 200),
-				new BreedTask(EntityType.HOGLIN, 0.6F),
+				new BreedTask(EntityType.HOGLIN, 0.6F, 2),
 				RangedApproachTask.create(1.0F),
 				TaskTriggerer.runIf(HoglinEntity::isAdult, MeleeAttackTask.create(40)),
 				TaskTriggerer.runIf(PassiveEntity::isBaby, MeleeAttackTask.create(15)),

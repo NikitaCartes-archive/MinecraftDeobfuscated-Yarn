@@ -222,7 +222,12 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).dimensions(1.375F, 0.5625F).eyeHeight(0.5625F).maxTrackingRange(10)
 	);
 	public static final EntityType<BreezeEntity> BREEZE = register(
-		"breeze", EntityType.Builder.create(BreezeEntity::new, SpawnGroup.MONSTER).dimensions(0.6F, 1.7F).maxTrackingRange(10).requires(FeatureFlags.UPDATE_1_21)
+		"breeze",
+		EntityType.Builder.create(BreezeEntity::new, SpawnGroup.MONSTER)
+			.dimensions(0.6F, 1.77F)
+			.eyeHeight(1.3452F)
+			.maxTrackingRange(10)
+			.requires(FeatureFlags.UPDATE_1_21)
 	);
 	public static final EntityType<CamelEntity> CAMEL = register(
 		"camel", EntityType.Builder.create(CamelEntity::new, SpawnGroup.CREATURE).dimensions(1.7F, 2.375F).eyeHeight(2.275F).maxTrackingRange(10)
@@ -478,7 +483,8 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		"iron_golem", EntityType.Builder.create(IronGolemEntity::new, SpawnGroup.MISC).dimensions(1.4F, 2.7F).maxTrackingRange(10)
 	);
 	public static final EntityType<ItemEntity> ITEM = register(
-		"item", EntityType.Builder.<ItemEntity>create(ItemEntity::new, SpawnGroup.MISC).dimensions(0.25F, 0.25F).maxTrackingRange(6).trackingTickInterval(20)
+		"item",
+		EntityType.Builder.<ItemEntity>create(ItemEntity::new, SpawnGroup.MISC).dimensions(0.25F, 0.25F).eyeHeight(0.1F).maxTrackingRange(6).trackingTickInterval(20)
 	);
 	public static final EntityType<DisplayEntity.ItemDisplayEntity> ITEM_DISPLAY = register(
 		"item_display",
@@ -668,7 +674,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.maxTrackingRange(10)
 	);
 	public static final EntityType<SlimeEntity> SLIME = register(
-		"slime", EntityType.Builder.create(SlimeEntity::new, SpawnGroup.MONSTER).dimensions(2.04F, 2.04F).eyeHeight(1.275F).maxTrackingRange(10)
+		"slime", EntityType.Builder.create(SlimeEntity::new, SpawnGroup.MONSTER).dimensions(0.52F, 0.52F).eyeHeight(0.325F).maxTrackingRange(10)
 	);
 	public static final EntityType<SmallFireballEntity> SMALL_FIREBALL = register(
 		"small_fireball",
@@ -811,7 +817,12 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<WardenEntity> WARDEN = register(
 		"warden",
-		EntityType.Builder.create(WardenEntity::new, SpawnGroup.MONSTER).dimensions(0.9F, 2.9F).passengerAttachments(3.15F).maxTrackingRange(16).makeFireImmune()
+		EntityType.Builder.create(WardenEntity::new, SpawnGroup.MONSTER)
+			.dimensions(0.9F, 2.9F)
+			.passengerAttachments(3.15F)
+			.method_56075(EntityAttachmentType.WARDEN_CHEST, 0.0F, 1.6F, 0.0F)
+			.maxTrackingRange(16)
+			.makeFireImmune()
 	);
 	public static final EntityType<WindChargeEntity> WIND_CHARGE = register(
 		"wind_charge",
@@ -1369,16 +1380,24 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		}
 
 		public EntityType.Builder<T> vehicleAttachment(Vec3d vehicleAttachment) {
-			this.attachments = this.attachments.add(EntityAttachmentType.VEHICLE, vehicleAttachment);
-			return this;
+			return this.method_56076(EntityAttachmentType.VEHICLE, vehicleAttachment);
 		}
 
 		public EntityType.Builder<T> vehicleAttachment(float offsetY) {
-			return this.vehicleAttachment(new Vec3d(0.0, (double)(-offsetY), 0.0));
+			return this.method_56075(EntityAttachmentType.VEHICLE, 0.0F, -offsetY, 0.0F);
 		}
 
 		public EntityType.Builder<T> nameTagAttachment(float offsetY) {
-			this.attachments = this.attachments.add(EntityAttachmentType.NAME_TAG, 0.0F, offsetY, 0.0F);
+			return this.method_56075(EntityAttachmentType.NAME_TAG, 0.0F, offsetY, 0.0F);
+		}
+
+		public EntityType.Builder<T> method_56075(EntityAttachmentType entityAttachmentType, float f, float g, float h) {
+			this.attachments = this.attachments.add(entityAttachmentType, f, g, h);
+			return this;
+		}
+
+		public EntityType.Builder<T> method_56076(EntityAttachmentType entityAttachmentType, Vec3d vec3d) {
+			this.attachments = this.attachments.add(entityAttachmentType, vec3d);
 			return this;
 		}
 

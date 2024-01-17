@@ -42,9 +42,11 @@ public class ArmadilloBrain {
 	private static final float field_47797 = 2.0F;
 	private static final float field_47798 = 1.0F;
 	private static final float field_47799 = 1.25F;
-	private static final float field_47800 = 1.1F;
+	private static final float field_47800 = 1.25F;
 	private static final float field_47801 = 1.0F;
-	private static final UniformIntProvider field_47802 = UniformIntProvider.create(5, 16);
+	private static final double field_48338 = 2.0;
+	private static final double field_48339 = 1.0;
+	private static final UniformIntProvider WALK_TOWARDS_CLOSEST_ADULT_RANGE = UniformIntProvider.create(5, 16);
 	private static final ImmutableList<SensorType<? extends Sensor<? super ArmadilloEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY, SensorType.ARMADILLO_TEMPTATIONS, SensorType.NEAREST_ADULT, SensorType.ARMADILLO_SCARE_DETECTED
 	);
@@ -65,11 +67,11 @@ public class ArmadilloBrain {
 		MemoryModuleType.NEAREST_VISIBLE_ADULT,
 		MemoryModuleType.DANGER_DETECTED_RECENTLY
 	);
-	private static final SingleTickTask<ArmadilloEntity> field_47805 = TaskTriggerer.task(
-		taskContext -> taskContext.group(taskContext.queryMemoryAbsent(MemoryModuleType.DANGER_DETECTED_RECENTLY))
-				.apply(taskContext, memoryQueryResult -> (serverWorld, armadillo, l) -> {
+	private static final SingleTickTask<ArmadilloEntity> UNROLL_TASK = TaskTriggerer.task(
+		context -> context.group(context.queryMemoryAbsent(MemoryModuleType.DANGER_DETECTED_RECENTLY))
+				.apply(context, memoryQueryResult -> (serverWorld, armadillo, l) -> {
 						if (armadillo.isNotIdle()) {
-							armadillo.unroll(armadillo.canRollUp());
+							armadillo.unroll();
 							return true;
 						} else {
 							return false;
@@ -93,7 +95,9 @@ public class ArmadilloBrain {
 
 	private static void addCoreActivities(Brain<ArmadilloEntity> brain) {
 		brain.setTaskList(
-			Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new ArmadilloBrain.class_9073(2.0F), new LookAroundTask(45, 90), new WanderAroundTask() {
+			Activity.CORE,
+			0,
+			ImmutableList.of(new StayAboveWaterTask(0.8F), new ArmadilloBrain.UnrollAndFleeTask(2.0F), new LookAroundTask(45, 90), new WanderAroundTask() {
 				@Override
 				protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
 					if (mobEntity instanceof ArmadilloEntity armadilloEntity && armadilloEntity.isNotIdle()) {
@@ -102,7 +106,7 @@ public class ArmadilloBrain {
 
 					return super.shouldRun(serverWorld, mobEntity);
 				}
-			}, new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS), new TemptationCooldownTask(MemoryModuleType.GAZE_COOLDOWN_TICKS), field_47805)
+			}, new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS), new TemptationCooldownTask(MemoryModuleType.GAZE_COOLDOWN_TICKS), UNROLL_TASK)
 		);
 	}
 
@@ -111,13 +115,13 @@ public class ArmadilloBrain {
 			Activity.IDLE,
 			ImmutableList.of(
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
-				Pair.of(1, new BreedTask(EntityType.ARMADILLO, 1.0F)),
+				Pair.of(1, new BreedTask(EntityType.ARMADILLO, 1.0F, 1)),
 				Pair.of(
 					2,
 					new RandomTask<>(
 						ImmutableList.of(
-							Pair.of(new TemptTask(livingEntity -> 1.25F, livingEntity -> livingEntity.isBaby() ? 2.5 : 3.5), 1),
-							Pair.of(WalkTowardClosestAdultTask.create(field_47802, 1.1F), 1)
+							Pair.of(new TemptTask(armadillo -> 1.25F, armadillo -> armadillo.isBaby() ? 1.0 : 2.0), 1),
+							Pair.of(WalkTowardClosestAdultTask.create(WALK_TOWARDS_CLOSEST_ADULT_RANGE, 1.25F), 1)
 						)
 					)
 				),
@@ -136,7 +140,7 @@ public class ArmadilloBrain {
 	private static void addPanicActivities(Brain<ArmadilloEntity> brain) {
 		brain.setTaskList(
 			Activity.PANIC,
-			ImmutableList.of(Pair.of(0, new ArmadilloBrain.class_9072())),
+			ImmutableList.of(Pair.of(0, new ArmadilloBrain.RollUpTask())),
 			Set.of(Pair.of(MemoryModuleType.DANGER_DETECTED_RECENTLY, MemoryModuleState.VALUE_PRESENT))
 		);
 	}
@@ -149,8 +153,8 @@ public class ArmadilloBrain {
 		return BREEDING_INGREDIENT;
 	}
 
-	public static class class_9072 extends MultiTickTask<ArmadilloEntity> {
-		public class_9072() {
+	public static class RollUpTask extends MultiTickTask<ArmadilloEntity> {
+		public RollUpTask() {
 			super(Map.of());
 		}
 
@@ -159,8 +163,7 @@ public class ArmadilloBrain {
 			if (armadilloEntity.shouldSwitchToScaredState()) {
 				armadilloEntity.setState(ArmadilloEntity.State.SCARED);
 				if (armadilloEntity.isOnGround()) {
-					armadilloEntity.getWorld()
-						.playSound(null, armadilloEntity.getBlockPos(), SoundEvents.ENTITY_ARMADILLO_LAND, armadilloEntity.getSoundCategory(), 1.0F, 1.0F);
+					armadilloEntity.playSoundIfNotSilent(SoundEvents.ENTITY_ARMADILLO_LAND);
 				}
 			}
 		}
@@ -179,20 +182,20 @@ public class ArmadilloBrain {
 
 		protected void finishRunning(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
 			if (!armadilloEntity.canRollUp()) {
-				armadilloEntity.unroll(false);
+				armadilloEntity.unroll();
 			}
 		}
 	}
 
-	public static class class_9073 extends FleeTask {
-		public class_9073(float f) {
+	public static class UnrollAndFleeTask extends FleeTask {
+		public UnrollAndFleeTask(float f) {
 			super(f);
 		}
 
 		@Override
 		protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 			if (pathAwareEntity instanceof ArmadilloEntity armadilloEntity) {
-				armadilloEntity.unroll(true);
+				armadilloEntity.unroll();
 			}
 
 			super.run(serverWorld, pathAwareEntity, l);

@@ -12,7 +12,10 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.Heightmap;
@@ -43,7 +46,7 @@ public class ChunkData {
 		}
 	}
 
-	public ChunkData(PacketByteBuf buf, int x, int z) {
+	public ChunkData(RegistryByteBuf buf, int x, int z) {
 		this.heightmap = buf.readNbt();
 		if (this.heightmap == null) {
 			throw new RuntimeException("Can't read heightmap in packet for [" + x + ", " + z + "]");
@@ -54,16 +57,16 @@ public class ChunkData {
 			} else {
 				this.sectionsData = new byte[i];
 				buf.readBytes(this.sectionsData);
-				this.blockEntities = buf.readList(ChunkData.BlockEntityData::new);
+				this.blockEntities = ChunkData.BlockEntityData.LIST_PACKET_CODEC.decode(buf);
 			}
 		}
 	}
 
-	public void write(PacketByteBuf buf) {
+	public void write(RegistryByteBuf buf) {
 		buf.writeNbt(this.heightmap);
 		buf.writeVarInt(this.sectionsData.length);
 		buf.writeBytes(this.sectionsData);
-		buf.writeCollection(this.blockEntities, (buf2, entry) -> entry.write(buf2));
+		ChunkData.BlockEntityData.LIST_PACKET_CODEC.encode(buf, this.blockEntities);
 	}
 
 	private static int getSectionsPacketSize(WorldChunk chunk) {
@@ -114,6 +117,10 @@ public class ChunkData {
 	}
 
 	static class BlockEntityData {
+		public static final PacketCodec<RegistryByteBuf, ChunkData.BlockEntityData> PACKET_CODEC = PacketCodec.of(
+			ChunkData.BlockEntityData::write, ChunkData.BlockEntityData::new
+		);
+		public static final PacketCodec<RegistryByteBuf, List<ChunkData.BlockEntityData>> LIST_PACKET_CODEC = PACKET_CODEC.mapResult(PacketCodecs.listMapper());
 		final int localXz;
 		final int y;
 		final BlockEntityType<?> type;
@@ -127,17 +134,17 @@ public class ChunkData {
 			this.nbt = nbt;
 		}
 
-		private BlockEntityData(PacketByteBuf buf) {
+		private BlockEntityData(RegistryByteBuf buf) {
 			this.localXz = buf.readByte();
 			this.y = buf.readShort();
-			this.type = buf.readRegistryValue(Registries.BLOCK_ENTITY_TYPE);
+			this.type = PacketCodecs.registry(RegistryKeys.BLOCK_ENTITY_TYPE).decode(buf);
 			this.nbt = buf.readNbt();
 		}
 
-		void write(PacketByteBuf buf) {
+		private void write(RegistryByteBuf buf) {
 			buf.writeByte(this.localXz);
 			buf.writeShort(this.y);
-			buf.writeRegistryValue(Registries.BLOCK_ENTITY_TYPE, this.type);
+			PacketCodecs.registry(RegistryKeys.BLOCK_ENTITY_TYPE).encode(buf, this.type);
 			buf.writeNbt(this.nbt);
 		}
 

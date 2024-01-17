@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.CandleBlock;
 import net.minecraft.block.CandleCakeBlock;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -38,7 +39,7 @@ public class FlintAndSteelItem extends Item {
 				ItemStack itemStack = context.getStack();
 				if (playerEntity instanceof ServerPlayerEntity) {
 					Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
-					itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+					itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 				}
 
 				return ActionResult.success(world.isClient());
@@ -50,7 +51,7 @@ public class FlintAndSteelItem extends Item {
 			world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), Block.NOTIFY_ALL_AND_REDRAW);
 			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
 			if (playerEntity != null) {
-				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+				context.getStack().damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 			}
 
 			return ActionResult.success(world.isClient());

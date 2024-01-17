@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestTypes;
 import org.slf4j.Logger;
 
-public class CompassItem extends Item implements Vanishable {
+public class CompassItem extends Item {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String LODESTONE_POS_KEY = "LodestonePos";
 	public static final String LODESTONE_DIMENSION_KEY = "LodestoneDimension";

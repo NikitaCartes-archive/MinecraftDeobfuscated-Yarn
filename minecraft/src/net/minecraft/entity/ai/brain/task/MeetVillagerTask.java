@@ -26,8 +26,8 @@ public class MeetVillagerTask {
 								GlobalPos globalPos = context.getValue(meetingPoint);
 								LivingTargetCache livingTargetCache = context.getValue(visibleMobs);
 								if (world.getRandom().nextInt(100) == 0
-									&& world.getRegistryKey() == globalPos.getDimension()
-									&& globalPos.getPos().isWithinDistance(entity.getPos(), 4.0)
+									&& world.getRegistryKey() == globalPos.dimension()
+									&& globalPos.pos().isWithinDistance(entity.getPos(), 4.0)
 									&& livingTargetCache.anyMatch(target -> EntityType.VILLAGER.equals(target.getType()))) {
 									livingTargetCache.findFirst(target -> EntityType.VILLAGER.equals(target.getType()) && target.squaredDistanceTo(entity) <= 32.0).ifPresent(target -> {
 										interactionTarget.remember(target);

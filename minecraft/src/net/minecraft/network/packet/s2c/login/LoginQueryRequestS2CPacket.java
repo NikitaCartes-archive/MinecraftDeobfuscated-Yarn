@@ -1,14 +1,20 @@
 package net.minecraft.network.packet.s2c.login;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientLoginPacketListener;
+import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 import net.minecraft.util.Identifier;
 
 public record LoginQueryRequestS2CPacket(int queryId, LoginQueryRequestPayload payload) implements Packet<ClientLoginPacketListener> {
+	public static final PacketCodec<PacketByteBuf, LoginQueryRequestS2CPacket> CODEC = Packet.createCodec(
+		LoginQueryRequestS2CPacket::write, LoginQueryRequestS2CPacket::new
+	);
 	private static final int MAX_PAYLOAD_SIZE = 1048576;
 
-	public LoginQueryRequestS2CPacket(PacketByteBuf buf) {
+	private LoginQueryRequestS2CPacket(PacketByteBuf buf) {
 		this(buf.readVarInt(), readPayload(buf.readIdentifier(), buf));
 	}
 
@@ -26,11 +32,15 @@ public record LoginQueryRequestS2CPacket(int queryId, LoginQueryRequestPayload p
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.queryId);
 		buf.writeIdentifier(this.payload.id());
 		this.payload.write(buf);
+	}
+
+	@Override
+	public PacketIdentifier<LoginQueryRequestS2CPacket> getPacketId() {
+		return LoginPackets.CUSTOM_QUERY;
 	}
 
 	public void apply(ClientLoginPacketListener clientLoginPacketListener) {

@@ -51,7 +51,6 @@ public class RealmsSettingsScreen extends RealmsScreen {
 		this.nameEdit.setMaxLength(32);
 		this.nameEdit.setText(this.serverData.getName());
 		this.addDrawableChild(this.nameEdit);
-		this.setInitialFocus(this.nameEdit);
 		this.descEdit = new TextFieldWidget(this.client.textRenderer, i, row(8), 212, 20, Text.translatable("mco.configure.world.description"));
 		this.descEdit.setMaxLength(32);
 		this.descEdit.setText(this.serverData.getDescription());
@@ -61,6 +60,11 @@ public class RealmsSettingsScreen extends RealmsScreen {
 		);
 		this.nameEdit.setChangedListener(name -> buttonWidget2.active = !Util.isBlank(name));
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).dimensions(this.width / 2 + 2, row(12), 106, 20).build());
+	}
+
+	@Override
+	protected void method_56131() {
+		this.setInitialFocus(this.nameEdit);
 	}
 
 	@Override

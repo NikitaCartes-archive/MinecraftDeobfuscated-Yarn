@@ -95,7 +95,7 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 		this.templateSlotIcon.render(this.handler, context, delta, this.x, this.y);
 		this.baseSlotIcon.render(this.handler, context, delta, this.x, this.y);
 		this.additionsSlotIcon.render(this.handler, context, delta, this.x, this.y);
-		InventoryScreen.drawEntity(context, (float)(this.x + 141), (float)(this.y + 75), 25, field_45497, ARMOR_STAND_ROTATION, null, this.armorStand);
+		InventoryScreen.drawEntity(context, (float)(this.x + 141), (float)(this.y + 75), 25.0F, field_45497, ARMOR_STAND_ROTATION, null, this.armorStand);
 	}
 
 	@Override

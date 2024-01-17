@@ -27,7 +27,7 @@ public class MangroveRootsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+	protected boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
 		return stateFrom.isOf(Blocks.MANGROVE_ROOTS) && direction.getAxis() == Direction.Axis.Y;
 	}
 
@@ -40,7 +40,7 @@ public class MangroveRootsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
@@ -51,7 +51,7 @@ public class MangroveRootsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 

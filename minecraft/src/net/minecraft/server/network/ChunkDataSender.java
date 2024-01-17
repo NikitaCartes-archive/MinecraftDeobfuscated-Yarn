@@ -57,7 +57,7 @@ public class ChunkDataSender {
 					if (!list.isEmpty()) {
 						ServerPlayNetworkHandler serverPlayNetworkHandler = player.networkHandler;
 						this.unacknowledgedBatches++;
-						serverPlayNetworkHandler.sendPacket(new StartChunkSendS2CPacket());
+						serverPlayNetworkHandler.sendPacket(StartChunkSendS2CPacket.INSTANCE);
 
 						for (WorldChunk worldChunk : list) {
 							sendChunkData(serverPlayNetworkHandler, serverWorld, worldChunk);

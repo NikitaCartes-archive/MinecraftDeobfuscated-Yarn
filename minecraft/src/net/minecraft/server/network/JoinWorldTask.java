@@ -9,7 +9,7 @@ public class JoinWorldTask implements ServerPlayerConfigurationTask {
 
 	@Override
 	public void sendPacket(Consumer<Packet<?>> sender) {
-		sender.accept(new ReadyS2CPacket());
+		sender.accept(ReadyS2CPacket.INSTANCE);
 	}
 
 	@Override

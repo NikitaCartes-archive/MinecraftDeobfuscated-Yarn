@@ -25,12 +25,15 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 	Vec3d getPos();
+
+	Box getBoundingBox();
 
 	@Nullable
 	Identifier getLootTableId();
@@ -170,6 +173,6 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 	}
 
 	default boolean canPlayerAccess(PlayerEntity player) {
-		return !this.isRemoved() && this.getPos().isInRange(player.getPos(), 8.0);
+		return !this.isRemoved() && player.canInteractWithEntityIn(this.getBoundingBox(), 4.0);
 	}
 }

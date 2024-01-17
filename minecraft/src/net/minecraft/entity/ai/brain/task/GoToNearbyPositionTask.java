@@ -13,12 +13,12 @@ public class GoToNearbyPositionTask {
 			context -> context.group(context.queryMemoryOptional(MemoryModuleType.WALK_TARGET), context.queryMemoryValue(posModule))
 					.apply(context, (walkTarget, pos) -> (world, entity, time) -> {
 							GlobalPos globalPos = context.getValue(pos);
-							if (world.getRegistryKey() != globalPos.getDimension() || !globalPos.getPos().isWithinDistance(entity.getPos(), (double)maxDistance)) {
+							if (world.getRegistryKey() != globalPos.dimension() || !globalPos.pos().isWithinDistance(entity.getPos(), (double)maxDistance)) {
 								return false;
 							} else if (time <= mutableLong.getValue()) {
 								return true;
 							} else {
-								walkTarget.remember(new WalkTarget(globalPos.getPos(), walkSpeed, completionRange));
+								walkTarget.remember(new WalkTarget(globalPos.pos(), walkSpeed, completionRange));
 								mutableLong.setValue(time + 80L);
 								return true;
 							}

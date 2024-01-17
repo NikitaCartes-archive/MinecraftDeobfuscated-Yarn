@@ -16,7 +16,7 @@ public interface RenderableGlyph {
 	float getOversample();
 
 	default float getXMin() {
-		return this.getBearingX();
+		return this.method_56129();
 	}
 
 	default float getXMax() {
@@ -24,18 +24,18 @@ public interface RenderableGlyph {
 	}
 
 	default float getYMin() {
-		return this.getAscent();
+		return 7.0F - this.method_56130();
 	}
 
 	default float getYMax() {
 		return this.getYMin() + (float)this.getHeight() / this.getOversample();
 	}
 
-	default float getBearingX() {
+	default float method_56129() {
 		return 0.0F;
 	}
 
-	default float getAscent() {
-		return 3.0F;
+	default float method_56130() {
+		return 7.0F;
 	}
 }

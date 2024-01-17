@@ -2,9 +2,12 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.List;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.collection.DefaultedList;
 
 /**
@@ -12,6 +15,7 @@ import net.minecraft.util.collection.DefaultedList;
  * from the server to the client.
  */
 public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, InventoryS2CPacket> CODEC = Packet.createCodec(InventoryS2CPacket::write, InventoryS2CPacket::new);
 	/**
 	 * The {@link net.minecraft.screen.ScreenHandler#syncId} of a screen handler.
 	 */
@@ -32,19 +36,23 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.cursorStack = cursorStack.copy();
 	}
 
-	public InventoryS2CPacket(PacketByteBuf buf) {
+	private InventoryS2CPacket(RegistryByteBuf buf) {
 		this.syncId = buf.readUnsignedByte();
 		this.revision = buf.readVarInt();
-		this.contents = buf.readCollection(DefaultedList::ofSize, PacketByteBuf::readItemStack);
-		this.cursorStack = buf.readItemStack();
+		this.contents = ItemStack.LIST_PACKET_CODEC.decode(buf);
+		this.cursorStack = ItemStack.PACKET_CODEC.decode(buf);
+	}
+
+	private void write(RegistryByteBuf buf) {
+		buf.writeByte(this.syncId);
+		buf.writeVarInt(this.revision);
+		ItemStack.LIST_PACKET_CODEC.encode(buf, this.contents);
+		ItemStack.PACKET_CODEC.encode(buf, this.cursorStack);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeByte(this.syncId);
-		buf.writeVarInt(this.revision);
-		buf.writeCollection(this.contents, PacketByteBuf::writeItemStack);
-		buf.writeItemStack(this.cursorStack);
+	public PacketIdentifier<InventoryS2CPacket> getPacketId() {
+		return PlayPackets.CONTAINER_SET_CONTENT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

@@ -2,7 +2,8 @@ package net.minecraft.recipe;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 
 /**
@@ -17,6 +18,7 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 public class SpecialRecipeSerializer<T extends CraftingRecipe> implements RecipeSerializer<T> {
 	private final SpecialRecipeSerializer.Factory<T> factory;
 	private final Codec<T> codec;
+	private final PacketCodec<RegistryByteBuf, T> PACKET_CODEC;
 
 	public SpecialRecipeSerializer(SpecialRecipeSerializer.Factory<T> factory) {
 		this.factory = factory;
@@ -24,6 +26,7 @@ public class SpecialRecipeSerializer<T extends CraftingRecipe> implements Recipe
 			instance -> instance.group(CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(CraftingRecipe::getCategory))
 					.apply(instance, factory::create)
 		);
+		this.PACKET_CODEC = PacketCodec.tuple(CraftingRecipeCategory.PACKET_CODEC, CraftingRecipe::getCategory, factory::create);
 	}
 
 	@Override
@@ -31,13 +34,9 @@ public class SpecialRecipeSerializer<T extends CraftingRecipe> implements Recipe
 		return this.codec;
 	}
 
-	public T read(PacketByteBuf packetByteBuf) {
-		CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
-		return this.factory.create(craftingRecipeCategory);
-	}
-
-	public void write(PacketByteBuf packetByteBuf, T craftingRecipe) {
-		packetByteBuf.writeEnumConstant(craftingRecipe.getCategory());
+	@Override
+	public PacketCodec<RegistryByteBuf, T> packetCodec() {
+		return this.PACKET_CODEC;
 	}
 
 	@FunctionalInterface

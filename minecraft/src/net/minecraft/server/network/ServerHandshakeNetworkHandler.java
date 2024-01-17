@@ -1,9 +1,10 @@
 package net.minecraft.server.network;
 
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9099;
+import net.minecraft.class_9103;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
-import net.minecraft.network.packet.c2s.handshake.ConnectionIntent;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -24,32 +25,46 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	public void onHandshake(HandshakeC2SPacket packet) {
 		switch (packet.intendedState()) {
 			case LOGIN:
-				this.connection.setS2CPacketHandler(ConnectionIntent.LOGIN);
-				if (packet.protocolVersion() != SharedConstants.getGameVersion().getProtocolVersion()) {
-					Text text;
-					if (packet.protocolVersion() < 754) {
-						text = Text.translatable("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
-					} else {
-						text = Text.translatable("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
-					}
-
-					this.connection.send(new LoginDisconnectS2CPacket(text));
-					this.connection.disconnect(text);
-				} else {
-					this.connection.setPacketListener(new ServerLoginNetworkHandler(this.server, this.connection));
-				}
+				this.method_56048(packet, false);
 				break;
 			case STATUS:
 				ServerMetadata serverMetadata = this.server.getServerMetadata();
+				this.connection.method_56329(class_9103.field_48264);
 				if (this.server.acceptsStatusQuery() && serverMetadata != null) {
-					this.connection.setS2CPacketHandler(ConnectionIntent.STATUS);
-					this.connection.setPacketListener(new ServerQueryNetworkHandler(serverMetadata, this.connection));
+					this.connection.method_56330(class_9103.field_48263, new ServerQueryNetworkHandler(serverMetadata, this.connection));
 				} else {
 					this.connection.disconnect(IGNORING_STATUS_REQUEST_MESSAGE);
 				}
 				break;
+			case TRANSFER:
+				if (!this.server.method_56040()) {
+					this.connection.method_56329(class_9099.field_48248);
+					Text text = Text.translatable("multiplayer.disconnect.transfers_disabled");
+					this.connection.send(new LoginDisconnectS2CPacket(text));
+					this.connection.disconnect(text);
+				} else {
+					this.method_56048(packet, true);
+				}
+				break;
 			default:
 				throw new UnsupportedOperationException("Invalid intention " + packet.intendedState());
+		}
+	}
+
+	private void method_56048(HandshakeC2SPacket handshakeC2SPacket, boolean bl) {
+		this.connection.method_56329(class_9099.field_48248);
+		if (handshakeC2SPacket.protocolVersion() != SharedConstants.getGameVersion().getProtocolVersion()) {
+			Text text;
+			if (handshakeC2SPacket.protocolVersion() < 754) {
+				text = Text.translatable("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
+			} else {
+				text = Text.translatable("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
+			}
+
+			this.connection.send(new LoginDisconnectS2CPacket(text));
+			this.connection.disconnect(text);
+		} else {
+			this.connection.method_56330(class_9099.field_48247, new ServerLoginNetworkHandler(this.server, this.connection, bl));
 		}
 	}
 

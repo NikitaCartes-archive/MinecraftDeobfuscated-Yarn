@@ -1,12 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.registry.tag.ItemTags;
 
 public class EfficiencyEnchantment extends Enchantment {
 	protected EfficiencyEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.DIGGER, slotTypes);
+		super(weight, ItemTags.MINING_ENCHANTABLE, slotTypes);
 	}
 
 	@Override
@@ -22,10 +21,5 @@ public class EfficiencyEnchantment extends Enchantment {
 	@Override
 	public int getMaxLevel() {
 		return 5;
-	}
-
-	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.isOf(Items.SHEARS) ? true : super.isAcceptableItem(stack);
 	}
 }

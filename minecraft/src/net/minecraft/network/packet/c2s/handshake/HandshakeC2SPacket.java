@@ -1,11 +1,14 @@
 package net.minecraft.network.packet.c2s.handshake;
 
-import net.minecraft.network.NetworkState;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
+import net.minecraft.network.packet.HandshakePackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
 public record HandshakeC2SPacket(int protocolVersion, String address, int port, ConnectionIntent intendedState) implements Packet<ServerHandshakePacketListener> {
+	public static final PacketCodec<PacketByteBuf, HandshakeC2SPacket> CODEC = Packet.createCodec(HandshakeC2SPacket::write, HandshakeC2SPacket::new);
 	private static final int MAX_ADDRESS_LENGTH = 255;
 
 	@Deprecated
@@ -16,16 +19,20 @@ public record HandshakeC2SPacket(int protocolVersion, String address, int port, 
 		this.intendedState = intendedState;
 	}
 
-	public HandshakeC2SPacket(PacketByteBuf buf) {
+	private HandshakeC2SPacket(PacketByteBuf buf) {
 		this(buf.readVarInt(), buf.readString(255), buf.readUnsignedShort(), ConnectionIntent.byId(buf.readVarInt()));
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.protocolVersion);
 		buf.writeString(this.address);
 		buf.writeShort(this.port);
 		buf.writeVarInt(this.intendedState.getId());
+	}
+
+	@Override
+	public PacketIdentifier<HandshakeC2SPacket> getPacketId() {
+		return HandshakePackets.INTENTION;
 	}
 
 	public void apply(ServerHandshakePacketListener serverHandshakePacketListener) {
@@ -33,7 +40,7 @@ public record HandshakeC2SPacket(int protocolVersion, String address, int port, 
 	}
 
 	@Override
-	public NetworkState getNewNetworkState() {
-		return this.intendedState.getState();
+	public boolean transitionsNetworkState() {
+		return true;
 	}
 }

@@ -31,9 +31,9 @@ public class LookTargetUtil {
 	private LookTargetUtil() {
 	}
 
-	public static void lookAtAndWalkTowardsEachOther(LivingEntity first, LivingEntity second, float speed) {
+	public static void lookAtAndWalkTowardsEachOther(LivingEntity first, LivingEntity second, float speed, int i) {
 		lookAtEachOther(first, second);
-		walkTowardsEachOther(first, second, speed);
+		walkTowardsEachOther(first, second, speed, i);
 	}
 
 	public static boolean canSee(Brain<?> brain, LivingEntity target) {
@@ -58,10 +58,9 @@ public class LookTargetUtil {
 		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 	}
 
-	private static void walkTowardsEachOther(LivingEntity first, LivingEntity second, float speed) {
-		int i = 2;
-		walkTowards(first, second, speed, 2);
-		walkTowards(second, first, speed, 2);
+	private static void walkTowardsEachOther(LivingEntity first, LivingEntity second, float speed, int i) {
+		walkTowards(first, second, speed, i);
+		walkTowards(second, first, speed, i);
 	}
 
 	public static void walkTowards(LivingEntity entity, Entity target, float speed, int completionRange) {

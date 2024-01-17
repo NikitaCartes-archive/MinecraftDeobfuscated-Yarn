@@ -46,10 +46,10 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		tintableCompositeModel.setColorMultiplier(1.0F, 1.0F, 1.0F);
 	}
 
-	protected void setupTransforms(TropicalFishEntity tropicalFishEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(tropicalFishEntity, matrixStack, f, g, h);
-		float i = 4.3F * MathHelper.sin(0.6F * f);
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(i));
+	protected void setupTransforms(TropicalFishEntity tropicalFishEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		super.setupTransforms(tropicalFishEntity, matrixStack, f, g, h, i);
+		float j = 4.3F * MathHelper.sin(0.6F * f);
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
 		if (!tropicalFishEntity.isTouchingWater()) {
 			matrixStack.translate(0.2F, 0.1F, 0.0F);
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));

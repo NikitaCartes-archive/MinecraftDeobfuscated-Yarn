@@ -1,6 +1,7 @@
 package net.minecraft.client.util;
 
 import java.util.function.Supplier;
+import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -74,7 +75,8 @@ public class ParticleUtil {
 
 	public static void spawnParticlesAround(WorldAccess world, BlockPos pos, int count, ParticleEffect effect) {
 		double d = 0.5;
-		double e = world.getBlockState(pos).getOutlineShape(world, pos).getMax(Direction.Axis.Y);
+		BlockState blockState = world.getBlockState(pos);
+		double e = blockState.isAir() ? 1.0 : blockState.getOutlineShape(world, pos).getMax(Direction.Axis.Y);
 		spawnParticlesAround(world, pos, count, 0.5, e, true, effect);
 	}
 

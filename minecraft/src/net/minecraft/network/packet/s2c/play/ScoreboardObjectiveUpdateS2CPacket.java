@@ -1,9 +1,12 @@
 package net.minecraft.network.packet.s2c.play;
 
-import javax.annotation.Nullable;
-import net.minecraft.network.PacketByteBuf;
+import java.util.Optional;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.number.NumberFormat;
@@ -12,47 +15,53 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, ScoreboardObjectiveUpdateS2CPacket> CODEC = Packet.createCodec(
+		ScoreboardObjectiveUpdateS2CPacket::write, ScoreboardObjectiveUpdateS2CPacket::new
+	);
 	public static final int ADD_MODE = 0;
 	public static final int REMOVE_MODE = 1;
 	public static final int UPDATE_MODE = 2;
 	private final String name;
 	private final Text displayName;
 	private final ScoreboardCriterion.RenderType type;
-	@Nullable
-	private final NumberFormat numberFormat;
+	private final Optional<NumberFormat> numberFormat;
 	private final int mode;
 
 	public ScoreboardObjectiveUpdateS2CPacket(ScoreboardObjective objective, int mode) {
 		this.name = objective.getName();
 		this.displayName = objective.getDisplayName();
 		this.type = objective.getRenderType();
-		this.numberFormat = objective.getNumberFormat();
+		this.numberFormat = Optional.ofNullable(objective.getNumberFormat());
 		this.mode = mode;
 	}
 
-	public ScoreboardObjectiveUpdateS2CPacket(PacketByteBuf buf) {
+	private ScoreboardObjectiveUpdateS2CPacket(RegistryByteBuf buf) {
 		this.name = buf.readString();
 		this.mode = buf.readByte();
 		if (this.mode != 0 && this.mode != 2) {
 			this.displayName = ScreenTexts.EMPTY;
 			this.type = ScoreboardCriterion.RenderType.INTEGER;
-			this.numberFormat = null;
+			this.numberFormat = Optional.empty();
 		} else {
 			this.displayName = buf.readUnlimitedText();
 			this.type = buf.readEnumConstant(ScoreboardCriterion.RenderType.class);
-			this.numberFormat = buf.readNullable(NumberFormatTypes::fromBuf);
+			this.numberFormat = NumberFormatTypes.OPTIONAL_PACKET_CODEC.decode(buf);
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeString(this.name);
 		buf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
 			buf.writeText(this.displayName);
 			buf.writeEnumConstant(this.type);
-			buf.writeNullable(this.numberFormat, NumberFormatTypes::toBuf);
+			NumberFormatTypes.OPTIONAL_PACKET_CODEC.encode(buf, this.numberFormat);
 		}
+	}
+
+	@Override
+	public PacketIdentifier<ScoreboardObjectiveUpdateS2CPacket> getPacketId() {
+		return PlayPackets.SET_OBJECTIVE;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -75,8 +84,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		return this.type;
 	}
 
-	@Nullable
-	public NumberFormat getNumberFormat() {
+	public Optional<NumberFormat> getNumberFormat() {
 		return this.numberFormat;
 	}
 }

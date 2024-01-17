@@ -2,31 +2,33 @@ package net.minecraft.network.packet.s2c.custom;
 
 import java.util.List;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.world.World;
 
 public record DebugStructuresCustomPayload(RegistryKey<World> dimension, BlockBox mainBB, List<DebugStructuresCustomPayload.Piece> pieces)
 	implements CustomPayload {
-	public static final Identifier ID = new Identifier("debug/structures");
+	public static final PacketCodec<PacketByteBuf, DebugStructuresCustomPayload> CODEC = CustomPayload.codecOf(
+		DebugStructuresCustomPayload::write, DebugStructuresCustomPayload::new
+	);
+	public static final CustomPayload.Id<DebugStructuresCustomPayload> KEY = CustomPayload.id("debug/structures");
 
-	public DebugStructuresCustomPayload(PacketByteBuf buf) {
+	private DebugStructuresCustomPayload(PacketByteBuf buf) {
 		this(buf.readRegistryKey(RegistryKeys.WORLD), readBox(buf), buf.readList(DebugStructuresCustomPayload.Piece::new));
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeRegistryKey(this.dimension);
 		writeBox(buf, this.mainBB);
 		buf.writeCollection(this.pieces, (buf2, piece) -> piece.write(buf));
 	}
 
 	@Override
-	public Identifier id() {
-		return ID;
+	public CustomPayload.Id<DebugStructuresCustomPayload> getId() {
+		return KEY;
 	}
 
 	static BlockBox readBox(PacketByteBuf buf) {

@@ -188,7 +188,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	private void squirt() {
-		this.playSound(this.getSquirtSound(), this.getSoundVolume(), this.getSoundPitch());
+		this.playSound(this.getSquirtSound());
 		Vec3d vec3d = this.applyBodyRotations(new Vec3d(0.0, -1.0, 0.0)).add(this.getX(), this.getY(), this.getZ());
 
 		for (int i = 0; i < 30; i++) {

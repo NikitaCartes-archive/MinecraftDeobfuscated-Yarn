@@ -40,7 +40,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState state) {
+	protected boolean hasSidedTransparency(BlockState state) {
 		return state.get(TYPE) != SlabType.DOUBLE;
 	}
 
@@ -50,7 +50,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		SlabType slabType = state.get(TYPE);
 		switch (slabType) {
 			case DOUBLE:
@@ -80,7 +80,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+	protected boolean canReplace(BlockState state, ItemPlacementContext context) {
 		ItemStack itemStack = context.getStack();
 		SlabType slabType = state.get(TYPE);
 		if (slabType == SlabType.DOUBLE || !itemStack.isOf(this.asItem())) {
@@ -97,7 +97,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
@@ -112,7 +112,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
@@ -123,7 +123,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		switch (type) {
 			case LAND:
 				return false;

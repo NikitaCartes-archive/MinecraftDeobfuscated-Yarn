@@ -44,18 +44,18 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		RailShape railShape = state.isOf(this) ? state.get(this.getShapeProperty()) : null;
 		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : STRAIGHT_SHAPE;
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		return hasTopRim(world, pos.down());
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			this.updateCurves(state, world, pos, notify);
 		}
@@ -71,7 +71,7 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (!world.isClient && world.getBlockState(pos).isOf(this)) {
 			RailShape railShape = state.get(this.getShapeProperty());
 			if (shouldDropRail(pos, world, railShape)) {
@@ -122,7 +122,7 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!moved) {
 			super.onStateReplaced(state, world, pos, newState, moved);
 			if (((RailShape)state.get(this.getShapeProperty())).isAscending()) {
@@ -149,7 +149,7 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	public abstract Property<RailShape> getShapeProperty();
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
@@ -160,7 +160,7 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 }

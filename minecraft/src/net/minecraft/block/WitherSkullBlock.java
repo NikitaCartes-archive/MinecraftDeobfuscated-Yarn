@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
@@ -39,10 +38,12 @@ public class WitherSkullBlock extends SkullBlock {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		super.onPlaced(world, pos, state, placer, itemStack);
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof SkullBlockEntity) {
-			onPlaced(world, pos, (SkullBlockEntity)blockEntity);
+		onPlaced(world, pos);
+	}
+
+	public static void onPlaced(World world, BlockPos pos) {
+		if (world.getBlockEntity(pos) instanceof SkullBlockEntity skullBlockEntity) {
+			onPlaced(world, pos, skullBlockEntity);
 		}
 	}
 

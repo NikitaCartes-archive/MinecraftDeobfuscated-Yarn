@@ -5,12 +5,18 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import java.util.List;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, CommandSuggestionsS2CPacket> CODEC = Packet.createCodec(
+		CommandSuggestionsS2CPacket::write, CommandSuggestionsS2CPacket::new
+	);
 	private final int completionId;
 	private final Suggestions suggestions;
 
@@ -19,7 +25,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 		this.suggestions = suggestions;
 	}
 
-	public CommandSuggestionsS2CPacket(PacketByteBuf buf) {
+	private CommandSuggestionsS2CPacket(PacketByteBuf buf) {
 		this.completionId = buf.readVarInt();
 		int i = buf.readVarInt();
 		int j = buf.readVarInt();
@@ -32,8 +38,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 		this.suggestions = new Suggestions(stringRange, list);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.completionId);
 		buf.writeVarInt(this.suggestions.getRange().getStart());
 		buf.writeVarInt(this.suggestions.getRange().getLength());
@@ -41,6 +46,11 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 			buf2.writeString(suggestion.getText());
 			buf2.writeNullable(suggestion.getTooltip(), (buf3, tooltip) -> buf3.writeText(Texts.toText(tooltip)));
 		});
+	}
+
+	@Override
+	public PacketIdentifier<CommandSuggestionsS2CPacket> getPacketId() {
+		return PlayPackets.COMMAND_SUGGESTIONS;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

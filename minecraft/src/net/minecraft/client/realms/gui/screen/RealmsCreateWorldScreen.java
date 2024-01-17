@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.EmptyWidget;
+import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsCreateWorldScreen extends RealmsScreen {
 	static final Logger LOGGER = LogUtils.getLogger();
-	static final Identifier SLOT_FRAME_TEXTURE = new Identifier("widget/slot_frame");
 	private static final Text CREATE_REALM_TITLE = Text.translatable("mco.selectServer.create");
 	private static final Text CREATE_REALM_SUBTITLE = Text.translatable("mco.selectServer.create.subtitle");
 	private static final Text CREATE_WORLD_TITLE = Text.translatable("mco.configure.world.switch.slot");
@@ -112,11 +111,10 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.vertical();
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addHeader(DirectionalLayoutWidget.vertical());
+		directionalLayoutWidget.getMainPositioner().margin(9 / 3);
 		directionalLayoutWidget.add(new TextWidget(this.title, this.textRenderer), Positioner::alignHorizontalCenter);
-		directionalLayoutWidget.add(EmptyWidget.ofHeight(3));
 		directionalLayoutWidget.add(new TextWidget(this.subtitle, this.textRenderer).setTextColor(this.subtitleColor), Positioner::alignHorizontalCenter);
-		this.layout.addHeader(directionalLayoutWidget);
 		(new Thread("Realms-reset-world-fetcher") {
 			public void run() {
 				RealmsClient realmsClient = RealmsClient.create();
@@ -137,38 +135,33 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 				}
 			}
 		}).start();
-		this.addDrawableChild(
+		GridWidget gridWidget = this.layout.addBody(new GridWidget());
+		GridWidget.Adder adder = gridWidget.createAdder(3);
+		adder.getMainPositioner().margin(16);
+		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
-				this.frame(1),
-				row(0) + 10,
 				RealmsResetNormalWorldScreen.TITLE,
 				NEW_WORLD_TEXTURE,
 				button -> this.client.setScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
 			)
 		);
-		this.addDrawableChild(
+		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
-				this.frame(2),
-				row(0) + 10,
 				RealmsSelectFileToUploadScreen.TITLE,
 				UPLOAD_TEXTURE,
-				button -> this.client.setScreen(new RealmsSelectFileToUploadScreen(this.serverData.id, this.slot, this))
+				button -> this.client.setScreen(new RealmsSelectFileToUploadScreen(this.creationTask, this.serverData.id, this.slot, this))
 			)
 		);
-		this.addDrawableChild(
+		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
-				this.frame(3),
-				row(0) + 10,
 				TEMPLATE_TEXT,
 				SURVIVAL_SPAWN_TEXTURE,
 				button -> this.client
 						.setScreen(new RealmsSelectWorldTemplateScreen(TEMPLATE_TEXT, this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates))
 			)
 		);
-		this.addDrawableChild(
+		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
-				this.frame(1),
-				row(6) + 20,
 				ADVENTURE_TEXT,
 				ADVENTURE_TEXTURE,
 				button -> this.client
@@ -177,10 +170,8 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 						)
 			)
 		);
-		this.addDrawableChild(
+		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
-				this.frame(2),
-				row(6) + 20,
 				EXPERIENCE_TEXT,
 				EXPERIENCE_TEXTURE,
 				button -> this.client
@@ -189,10 +180,8 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 						)
 			)
 		);
-		this.addDrawableChild(
+		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
-				this.frame(3),
-				row(6) + 20,
 				INSPIRATION_TEXT,
 				INSPIRATION_TEXTURE,
 				button -> this.client
@@ -205,6 +194,11 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
 		this.layout.refreshPositions();
 	}
 
@@ -216,10 +210,6 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 	@Override
 	public void close() {
 		this.client.setScreen(this.parent);
-	}
-
-	private int frame(int i) {
-		return this.width / 2 - 130 + (i - 1) * 100;
 	}
 
 	private void onSelectWorldTemplate(@Nullable WorldTemplate template) {
@@ -251,21 +241,17 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, (LongRunningTask[])list.toArray(new LongRunningTask[0])));
 	}
 
-	public void switchSlot(Runnable callback) {
-		this.client
-			.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.serverData.id, this.slot, () -> this.client.execute(callback))));
-	}
-
 	@Environment(EnvType.CLIENT)
 	class FrameButton extends ButtonWidget {
-		private static final int field_46128 = 60;
-		private static final int field_46129 = 72;
+		private static final Identifier field_48384 = new Identifier("widget/slot_frame");
+		private static final int field_48385 = 60;
+		private static final int field_48386 = 2;
 		private static final int field_46130 = 56;
 		private final Identifier image;
 
-		FrameButton(int x, int y, Text message, Identifier image, ButtonWidget.PressAction onPress) {
-			super(x, y, 60, 72, message, onPress, DEFAULT_NARRATION_SUPPLIER);
-			this.image = image;
+		FrameButton(Text text, Identifier identifier, ButtonWidget.PressAction pressAction) {
+			super(0, 0, 60, 60, text, pressAction, DEFAULT_NARRATION_SUPPLIER);
+			this.image = identifier;
 		}
 
 		@Override
@@ -277,11 +263,11 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 
 			int i = this.getX();
 			int j = this.getY();
-			context.drawTexture(this.image, i + 2, j + 14, 0.0F, 0.0F, 56, 56, 56, 56);
-			context.drawGuiTexture(RealmsCreateWorldScreen.SLOT_FRAME_TEXTURE, i, j + 12, 60, 60);
+			context.drawTexture(this.image, i + 2, j + 2, 0.0F, 0.0F, 56, 56, 56, 56);
+			context.drawGuiTexture(field_48384, i, j, 60, 60);
 			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = bl ? Colors.LIGHT_GRAY : Colors.WHITE;
-			context.drawCenteredTextWithShadow(RealmsCreateWorldScreen.this.textRenderer, this.getMessage(), i + 30, j, k);
+			context.drawCenteredTextWithShadow(RealmsCreateWorldScreen.this.textRenderer, this.getMessage(), i + 28, j - 14, k);
 		}
 	}
 }

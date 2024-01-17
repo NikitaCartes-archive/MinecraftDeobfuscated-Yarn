@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
@@ -24,6 +25,7 @@ public record RawShapedRecipe(int width, int height, DefaultedList<Ingredient> i
 			RawShapedRecipe::fromData,
 			recipe -> (DataResult)recipe.data().map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Cannot encode unpacked recipe"))
 		);
+	public static final PacketCodec<RegistryByteBuf, RawShapedRecipe> PACKET_CODEC = PacketCodec.of(RawShapedRecipe::writeToBuf, RawShapedRecipe::readFromBuf);
 
 	public static RawShapedRecipe create(Map<Character, Ingredient> key, String... pattern) {
 		return create(key, List.of(pattern));
@@ -177,20 +179,20 @@ public record RawShapedRecipe(int width, int height, DefaultedList<Ingredient> i
 		return true;
 	}
 
-	public void writeToBuf(PacketByteBuf buf) {
+	private void writeToBuf(RegistryByteBuf buf) {
 		buf.writeVarInt(this.width);
 		buf.writeVarInt(this.height);
 
 		for (Ingredient ingredient : this.ingredients) {
-			ingredient.write(buf);
+			Ingredient.PACKET_CODEC.encode(buf, ingredient);
 		}
 	}
 
-	public static RawShapedRecipe readFromBuf(PacketByteBuf buf) {
+	private static RawShapedRecipe readFromBuf(RegistryByteBuf buf) {
 		int i = buf.readVarInt();
 		int j = buf.readVarInt();
 		DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
-		defaultedList.replaceAll(ingredient -> Ingredient.fromPacket(buf));
+		defaultedList.replaceAll(ingredient -> Ingredient.PACKET_CODEC.decode(buf));
 		return new RawShapedRecipe(i, j, defaultedList, Optional.empty());
 	}
 

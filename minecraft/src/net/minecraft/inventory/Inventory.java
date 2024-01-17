@@ -45,7 +45,7 @@ import net.minecraft.world.World;
  */
 public interface Inventory extends Clearable {
 	int MAX_COUNT_PER_STACK = 64;
-	int field_42619 = 8;
+	float DEFAULT_MAX_INTERACTION_RANGE = 4.0F;
 
 	/**
 	 * {@return the size of the inventory}
@@ -228,7 +228,7 @@ public interface Inventory extends Clearable {
 	 * @see #canPlayerUse(BlockEntity, PlayerEntity, int)
 	 */
 	static boolean canPlayerUse(BlockEntity blockEntity, PlayerEntity player) {
-		return canPlayerUse(blockEntity, player, 8);
+		return canPlayerUse(blockEntity, player, 4.0F);
 	}
 
 	/**
@@ -242,15 +242,13 @@ public interface Inventory extends Clearable {
 	 * 
 	 * @see #canPlayerUse(BlockEntity, PlayerEntity)
 	 */
-	static boolean canPlayerUse(BlockEntity blockEntity, PlayerEntity player, int range) {
+	static boolean canPlayerUse(BlockEntity blockEntity, PlayerEntity player, float range) {
 		World world = blockEntity.getWorld();
 		BlockPos blockPos = blockEntity.getPos();
 		if (world == null) {
 			return false;
 		} else {
-			return world.getBlockEntity(blockPos) != blockEntity
-				? false
-				: player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= (double)(range * range);
+			return world.getBlockEntity(blockPos) != blockEntity ? false : player.canInteractWithBlockAt(blockPos, (double)range);
 		}
 	}
 }

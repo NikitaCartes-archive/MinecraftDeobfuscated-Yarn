@@ -11,13 +11,16 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9111;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
-import org.lwjgl.stb.STBTTFontinfo;
-import org.lwjgl.stb.STBTruetype;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.util.freetype.FT_Face;
+import org.lwjgl.util.freetype.FreeType;
 
 @Environment(EnvType.CLIENT)
 public record TrueTypeFontLoader(Identifier location, float size, float oversample, TrueTypeFontLoader.Shift shift, String skip) implements FontLoader {
@@ -44,46 +47,54 @@ public record TrueTypeFontLoader(Identifier location, float size, float oversamp
 	}
 
 	private Font load(ResourceManager resourceManager) throws IOException {
-		STBTTFontinfo sTBTTFontinfo = null;
+		FT_Face fT_Face = null;
 		ByteBuffer byteBuffer = null;
 
 		try {
 			InputStream inputStream = resourceManager.open(this.location.withPrefixedPath("font/"));
 
-			TrueTypeFont var5;
+			TrueTypeFont var14;
 			try {
-				sTBTTFontinfo = STBTTFontinfo.malloc();
 				byteBuffer = TextureUtil.readResource(inputStream);
 				byteBuffer.flip();
-				if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, byteBuffer)) {
-					throw new IOException("Invalid ttf");
+
+				try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+					PointerBuffer pointerBuffer = memoryStack.mallocPointer(1);
+					class_9111.method_56145(FreeType.FT_New_Memory_Face(class_9111.method_56143(), byteBuffer, 0L, pointerBuffer), "Initializing font face");
+					fT_Face = FT_Face.create(pointerBuffer.get());
 				}
 
-				var5 = new TrueTypeFont(byteBuffer, sTBTTFontinfo, this.size, this.oversample, this.shift.x, this.shift.y, this.skip);
-			} catch (Throwable var8) {
+				String string = FreeType.FT_Get_Font_Format(fT_Face);
+				if (!"TrueType".equals(string)) {
+					throw new IOException("Font is not in TTF format, was " + string);
+				}
+
+				class_9111.method_56145(FreeType.FT_Select_Charmap(fT_Face, FreeType.FT_ENCODING_UNICODE), "Find unicode charmap");
+				var14 = new TrueTypeFont(byteBuffer, fT_Face, this.size, this.oversample, this.shift.x, this.shift.y, this.skip);
+			} catch (Throwable var11) {
 				if (inputStream != null) {
 					try {
 						inputStream.close();
-					} catch (Throwable var7) {
-						var8.addSuppressed(var7);
+					} catch (Throwable var8) {
+						var11.addSuppressed(var8);
 					}
 				}
 
-				throw var8;
+				throw var11;
 			}
 
 			if (inputStream != null) {
 				inputStream.close();
 			}
 
-			return var5;
-		} catch (Exception var9) {
-			if (sTBTTFontinfo != null) {
-				sTBTTFontinfo.free();
+			return var14;
+		} catch (Exception var12) {
+			if (fT_Face != null) {
+				FreeType.FT_Done_Face(fT_Face);
 			}
 
 			MemoryUtil.memFree(byteBuffer);
-			throw var9;
+			throw var12;
 		}
 	}
 

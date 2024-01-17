@@ -25,7 +25,7 @@ public class FarmerWorkTask extends VillagerWorkTask {
 		Optional<GlobalPos> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
 		if (!optional.isEmpty()) {
 			GlobalPos globalPos = (GlobalPos)optional.get();
-			BlockState blockState = world.getBlockState(globalPos.getPos());
+			BlockState blockState = world.getBlockState(globalPos.pos());
 			if (blockState.isOf(Blocks.COMPOSTER)) {
 				this.craftAndDropBread(entity);
 				this.compostSeeds(world, entity, globalPos, blockState);
@@ -34,7 +34,7 @@ public class FarmerWorkTask extends VillagerWorkTask {
 	}
 
 	private void compostSeeds(ServerWorld world, VillagerEntity entity, GlobalPos pos, BlockState composterState) {
-		BlockPos blockPos = pos.getPos();
+		BlockPos blockPos = pos.pos();
 		if ((Integer)composterState.get(ComposterBlock.LEVEL) == 8) {
 			composterState = ComposterBlock.emptyFullComposter(entity, composterState, world, blockPos);
 		}

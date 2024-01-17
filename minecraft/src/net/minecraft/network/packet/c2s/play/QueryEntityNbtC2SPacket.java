@@ -1,10 +1,16 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class QueryEntityNbtC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, QueryEntityNbtC2SPacket> CODEC = Packet.createCodec(
+		QueryEntityNbtC2SPacket::write, QueryEntityNbtC2SPacket::new
+	);
 	private final int transactionId;
 	private final int entityId;
 
@@ -13,15 +19,19 @@ public class QueryEntityNbtC2SPacket implements Packet<ServerPlayPacketListener>
 		this.entityId = entityId;
 	}
 
-	public QueryEntityNbtC2SPacket(PacketByteBuf buf) {
+	private QueryEntityNbtC2SPacket(PacketByteBuf buf) {
 		this.transactionId = buf.readVarInt();
 		this.entityId = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.transactionId);
 		buf.writeVarInt(this.entityId);
+	}
+
+	@Override
+	public PacketIdentifier<QueryEntityNbtC2SPacket> getPacketId() {
+		return PlayPackets.ENTITY_TAG_QUERY;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

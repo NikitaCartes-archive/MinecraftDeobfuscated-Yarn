@@ -1,11 +1,17 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.border.WorldBorder;
 
 public class WorldBorderCenterChangedS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, WorldBorderCenterChangedS2CPacket> CODEC = Packet.createCodec(
+		WorldBorderCenterChangedS2CPacket::write, WorldBorderCenterChangedS2CPacket::new
+	);
 	private final double centerX;
 	private final double centerZ;
 
@@ -14,15 +20,19 @@ public class WorldBorderCenterChangedS2CPacket implements Packet<ClientPlayPacke
 		this.centerZ = worldBorder.getCenterZ();
 	}
 
-	public WorldBorderCenterChangedS2CPacket(PacketByteBuf buf) {
+	private WorldBorderCenterChangedS2CPacket(PacketByteBuf buf) {
 		this.centerX = buf.readDouble();
 		this.centerZ = buf.readDouble();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeDouble(this.centerX);
 		buf.writeDouble(this.centerZ);
+	}
+
+	@Override
+	public PacketIdentifier<WorldBorderCenterChangedS2CPacket> getPacketId() {
+		return PlayPackets.SET_BORDER_CENTER;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

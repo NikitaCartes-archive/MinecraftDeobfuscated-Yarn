@@ -175,6 +175,10 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return !this.isUnavailable();
 	}
 
+	public boolean isImmediatelyLoadable() {
+		return !this.requiresConversion() && !this.isLocked();
+	}
+
 	public boolean isEditable() {
 		return !this.isUnavailable();
 	}
@@ -256,6 +260,11 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		}
 
 		@Override
+		public boolean isImmediatelyLoadable() {
+			return false;
+		}
+
+		@Override
 		public boolean isEditable() {
 			return false;
 		}
@@ -302,6 +311,11 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		@Override
 		public boolean isSelectable() {
 			return true;
+		}
+
+		@Override
+		public boolean isImmediatelyLoadable() {
+			return false;
 		}
 
 		@Override

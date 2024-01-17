@@ -1,25 +1,27 @@
 package net.minecraft.network.packet.s2c.custom;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public record DebugHiveCustomPayload(DebugHiveCustomPayload.HiveInfo hiveInfo) implements CustomPayload {
-	public static final Identifier ID = new Identifier("debug/hive");
+	public static final PacketCodec<PacketByteBuf, DebugHiveCustomPayload> CODEC = CustomPayload.codecOf(
+		DebugHiveCustomPayload::write, DebugHiveCustomPayload::new
+	);
+	public static final CustomPayload.Id<DebugHiveCustomPayload> KEY = CustomPayload.id("debug/hive");
 
-	public DebugHiveCustomPayload(PacketByteBuf buf) {
+	private DebugHiveCustomPayload(PacketByteBuf buf) {
 		this(new DebugHiveCustomPayload.HiveInfo(buf));
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		this.hiveInfo.write(buf);
 	}
 
 	@Override
-	public Identifier id() {
-		return ID;
+	public CustomPayload.Id<DebugHiveCustomPayload> getId() {
+		return KEY;
 	}
 
 	public static record HiveInfo(BlockPos pos, String hiveType, int occupantCount, int honeyLevel, boolean sedated) {

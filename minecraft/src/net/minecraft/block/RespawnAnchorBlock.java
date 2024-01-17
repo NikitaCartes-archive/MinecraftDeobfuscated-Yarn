@@ -71,7 +71,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (isChargeItem(stack) && canCharge(state)) {
 			charge(player, world, pos, state);
 			if (!player.getAbilities().creativeMode) {
@@ -87,7 +87,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if ((Integer)state.get(CHARGES) == 0) {
 			return ActionResult.PASS;
 		} else if (!isNether(world)) {
@@ -201,7 +201,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	protected boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
@@ -210,7 +210,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		return getLightLevel(state, 15);
 	}
 
@@ -234,7 +234,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

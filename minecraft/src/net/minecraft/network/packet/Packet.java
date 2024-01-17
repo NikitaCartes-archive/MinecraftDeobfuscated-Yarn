@@ -1,12 +1,13 @@
 package net.minecraft.network.packet;
 
-import javax.annotation.Nullable;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketDecoder;
+import net.minecraft.network.codec.ValueFirstEncoder;
 import net.minecraft.network.listener.PacketListener;
 
 public interface Packet<T extends PacketListener> {
-	void write(PacketByteBuf buf);
+	PacketIdentifier<? extends Packet<T>> getPacketId();
 
 	void apply(T listener);
 
@@ -19,15 +20,16 @@ public interface Packet<T extends PacketListener> {
 	}
 
 	/**
-	 * {@return a new network state to transition to, or {@code null}
-	 * to indicate no state change}
-	 * <p>
-	 * The state transition is done on both the sender and receiver sides, but it
-	 * is only in one direction (out of C2S and S2C). Another packet must be processed
-	 * in the reverse direction to ensure the state in both directions are updated.
+	 * {@return {@code true} if the packet signals transitioning between {@link
+	 * net.minecraft.network.NetworkState}s}
+	 * 
+	 * <p>Such packets cannot be {@linkplain BundlePacket bundled}.
 	 */
-	@Nullable
-	default NetworkState getNewNetworkState() {
-		return null;
+	default boolean transitionsNetworkState() {
+		return false;
+	}
+
+	static <B extends ByteBuf, T extends Packet<?>> PacketCodec<B, T> createCodec(ValueFirstEncoder<B, T> encoder, PacketDecoder<B, T> decoder) {
+		return PacketCodec.of(encoder, decoder);
 	}
 }

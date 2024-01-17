@@ -24,7 +24,7 @@ public class ShearsItem extends Item {
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		if (!world.isClient && !state.isIn(BlockTags.FIRE)) {
-			stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+			stack.damage(1, miner, EquipmentSlot.MAINHAND);
 		}
 
 		return !state.isIn(BlockTags.LEAVES)
@@ -73,7 +73,7 @@ public class ShearsItem extends Item {
 			world.setBlockState(blockPos, blockState2);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(context.getPlayer(), blockState2));
 			if (playerEntity != null) {
-				itemStack.damage(1, playerEntity, player -> player.sendToolBreakStatus(context.getHand()));
+				itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 			}
 
 			return ActionResult.success(world.isClient);

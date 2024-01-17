@@ -132,14 +132,15 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.lastStretch = this.stretch;
 		super.tick();
 		if (this.isOnGround() && !this.onGroundLastTick) {
-			int i = this.getSize();
+			float f = this.getDimensions(this.getPose()).width() * 2.0F;
+			float g = f / 2.0F;
 
-			for (int j = 0; j < i * 8; j++) {
-				float f = this.random.nextFloat() * (float) (Math.PI * 2);
-				float g = this.random.nextFloat() * 0.5F + 0.5F;
-				float h = MathHelper.sin(f) * (float)i * 0.5F * g;
-				float k = MathHelper.cos(f) * (float)i * 0.5F * g;
-				this.getWorld().addParticle(this.getParticles(), this.getX() + (double)h, this.getY(), this.getZ() + (double)k, 0.0, 0.0, 0.0);
+			for (int i = 0; (float)i < f * 16.0F; i++) {
+				float h = this.random.nextFloat() * (float) (Math.PI * 2);
+				float j = this.random.nextFloat() * 0.5F + 0.5F;
+				float k = MathHelper.sin(h) * g * j;
+				float l = MathHelper.cos(h) * g * j;
+				this.getWorld().addParticle(this.getParticles(), this.getX() + (double)k, this.getY(), this.getZ() + (double)l, 0.0, 0.0, 0.0);
 			}
 
 			this.playSound(this.getSquishSound(), this.getSoundVolume(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
@@ -194,13 +195,14 @@ public class SlimeEntity extends MobEntity implements Monster {
 		if (!this.getWorld().isClient && i > 1 && this.isDead()) {
 			Text text = this.getCustomName();
 			boolean bl = this.isAiDisabled();
-			float f = (float)i / 4.0F;
+			float f = this.getDimensions(this.getPose()).width();
+			float g = f / 2.0F;
 			int j = i / 2;
 			int k = 2 + this.random.nextInt(3);
 
 			for (int l = 0; l < k; l++) {
-				float g = ((float)(l % 2) - 0.5F) * f;
-				float h = ((float)(l / 2) - 0.5F) * f;
+				float h = ((float)(l % 2) - 0.5F) * g;
+				float m = ((float)(l / 2) - 0.5F) * g;
 				SlimeEntity slimeEntity = this.getType().create(this.getWorld());
 				if (slimeEntity != null) {
 					if (this.isPersistent()) {
@@ -211,7 +213,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 					slimeEntity.setAiDisabled(bl);
 					slimeEntity.setInvulnerable(this.isInvulnerable());
 					slimeEntity.setSize(j, true);
-					slimeEntity.refreshPositionAndAngles(this.getX() + (double)g, this.getY() + 0.5, this.getZ() + (double)h, this.random.nextFloat() * 360.0F, 0.0F);
+					slimeEntity.refreshPositionAndAngles(this.getX() + (double)h, this.getY() + 0.5, this.getZ() + (double)m, this.random.nextFloat() * 360.0F, 0.0F);
 					this.getWorld().spawnEntity(slimeEntity);
 				}
 			}
@@ -355,7 +357,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	@Override
 	public EntityDimensions getBaseDimensions(EntityPose pose) {
-		return super.getBaseDimensions(pose).scaled(0.255F * (float)this.getSize());
+		return super.getBaseDimensions(pose).scaled((float)this.getSize());
 	}
 
 	static class FaceTowardTargetGoal extends Goal {

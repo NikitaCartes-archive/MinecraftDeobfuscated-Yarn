@@ -7,7 +7,6 @@ import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -173,7 +172,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		} else {
 			this.movementCooldownTicks = 10;
 			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
-			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK);
 			return Hoglin.tryAttack(this, (LivingEntity)target);
 		}
 	}
@@ -262,7 +261,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.movementCooldownTicks = 10;
-			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK);
 		} else {
 			super.handleStatus(status);
 		}
@@ -298,18 +297,13 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	protected void playAngrySound() {
-		this.playSound(SoundEvents.ENTITY_ZOGLIN_ANGRY, 1.0F, this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_ZOGLIN_ANGRY);
 	}
 
 	@Override
 	protected void sendAiDebugData() {
 		super.sendAiDebugData();
 		DebugInfoSender.sendBrainDebugData(this);
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.UNDEAD;
 	}
 
 	@Override

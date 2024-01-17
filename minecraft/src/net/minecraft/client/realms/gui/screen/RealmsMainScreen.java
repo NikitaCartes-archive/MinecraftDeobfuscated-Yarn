@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9110;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
@@ -866,11 +867,11 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class ParentRealmSelectionListEntry extends RealmsMainScreen.Entry {
 		private final RealmsServer server;
-		private final Tooltip tooltip;
+		private final class_9110 tooltip = new class_9110();
 
-		public ParentRealmSelectionListEntry(RealmsServer server) {
-			this.server = server;
-			this.tooltip = Tooltip.of(Text.translatable("mco.snapshot.parent.tooltip"));
+		public ParentRealmSelectionListEntry(RealmsServer realmsServer) {
+			this.server = realmsServer;
+			this.tooltip.method_56138(Tooltip.of(Text.translatable("mco.snapshot.parent.tooltip")));
 		}
 
 		@Override
@@ -893,7 +894,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), Colors.GRAY, false);
 			this.drawOwnerOrExpiredText(context, y, x, this.server);
 			this.renderStatusIcon(this.server, context, x + entryWidth, y, mouseX, mouseY);
-			this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
+			this.tooltip.method_56142(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
 		}
 
 		@Override
@@ -928,20 +929,17 @@ public class RealmsMainScreen extends RealmsScreen {
 	class RealmSelectionListEntry extends RealmsMainScreen.Entry {
 		private static final int field_32054 = 36;
 		private final RealmsServer server;
-		@Nullable
-		private final Tooltip tooltip;
+		private final class_9110 tooltip = new class_9110();
 
 		public RealmSelectionListEntry(RealmsServer server) {
 			this.server = server;
 			boolean bl = RealmsMainScreen.this.isSelfOwnedServer(server);
 			if (RealmsMainScreen.isSnapshotRealmsEligible() && bl && server.hasParentWorld()) {
-				this.tooltip = Tooltip.of(Text.translatable("mco.snapshot.paired", server.parentWorldName));
+				this.tooltip.method_56138(Tooltip.of(Text.translatable("mco.snapshot.paired", server.parentWorldName)));
 			} else if (!bl && server.needsUpgrade()) {
-				this.tooltip = Tooltip.of(Text.translatable("mco.snapshot.friendsRealm.upgrade", server.owner));
+				this.tooltip.method_56138(Tooltip.of(Text.translatable("mco.snapshot.friendsRealm.upgrade", server.owner)));
 			} else if (!bl && server.needsDowngrade()) {
-				this.tooltip = Tooltip.of(Text.translatable("mco.snapshot.friendsRealm.downgrade", server.activeVersion));
-			} else {
-				this.tooltip = null;
+				this.tooltip.method_56138(Tooltip.of(Text.translatable("mco.snapshot.friendsRealm.downgrade", server.activeVersion)));
 			}
 		}
 
@@ -957,9 +955,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				this.drawDescription(context, y, x);
 				this.drawOwnerOrExpiredText(context, y, x, this.server);
 				this.renderStatusIcon(this.server, context, x + entryWidth, y, mouseX, mouseY);
-				if (this.tooltip != null) {
-					this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
-				}
+				this.tooltip.method_56142(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
 			}
 		}
 
@@ -1052,12 +1048,12 @@ public class RealmsMainScreen extends RealmsScreen {
 	class SnapshotEntry extends RealmsMainScreen.Entry {
 		private static final Text START_TEXT = Text.translatable("mco.snapshot.start");
 		private static final int field_46677 = 5;
-		private final Tooltip tooltip;
+		private final class_9110 tooltip = new class_9110();
 		private final RealmsServer server;
 
-		public SnapshotEntry(RealmsServer server) {
-			this.server = server;
-			this.tooltip = Tooltip.of(Text.translatable("mco.snapshot.tooltip"));
+		public SnapshotEntry(RealmsServer realmsServer) {
+			this.server = realmsServer;
+			this.tooltip.method_56138(Tooltip.of(Text.translatable("mco.snapshot.tooltip")));
 		}
 
 		@Override
@@ -1068,7 +1064,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			context.drawTextWithShadow(
 				RealmsMainScreen.this.textRenderer, Text.translatable("mco.snapshot.description", this.server.name), x + 40 - 2, i + 5, Colors.GRAY
 			);
-			this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
+			this.tooltip.method_56142(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
 		}
 
 		@Override

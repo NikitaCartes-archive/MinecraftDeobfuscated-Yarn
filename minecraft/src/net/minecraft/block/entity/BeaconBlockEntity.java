@@ -252,7 +252,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 				playerEntity.addStatusEffect(new StatusEffectInstance(primaryEffect, j, i, true, true));
 			}
 
-			if (beaconLevel >= 4 && Objects.equals(primaryEffect, secondaryEffect) && secondaryEffect != null) {
+			if (beaconLevel >= 4 && !Objects.equals(primaryEffect, secondaryEffect) && secondaryEffect != null) {
 				for (PlayerEntity playerEntity : list) {
 					playerEntity.addStatusEffect(new StatusEffectInstance(secondaryEffect, j, 0, true, true));
 				}

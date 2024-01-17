@@ -49,9 +49,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private final GeneratorOptions generatorOptions;
 	private final LevelProperties.SpecialProperty specialProperty;
 	private final Lifecycle lifecycle;
-	private int spawnX;
-	private int spawnY;
-	private int spawnZ;
+	private BlockPos spawnPos;
 	private float spawnAngle;
 	private long time;
 	private long timeOfDay;
@@ -81,9 +79,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private LevelProperties(
 		@Nullable NbtCompound playerData,
 		boolean modded,
-		int spawnX,
-		int spawnY,
-		int spawnZ,
+		BlockPos spawnPos,
 		float spawnAngle,
 		long time,
 		long timeOfDay,
@@ -110,9 +106,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		Lifecycle lifecycle
 	) {
 		this.modded = modded;
-		this.spawnX = spawnX;
-		this.spawnY = spawnY;
-		this.spawnZ = spawnZ;
+		this.spawnPos = spawnPos;
 		this.spawnAngle = spawnAngle;
 		this.time = time;
 		this.timeOfDay = timeOfDay;
@@ -144,9 +138,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		this(
 			null,
 			false,
-			0,
-			0,
-			0,
+			BlockPos.ORIGIN,
 			0.0F,
 			0L,
 			0L,
@@ -181,9 +173,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		return new LevelProperties(
 			(NbtCompound)NbtCompound.CODEC.parse(dynamic.get("Player").orElseEmptyMap()).result().orElse(null),
 			dynamic.get("WasModded").asBoolean(false),
-			dynamic.get("SpawnX").asInt(0),
-			dynamic.get("SpawnY").asInt(0),
-			dynamic.get("SpawnZ").asInt(0),
+			new BlockPos(dynamic.get("SpawnX").asInt(0), dynamic.get("SpawnY").asInt(0), dynamic.get("SpawnZ").asInt(0)),
 			dynamic.get("SpawnAngle").asFloat(0.0F),
 			l,
 			dynamic.get("DayTime").asLong(l),
@@ -244,9 +234,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error))
 			.ifPresent(nbtElement -> levelNbt.put("WorldGenSettings", nbtElement));
 		levelNbt.putInt("GameType", this.levelInfo.getGameMode().getId());
-		levelNbt.putInt("SpawnX", this.spawnX);
-		levelNbt.putInt("SpawnY", this.spawnY);
-		levelNbt.putInt("SpawnZ", this.spawnZ);
+		levelNbt.putInt("SpawnX", this.spawnPos.getX());
+		levelNbt.putInt("SpawnY", this.spawnPos.getY());
+		levelNbt.putInt("SpawnZ", this.spawnPos.getZ());
 		levelNbt.putFloat("SpawnAngle", this.spawnAngle);
 		levelNbt.putLong("Time", this.time);
 		levelNbt.putLong("DayTime", this.timeOfDay);
@@ -293,18 +283,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public int getSpawnX() {
-		return this.spawnX;
-	}
-
-	@Override
-	public int getSpawnY() {
-		return this.spawnY;
-	}
-
-	@Override
-	public int getSpawnZ() {
-		return this.spawnZ;
+	public BlockPos getSpawnPos() {
+		return this.spawnPos;
 	}
 
 	@Override
@@ -329,26 +309,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setSpawnX(int spawnX) {
-		this.spawnX = spawnX;
-	}
-
-	@Override
-	public void setSpawnY(int spawnY) {
-		this.spawnY = spawnY;
-	}
-
-	@Override
-	public void setSpawnZ(int spawnZ) {
-		this.spawnZ = spawnZ;
-	}
-
-	@Override
-	public void setSpawnAngle(float spawnAngle) {
-		this.spawnAngle = spawnAngle;
-	}
-
-	@Override
 	public void setTime(long time) {
 		this.time = time;
 	}
@@ -360,9 +320,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 
 	@Override
 	public void setSpawnPos(BlockPos pos, float angle) {
-		this.spawnX = pos.getX();
-		this.spawnY = pos.getY();
-		this.spawnZ = pos.getZ();
+		this.spawnPos = pos.toImmutable();
 		this.spawnAngle = angle;
 	}
 

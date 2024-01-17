@@ -37,12 +37,12 @@ public class EndPortalBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (world instanceof ServerWorld
 			&& entity.canUsePortals()
 			&& VoxelShapes.matchesAnywhere(
@@ -74,7 +74,7 @@ public class EndPortalBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canBucketPlace(BlockState state, Fluid fluid) {
+	protected boolean canBucketPlace(BlockState state, Fluid fluid) {
 		return false;
 	}
 }

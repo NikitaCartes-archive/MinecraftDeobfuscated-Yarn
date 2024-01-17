@@ -31,6 +31,7 @@ import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.FrostWalkerEnchantment;
+import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -515,7 +516,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				);
 				if (this.getRandom().nextFloat() < 0.04F) {
 					ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
-					itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.FEET));
+					itemStack.damage(1, this, EquipmentSlot.FEET);
 				}
 			}
 		}
@@ -570,7 +571,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public float getScale() {
 		AttributeContainer attributeContainer = this.getAttributes();
-		return attributeContainer == null ? 1.0F : (float)attributeContainer.getValue(EntityAttributes.GENERIC_SCALE);
+		return attributeContainer == null ? 1.0F : this.method_56077((float)attributeContainer.getValue(EntityAttributes.GENERIC_SCALE));
+	}
+
+	protected float method_56077(float f) {
+		return f;
 	}
 
 	protected boolean shouldSwimInFluids() {
@@ -1024,7 +1029,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return this.getGroup() != EntityGroup.UNDEAD ? true : !effect.equals(StatusEffects.REGENERATION) && !effect.equals(StatusEffects.POISON);
+		return !this.getType().isIn(EntityTypeTags.IGNORES_POISON_AND_REGEN)
+			? true
+			: !effect.equals(StatusEffects.REGENERATION) && !effect.equals(StatusEffects.POISON);
 	}
 
 	/**
@@ -1054,8 +1061,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	public boolean isUndead() {
-		return this.getGroup() == EntityGroup.UNDEAD;
+	public boolean hasInvertedHealingAndHarm() {
+		return this.getType().isIn(EntityTypeTags.INVERTED_HEALING_AND_HARM);
 	}
 
 	/**
@@ -1284,9 +1291,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			if (this.isDead()) {
 				if (!this.tryUseTotem(source)) {
-					SoundEvent soundEvent = this.getDeathSound();
-					if (bl2 && soundEvent != null) {
-						this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+					if (bl2) {
+						this.playSound(this.getDeathSound());
 					}
 
 					this.onDeath(source);
@@ -1367,10 +1373,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.lastDamageSource;
 	}
 
-	protected void playHurtSound(DamageSource source) {
-		SoundEvent soundEvent = this.getHurtSound(source);
-		if (soundEvent != null) {
-			this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+	protected void playHurtSound(DamageSource damageSource) {
+		this.playSound(this.getHurtSound(damageSource));
+	}
+
+	public void playSound(@Nullable SoundEvent sound) {
+		if (sound != null) {
+			this.playSound(sound, this.getSoundVolume(), this.getSoundPitch());
 		}
 	}
 
@@ -1974,10 +1983,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public AttributeContainer getAttributes() {
 		return this.attributes;
-	}
-
-	public EntityGroup getGroup() {
-		return EntityGroup.DEFAULT;
 	}
 
 	public ItemStack getMainHandStack() {
@@ -2672,7 +2677,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		if (this.headTrackingIncrements > 0) {
-			this.method_52539(this.headTrackingIncrements, this.serverHeadYaw);
+			this.lerpHeadYaw(this.headTrackingIncrements, this.serverHeadYaw);
 			this.headTrackingIncrements--;
 		}
 
@@ -2797,7 +2802,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				if (!this.getWorld().isClient && i % 10 == 0) {
 					int j = i / 10;
 					if (j % 2 == 0) {
-						itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+						itemStack.damage(1, this, EquipmentSlot.CHEST);
 					}
 
 					this.emitGameEvent(GameEvent.ELYTRA_GLIDE);
@@ -3493,8 +3498,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.getWorld().sendEntityStatus(this, getEquipmentBreakStatus(slot));
 	}
 
-	public void sendToolBreakStatus(Hand hand) {
-		this.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+	public static EquipmentSlot getSlotForHand(Hand hand) {
+		return hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
 	}
 
 	@Override
@@ -3597,8 +3602,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.getPos().add(this.getPassengerAttachmentPos(passenger, this.getDimensions(this.getPose()), this.getScale() * this.getScaleFactor()));
 	}
 
-	protected void method_52539(int i, double d) {
-		this.headYaw = (float)MathHelper.lerpAngleDegrees(1.0 / (double)i, (double)this.headYaw, d);
+	protected void lerpHeadYaw(int headTrackingIncrements, double serverHeadYaw) {
+		this.headYaw = (float)MathHelper.lerpAngleDegrees(1.0 / (double)headTrackingIncrements, (double)this.headYaw, serverHeadYaw);
+	}
+
+	@Override
+	public void setOnFireForTicks(int ticks) {
+		super.setOnFireForTicks(ProtectionEnchantment.transformFireDuration(this, ticks));
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

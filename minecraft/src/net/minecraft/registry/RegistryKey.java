@@ -2,8 +2,10 @@ package net.minecraft.registry;
 
 import com.google.common.collect.MapMaker;
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
 
 /**
@@ -29,6 +31,10 @@ public class RegistryKey<T> {
 
 	public static <T> Codec<RegistryKey<T>> createCodec(RegistryKey<? extends Registry<T>> registry) {
 		return Identifier.CODEC.xmap(id -> of(registry, id), RegistryKey::getValue);
+	}
+
+	public static <T> PacketCodec<ByteBuf, RegistryKey<T>> createPacketCodec(RegistryKey<? extends Registry<T>> registry) {
+		return Identifier.PACKET_CODEC.xmap(id -> of(registry, id), RegistryKey::getValue);
 	}
 
 	/**

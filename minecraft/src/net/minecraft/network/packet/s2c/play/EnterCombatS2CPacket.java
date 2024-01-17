@@ -1,18 +1,22 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class EnterCombatS2CPacket implements Packet<ClientPlayPacketListener> {
-	public EnterCombatS2CPacket() {
-	}
+	public static final EnterCombatS2CPacket INSTANCE = new EnterCombatS2CPacket();
+	public static final PacketCodec<ByteBuf, EnterCombatS2CPacket> CODEC = PacketCodec.unit(INSTANCE);
 
-	public EnterCombatS2CPacket(PacketByteBuf buf) {
+	private EnterCombatS2CPacket() {
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
+	public PacketIdentifier<EnterCombatS2CPacket> getPacketId() {
+		return PlayPackets.PLAYER_COMBAT_ENTER;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

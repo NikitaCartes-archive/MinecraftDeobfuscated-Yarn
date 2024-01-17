@@ -32,7 +32,7 @@ public class TakeJobSiteTask {
 								} else if (entity.getVillagerData().getProfession() != VillagerProfession.NONE) {
 									return false;
 								} else {
-									BlockPos blockPos = context.<GlobalPos>getValue(potentialJobSite).getPos();
+									BlockPos blockPos = context.<GlobalPos>getValue(potentialJobSite).pos();
 									Optional<RegistryEntry<PointOfInterestType>> optional = world.getPointOfInterestStorage().getType(blockPos);
 									if (optional.isEmpty()) {
 										return true;
@@ -70,7 +70,7 @@ public class TakeJobSiteTask {
 			Optional<GlobalPos> optional = villager.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
 			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
 			if (villagerProfession.heldWorkstation().test(poiType)) {
-				return optional.isEmpty() ? canReachJobSite(villager, pos, poiType.value()) : ((GlobalPos)optional.get()).getPos().equals(pos);
+				return optional.isEmpty() ? canReachJobSite(villager, pos, poiType.value()) : ((GlobalPos)optional.get()).pos().equals(pos);
 			} else {
 				return false;
 			}

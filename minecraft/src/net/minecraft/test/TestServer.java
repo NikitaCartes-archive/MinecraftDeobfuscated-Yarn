@@ -31,7 +31,6 @@ import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ApiServices;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
@@ -53,8 +52,10 @@ public class TestServer extends MinecraftServer {
 	private static final int RESULT_STRING_LOG_INTERVAL = 20;
 	private static final int TEST_POS_XZ_RANGE = 14999992;
 	private static final ApiServices NONE_API_SERVICES = new ApiServices(null, ServicesKeySet.EMPTY, null, null);
-	private final List<GameTestBatch> batches;
+	private List<GameTestBatch> batches = new ArrayList();
+	private final List<TestFunction> testFunctions;
 	private final BlockPos pos;
+	private final Stopwatch stopwatch = Stopwatch.createUnstarted();
 	private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {
 		gameRules.get(GameRules.DO_MOB_SPAWNING).set(false, null);
 		gameRules.get(GameRules.DO_WEATHER_CYCLE).set(false, null);
@@ -64,10 +65,10 @@ public class TestServer extends MinecraftServer {
 	private TestSet testSet;
 
 	public static TestServer create(
-		Thread thread, LevelStorage.Session session, ResourcePackManager resourcePackManager, Collection<GameTestBatch> batches, BlockPos pos
+		Thread thread, LevelStorage.Session session, ResourcePackManager resourcePackManager, Collection<TestFunction> batches, BlockPos pos
 	) {
 		if (batches.isEmpty()) {
-			throw new IllegalArgumentException("No test batches were given!");
+			throw new IllegalArgumentException("No test functions were given!");
 		} else {
 			resourcePackManager.scanPacks();
 			DataConfiguration dataConfiguration = new DataConfiguration(
@@ -118,11 +119,11 @@ public class TestServer extends MinecraftServer {
 		LevelStorage.Session session,
 		ResourcePackManager dataPackManager,
 		SaveLoader saveLoader,
-		Collection<GameTestBatch> batches,
+		Collection<TestFunction> testFunctions,
 		BlockPos pos
 	) {
-		super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, Schemas.getFixer(), NONE_API_SERVICES, WorldGenerationProgressLogger::new);
-		this.batches = Lists.<GameTestBatch>newArrayList(batches);
+		super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, Schemas.getFixer(), NONE_API_SERVICES, WorldGenerationProgressLogger::create);
+		this.testFunctions = Lists.<TestFunction>newArrayList(testFunctions);
 		this.pos = pos;
 	}
 
@@ -132,6 +133,7 @@ public class TestServer extends MinecraftServer {
 		});
 		this.loadWorld();
 		ServerWorld serverWorld = this.getOverworld();
+		this.batches = Lists.<GameTestBatch>newArrayList(Batches.createBatches(this.testFunctions, serverWorld));
 		serverWorld.setSpawnPos(this.pos, 0.0F);
 		int i = 20000000;
 		serverWorld.setWeather(20000000, 20000000, false, false);
@@ -155,7 +157,7 @@ public class TestServer extends MinecraftServer {
 			this.stop(false);
 			LOGGER.info(this.testSet.getResultString());
 			TestFailureLogger.stop();
-			LOGGER.info("========= {} GAME TESTS COMPLETE ======================", this.testSet.getTestCount());
+			LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testSet.getTestCount(), this.stopwatch.stop());
 			if (this.testSet.failed()) {
 				LOGGER.info("{} required tests failed :(", this.testSet.getFailedRequiredTestCount());
 				this.testSet.getRequiredTests().forEach(test -> LOGGER.info("   - {}", test.getTemplatePath()));
@@ -199,9 +201,13 @@ public class TestServer extends MinecraftServer {
 
 	private void runTestBatches(ServerWorld world) {
 		BlockPos blockPos = new BlockPos(world.random.nextBetween(-14999992, 14999992), -59, world.random.nextBetween(-14999992, 14999992));
-		Collection<GameTestState> collection = TestUtil.runTestBatches(this.batches, blockPos, BlockRotation.NONE, world, TestManager.INSTANCE, 8);
+		TestRunContext testRunContext = TestRunContext.Builder.of(this.batches, world).initialSpawner(new TestStructurePlacer(blockPos, 8)).build();
+		Collection<GameTestState> collection = testRunContext.getStates();
 		this.testSet = new TestSet(collection);
 		LOGGER.info("{} tests are now running at position {}!", this.testSet.getTestCount(), blockPos.toShortString());
+		this.stopwatch.reset();
+		this.stopwatch.start();
+		testRunContext.start();
 	}
 
 	private boolean isTesting() {

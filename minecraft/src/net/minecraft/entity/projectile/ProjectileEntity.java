@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Ownable;
+import net.minecraft.entity.ProjectileDeflector;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -188,7 +189,14 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	protected void onCollision(HitResult hitResult) {
 		HitResult.Type type = hitResult.getType();
 		if (type == HitResult.Type.ENTITY) {
-			this.onEntityHit((EntityHitResult)hitResult);
+			EntityHitResult entityHitResult = (EntityHitResult)hitResult;
+			ProjectileDeflector projectileDeflector = entityHitResult.getEntity().getProjectileDeflector(this);
+			if (projectileDeflector != ProjectileDeflector.NONE) {
+				projectileDeflector.deflect(this, entityHitResult.getEntity(), this.random);
+				return;
+			}
+
+			this.onEntityHit(entityHitResult);
 			this.getWorld().emitGameEvent(GameEvent.PROJECTILE_LAND, hitResult.getPos(), GameEvent.Emitter.of(this, null));
 		} else if (type == HitResult.Type.BLOCK) {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;

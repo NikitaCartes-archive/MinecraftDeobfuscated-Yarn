@@ -2,12 +2,16 @@ package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, UpdateJigsawC2SPacket> CODEC = Packet.createCodec(UpdateJigsawC2SPacket::write, UpdateJigsawC2SPacket::new);
 	private final BlockPos pos;
 	private final Identifier name;
 	private final Identifier target;
@@ -37,7 +41,7 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.placementPriority = placementPriority;
 	}
 
-	public UpdateJigsawC2SPacket(PacketByteBuf buf) {
+	private UpdateJigsawC2SPacket(PacketByteBuf buf) {
 		this.pos = buf.readBlockPos();
 		this.name = buf.readIdentifier();
 		this.target = buf.readIdentifier();
@@ -48,8 +52,7 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.placementPriority = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
 		buf.writeIdentifier(this.name);
 		buf.writeIdentifier(this.target);
@@ -58,6 +61,11 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeString(this.jointType.asString());
 		buf.writeVarInt(this.selectionPriority);
 		buf.writeVarInt(this.placementPriority);
+	}
+
+	@Override
+	public PacketIdentifier<UpdateJigsawC2SPacket> getPacketId() {
+		return PlayPackets.SET_JIGSAW_BLOCK;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.sound.SoundCategory;
@@ -11,7 +12,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class FishingRodItem extends Item implements Vanishable {
+public class FishingRodItem extends Item {
 	public FishingRodItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -22,7 +23,7 @@ public class FishingRodItem extends Item implements Vanishable {
 		if (user.fishHook != null) {
 			if (!world.isClient) {
 				int i = user.fishHook.use(itemStack);
-				itemStack.damage(i, user, p -> p.sendToolBreakStatus(hand));
+				itemStack.damage(i, user, LivingEntity.getSlotForHand(hand));
 			}
 
 			world.playSound(

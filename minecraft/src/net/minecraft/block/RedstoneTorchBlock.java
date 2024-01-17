@@ -37,14 +37,14 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		for (Direction direction : Direction.values()) {
 			world.updateNeighborsAlways(pos.offset(direction), this);
 		}
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!moved) {
 			for (Direction direction : Direction.values()) {
 				world.updateNeighborsAlways(pos.offset(direction), this);
@@ -53,7 +53,7 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return state.get(LIT) && Direction.UP != direction ? 15 : 0;
 	}
 
@@ -62,7 +62,7 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		boolean bl = this.shouldUnpower(world, pos, state);
 		List<RedstoneTorchBlock.BurnoutEntry> list = (List<RedstoneTorchBlock.BurnoutEntry>)BURNOUT_MAP.get(world);
 
@@ -84,19 +84,19 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if ((Boolean)state.get(LIT) == this.shouldUnpower(world, pos, state) && !world.getBlockTickScheduler().isTicking(pos, this)) {
 			world.scheduleBlockTick(pos, this, 2);
 		}
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return direction == Direction.DOWN ? state.getWeakRedstonePower(world, pos, direction) : 0;
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState state) {
+	protected boolean emitsRedstonePower(BlockState state) {
 		return true;
 	}
 

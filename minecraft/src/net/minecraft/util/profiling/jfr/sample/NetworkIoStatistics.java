@@ -1,16 +1,10 @@
 package net.minecraft.util.profiling.jfr.sample;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import jdk.jfr.consumer.RecordedEvent;
-import net.minecraft.network.NetworkSide;
-import net.minecraft.network.NetworkState;
 
 public final class NetworkIoStatistics {
 	private final NetworkIoStatistics.PacketStatistics combinedStatistics;
@@ -49,32 +43,9 @@ public final class NetworkIoStatistics {
 		return this.topContributors;
 	}
 
-	public static record Packet(NetworkSide side, String protocolId, int packetId) {
-		private static final Map<NetworkIoStatistics.Packet, String> PACKET_TO_NAME;
-
-		public String getName() {
-			return (String)PACKET_TO_NAME.getOrDefault(this, "unknown");
-		}
-
+	public static record Packet(String side, String protocolId, String packetId) {
 		public static NetworkIoStatistics.Packet fromEvent(RecordedEvent event) {
-			return new NetworkIoStatistics.Packet(
-				event.getEventType().getName().equals("minecraft.PacketSent") ? NetworkSide.CLIENTBOUND : NetworkSide.SERVERBOUND,
-				event.getString("protocolId"),
-				event.getInt("packetId")
-			);
-		}
-
-		static {
-			Builder<NetworkIoStatistics.Packet, String> builder = ImmutableMap.builder();
-
-			for (NetworkState networkState : NetworkState.values()) {
-				for (NetworkSide networkSide : NetworkSide.values()) {
-					Int2ObjectMap<Class<? extends net.minecraft.network.packet.Packet<?>>> int2ObjectMap = networkState.getPacketIdToPacketMap(networkSide);
-					int2ObjectMap.forEach((packetId, clazz) -> builder.put(new NetworkIoStatistics.Packet(networkSide, networkState.getId(), packetId), clazz.getSimpleName()));
-				}
-			}
-
-			PACKET_TO_NAME = builder.build();
+			return new NetworkIoStatistics.Packet(event.getString("packetDirection"), event.getString("protocolId"), event.getString("packetId"));
 		}
 	}
 

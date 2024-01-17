@@ -219,7 +219,7 @@ public class Mouse {
 		this.lastTickTime = d;
 		if (this.client.isWindowFocused()) {
 			Screen screen = this.client.currentScreen;
-			if (screen != null && this.client.getOverlay() == null) {
+			if (screen != null && this.client.getOverlay() == null && (this.cursorDeltaX != 0.0 || this.cursorDeltaY != 0.0)) {
 				double f = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
 				double g = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
 				Screen.wrapScreenError(() -> screen.mouseMoved(f, g), "mouseMoved event handler", screen.getClass().getCanonicalName());

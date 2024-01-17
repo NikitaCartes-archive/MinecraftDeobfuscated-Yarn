@@ -23,7 +23,7 @@ public class PillarBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return changeRotation(state, rotation);
 	}
 

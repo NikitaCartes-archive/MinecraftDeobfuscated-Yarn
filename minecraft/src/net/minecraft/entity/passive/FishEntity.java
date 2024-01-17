@@ -121,7 +121,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 			);
 			this.setOnGround(false);
 			this.velocityDirty = true;
-			this.playSound(this.getFlopSound(), this.getSoundVolume(), this.getSoundPitch());
+			this.playSound(this.getFlopSound());
 		}
 
 		super.tickMovement();

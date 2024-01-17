@@ -36,7 +36,6 @@ public class GoatBrain {
 	public static final int PREPARE_RAM_DURATION = 20;
 	public static final int MAX_RAM_TARGET_DISTANCE = 7;
 	private static final UniformIntProvider WALKING_SPEED = UniformIntProvider.create(5, 16);
-	private static final float BREEDING_WALK_SPEED = 1.0F;
 	private static final float FOLLOWING_TARGET_WALK_SPEED = 1.0F;
 	private static final float TEMPTED_WALK_SPEED = 1.25F;
 	private static final float FOLLOW_ADULT_WALK_SPEED = 1.25F;
@@ -92,7 +91,7 @@ public class GoatBrain {
 			Activity.IDLE,
 			ImmutableList.of(
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
-				Pair.of(0, new BreedTask(EntityType.GOAT, 1.0F)),
+				Pair.of(0, new BreedTask(EntityType.GOAT)),
 				Pair.of(1, new TemptTask(goat -> 1.25F)),
 				Pair.of(2, WalkTowardClosestAdultTask.create(WALKING_SPEED, 1.25F)),
 				Pair.of(

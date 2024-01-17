@@ -1,11 +1,15 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.Difficulty;
 
 public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, DifficultyS2CPacket> CODEC = Packet.createCodec(DifficultyS2CPacket::write, DifficultyS2CPacket::new);
 	private final Difficulty difficulty;
 	private final boolean difficultyLocked;
 
@@ -14,15 +18,19 @@ public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.difficultyLocked = difficultyLocked;
 	}
 
-	public DifficultyS2CPacket(PacketByteBuf buf) {
+	private DifficultyS2CPacket(PacketByteBuf buf) {
 		this.difficulty = Difficulty.byId(buf.readUnsignedByte());
 		this.difficultyLocked = buf.readBoolean();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.difficulty.getId());
 		buf.writeBoolean(this.difficultyLocked);
+	}
+
+	@Override
+	public PacketIdentifier<DifficultyS2CPacket> getPacketId() {
+		return PlayPackets.CHANGE_DIFFICULTY_S2C;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

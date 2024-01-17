@@ -4,15 +4,15 @@ import java.util.Map.Entry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.random.Random;
 
 public class ThornsEnchantment extends Enchantment {
 	private static final float ATTACK_CHANCE_PER_LEVEL = 0.15F;
 
 	public ThornsEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ARMOR_CHEST, slotTypes);
+		super(weight, ItemTags.ARMOR_ENCHANTABLE, slotTypes);
 	}
 
 	@Override
@@ -31,11 +31,6 @@ public class ThornsEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.getItem() instanceof ArmorItem ? true : super.isAcceptableItem(stack);
-	}
-
-	@Override
 	public void onUserDamaged(LivingEntity user, Entity attacker, int level) {
 		Random random = user.getRandom();
 		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.THORNS, user);
@@ -45,7 +40,7 @@ public class ThornsEnchantment extends Enchantment {
 			}
 
 			if (entry != null) {
-				((ItemStack)entry.getValue()).damage(2, user, entity -> entity.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
+				((ItemStack)entry.getValue()).damage(2, user, (EquipmentSlot)entry.getKey());
 			}
 		}
 	}

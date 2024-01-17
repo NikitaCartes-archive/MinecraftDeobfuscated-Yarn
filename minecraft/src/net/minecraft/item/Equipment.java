@@ -18,7 +18,7 @@ import net.minecraft.world.World;
  * 
  * <p>This type of item can be targeted by the {@code minecraft:binding_curse} enchantment.
  */
-public interface Equipment extends Vanishable {
+public interface Equipment {
 	EquipmentSlot getSlotType();
 
 	default SoundEvent getEquipSound() {

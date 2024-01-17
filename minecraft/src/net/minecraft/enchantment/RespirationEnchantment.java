@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class RespirationEnchantment extends Enchantment {
 	public RespirationEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ARMOR_HEAD, slotTypes);
+		super(weight, ItemTags.HEAD_ARMOR_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

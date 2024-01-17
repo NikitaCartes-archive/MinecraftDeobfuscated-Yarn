@@ -391,7 +391,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 					return ActionResult.SUCCESS;
 				} else if (itemStack.isOf(Items.SHEARS) && this.isOwner(player) && this.hasArmor()) {
 					if (!player.getAbilities().creativeMode) {
-						itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+						itemStack.damage(1, player, getSlotForHand(hand));
 					}
 
 					this.getWorld().playSoundFromEntity(null, this, SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF, this.getSoundCategory(), 1.0F, 1.0F);

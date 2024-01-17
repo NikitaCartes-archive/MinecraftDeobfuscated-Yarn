@@ -1,11 +1,17 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 
 public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerListHeaderS2CPacket> CODEC = Packet.createCodec(
+		PlayerListHeaderS2CPacket::write, PlayerListHeaderS2CPacket::new
+	);
 	private final Text header;
 	private final Text footer;
 
@@ -14,15 +20,19 @@ public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListene
 		this.footer = footer;
 	}
 
-	public PlayerListHeaderS2CPacket(PacketByteBuf buf) {
+	private PlayerListHeaderS2CPacket(PacketByteBuf buf) {
 		this.header = buf.readUnlimitedText();
 		this.footer = buf.readUnlimitedText();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeText(this.header);
 		buf.writeText(this.footer);
+	}
+
+	@Override
+	public PacketIdentifier<PlayerListHeaderS2CPacket> getPacketId() {
+		return PlayPackets.TAB_LIST;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

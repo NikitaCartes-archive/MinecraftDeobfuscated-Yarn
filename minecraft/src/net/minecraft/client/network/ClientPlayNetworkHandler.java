@@ -8,6 +8,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.time.Instant;
 import java.util.BitSet;
 import java.util.Collection;
@@ -19,14 +20,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9157;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -273,6 +275,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -305,7 +308,7 @@ import net.minecraft.world.tick.TickManager;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler implements TickablePacketListener, ClientPlayPacketListener {
+public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler implements ClientPlayPacketListener, TickablePacketListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text UNSECURE_SERVER_TOAST_TITLE = Text.translatable("multiplayer.unsecureserver.toast.title");
 	private static final Text UNSECURE_SERVER_TOAST_TEXT = Text.translatable("multiplayer.unsecureserver.toast");
@@ -339,6 +342,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private final PingMeasurer pingMeasurer;
 	@Nullable
 	private WorldLoadingState worldLoadingState;
+	private boolean field_48403;
 	private boolean displayedUnsecureChatWarning = false;
 	private volatile boolean worldCleared;
 	private final Scoreboard scoreboard = new Scoreboard();
@@ -434,6 +438,12 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 		this.worldSession.setGameMode(commonPlayerSpawnInfo.gameMode(), packet.hardcore());
 		this.client.getQuickPlayLogger().save(this.client);
+		this.field_48403 = packet.enforcesSecureChat();
+		if (this.serverInfo != null && !this.displayedUnsecureChatWarning && !this.isSecureChatEnforced()) {
+			SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, UNSECURE_SERVER_TOAST_TITLE, UNSECURE_SERVER_TOAST_TEXT);
+			this.client.getToastManager().add(systemToast);
+			this.displayedUnsecureChatWarning = true;
+		}
 	}
 
 	@Override
@@ -768,21 +778,28 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	@Override
 	public void onEnterReconfiguration(EnterReconfigurationS2CPacket packet) {
-		this.connection.disableAutoRead();
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.enterReconfiguration(new ReconfiguringScreen(RECONFIGURING_TEXT, this.connection));
 		this.connection
-			.setPacketListener(
+			.method_56330(
+				class_9157.field_48699,
 				new ClientConfigurationNetworkHandler(
 					this.client,
 					this.connection,
 					new ClientConnectionState(
-						this.profile, this.worldSession, this.combinedDynamicRegistries, this.enabledFeatures, this.brand, this.serverInfo, this.postDisconnectScreen
+						this.profile,
+						this.worldSession,
+						this.combinedDynamicRegistries,
+						this.enabledFeatures,
+						this.brand,
+						this.serverInfo,
+						this.postDisconnectScreen,
+						this.serverCookies
 					)
 				)
 			);
-		this.connection.enableAutoRead();
-		this.sendPacket(new AcknowledgeReconfigurationC2SPacket());
+		this.sendPacket(AcknowledgeReconfigurationC2SPacket.INSTANCE);
+		this.connection.method_56329(class_9157.field_48698);
 	}
 
 	@Override
@@ -1237,7 +1254,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		BlockPos blockPos = packet.getPos();
 		this.client.world.getBlockEntity(blockPos, packet.getBlockEntityType()).ifPresent(blockEntity -> {
 			NbtCompound nbtCompound = packet.getNbt();
-			if (nbtCompound != null) {
+			if (!nbtCompound.isEmpty()) {
 				blockEntity.readNbt(nbtCompound);
 			}
 
@@ -1464,9 +1481,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onStatistics(StatisticsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 
-		for (Entry<Stat<?>, Integer> entry : packet.getStats().entrySet()) {
+		for (Entry<Stat<?>> entry : packet.stats().object2IntEntrySet()) {
 			Stat<?> stat = (Stat<?>)entry.getKey();
-			int i = (Integer)entry.getValue();
+			int i = entry.getIntValue();
 			this.client.player.getStatHandler().setStat(this.client.player, stat, i);
 		}
 
@@ -1539,6 +1556,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	private void refreshTagBasedData() {
 		if (!this.connection.isLocal()) {
+			AbstractFurnaceBlockEntity.clearFuelTimes();
 			Blocks.refreshShapeCache();
 		}
 
@@ -1644,13 +1662,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		if (this.serverInfo != null) {
 			this.serverInfo.label = packet.getDescription();
 			packet.getFavicon().map(ServerInfo::validateFavicon).ifPresent(this.serverInfo::setFavicon);
-			this.serverInfo.setSecureChatEnforced(packet.isSecureChatEnforced());
 			ServerList.updateServerListEntry(this.serverInfo);
-			if (!this.displayedUnsecureChatWarning && !this.isSecureChatEnforced()) {
-				SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, UNSECURE_SERVER_TOAST_TITLE, UNSECURE_SERVER_TOAST_TEXT);
-				this.client.getToastManager().add(systemToast);
-				this.displayedUnsecureChatWarning = true;
-			}
 		}
 	}
 
@@ -1785,7 +1797,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	private boolean isSecureChatEnforced() {
-		return !this.client.providesProfileKeys() ? false : this.serverInfo != null && this.serverInfo.isSecureChatEnforced();
+		return this.client.providesProfileKeys() && this.field_48403;
 	}
 
 	@Override
@@ -1838,10 +1850,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onCooldownUpdate(CooldownUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		if (packet.getCooldown() == 0) {
-			this.client.player.getItemCooldownManager().remove(packet.getItem());
+		if (packet.cooldown() == 0) {
+			this.client.player.getItemCooldownManager().remove(packet.item());
 		} else {
-			this.client.player.getItemCooldownManager().set(packet.getItem(), packet.getCooldown());
+			this.client.player.getItemCooldownManager().set(packet.item(), packet.cooldown());
 		}
 	}
 
@@ -1896,7 +1908,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				.setFreeTicketCount(debugPoiTicketCountCustomPayload.pos(), debugPoiTicketCountCustomPayload.freeTicketCount());
 		} else if (payload instanceof DebugPoiAddedCustomPayload debugPoiAddedCustomPayload) {
 			VillageDebugRenderer.PointOfInterest pointOfInterest = new VillageDebugRenderer.PointOfInterest(
-				debugPoiAddedCustomPayload.pos(), debugPoiAddedCustomPayload.type(), debugPoiAddedCustomPayload.freeTicketCount()
+				debugPoiAddedCustomPayload.pos(), debugPoiAddedCustomPayload.poiType(), debugPoiAddedCustomPayload.freeTicketCount()
 			);
 			this.client.debugRenderer.villageDebugRenderer.addPointOfInterest(pointOfInterest);
 		} else if (payload instanceof DebugPoiRemovedCustomPayload debugPoiRemovedCustomPayload) {
@@ -1931,7 +1943,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		} else if (payload instanceof DebugRaidsCustomPayload debugRaidsCustomPayload) {
 			this.client.debugRenderer.raidCenterDebugRenderer.setRaidCenters(debugRaidsCustomPayload.raidCenters());
 		} else if (payload instanceof DebugGameEventCustomPayload debugGameEventCustomPayload) {
-			this.client.debugRenderer.gameEventDebugRenderer.addEvent(debugGameEventCustomPayload.type(), debugGameEventCustomPayload.pos());
+			this.client.debugRenderer.gameEventDebugRenderer.addEvent(debugGameEventCustomPayload.gameEventType(), debugGameEventCustomPayload.pos());
 		} else if (payload instanceof DebugGameEventListenersCustomPayload debugGameEventListenersCustomPayload) {
 			this.client
 				.debugRenderer
@@ -1945,7 +1957,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	private void warnOnUnknownPayload(CustomPayload payload) {
-		LOGGER.warn("Unknown custom packet payload: {}", payload.id());
+		LOGGER.warn("Unknown custom packet payload: {}", payload.getId().id());
 	}
 
 	@Override
@@ -1953,7 +1965,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		String string = packet.getName();
 		if (packet.getMode() == 0) {
-			this.scoreboard.addObjective(string, ScoreboardCriterion.DUMMY, packet.getDisplayName(), packet.getType(), false, packet.getNumberFormat());
+			this.scoreboard
+				.addObjective(string, ScoreboardCriterion.DUMMY, packet.getDisplayName(), packet.getType(), false, (NumberFormat)packet.getNumberFormat().orElse(null));
 		} else {
 			ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 			if (scoreboardObjective != null) {
@@ -1962,7 +1975,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				} else if (packet.getMode() == ScoreboardObjectiveUpdateS2CPacket.UPDATE_MODE) {
 					scoreboardObjective.setRenderType(packet.getType());
 					scoreboardObjective.setDisplayName(packet.getDisplayName());
-					scoreboardObjective.setNumberFormat(packet.getNumberFormat());
+					scoreboardObjective.setNumberFormat((NumberFormat)packet.getNumberFormat().orElse(null));
 				}
 			}
 		}
@@ -1978,7 +1991,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			ScoreAccess scoreAccess = this.scoreboard.getOrCreateScore(scoreHolder, scoreboardObjective, true);
 			scoreAccess.setScore(packet.score());
 			scoreAccess.setDisplayText(packet.display());
-			scoreAccess.setNumberFormat(packet.numberFormat());
+			scoreAccess.setNumberFormat((NumberFormat)packet.numberFormat().orElse(null));
 		} else {
 			LOGGER.warn("Received packet for unknown scoreboard objective: {}", string);
 		}
@@ -2202,7 +2215,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onBundle(BundleS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 
-		for (Packet<ClientPlayPacketListener> packet2 : packet.getPackets()) {
+		for (Packet<? super ClientPlayPacketListener> packet2 : packet.getPackets()) {
 			packet2.apply(this);
 		}
 	}

@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9099;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.QuickPlay;
 import net.minecraft.client.QuickPlayLogger;
@@ -18,6 +19,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.Address;
 import net.minecraft.client.network.AllowedAddressResolver;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
+import net.minecraft.client.network.CookieStorage;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.server.ServerResourcePackManager;
@@ -65,21 +67,36 @@ public class ConnectScreen extends Screen {
 		this.failureErrorMessage = failureErrorMessage;
 	}
 
-	public static void connect(Screen screen, MinecraftClient client, ServerAddress address, ServerInfo info, boolean quickPlay) {
+	public static void connect(
+		Screen screen, MinecraftClient client, ServerAddress address, ServerInfo info, boolean quickPlay, @Nullable CookieStorage cookieStorage
+	) {
 		if (client.currentScreen instanceof ConnectScreen) {
 			LOGGER.error("Attempt to connect while already connecting");
 		} else {
-			ConnectScreen connectScreen = new ConnectScreen(screen, quickPlay ? QuickPlay.ERROR_TITLE : ScreenTexts.CONNECT_FAILED);
+			Text text;
+			if (cookieStorage != null) {
+				text = ScreenTexts.CONNECT_FAILED_TRANSFER;
+			} else if (quickPlay) {
+				text = QuickPlay.ERROR_TITLE;
+			} else {
+				text = ScreenTexts.CONNECT_FAILED;
+			}
+
+			ConnectScreen connectScreen = new ConnectScreen(screen, text);
+			if (cookieStorage != null) {
+				connectScreen.setStatus(Text.translatable("connect.transferring"));
+			}
+
 			client.disconnect();
 			client.loadBlockList();
-			client.ensureAbuseReportContext(ReporterEnvironment.ofThirdPartyServer(info != null ? info.address : address.getAddress()));
+			client.ensureAbuseReportContext(ReporterEnvironment.ofThirdPartyServer(info.address));
 			client.getQuickPlayLogger().setWorld(QuickPlayLogger.WorldType.MULTIPLAYER, info.address, info.name);
 			client.setScreen(connectScreen);
-			connectScreen.connect(client, address, info);
+			connectScreen.connect(client, address, info, cookieStorage);
 		}
 	}
 
-	private void connect(MinecraftClient client, ServerAddress address, @Nullable ServerInfo info) {
+	private void connect(MinecraftClient client, ServerAddress address, ServerInfo info, @Nullable CookieStorage cookieStorage) {
 		LOGGER.info("Connecting to {}, {}", address.getAddress(), address.getPort());
 		Thread thread = new Thread("Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()) {
 			public void run() {
@@ -122,15 +139,19 @@ public class ConnectScreen extends Screen {
 						}
 
 						ConnectScreen.this.connection = clientConnection;
-						client.getServerResourcePackProvider()
-							.init(clientConnection, info != null ? toAcceptanceStatus(info.getResourcePackPolicy()) : ServerResourcePackManager.AcceptanceStatus.PENDING);
+						client.getServerResourcePackProvider().init(clientConnection, toAcceptanceStatus(info.getResourcePackPolicy()));
 					}
 
 					ConnectScreen.this.connection
 						.connect(
 							inetSocketAddress.getHostName(),
 							inetSocketAddress.getPort(),
-							new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus)
+							class_9099.field_48247,
+							class_9099.field_48248,
+							new ClientLoginNetworkHandler(
+								ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus, cookieStorage
+							),
+							cookieStorage != null
 						);
 					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), client.getSession().getUuidOrNull()));
 				} catch (Exception var9) {

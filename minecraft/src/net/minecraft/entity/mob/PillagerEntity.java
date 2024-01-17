@@ -7,9 +7,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.InventoryOwner;
@@ -171,17 +169,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 				EnchantmentHelper.set(map, itemStack);
 				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 			}
-		}
-	}
-
-	@Override
-	public boolean isTeammate(Entity other) {
-		if (super.isTeammate(other)) {
-			return true;
-		} else {
-			return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && other.getScoreboardTeam() == null
-				: false;
 		}
 	}
 

@@ -12,6 +12,9 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataLookup;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
@@ -52,6 +55,7 @@ public record Advancement(
 		),
 		Advancement::validate
 	);
+	public static final PacketCodec<RegistryByteBuf, Advancement> PACKET_CODEC = PacketCodec.of(Advancement::write, Advancement::read);
 
 	public Advancement(
 		Optional<Identifier> parent,
@@ -80,17 +84,17 @@ public record Advancement(
 		return (Text)identifiedAdvancement.value().name().orElseGet(() -> Text.literal(identifiedAdvancement.id().toString()));
 	}
 
-	public void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeOptional(this.parent, PacketByteBuf::writeIdentifier);
-		buf.writeOptional(this.display, (bufx, display) -> display.toPacket(bufx));
+		AdvancementDisplay.PACKET_CODEC.mapResult(PacketCodecs::optional).encode(buf, this.display);
 		this.requirements.writeRequirements(buf);
 		buf.writeBoolean(this.sendsTelemetryEvent);
 	}
 
-	public static Advancement read(PacketByteBuf buf) {
+	private static Advancement read(RegistryByteBuf buf) {
 		return new Advancement(
 			buf.readOptional(PacketByteBuf::readIdentifier),
-			buf.readOptional(AdvancementDisplay::fromPacket),
+			(Optional<AdvancementDisplay>)AdvancementDisplay.PACKET_CODEC.mapResult(PacketCodecs::optional).decode(buf),
 			AdvancementRewards.NONE,
 			Map.of(),
 			new AdvancementRequirements(buf),

@@ -3,7 +3,8 @@ package net.minecraft.world.event;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -12,7 +13,10 @@ public class BlockPositionSource implements PositionSource {
 	public static final Codec<BlockPositionSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(BlockPos.CODEC.fieldOf("pos").forGetter(blockPositionSource -> blockPositionSource.pos)).apply(instance, BlockPositionSource::new)
 	);
-	final BlockPos pos;
+	public static final PacketCodec<RegistryByteBuf, BlockPositionSource> PACKET_CODEC = PacketCodec.tuple(
+		BlockPos.PACKET_CODEC, source -> source.pos, BlockPositionSource::new
+	);
+	private final BlockPos pos;
 
 	public BlockPositionSource(BlockPos pos) {
 		this.pos = pos;
@@ -24,22 +28,19 @@ public class BlockPositionSource implements PositionSource {
 	}
 
 	@Override
-	public PositionSourceType<?> getType() {
+	public PositionSourceType<BlockPositionSource> getType() {
 		return PositionSourceType.BLOCK;
 	}
 
 	public static class Type implements PositionSourceType<BlockPositionSource> {
-		public BlockPositionSource readFromBuf(PacketByteBuf packetByteBuf) {
-			return new BlockPositionSource(packetByteBuf.readBlockPos());
-		}
-
-		public void writeToBuf(PacketByteBuf packetByteBuf, BlockPositionSource blockPositionSource) {
-			packetByteBuf.writeBlockPos(blockPositionSource.pos);
-		}
-
 		@Override
 		public Codec<BlockPositionSource> getCodec() {
 			return BlockPositionSource.CODEC;
+		}
+
+		@Override
+		public PacketCodec<RegistryByteBuf, BlockPositionSource> getPacketCodec() {
+			return BlockPositionSource.PACKET_CODEC;
 		}
 	}
 }

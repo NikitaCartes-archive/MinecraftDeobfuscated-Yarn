@@ -3,8 +3,11 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.World;
@@ -19,9 +22,12 @@ public record GameJoinS2CPacket(
 	boolean reducedDebugInfo,
 	boolean showDeathScreen,
 	boolean doLimitedCrafting,
-	CommonPlayerSpawnInfo commonPlayerSpawnInfo
+	CommonPlayerSpawnInfo commonPlayerSpawnInfo,
+	boolean enforcesSecureChat
 ) implements Packet<ClientPlayPacketListener> {
-	public GameJoinS2CPacket(PacketByteBuf buf) {
+	public static final PacketCodec<PacketByteBuf, GameJoinS2CPacket> CODEC = Packet.createCodec(GameJoinS2CPacket::write, GameJoinS2CPacket::new);
+
+	private GameJoinS2CPacket(PacketByteBuf buf) {
 		this(
 			buf.readInt(),
 			buf.readBoolean(),
@@ -32,12 +38,12 @@ public record GameJoinS2CPacket(
 			buf.readBoolean(),
 			buf.readBoolean(),
 			buf.readBoolean(),
-			new CommonPlayerSpawnInfo(buf)
+			new CommonPlayerSpawnInfo(buf),
+			buf.readBoolean()
 		);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeInt(this.playerEntityId);
 		buf.writeBoolean(this.hardcore);
 		buf.writeCollection(this.dimensionIds, PacketByteBuf::writeRegistryKey);
@@ -48,6 +54,12 @@ public record GameJoinS2CPacket(
 		buf.writeBoolean(this.showDeathScreen);
 		buf.writeBoolean(this.doLimitedCrafting);
 		this.commonPlayerSpawnInfo.write(buf);
+		buf.writeBoolean(this.enforcesSecureChat);
+	}
+
+	@Override
+	public PacketIdentifier<GameJoinS2CPacket> getPacketId() {
+		return PlayPackets.LOGIN;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

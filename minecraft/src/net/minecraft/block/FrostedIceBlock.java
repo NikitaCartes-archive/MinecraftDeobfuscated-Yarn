@@ -32,12 +32,12 @@ public class FrostedIceBlock extends IceBlock {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		this.scheduledTick(state, world, pos, random);
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((random.nextInt(3) == 0 || this.canMelt(world, pos, 4))
 			&& world.getLightLevel(pos) > 11 - (Integer)state.get(AGE) - state.getOpacity(world, pos)
 			&& this.increaseAge(state, world, pos)) {
@@ -67,7 +67,7 @@ public class FrostedIceBlock extends IceBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (sourceBlock.getDefaultState().isOf(this) && this.canMelt(world, pos, 2)) {
 			this.melt(state, world, pos);
 		}

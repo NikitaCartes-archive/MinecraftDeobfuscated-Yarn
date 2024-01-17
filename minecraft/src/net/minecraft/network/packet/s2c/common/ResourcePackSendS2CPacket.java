@@ -3,11 +3,17 @@ package net.minecraft.network.packet.s2c.common;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
+import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 import net.minecraft.text.Text;
 
 public record ResourcePackSendS2CPacket(UUID id, String url, String hash, boolean required, @Nullable Text prompt) implements Packet<ClientCommonPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ResourcePackSendS2CPacket> CODEC = Packet.createCodec(
+		ResourcePackSendS2CPacket::write, ResourcePackSendS2CPacket::new
+	);
 	public static final int MAX_HASH_LENGTH = 40;
 
 	public ResourcePackSendS2CPacket(UUID id, String url, String hash, boolean required, @Nullable Text prompt) {
@@ -22,17 +28,21 @@ public record ResourcePackSendS2CPacket(UUID id, String url, String hash, boolea
 		}
 	}
 
-	public ResourcePackSendS2CPacket(PacketByteBuf buf) {
+	private ResourcePackSendS2CPacket(PacketByteBuf buf) {
 		this(buf.readUuid(), buf.readString(), buf.readString(40), buf.readBoolean(), buf.readNullable(PacketByteBuf::readUnlimitedText));
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeUuid(this.id);
 		buf.writeString(this.url);
 		buf.writeString(this.hash);
 		buf.writeBoolean(this.required);
 		buf.writeNullable(this.prompt, PacketByteBuf::writeText);
+	}
+
+	@Override
+	public PacketIdentifier<ResourcePackSendS2CPacket> getPacketId() {
+		return CommonPackets.RESOURCE_PACK_PUSH;
 	}
 
 	public void apply(ClientCommonPacketListener clientCommonPacketListener) {

@@ -28,10 +28,14 @@ public class PlayerSkullBlock extends SkullBlock {
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		super.onPlaced(world, pos, state, placer, itemStack);
+		resolveSkullOwner(world, pos, itemStack);
+	}
+
+	public static void resolveSkullOwner(World world, BlockPos pos, ItemStack stack) {
 		if (world.getBlockEntity(pos) instanceof SkullBlockEntity skullBlockEntity) {
 			GameProfile gameProfile = null;
-			if (itemStack.hasNbt()) {
-				NbtCompound nbtCompound = itemStack.getNbt();
+			if (stack.hasNbt()) {
+				NbtCompound nbtCompound = stack.getNbt();
 				if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 					gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
 				} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbtCompound.getString("SkullOwner"))) {

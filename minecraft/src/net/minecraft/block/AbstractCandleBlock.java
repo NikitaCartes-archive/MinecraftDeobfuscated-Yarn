@@ -39,7 +39,7 @@ public abstract class AbstractCandleBlock extends Block {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+	protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		if (!world.isClient && projectile.isOnFire() && this.isNotLit(state)) {
 			setLit(world, state, hit.getBlockPos(), true);
 		}
@@ -99,7 +99,7 @@ public abstract class AbstractCandleBlock extends Block {
 	}
 
 	@Override
-	public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && (Boolean)state.get(LIT)) {
 			extinguish(null, state, world, pos);
 		}

@@ -1,11 +1,17 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.village.TradeOfferList;
 
 public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, SetTradeOffersS2CPacket> CODEC = Packet.createCodec(
+		SetTradeOffersS2CPacket::write, SetTradeOffersS2CPacket::new
+	);
 	private final int syncId;
 	private final TradeOfferList offers;
 	private final int levelProgress;
@@ -22,23 +28,27 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 		this.refreshable = refreshable;
 	}
 
-	public SetTradeOffersS2CPacket(PacketByteBuf buf) {
+	private SetTradeOffersS2CPacket(RegistryByteBuf buf) {
 		this.syncId = buf.readVarInt();
-		this.offers = TradeOfferList.fromPacket(buf);
+		this.offers = TradeOfferList.PACKET_CODEC.decode(buf);
 		this.levelProgress = buf.readVarInt();
 		this.experience = buf.readVarInt();
 		this.leveled = buf.readBoolean();
 		this.refreshable = buf.readBoolean();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeVarInt(this.syncId);
-		this.offers.toPacket(buf);
+		TradeOfferList.PACKET_CODEC.encode(buf, this.offers);
 		buf.writeVarInt(this.levelProgress);
 		buf.writeVarInt(this.experience);
 		buf.writeBoolean(this.leveled);
 		buf.writeBoolean(this.refreshable);
+	}
+
+	@Override
+	public PacketIdentifier<SetTradeOffersS2CPacket> getPacketId() {
+		return PlayPackets.MERCHANT_OFFERS;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

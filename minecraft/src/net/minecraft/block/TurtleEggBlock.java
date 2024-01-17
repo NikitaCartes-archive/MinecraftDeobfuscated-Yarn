@@ -87,7 +87,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (this.shouldHatchProgress(world) && isSandBelow(world, pos)) {
 			int i = (Integer)state.get(HATCH);
 			if (i < 2) {
@@ -122,7 +122,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (isSandBelow(world, pos) && !world.isClient) {
 			world.syncWorldEvent(WorldEvents.TURTLE_EGG_PLACED, pos, 15);
 		}
@@ -140,7 +140,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+	protected boolean canReplace(BlockState state, ItemPlacementContext context) {
 		return !context.shouldCancelInteraction() && context.getStack().isOf(this.asItem()) && state.get(EGGS) < 4 ? true : super.canReplace(state, context);
 	}
 
@@ -152,7 +152,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return state.get(EGGS) > 1 ? LARGE_SHAPE : SMALL_SHAPE;
 	}
 

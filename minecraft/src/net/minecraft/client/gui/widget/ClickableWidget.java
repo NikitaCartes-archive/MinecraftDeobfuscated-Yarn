@@ -1,9 +1,11 @@
 package net.minecraft.client.gui.widget;
 
+import java.time.Duration;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9110;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -44,8 +46,7 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	protected float alpha = 1.0F;
 	private int navigationOrder;
 	private boolean focused;
-	@Nullable
-	private Tooltip tooltip;
+	private final class_9110 tooltip = new class_9110();
 
 	public ClickableWidget(int x, int y, int width, int height, Text message) {
 		this.x = x;
@@ -65,25 +66,21 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		if (this.visible) {
 			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 			this.renderWidget(context, mouseX, mouseY, delta);
-			if (this.tooltip != null) {
-				this.tooltip.render(this.isHovered(), this.isFocused(), this.getNavigationFocus());
-			}
+			this.tooltip.method_56142(this.isHovered(), this.isFocused(), this.getNavigationFocus());
 		}
 	}
 
 	public void setTooltip(@Nullable Tooltip tooltip) {
-		this.tooltip = tooltip;
+		this.tooltip.method_56138(tooltip);
 	}
 
 	@Nullable
 	public Tooltip getTooltip() {
-		return this.tooltip;
+		return this.tooltip.method_56137();
 	}
 
-	public void setTooltipDelay(int delay) {
-		if (this.tooltip != null) {
-			this.tooltip.setDelay(delay);
-		}
+	public void setTooltipDelay(Duration duration) {
+		this.tooltip.method_56141(duration);
 	}
 
 	protected MutableText getNarrationMessage() {
@@ -271,9 +268,7 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	@Override
 	public final void appendNarrations(NarrationMessageBuilder builder) {
 		this.appendClickableNarrations(builder);
-		if (this.tooltip != null) {
-			this.tooltip.appendNarrations(builder);
-		}
+		this.tooltip.method_56139(builder);
 	}
 
 	protected abstract void appendClickableNarrations(NarrationMessageBuilder builder);

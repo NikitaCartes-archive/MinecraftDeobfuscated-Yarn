@@ -17,7 +17,7 @@ public class GoToWorkTask {
 						context,
 						(potentialJobSite, jobSite) -> (world, entity, time) -> {
 								GlobalPos globalPos = context.getValue(potentialJobSite);
-								if (!globalPos.getPos().isWithinDistance(entity.getPos(), 2.0) && !entity.isNatural()) {
+								if (!globalPos.pos().isWithinDistance(entity.getPos(), 2.0) && !entity.isNatural()) {
 									return false;
 								} else {
 									potentialJobSite.forget();
@@ -27,8 +27,8 @@ public class GoToWorkTask {
 										return true;
 									} else {
 										MinecraftServer minecraftServer = world.getServer();
-										Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))
-											.flatMap(jobSiteWorld -> jobSiteWorld.getPointOfInterestStorage().getType(globalPos.getPos()))
+										Optional.ofNullable(minecraftServer.getWorld(globalPos.dimension()))
+											.flatMap(jobSiteWorld -> jobSiteWorld.getPointOfInterestStorage().getType(globalPos.pos()))
 											.flatMap(poiType -> Registries.VILLAGER_PROFESSION.stream().filter(profession -> profession.heldWorkstation().test(poiType)).findFirst())
 											.ifPresent(profession -> {
 												entity.setVillagerData(entity.getVillagerData().withProfession(profession));

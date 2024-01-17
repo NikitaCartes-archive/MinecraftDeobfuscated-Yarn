@@ -2,11 +2,17 @@ package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 
 public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, UpdateCommandBlockC2SPacket> CODEC = Packet.createCodec(
+		UpdateCommandBlockC2SPacket::write, UpdateCommandBlockC2SPacket::new
+	);
 	private static final int TRACK_OUTPUT_MASK = 1;
 	private static final int CONDITIONAL_MASK = 2;
 	private static final int ALWAYS_ACTIVE_MASK = 4;
@@ -28,7 +34,7 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 		this.type = type;
 	}
 
-	public UpdateCommandBlockC2SPacket(PacketByteBuf buf) {
+	private UpdateCommandBlockC2SPacket(PacketByteBuf buf) {
 		this.pos = buf.readBlockPos();
 		this.command = buf.readString();
 		this.type = buf.readEnumConstant(CommandBlockBlockEntity.Type.class);
@@ -38,8 +44,7 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 		this.alwaysActive = (i & 4) != 0;
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
 		buf.writeString(this.command);
 		buf.writeEnumConstant(this.type);
@@ -57,6 +62,11 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 		}
 
 		buf.writeByte(i);
+	}
+
+	@Override
+	public PacketIdentifier<UpdateCommandBlockC2SPacket> getPacketId() {
+		return PlayPackets.SET_COMMAND_BLOCK;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

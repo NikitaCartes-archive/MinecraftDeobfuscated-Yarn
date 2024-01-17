@@ -1,9 +1,22 @@
 package net.minecraft.util.math;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.codec.PacketCodec;
 
 public class EulerAngle {
+	public static final PacketCodec<ByteBuf, EulerAngle> PACKET_CODEC = new PacketCodec<ByteBuf, EulerAngle>() {
+		public EulerAngle decode(ByteBuf byteBuf) {
+			return new EulerAngle(byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readFloat());
+		}
+
+		public void encode(ByteBuf byteBuf, EulerAngle eulerAngle) {
+			byteBuf.writeFloat(eulerAngle.pitch);
+			byteBuf.writeFloat(eulerAngle.yaw);
+			byteBuf.writeFloat(eulerAngle.roll);
+		}
+	};
 	protected final float pitch;
 	protected final float yaw;
 	protected final float roll;

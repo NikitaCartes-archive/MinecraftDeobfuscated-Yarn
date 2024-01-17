@@ -73,6 +73,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 		Vec3i vec3i = Direction.SOUTH.getVector();
 		return new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
 	});
+	private static final float field_48343 = 3.0F;
 	private float prevOpenProgress;
 	private float openProgress;
 	@Nullable
@@ -197,8 +198,8 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	protected Box calculateBoundingBox() {
 		float f = getExtraLength(this.openProgress);
 		Direction direction = this.getAttachedFace().getOpposite();
-		float g = this.getType().getWidth() / 2.0F;
-		return calculateBoundingBox(direction, f).offset(this.getX() - (double)g, this.getY(), this.getZ() - (double)g);
+		float g = this.getWidth() / 2.0F;
+		return calculateBoundingBox(this.getScale(), direction, f).offset(this.getX() - (double)g, this.getY(), this.getZ() - (double)g);
 	}
 
 	private static float getExtraLength(float openProgress) {
@@ -226,12 +227,12 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 		float f = getExtraLength(this.openProgress);
 		float g = getExtraLength(this.prevOpenProgress);
 		Direction direction = this.getAttachedFace().getOpposite();
-		float h = f - g;
+		float h = (f - g) * this.getScale();
 		if (!(h <= 0.0F)) {
 			for (Entity entity : this.getWorld()
 				.getOtherEntities(
 					this,
-					calculateBoundingBox(direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5),
+					calculateBoundingBox(this.getScale(), direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5),
 					EntityPredicates.EXCEPT_SPECTATOR.and(entityx -> !entityx.isConnectedThroughVehicle(this))
 				)) {
 				if (!(entity instanceof ShulkerEntity) && !entity.noClip) {
@@ -244,16 +245,22 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 		}
 	}
 
-	public static Box calculateBoundingBox(Direction direction, float extraLength) {
-		return calculateBoundingBox(direction, -1.0F, extraLength);
+	public static Box calculateBoundingBox(float scale, Direction facing, float extraLength) {
+		return calculateBoundingBox(scale, facing, -1.0F, extraLength);
 	}
 
-	public static Box calculateBoundingBox(Direction direction, float prevExtraLength, float extraLength) {
+	public static Box calculateBoundingBox(float scale, Direction facing, float prevExtraLength, float extraLength) {
+		Box box = new Box(0.0, 0.0, 0.0, (double)scale, (double)scale, (double)scale);
 		double d = (double)Math.max(prevExtraLength, extraLength);
 		double e = (double)Math.min(prevExtraLength, extraLength);
-		return new Box(BlockPos.ORIGIN)
-			.stretch((double)direction.getOffsetX() * d, (double)direction.getOffsetY() * d, (double)direction.getOffsetZ() * d)
-			.shrink((double)(-direction.getOffsetX()) * (1.0 + e), (double)(-direction.getOffsetY()) * (1.0 + e), (double)(-direction.getOffsetZ()) * (1.0 + e));
+		return box.stretch(
+				(double)facing.getOffsetX() * d * (double)scale, (double)facing.getOffsetY() * d * (double)scale, (double)facing.getOffsetZ() * d * (double)scale
+			)
+			.shrink(
+				(double)(-facing.getOffsetX()) * (1.0 + e) * (double)scale,
+				(double)(-facing.getOffsetY()) * (1.0 + e) * (double)scale,
+				(double)(-facing.getOffsetZ()) * (1.0 + e) * (double)scale
+			);
 	}
 
 	@Override
@@ -351,7 +358,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 			if (!this.getWorld().isDirectionSolid(pos.offset(direction), this, direction2)) {
 				return false;
 			} else {
-				Box box = calculateBoundingBox(direction2, 1.0F).offset(pos).contract(1.0E-6);
+				Box box = calculateBoundingBox(this.getScale(), direction2, 1.0F).offset(pos).contract(1.0E-6);
 				return this.getWorld().isSpaceEmpty(this, box);
 			}
 		}
@@ -531,6 +538,11 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 		} else {
 			return Optional.empty();
 		}
+	}
+
+	@Override
+	protected float method_56077(float f) {
+		return Math.min(f, 3.0F);
 	}
 
 	public void setVariant(Optional<DyeColor> optional) {

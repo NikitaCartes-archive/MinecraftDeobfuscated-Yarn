@@ -340,7 +340,7 @@ public class ArmorStandEntity extends LivingEntity {
 	private EquipmentSlot getSlotFromPosition(Vec3d hitPos) {
 		EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
 		boolean bl = this.isSmall();
-		double d = bl ? hitPos.y * 2.0 : hitPos.y;
+		double d = hitPos.y / (double)(this.getScale() * this.getScaleFactor());
 		EquipmentSlot equipmentSlot2 = EquipmentSlot.FEET;
 		if (d >= 0.1 && d < 0.1 + (bl ? 0.8 : 0.45) && this.hasStackEquipped(equipmentSlot2)) {
 			equipmentSlot = EquipmentSlot.FEET;

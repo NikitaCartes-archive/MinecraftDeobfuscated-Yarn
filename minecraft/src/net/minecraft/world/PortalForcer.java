@@ -19,7 +19,7 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class PortalForcer {
-	private static final int field_31810 = 3;
+	public static final int field_31810 = 3;
 	private static final int field_31811 = 128;
 	private static final int field_31812 = 16;
 	private static final int field_31813 = 5;

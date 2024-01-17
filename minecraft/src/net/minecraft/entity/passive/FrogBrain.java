@@ -48,7 +48,6 @@ import net.minecraft.world.World;
 
 public class FrogBrain {
 	private static final float FLEE_SPEED = 2.0F;
-	private static final float field_37470 = 1.0F;
 	private static final float field_37471 = 1.0F;
 	private static final float field_37472 = 1.0F;
 	private static final float field_37473 = 0.75F;
@@ -94,7 +93,7 @@ public class FrogBrain {
 			Activity.IDLE,
 			ImmutableList.of(
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
-				Pair.of(0, new BreedTask(EntityType.FROG, 1.0F)),
+				Pair.of(0, new BreedTask(EntityType.FROG)),
 				Pair.of(1, new TemptTask(frog -> 1.25F)),
 				Pair.of(
 					2, UpdateAttackTargetTask.create(FrogBrain::isNotBreeding, frog -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))

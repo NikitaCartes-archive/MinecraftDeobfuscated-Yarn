@@ -49,7 +49,7 @@ public class BeetrootsBlock extends CropBlock {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (random.nextInt(3) != 0) {
 			super.randomTick(state, world, pos, random);
 		}
@@ -66,7 +66,7 @@ public class BeetrootsBlock extends CropBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return AGE_TO_SHAPE[this.getAge(state)];
 	}
 }

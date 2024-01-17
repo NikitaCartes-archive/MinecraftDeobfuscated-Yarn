@@ -20,14 +20,14 @@ public class VillagerWalkTowardsTask {
 					.apply(context, (cantReachWalkTargetSince, walkTarget, destinationResult) -> (world, entity, time) -> {
 							GlobalPos globalPos = context.getValue(destinationResult);
 							Optional<Long> optional = context.getOptionalValue(cantReachWalkTargetSince);
-							if (globalPos.getDimension() == world.getRegistryKey() && (!optional.isPresent() || world.getTime() - (Long)optional.get() <= (long)maxRunTime)) {
-								if (globalPos.getPos().getManhattanDistance(entity.getBlockPos()) > maxDistance) {
+							if (globalPos.dimension() == world.getRegistryKey() && (!optional.isPresent() || world.getTime() - (Long)optional.get() <= (long)maxRunTime)) {
+								if (globalPos.pos().getManhattanDistance(entity.getBlockPos()) > maxDistance) {
 									Vec3d vec3d = null;
 									int l = 0;
 									int m = 1000;
 
 									while (vec3d == null || BlockPos.ofFloored(vec3d).getManhattanDistance(entity.getBlockPos()) > maxDistance) {
-										vec3d = NoPenaltyTargeting.findTo(entity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), (float) (Math.PI / 2));
+										vec3d = NoPenaltyTargeting.findTo(entity, 15, 7, Vec3d.ofBottomCenter(globalPos.pos()), (float) (Math.PI / 2));
 										if (++l == 1000) {
 											entity.releaseTicketFor(destination);
 											destinationResult.forget();
@@ -37,8 +37,8 @@ public class VillagerWalkTowardsTask {
 									}
 
 									walkTarget.remember(new WalkTarget(vec3d, speed, completionRange));
-								} else if (globalPos.getPos().getManhattanDistance(entity.getBlockPos()) > completionRange) {
-									walkTarget.remember(new WalkTarget(globalPos.getPos(), speed, completionRange));
+								} else if (globalPos.pos().getManhattanDistance(entity.getBlockPos()) > completionRange) {
+									walkTarget.remember(new WalkTarget(globalPos.pos(), speed, completionRange));
 								}
 							} else {
 								entity.releaseTicketFor(destination);

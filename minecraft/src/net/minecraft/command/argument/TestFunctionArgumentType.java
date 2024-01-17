@@ -43,7 +43,11 @@ public class TestFunctionArgumentType implements ArgumentType<TestFunction> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		Stream<String> stream = TestFunctions.getTestFunctions().stream().map(TestFunction::getTemplatePath);
+		return suggestTestNames(context, builder);
+	}
+
+	public static <S> CompletableFuture<Suggestions> suggestTestNames(CommandContext<S> context, SuggestionsBuilder builder) {
+		Stream<String> stream = TestFunctions.getTestFunctions().stream().map(TestFunction::templatePath);
 		return CommandSource.suggestMatching(stream, builder);
 	}
 

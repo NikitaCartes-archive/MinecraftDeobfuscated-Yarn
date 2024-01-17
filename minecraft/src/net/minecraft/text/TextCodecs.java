@@ -11,14 +11,18 @@ import com.mojang.serialization.MapEncoder;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.Codecs;
 
 public class TextCodecs {
 	public static final Codec<Text> CODEC = Codecs.createRecursive("Component", TextCodecs::createCodec);
+	public static final PacketCodec<ByteBuf, Text> PACKET_CODEC = PacketCodecs.ofCodec(CODEC);
 	public static final Codec<Text> STRINGIFIED_CODEC = Codecs.STRINGIFIED_TEXT
 		.flatXmap(json -> CODEC.parse(JsonOps.INSTANCE, json), text -> CODEC.encodeStart(JsonOps.INSTANCE, text));
 

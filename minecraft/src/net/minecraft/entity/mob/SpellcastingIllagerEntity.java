@@ -84,8 +84,10 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 			float g = this.bodyYaw * (float) (Math.PI / 180.0) + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
 			float h = MathHelper.cos(g);
 			float i = MathHelper.sin(g);
-			this.getWorld().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)h * 0.6, this.getY() + 1.8, this.getZ() + (double)i * 0.6, d, e, f);
-			this.getWorld().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)h * 0.6, this.getY() + 1.8, this.getZ() - (double)i * 0.6, d, e, f);
+			double j = 0.6 * (double)this.getScale();
+			double k = 1.8 * (double)this.getScale();
+			this.getWorld().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)h * j, this.getY() + k, this.getZ() + (double)i * j, d, e, f);
+			this.getWorld().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)h * j, this.getY() + k, this.getZ() - (double)i * j, d, e, f);
 		}
 	}
 

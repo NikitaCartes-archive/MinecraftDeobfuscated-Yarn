@@ -3,13 +3,10 @@ package net.minecraft.world;
 import java.util.Locale;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.BlockPos;
 
 public interface WorldProperties {
-	int getSpawnX();
-
-	int getSpawnY();
-
-	int getSpawnZ();
+	BlockPos getSpawnPos();
 
 	float getSpawnAngle();
 
@@ -32,9 +29,7 @@ public interface WorldProperties {
 	boolean isDifficultyLocked();
 
 	default void populateCrashReport(CrashReportSection reportSection, HeightLimitView world) {
-		reportSection.add(
-			"Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(world, this.getSpawnX(), this.getSpawnY(), this.getSpawnZ()))
-		);
+		reportSection.add("Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(world, this.getSpawnPos())));
 		reportSection.add("Level time", (CrashCallable<String>)(() -> String.format(Locale.ROOT, "%d game time, %d day time", this.getTime(), this.getTimeOfDay())));
 	}
 }

@@ -1,13 +1,16 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.registry.Registries;
+import net.minecraft.particle.ParticleTypes;
 
 public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, ParticleS2CPacket> CODEC = Packet.createCodec(ParticleS2CPacket::write, ParticleS2CPacket::new);
 	private final double x;
 	private final double y;
 	private final double z;
@@ -34,8 +37,7 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.count = count;
 	}
 
-	public ParticleS2CPacket(PacketByteBuf buf) {
-		ParticleType<?> particleType = buf.readRegistryValue(Registries.PARTICLE_TYPE);
+	private ParticleS2CPacket(RegistryByteBuf buf) {
 		this.longDistance = buf.readBoolean();
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
@@ -45,16 +47,10 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.offsetZ = buf.readFloat();
 		this.speed = buf.readFloat();
 		this.count = buf.readInt();
-		this.parameters = this.readParticleParameters(buf, (ParticleType<ParticleEffect>)particleType);
+		this.parameters = ParticleTypes.PACKET_CODEC.decode(buf);
 	}
 
-	private <T extends ParticleEffect> T readParticleParameters(PacketByteBuf buf, ParticleType<T> type) {
-		return type.getParametersFactory().read(type, buf);
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeRegistryValue(Registries.PARTICLE_TYPE, this.parameters.getType());
+	private void write(RegistryByteBuf buf) {
 		buf.writeBoolean(this.longDistance);
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
@@ -64,7 +60,16 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeFloat(this.offsetZ);
 		buf.writeFloat(this.speed);
 		buf.writeInt(this.count);
-		this.parameters.write(buf);
+		ParticleTypes.PACKET_CODEC.encode(buf, this.parameters);
+	}
+
+	@Override
+	public PacketIdentifier<ParticleS2CPacket> getPacketId() {
+		return PlayPackets.LEVEL_PARTICLES;
+	}
+
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+		clientPlayPacketListener.onParticle(this);
 	}
 
 	public boolean isLongDistance() {
@@ -105,9 +110,5 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public ParticleEffect getParameters() {
 		return this.parameters;
-	}
-
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onParticle(this);
 	}
 }

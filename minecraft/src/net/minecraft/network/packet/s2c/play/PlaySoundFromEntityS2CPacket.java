@@ -1,15 +1,20 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 
 public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, PlaySoundFromEntityS2CPacket> CODEC = Packet.createCodec(
+		PlaySoundFromEntityS2CPacket::write, PlaySoundFromEntityS2CPacket::new
+	);
 	private final RegistryEntry<SoundEvent> sound;
 	private final SoundCategory category;
 	private final int entityId;
@@ -26,8 +31,8 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 		this.seed = seed;
 	}
 
-	public PlaySoundFromEntityS2CPacket(PacketByteBuf buf) {
-		this.sound = buf.readRegistryEntry(Registries.SOUND_EVENT.getIndexedEntries(), SoundEvent::fromBuf);
+	private PlaySoundFromEntityS2CPacket(RegistryByteBuf buf) {
+		this.sound = SoundEvent.ENTRY_PACKET_CODEC.decode(buf);
 		this.category = buf.readEnumConstant(SoundCategory.class);
 		this.entityId = buf.readVarInt();
 		this.volume = buf.readFloat();
@@ -35,14 +40,22 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 		this.seed = buf.readLong();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeRegistryEntry(Registries.SOUND_EVENT.getIndexedEntries(), this.sound, (packetByteBuf, soundEvent) -> soundEvent.writeBuf(packetByteBuf));
+	private void write(RegistryByteBuf buf) {
+		SoundEvent.ENTRY_PACKET_CODEC.encode(buf, this.sound);
 		buf.writeEnumConstant(this.category);
 		buf.writeVarInt(this.entityId);
 		buf.writeFloat(this.volume);
 		buf.writeFloat(this.pitch);
 		buf.writeLong(this.seed);
+	}
+
+	@Override
+	public PacketIdentifier<PlaySoundFromEntityS2CPacket> getPacketId() {
+		return PlayPackets.SOUND_ENTITY;
+	}
+
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+		clientPlayPacketListener.onPlaySoundFromEntity(this);
 	}
 
 	public RegistryEntry<SoundEvent> getSound() {
@@ -67,9 +80,5 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 
 	public long getSeed() {
 		return this.seed;
-	}
-
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onPlaySoundFromEntity(this);
 	}
 }

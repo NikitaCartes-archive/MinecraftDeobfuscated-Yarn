@@ -2,7 +2,8 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 
 public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleEffect {
@@ -10,12 +11,9 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader) {
 			return (DefaultParticleType)particleType;
 		}
-
-		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
-			return (DefaultParticleType)particleType;
-		}
 	};
 	private final Codec<DefaultParticleType> codec = Codec.unit(this::getType);
+	private final PacketCodec<RegistryByteBuf, DefaultParticleType> PACKET_CODEC = PacketCodec.unit(this);
 
 	protected DefaultParticleType(boolean alwaysShow) {
 		super(alwaysShow, PARAMETER_FACTORY);
@@ -31,7 +29,8 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
+	public PacketCodec<RegistryByteBuf, DefaultParticleType> getPacketCodec() {
+		return this.PACKET_CODEC;
 	}
 
 	@Override

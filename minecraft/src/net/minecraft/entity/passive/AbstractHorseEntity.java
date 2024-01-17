@@ -728,10 +728,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	public void playAngrySound() {
 		if (!this.isAngry()) {
 			this.updateAnger();
-			SoundEvent soundEvent = this.getAngrySound();
-			if (soundEvent != null) {
-				this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
-			}
+			this.playSound(this.getAngrySound());
 		}
 	}
 

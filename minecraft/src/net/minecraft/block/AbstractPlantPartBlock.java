@@ -39,7 +39,7 @@ public abstract class AbstractPlantPartBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.offset(this.growthDirection.getOpposite());
 		BlockState blockState = world.getBlockState(blockPos);
 		return !this.canAttachTo(blockState)
@@ -48,7 +48,7 @@ public abstract class AbstractPlantPartBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
 		}
@@ -59,7 +59,7 @@ public abstract class AbstractPlantPartBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.outlineShape;
 	}
 

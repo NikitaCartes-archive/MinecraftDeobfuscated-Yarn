@@ -66,7 +66,7 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		boolean bl = direction.getAxis() == Direction.Axis.Y;
@@ -74,7 +74,7 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(POWERED)) {
 			if (bl) {
@@ -93,14 +93,14 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		return stack.isIn(ItemTags.NOTEBLOCK_TOP_INSTRUMENTS) && hit.getSide() == Direction.UP
 			? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION
 			: super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
@@ -113,7 +113,7 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
+	protected void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
 		if (!world.isClient) {
 			this.playNote(player, state, world, pos);
 			player.incrementStat(Stats.PLAY_NOTEBLOCK);
@@ -125,7 +125,7 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+	protected boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 		Instrument instrument = state.get(INSTRUMENT);
 		float f;
 		if (instrument.shouldSpawnNoteParticles()) {

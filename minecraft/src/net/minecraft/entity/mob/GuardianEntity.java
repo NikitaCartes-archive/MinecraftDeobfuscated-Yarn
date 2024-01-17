@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -103,11 +102,6 @@ public class GuardianEntity extends HostileEntity {
 		super.initDataTracker();
 		this.dataTracker.startTracking(SPIKES_RETRACTED, false);
 		this.dataTracker.startTracking(BEAM_TARGET_ID, 0);
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.AQUATIC;
 	}
 
 	public boolean areSpikesRetracted() {

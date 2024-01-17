@@ -1,12 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.registry.tag.ItemTags;
 
 public class BindingCurseEnchantment extends Enchantment {
 	public BindingCurseEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.WEARABLE, slotTypes);
+		super(weight, ItemTags.EQUIPPABLE_ENCHANTABLE, slotTypes);
 	}
 
 	@Override
@@ -27,10 +26,5 @@ public class BindingCurseEnchantment extends Enchantment {
 	@Override
 	public boolean isCursed() {
 		return true;
-	}
-
-	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return !stack.isOf(Items.SHIELD) && super.isAcceptableItem(stack);
 	}
 }

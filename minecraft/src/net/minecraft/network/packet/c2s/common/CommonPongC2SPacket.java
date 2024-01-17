@@ -1,8 +1,11 @@
 package net.minecraft.network.packet.c2s.common;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerCommonPacketListener;
+import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
 /**
  * This is a packet that is sent by the client during tick after receiving a
@@ -14,19 +17,24 @@ import net.minecraft.network.packet.Packet;
  * @see net.minecraft.network.packet.c2s.query.QueryPingC2SPacket
  */
 public class CommonPongC2SPacket implements Packet<ServerCommonPacketListener> {
+	public static final PacketCodec<PacketByteBuf, CommonPongC2SPacket> CODEC = Packet.createCodec(CommonPongC2SPacket::write, CommonPongC2SPacket::new);
 	private final int parameter;
 
 	public CommonPongC2SPacket(int parameter) {
 		this.parameter = parameter;
 	}
 
-	public CommonPongC2SPacket(PacketByteBuf buf) {
+	private CommonPongC2SPacket(PacketByteBuf buf) {
 		this.parameter = buf.readInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeInt(this.parameter);
+	}
+
+	@Override
+	public PacketIdentifier<CommonPongC2SPacket> getPacketId() {
+		return CommonPackets.PONG;
 	}
 
 	public void apply(ServerCommonPacketListener serverCommonPacketListener) {

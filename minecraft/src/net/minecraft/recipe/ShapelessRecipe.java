@@ -5,7 +5,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
@@ -100,36 +101,40 @@ public class ShapelessRecipe implements CraftingRecipe {
 					)
 					.apply(instance, ShapelessRecipe::new)
 		);
+		public static final PacketCodec<RegistryByteBuf, ShapelessRecipe> PACKET_CODEC = PacketCodec.of(
+			ShapelessRecipe.Serializer::write, ShapelessRecipe.Serializer::read
+		);
 
 		@Override
 		public Codec<ShapelessRecipe> codec() {
 			return CODEC;
 		}
 
-		public ShapelessRecipe read(PacketByteBuf packetByteBuf) {
-			String string = packetByteBuf.readString();
-			CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
-			int i = packetByteBuf.readVarInt();
+		@Override
+		public PacketCodec<RegistryByteBuf, ShapelessRecipe> packetCodec() {
+			return PACKET_CODEC;
+		}
+
+		private static ShapelessRecipe read(RegistryByteBuf buf) {
+			String string = buf.readString();
+			CraftingRecipeCategory craftingRecipeCategory = buf.readEnumConstant(CraftingRecipeCategory.class);
+			int i = buf.readVarInt();
 			DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i, Ingredient.EMPTY);
-
-			for (int j = 0; j < defaultedList.size(); j++) {
-				defaultedList.set(j, Ingredient.fromPacket(packetByteBuf));
-			}
-
-			ItemStack itemStack = packetByteBuf.readItemStack();
+			defaultedList.replaceAll(empty -> Ingredient.PACKET_CODEC.decode(buf));
+			ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
 			return new ShapelessRecipe(string, craftingRecipeCategory, itemStack, defaultedList);
 		}
 
-		public void write(PacketByteBuf packetByteBuf, ShapelessRecipe shapelessRecipe) {
-			packetByteBuf.writeString(shapelessRecipe.group);
-			packetByteBuf.writeEnumConstant(shapelessRecipe.category);
-			packetByteBuf.writeVarInt(shapelessRecipe.ingredients.size());
+		private static void write(RegistryByteBuf buf, ShapelessRecipe recipe) {
+			buf.writeString(recipe.group);
+			buf.writeEnumConstant(recipe.category);
+			buf.writeVarInt(recipe.ingredients.size());
 
-			for (Ingredient ingredient : shapelessRecipe.ingredients) {
-				ingredient.write(packetByteBuf);
+			for (Ingredient ingredient : recipe.ingredients) {
+				Ingredient.PACKET_CODEC.encode(buf, ingredient);
 			}
 
-			packetByteBuf.writeItemStack(shapelessRecipe.result);
+			ItemStack.PACKET_CODEC.encode(buf, recipe.result);
 		}
 	}
 }

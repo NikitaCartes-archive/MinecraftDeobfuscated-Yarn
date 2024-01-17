@@ -1,10 +1,14 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class TitleFadeS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, TitleFadeS2CPacket> CODEC = Packet.createCodec(TitleFadeS2CPacket::write, TitleFadeS2CPacket::new);
 	private final int fadeInTicks;
 	private final int stayTicks;
 	private final int fadeOutTicks;
@@ -15,17 +19,21 @@ public class TitleFadeS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.fadeOutTicks = fadeOutTicks;
 	}
 
-	public TitleFadeS2CPacket(PacketByteBuf buf) {
+	private TitleFadeS2CPacket(PacketByteBuf buf) {
 		this.fadeInTicks = buf.readInt();
 		this.stayTicks = buf.readInt();
 		this.fadeOutTicks = buf.readInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeInt(this.fadeInTicks);
 		buf.writeInt(this.stayTicks);
 		buf.writeInt(this.fadeOutTicks);
+	}
+
+	@Override
+	public PacketIdentifier<TitleFadeS2CPacket> getPacketId() {
+		return PlayPackets.SET_TITLES_ANIMATION;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

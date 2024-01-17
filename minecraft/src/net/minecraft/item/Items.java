@@ -1113,7 +1113,7 @@ public class Items {
 	public static final Item CAULDRON = register(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
 	public static final Item ENDER_EYE = register("ender_eye", new EnderEyeItem(new Item.Settings()));
 	public static final Item GLISTERING_MELON_SLICE = register("glistering_melon_slice", new Item(new Item.Settings()));
-	public static final Item ARMADILLO_SPAWN_EGG = register("armadillo_spawn_egg", new SpawnEggItem(EntityType.ARMADILLO, 10909557, 7555919, new Item.Settings()));
+	public static final Item ARMADILLO_SPAWN_EGG = register("armadillo_spawn_egg", new SpawnEggItem(EntityType.ARMADILLO, 11366765, 8538184, new Item.Settings()));
 	public static final Item ALLAY_SPAWN_EGG = register("allay_spawn_egg", new SpawnEggItem(EntityType.ALLAY, 56063, 44543, new Item.Settings()));
 	public static final Item AXOLOTL_SPAWN_EGG = register("axolotl_spawn_egg", new SpawnEggItem(EntityType.AXOLOTL, 16499171, 10890612, new Item.Settings()));
 	public static final Item BAT_SPAWN_EGG = register("bat_spawn_egg", new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings()));

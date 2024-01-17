@@ -40,9 +40,8 @@ public class FleeTask extends MultiTickTask<PathAwareEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
-		return pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.HURT_BY)
-			|| this.predicate.test(pathAwareEntity)
-			|| pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
+		return this.predicate.test(pathAwareEntity)
+			&& (pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.HURT_BY) || pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING));
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {

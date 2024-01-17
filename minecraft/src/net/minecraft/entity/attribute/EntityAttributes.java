@@ -21,11 +21,11 @@ public class EntityAttributes {
 	public static final RegistryEntry<EntityAttribute> GENERIC_ATTACK_SPEED = register(
 		"generic.attack_speed", new ClampedEntityAttribute("attribute.name.generic.attack_speed", 4.0, 0.0, 1024.0).setTracked(true)
 	);
-	public static final RegistryEntry<EntityAttribute> GENERIC_BLOCK_INTERACTION_RANGE = register(
-		"generic.block_interaction_range", new ClampedEntityAttribute("attribute.name.generic.block_interaction_range", 4.5, 0.0, 64.0).setTracked(true)
+	public static final RegistryEntry<EntityAttribute> PLAYER_BLOCK_INTERACTION_RANGE = register(
+		"player.block_interaction_range", new ClampedEntityAttribute("attribute.name.player.block_interaction_range", 4.5, 0.0, 64.0).setTracked(true)
 	);
-	public static final RegistryEntry<EntityAttribute> GENERIC_ENTITY_INTERACTION_RANGE = register(
-		"generic.entity_interaction_range", new ClampedEntityAttribute("attribute.name.generic.entity_interaction_range", 3.0, 0.0, 64.0).setTracked(true)
+	public static final RegistryEntry<EntityAttribute> PLAYER_ENTITY_INTERACTION_RANGE = register(
+		"player.entity_interaction_range", new ClampedEntityAttribute("attribute.name.player.entity_interaction_range", 3.0, 0.0, 64.0).setTracked(true)
 	);
 	public static final RegistryEntry<EntityAttribute> GENERIC_FLYING_SPEED = register(
 		"generic.flying_speed", new ClampedEntityAttribute("attribute.name.generic.flying_speed", 0.4F, 0.0, 1024.0).setTracked(true)

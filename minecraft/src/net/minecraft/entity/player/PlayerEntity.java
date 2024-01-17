@@ -30,7 +30,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAttachmentType;
 import net.minecraft.entity.EntityAttachments;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -215,8 +214,8 @@ public abstract class PlayerEntity extends LivingEntity {
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1F)
 			.add(EntityAttributes.GENERIC_ATTACK_SPEED)
 			.add(EntityAttributes.GENERIC_LUCK)
-			.add(EntityAttributes.GENERIC_BLOCK_INTERACTION_RANGE, 4.5)
-			.add(EntityAttributes.GENERIC_ENTITY_INTERACTION_RANGE, 3.0);
+			.add(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE, 4.5)
+			.add(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, 3.0);
 	}
 
 	@Override
@@ -897,7 +896,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected void takeShieldHit(LivingEntity attacker) {
 		super.takeShieldHit(attacker);
 		if (attacker.disablesShield()) {
-			this.disableShield(true);
+			this.disableShield();
 		}
 	}
 
@@ -936,7 +935,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (amount >= 3.0F) {
 				int i = 1 + MathHelper.floor(amount);
 				Hand hand = this.getActiveHand();
-				this.activeItemStack.damage(i, this, player -> player.sendToolBreakStatus(hand));
+				this.activeItemStack.damage(i, this, getSlotForHand(hand));
 				if (this.activeItemStack.isEmpty()) {
 					if (hand == Hand.MAIN_HAND) {
 						this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
@@ -1147,13 +1146,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (target.isAttackable()) {
 			if (!target.handleAttack(this)) {
 				float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-				float g;
-				if (target instanceof LivingEntity) {
-					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
-				} else {
-					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), EntityGroup.DEFAULT);
-				}
-
+				float g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), target.getType());
 				float h = this.getAttackCooldownProgress(0.5F);
 				f *= 0.2F + h * h * 0.8F;
 				g *= h;
@@ -1319,17 +1312,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.attack(target);
 	}
 
-	public void disableShield(boolean sprinting) {
-		float f = 0.25F + (float)EnchantmentHelper.getEfficiency(this) * 0.05F;
-		if (sprinting) {
-			f += 0.75F;
-		}
-
-		if (this.random.nextFloat() < f) {
-			this.getItemCooldownManager().set(Items.SHIELD, 100);
-			this.clearActiveItem();
-			this.getWorld().sendEntityStatus(this, EntityStatuses.BREAK_SHIELD);
-		}
+	public void disableShield() {
+		this.getItemCooldownManager().set(Items.SHIELD, 100);
+		this.clearActiveItem();
+		this.getWorld().sendEntityStatus(this, EntityStatuses.BREAK_SHIELD);
 	}
 
 	public void addCritParticles(Entity target) {
@@ -2154,11 +2140,25 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public double getBlockInteractionRange() {
-		return this.getAttributeValue(EntityAttributes.GENERIC_BLOCK_INTERACTION_RANGE);
+		return this.getAttributeValue(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE);
 	}
 
 	public double getEntityInteractionRange() {
-		return this.getAttributeValue(EntityAttributes.GENERIC_ENTITY_INTERACTION_RANGE);
+		return this.getAttributeValue(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE);
+	}
+
+	public boolean canInteractWithEntity(Entity entity, double range) {
+		return entity.isRemoved() ? false : this.canInteractWithEntityIn(entity.getBoundingBox(), range);
+	}
+
+	public boolean canInteractWithEntityIn(Box box, double range) {
+		double d = this.getEntityInteractionRange() + range;
+		return box.squaredMagnitude(this.getEyePos()) < d * d;
+	}
+
+	public boolean canInteractWithBlockAt(BlockPos pos, double range) {
+		double d = this.getBlockInteractionRange() + range;
+		return new Box(pos).squaredMagnitude(this.getEyePos()) < d * d;
 	}
 
 	/**

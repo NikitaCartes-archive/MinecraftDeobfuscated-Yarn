@@ -2,8 +2,11 @@ package net.minecraft.sound;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import java.util.Optional;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -17,6 +20,12 @@ public class SoundEvent {
 				.apply(instance, SoundEvent::of)
 	);
 	public static final Codec<RegistryEntry<SoundEvent>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.SOUND_EVENT, CODEC);
+	public static final PacketCodec<ByteBuf, SoundEvent> PACKET_CODEC = PacketCodec.tuple(
+		Identifier.PACKET_CODEC, SoundEvent::getId, PacketCodecs.FLOAT.mapResult(PacketCodecs::optional), SoundEvent::getStaticDistanceToTravel, SoundEvent::of
+	);
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<SoundEvent>> ENTRY_PACKET_CODEC = PacketCodecs.registryEntry(
+		RegistryKeys.SOUND_EVENT, PACKET_CODEC
+	);
 	private static final float DEFAULT_DISTANCE_TO_TRAVEL = 16.0F;
 	private final Identifier id;
 	private final float distanceToTravel;
@@ -54,16 +63,5 @@ public class SoundEvent {
 
 	private Optional<Float> getStaticDistanceToTravel() {
 		return this.staticDistance ? Optional.of(this.distanceToTravel) : Optional.empty();
-	}
-
-	public void writeBuf(PacketByteBuf buf) {
-		buf.writeIdentifier(this.id);
-		buf.writeOptional(this.getStaticDistanceToTravel(), PacketByteBuf::writeFloat);
-	}
-
-	public static SoundEvent fromBuf(PacketByteBuf buf) {
-		Identifier identifier = buf.readIdentifier();
-		Optional<Float> optional = buf.readOptional(PacketByteBuf::readFloat);
-		return of(identifier, optional);
 	}
 }

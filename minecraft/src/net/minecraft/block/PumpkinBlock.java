@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -29,7 +30,7 @@ public class PumpkinBlock extends Block {
 	}
 
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!stack.isOf(Items.SHEARS)) {
 			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		} else if (world.isClient) {
@@ -50,7 +51,7 @@ public class PumpkinBlock extends Block {
 				0.05 * (double)direction2.getOffsetX() + world.random.nextDouble() * 0.02, 0.05, 0.05 * (double)direction2.getOffsetZ() + world.random.nextDouble() * 0.02
 			);
 			world.spawnEntity(itemEntity);
-			stack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+			stack.damage(1, player, LivingEntity.getSlotForHand(hand));
 			world.emitGameEvent(player, GameEvent.SHEAR, pos);
 			player.incrementStat(Stats.USED.getOrCreateStat(Items.SHEARS));
 			return ItemActionResult.success(world.isClient);

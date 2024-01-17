@@ -2,11 +2,17 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, EntityPositionS2CPacket> CODEC = Packet.createCodec(
+		EntityPositionS2CPacket::write, EntityPositionS2CPacket::new
+	);
 	private final int id;
 	private final double x;
 	private final double y;
@@ -26,7 +32,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		this.onGround = entity.isOnGround();
 	}
 
-	public EntityPositionS2CPacket(PacketByteBuf buf) {
+	private EntityPositionS2CPacket(PacketByteBuf buf) {
 		this.id = buf.readVarInt();
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
@@ -36,8 +42,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		this.onGround = buf.readBoolean();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
@@ -45,6 +50,11 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		buf.writeByte(this.yaw);
 		buf.writeByte(this.pitch);
 		buf.writeBoolean(this.onGround);
+	}
+
+	@Override
+	public PacketIdentifier<EntityPositionS2CPacket> getPacketId() {
+		return PlayPackets.TELEPORT_ENTITY;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

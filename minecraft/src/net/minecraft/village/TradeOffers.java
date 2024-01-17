@@ -865,16 +865,16 @@ public class TradeOffers {
 							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_CHESTPLATE, Enchantments.MENDING, 1), 13, 1, 3, 15, 0.05F), VillagerType.SWAMP
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND_BOOTS, 1, 4, Items.DIAMOND_LEGGINGS, 1, 3, 15, 0.05F), VillagerType.TAIGA
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND_BOOTS, 1, 4, Items.DIAMOND_LEGGINGS, 1, 3, 15, 0.05F, true), VillagerType.TAIGA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND_LEGGINGS, 1, 4, Items.DIAMOND_CHESTPLATE, 1, 3, 15, 0.05F), VillagerType.TAIGA
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND_LEGGINGS, 1, 4, Items.DIAMOND_CHESTPLATE, 1, 3, 15, 0.05F, true), VillagerType.TAIGA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND_HELMET, 1, 4, Items.DIAMOND_BOOTS, 1, 3, 15, 0.05F), VillagerType.TAIGA
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND_HELMET, 1, 4, Items.DIAMOND_BOOTS, 1, 3, 15, 0.05F, true), VillagerType.TAIGA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND_CHESTPLATE, 1, 2, Items.DIAMOND_HELMET, 1, 3, 15, 0.05F), VillagerType.TAIGA
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND_CHESTPLATE, 1, 2, Items.DIAMOND_HELMET, 1, 3, 15, 0.05F, true), VillagerType.TAIGA
 						)
 					}
 				)
@@ -1136,7 +1136,7 @@ public class TradeOffers {
 					VillagerType.JUNGLE, new TradeOffers.EnchantBookFactory(experience, Enchantments.FEATHER_FALLING, Enchantments.PROJECTILE_PROTECTION, Enchantments.POWER)
 				)
 				.put(VillagerType.PLAINS, new TradeOffers.EnchantBookFactory(experience, Enchantments.PUNCH, Enchantments.SMITE, Enchantments.BANE_OF_ARTHROPODS))
-				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(experience, Enchantments.KNOCKBACK, Enchantments.BINDING_CURSE, Enchantments.SWEEPING))
+				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(experience, Enchantments.KNOCKBACK, Enchantments.BINDING_CURSE, Enchantments.SWEEPING_EDGE))
 				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(experience, Enchantments.AQUA_AFFINITY, Enchantments.LOOTING, Enchantments.FROST_WALKER))
 				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(experience, Enchantments.DEPTH_STRIDER, Enchantments.RESPIRATION, Enchantments.VANISHING_CURSE))
 				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(experience, Enchantments.BLAST_PROTECTION, Enchantments.FIRE_ASPECT, Enchantments.FLAME))
@@ -1269,25 +1269,47 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 		private final float multiplier;
+		private final boolean ignoreNbt;
 
-		public ProcessItemFactory(ItemConvertible item, int count, int price, Item processed, int processedCount, int maxUses, int experience, float multiplier) {
-			this(item, count, price, new ItemStack(processed), processedCount, maxUses, experience, multiplier);
+		public ProcessItemFactory(ItemConvertible item, int count, int price, Item processed, int processedCount, int maxUses, int experience, float mutiplier) {
+			this(item, count, price, new ItemStack(processed), processedCount, maxUses, experience, mutiplier, false);
+		}
+
+		public ProcessItemFactory(
+			ItemConvertible item, int count, int price, Item processed, int processedCount, int maxUses, int experience, float multiplier, boolean ignoreNbt
+		) {
+			this(item, count, price, new ItemStack(processed), processedCount, maxUses, experience, multiplier, ignoreNbt);
 		}
 
 		public ProcessItemFactory(ItemConvertible item, int count, int price, ItemStack processed, int processedCount, int maxUses, int experience, float multiplier) {
+			this(item, count, price, processed, processedCount, maxUses, experience, multiplier, false);
+		}
+
+		private ProcessItemFactory(
+			ItemConvertible item, int count, int price, ItemStack processed, int processedCount, int maxUses, int experience, float multiplier, boolean ignoreNbt
+		) {
 			this.toBeProcessed = new ItemStack(item, count);
 			this.price = price;
 			this.processed = processed.copyWithCount(processedCount);
 			this.maxUses = maxUses;
 			this.experience = experience;
 			this.multiplier = multiplier;
+			this.ignoreNbt = ignoreNbt;
 		}
 
 		@Nullable
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			return new TradeOffer(
-				new ItemStack(Items.EMERALD, this.price), this.toBeProcessed.copy(), this.processed.copy(), this.maxUses, this.experience, this.multiplier
+				new ItemStack(Items.EMERALD, this.price),
+				this.toBeProcessed.copy(),
+				this.processed.copy(),
+				0,
+				this.maxUses,
+				this.experience,
+				this.multiplier,
+				0,
+				this.ignoreNbt
 			);
 		}
 	}

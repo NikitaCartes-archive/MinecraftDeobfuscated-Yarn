@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -41,6 +40,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -68,7 +68,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	private final int[] chargedSkullCooldowns = new int[2];
 	private int blockBreakingCooldown;
 	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.PURPLE, BossBar.Style.PROGRESS).setDarkenSky(true);
-	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = entity -> entity.getGroup() != EntityGroup.UNDEAD && entity.isMobOrPlayer();
+	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = entity -> !entity.getType().isIn(EntityTypeTags.WITHER_FRIENDS) && entity.isMobOrPlayer();
 	private static final TargetPredicate HEAD_TARGET_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(20.0).setPredicate(CAN_ATTACK_PREDICATE);
 
 	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
@@ -206,17 +206,24 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			double p = this.getHeadX(jx);
 			double q = this.getHeadY(jx);
 			double r = this.getHeadZ(jx);
+			float s = 0.3F * this.getScale();
 			this.getWorld()
 				.addParticle(
-					ParticleTypes.SMOKE, p + this.random.nextGaussian() * 0.3F, q + this.random.nextGaussian() * 0.3F, r + this.random.nextGaussian() * 0.3F, 0.0, 0.0, 0.0
+					ParticleTypes.SMOKE,
+					p + this.random.nextGaussian() * (double)s,
+					q + this.random.nextGaussian() * (double)s,
+					r + this.random.nextGaussian() * (double)s,
+					0.0,
+					0.0,
+					0.0
 				);
 			if (bl && this.getWorld().random.nextInt(4) == 0) {
 				this.getWorld()
 					.addParticle(
 						ParticleTypes.ENTITY_EFFECT,
-						p + this.random.nextGaussian() * 0.3F,
-						q + this.random.nextGaussian() * 0.3F,
-						r + this.random.nextGaussian() * 0.3F,
+						p + this.random.nextGaussian() * (double)s,
+						q + this.random.nextGaussian() * (double)s,
+						r + this.random.nextGaussian() * (double)s,
 						0.7F,
 						0.7F,
 						0.5
@@ -225,12 +232,14 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		}
 
 		if (this.getInvulnerableTimer() > 0) {
-			for (int jxx = 0; jxx < 3; jxx++) {
+			float t = 3.3F * this.getScale();
+
+			for (int u = 0; u < 3; u++) {
 				this.getWorld()
 					.addParticle(
 						ParticleTypes.ENTITY_EFFECT,
 						this.getX() + this.random.nextGaussian(),
-						this.getY() + (double)(this.random.nextFloat() * 3.3F),
+						this.getY() + (double)(this.random.nextFloat() * t),
 						this.getZ() + this.random.nextGaussian(),
 						0.7F,
 						0.7F,
@@ -302,23 +311,16 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			if (this.blockBreakingCooldown > 0) {
 				this.blockBreakingCooldown--;
 				if (this.blockBreakingCooldown == 0 && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-					int ixx = MathHelper.floor(this.getY());
-					int j = MathHelper.floor(this.getX());
-					int k = MathHelper.floor(this.getZ());
 					boolean bl = false;
+					int j = MathHelper.floor(this.getWidth() / 2.0F + 1.0F);
+					int k = MathHelper.floor(this.getHeight());
 
-					for (int l = -1; l <= 1; l++) {
-						for (int m = -1; m <= 1; m++) {
-							for (int n = 0; n <= 3; n++) {
-								int o = j + l;
-								int p = ixx + n;
-								int q = k + m;
-								BlockPos blockPos = new BlockPos(o, p, q);
-								BlockState blockState = this.getWorld().getBlockState(blockPos);
-								if (canDestroy(blockState)) {
-									bl = this.getWorld().breakBlock(blockPos, true, this) || bl;
-								}
-							}
+					for (BlockPos blockPos : BlockPos.iterate(
+						this.getBlockX() - j, this.getBlockY(), this.getBlockZ() - j, this.getBlockX() + j, this.getBlockY() + k, this.getBlockZ() + j
+					)) {
+						BlockState blockState = this.getWorld().getBlockState(blockPos);
+						if (canDestroy(blockState)) {
+							bl = this.getWorld().breakBlock(blockPos, true, this) || bl;
 						}
 					}
 
@@ -368,12 +370,13 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		} else {
 			float f = (this.bodyYaw + (float)(180 * (headIndex - 1))) * (float) (Math.PI / 180.0);
 			float g = MathHelper.cos(f);
-			return this.getX() + (double)g * 1.3;
+			return this.getX() + (double)g * 1.3 * (double)this.getScale();
 		}
 	}
 
 	private double getHeadY(int headIndex) {
-		return headIndex <= 0 ? this.getY() + 3.0 : this.getY() + 2.2;
+		float f = headIndex <= 0 ? 3.0F : 2.2F;
+		return this.getY() + (double)(f * this.getScale());
 	}
 
 	private double getHeadZ(int headIndex) {
@@ -382,7 +385,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		} else {
 			float f = (this.bodyYaw + (float)(180 * (headIndex - 1))) * (float) (Math.PI / 180.0);
 			float g = MathHelper.sin(f);
-			return this.getZ() + (double)g * 1.3;
+			return this.getZ() + (double)g * 1.3 * (double)this.getScale();
 		}
 	}
 
@@ -448,7 +451,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			}
 
 			Entity entity = source.getAttacker();
-			if (entity != null && !(entity instanceof PlayerEntity) && entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == this.getGroup()) {
+			if (entity != null && entity.getType().isIn(EntityTypeTags.WITHER_FRIENDS)) {
 				return false;
 			} else {
 				if (this.blockBreakingCooldown <= 0) {
@@ -523,11 +526,6 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	@Override
 	public boolean shouldRenderOverlay() {
 		return this.getHealth() <= this.getMaxHealth() / 2.0F;
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.UNDEAD;
 	}
 
 	@Override

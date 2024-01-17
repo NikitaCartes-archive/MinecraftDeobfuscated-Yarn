@@ -159,6 +159,7 @@ import net.minecraft.datafixer.fix.RemoveGolemGossipFix;
 import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.RenameBlockEntityFix;
 import net.minecraft.datafixer.fix.RenameChunkStatusFix;
+import net.minecraft.datafixer.fix.RenameEnchantmentFix;
 import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
 import net.minecraft.datafixer.fix.RenameScoreboardDisplaySlotFix;
 import net.minecraft.datafixer.fix.RenameVariantsFix;
@@ -1178,6 +1179,8 @@ public class Schemas {
 		Schema schema200 = builder.addSchema(3800, EMPTY_IDENTIFIER_NORMALIZE);
 		UnaryOperator<String> unaryOperator3 = replacing(Map.of("minecraft:scute", "minecraft:turtle_scute"));
 		builder.addFixer(ItemNameFix.create(schema200, "Rename scute item to turtle_scute", unaryOperator3));
+		Schema schema201 = builder.addSchema(3803, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RenameEnchantmentFix(schema201, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge")));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

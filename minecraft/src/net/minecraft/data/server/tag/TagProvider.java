@@ -26,6 +26,7 @@ import net.minecraft.registry.tag.TagFile;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.registry.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
 public abstract class TagProvider<T> implements DataProvider {
@@ -70,7 +71,7 @@ public abstract class TagProvider<T> implements DataProvider {
 				this.registryLoadFuture.complete(null);
 				return registryLookupFuture;
 			})
-			.thenCombineAsync(this.parentTagLookupFuture, (lookup, parent) -> new RegistryInfo(lookup, parent))
+			.thenCombineAsync(this.parentTagLookupFuture, (lookup, parent) -> new RegistryInfo(lookup, parent), Util.getMainWorkerExecutor())
 			.thenCompose(
 				info -> {
 					RegistryWrapper.Impl<T> impl = info.contents.getWrapperOrThrow(this.registryRef);

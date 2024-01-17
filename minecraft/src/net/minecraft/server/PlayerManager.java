@@ -186,7 +186,8 @@ public abstract class PlayerManager {
 				bl2,
 				!bl,
 				bl3,
-				player.createCommonPlayerSpawnInfo(serverWorld2)
+				player.createCommonPlayerSpawnInfo(serverWorld2),
+				this.server.shouldEnforceSecureProfile()
 			)
 		);
 		serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
@@ -208,7 +209,7 @@ public abstract class PlayerManager {
 		this.broadcast(mutableText.formatted(Formatting.YELLOW), false);
 		serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
 		ServerMetadata serverMetadata = this.server.getServerMetadata();
-		if (serverMetadata != null) {
+		if (serverMetadata != null && !clientData.transferred()) {
 			player.sendServerMetadata(serverMetadata);
 		}
 

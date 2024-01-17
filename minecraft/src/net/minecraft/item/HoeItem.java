@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
@@ -63,7 +64,7 @@ public class HoeItem extends MiningToolItem {
 				if (!world.isClient) {
 					consumer.accept(context);
 					if (playerEntity != null) {
-						context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+						context.getStack().damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 					}
 				}
 

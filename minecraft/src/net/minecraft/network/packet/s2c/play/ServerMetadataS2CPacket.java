@@ -2,32 +2,38 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.Optional;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 
 public class ServerMetadataS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ServerMetadataS2CPacket> CODEC = Packet.createCodec(
+		ServerMetadataS2CPacket::write, ServerMetadataS2CPacket::new
+	);
 	private final Text description;
 	private final Optional<byte[]> favicon;
-	private final boolean secureChatEnforced;
 
-	public ServerMetadataS2CPacket(Text description, Optional<byte[]> favicon, boolean previewsChat) {
+	public ServerMetadataS2CPacket(Text description, Optional<byte[]> favicon) {
 		this.description = description;
 		this.favicon = favicon;
-		this.secureChatEnforced = previewsChat;
 	}
 
-	public ServerMetadataS2CPacket(PacketByteBuf buf) {
+	private ServerMetadataS2CPacket(PacketByteBuf buf) {
 		this.description = buf.readUnlimitedText();
 		this.favicon = buf.readOptional(PacketByteBuf::readByteArray);
-		this.secureChatEnforced = buf.readBoolean();
+	}
+
+	private void write(PacketByteBuf buf) {
+		buf.writeText(this.description);
+		buf.writeOptional(this.favicon, PacketByteBuf::writeByteArray);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeText(this.description);
-		buf.writeOptional(this.favicon, PacketByteBuf::writeByteArray);
-		buf.writeBoolean(this.secureChatEnforced);
+	public PacketIdentifier<ServerMetadataS2CPacket> getPacketId() {
+		return PlayPackets.SERVER_DATA;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -40,9 +46,5 @@ public class ServerMetadataS2CPacket implements Packet<ClientPlayPacketListener>
 
 	public Optional<byte[]> getFavicon() {
 		return this.favicon;
-	}
-
-	public boolean isSecureChatEnforced() {
-		return this.secureChatEnforced;
 	}
 }

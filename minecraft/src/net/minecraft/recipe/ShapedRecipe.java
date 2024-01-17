@@ -4,7 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
@@ -99,27 +100,33 @@ public class ShapedRecipe implements CraftingRecipe {
 					)
 					.apply(instance, ShapedRecipe::new)
 		);
+		public static final PacketCodec<RegistryByteBuf, ShapedRecipe> PACKET_CODEC = PacketCodec.of(ShapedRecipe.Serializer::write, ShapedRecipe.Serializer::read);
 
 		@Override
 		public Codec<ShapedRecipe> codec() {
 			return CODEC;
 		}
 
-		public ShapedRecipe read(PacketByteBuf packetByteBuf) {
-			String string = packetByteBuf.readString();
-			CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
-			RawShapedRecipe rawShapedRecipe = RawShapedRecipe.readFromBuf(packetByteBuf);
-			ItemStack itemStack = packetByteBuf.readItemStack();
-			boolean bl = packetByteBuf.readBoolean();
+		@Override
+		public PacketCodec<RegistryByteBuf, ShapedRecipe> packetCodec() {
+			return PACKET_CODEC;
+		}
+
+		private static ShapedRecipe read(RegistryByteBuf buf) {
+			String string = buf.readString();
+			CraftingRecipeCategory craftingRecipeCategory = buf.readEnumConstant(CraftingRecipeCategory.class);
+			RawShapedRecipe rawShapedRecipe = RawShapedRecipe.PACKET_CODEC.decode(buf);
+			ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
+			boolean bl = buf.readBoolean();
 			return new ShapedRecipe(string, craftingRecipeCategory, rawShapedRecipe, itemStack, bl);
 		}
 
-		public void write(PacketByteBuf packetByteBuf, ShapedRecipe shapedRecipe) {
-			packetByteBuf.writeString(shapedRecipe.group);
-			packetByteBuf.writeEnumConstant(shapedRecipe.category);
-			shapedRecipe.raw.writeToBuf(packetByteBuf);
-			packetByteBuf.writeItemStack(shapedRecipe.result);
-			packetByteBuf.writeBoolean(shapedRecipe.showNotification);
+		private static void write(RegistryByteBuf buf, ShapedRecipe recipe) {
+			buf.writeString(recipe.group);
+			buf.writeEnumConstant(recipe.category);
+			RawShapedRecipe.PACKET_CODEC.encode(buf, recipe.raw);
+			ItemStack.PACKET_CODEC.encode(buf, recipe.result);
+			buf.writeBoolean(recipe.showNotification);
 		}
 	}
 }

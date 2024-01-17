@@ -19,9 +19,9 @@ public class ForgetCompletedPointOfInterestTask {
 	public static Task<LivingEntity> create(Predicate<RegistryEntry<PointOfInterestType>> poiTypePredicate, MemoryModuleType<GlobalPos> poiPosModule) {
 		return TaskTriggerer.task(context -> context.group(context.queryMemoryValue(poiPosModule)).apply(context, poiPos -> (world, entity, time) -> {
 					GlobalPos globalPos = context.getValue(poiPos);
-					BlockPos blockPos = globalPos.getPos();
-					if (world.getRegistryKey() == globalPos.getDimension() && blockPos.isWithinDistance(entity.getPos(), 16.0)) {
-						ServerWorld serverWorld = world.getServer().getWorld(globalPos.getDimension());
+					BlockPos blockPos = globalPos.pos();
+					if (world.getRegistryKey() == globalPos.dimension() && blockPos.isWithinDistance(entity.getPos(), 16.0)) {
+						ServerWorld serverWorld = world.getServer().getWorld(globalPos.dimension());
 						if (serverWorld == null || !serverWorld.getPointOfInterestStorage().test(blockPos, poiTypePredicate)) {
 							poiPos.forget();
 						} else if (isBedOccupiedByOthers(serverWorld, blockPos, entity)) {

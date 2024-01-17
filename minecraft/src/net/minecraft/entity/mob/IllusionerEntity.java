@@ -1,9 +1,7 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -156,17 +154,6 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 			}
 
 			return vec3ds;
-		}
-	}
-
-	@Override
-	public boolean isTeammate(Entity other) {
-		if (super.isTeammate(other)) {
-			return true;
-		} else {
-			return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && other.getScoreboardTeam() == null
-				: false;
 		}
 	}
 

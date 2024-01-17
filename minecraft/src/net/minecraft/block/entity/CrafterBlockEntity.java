@@ -9,6 +9,7 @@ import net.minecraft.block.CrafterBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -176,9 +177,7 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 
 	@Override
 	public boolean canPlayerUse(PlayerEntity player) {
-		return this.world != null && this.world.getBlockEntity(this.pos) == this
-			? !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0)
-			: false;
+		return Inventory.canPlayerUse(this, player);
 	}
 
 	@Override

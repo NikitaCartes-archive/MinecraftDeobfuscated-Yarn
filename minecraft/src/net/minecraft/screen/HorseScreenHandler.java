@@ -71,7 +71,7 @@ public class HorseScreenHandler extends ScreenHandler {
 		return !this.entity.areInventoriesDifferent(this.inventory)
 			&& this.inventory.canPlayerUse(player)
 			&& this.entity.isAlive()
-			&& this.entity.distanceTo(player) < 8.0F;
+			&& player.canInteractWithEntity(this.entity, 4.0);
 	}
 
 	private boolean hasChest(AbstractHorseEntity horse) {

@@ -1,11 +1,17 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, ScreenHandlerSlotUpdateS2CPacket> CODEC = Packet.createCodec(
+		ScreenHandlerSlotUpdateS2CPacket::write, ScreenHandlerSlotUpdateS2CPacket::new
+	);
 	public static final int UPDATE_CURSOR_SYNC_ID = -1;
 	public static final int UPDATE_PLAYER_INVENTORY_SYNC_ID = -2;
 	private final int syncId;
@@ -20,19 +26,23 @@ public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacket
 		this.stack = stack.copy();
 	}
 
-	public ScreenHandlerSlotUpdateS2CPacket(PacketByteBuf buf) {
+	private ScreenHandlerSlotUpdateS2CPacket(RegistryByteBuf buf) {
 		this.syncId = buf.readByte();
 		this.revision = buf.readVarInt();
 		this.slot = buf.readShort();
-		this.stack = buf.readItemStack();
+		this.stack = ItemStack.PACKET_CODEC.decode(buf);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeVarInt(this.revision);
 		buf.writeShort(this.slot);
-		buf.writeItemStack(this.stack);
+		ItemStack.PACKET_CODEC.encode(buf, this.stack);
+	}
+
+	@Override
+	public PacketIdentifier<ScreenHandlerSlotUpdateS2CPacket> getPacketId() {
+		return PlayPackets.CONTAINER_SET_SLOT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

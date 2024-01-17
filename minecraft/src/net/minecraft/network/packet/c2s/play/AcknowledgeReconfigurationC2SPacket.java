@@ -1,17 +1,22 @@
 package net.minecraft.network.packet.c2s.play;
 
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
-public record AcknowledgeReconfigurationC2SPacket() implements Packet<ServerPlayPacketListener> {
-	public AcknowledgeReconfigurationC2SPacket(PacketByteBuf buf) {
-		this();
+public class AcknowledgeReconfigurationC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final AcknowledgeReconfigurationC2SPacket INSTANCE = new AcknowledgeReconfigurationC2SPacket();
+	public static final PacketCodec<ByteBuf, AcknowledgeReconfigurationC2SPacket> CODEC = PacketCodec.unit(INSTANCE);
+
+	private AcknowledgeReconfigurationC2SPacket() {
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
+	public PacketIdentifier<AcknowledgeReconfigurationC2SPacket> getPacketId() {
+		return PlayPackets.CONFIGURATION_ACKNOWLEDGED;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -19,7 +24,7 @@ public record AcknowledgeReconfigurationC2SPacket() implements Packet<ServerPlay
 	}
 
 	@Override
-	public NetworkState getNewNetworkState() {
-		return NetworkState.CONFIGURATION;
+	public boolean transitionsNetworkState() {
+		return true;
 	}
 }

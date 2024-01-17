@@ -303,9 +303,9 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Override
 	public void tick() {
 		if (this.isBeingTempted() && this.random.nextInt(140) == 0) {
-			this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY);
 		} else if (this.isPanicking() && this.random.nextInt(60) == 0) {
-			this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT);
 		}
 
 		if (!this.isAiDisabled()) {

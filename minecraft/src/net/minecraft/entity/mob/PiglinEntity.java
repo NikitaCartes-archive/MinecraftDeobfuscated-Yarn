@@ -483,10 +483,6 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 		this.playSound(SoundEvents.ENTITY_PIGLIN_STEP, 0.15F, 1.0F);
 	}
 
-	protected void playSound(SoundEvent sound) {
-		this.playSound(sound, this.getSoundVolume(), this.getSoundPitch());
-	}
-
 	@Override
 	protected void playZombificationSound() {
 		this.playSound(SoundEvents.ENTITY_PIGLIN_CONVERTED_TO_ZOMBIFIED);

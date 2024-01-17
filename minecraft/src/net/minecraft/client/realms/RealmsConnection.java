@@ -57,7 +57,7 @@ public class RealmsConnection {
 
 						ClientLoginNetworkHandler clientLoginNetworkHandler = new ClientLoginNetworkHandler(
 							RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, false, null, status -> {
-							}
+							}, null
 						);
 						if (server.worldType == RealmsServer.WorldType.MINIGAME) {
 							clientLoginNetworkHandler.setMinigameName(server.minigameName);

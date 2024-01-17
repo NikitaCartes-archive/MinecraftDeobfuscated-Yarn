@@ -3,7 +3,8 @@ package net.minecraft.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.dynamic.Codecs;
@@ -11,6 +12,7 @@ import net.minecraft.util.dynamic.Codecs;
 public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
 	private final AbstractCookingRecipe.RecipeFactory<T> recipeFactory;
 	private final Codec<T> codec;
+	private final PacketCodec<RegistryByteBuf, T> PACKET_CODEC;
 
 	public CookingRecipeSerializer(AbstractCookingRecipe.RecipeFactory<T> recipeFactory, int cookingTime) {
 		this.recipeFactory = recipeFactory;
@@ -25,6 +27,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 					)
 					.apply(instance, recipeFactory::create)
 		);
+		this.PACKET_CODEC = PacketCodec.of(this::write, this::read);
 	}
 
 	@Override
@@ -32,23 +35,28 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		return this.codec;
 	}
 
-	public T read(PacketByteBuf packetByteBuf) {
-		String string = packetByteBuf.readString();
-		CookingRecipeCategory cookingRecipeCategory = packetByteBuf.readEnumConstant(CookingRecipeCategory.class);
-		Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
-		ItemStack itemStack = packetByteBuf.readItemStack();
-		float f = packetByteBuf.readFloat();
-		int i = packetByteBuf.readVarInt();
+	@Override
+	public PacketCodec<RegistryByteBuf, T> packetCodec() {
+		return this.PACKET_CODEC;
+	}
+
+	private T read(RegistryByteBuf buf) {
+		String string = buf.readString();
+		CookingRecipeCategory cookingRecipeCategory = buf.readEnumConstant(CookingRecipeCategory.class);
+		Ingredient ingredient = Ingredient.PACKET_CODEC.decode(buf);
+		ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
+		float f = buf.readFloat();
+		int i = buf.readVarInt();
 		return this.recipeFactory.create(string, cookingRecipeCategory, ingredient, itemStack, f, i);
 	}
 
-	public void write(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
-		packetByteBuf.writeString(abstractCookingRecipe.group);
-		packetByteBuf.writeEnumConstant(abstractCookingRecipe.getCategory());
-		abstractCookingRecipe.ingredient.write(packetByteBuf);
-		packetByteBuf.writeItemStack(abstractCookingRecipe.result);
-		packetByteBuf.writeFloat(abstractCookingRecipe.experience);
-		packetByteBuf.writeVarInt(abstractCookingRecipe.cookingTime);
+	private void write(RegistryByteBuf buf, T recipe) {
+		buf.writeString(recipe.group);
+		buf.writeEnumConstant(recipe.getCategory());
+		Ingredient.PACKET_CODEC.encode(buf, recipe.ingredient);
+		ItemStack.PACKET_CODEC.encode(buf, recipe.result);
+		buf.writeFloat(recipe.experience);
+		buf.writeVarInt(recipe.cookingTime);
 	}
 
 	public AbstractCookingRecipe create(String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {

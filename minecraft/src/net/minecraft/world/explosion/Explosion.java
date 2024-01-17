@@ -25,6 +25,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -56,7 +57,7 @@ public class Explosion {
 	private final ExplosionBehavior behavior;
 	private final ParticleEffect particle;
 	private final ParticleEffect emitterParticle;
-	private final SoundEvent soundEvent;
+	private final RegistryEntry<SoundEvent> soundEvent;
 	private final ObjectArrayList<BlockPos> affectedBlocks = new ObjectArrayList<>();
 	private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.<PlayerEntity, Vec3d>newHashMap();
 
@@ -75,9 +76,9 @@ public class Explosion {
 		Explosion.DestructionType destructionType,
 		ParticleEffect particle,
 		ParticleEffect emitterParticle,
-		SoundEvent soundEvent
+		RegistryEntry<SoundEvent> registryEntry
 	) {
-		this(world, entity, createDamageSource(world, entity), null, x, y, z, power, false, destructionType, particle, emitterParticle, soundEvent);
+		this(world, entity, createDamageSource(world, entity), null, x, y, z, power, false, destructionType, particle, emitterParticle, registryEntry);
 		this.affectedBlocks.addAll(affectedBlocks);
 	}
 
@@ -129,7 +130,7 @@ public class Explosion {
 		Explosion.DestructionType destructionType,
 		ParticleEffect particle,
 		ParticleEffect emitterParticle,
-		SoundEvent soundEvent
+		RegistryEntry<SoundEvent> soundEvent
 	) {
 		this.world = world;
 		this.entity = entity;
@@ -301,7 +302,7 @@ public class Explosion {
 					this.x,
 					this.y,
 					this.z,
-					this.soundEvent,
+					this.soundEvent.value(),
 					SoundCategory.BLOCKS,
 					4.0F,
 					(1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F,
@@ -421,7 +422,7 @@ public class Explosion {
 		return this.emitterParticle;
 	}
 
-	public SoundEvent getSoundEvent() {
+	public RegistryEntry<SoundEvent> getSoundEvent() {
 		return this.soundEvent;
 	}
 

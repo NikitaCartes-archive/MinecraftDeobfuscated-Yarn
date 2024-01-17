@@ -35,7 +35,7 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
@@ -65,7 +65,7 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		if (state.get(HALF) != DoubleBlockHalf.UPPER) {
 			return super.canPlaceAt(state, world, pos);
 		} else {
@@ -127,7 +127,7 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public long getRenderingSeed(BlockState state, BlockPos pos) {
+	protected long getRenderingSeed(BlockState state, BlockPos pos) {
 		return MathHelper.hashCode(pos.getX(), pos.down(state.get(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
 	}
 }

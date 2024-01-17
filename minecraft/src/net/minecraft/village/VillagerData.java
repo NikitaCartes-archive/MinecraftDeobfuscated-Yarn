@@ -2,7 +2,11 @@ package net.minecraft.village;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 
 public class VillagerData {
 	public static final int MIN_LEVEL = 1;
@@ -10,15 +14,20 @@ public class VillagerData {
 	private static final int[] LEVEL_BASE_EXPERIENCE = new int[]{0, 10, 70, 150, 250};
 	public static final Codec<VillagerData> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.VILLAGER_TYPE.getCodec().fieldOf("type").orElseGet(() -> VillagerType.PLAINS).forGetter(villagerData -> villagerData.type),
-					Registries.VILLAGER_PROFESSION
-						.getCodec()
-						.fieldOf("profession")
-						.orElseGet(() -> VillagerProfession.NONE)
-						.forGetter(villagerData -> villagerData.profession),
-					Codec.INT.fieldOf("level").orElse(1).forGetter(villagerData -> villagerData.level)
+					Registries.VILLAGER_TYPE.getCodec().fieldOf("type").orElseGet(() -> VillagerType.PLAINS).forGetter(data -> data.type),
+					Registries.VILLAGER_PROFESSION.getCodec().fieldOf("profession").orElseGet(() -> VillagerProfession.NONE).forGetter(data -> data.profession),
+					Codec.INT.fieldOf("level").orElse(1).forGetter(data -> data.level)
 				)
 				.apply(instance, VillagerData::new)
+	);
+	public static final PacketCodec<RegistryByteBuf, VillagerData> PACKET_CODEC = PacketCodec.tuple(
+		PacketCodecs.registry(RegistryKeys.VILLAGER_TYPE),
+		data -> data.type,
+		PacketCodecs.registry(RegistryKeys.VILLAGER_PROFESSION),
+		data -> data.profession,
+		PacketCodecs.VAR_INT,
+		data -> data.level,
+		VillagerData::new
 	);
 	private final VillagerType type;
 	private final VillagerProfession profession;

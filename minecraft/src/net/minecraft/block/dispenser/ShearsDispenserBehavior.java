@@ -24,8 +24,8 @@ public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 		if (!serverWorld.isClient()) {
 			BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 			this.setSuccess(tryShearBlock(serverWorld, blockPos) || tryShearEntity(serverWorld, blockPos));
-			if (this.isSuccess() && stack.damage(1, serverWorld.getRandom(), null)) {
-				stack.setCount(0);
+			if (this.isSuccess()) {
+				stack.damage(1, serverWorld.getRandom(), null, () -> stack.setCount(0));
 			}
 		}
 

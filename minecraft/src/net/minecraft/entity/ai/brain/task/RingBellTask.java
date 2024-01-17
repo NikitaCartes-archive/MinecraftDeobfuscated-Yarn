@@ -18,7 +18,7 @@ public class RingBellTask {
 						if (world.random.nextFloat() <= 0.95F) {
 							return false;
 						} else {
-							BlockPos blockPos = context.<GlobalPos>getValue(meetingPoint).getPos();
+							BlockPos blockPos = context.<GlobalPos>getValue(meetingPoint).pos();
 							if (blockPos.isWithinDistance(entity.getBlockPos(), 3.0)) {
 								BlockState blockState = world.getBlockState(blockPos);
 								if (blockState.isOf(Blocks.BELL)) {

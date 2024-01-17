@@ -17,7 +17,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class MiningToolItem extends ToolItem implements Vanishable {
+public class MiningToolItem extends ToolItem {
 	private final TagKey<Block> effectiveBlocks;
 	protected final float miningSpeed;
 	private final float attackDamage;
@@ -47,14 +47,14 @@ public class MiningToolItem extends ToolItem implements Vanishable {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(2, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+		stack.damage(2, attacker, EquipmentSlot.MAINHAND);
 		return true;
 	}
 
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		if (!world.isClient && state.getHardness(world, pos) != 0.0F) {
-			stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+			stack.damage(1, miner, EquipmentSlot.MAINHAND);
 		}
 
 		return true;

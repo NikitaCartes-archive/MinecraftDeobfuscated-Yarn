@@ -48,17 +48,17 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+	protected boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
 		return stateFrom.isOf(this) ? true : super.isSideInvisible(state, stateFrom, direction);
 	}
 
 	@Override
-	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!(entity instanceof LivingEntity) || entity.getBlockStateAtPos().isOf(this)) {
 			entity.slowMovement(state, new Vec3d(0.9F, 1.5, 0.9F));
 			if (world.isClient) {
@@ -98,7 +98,7 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if (context instanceof EntityShapeContext entityShapeContext) {
 			Entity entity = entityShapeContext.getEntity();
 			if (entity != null) {
@@ -117,7 +117,7 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.empty();
 	}
 
@@ -145,7 +145,7 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return true;
 	}
 }

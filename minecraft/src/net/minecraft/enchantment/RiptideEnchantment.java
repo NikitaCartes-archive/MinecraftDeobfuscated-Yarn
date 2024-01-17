@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class RiptideEnchantment extends Enchantment {
 	public RiptideEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.TRIDENT, slotTypes);
+		super(weight, ItemTags.TRIDENT_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

@@ -34,15 +34,15 @@ public class WalkTowardJobSiteTask extends MultiTickTask<VillagerEntity> {
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		LookTargetUtil.walkTowards(
-			villagerEntity, ((GlobalPos)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos(), this.speed, 1
+			villagerEntity, ((GlobalPos)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).pos(), this.speed, 1
 		);
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		optional.ifPresent(pos -> {
-			BlockPos blockPos = pos.getPos();
-			ServerWorld serverWorld2 = serverWorld.getServer().getWorld(pos.getDimension());
+			BlockPos blockPos = pos.pos();
+			ServerWorld serverWorld2 = serverWorld.getServer().getWorld(pos.dimension());
 			if (serverWorld2 != null) {
 				PointOfInterestStorage pointOfInterestStorage = serverWorld2.getPointOfInterestStorage();
 				if (pointOfInterestStorage.test(blockPos, poiType -> true)) {

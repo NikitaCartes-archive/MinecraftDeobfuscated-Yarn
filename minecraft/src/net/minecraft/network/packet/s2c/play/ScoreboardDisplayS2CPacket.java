@@ -3,12 +3,18 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
 
 public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ScoreboardDisplayS2CPacket> CODEC = Packet.createCodec(
+		ScoreboardDisplayS2CPacket::write, ScoreboardDisplayS2CPacket::new
+	);
 	private final ScoreboardDisplaySlot slot;
 	private final String name;
 
@@ -21,15 +27,19 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 		}
 	}
 
-	public ScoreboardDisplayS2CPacket(PacketByteBuf buf) {
+	private ScoreboardDisplayS2CPacket(PacketByteBuf buf) {
 		this.slot = buf.decode(ScoreboardDisplaySlot.FROM_ID);
 		this.name = buf.readString();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.encode(ScoreboardDisplaySlot::getId, this.slot);
 		buf.writeString(this.name);
+	}
+
+	@Override
+	public PacketIdentifier<ScoreboardDisplayS2CPacket> getPacketId() {
+		return PlayPackets.SET_DISPLAY_OBJECTIVE;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

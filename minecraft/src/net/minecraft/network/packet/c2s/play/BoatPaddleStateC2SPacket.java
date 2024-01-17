@@ -1,10 +1,16 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class BoatPaddleStateC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, BoatPaddleStateC2SPacket> CODEC = Packet.createCodec(
+		BoatPaddleStateC2SPacket::write, BoatPaddleStateC2SPacket::new
+	);
 	private final boolean leftPaddling;
 	private final boolean rightPaddling;
 
@@ -13,19 +19,23 @@ public class BoatPaddleStateC2SPacket implements Packet<ServerPlayPacketListener
 		this.rightPaddling = rightPaddling;
 	}
 
-	public BoatPaddleStateC2SPacket(PacketByteBuf buf) {
+	private BoatPaddleStateC2SPacket(PacketByteBuf buf) {
 		this.leftPaddling = buf.readBoolean();
 		this.rightPaddling = buf.readBoolean();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeBoolean(this.leftPaddling);
 		buf.writeBoolean(this.rightPaddling);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onBoatPaddleState(this);
+	}
+
+	@Override
+	public PacketIdentifier<BoatPaddleStateC2SPacket> getPacketId() {
+		return PlayPackets.PADDLE_BOAT;
 	}
 
 	public boolean isLeftPaddling() {

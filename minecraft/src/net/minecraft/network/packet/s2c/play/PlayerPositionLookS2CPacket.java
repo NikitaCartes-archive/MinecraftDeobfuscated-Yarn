@@ -2,10 +2,16 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.Set;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerPositionLookS2CPacket> CODEC = Packet.createCodec(
+		PlayerPositionLookS2CPacket::write, PlayerPositionLookS2CPacket::new
+	);
 	private final double x;
 	private final double y;
 	private final double z;
@@ -24,7 +30,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		this.teleportId = teleportId;
 	}
 
-	public PlayerPositionLookS2CPacket(PacketByteBuf buf) {
+	private PlayerPositionLookS2CPacket(PacketByteBuf buf) {
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
 		this.z = buf.readDouble();
@@ -34,8 +40,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		this.teleportId = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
 		buf.writeDouble(this.z);
@@ -43,6 +48,11 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeFloat(this.pitch);
 		buf.writeByte(PositionFlag.getBitfield(this.flags));
 		buf.writeVarInt(this.teleportId);
+	}
+
+	@Override
+	public PacketIdentifier<PlayerPositionLookS2CPacket> getPacketId() {
+		return PlayPackets.PLAYER_POSITION;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

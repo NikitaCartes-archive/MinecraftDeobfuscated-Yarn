@@ -25,7 +25,7 @@ public class ExperienceDroppingBlock extends Block {
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
+	protected void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
 		super.onStacksDropped(state, world, pos, tool, dropExperience);
 		if (dropExperience) {
 			this.dropExperienceWhenMined(world, pos, tool, this.experienceDropped);

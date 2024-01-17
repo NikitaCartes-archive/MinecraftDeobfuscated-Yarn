@@ -2,10 +2,14 @@ package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ClientCommandC2SPacket> CODEC = Packet.createCodec(ClientCommandC2SPacket::write, ClientCommandC2SPacket::new);
 	private final int entityId;
 	private final ClientCommandC2SPacket.Mode mode;
 	private final int mountJumpHeight;
@@ -20,17 +24,21 @@ public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> 
 		this.mountJumpHeight = mountJumpHeight;
 	}
 
-	public ClientCommandC2SPacket(PacketByteBuf buf) {
+	private ClientCommandC2SPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
 		this.mode = buf.readEnumConstant(ClientCommandC2SPacket.Mode.class);
 		this.mountJumpHeight = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeEnumConstant(this.mode);
 		buf.writeVarInt(this.mountJumpHeight);
+	}
+
+	@Override
+	public PacketIdentifier<ClientCommandC2SPacket> getPacketId() {
+		return PlayPackets.PLAYER_COMMAND;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

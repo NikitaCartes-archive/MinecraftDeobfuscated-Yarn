@@ -1,35 +1,40 @@
 package net.minecraft.network.packet.s2c.play;
 
-import javax.annotation.Nullable;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
 public class OpenScreenS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, OpenScreenS2CPacket> CODEC = PacketCodec.tuple(
+		PacketCodecs.VAR_INT,
+		OpenScreenS2CPacket::getSyncId,
+		PacketCodecs.registry(RegistryKeys.SCREEN_HANDLER),
+		OpenScreenS2CPacket::getScreenHandlerType,
+		TextCodecs.PACKET_CODEC,
+		OpenScreenS2CPacket::getName,
+		OpenScreenS2CPacket::new
+	);
 	private final int syncId;
 	private final ScreenHandlerType<?> screenHandlerId;
 	private final Text name;
 
-	public OpenScreenS2CPacket(int syncId, ScreenHandlerType<?> type, Text name) {
+	public OpenScreenS2CPacket(int syncId, ScreenHandlerType<?> screenHandlerId, Text name) {
 		this.syncId = syncId;
-		this.screenHandlerId = type;
+		this.screenHandlerId = screenHandlerId;
 		this.name = name;
 	}
 
-	public OpenScreenS2CPacket(PacketByteBuf buf) {
-		this.syncId = buf.readVarInt();
-		this.screenHandlerId = buf.readRegistryValue(Registries.SCREEN_HANDLER);
-		this.name = buf.readUnlimitedText();
-	}
-
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.syncId);
-		buf.writeRegistryValue(Registries.SCREEN_HANDLER, this.screenHandlerId);
-		buf.writeText(this.name);
+	public PacketIdentifier<OpenScreenS2CPacket> getPacketId() {
+		return PlayPackets.OPEN_SCREEN;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -40,7 +45,6 @@ public class OpenScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 		return this.syncId;
 	}
 
-	@Nullable
 	public ScreenHandlerType<?> getScreenHandlerType() {
 		return this.screenHandlerId;
 	}

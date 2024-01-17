@@ -55,7 +55,7 @@ public class InGameOverlayRenderer {
 
 		for (int i = 0; i < 8; i++) {
 			double d = player.getX() + (double)(((float)((i >> 0) % 2) - 0.5F) * player.getWidth() * 0.8F);
-			double e = player.getEyeY() + (double)(((float)((i >> 1) % 2) - 0.5F) * 0.1F);
+			double e = player.getEyeY() + (double)(((float)((i >> 1) % 2) - 0.5F) * 0.1F * player.getScale());
 			double f = player.getZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * player.getWidth() * 0.8F);
 			mutable.set(d, e, f);
 			BlockState blockState = player.getWorld().getBlockState(mutable);

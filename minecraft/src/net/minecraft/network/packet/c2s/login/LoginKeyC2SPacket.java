@@ -5,12 +5,16 @@ import java.security.PublicKey;
 import java.util.Arrays;
 import javax.crypto.SecretKey;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerLoginPacketListener;
+import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
 public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
+	public static final PacketCodec<PacketByteBuf, LoginKeyC2SPacket> CODEC = Packet.createCodec(LoginKeyC2SPacket::write, LoginKeyC2SPacket::new);
 	private final byte[] encryptedSecretKey;
 	/**
 	 * The nonce value.
@@ -28,15 +32,19 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 		this.nonce = NetworkEncryptionUtils.encrypt(publicKey, nonce);
 	}
 
-	public LoginKeyC2SPacket(PacketByteBuf buf) {
+	private LoginKeyC2SPacket(PacketByteBuf buf) {
 		this.encryptedSecretKey = buf.readByteArray();
 		this.nonce = buf.readByteArray();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeByteArray(this.encryptedSecretKey);
 		buf.writeByteArray(this.nonce);
+	}
+
+	@Override
+	public PacketIdentifier<LoginKeyC2SPacket> getPacketId() {
+		return LoginPackets.KEY;
 	}
 
 	public void apply(ServerLoginPacketListener serverLoginPacketListener) {

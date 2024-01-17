@@ -1,17 +1,22 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
-public record EnterReconfigurationS2CPacket() implements Packet<ClientPlayPacketListener> {
-	public EnterReconfigurationS2CPacket(PacketByteBuf buf) {
-		this();
+public class EnterReconfigurationS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final EnterReconfigurationS2CPacket INSTANCE = new EnterReconfigurationS2CPacket();
+	public static final PacketCodec<ByteBuf, EnterReconfigurationS2CPacket> CODEC = PacketCodec.unit(INSTANCE);
+
+	private EnterReconfigurationS2CPacket() {
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
+	public PacketIdentifier<EnterReconfigurationS2CPacket> getPacketId() {
+		return PlayPackets.START_CONFIGURATION;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -19,7 +24,7 @@ public record EnterReconfigurationS2CPacket() implements Packet<ClientPlayPacket
 	}
 
 	@Override
-	public NetworkState getNewNetworkState() {
-		return NetworkState.CONFIGURATION;
+	public boolean transitionsNetworkState() {
+		return true;
 	}
 }

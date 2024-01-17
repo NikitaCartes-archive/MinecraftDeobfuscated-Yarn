@@ -2,47 +2,27 @@ package net.minecraft.network.packet.s2c.play;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import java.util.Map;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.stat.Stat;
-import net.minecraft.stat.StatType;
 
-public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
-	private final Object2IntMap<Stat<?>> stats;
+public record StatisticsS2CPacket(Object2IntMap<Stat<?>> stats) implements Packet<ClientPlayPacketListener> {
+	private static final PacketCodec<RegistryByteBuf, Object2IntMap<Stat<?>>> field_47900 = PacketCodecs.map(
+		Object2IntOpenHashMap::new, Stat.PACKET_CODEC, PacketCodecs.VAR_INT
+	);
+	public static final PacketCodec<RegistryByteBuf, StatisticsS2CPacket> field_47899 = field_47900.xmap(StatisticsS2CPacket::new, StatisticsS2CPacket::stats);
 
-	public StatisticsS2CPacket(Object2IntMap<Stat<?>> stats) {
-		this.stats = stats;
-	}
-
-	public StatisticsS2CPacket(PacketByteBuf buf) {
-		this.stats = buf.readMap(Object2IntOpenHashMap::new, bufx -> {
-			StatType<?> statType = bufx.readRegistryValue(Registries.STAT_TYPE);
-			return getOrCreateStat(buf, statType);
-		}, PacketByteBuf::readVarInt);
-	}
-
-	private static <T> Stat<T> getOrCreateStat(PacketByteBuf buf, StatType<T> statType) {
-		return statType.getOrCreateStat(buf.readRegistryValue(statType.getRegistry()));
+	@Override
+	public PacketIdentifier<StatisticsS2CPacket> getPacketId() {
+		return PlayPackets.AWARD_STATS;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onStatistics(this);
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeMap(this.stats, StatisticsS2CPacket::write, PacketByteBuf::writeVarInt);
-	}
-
-	private static <T> void write(PacketByteBuf buf, Stat<T> stat) {
-		buf.writeRegistryValue(Registries.STAT_TYPE, stat.getType());
-		buf.writeRegistryValue(stat.getType().getRegistry(), stat.getValue());
-	}
-
-	public Map<Stat<?>, Integer> getStats() {
-		return this.stats;
 	}
 }

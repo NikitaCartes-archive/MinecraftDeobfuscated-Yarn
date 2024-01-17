@@ -2,10 +2,16 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerAbilitiesS2CPacket> CODEC = Packet.createCodec(
+		PlayerAbilitiesS2CPacket::write, PlayerAbilitiesS2CPacket::new
+	);
 	private static final int INVULNERABLE_MASK = 1;
 	private static final int FLYING_MASK = 2;
 	private static final int ALLOW_FLYING_MASK = 4;
@@ -26,7 +32,7 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		this.walkSpeed = abilities.getWalkSpeed();
 	}
 
-	public PlayerAbilitiesS2CPacket(PacketByteBuf buf) {
+	private PlayerAbilitiesS2CPacket(PacketByteBuf buf) {
 		byte b = buf.readByte();
 		this.invulnerable = (b & 1) != 0;
 		this.flying = (b & 2) != 0;
@@ -36,8 +42,7 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		this.walkSpeed = buf.readFloat();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		byte b = 0;
 		if (this.invulnerable) {
 			b = (byte)(b | 1);
@@ -58,6 +63,11 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		buf.writeByte(b);
 		buf.writeFloat(this.flySpeed);
 		buf.writeFloat(this.walkSpeed);
+	}
+
+	@Override
+	public PacketIdentifier<PlayerAbilitiesS2CPacket> getPacketId() {
+		return PlayPackets.PLAYER_ABILITIES_S2C;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

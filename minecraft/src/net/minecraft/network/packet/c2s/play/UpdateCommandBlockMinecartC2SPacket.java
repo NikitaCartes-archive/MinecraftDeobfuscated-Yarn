@@ -4,12 +4,18 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.World;
 
 public class UpdateCommandBlockMinecartC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, UpdateCommandBlockMinecartC2SPacket> CODEC = Packet.createCodec(
+		UpdateCommandBlockMinecartC2SPacket::write, UpdateCommandBlockMinecartC2SPacket::new
+	);
 	private final int entityId;
 	private final String command;
 	private final boolean trackOutput;
@@ -20,17 +26,21 @@ public class UpdateCommandBlockMinecartC2SPacket implements Packet<ServerPlayPac
 		this.trackOutput = trackOutput;
 	}
 
-	public UpdateCommandBlockMinecartC2SPacket(PacketByteBuf buf) {
+	private UpdateCommandBlockMinecartC2SPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
 		this.command = buf.readString();
 		this.trackOutput = buf.readBoolean();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeString(this.command);
 		buf.writeBoolean(this.trackOutput);
+	}
+
+	@Override
+	public PacketIdentifier<UpdateCommandBlockMinecartC2SPacket> getPacketId() {
+		return PlayPackets.SET_COMMAND_MINECART;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

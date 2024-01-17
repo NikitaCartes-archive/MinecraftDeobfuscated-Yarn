@@ -1,10 +1,16 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class ChunkRenderDistanceCenterS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ChunkRenderDistanceCenterS2CPacket> CODEC = Packet.createCodec(
+		ChunkRenderDistanceCenterS2CPacket::write, ChunkRenderDistanceCenterS2CPacket::new
+	);
 	private final int chunkX;
 	private final int chunkZ;
 
@@ -13,15 +19,19 @@ public class ChunkRenderDistanceCenterS2CPacket implements Packet<ClientPlayPack
 		this.chunkZ = z;
 	}
 
-	public ChunkRenderDistanceCenterS2CPacket(PacketByteBuf buf) {
+	private ChunkRenderDistanceCenterS2CPacket(PacketByteBuf buf) {
 		this.chunkX = buf.readVarInt();
 		this.chunkZ = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.chunkX);
 		buf.writeVarInt(this.chunkZ);
+	}
+
+	@Override
+	public PacketIdentifier<ChunkRenderDistanceCenterS2CPacket> getPacketId() {
+		return PlayPackets.SET_CHUNK_CACHE_CENTER;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

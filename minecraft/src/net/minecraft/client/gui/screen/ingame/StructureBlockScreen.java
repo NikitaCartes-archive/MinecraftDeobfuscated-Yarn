@@ -216,6 +216,10 @@ public class StructureBlockScreen extends Screen {
 		this.addSelectableChild(this.inputMetadata);
 		this.updateRotationButton();
 		this.updateWidgets(this.mode);
+	}
+
+	@Override
+	protected void method_56131() {
 		this.setInitialFocus(this.inputName);
 	}
 

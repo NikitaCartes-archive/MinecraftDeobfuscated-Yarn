@@ -34,7 +34,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -287,10 +286,6 @@ public class Block extends AbstractBlock implements ItemConvertible {
 			|| state.isIn(BlockTags.SHULKER_BOXES);
 	}
 
-	public boolean hasRandomTicks(BlockState state) {
-		return this.randomTicks;
-	}
-
 	public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction side, BlockPos otherPos) {
 		BlockState blockState = world.getBlockState(otherPos);
 		if (state.isSideInvisible(blockState, side)) {
@@ -337,10 +332,6 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public static boolean isShapeFullCube(VoxelShape shape) {
 		return FULL_CUBE_SHAPE_CACHE.getUnchecked(shape);
-	}
-
-	public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
-		return !isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
 	}
 
 	/**
@@ -704,10 +695,6 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	private static <T extends Comparable<T>> BlockState copyProperty(BlockState source, BlockState target, Property<T> property) {
 		return target.with(property, source.get(property));
-	}
-
-	public BlockSoundGroup getSoundGroup(BlockState state) {
-		return this.soundGroup;
 	}
 
 	@Override

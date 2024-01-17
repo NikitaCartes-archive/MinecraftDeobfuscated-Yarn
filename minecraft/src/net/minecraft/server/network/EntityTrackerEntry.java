@@ -222,7 +222,7 @@ public class EntityTrackerEntry {
 	}
 
 	public void startTracking(ServerPlayerEntity player) {
-		List<Packet<ClientPlayPacketListener>> list = new ArrayList();
+		List<Packet<? super ClientPlayPacketListener>> list = new ArrayList();
 		this.sendPackets(player, list::add);
 		player.networkHandler.sendPacket(new BundleS2CPacket(list));
 		this.entity.onStartedTrackingBy(player);

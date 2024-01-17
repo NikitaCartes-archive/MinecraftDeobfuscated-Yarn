@@ -15,6 +15,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
+import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -32,6 +33,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").withColor(Colors.RED);
 	static final Text CHEATS_TEXT = Text.translatable("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
+	@Nullable
+	private final WorldCreationTask creationTask;
 	private final RealmsCreateWorldScreen parent;
 	private final long worldId;
 	private final int slotId;
@@ -40,18 +43,19 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	int selectedWorld = -1;
 	RealmsSelectFileToUploadScreen.WorldSelectionList worldSelectionList;
 
-	public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsCreateWorldScreen parent) {
+	public RealmsSelectFileToUploadScreen(@Nullable WorldCreationTask creationTask, long worldId, int slotId, RealmsCreateWorldScreen parent) {
 		super(TITLE);
+		this.creationTask = creationTask;
 		this.parent = parent;
 		this.worldId = worldId;
 		this.slotId = slotId;
 	}
 
-	private void loadLevelList() throws Exception {
+	private void loadLevelList() {
 		LevelStorage.LevelList levelList = this.client.getLevelStorage().getLevelList();
 		this.levelList = (List<LevelSummary>)((List)this.client.getLevelStorage().loadSummaries(levelList).join())
 			.stream()
-			.filter(a -> !a.requiresConversion() && !a.isLocked())
+			.filter(LevelSummary::isImmediatelyLoadable)
 			.collect(Collectors.toList());
 
 		for (LevelSummary levelSummary : this.levelList) {
@@ -94,7 +98,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private void upload() {
 		if (this.selectedWorld != -1 && !((LevelSummary)this.levelList.get(this.selectedWorld)).isHardcore()) {
 			LevelSummary levelSummary = (LevelSummary)this.levelList.get(this.selectedWorld);
-			this.client.setScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.parent, levelSummary));
+			this.client.setScreen(new RealmsUploadScreen(this.creationTask, this.worldId, this.slotId, this.parent, levelSummary));
 		}
 	}
 

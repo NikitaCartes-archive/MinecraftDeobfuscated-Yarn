@@ -4,7 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
@@ -23,6 +24,9 @@ public class AdvancementDisplay {
 					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "hidden", false).forGetter(AdvancementDisplay::isHidden)
 				)
 				.apply(instance, AdvancementDisplay::new)
+	);
+	public static final PacketCodec<RegistryByteBuf, AdvancementDisplay> PACKET_CODEC = PacketCodec.of(
+		AdvancementDisplay::toPacket, AdvancementDisplay::fromPacket
 	);
 	private final Text title;
 	private final Text description;
@@ -100,10 +104,10 @@ public class AdvancementDisplay {
 		return this.hidden;
 	}
 
-	public void toPacket(PacketByteBuf buf) {
+	private void toPacket(RegistryByteBuf buf) {
 		buf.writeText(this.title);
 		buf.writeText(this.description);
-		buf.writeItemStack(this.icon);
+		ItemStack.PACKET_CODEC.encode(buf, this.icon);
 		buf.writeEnumConstant(this.frame);
 		int i = 0;
 		if (this.background.isPresent()) {
@@ -124,10 +128,10 @@ public class AdvancementDisplay {
 		buf.writeFloat(this.y);
 	}
 
-	public static AdvancementDisplay fromPacket(PacketByteBuf buf) {
+	private static AdvancementDisplay fromPacket(RegistryByteBuf buf) {
 		Text text = buf.readUnlimitedText();
 		Text text2 = buf.readUnlimitedText();
-		ItemStack itemStack = buf.readItemStack();
+		ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
 		AdvancementFrame advancementFrame = buf.readEnumConstant(AdvancementFrame.class);
 		int i = buf.readInt();
 		Optional<Identifier> optional = (i & 1) != 0 ? Optional.of(buf.readIdentifier()) : Optional.empty();

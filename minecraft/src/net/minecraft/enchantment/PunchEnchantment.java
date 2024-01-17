@@ -1,10 +1,11 @@
 package net.minecraft.enchantment;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.tag.ItemTags;
 
 public class PunchEnchantment extends Enchantment {
 	public PunchEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.BOW, slotTypes);
+		super(weight, ItemTags.BOW_ENCHANTABLE, slotTypes);
 	}
 
 	@Override

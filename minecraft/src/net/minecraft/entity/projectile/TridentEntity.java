@@ -14,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -104,7 +103,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 		Entity entity = entityHitResult.getEntity();
 		float f = 8.0F;
 		if (entity instanceof LivingEntity livingEntity) {
-			f += EnchantmentHelper.getAttackDamage(this.getItemStack(), livingEntity.getGroup());
+			f += EnchantmentHelper.getAttackDamage(this.getItemStack(), livingEntity.getType());
 		}
 
 		Entity entity2 = this.getOwner();
@@ -124,9 +123,6 @@ public class TridentEntity extends PersistentProjectileEntity {
 
 				this.onHit(livingEntity2);
 			}
-		} else if (entity.getType().isIn(EntityTypeTags.DEFLECTS_TRIDENTS)) {
-			this.deflect(entity);
-			return;
 		}
 
 		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));

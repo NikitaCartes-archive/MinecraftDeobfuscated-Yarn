@@ -19,6 +19,9 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class VillagerTaskListProvider {
 	private static final float JOB_WALKING_SPEED = 0.4F;
+	public static final int field_48329 = 5;
+	public static final int field_48330 = 2;
+	public static final float field_48331 = 0.5F;
 
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession profession, float speed) {
 		return ImmutableList.of(

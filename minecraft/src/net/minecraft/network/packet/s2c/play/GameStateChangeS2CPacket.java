@@ -3,10 +3,16 @@ package net.minecraft.network.packet.s2c.play;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, GameStateChangeS2CPacket> CODEC = Packet.createCodec(
+		GameStateChangeS2CPacket::write, GameStateChangeS2CPacket::new
+	);
 	public static final GameStateChangeS2CPacket.Reason NO_RESPAWN_BLOCK = new GameStateChangeS2CPacket.Reason(0);
 	public static final GameStateChangeS2CPacket.Reason RAIN_STARTED = new GameStateChangeS2CPacket.Reason(1);
 	public static final GameStateChangeS2CPacket.Reason RAIN_STOPPED = new GameStateChangeS2CPacket.Reason(2);
@@ -34,15 +40,19 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 		this.value = value;
 	}
 
-	public GameStateChangeS2CPacket(PacketByteBuf buf) {
+	private GameStateChangeS2CPacket(PacketByteBuf buf) {
 		this.reason = GameStateChangeS2CPacket.Reason.REASONS.get(buf.readUnsignedByte());
 		this.value = buf.readFloat();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.reason.id);
 		buf.writeFloat(this.value);
+	}
+
+	@Override
+	public PacketIdentifier<GameStateChangeS2CPacket> getPacketId() {
+		return PlayPackets.GAME_EVENT;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

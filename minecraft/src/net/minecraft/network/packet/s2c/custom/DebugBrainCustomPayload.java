@@ -7,26 +7,28 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public record DebugBrainCustomPayload(DebugBrainCustomPayload.Brain brainDump) implements CustomPayload {
-	public static final Identifier ID = new Identifier("debug/brain");
+	public static final PacketCodec<PacketByteBuf, DebugBrainCustomPayload> CODEC = CustomPayload.codecOf(
+		DebugBrainCustomPayload::write, DebugBrainCustomPayload::new
+	);
+	public static final CustomPayload.Id<DebugBrainCustomPayload> KEY = CustomPayload.id("debug/brain");
 
-	public DebugBrainCustomPayload(PacketByteBuf buf) {
+	private DebugBrainCustomPayload(PacketByteBuf buf) {
 		this(new DebugBrainCustomPayload.Brain(buf));
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		this.brainDump.write(buf);
 	}
 
 	@Override
-	public Identifier id() {
-		return ID;
+	public CustomPayload.Id<DebugBrainCustomPayload> getId() {
+		return KEY;
 	}
 
 	public static record Brain(
@@ -67,8 +69,8 @@ public record DebugBrainCustomPayload(DebugBrainCustomPayload.Brain brainDump) i
 				buf.readList(PacketByteBuf::readString),
 				buf.readList(PacketByteBuf::readString),
 				buf.readList(PacketByteBuf::readString),
-				buf.readCollection(HashSet::new, PacketByteBuf::readBlockPos),
-				buf.readCollection(HashSet::new, PacketByteBuf::readBlockPos)
+				buf.readCollection(HashSet::new, BlockPos.PACKET_CODEC),
+				buf.readCollection(HashSet::new, BlockPos.PACKET_CODEC)
 			);
 		}
 
@@ -89,8 +91,8 @@ public record DebugBrainCustomPayload(DebugBrainCustomPayload.Brain brainDump) i
 			buf.writeCollection(this.runningTasks, PacketByteBuf::writeString);
 			buf.writeCollection(this.memories, PacketByteBuf::writeString);
 			buf.writeCollection(this.gossips, PacketByteBuf::writeString);
-			buf.writeCollection(this.pois, PacketByteBuf::writeBlockPos);
-			buf.writeCollection(this.potentialPois, PacketByteBuf::writeBlockPos);
+			buf.writeCollection(this.pois, BlockPos.PACKET_CODEC);
+			buf.writeCollection(this.potentialPois, BlockPos.PACKET_CODEC);
 		}
 
 		public boolean isPointOfInterest(BlockPos pos) {

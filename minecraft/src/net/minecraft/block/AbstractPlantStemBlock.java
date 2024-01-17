@@ -34,12 +34,12 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 	}
 
 	@Override
-	public boolean hasRandomTicks(BlockState state) {
+	protected boolean hasRandomTicks(BlockState state) {
 		return (Integer)state.get(AGE) < 25;
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Integer)state.get(AGE) < 25 && random.nextDouble() < this.growthChance) {
 			BlockPos blockPos = pos.offset(this.growthDirection);
 			if (this.chooseStemState(world.getBlockState(blockPos))) {
@@ -65,7 +65,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {

@@ -6,7 +6,8 @@ import java.util.stream.Stream;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.world.World;
 
@@ -79,25 +80,33 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 					)
 					.apply(instance, SmithingTransformRecipe::new)
 		);
+		public static final PacketCodec<RegistryByteBuf, SmithingTransformRecipe> PACKET_CODEC = PacketCodec.of(
+			SmithingTransformRecipe.Serializer::write, SmithingTransformRecipe.Serializer::read
+		);
 
 		@Override
 		public Codec<SmithingTransformRecipe> codec() {
 			return CODEC;
 		}
 
-		public SmithingTransformRecipe read(PacketByteBuf packetByteBuf) {
-			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
-			Ingredient ingredient2 = Ingredient.fromPacket(packetByteBuf);
-			Ingredient ingredient3 = Ingredient.fromPacket(packetByteBuf);
-			ItemStack itemStack = packetByteBuf.readItemStack();
+		@Override
+		public PacketCodec<RegistryByteBuf, SmithingTransformRecipe> packetCodec() {
+			return PACKET_CODEC;
+		}
+
+		private static SmithingTransformRecipe read(RegistryByteBuf buf) {
+			Ingredient ingredient = Ingredient.PACKET_CODEC.decode(buf);
+			Ingredient ingredient2 = Ingredient.PACKET_CODEC.decode(buf);
+			Ingredient ingredient3 = Ingredient.PACKET_CODEC.decode(buf);
+			ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
 			return new SmithingTransformRecipe(ingredient, ingredient2, ingredient3, itemStack);
 		}
 
-		public void write(PacketByteBuf packetByteBuf, SmithingTransformRecipe smithingTransformRecipe) {
-			smithingTransformRecipe.template.write(packetByteBuf);
-			smithingTransformRecipe.base.write(packetByteBuf);
-			smithingTransformRecipe.addition.write(packetByteBuf);
-			packetByteBuf.writeItemStack(smithingTransformRecipe.result);
+		private static void write(RegistryByteBuf buf, SmithingTransformRecipe recipe) {
+			Ingredient.PACKET_CODEC.encode(buf, recipe.template);
+			Ingredient.PACKET_CODEC.encode(buf, recipe.base);
+			Ingredient.PACKET_CODEC.encode(buf, recipe.addition);
+			ItemStack.PACKET_CODEC.encode(buf, recipe.result);
 		}
 	}
 }

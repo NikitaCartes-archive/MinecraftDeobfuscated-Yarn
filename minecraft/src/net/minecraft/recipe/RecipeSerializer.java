@@ -1,7 +1,8 @@
 package net.minecraft.recipe;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -55,28 +56,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 
 	Codec<T> codec();
 
-	/**
-	 * Reads a recipe from a packet byte buf, usually on the client.
-	 * 
-	 * <p>This can throw whatever exception the packet byte buf throws. This may be
-	 * called in the netty event loop than the client game engine thread.
-	 * 
-	 * @return the read recipe
-	 */
-	T read(PacketByteBuf buf);
-
-	/**
-	 * Writes a recipe to a packet byte buf, usually on the server.
-	 * 
-	 * <p>The recipe's ID is already written into the buf when this is called.
-	 * 
-	 * <p>This can throw whatever exception the packet byte buf throws. This may be
-	 * called in the netty event loop than the server game engine thread.
-	 * 
-	 * @param buf the recipe buf
-	 * @param recipe the recipe
-	 */
-	void write(PacketByteBuf buf, T recipe);
+	PacketCodec<RegistryByteBuf, T> packetCodec();
 
 	static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
 		return Registry.register(Registries.RECIPE_SERIALIZER, id, serializer);

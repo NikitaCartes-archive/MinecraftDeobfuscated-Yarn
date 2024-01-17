@@ -80,38 +80,27 @@ public class ServerNetworkIo {
 				LOGGER.info("Using default channel type");
 			}
 
-			this.channels
-				.add(
-					new ServerBootstrap()
-						.channel(class_)
-						.childHandler(
-							new ChannelInitializer<Channel>() {
-								@Override
-								protected void initChannel(Channel channel) {
-									ClientConnection.setHandlers(channel);
+			this.channels.add(new ServerBootstrap().channel(class_).childHandler(new ChannelInitializer<Channel>() {
+				@Override
+				protected void initChannel(Channel channel) {
+					try {
+						channel.config().setOption(ChannelOption.TCP_NODELAY, true);
+					} catch (ChannelException var5) {
+					}
 
-									try {
-										channel.config().setOption(ChannelOption.TCP_NODELAY, true);
-									} catch (ChannelException var5) {
-									}
+					ChannelPipeline channelPipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
+					if (ServerNetworkIo.this.server.acceptsStatusQuery()) {
+						channelPipeline.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this.getServer()));
+					}
 
-									ChannelPipeline channelPipeline = channel.pipeline()
-										.addLast("timeout", new ReadTimeoutHandler(30))
-										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this.getServer()));
-									ClientConnection.addHandlers(channelPipeline, NetworkSide.SERVERBOUND, null);
-									int i = ServerNetworkIo.this.server.getRateLimit();
-									ClientConnection clientConnection = (ClientConnection)(i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.SERVERBOUND));
-									ServerNetworkIo.this.connections.add(clientConnection);
-									clientConnection.addFlowControlHandler(channelPipeline);
-									clientConnection.setInitialPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
-								}
-							}
-						)
-						.group(eventLoopGroup)
-						.localAddress(address, port)
-						.bind()
-						.syncUninterruptibly()
-				);
+					ClientConnection.addHandlers(channelPipeline, NetworkSide.SERVERBOUND, null);
+					int i = ServerNetworkIo.this.server.getRateLimit();
+					ClientConnection clientConnection = (ClientConnection)(i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.SERVERBOUND));
+					ServerNetworkIo.this.connections.add(clientConnection);
+					clientConnection.addFlowControlHandler(channelPipeline);
+					clientConnection.setInitialPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
+				}
+			}).group(eventLoopGroup).localAddress(address, port).bind().syncUninterruptibly());
 		}
 	}
 
@@ -121,7 +110,6 @@ public class ServerNetworkIo {
 			channelFuture = new ServerBootstrap().channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>() {
 				@Override
 				protected void initChannel(Channel channel) {
-					ClientConnection.setHandlers(channel);
 					ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
 					clientConnection.setInitialPacketListener(new LocalServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 					ServerNetworkIo.this.connections.add(clientConnection);

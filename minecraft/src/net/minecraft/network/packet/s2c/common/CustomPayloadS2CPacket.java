@@ -1,12 +1,15 @@
 package net.minecraft.network.packet.s2c.common;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Map;
+import java.util.List;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.BrandCustomPayload;
+import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 import net.minecraft.network.packet.UnknownCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugBeeCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugBrainCustomPayload;
@@ -26,55 +29,42 @@ import net.minecraft.network.packet.s2c.custom.DebugRaidsCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugStructuresCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugVillageSectionsCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugWorldgenAttemptCustomPayload;
-import net.minecraft.util.Identifier;
 
 public record CustomPayloadS2CPacket(CustomPayload payload) implements Packet<ClientCommonPacketListener> {
 	private static final int MAX_PAYLOAD_SIZE = 1048576;
-	private static final Map<Identifier, PacketByteBuf.PacketReader<? extends CustomPayload>> ID_TO_READER = ImmutableMap.<Identifier, PacketByteBuf.PacketReader<? extends CustomPayload>>builder()
-		.put(BrandCustomPayload.ID, BrandCustomPayload::new)
-		.put(DebugBeeCustomPayload.ID, DebugBeeCustomPayload::new)
-		.put(DebugBrainCustomPayload.ID, DebugBrainCustomPayload::new)
-		.put(DebugBreezeCustomPayload.ID, DebugBreezeCustomPayload::new)
-		.put(DebugGameEventCustomPayload.ID, DebugGameEventCustomPayload::new)
-		.put(DebugGameEventListenersCustomPayload.ID, DebugGameEventListenersCustomPayload::new)
-		.put(DebugGameTestAddMarkerCustomPayload.ID, DebugGameTestAddMarkerCustomPayload::new)
-		.put(DebugGameTestClearCustomPayload.ID, DebugGameTestClearCustomPayload::new)
-		.put(DebugGoalSelectorCustomPayload.ID, DebugGoalSelectorCustomPayload::new)
-		.put(DebugHiveCustomPayload.ID, DebugHiveCustomPayload::new)
-		.put(DebugNeighborsUpdateCustomPayload.ID, DebugNeighborsUpdateCustomPayload::new)
-		.put(DebugPathCustomPayload.ID, DebugPathCustomPayload::new)
-		.put(DebugPoiAddedCustomPayload.ID, DebugPoiAddedCustomPayload::new)
-		.put(DebugPoiRemovedCustomPayload.ID, DebugPoiRemovedCustomPayload::new)
-		.put(DebugPoiTicketCountCustomPayload.ID, DebugPoiTicketCountCustomPayload::new)
-		.put(DebugRaidsCustomPayload.ID, DebugRaidsCustomPayload::new)
-		.put(DebugStructuresCustomPayload.ID, DebugStructuresCustomPayload::new)
-		.put(DebugVillageSectionsCustomPayload.ID, DebugVillageSectionsCustomPayload::new)
-		.put(DebugWorldgenAttemptCustomPayload.ID, DebugWorldgenAttemptCustomPayload::new)
-		.build();
-
-	public CustomPayloadS2CPacket(PacketByteBuf buf) {
-		this(readPayload(buf.readIdentifier(), buf));
-	}
-
-	private static CustomPayload readPayload(Identifier id, PacketByteBuf buf) {
-		PacketByteBuf.PacketReader<? extends CustomPayload> packetReader = (PacketByteBuf.PacketReader<? extends CustomPayload>)ID_TO_READER.get(id);
-		return (CustomPayload)(packetReader != null ? (CustomPayload)packetReader.apply(buf) : readUnknownPayload(id, buf));
-	}
-
-	private static UnknownCustomPayload readUnknownPayload(Identifier id, PacketByteBuf buf) {
-		int i = buf.readableBytes();
-		if (i >= 0 && i <= 1048576) {
-			buf.skipBytes(i);
-			return new UnknownCustomPayload(id);
-		} else {
-			throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
-		}
-	}
+	public static final PacketCodec<RegistryByteBuf, CustomPayloadS2CPacket> field_48620 = CustomPayload.<RegistryByteBuf>createCodec(
+			identifier -> UnknownCustomPayload.createCodec(identifier, 1048576),
+			List.of(
+				new CustomPayload.Type<>(BrandCustomPayload.KEY, BrandCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugBeeCustomPayload.KEY, DebugBeeCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugBrainCustomPayload.KEY, DebugBrainCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugBreezeCustomPayload.KEY, DebugBreezeCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugGameEventCustomPayload.KEY, DebugGameEventCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugGameEventListenersCustomPayload.PAYLOAD_TYPE, DebugGameEventListenersCustomPayload.PACKET_CODEC),
+				new CustomPayload.Type<>(DebugGameTestAddMarkerCustomPayload.KEY, DebugGameTestAddMarkerCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugGameTestClearCustomPayload.KEY, DebugGameTestClearCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugGoalSelectorCustomPayload.KEY, DebugGoalSelectorCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugHiveCustomPayload.KEY, DebugHiveCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugNeighborsUpdateCustomPayload.KEY, DebugNeighborsUpdateCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugPathCustomPayload.KEY, DebugPathCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugPoiAddedCustomPayload.KEY, DebugPoiAddedCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugPoiRemovedCustomPayload.KEY, DebugPoiRemovedCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugPoiTicketCountCustomPayload.KEY, DebugPoiTicketCountCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugRaidsCustomPayload.KEY, DebugRaidsCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugStructuresCustomPayload.KEY, DebugStructuresCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugVillageSectionsCustomPayload.KEY, DebugVillageSectionsCustomPayload.CODEC),
+				new CustomPayload.Type<>(DebugWorldgenAttemptCustomPayload.KEY, DebugWorldgenAttemptCustomPayload.CODEC)
+			)
+		)
+		.xmap(CustomPayloadS2CPacket::new, CustomPayloadS2CPacket::payload);
+	public static final PacketCodec<PacketByteBuf, CustomPayloadS2CPacket> field_48621 = CustomPayload.<PacketByteBuf>createCodec(
+			identifier -> UnknownCustomPayload.createCodec(identifier, 1048576), List.of(new CustomPayload.Type<>(BrandCustomPayload.KEY, BrandCustomPayload.CODEC))
+		)
+		.xmap(CustomPayloadS2CPacket::new, CustomPayloadS2CPacket::payload);
 
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeIdentifier(this.payload.id());
-		this.payload.write(buf);
+	public PacketIdentifier<CustomPayloadS2CPacket> getPacketId() {
+		return CommonPackets.CUSTOM_PAYLOAD_S2C;
 	}
 
 	public void apply(ClientCommonPacketListener clientCommonPacketListener) {

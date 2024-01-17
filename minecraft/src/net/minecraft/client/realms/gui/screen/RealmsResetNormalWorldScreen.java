@@ -45,7 +45,6 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	public void init() {
 		this.seedEdit = new TextFieldWidget(this.textRenderer, 210, 20, Text.translatable("mco.reset.world.seed"));
 		this.seedEdit.setMaxLength(32);
-		this.setInitialFocus(this.seedEdit);
 		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(10);
 		directionalLayoutWidget.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.seedEdit, RESET_SEED_TEXT));
@@ -67,6 +66,11 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 		this.initTabNavigation();
+	}
+
+	@Override
+	protected void method_56131() {
+		this.setInitialFocus(this.seedEdit);
 	}
 
 	private void addExperimentsButton(DirectionalLayoutWidget layout) {

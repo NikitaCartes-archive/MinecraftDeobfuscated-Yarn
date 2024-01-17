@@ -422,7 +422,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		@Override
 		public void tick() {
 			if (!this.raider.isSilent() && this.raider.random.nextInt(this.getTickCount(100)) == 0) {
-				RaiderEntity.this.playSound(RaiderEntity.this.getCelebratingSound(), RaiderEntity.this.getSoundVolume(), RaiderEntity.this.getSoundPitch());
+				RaiderEntity.this.playSound(RaiderEntity.this.getCelebratingSound());
 			}
 
 			if (!this.raider.hasVehicle() && this.raider.random.nextInt(this.getTickCount(50)) == 0) {

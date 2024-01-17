@@ -1,22 +1,24 @@
 package net.minecraft.network.packet.s2c.custom;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
 
 public record DebugGameTestClearCustomPayload() implements CustomPayload {
-	public static final Identifier ID = new Identifier("debug/game_test_clear");
+	public static final PacketCodec<PacketByteBuf, DebugGameTestClearCustomPayload> CODEC = CustomPayload.codecOf(
+		DebugGameTestClearCustomPayload::write, DebugGameTestClearCustomPayload::new
+	);
+	public static final CustomPayload.Id<DebugGameTestClearCustomPayload> KEY = CustomPayload.id("debug/game_test_clear");
 
-	public DebugGameTestClearCustomPayload(PacketByteBuf buf) {
+	private DebugGameTestClearCustomPayload(PacketByteBuf buf) {
 		this();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 	}
 
 	@Override
-	public Identifier id() {
-		return ID;
+	public CustomPayload.Id<DebugGameTestClearCustomPayload> getId() {
+		return KEY;
 	}
 }

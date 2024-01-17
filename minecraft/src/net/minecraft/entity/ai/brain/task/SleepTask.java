@@ -31,7 +31,7 @@ public class SleepTask extends MultiTickTask<LivingEntity> {
 		} else {
 			Brain<?> brain = entity.getBrain();
 			GlobalPos globalPos = (GlobalPos)brain.getOptionalRegisteredMemory(MemoryModuleType.HOME).get();
-			if (world.getRegistryKey() != globalPos.getDimension()) {
+			if (world.getRegistryKey() != globalPos.dimension()) {
 				return false;
 			} else {
 				Optional<Long> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.LAST_WOKEN);
@@ -42,8 +42,8 @@ public class SleepTask extends MultiTickTask<LivingEntity> {
 					}
 				}
 
-				BlockState blockState = world.getBlockState(globalPos.getPos());
-				return globalPos.getPos().isWithinDistance(entity.getPos(), 2.0) && blockState.isIn(BlockTags.BEDS) && !(Boolean)blockState.get(BedBlock.OCCUPIED);
+				BlockState blockState = world.getBlockState(globalPos.pos());
+				return globalPos.pos().isWithinDistance(entity.getPos(), 2.0) && blockState.isIn(BlockTags.BEDS) && !(Boolean)blockState.get(BedBlock.OCCUPIED);
 			}
 		}
 	}
@@ -54,7 +54,7 @@ public class SleepTask extends MultiTickTask<LivingEntity> {
 		if (optional.isEmpty()) {
 			return false;
 		} else {
-			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();
+			BlockPos blockPos = ((GlobalPos)optional.get()).pos();
 			return entity.getBrain().hasActivity(Activity.REST) && entity.getY() > (double)blockPos.getY() + 0.4 && blockPos.isWithinDistance(entity.getPos(), 1.14);
 		}
 	}
@@ -75,7 +75,7 @@ public class SleepTask extends MultiTickTask<LivingEntity> {
 				OpenDoorsTask.pathToDoor(world, entity, null, null, set, optional);
 			}
 
-			entity.sleep(((GlobalPos)entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME).get()).getPos());
+			entity.sleep(((GlobalPos)entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME).get()).pos());
 		}
 	}
 

@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9095;
+import net.minecraft.class_9157;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -63,6 +65,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.encryption.SignatureVerifier;
@@ -229,7 +232,7 @@ public class ServerPlayNetworkHandler
 	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData) {
 		super(server, connection, clientData);
 		this.chunkDataSender = new ChunkDataSender(connection.isLocal());
-		connection.setPacketListener(this);
+		connection.method_56330(class_9095.field_48172.bind(RegistryByteBuf.makeFactory(server.getRegistryManager())), this);
 		this.player = player;
 		player.networkHandler = this;
 		player.getTextStream().onConnect();
@@ -1052,7 +1055,7 @@ public class ServerPlayNetworkHandler
 			BlockHitResult blockHitResult = packet.getBlockHitResult();
 			Vec3d vec3d = blockHitResult.getPos();
 			BlockPos blockPos = blockHitResult.getBlockPos();
-			if (this.player.isPosInBlockInteractionRange(blockPos)) {
+			if (this.player.canInteractWithBlockAt(blockPos, 1.0)) {
 				Vec3d vec3d2 = vec3d.subtract(Vec3d.ofCenter(blockPos));
 				double d = 1.0000001;
 				if (Math.abs(vec3d2.getX()) < 1.0000001 && Math.abs(vec3d2.getY()) < 1.0000001 && Math.abs(vec3d2.getZ()) < 1.0000001) {
@@ -1062,6 +1065,10 @@ public class ServerPlayNetworkHandler
 					if (blockPos.getY() < i) {
 						if (this.requestedTeleportPos == null && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
 							ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
+							if (actionResult.isAccepted()) {
+								Criteria.ANY_BLOCK_USE.trigger(this.player, blockHitResult.getBlockPos(), itemStack.copy());
+							}
+
 							if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
 								Text text = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
 								this.player.sendMessageToClient(text, true);
@@ -1426,7 +1433,8 @@ public class ServerPlayNetworkHandler
 	public void reconfigure() {
 		this.requestedReconfiguration = true;
 		this.cleanUp();
-		this.sendPacket(new EnterReconfigurationS2CPacket());
+		this.sendPacket(EnterReconfigurationS2CPacket.INSTANCE);
+		this.connection.method_56329(class_9157.field_48699);
 	}
 
 	@Override
@@ -1447,7 +1455,7 @@ public class ServerPlayNetworkHandler
 			}
 
 			Box box = entity.getBoundingBox();
-			if (this.player.isBoxInEntityInteractionRange(box)) {
+			if (this.player.canInteractWithEntityIn(box, 1.0)) {
 				packet.handle(
 					new PlayerInteractEntityC2SPacket.Handler() {
 						private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {
@@ -1709,7 +1717,9 @@ public class ServerPlayNetworkHandler
 			throw new IllegalStateException("Client acknowledged config, but none was requested");
 		} else {
 			this.connection
-				.setPacketListener(new ServerConfigurationNetworkHandler(this.server, this.connection, this.createClientData(this.player.getClientOptions())));
+				.method_56330(
+					class_9157.field_48698, new ServerConfigurationNetworkHandler(this.server, this.connection, this.createClientData(this.player.getClientOptions()))
+				);
 		}
 	}
 

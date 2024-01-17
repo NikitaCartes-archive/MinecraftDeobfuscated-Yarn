@@ -438,8 +438,8 @@ public interface DispenserBehavior {
 					this.setSuccess(false);
 				}
 
-				if (this.isSuccess() && stack.damage(1, world.random, null)) {
-					stack.setCount(0);
+				if (this.isSuccess()) {
+					stack.damage(1, world.getRandom(), null, () -> stack.setCount(0));
 				}
 
 				return stack;
@@ -616,11 +616,10 @@ public interface DispenserBehavior {
 					return stack;
 				} else {
 					((ArmadilloEntity)list.get(0)).brushScute();
-					if (stack.damage(16, serverWorld.getRandom(), null)) {
+					stack.damage(16, serverWorld.getRandom(), null, () -> {
 						stack.decrement(1);
 						stack.setDamage(0);
-					}
-
+					});
 					return stack;
 				}
 			}

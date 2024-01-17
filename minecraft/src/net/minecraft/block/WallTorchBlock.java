@@ -57,7 +57,7 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return getBoundingShape(state);
 	}
 
@@ -66,11 +66,14 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		Direction direction = state.get(FACING);
-		BlockPos blockPos = pos.offset(direction.getOpposite());
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		return canPlaceAt(world, pos, state.get(FACING));
+	}
+
+	public static boolean canPlaceAt(WorldView world, BlockPos pos, Direction facing) {
+		BlockPos blockPos = pos.offset(facing.getOpposite());
 		BlockState blockState = world.getBlockState(blockPos);
-		return blockState.isSideSolidFullSquare(world, blockPos, direction);
+		return blockState.isSideSolidFullSquare(world, blockPos, facing);
 	}
 
 	@Nullable
@@ -95,7 +98,7 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : state;
@@ -115,12 +118,12 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
 

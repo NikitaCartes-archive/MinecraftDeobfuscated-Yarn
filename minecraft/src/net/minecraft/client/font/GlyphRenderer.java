@@ -31,19 +31,16 @@ public class GlyphRenderer {
 	}
 
 	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
-		int i = 3;
 		float f = x + this.minX;
 		float g = x + this.maxX;
-		float h = this.minY - 3.0F;
-		float j = this.maxY - 3.0F;
-		float k = y + h;
-		float l = y + j;
-		float m = italic ? 1.0F - 0.25F * h : 0.0F;
-		float n = italic ? 1.0F - 0.25F * j : 0.0F;
-		vertexConsumer.vertex(matrix, f + m, k, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.minV).light(light).next();
-		vertexConsumer.vertex(matrix, f + n, l, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.maxV).light(light).next();
-		vertexConsumer.vertex(matrix, g + n, l, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.maxV).light(light).next();
-		vertexConsumer.vertex(matrix, g + m, k, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.minV).light(light).next();
+		float h = y + this.minY;
+		float i = y + this.maxY;
+		float j = italic ? 1.0F - 0.25F * this.minY : 0.0F;
+		float k = italic ? 1.0F - 0.25F * this.maxY : 0.0F;
+		vertexConsumer.vertex(matrix, f + j, h, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.minV).light(light).next();
+		vertexConsumer.vertex(matrix, f + k, i, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.maxV).light(light).next();
+		vertexConsumer.vertex(matrix, g + k, i, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.maxV).light(light).next();
+		vertexConsumer.vertex(matrix, g + j, h, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.minV).light(light).next();
 	}
 
 	public void drawRectangle(GlyphRenderer.Rectangle rectangle, Matrix4f matrix, VertexConsumer vertexConsumer, int light) {

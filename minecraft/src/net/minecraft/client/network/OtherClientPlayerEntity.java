@@ -53,7 +53,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.headTrackingIncrements > 0) {
-			this.method_52539(this.headTrackingIncrements, this.serverHeadYaw);
+			this.lerpHeadYaw(this.headTrackingIncrements, this.serverHeadYaw);
 			this.headTrackingIncrements--;
 		}
 

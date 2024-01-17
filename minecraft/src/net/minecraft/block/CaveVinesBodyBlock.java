@@ -43,7 +43,7 @@ public class CaveVinesBodyBlock extends AbstractPlantBlock implements Fertilizab
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		return CaveVines.pickBerries(player, state, world, pos);
 	}
 

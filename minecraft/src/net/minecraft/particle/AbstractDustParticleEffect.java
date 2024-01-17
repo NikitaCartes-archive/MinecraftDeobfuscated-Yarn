@@ -3,7 +3,6 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Locale;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector3f;
@@ -27,18 +26,6 @@ public abstract class AbstractDustParticleEffect implements ParticleEffect {
 		reader.expect(' ');
 		float h = reader.readFloat();
 		return new Vector3f(f, g, h);
-	}
-
-	public static Vector3f readColor(PacketByteBuf buf) {
-		return new Vector3f(buf.readFloat(), buf.readFloat(), buf.readFloat());
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeFloat(this.color.x());
-		buf.writeFloat(this.color.y());
-		buf.writeFloat(this.color.z());
-		buf.writeFloat(this.scale);
 	}
 
 	@Override

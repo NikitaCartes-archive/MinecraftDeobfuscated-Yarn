@@ -26,12 +26,12 @@ public class OxidizableGrateBlock extends GrateBlock implements Oxidizable {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		this.tickDegradation(state, world, pos, random);
 	}
 
 	@Override
-	public boolean hasRandomTicks(BlockState state) {
+	protected boolean hasRandomTicks(BlockState state) {
 		return Oxidizable.getIncreasedOxidationBlock(state.getBlock()).isPresent();
 	}
 

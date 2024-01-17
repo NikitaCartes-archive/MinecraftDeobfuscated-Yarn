@@ -164,7 +164,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private static final int field_29769 = 32;
 	private static final int field_29770 = 10;
 	private static final int field_46928 = 25;
-	private static final double field_47708 = 1.0;
+	public static final double field_47708 = 1.0;
 	private static final EntityAttributeModifier CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
 		UUID.fromString("736565d2-e1a7-403d-a3f8-1aeb3e302542"), "Creative block interaction range modifier", 0.5, EntityAttributeModifier.Operation.ADDITION
 	);
@@ -446,7 +446,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void enterCombat() {
 		super.enterCombat();
-		this.networkHandler.sendPacket(new EnterCombatS2CPacket());
+		this.networkHandler.sendPacket(EnterCombatS2CPacket.INSTANCE);
 	}
 
 	@Override
@@ -505,7 +505,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	private void updateCreativeInteractionRangeModifiers() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_BLOCK_INTERACTION_RANGE);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE);
 		if (entityAttributeInstance != null) {
 			if (this.isCreative()) {
 				entityAttributeInstance.updateModifier(CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID);
@@ -514,7 +514,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			}
 		}
 
-		EntityAttributeInstance entityAttributeInstance2 = this.getAttributeInstance(EntityAttributes.GENERIC_ENTITY_INTERACTION_RANGE);
+		EntityAttributeInstance entityAttributeInstance2 = this.getAttributeInstance(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE);
 		if (entityAttributeInstance2 != null) {
 			if (this.isCreative()) {
 				entityAttributeInstance2.updateModifier(CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID);
@@ -1513,8 +1513,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	public void sendServerMetadata(ServerMetadata metadata) {
-		this.networkHandler
-			.sendPacket(new ServerMetadataS2CPacket(metadata.description(), metadata.favicon().map(ServerMetadata.Favicon::iconBytes), metadata.secureChatEnforced()));
+		this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.description(), metadata.favicon().map(ServerMetadata.Favicon::iconBytes)));
 	}
 
 	@Override
@@ -1883,15 +1882,5 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.getLastDeathPos(),
 			this.getPortalCooldown()
 		);
-	}
-
-	public boolean isBoxInEntityInteractionRange(Box box) {
-		double d = this.getEntityInteractionRange() + 1.0;
-		return box.squaredMagnitude(this.getEyePos()) < d * d;
-	}
-
-	public boolean isPosInBlockInteractionRange(BlockPos pos) {
-		double d = this.getBlockInteractionRange() + 1.0;
-		return this.getEyePos().isInRange(Vec3d.ofCenter(pos), d);
 	}
 }

@@ -1,10 +1,11 @@
 package net.minecraft.entity.mob;
 
-import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.world.World;
 
 public abstract class IllagerEntity extends RaiderEntity {
@@ -17,11 +18,6 @@ public abstract class IllagerEntity extends RaiderEntity {
 		super.initGoals();
 	}
 
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.ILLAGER;
-	}
-
 	public IllagerEntity.State getState() {
 		return IllagerEntity.State.CROSSED;
 	}
@@ -29,6 +25,15 @@ public abstract class IllagerEntity extends RaiderEntity {
 	@Override
 	public boolean canTarget(LivingEntity target) {
 		return target instanceof MerchantEntity && target.isBaby() ? false : super.canTarget(target);
+	}
+
+	@Override
+	public boolean isTeammate(Entity other) {
+		if (super.isTeammate(other)) {
+			return true;
+		} else {
+			return !other.getType().isIn(EntityTypeTags.ILLAGER_FRIENDS) ? false : this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
+		}
 	}
 
 	protected class LongDoorInteractGoal extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {

@@ -6,7 +6,8 @@ import net.minecraft.util.math.Vec3d;
 public enum EntityAttachmentType {
 	PASSENGER(EntityAttachmentType.Point.AT_HEIGHT),
 	VEHICLE(EntityAttachmentType.Point.ZERO),
-	NAME_TAG(EntityAttachmentType.Point.AT_HEIGHT);
+	NAME_TAG(EntityAttachmentType.Point.AT_HEIGHT),
+	WARDEN_CHEST(EntityAttachmentType.Point.field_48321);
 
 	private final EntityAttachmentType.Point point;
 
@@ -22,6 +23,7 @@ public enum EntityAttachmentType {
 		List<Vec3d> NONE = List.of(Vec3d.ZERO);
 		EntityAttachmentType.Point ZERO = (width, height) -> NONE;
 		EntityAttachmentType.Point AT_HEIGHT = (width, height) -> List.of(new Vec3d(0.0, (double)height, 0.0));
+		EntityAttachmentType.Point field_48321 = (f, g) -> List.of(new Vec3d(0.0, (double)g / 2.0, 0.0));
 
 		List<Vec3d> create(float width, float height);
 	}

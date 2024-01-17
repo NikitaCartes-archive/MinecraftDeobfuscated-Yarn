@@ -19,7 +19,7 @@ public class WorkStationCompetitionTask {
 						(jobSite, mobs) -> (world, entity, time) -> {
 								GlobalPos globalPos = context.getValue(jobSite);
 								world.getPointOfInterestStorage()
-									.getType(globalPos.getPos())
+									.getType(globalPos.pos())
 									.ifPresent(
 										poiType -> context.<List>getValue(mobs)
 												.stream()

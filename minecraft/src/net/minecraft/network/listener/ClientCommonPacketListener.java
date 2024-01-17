@@ -6,9 +6,11 @@ import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
+import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 
-public interface ClientCommonPacketListener extends ClientPacketListener {
+public interface ClientCommonPacketListener extends ClientCookieRequestPacketListener, ClientPacketListener {
 	void onKeepAlive(KeepAliveS2CPacket packet);
 
 	void onPing(CommonPingS2CPacket packet);
@@ -22,4 +24,8 @@ public interface ClientCommonPacketListener extends ClientPacketListener {
 	void onResourcePackRemove(ResourcePackRemoveS2CPacket packet);
 
 	void onSynchronizeTags(SynchronizeTagsS2CPacket packet);
+
+	void onStoreCookie(StoreCookieS2CPacket packet);
+
+	void onServerTransfer(ServerTransferS2CPacket packet);
 }

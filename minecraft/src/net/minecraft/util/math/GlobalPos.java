@@ -2,48 +2,23 @@ package net.minecraft.util.math;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Objects;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.World;
 
-public final class GlobalPos {
+public record GlobalPos(RegistryKey<World> dimension, BlockPos pos) {
 	public static final Codec<GlobalPos> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(World.CODEC.fieldOf("dimension").forGetter(GlobalPos::getDimension), BlockPos.CODEC.fieldOf("pos").forGetter(GlobalPos::getPos))
+		instance -> instance.group(World.CODEC.fieldOf("dimension").forGetter(GlobalPos::dimension), BlockPos.CODEC.fieldOf("pos").forGetter(GlobalPos::pos))
 				.apply(instance, GlobalPos::create)
 	);
-	private final RegistryKey<World> dimension;
-	private final BlockPos pos;
-
-	private GlobalPos(RegistryKey<World> dimension, BlockPos pos) {
-		this.dimension = dimension;
-		this.pos = pos;
-	}
+	public static final PacketCodec<ByteBuf, GlobalPos> PACKET_CODEC = PacketCodec.tuple(
+		RegistryKey.createPacketCodec(RegistryKeys.WORLD), GlobalPos::dimension, BlockPos.PACKET_CODEC, GlobalPos::pos, GlobalPos::create
+	);
 
 	public static GlobalPos create(RegistryKey<World> dimension, BlockPos pos) {
 		return new GlobalPos(dimension, pos);
-	}
-
-	public RegistryKey<World> getDimension() {
-		return this.dimension;
-	}
-
-	public BlockPos getPos() {
-		return this.pos;
-	}
-
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			GlobalPos globalPos = (GlobalPos)o;
-			return Objects.equals(this.dimension, globalPos.dimension) && Objects.equals(this.pos, globalPos.pos);
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		return Objects.hash(new Object[]{this.dimension, this.pos});
 	}
 
 	public String toString() {

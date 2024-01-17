@@ -30,7 +30,7 @@ public class KelpPlantBlock extends AbstractPlantBlock implements FluidFillable 
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return Fluids.WATER.getStill(false);
 	}
 

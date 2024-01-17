@@ -23,7 +23,7 @@ public class WetSpongeBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (world.getDimension().ultrawarm()) {
 			world.setBlockState(pos, Blocks.SPONGE.getDefaultState(), Block.NOTIFY_ALL);
 			world.syncWorldEvent(WorldEvents.WET_SPONGE_DRIES_OUT, pos, 0);

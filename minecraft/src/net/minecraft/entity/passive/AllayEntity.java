@@ -627,7 +627,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 					return true;
 				} else {
 					GlobalPos globalPos = (GlobalPos)optional.get();
-					return globalPos.getDimension().equals(world.getRegistryKey()) && globalPos.getPos().equals(pos);
+					return globalPos.dimension().equals(world.getRegistryKey()) && globalPos.pos().equals(pos);
 				}
 			}
 		}

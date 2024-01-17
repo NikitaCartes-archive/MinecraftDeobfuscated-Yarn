@@ -3,6 +3,7 @@ package net.minecraft.item;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemSteerable;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
@@ -27,7 +28,7 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 		} else {
 			Entity entity = user.getControllingVehicle();
 			if (user.hasVehicle() && entity instanceof ItemSteerable itemSteerable && entity.getType() == this.target && itemSteerable.consumeOnAStickItem()) {
-				itemStack.damage(this.damagePerUse, user, p -> p.sendToolBreakStatus(hand));
+				itemStack.damage(this.damagePerUse, user, LivingEntity.getSlotForHand(hand));
 				if (itemStack.isEmpty()) {
 					ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
 					itemStack2.setNbt(itemStack.getNbt());

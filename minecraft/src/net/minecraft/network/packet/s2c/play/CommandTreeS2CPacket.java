@@ -28,12 +28,16 @@ import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, CommandTreeS2CPacket> CODEC = Packet.createCodec(CommandTreeS2CPacket::write, CommandTreeS2CPacket::new);
 	private static final byte field_33317 = 3;
 	private static final byte field_33318 = 4;
 	private static final byte field_33319 = 8;
@@ -50,14 +54,13 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.rootSize = object2IntMap.getInt(rootNode);
 	}
 
-	public CommandTreeS2CPacket(PacketByteBuf buf) {
+	private CommandTreeS2CPacket(PacketByteBuf buf) {
 		this.nodes = buf.readList(CommandTreeS2CPacket::readCommandNode);
 		this.rootSize = buf.readVarInt();
 		validate(this.nodes);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeCollection(this.nodes, (buf2, node) -> node.write(buf2));
 		buf.writeVarInt(this.rootSize);
 	}
@@ -174,6 +177,11 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		int[] is = node.getChildren().stream().mapToInt(nodes::getInt).toArray();
 		return new CommandTreeS2CPacket.CommandNodeData(suggestableNode, i, j, is);
+	}
+
+	@Override
+	public PacketIdentifier<CommandTreeS2CPacket> getPacketId() {
+		return PlayPackets.COMMANDS;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

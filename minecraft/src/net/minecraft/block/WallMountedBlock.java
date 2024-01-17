@@ -22,7 +22,7 @@ public abstract class WallMountedBlock extends HorizontalFacingBlock {
 	protected abstract MapCodec<? extends WallMountedBlock> getCodec();
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		return canPlaceAt(world, pos, getDirection(state).getOpposite());
 	}
 
@@ -53,7 +53,7 @@ public abstract class WallMountedBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		return getDirection(state).getOpposite() == direction && !state.canPlaceAt(world, pos)

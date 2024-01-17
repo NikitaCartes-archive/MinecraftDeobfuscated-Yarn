@@ -19,8 +19,6 @@ import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
-	private static final int MAX_DISTANCE = 5;
-	private static final float APPROACH_SPEED = 0.5F;
 	private long breedEndTime;
 
 	public VillagerBreedTask() {
@@ -39,7 +37,7 @@ public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5F);
+		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5F, 2);
 		serverWorld.sendEntityStatus(passiveEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
 		serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
 		int i = 275 + villagerEntity.getRandom().nextInt(50);
@@ -49,7 +47,7 @@ public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
-			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F);
+			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F, 2);
 			if (l >= this.breedEndTime) {
 				villagerEntity.eatForBreeding();
 				villagerEntity2.eatForBreeding();

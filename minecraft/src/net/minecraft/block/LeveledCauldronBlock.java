@@ -64,7 +64,7 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient && entity.isOnFire() && this.isEntityTouchingFluid(state, pos, entity)) {
 			entity.extinguish();
 			if (entity.canModifyAt(world, pos)) {
@@ -98,7 +98,7 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		return (Integer)state.get(LEVEL);
 	}
 

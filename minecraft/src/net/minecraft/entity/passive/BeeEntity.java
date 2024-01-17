@@ -23,7 +23,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
@@ -640,11 +639,6 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 			return super.damage(source, amount);
 		}
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.ARTHROPOD;
 	}
 
 	@Override

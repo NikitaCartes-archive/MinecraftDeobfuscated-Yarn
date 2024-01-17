@@ -6,7 +6,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 
 public class ItemStackParticleEffect implements ParticleEffect {
@@ -17,10 +18,6 @@ public class ItemStackParticleEffect implements ParticleEffect {
 			ItemStack itemStack = new ItemStackArgument(itemResult.item(), itemResult.nbt()).createStack(1, false);
 			return new ItemStackParticleEffect(particleType, itemStack);
 		}
-
-		public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, PacketByteBuf packetByteBuf) {
-			return new ItemStackParticleEffect(particleType, packetByteBuf.readItemStack());
-		}
 	};
 	private final ParticleType<ItemStackParticleEffect> type;
 	private final ItemStack stack;
@@ -29,14 +26,13 @@ public class ItemStackParticleEffect implements ParticleEffect {
 		return ItemStack.CODEC.xmap(stack -> new ItemStackParticleEffect(type, stack), effect -> effect.stack);
 	}
 
+	public static PacketCodec<? super RegistryByteBuf, ItemStackParticleEffect> createPacketCodec(ParticleType<ItemStackParticleEffect> type) {
+		return ItemStack.PACKET_CODEC.xmap(stack -> new ItemStackParticleEffect(type, stack), effect -> effect.stack);
+	}
+
 	public ItemStackParticleEffect(ParticleType<ItemStackParticleEffect> type, ItemStack stack) {
 		this.type = type;
 		this.stack = stack;
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeItemStack(this.stack);
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -137,10 +136,5 @@ public class EndermiteEntity extends HostileEntity {
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.ARTHROPOD;
 	}
 }

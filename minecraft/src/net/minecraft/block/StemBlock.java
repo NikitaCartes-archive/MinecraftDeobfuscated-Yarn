@@ -64,7 +64,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return AGE_TO_SHAPE[state.get(AGE)];
 	}
 
@@ -74,7 +74,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getBaseLightLevel(pos, 0) >= 9) {
 			float f = CropBlock.getAvailableMoisture(this, world, pos);
 			if (random.nextInt((int)(25.0F / f) + 1) == 0) {

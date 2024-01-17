@@ -209,15 +209,15 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(identifier)), light, OverlayTexture.DEFAULT_UV);
 	}
 
-	protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
-		float i = abstractClientPlayerEntity.getLeaningPitch(h);
-		float j = abstractClientPlayerEntity.getPitch(h);
+	protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+		float j = abstractClientPlayerEntity.getLeaningPitch(h);
+		float k = abstractClientPlayerEntity.getPitch(h);
 		if (abstractClientPlayerEntity.isFallFlying()) {
-			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
-			float k = (float)abstractClientPlayerEntity.getRoll() + h;
-			float l = MathHelper.clamp(k * k / 100.0F, 0.0F, 1.0F);
+			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h, i);
+			float l = (float)abstractClientPlayerEntity.getRoll() + h;
+			float m = MathHelper.clamp(l * l / 100.0F, 0.0F, 1.0F);
 			if (!abstractClientPlayerEntity.isUsingRiptide()) {
-				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(l * (-90.0F - j)));
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(m * (-90.0F - k)));
 			}
 
 			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
@@ -225,20 +225,20 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			double d = vec3d2.horizontalLengthSquared();
 			double e = vec3d.horizontalLengthSquared();
 			if (d > 0.0 && e > 0.0) {
-				double m = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
-				double n = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation((float)(Math.signum(n) * Math.acos(m))));
+				double n = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
+				double o = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation((float)(Math.signum(o) * Math.acos(n))));
 			}
-		} else if (i > 0.0F) {
-			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
-			float kx = abstractClientPlayerEntity.isTouchingWater() ? -90.0F - j : -90.0F;
-			float lx = MathHelper.lerp(i, 0.0F, kx);
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(lx));
+		} else if (j > 0.0F) {
+			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h, i);
+			float lx = abstractClientPlayerEntity.isTouchingWater() ? -90.0F - k : -90.0F;
+			float mx = MathHelper.lerp(j, 0.0F, lx);
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(mx));
 			if (abstractClientPlayerEntity.isInSwimmingPose()) {
 				matrixStack.translate(0.0F, -1.0F, 0.3F);
 			}
 		} else {
-			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
+			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h, i);
 		}
 	}
 }

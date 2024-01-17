@@ -12,7 +12,8 @@ import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimMaterials;
 import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.item.trim.ArmorTrimPatterns;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -108,23 +109,31 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 					)
 					.apply(instance, SmithingTrimRecipe::new)
 		);
+		public static final PacketCodec<RegistryByteBuf, SmithingTrimRecipe> PACKET_CODEC = PacketCodec.of(
+			SmithingTrimRecipe.Serializer::write, SmithingTrimRecipe.Serializer::read
+		);
 
 		@Override
 		public Codec<SmithingTrimRecipe> codec() {
 			return CODEC;
 		}
 
-		public SmithingTrimRecipe read(PacketByteBuf packetByteBuf) {
-			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
-			Ingredient ingredient2 = Ingredient.fromPacket(packetByteBuf);
-			Ingredient ingredient3 = Ingredient.fromPacket(packetByteBuf);
+		@Override
+		public PacketCodec<RegistryByteBuf, SmithingTrimRecipe> packetCodec() {
+			return PACKET_CODEC;
+		}
+
+		private static SmithingTrimRecipe read(RegistryByteBuf buf) {
+			Ingredient ingredient = Ingredient.PACKET_CODEC.decode(buf);
+			Ingredient ingredient2 = Ingredient.PACKET_CODEC.decode(buf);
+			Ingredient ingredient3 = Ingredient.PACKET_CODEC.decode(buf);
 			return new SmithingTrimRecipe(ingredient, ingredient2, ingredient3);
 		}
 
-		public void write(PacketByteBuf packetByteBuf, SmithingTrimRecipe smithingTrimRecipe) {
-			smithingTrimRecipe.template.write(packetByteBuf);
-			smithingTrimRecipe.base.write(packetByteBuf);
-			smithingTrimRecipe.addition.write(packetByteBuf);
+		private static void write(RegistryByteBuf buf, SmithingTrimRecipe recipe) {
+			Ingredient.PACKET_CODEC.encode(buf, recipe.template);
+			Ingredient.PACKET_CODEC.encode(buf, recipe.base);
+			Ingredient.PACKET_CODEC.encode(buf, recipe.addition);
 		}
 	}
 }

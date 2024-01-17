@@ -14,8 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
+import java.util.stream.Stream;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 
@@ -24,7 +23,7 @@ public class TestFunctions {
 	private static final Set<String> TEST_CLASSES = Sets.<String>newHashSet();
 	private static final Map<String, Consumer<ServerWorld>> BEFORE_BATCH_CONSUMERS = Maps.<String, Consumer<ServerWorld>>newHashMap();
 	private static final Map<String, Consumer<ServerWorld>> AFTER_BATCH_CONSUMERS = Maps.<String, Consumer<ServerWorld>>newHashMap();
-	private static final Collection<TestFunction> FAILED_TEST_FUNCTIONS = Sets.<TestFunction>newHashSet();
+	private static final Set<TestFunction> FAILED_TEST_FUNCTIONS = Sets.<TestFunction>newHashSet();
 
 	public static void register(Class<?> testClass) {
 		Arrays.stream(testClass.getDeclaredMethods()).sorted(Comparator.comparing(Method::getName)).forEach(TestFunctions::register);
@@ -61,8 +60,8 @@ public class TestFunctions {
 		}
 	}
 
-	public static Collection<TestFunction> getTestFunctions(String testClass) {
-		return (Collection<TestFunction>)TEST_FUNCTIONS.stream().filter(testFunction -> isInClass(testFunction, testClass)).collect(Collectors.toList());
+	public static Stream<TestFunction> getTestFunctions(String testClass) {
+		return TEST_FUNCTIONS.stream().filter(testFunction -> isInClass(testFunction, testClass));
 	}
 
 	public static Collection<TestFunction> getTestFunctions() {
@@ -77,18 +76,18 @@ public class TestFunctions {
 		return TEST_CLASSES.contains(testClass);
 	}
 
-	@Nullable
 	public static Consumer<ServerWorld> getBeforeBatchConsumer(String batchId) {
-		return (Consumer<ServerWorld>)BEFORE_BATCH_CONSUMERS.get(batchId);
+		return (Consumer<ServerWorld>)BEFORE_BATCH_CONSUMERS.getOrDefault(batchId, (Consumer)world -> {
+		});
 	}
 
-	@Nullable
 	public static Consumer<ServerWorld> getAfterBatchConsumer(String batchId) {
-		return (Consumer<ServerWorld>)AFTER_BATCH_CONSUMERS.get(batchId);
+		return (Consumer<ServerWorld>)AFTER_BATCH_CONSUMERS.getOrDefault(batchId, (Consumer)world -> {
+		});
 	}
 
 	public static Optional<TestFunction> getTestFunction(String structurePath) {
-		return getTestFunctions().stream().filter(testFunction -> testFunction.getTemplatePath().equalsIgnoreCase(structurePath)).findFirst();
+		return getTestFunctions().stream().filter(testFunction -> testFunction.templatePath().equalsIgnoreCase(structurePath)).findFirst();
 	}
 
 	public static TestFunction getTestFunctionOrThrow(String structurePath) {
@@ -149,11 +148,11 @@ public class TestFunctions {
 	}
 
 	private static boolean isInClass(TestFunction testFunction, String testClass) {
-		return testFunction.getTemplatePath().toLowerCase().startsWith(testClass.toLowerCase() + ".");
+		return testFunction.templatePath().toLowerCase().startsWith(testClass.toLowerCase() + ".");
 	}
 
-	public static Collection<TestFunction> getFailedTestFunctions() {
-		return FAILED_TEST_FUNCTIONS;
+	public static Stream<TestFunction> getFailedTestFunctions() {
+		return FAILED_TEST_FUNCTIONS.stream();
 	}
 
 	public static void addFailedTestFunction(TestFunction testFunction) {

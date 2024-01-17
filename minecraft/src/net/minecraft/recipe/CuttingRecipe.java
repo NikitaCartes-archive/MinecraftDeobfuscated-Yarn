@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
@@ -72,6 +74,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	public static class Serializer<T extends CuttingRecipe> implements RecipeSerializer<T> {
 		final CuttingRecipe.RecipeFactory<T> recipeFactory;
 		private final Codec<T> codec;
+		private final PacketCodec<RegistryByteBuf, T> packetCodec;
 
 		protected Serializer(CuttingRecipe.RecipeFactory<T> recipeFactory) {
 			this.recipeFactory = recipeFactory;
@@ -83,6 +86,15 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 						)
 						.apply(instance, recipeFactory::create)
 			);
+			this.packetCodec = PacketCodec.tuple(
+				PacketCodecs.STRING,
+				recipe -> recipe.group,
+				Ingredient.PACKET_CODEC,
+				recipe -> recipe.ingredient,
+				ItemStack.PACKET_CODEC,
+				recipe -> recipe.result,
+				recipeFactory::create
+			);
 		}
 
 		@Override
@@ -90,17 +102,9 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 			return this.codec;
 		}
 
-		public T read(PacketByteBuf packetByteBuf) {
-			String string = packetByteBuf.readString();
-			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
-			ItemStack itemStack = packetByteBuf.readItemStack();
-			return this.recipeFactory.create(string, ingredient, itemStack);
-		}
-
-		public void write(PacketByteBuf packetByteBuf, T cuttingRecipe) {
-			packetByteBuf.writeString(cuttingRecipe.group);
-			cuttingRecipe.ingredient.write(packetByteBuf);
-			packetByteBuf.writeItemStack(cuttingRecipe.result);
+		@Override
+		public PacketCodec<RegistryByteBuf, T> packetCodec() {
+			return this.packetCodec;
 		}
 	}
 }

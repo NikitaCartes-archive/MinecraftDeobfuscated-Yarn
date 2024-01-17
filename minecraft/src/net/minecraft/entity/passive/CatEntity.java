@@ -226,7 +226,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	}
 
 	public void hiss() {
-		this.playSound(SoundEvents.ENTITY_CAT_HISS, this.getSoundVolume(), this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_CAT_HISS);
 	}
 
 	@Override
@@ -357,10 +357,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		boolean bl = world.getMoonSize() > 0.9F;
 		TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
-		Registries.CAT_VARIANT
-			.getEntryList(tagKey)
-			.flatMap(list -> list.getRandom(world.getRandom()))
-			.ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
+		Registries.CAT_VARIANT.getRandomEntry(tagKey, world.getRandom()).ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
 		ServerWorld serverWorld = world.toServerWorld();
 		if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
 			this.setVariant(Registries.CAT_VARIANT.getOrThrow(CatVariant.ALL_BLACK));

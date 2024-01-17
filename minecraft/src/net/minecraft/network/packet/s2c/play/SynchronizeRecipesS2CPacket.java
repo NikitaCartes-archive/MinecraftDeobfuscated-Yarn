@@ -1,31 +1,31 @@
 package net.minecraft.network.packet.s2c.play;
 
-import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 
 public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, SynchronizeRecipesS2CPacket> CODEC = PacketCodec.tuple(
+		RecipeEntry.PACKET_CODEC.mapResult(PacketCodecs.listMapper()),
+		synchronizeRecipesS2CPacket -> synchronizeRecipesS2CPacket.recipes,
+		SynchronizeRecipesS2CPacket::new
+	);
 	private final List<RecipeEntry<?>> recipes;
 
 	public SynchronizeRecipesS2CPacket(Collection<RecipeEntry<?>> recipes) {
-		this.recipes = Lists.<RecipeEntry<?>>newArrayList(recipes);
-	}
-
-	public SynchronizeRecipesS2CPacket(PacketByteBuf buf) {
-		this.recipes = buf.readList(SynchronizeRecipesS2CPacket::readRecipe);
+		this.recipes = List.copyOf(recipes);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeCollection(this.recipes, SynchronizeRecipesS2CPacket::writeRecipe);
+	public PacketIdentifier<SynchronizeRecipesS2CPacket> getPacketId() {
+		return PlayPackets.UPDATE_RECIPES;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -34,21 +34,5 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 
 	public List<RecipeEntry<?>> getRecipes() {
 		return this.recipes;
-	}
-
-	private static RecipeEntry<?> readRecipe(PacketByteBuf buf) {
-		Identifier identifier = buf.readIdentifier();
-		Identifier identifier2 = buf.readIdentifier();
-		Recipe<?> recipe = ((RecipeSerializer)Registries.RECIPE_SERIALIZER
-				.getOrEmpty(identifier)
-				.orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)))
-			.read(buf);
-		return new RecipeEntry<>(identifier2, recipe);
-	}
-
-	public static <T extends Recipe<?>> void writeRecipe(PacketByteBuf buf, RecipeEntry<?> recipe) {
-		buf.writeIdentifier(Registries.RECIPE_SERIALIZER.getId(recipe.value().getSerializer()));
-		buf.writeIdentifier(recipe.id());
-		((RecipeSerializer<Recipe<?>>)recipe.value().getSerializer()).write(buf, recipe.value());
 	}
 }

@@ -8,9 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -138,17 +136,6 @@ public class VindicatorEntity extends IllagerEntity {
 	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		if (this.getRaid() == null) {
 			this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
-		}
-	}
-
-	@Override
-	public boolean isTeammate(Entity other) {
-		if (super.isTeammate(other)) {
-			return true;
-		} else {
-			return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && other.getScoreboardTeam() == null
-				: false;
 		}
 	}
 

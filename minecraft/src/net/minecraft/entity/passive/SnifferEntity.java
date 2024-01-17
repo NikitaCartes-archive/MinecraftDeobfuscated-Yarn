@@ -1,11 +1,13 @@
 package net.minecraft.entity.passive;
 
 import com.mojang.serialization.Dynamic;
+import io.netty.buffer.ByteBuf;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -37,6 +39,8 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
@@ -48,6 +52,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
@@ -467,12 +472,26 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	public static enum State {
-		IDLING,
-		FEELING_HAPPY,
-		SCENTING,
-		SNIFFING,
-		SEARCHING,
-		DIGGING,
-		RISING;
+		IDLING(0),
+		FEELING_HAPPY(1),
+		SCENTING(2),
+		SNIFFING(3),
+		SEARCHING(4),
+		DIGGING(5),
+		RISING(6);
+
+		public static final IntFunction<SnifferEntity.State> INDEX_TO_VALUE = ValueLists.createIdToValueFunction(
+			SnifferEntity.State::getIndex, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
+		public static final PacketCodec<ByteBuf, SnifferEntity.State> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, SnifferEntity.State::getIndex);
+		private final int index;
+
+		private State(int index) {
+			this.index = index;
+		}
+
+		public int getIndex() {
+			return this.index;
+		}
 	}
 }

@@ -1,37 +1,46 @@
 package net.minecraft.enchantment;
 
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 
 public class DamageEnchantment extends Enchantment {
-	public static final int ALL_INDEX = 0;
-	public static final int UNDEAD_INDEX = 1;
-	public static final int ARTHROPODS_INDEX = 2;
-	private static final String[] TYPE_NAMES = new String[]{"all", "undead", "arthropods"};
-	private static final int[] BASE_POWERS = new int[]{1, 5, 5};
-	private static final int[] POWERS_PER_LEVEL = new int[]{11, 8, 8};
-	private static final int[] MIN_MAX_POWER_DIFFERENCES = new int[]{20, 20, 20};
-	public final int typeIndex;
+	private final int basePower;
+	private final int powerPerLevel;
+	private final int minMaxPowerDifference;
+	private final Optional<TagKey<EntityType<?>>> applicableEntities;
 
-	public DamageEnchantment(Enchantment.Rarity weight, int typeIndex, EquipmentSlot... slots) {
-		super(weight, EnchantmentTarget.WEAPON, slots);
-		this.typeIndex = typeIndex;
+	public DamageEnchantment(
+		Enchantment.Rarity weight,
+		int basePower,
+		int powerPerLevel,
+		int minMaxPowerDifference,
+		Optional<TagKey<EntityType<?>>> applicableEntities,
+		EquipmentSlot... slotTypes
+	) {
+		super(weight, ItemTags.WEAPON_ENCHANTABLE, slotTypes);
+		this.basePower = basePower;
+		this.powerPerLevel = powerPerLevel;
+		this.minMaxPowerDifference = minMaxPowerDifference;
+		this.applicableEntities = applicableEntities;
 	}
 
 	@Override
 	public int getMinPower(int level) {
-		return BASE_POWERS[this.typeIndex] + (level - 1) * POWERS_PER_LEVEL[this.typeIndex];
+		return this.basePower + (level - 1) * this.powerPerLevel;
 	}
 
 	@Override
 	public int getMaxPower(int level) {
-		return this.getMinPower(level) + MIN_MAX_POWER_DIFFERENCES[this.typeIndex];
+		return this.getMinPower(level) + this.minMaxPowerDifference;
 	}
 
 	@Override
@@ -40,13 +49,11 @@ public class DamageEnchantment extends Enchantment {
 	}
 
 	@Override
-	public float getAttackDamage(int level, EntityGroup group) {
-		if (this.typeIndex == 0) {
+	public float getAttackDamage(int level, @Nullable EntityType<?> entityType) {
+		if (this.applicableEntities.isEmpty()) {
 			return 1.0F + (float)Math.max(0, level - 1) * 0.5F;
-		} else if (this.typeIndex == 1 && group == EntityGroup.UNDEAD) {
-			return (float)level * 2.5F;
 		} else {
-			return this.typeIndex == 2 && group == EntityGroup.ARTHROPOD ? (float)level * 2.5F : 0.0F;
+			return entityType != null && entityType.isIn((TagKey<EntityType<?>>)this.applicableEntities.get()) ? (float)level * 2.5F : 0.0F;
 		}
 	}
 
@@ -56,13 +63,12 @@ public class DamageEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.getItem() instanceof AxeItem ? true : super.isAcceptableItem(stack);
-	}
-
-	@Override
 	public void onTargetDamaged(LivingEntity user, Entity target, int level) {
-		if (target instanceof LivingEntity livingEntity && this.typeIndex == 2 && level > 0 && livingEntity.getGroup() == EntityGroup.ARTHROPOD) {
+		if (this.applicableEntities.isPresent()
+			&& target instanceof LivingEntity livingEntity
+			&& this.applicableEntities.get() == EntityTypeTags.ARTHROPOD
+			&& level > 0
+			&& livingEntity.getType().isIn((TagKey<EntityType<?>>)this.applicableEntities.get())) {
 			int i = 20 + user.getRandom().nextInt(10 * level);
 			livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, i, 3));
 		}

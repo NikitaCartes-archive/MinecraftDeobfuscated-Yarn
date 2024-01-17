@@ -2,7 +2,6 @@ package net.minecraft.item;
 
 import com.mojang.datafixers.util.Pair;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import net.minecraft.block.LightBlock;
 import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.nbt.NbtCompound;
@@ -30,6 +28,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.InstrumentTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.PaintingVariantTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -1474,147 +1473,165 @@ public class ItemGroups {
 			ItemGroup.create(ItemGroup.Row.BOTTOM, 3)
 				.displayName(Text.translatable("itemGroup.ingredients"))
 				.icon(() -> new ItemStack(Items.IRON_INGOT))
-				.entries((displayContext, entries) -> {
-					entries.add(Items.COAL);
-					entries.add(Items.CHARCOAL);
-					entries.add(Items.RAW_IRON);
-					entries.add(Items.RAW_COPPER);
-					entries.add(Items.RAW_GOLD);
-					entries.add(Items.EMERALD);
-					entries.add(Items.LAPIS_LAZULI);
-					entries.add(Items.DIAMOND);
-					entries.add(Items.ANCIENT_DEBRIS);
-					entries.add(Items.QUARTZ);
-					entries.add(Items.AMETHYST_SHARD);
-					entries.add(Items.IRON_NUGGET);
-					entries.add(Items.GOLD_NUGGET);
-					entries.add(Items.IRON_INGOT);
-					entries.add(Items.COPPER_INGOT);
-					entries.add(Items.GOLD_INGOT);
-					entries.add(Items.NETHERITE_SCRAP);
-					entries.add(Items.NETHERITE_INGOT);
-					entries.add(Items.STICK);
-					entries.add(Items.FLINT);
-					entries.add(Items.WHEAT);
-					entries.add(Items.BONE);
-					entries.add(Items.BONE_MEAL);
-					entries.add(Items.STRING);
-					entries.add(Items.FEATHER);
-					entries.add(Items.SNOWBALL);
-					entries.add(Items.EGG);
-					entries.add(Items.LEATHER);
-					entries.add(Items.RABBIT_HIDE);
-					entries.add(Items.HONEYCOMB);
-					entries.add(Items.INK_SAC);
-					entries.add(Items.GLOW_INK_SAC);
-					entries.add(Items.TURTLE_SCUTE);
-					entries.add(Items.ARMADILLO_SCUTE);
-					entries.add(Items.SLIME_BALL);
-					entries.add(Items.CLAY_BALL);
-					entries.add(Items.PRISMARINE_SHARD);
-					entries.add(Items.PRISMARINE_CRYSTALS);
-					entries.add(Items.NAUTILUS_SHELL);
-					entries.add(Items.HEART_OF_THE_SEA);
-					entries.add(Items.FIRE_CHARGE);
-					entries.add(Items.BLAZE_ROD);
-					entries.add(Items.NETHER_STAR);
-					entries.add(Items.ENDER_PEARL);
-					entries.add(Items.ENDER_EYE);
-					entries.add(Items.SHULKER_SHELL);
-					entries.add(Items.POPPED_CHORUS_FRUIT);
-					entries.add(Items.ECHO_SHARD);
-					entries.add(Items.DISC_FRAGMENT_5);
-					entries.add(Items.WHITE_DYE);
-					entries.add(Items.LIGHT_GRAY_DYE);
-					entries.add(Items.GRAY_DYE);
-					entries.add(Items.BLACK_DYE);
-					entries.add(Items.BROWN_DYE);
-					entries.add(Items.RED_DYE);
-					entries.add(Items.ORANGE_DYE);
-					entries.add(Items.YELLOW_DYE);
-					entries.add(Items.LIME_DYE);
-					entries.add(Items.GREEN_DYE);
-					entries.add(Items.CYAN_DYE);
-					entries.add(Items.LIGHT_BLUE_DYE);
-					entries.add(Items.BLUE_DYE);
-					entries.add(Items.PURPLE_DYE);
-					entries.add(Items.MAGENTA_DYE);
-					entries.add(Items.PINK_DYE);
-					entries.add(Items.BOWL);
-					entries.add(Items.BRICK);
-					entries.add(Items.NETHER_BRICK);
-					entries.add(Items.PAPER);
-					entries.add(Items.BOOK);
-					entries.add(Items.FIREWORK_STAR);
-					entries.add(Items.GLASS_BOTTLE);
-					entries.add(Items.NETHER_WART);
-					entries.add(Items.REDSTONE);
-					entries.add(Items.GLOWSTONE_DUST);
-					entries.add(Items.GUNPOWDER);
-					entries.add(Items.DRAGON_BREATH);
-					entries.add(Items.FERMENTED_SPIDER_EYE);
-					entries.add(Items.BLAZE_POWDER);
-					entries.add(Items.SUGAR);
-					entries.add(Items.RABBIT_FOOT);
-					entries.add(Items.GLISTERING_MELON_SLICE);
-					entries.add(Items.SPIDER_EYE);
-					entries.add(Items.PUFFERFISH);
-					entries.add(Items.MAGMA_CREAM);
-					entries.add(Items.GOLDEN_CARROT);
-					entries.add(Items.GHAST_TEAR);
-					entries.add(Items.TURTLE_HELMET);
-					entries.add(Items.PHANTOM_MEMBRANE);
-					entries.add(Items.FLOWER_BANNER_PATTERN);
-					entries.add(Items.CREEPER_BANNER_PATTERN);
-					entries.add(Items.SKULL_BANNER_PATTERN);
-					entries.add(Items.MOJANG_BANNER_PATTERN);
-					entries.add(Items.GLOBE_BANNER_PATTERN);
-					entries.add(Items.PIGLIN_BANNER_PATTERN);
-					entries.add(Items.ANGLER_POTTERY_SHERD);
-					entries.add(Items.ARCHER_POTTERY_SHERD);
-					entries.add(Items.ARMS_UP_POTTERY_SHERD);
-					entries.add(Items.BLADE_POTTERY_SHERD);
-					entries.add(Items.BREWER_POTTERY_SHERD);
-					entries.add(Items.BURN_POTTERY_SHERD);
-					entries.add(Items.DANGER_POTTERY_SHERD);
-					entries.add(Items.EXPLORER_POTTERY_SHERD);
-					entries.add(Items.FRIEND_POTTERY_SHERD);
-					entries.add(Items.HEART_POTTERY_SHERD);
-					entries.add(Items.HEARTBREAK_POTTERY_SHERD);
-					entries.add(Items.HOWL_POTTERY_SHERD);
-					entries.add(Items.MINER_POTTERY_SHERD);
-					entries.add(Items.MOURNER_POTTERY_SHERD);
-					entries.add(Items.PLENTY_POTTERY_SHERD);
-					entries.add(Items.PRIZE_POTTERY_SHERD);
-					entries.add(Items.SHEAF_POTTERY_SHERD);
-					entries.add(Items.SHELTER_POTTERY_SHERD);
-					entries.add(Items.SKULL_POTTERY_SHERD);
-					entries.add(Items.SNORT_POTTERY_SHERD);
-					entries.add(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
-					entries.add(Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE);
-					entries.add(Items.EXPERIENCE_BOTTLE);
-					entries.add(Items.TRIAL_KEY);
-					Set<EnchantmentTarget> set = EnumSet.allOf(EnchantmentTarget.class);
-					displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(wrapper -> {
-						addMaxLevelEnchantedBooks(entries, wrapper, set, ItemGroup.StackVisibility.PARENT_TAB_ONLY);
-						addAllLevelEnchantedBooks(entries, wrapper, set, ItemGroup.StackVisibility.SEARCH_TAB_ONLY);
-					});
-				})
+				.entries(
+					(displayContext, entries) -> {
+						entries.add(Items.COAL);
+						entries.add(Items.CHARCOAL);
+						entries.add(Items.RAW_IRON);
+						entries.add(Items.RAW_COPPER);
+						entries.add(Items.RAW_GOLD);
+						entries.add(Items.EMERALD);
+						entries.add(Items.LAPIS_LAZULI);
+						entries.add(Items.DIAMOND);
+						entries.add(Items.ANCIENT_DEBRIS);
+						entries.add(Items.QUARTZ);
+						entries.add(Items.AMETHYST_SHARD);
+						entries.add(Items.IRON_NUGGET);
+						entries.add(Items.GOLD_NUGGET);
+						entries.add(Items.IRON_INGOT);
+						entries.add(Items.COPPER_INGOT);
+						entries.add(Items.GOLD_INGOT);
+						entries.add(Items.NETHERITE_SCRAP);
+						entries.add(Items.NETHERITE_INGOT);
+						entries.add(Items.STICK);
+						entries.add(Items.FLINT);
+						entries.add(Items.WHEAT);
+						entries.add(Items.BONE);
+						entries.add(Items.BONE_MEAL);
+						entries.add(Items.STRING);
+						entries.add(Items.FEATHER);
+						entries.add(Items.SNOWBALL);
+						entries.add(Items.EGG);
+						entries.add(Items.LEATHER);
+						entries.add(Items.RABBIT_HIDE);
+						entries.add(Items.HONEYCOMB);
+						entries.add(Items.INK_SAC);
+						entries.add(Items.GLOW_INK_SAC);
+						entries.add(Items.TURTLE_SCUTE);
+						entries.add(Items.ARMADILLO_SCUTE);
+						entries.add(Items.SLIME_BALL);
+						entries.add(Items.CLAY_BALL);
+						entries.add(Items.PRISMARINE_SHARD);
+						entries.add(Items.PRISMARINE_CRYSTALS);
+						entries.add(Items.NAUTILUS_SHELL);
+						entries.add(Items.HEART_OF_THE_SEA);
+						entries.add(Items.FIRE_CHARGE);
+						entries.add(Items.BLAZE_ROD);
+						entries.add(Items.NETHER_STAR);
+						entries.add(Items.ENDER_PEARL);
+						entries.add(Items.ENDER_EYE);
+						entries.add(Items.SHULKER_SHELL);
+						entries.add(Items.POPPED_CHORUS_FRUIT);
+						entries.add(Items.ECHO_SHARD);
+						entries.add(Items.DISC_FRAGMENT_5);
+						entries.add(Items.WHITE_DYE);
+						entries.add(Items.LIGHT_GRAY_DYE);
+						entries.add(Items.GRAY_DYE);
+						entries.add(Items.BLACK_DYE);
+						entries.add(Items.BROWN_DYE);
+						entries.add(Items.RED_DYE);
+						entries.add(Items.ORANGE_DYE);
+						entries.add(Items.YELLOW_DYE);
+						entries.add(Items.LIME_DYE);
+						entries.add(Items.GREEN_DYE);
+						entries.add(Items.CYAN_DYE);
+						entries.add(Items.LIGHT_BLUE_DYE);
+						entries.add(Items.BLUE_DYE);
+						entries.add(Items.PURPLE_DYE);
+						entries.add(Items.MAGENTA_DYE);
+						entries.add(Items.PINK_DYE);
+						entries.add(Items.BOWL);
+						entries.add(Items.BRICK);
+						entries.add(Items.NETHER_BRICK);
+						entries.add(Items.PAPER);
+						entries.add(Items.BOOK);
+						entries.add(Items.FIREWORK_STAR);
+						entries.add(Items.GLASS_BOTTLE);
+						entries.add(Items.NETHER_WART);
+						entries.add(Items.REDSTONE);
+						entries.add(Items.GLOWSTONE_DUST);
+						entries.add(Items.GUNPOWDER);
+						entries.add(Items.DRAGON_BREATH);
+						entries.add(Items.FERMENTED_SPIDER_EYE);
+						entries.add(Items.BLAZE_POWDER);
+						entries.add(Items.SUGAR);
+						entries.add(Items.RABBIT_FOOT);
+						entries.add(Items.GLISTERING_MELON_SLICE);
+						entries.add(Items.SPIDER_EYE);
+						entries.add(Items.PUFFERFISH);
+						entries.add(Items.MAGMA_CREAM);
+						entries.add(Items.GOLDEN_CARROT);
+						entries.add(Items.GHAST_TEAR);
+						entries.add(Items.TURTLE_HELMET);
+						entries.add(Items.PHANTOM_MEMBRANE);
+						entries.add(Items.FLOWER_BANNER_PATTERN);
+						entries.add(Items.CREEPER_BANNER_PATTERN);
+						entries.add(Items.SKULL_BANNER_PATTERN);
+						entries.add(Items.MOJANG_BANNER_PATTERN);
+						entries.add(Items.GLOBE_BANNER_PATTERN);
+						entries.add(Items.PIGLIN_BANNER_PATTERN);
+						entries.add(Items.ANGLER_POTTERY_SHERD);
+						entries.add(Items.ARCHER_POTTERY_SHERD);
+						entries.add(Items.ARMS_UP_POTTERY_SHERD);
+						entries.add(Items.BLADE_POTTERY_SHERD);
+						entries.add(Items.BREWER_POTTERY_SHERD);
+						entries.add(Items.BURN_POTTERY_SHERD);
+						entries.add(Items.DANGER_POTTERY_SHERD);
+						entries.add(Items.EXPLORER_POTTERY_SHERD);
+						entries.add(Items.FRIEND_POTTERY_SHERD);
+						entries.add(Items.HEART_POTTERY_SHERD);
+						entries.add(Items.HEARTBREAK_POTTERY_SHERD);
+						entries.add(Items.HOWL_POTTERY_SHERD);
+						entries.add(Items.MINER_POTTERY_SHERD);
+						entries.add(Items.MOURNER_POTTERY_SHERD);
+						entries.add(Items.PLENTY_POTTERY_SHERD);
+						entries.add(Items.PRIZE_POTTERY_SHERD);
+						entries.add(Items.SHEAF_POTTERY_SHERD);
+						entries.add(Items.SHELTER_POTTERY_SHERD);
+						entries.add(Items.SKULL_POTTERY_SHERD);
+						entries.add(Items.SNORT_POTTERY_SHERD);
+						entries.add(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
+						entries.add(Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.EXPERIENCE_BOTTLE);
+						entries.add(Items.TRIAL_KEY);
+						Set<TagKey<Item>> set = Set.of(
+							ItemTags.FOOT_ARMOR_ENCHANTABLE,
+							ItemTags.LEG_ARMOR_ENCHANTABLE,
+							ItemTags.CHEST_ARMOR_ENCHANTABLE,
+							ItemTags.HEAD_ARMOR_ENCHANTABLE,
+							ItemTags.ARMOR_ENCHANTABLE,
+							ItemTags.SWORD_ENCHANTABLE,
+							ItemTags.WEAPON_ENCHANTABLE,
+							ItemTags.MINING_ENCHANTABLE,
+							ItemTags.FISHING_ENCHANTABLE,
+							ItemTags.TRIDENT_ENCHANTABLE,
+							ItemTags.DURABILITY_ENCHANTABLE,
+							ItemTags.BOW_ENCHANTABLE,
+							ItemTags.EQUIPPABLE_ENCHANTABLE,
+							ItemTags.CROSSBOW_ENCHANTABLE,
+							ItemTags.VANISHING_ENCHANTABLE
+						);
+						displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(wrapper -> {
+							addMaxLevelEnchantedBooks(entries, wrapper, set, ItemGroup.StackVisibility.PARENT_TAB_ONLY);
+							addAllLevelEnchantedBooks(entries, wrapper, set, ItemGroup.StackVisibility.SEARCH_TAB_ONLY);
+						});
+					}
+				)
 				.build()
 		);
 		Registry.register(
@@ -1782,21 +1799,21 @@ public class ItemGroups {
 	}
 
 	private static void addMaxLevelEnchantedBooks(
-		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, Set<EnchantmentTarget> enchantmentTargets, ItemGroup.StackVisibility visibility
+		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, Set<TagKey<Item>> enchantmentTargets, ItemGroup.StackVisibility visibility
 	) {
 		registryWrapper.streamEntries()
 			.map(RegistryEntry::value)
-			.filter(enchantment -> enchantmentTargets.contains(enchantment.target))
+			.filter(enchantment -> enchantmentTargets.contains(enchantment.getApplicableItems()))
 			.map(enchantment -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, enchantment.getMaxLevel())))
 			.forEach(stack -> entries.add(stack, visibility));
 	}
 
 	private static void addAllLevelEnchantedBooks(
-		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, Set<EnchantmentTarget> enchantmentTargets, ItemGroup.StackVisibility visibility
+		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, Set<TagKey<Item>> enchantmentTargets, ItemGroup.StackVisibility visibility
 	) {
 		registryWrapper.streamEntries()
 			.map(RegistryEntry::value)
-			.filter(enchantment -> enchantmentTargets.contains(enchantment.target))
+			.filter(enchantment -> enchantmentTargets.contains(enchantment.getApplicableItems()))
 			.flatMap(
 				enchantment -> IntStream.rangeClosed(enchantment.getMinLevel(), enchantment.getMaxLevel())
 						.mapToObj(level -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, level)))

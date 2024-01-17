@@ -1,23 +1,33 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class ChunkLoadDistanceS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ChunkLoadDistanceS2CPacket> CODEC = Packet.createCodec(
+		ChunkLoadDistanceS2CPacket::write, ChunkLoadDistanceS2CPacket::new
+	);
 	private final int distance;
 
 	public ChunkLoadDistanceS2CPacket(int distance) {
 		this.distance = distance;
 	}
 
-	public ChunkLoadDistanceS2CPacket(PacketByteBuf buf) {
+	private ChunkLoadDistanceS2CPacket(PacketByteBuf buf) {
 		this.distance = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.distance);
+	}
+
+	@Override
+	public PacketIdentifier<ChunkLoadDistanceS2CPacket> getPacketId() {
+		return PlayPackets.SET_CHUNK_CACHE_RADIUS;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

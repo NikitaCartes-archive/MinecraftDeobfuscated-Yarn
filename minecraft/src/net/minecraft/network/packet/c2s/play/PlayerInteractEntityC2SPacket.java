@@ -4,13 +4,19 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerInteractEntityC2SPacket> CODEC = Packet.createCodec(
+		PlayerInteractEntityC2SPacket::write, PlayerInteractEntityC2SPacket::new
+	);
 	private final int entityId;
 	private final PlayerInteractEntityC2SPacket.InteractTypeHandler type;
 	private final boolean playerSneaking;
@@ -48,19 +54,23 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 		return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, new PlayerInteractEntityC2SPacket.InteractAtHandler(hand, pos));
 	}
 
-	public PlayerInteractEntityC2SPacket(PacketByteBuf buf) {
+	private PlayerInteractEntityC2SPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
 		PlayerInteractEntityC2SPacket.InteractType interactType = buf.readEnumConstant(PlayerInteractEntityC2SPacket.InteractType.class);
 		this.type = (PlayerInteractEntityC2SPacket.InteractTypeHandler)interactType.handlerGetter.apply(buf);
 		this.playerSneaking = buf.readBoolean();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeEnumConstant(this.type.getType());
 		this.type.write(buf);
 		buf.writeBoolean(this.playerSneaking);
+	}
+
+	@Override
+	public PacketIdentifier<PlayerInteractEntityC2SPacket> getPacketId() {
+		return PlayPackets.INTERACT;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

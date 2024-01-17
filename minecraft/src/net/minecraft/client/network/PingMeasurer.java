@@ -22,6 +22,6 @@ public class PingMeasurer {
 	}
 
 	public void onPingResult(PingResultS2CPacket packet) {
-		this.log.push(Util.getMeasuringTimeMs() - packet.getStartTime());
+		this.log.push(Util.getMeasuringTimeMs() - packet.startTime());
 	}
 }

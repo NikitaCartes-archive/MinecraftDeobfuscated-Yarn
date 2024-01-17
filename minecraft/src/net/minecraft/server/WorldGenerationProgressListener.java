@@ -12,4 +12,8 @@ public interface WorldGenerationProgressListener {
 	void start();
 
 	void stop();
+
+	static int getStartRegionSize(int spawnChunkRadius) {
+		return 2 * spawnChunkRadius + 1;
+	}
 }

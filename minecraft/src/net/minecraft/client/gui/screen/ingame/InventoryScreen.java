@@ -69,7 +69,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 				this.mouseDown = true;
 			}));
 			this.addSelectableChild(this.recipeBook);
-			this.setInitialFocus(this.recipeBook);
 		}
 	}
 
@@ -122,8 +121,10 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		entity.setPitch(-j * 20.0F);
 		entity.headYaw = entity.getYaw();
 		entity.prevHeadYaw = entity.getYaw();
-		Vector3f vector3f = new Vector3f(0.0F, entity.getHeight() / 2.0F + f, 0.0F);
-		drawEntity(context, g, h, size, vector3f, quaternionf, quaternionf2, entity);
+		float p = entity.getScale();
+		Vector3f vector3f = new Vector3f(0.0F, entity.getHeight() / 2.0F + f * p, 0.0F);
+		float q = (float)size / p;
+		drawEntity(context, g, h, q, vector3f, quaternionf, quaternionf2, entity);
 		entity.bodyYaw = k;
 		entity.setYaw(l);
 		entity.setPitch(m);
@@ -133,11 +134,11 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	}
 
 	public static void drawEntity(
-		DrawContext context, float x, float y, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity
+		DrawContext context, float x, float y, float size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity
 	) {
 		context.getMatrices().push();
 		context.getMatrices().translate((double)x, (double)y, 50.0);
-		context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling((float)size, (float)size, (float)(-size)));
+		context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling(size, size, -size));
 		context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
 		context.getMatrices().multiply(quaternionf);
 		DiffuseLighting.method_34742();
@@ -153,6 +154,16 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		entityRenderDispatcher.setRenderShadows(true);
 		context.getMatrices().pop();
 		DiffuseLighting.enableGuiDepthLighting();
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		return this.recipeBook.keyPressed(keyCode, scanCode, modifiers) ? true : super.keyPressed(keyCode, scanCode, modifiers);
+	}
+
+	@Override
+	public boolean charTyped(char chr, int modifiers) {
+		return this.recipeBook.charTyped(chr, modifiers) ? true : super.charTyped(chr, modifiers);
 	}
 
 	@Override

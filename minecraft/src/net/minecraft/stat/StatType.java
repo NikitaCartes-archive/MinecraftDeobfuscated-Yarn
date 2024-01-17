@@ -3,6 +3,9 @@ package net.minecraft.stat;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 
@@ -10,10 +13,16 @@ public class StatType<T> implements Iterable<Stat<T>> {
 	private final Registry<T> registry;
 	private final Map<T, Stat<T>> stats = new IdentityHashMap();
 	private final Text name;
+	private final PacketCodec<RegistryByteBuf, Stat<T>> packetCodec;
 
 	public StatType(Registry<T> registry, Text name) {
 		this.registry = registry;
 		this.name = name;
+		this.packetCodec = PacketCodecs.registry(registry.getKey()).xmap(this::getOrCreateStat, Stat::getValue);
+	}
+
+	public PacketCodec<RegistryByteBuf, Stat<T>> getPacketCodec() {
+		return this.packetCodec;
 	}
 
 	public boolean hasStat(T key) {

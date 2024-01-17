@@ -35,7 +35,6 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 			button.setPosition(this.x + 5, this.height / 2 - 49);
 		}));
 		this.addSelectableChild(this.recipeBook);
-		this.setInitialFocus(this.recipeBook);
 		this.titleX = 29;
 	}
 
@@ -65,6 +64,16 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 		int i = this.x;
 		int j = (this.height - this.backgroundHeight) / 2;
 		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		return this.recipeBook.keyPressed(keyCode, scanCode, modifiers) ? true : super.keyPressed(keyCode, scanCode, modifiers);
+	}
+
+	@Override
+	public boolean charTyped(char chr, int modifiers) {
+		return this.recipeBook.charTyped(chr, modifiers) ? true : super.charTyped(chr, modifiers);
 	}
 
 	@Override

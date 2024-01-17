@@ -21,64 +21,82 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 class StructureTestListener implements TestListener {
-	private final GameTestState test;
-	private final TestManager testManager;
-	private final BlockPos pos;
-	int attempt;
-	int successes;
+	private int attempt = 0;
+	private int successes = 0;
 
-	public StructureTestListener(GameTestState test, TestManager testManager, BlockPos pos) {
-		this.test = test;
-		this.testManager = testManager;
-		this.pos = pos;
-		this.attempt = 0;
-		this.successes = 0;
+	public StructureTestListener() {
 	}
 
 	@Override
 	public void onStarted(GameTestState test) {
-		visualizeTest(this.test, Blocks.LIGHT_GRAY_STAINED_GLASS);
+		visualizeTest(test, Blocks.LIGHT_GRAY_STAINED_GLASS);
 		this.attempt++;
 	}
 
+	private void retry(GameTestState state, TestRunContext context, boolean prevPassed) {
+		TestAttemptConfig testAttemptConfig = state.getTestAttemptConfig();
+		String string = String.format("[Run: %4d, Ok: %4d, Fail: %4d", this.attempt, this.successes, this.attempt - this.successes);
+		if (!testAttemptConfig.isDisabled()) {
+			string = string + String.format(", Left: %4d", testAttemptConfig.numberOfTries() - this.attempt);
+		}
+
+		string = string + "]";
+		String string2 = state.getTemplatePath() + " " + (prevPassed ? "passed" : "failed") + "! " + state.getElapsedMilliseconds() + "ms";
+		String string3 = String.format("%-53s%s", string, string2);
+		if (prevPassed) {
+			passTest(state, string3);
+		} else {
+			sendMessageToAllPlayers(state.getWorld(), Formatting.RED, string3);
+		}
+
+		if (testAttemptConfig.shouldTestAgain(this.attempt, this.successes)) {
+			context.retry(state);
+		}
+	}
+
 	@Override
-	public void onPassed(GameTestState test) {
+	public void onPassed(GameTestState test, TestRunContext context) {
 		this.successes++;
-		if (test.shouldRerunUntilFailed()) {
-			passTest(test, test.getTemplatePath() + " passed! (" + test.getElapsedMilliseconds() + "ms). Rerunning until failed.");
-			this.init();
+		if (test.getTestAttemptConfig().needsMultipleAttempts()) {
+			this.retry(test, context, true);
 		} else if (!test.isFlaky()) {
 			passTest(test, test.getTemplatePath() + " passed! (" + test.getElapsedMilliseconds() + "ms)");
 		} else {
 			if (this.successes >= test.getRequiredSuccesses()) {
 				passTest(test, test + " passed " + this.successes + " times of " + this.attempt + " attempts.");
 			} else {
-				sendMessageToAllPlayers(
-					this.test.getWorld(), Formatting.GREEN, "Flaky test " + this.test + " succeeded, attempt: " + this.attempt + " successes: " + this.successes
-				);
-				this.init();
+				sendMessageToAllPlayers(test.getWorld(), Formatting.GREEN, "Flaky test " + test + " succeeded, attempt: " + this.attempt + " successes: " + this.successes);
+				context.retry(test);
 			}
 		}
 	}
 
 	@Override
-	public void onFailed(GameTestState test) {
+	public void onFailed(GameTestState test, TestRunContext context) {
 		if (!test.isFlaky()) {
 			failTest(test, test.getThrowable());
+			if (test.getTestAttemptConfig().needsMultipleAttempts()) {
+				this.retry(test, context, false);
+			}
 		} else {
-			TestFunction testFunction = this.test.getTestFunction();
-			String string = "Flaky test " + this.test + " failed, attempt: " + this.attempt + "/" + testFunction.getMaxAttempts();
-			if (testFunction.getRequiredSuccesses() > 1) {
-				string = string + ", successes: " + this.successes + " (" + testFunction.getRequiredSuccesses() + " required)";
+			TestFunction testFunction = test.getTestFunction();
+			String string = "Flaky test " + test + " failed, attempt: " + this.attempt + "/" + testFunction.maxAttempts();
+			if (testFunction.requiredSuccesses() > 1) {
+				string = string + ", successes: " + this.successes + " (" + testFunction.requiredSuccesses() + " required)";
 			}
 
-			sendMessageToAllPlayers(this.test.getWorld(), Formatting.YELLOW, string);
+			sendMessageToAllPlayers(test.getWorld(), Formatting.YELLOW, string);
 			if (test.getMaxAttempts() - this.attempt + this.successes >= test.getRequiredSuccesses()) {
-				this.init();
+				context.retry(test);
 			} else {
 				failTest(test, new NotEnoughSuccessesError(this.attempt, this.successes, test));
 			}
 		}
+	}
+
+	@Override
+	public void onRetry(GameTestState prevState, GameTestState nextState, TestRunContext context) {
+		nextState.addListener(this);
 	}
 
 	public static void passTest(GameTestState test, String output) {
@@ -107,15 +125,6 @@ class StructureTestListener implements TestListener {
 		}
 
 		TestFailureLogger.failTest(test);
-	}
-
-	private void init() {
-		this.test.clearArea();
-		GameTestState gameTestState = new GameTestState(this.test.getTestFunction(), this.test.getRotation(), this.test.getWorld());
-		gameTestState.setRerunUntilFailed(this.test.shouldRerunUntilFailed());
-		this.testManager.start(gameTestState);
-		gameTestState.addListener(this);
-		gameTestState.init(this.pos);
 	}
 
 	protected static void visualizeTest(GameTestState test, Block block) {

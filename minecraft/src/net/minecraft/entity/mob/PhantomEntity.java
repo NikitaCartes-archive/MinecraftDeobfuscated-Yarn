@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -129,12 +128,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 					);
 			}
 
-			int i = this.getPhantomSize();
-			float h = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
-			float j = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
-			float k = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
-			this.getWorld().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)h, this.getY() + (double)k, this.getZ() + (double)j, 0.0, 0.0, 0.0);
-			this.getWorld().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)h, this.getY() + (double)k, this.getZ() - (double)j, 0.0, 0.0, 0.0);
+			float h = this.getWidth() * 1.48F;
+			float i = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * h;
+			float j = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * h;
+			float k = (0.3F + f * 0.45F) * this.getHeight() * 2.5F;
+			this.getWorld().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)i, this.getY() + (double)k, this.getZ() + (double)j, 0.0, 0.0, 0.0);
+			this.getWorld().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)i, this.getY() + (double)k, this.getZ() - (double)j, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -203,11 +202,6 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	@Override
 	protected SoundEvent getDeathSound() {
 		return SoundEvents.ENTITY_PHANTOM_DEATH;
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.UNDEAD;
 	}
 
 	@Override

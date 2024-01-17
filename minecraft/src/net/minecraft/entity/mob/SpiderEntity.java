@@ -5,11 +5,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -28,6 +28,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.passive.ArmadilloEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -57,6 +58,7 @@ public class SpiderEntity extends HostileEntity {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
+		this.goalSelector.add(2, new FleeEntityGoal(this, ArmadilloEntity.class, 6.0F, 1.0, 1.2, entity -> !((ArmadilloEntity)entity).isNotIdle()));
 		this.goalSelector.add(3, new PounceAtTargetGoal(this, 0.4F));
 		this.goalSelector.add(4, new SpiderEntity.AttackGoal(this));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
@@ -120,11 +122,6 @@ public class SpiderEntity extends HostileEntity {
 		if (!state.isOf(Blocks.COBWEB)) {
 			super.slowMovement(state, multiplier);
 		}
-	}
-
-	@Override
-	public EntityGroup getGroup() {
-		return EntityGroup.ARTHROPOD;
 	}
 
 	@Override

@@ -2,11 +2,13 @@ package net.minecraft.world;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DynamicLike;
 import java.util.Comparator;
@@ -24,6 +26,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import org.slf4j.Logger;
 
 public class GameRules {
@@ -230,6 +233,12 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.BooleanRule> ENDER_PEARLS_VANISH_ON_DEATH = register(
 		"enderPearlsVanishOnDeath", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
+	public static final GameRules.Key<GameRules.IntRule> SPAWN_CHUNK_RADIUS = register(
+		"spawnChunkRadius", GameRules.Category.MISC, GameRules.IntRule.create(2, 0, 32, (server, value) -> {
+			ServerWorld serverWorld = server.getOverworld();
+			serverWorld.setSpawnPos(serverWorld.getSpawnPos(), serverWorld.getSpawnAngle());
+		})
+	);
 	private final Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
 
 	private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Category category, GameRules.Type<T> type) {
@@ -402,6 +411,12 @@ public class GameRules {
 			return new GameRules.Type<>(IntegerArgumentType::integer, type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.Visitor::visitInt);
 		}
 
+		static GameRules.Type<GameRules.IntRule> create(int initialValue, int min, int max, BiConsumer<MinecraftServer, GameRules.IntRule> changeCallback) {
+			return new GameRules.Type<>(
+				() -> IntegerArgumentType.integer(min, max), type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.Visitor::visitInt
+			);
+		}
+
 		static GameRules.Type<GameRules.IntRule> create(int initialValue) {
 			return create(initialValue, (server, rule) -> {
 			});
@@ -443,9 +458,10 @@ public class GameRules {
 		 */
 		public boolean validateAndSet(String input) {
 			try {
-				this.value = Integer.parseInt(input);
-				return true;
-			} catch (NumberFormatException var3) {
+				StringReader stringReader = new StringReader(input);
+				this.value = (Integer)((ArgumentType)this.type.argumentType.get()).parse(stringReader);
+				return !stringReader.canRead();
+			} catch (CommandSyntaxException var3) {
 				return false;
 			}
 		}
@@ -553,7 +569,7 @@ public class GameRules {
 	}
 
 	public static class Type<T extends GameRules.Rule<T>> {
-		private final Supplier<ArgumentType<?>> argumentType;
+		final Supplier<ArgumentType<?>> argumentType;
 		private final Function<GameRules.Type<T>, T> ruleFactory;
 		final BiConsumer<MinecraftServer, T> changeCallback;
 		private final GameRules.Acceptor<T> ruleAcceptor;

@@ -27,7 +27,7 @@ public class VillagerWorkTask extends MultiTickTask<VillagerEntity> {
 		} else {
 			this.lastCheckedTime = serverWorld.getTime();
 			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE).get();
-			return globalPos.getDimension() == serverWorld.getRegistryKey() && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+			return globalPos.dimension() == serverWorld.getRegistryKey() && globalPos.pos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 
@@ -35,7 +35,7 @@ public class VillagerWorkTask extends MultiTickTask<VillagerEntity> {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
 		brain.remember(MemoryModuleType.LAST_WORKED_AT_POI, l);
 		brain.getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE)
-			.ifPresent(pos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos.getPos())));
+			.ifPresent(pos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos.pos())));
 		villagerEntity.playWorkSound();
 		this.performAdditionalWork(serverWorld, villagerEntity);
 		if (villagerEntity.shouldRestock()) {
@@ -52,7 +52,7 @@ public class VillagerWorkTask extends MultiTickTask<VillagerEntity> {
 			return false;
 		} else {
 			GlobalPos globalPos = (GlobalPos)optional.get();
-			return globalPos.getDimension() == serverWorld.getRegistryKey() && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+			return globalPos.dimension() == serverWorld.getRegistryKey() && globalPos.pos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 }

@@ -53,7 +53,7 @@ public class GoatHornItem extends Item {
 	}
 
 	public static void setRandomInstrumentFromTag(ItemStack stack, TagKey<Instrument> instrumentTag, Random random) {
-		Optional<RegistryEntry<Instrument>> optional = Registries.INSTRUMENT.getEntryList(instrumentTag).flatMap(entryList -> entryList.getRandom(random));
+		Optional<RegistryEntry<Instrument>> optional = Registries.INSTRUMENT.getRandomEntry(instrumentTag, random);
 		optional.ifPresent(instrument -> setInstrument(stack, instrument));
 	}
 

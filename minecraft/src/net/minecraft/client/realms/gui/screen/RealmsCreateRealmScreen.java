@@ -60,6 +60,10 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 		this.initTabNavigation();
+	}
+
+	@Override
+	protected void method_56131() {
 		this.setInitialFocus(this.nameBox);
 	}
 

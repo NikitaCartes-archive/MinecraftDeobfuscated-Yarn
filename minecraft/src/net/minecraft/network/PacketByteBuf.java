@@ -41,36 +41,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.network.codec.PacketDecoder;
+import net.minecraft.network.codec.PacketEncoder;
 import net.minecraft.network.encoding.StringEncoding;
 import net.minecraft.network.encoding.VarInts;
 import net.minecraft.network.encoding.VarLongs;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -325,76 +320,6 @@ public class PacketByteBuf extends ByteBuf {
 		this.writeString(GSON.toJson(Util.getResult(dataResult, error -> new EncoderException("Failed to encode: " + error + " " + value))));
 	}
 
-	/**
-	 * Writes a value from a registry (or other {@link IndexedIterable}s). The value
-	 * is stored using its raw ID as a {@linkplain #readVarInt() var int}.
-	 * 
-	 * <p>Callers must ensure that <strong>the registry (or the indexed iterable) is
-	 * properly synchronized</strong> between the client and the server.
-	 * 
-	 * @throws IllegalArgumentException if {@code value} is not in {@code registry}
-	 * @see #readRegistryValue(IndexedIterable)
-	 * 
-	 * @param registry the registry (or an indexed iterable) that contains the value
-	 * @param value a value to write, must be in {@code registry}
-	 */
-	public <T> void writeRegistryValue(IndexedIterable<T> registry, T value) {
-		int i = registry.getRawId(value);
-		if (i == -1) {
-			throw new IllegalArgumentException("Can't find id for '" + value + "' in map " + registry);
-		} else {
-			this.writeVarInt(i);
-		}
-	}
-
-	public <T> void writeRegistryEntry(IndexedIterable<RegistryEntry<T>> registryEntries, RegistryEntry<T> entry, PacketByteBuf.PacketWriter<T> writer) {
-		switch (entry.getType()) {
-			case REFERENCE:
-				int i = registryEntries.getRawId(entry);
-				if (i == -1) {
-					throw new IllegalArgumentException("Can't find id for '" + entry.value() + "' in map " + registryEntries);
-				}
-
-				this.writeVarInt(i + 1);
-				break;
-			case DIRECT:
-				this.writeVarInt(0);
-				writer.accept(this, entry.value());
-		}
-	}
-
-	/**
-	 * Reads a value from a registry (or other {@link IndexedIterable}s). The value
-	 * is stored using its raw ID as a {@linkplain #readVarInt() var int}.
-	 * 
-	 * <p>Callers must ensure that <strong>the registry (or the indexed iterable) is
-	 * properly synchronized</strong> between the client and the server.
-	 * 
-	 * @return the value, or {@code null} if it is missing from {@code registry}
-	 * @see #writeRegistryValue(IndexedIterable, Object)
-	 * 
-	 * @param registry the registry (or an indexed iterable) that contains the value
-	 */
-	@Nullable
-	public <T> T readRegistryValue(IndexedIterable<T> registry) {
-		int i = this.readVarInt();
-		return registry.get(i);
-	}
-
-	public <T> RegistryEntry<T> readRegistryEntry(IndexedIterable<RegistryEntry<T>> registryEntries, PacketByteBuf.PacketReader<T> reader) {
-		int i = this.readVarInt();
-		if (i == 0) {
-			return RegistryEntry.of((T)reader.apply(this));
-		} else {
-			RegistryEntry<T> registryEntry = registryEntries.get(i - 1);
-			if (registryEntry == null) {
-				throw new IllegalArgumentException("Can't find element with id " + i);
-			} else {
-				return registryEntry;
-			}
-		}
-	}
-
 	public static <T> IntFunction<T> getMaxValidator(IntFunction<T> applier, int max) {
 		return value -> {
 			if (value > max) {
@@ -418,12 +343,12 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @param collectionFactory a factory that creates a collection with a given size
 	 */
-	public <T, C extends Collection<T>> C readCollection(IntFunction<C> collectionFactory, PacketByteBuf.PacketReader<T> reader) {
+	public <T, C extends Collection<T>> C readCollection(IntFunction<C> collectionFactory, PacketDecoder<? super PacketByteBuf, T> reader) {
 		int i = this.readVarInt();
 		C collection = (C)collectionFactory.apply(i);
 
 		for (int j = 0; j < i; j++) {
-			collection.add(reader.apply(this));
+			collection.add(reader.decode(this));
 		}
 
 		return collection;
@@ -439,11 +364,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @param collection the collection to write
 	 */
-	public <T> void writeCollection(Collection<T> collection, PacketByteBuf.PacketWriter<T> writer) {
+	public <T> void writeCollection(Collection<T> collection, PacketEncoder<? super PacketByteBuf, T> writer) {
 		this.writeVarInt(collection.size());
 
 		for (T object : collection) {
-			writer.accept(this, object);
+			writer.encode(this, object);
 		}
 	}
 
@@ -454,7 +379,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return the read list
 	 * @see #readCollection(IntFunction, PacketByteBuf.PacketReader)
 	 */
-	public <T> List<T> readList(PacketByteBuf.PacketReader<T> reader) {
+	public <T> List<T> readList(PacketDecoder<? super PacketByteBuf, T> reader) {
 		return this.readCollection(Lists::newArrayListWithCapacity, reader);
 	}
 
@@ -512,13 +437,15 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @param mapFactory a factory that creates a map with a given size
 	 */
-	public <K, V, M extends Map<K, V>> M readMap(IntFunction<M> mapFactory, PacketByteBuf.PacketReader<K> keyReader, PacketByteBuf.PacketReader<V> valueReader) {
+	public <K, V, M extends Map<K, V>> M readMap(
+		IntFunction<M> mapFactory, PacketDecoder<? super PacketByteBuf, K> packetDecoder, PacketDecoder<? super PacketByteBuf, V> packetDecoder2
+	) {
 		int i = this.readVarInt();
 		M map = (M)mapFactory.apply(i);
 
 		for (int j = 0; j < i; j++) {
-			K object = (K)keyReader.apply(this);
-			V object2 = (V)valueReader.apply(this);
+			K object = packetDecoder.decode(this);
+			V object2 = packetDecoder2.decode(this);
 			map.put(object, object2);
 		}
 
@@ -533,7 +460,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return the read map
 	 * @see #readMap(IntFunction, PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)
 	 */
-	public <K, V> Map<K, V> readMap(PacketByteBuf.PacketReader<K> keyReader, PacketByteBuf.PacketReader<V> valueReader) {
+	public <K, V> Map<K, V> readMap(PacketDecoder<? super PacketByteBuf, K> keyReader, PacketDecoder<? super PacketByteBuf, V> valueReader) {
 		return this.readMap(Maps::newHashMapWithExpectedSize, keyReader, valueReader);
 	}
 
@@ -548,11 +475,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @param map the map to write
 	 */
-	public <K, V> void writeMap(Map<K, V> map, PacketByteBuf.PacketWriter<K> keyWriter, PacketByteBuf.PacketWriter<V> valueWriter) {
+	public <K, V> void writeMap(Map<K, V> map, PacketEncoder<? super PacketByteBuf, K> keyWriter, PacketEncoder<? super PacketByteBuf, V> valueWriter) {
 		this.writeVarInt(map.size());
 		map.forEach((key, value) -> {
-			keyWriter.accept(this, key);
-			valueWriter.accept(this, value);
+			keyWriter.encode(this, (K)key);
+			valueWriter.encode(this, (V)value);
 		});
 	}
 
@@ -621,10 +548,10 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @see #readOptional(PacketByteBuf.PacketReader)
 	 */
-	public <T> void writeOptional(Optional<T> value, PacketByteBuf.PacketWriter<T> writer) {
+	public <T> void writeOptional(Optional<T> value, PacketEncoder<? super PacketByteBuf, T> writer) {
 		if (value.isPresent()) {
 			this.writeBoolean(true);
-			writer.accept(this, value.get());
+			writer.encode(this, (T)value.get());
 		} else {
 			this.writeBoolean(false);
 		}
@@ -638,8 +565,8 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return the read optional value
 	 * @see #writeOptional(Optional, PacketByteBuf.PacketWriter)
 	 */
-	public <T> Optional<T> readOptional(PacketByteBuf.PacketReader<T> reader) {
-		return this.readBoolean() ? Optional.of(reader.apply(this)) : Optional.empty();
+	public <T> Optional<T> readOptional(PacketDecoder<? super PacketByteBuf, T> reader) {
+		return this.readBoolean() ? Optional.of(reader.decode(this)) : Optional.empty();
 	}
 
 	/**
@@ -651,8 +578,8 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeNullable(Object, PacketByteBuf.PacketWriter)
 	 */
 	@Nullable
-	public <T> T readNullable(PacketByteBuf.PacketReader<T> reader) {
-		return (T)(this.readBoolean() ? reader.apply(this) : null);
+	public <T> T readNullable(PacketDecoder<? super PacketByteBuf, T> reader) {
+		return this.readBoolean() ? reader.decode(this) : null;
 	}
 
 	/**
@@ -662,10 +589,10 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @see #readNullable(PacketByteBuf.PacketReader)
 	 */
-	public <T> void writeNullable(@Nullable T value, PacketByteBuf.PacketWriter<T> writer) {
+	public <T> void writeNullable(@Nullable T value, PacketEncoder<? super PacketByteBuf, T> writer) {
 		if (value != null) {
 			this.writeBoolean(true);
-			writer.accept(this, value);
+			writer.encode(this, value);
 		} else {
 			this.writeBoolean(false);
 		}
@@ -678,13 +605,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @see #readEither(PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)
 	 */
-	public <L, R> void writeEither(Either<L, R> either, PacketByteBuf.PacketWriter<L> leftWriter, PacketByteBuf.PacketWriter<R> rightWriter) {
+	public <L, R> void writeEither(Either<L, R> either, PacketEncoder<? super PacketByteBuf, L> leftWriter, PacketEncoder<? super PacketByteBuf, R> rightWriter) {
 		either.ifLeft(object -> {
 			this.writeBoolean(true);
-			leftWriter.accept(this, object);
+			leftWriter.encode(this, (L)object);
 		}).ifRight(object -> {
 			this.writeBoolean(false);
-			rightWriter.accept(this, object);
+			rightWriter.encode(this, (R)object);
 		});
 	}
 
@@ -696,8 +623,8 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return the read either
 	 * @see #writeEither(Either, PacketByteBuf.PacketWriter, PacketByteBuf.PacketWriter)
 	 */
-	public <L, R> Either<L, R> readEither(PacketByteBuf.PacketReader<L> leftReader, PacketByteBuf.PacketReader<R> rightReader) {
-		return this.readBoolean() ? Either.left((L)leftReader.apply(this)) : Either.right((R)rightReader.apply(this));
+	public <L, R> Either<L, R> readEither(PacketDecoder<? super PacketByteBuf, L> leftReader, PacketDecoder<? super PacketByteBuf, R> rightReader) {
+		return this.readBoolean() ? Either.left(leftReader.decode(this)) : Either.right(rightReader.decode(this));
 	}
 
 	/**
@@ -921,7 +848,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeBlockPos(BlockPos)
 	 */
 	public BlockPos readBlockPos() {
-		return BlockPos.fromLong(this.readLong());
+		return readBlockPos(this);
+	}
+
+	public static BlockPos readBlockPos(ByteBuf buf) {
+		return BlockPos.fromLong(buf.readLong());
 	}
 
 	/**
@@ -934,8 +865,12 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param pos the pos to write
 	 */
 	public PacketByteBuf writeBlockPos(BlockPos pos) {
-		this.writeLong(pos.asLong());
+		writeBlockPos(this, pos);
 		return this;
+	}
+
+	public static void writeBlockPos(ByteBuf buf, BlockPos pos) {
+		buf.writeLong(pos.asLong());
 	}
 
 	/**
@@ -1010,8 +945,8 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readGlobalPos()
 	 */
 	public void writeGlobalPos(GlobalPos pos) {
-		this.writeRegistryKey(pos.getDimension());
-		this.writeBlockPos(pos.getPos());
+		this.writeRegistryKey(pos.dimension());
+		this.writeBlockPos(pos.pos());
 	}
 
 	/**
@@ -1021,7 +956,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeVector3f(Vector3f)
 	 */
 	public Vector3f readVector3f() {
-		return new Vector3f(this.readFloat(), this.readFloat(), this.readFloat());
+		return readVector3f(this);
+	}
+
+	public static Vector3f readVector3f(ByteBuf buf) {
+		return new Vector3f(buf.readFloat(), buf.readFloat(), buf.readFloat());
 	}
 
 	/**
@@ -1031,9 +970,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readVector3f()
 	 */
 	public void writeVector3f(Vector3f vector3f) {
-		this.writeFloat(vector3f.x());
-		this.writeFloat(vector3f.y());
-		this.writeFloat(vector3f.z());
+		writeVector3f(this, vector3f);
+	}
+
+	public static void writeVector3f(ByteBuf buf, Vector3f vector) {
+		buf.writeFloat(vector.x());
+		buf.writeFloat(vector.y());
+		buf.writeFloat(vector.z());
 	}
 
 	/**
@@ -1043,7 +986,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeQuaternionf(Quaternionf)
 	 */
 	public Quaternionf readQuaternionf() {
-		return new Quaternionf(this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat());
+		return readQuaternionf(this);
+	}
+
+	public static Quaternionf readQuaternionf(ByteBuf buf) {
+		return new Quaternionf(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat());
 	}
 
 	/**
@@ -1053,10 +1000,14 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readQuaternionf()
 	 */
 	public void writeQuaternionf(Quaternionf quaternionf) {
-		this.writeFloat(quaternionf.x);
-		this.writeFloat(quaternionf.y);
-		this.writeFloat(quaternionf.z);
-		this.writeFloat(quaternionf.w);
+		writeQuaternionf(this, quaternionf);
+	}
+
+	public static void writeQuaternionf(ByteBuf buf, Quaternionf quaternion) {
+		buf.writeFloat(quaternion.x);
+		buf.writeFloat(quaternion.y);
+		buf.writeFloat(quaternion.z);
+		buf.writeFloat(quaternion.w);
 	}
 
 	/**
@@ -1203,9 +1154,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param uuid the UUID to write
 	 */
 	public PacketByteBuf writeUuid(UUID uuid) {
-		this.writeLong(uuid.getMostSignificantBits());
-		this.writeLong(uuid.getLeastSignificantBits());
+		writeUuid(this, uuid);
 		return this;
+	}
+
+	public static void writeUuid(ByteBuf buf, UUID uuid) {
+		buf.writeLong(uuid.getMostSignificantBits());
+		buf.writeLong(uuid.getLeastSignificantBits());
 	}
 
 	/**
@@ -1216,7 +1171,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeUuid(UUID)
 	 */
 	public UUID readUuid() {
-		return new UUID(this.readLong(), this.readLong());
+		return readUuid(this);
+	}
+
+	public static UUID readUuid(ByteBuf buf) {
+		return new UUID(buf.readLong(), buf.readLong());
 	}
 
 	/**
@@ -1266,13 +1225,17 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readNbt(NbtSizeTracker)
 	 */
 	public PacketByteBuf writeNbt(@Nullable NbtElement nbt) {
+		writeNbt(this, nbt);
+		return this;
+	}
+
+	public static void writeNbt(ByteBuf buf, @Nullable NbtElement nbt) {
 		if (nbt == null) {
 			nbt = NbtEnd.INSTANCE;
 		}
 
 		try {
-			NbtIo.writeForPacket(nbt, new ByteBufOutputStream(this));
-			return this;
+			NbtIo.writeForPacket(nbt, new ByteBufOutputStream(buf));
 		} catch (IOException var3) {
 			throw new EncoderException(var3);
 		}
@@ -1296,11 +1259,26 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Nullable
 	public NbtCompound readNbt() {
-		NbtElement nbtElement = this.readNbt(NbtSizeTracker.of(2097152L));
+		return readNbt(this);
+	}
+
+	@Nullable
+	public static NbtCompound readNbt(ByteBuf buf) {
+		NbtElement nbtElement = readNbt(buf, NbtSizeTracker.of(2097152L));
 		if (nbtElement != null && !(nbtElement instanceof NbtCompound)) {
 			throw new DecoderException("Not a compound tag: " + nbtElement);
 		} else {
 			return (NbtCompound)nbtElement;
+		}
+	}
+
+	@Nullable
+	public static NbtElement readNbt(ByteBuf buf, NbtSizeTracker sizeTracker) {
+		try {
+			NbtElement nbtElement = NbtIo.read(new ByteBufInputStream(buf), sizeTracker);
+			return nbtElement.getType() == 0 ? null : nbtElement;
+		} catch (IOException var3) {
+			throw new EncoderException(var3);
 		}
 	}
 
@@ -1318,63 +1296,7 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Nullable
 	public NbtElement readNbt(NbtSizeTracker sizeTracker) {
-		try {
-			NbtElement nbtElement = NbtIo.read(new ByteBufInputStream(this), sizeTracker);
-			return nbtElement.getType() == 0 ? null : nbtElement;
-		} catch (IOException var3) {
-			throw new EncoderException(var3);
-		}
-	}
-
-	/**
-	 * Writes an item stack to this buf. An item stack is represented by a
-	 * boolean indicating whether it exists; if it exists, it is followed by
-	 * a var int for its raw id, a byte for its count, and an NBT compound for
-	 * its tag.
-	 * 
-	 * @return this buf, for chaining
-	 * @see #readItemStack()
-	 * 
-	 * @param stack the stack to write
-	 */
-	public PacketByteBuf writeItemStack(ItemStack stack) {
-		if (stack.isEmpty()) {
-			this.writeBoolean(false);
-		} else {
-			this.writeBoolean(true);
-			Item item = stack.getItem();
-			this.writeRegistryValue(Registries.ITEM, item);
-			this.writeByte(stack.getCount());
-			NbtCompound nbtCompound = null;
-			if (item.isDamageable() || item.isNbtSynced()) {
-				nbtCompound = stack.getNbt();
-			}
-
-			this.writeNbt(nbtCompound);
-		}
-
-		return this;
-	}
-
-	/**
-	 * Reads an item stack from this buf. An item stack is represented by a
-	 * boolean indicating whether it exists; if it exists, it is followed by
-	 * a var int for its raw id, a byte for its count, and an NBT compound for
-	 * its tag.
-	 * 
-	 * @return the read item stack
-	 * @see #writeItemStack(ItemStack)
-	 */
-	public ItemStack readItemStack() {
-		if (!this.readBoolean()) {
-			return ItemStack.EMPTY;
-		} else {
-			Item item = this.readRegistryValue(Registries.ITEM);
-			int i = this.readByte();
-			ItemStack itemStack = new ItemStack(item, i);
-			itemStack.setNbt(this.readNbt());
-			return itemStack;
-		}
+		return readNbt(this, sizeTracker);
 	}
 
 	/**
@@ -2694,25 +2616,5 @@ public class PacketByteBuf extends ByteBuf {
 	@Override
 	public boolean release(int decrement) {
 		return this.parent.release(decrement);
-	}
-
-	/**
-	 * A functional interface to read a value from {@link PacketByteBuf}.
-	 */
-	@FunctionalInterface
-	public interface PacketReader<T> extends Function<PacketByteBuf, T> {
-		default PacketByteBuf.PacketReader<Optional<T>> asOptional() {
-			return buf -> buf.readOptional(this);
-		}
-	}
-
-	/**
-	 * A functional interface to write a value to {@link PacketByteBuf}.
-	 */
-	@FunctionalInterface
-	public interface PacketWriter<T> extends BiConsumer<PacketByteBuf, T> {
-		default PacketByteBuf.PacketWriter<Optional<T>> asOptional() {
-			return (buf, value) -> buf.writeOptional(value, this);
-		}
 	}
 }

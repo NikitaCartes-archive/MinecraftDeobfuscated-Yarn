@@ -8,11 +8,18 @@ import java.util.Set;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Identifier;
 
 public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, AdvancementUpdateS2CPacket> CODEC = Packet.createCodec(
+		AdvancementUpdateS2CPacket::write, AdvancementUpdateS2CPacket::new
+	);
 	private final boolean clearCurrent;
 	private final List<AdvancementEntry> toEarn;
 	private final Set<Identifier> toRemove;
@@ -27,19 +34,23 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		this.toSetProgress = Map.copyOf(toSetProgress);
 	}
 
-	public AdvancementUpdateS2CPacket(PacketByteBuf buf) {
+	private AdvancementUpdateS2CPacket(RegistryByteBuf buf) {
 		this.clearCurrent = buf.readBoolean();
-		this.toEarn = buf.readList(AdvancementEntry::read);
+		this.toEarn = AdvancementEntry.LIST_PACKET_CODEC.decode(buf);
 		this.toRemove = buf.readCollection(Sets::newLinkedHashSetWithExpectedSize, PacketByteBuf::readIdentifier);
 		this.toSetProgress = buf.readMap(PacketByteBuf::readIdentifier, AdvancementProgress::fromPacket);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeBoolean(this.clearCurrent);
-		buf.writeCollection(this.toEarn, (buf2, task) -> task.write(buf2));
+		AdvancementEntry.LIST_PACKET_CODEC.encode(buf, this.toEarn);
 		buf.writeCollection(this.toRemove, PacketByteBuf::writeIdentifier);
 		buf.writeMap(this.toSetProgress, PacketByteBuf::writeIdentifier, (buf2, progress) -> progress.toPacket(buf2));
+	}
+
+	@Override
+	public PacketIdentifier<AdvancementUpdateS2CPacket> getPacketId() {
+		return PlayPackets.UPDATE_ADVANCEMENTS;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

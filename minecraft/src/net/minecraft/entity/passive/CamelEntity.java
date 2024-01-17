@@ -173,7 +173,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		}
 
 		if (this.isStationary()) {
-			this.clampHeadYaw(this, 30.0F);
+			this.clampHeadYaw();
 		}
 
 		if (this.isSitting() && this.isTouchingWater()) {
@@ -300,7 +300,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 
 	@Override
 	public void startJumping(int height) {
-		this.playSound(SoundEvents.ENTITY_CAMEL_DASH, 1.0F, this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_CAMEL_DASH);
 		this.emitGameEvent(GameEvent.ENTITY_ACTION);
 		this.setDashing(true);
 	}
@@ -520,14 +520,6 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		return new Vec3d(0.0, this.getPassengerAttachmentY(true, tickDelta, entityDimensions, f) - (double)(0.2F * f), (double)(entityDimensions.width() * 0.56F));
 	}
 
-	private void clampHeadYaw(Entity entity, float range) {
-		float f = entity.getHeadYaw();
-		float g = MathHelper.wrapDegrees(this.bodyYaw - f);
-		float h = MathHelper.clamp(MathHelper.wrapDegrees(this.bodyYaw - f), -range, range);
-		float i = f + g - h;
-		entity.setHeadYaw(i);
-	}
-
 	@Override
 	public int getMaxHeadRotation() {
 		return 30;
@@ -563,7 +555,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 
 	public void startSitting() {
 		if (!this.isSitting()) {
-			this.playSound(SoundEvents.ENTITY_CAMEL_SIT, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_CAMEL_SIT);
 			this.setPose(EntityPose.SITTING);
 			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 			this.setLastPoseTick(-this.getWorld().getTime());
@@ -572,7 +564,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 
 	public void startStanding() {
 		if (this.isSitting()) {
-			this.playSound(SoundEvents.ENTITY_CAMEL_STAND, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_CAMEL_STAND);
 			this.setPose(EntityPose.STANDING);
 			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 			this.setLastPoseTick(this.getWorld().getTime());

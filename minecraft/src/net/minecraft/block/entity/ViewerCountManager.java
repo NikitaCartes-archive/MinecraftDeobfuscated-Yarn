@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.TypeFilter;
@@ -15,6 +16,7 @@ import net.minecraft.world.event.GameEvent;
 public abstract class ViewerCountManager {
 	private static final int SCHEDULE_TICK_DELAY = 5;
 	private int viewerCount;
+	private double maxBlockInteractionRange;
 
 	/**
 	 * Run when this container is opened (when the viewer count becomes nonzero).
@@ -46,6 +48,7 @@ public abstract class ViewerCountManager {
 		}
 
 		this.onViewerCountUpdate(world, pos, state, i, this.viewerCount);
+		this.maxBlockInteractionRange = Math.max(player.getBlockInteractionRange(), this.maxBlockInteractionRange);
 	}
 
 	public void closeContainer(PlayerEntity player, World world, BlockPos pos, BlockState state) {
@@ -53,29 +56,27 @@ public abstract class ViewerCountManager {
 		if (this.viewerCount == 0) {
 			this.onContainerClose(world, pos, state);
 			world.emitGameEvent(player, GameEvent.CONTAINER_CLOSE, pos);
+			this.maxBlockInteractionRange = 0.0;
 		}
 
 		this.onViewerCountUpdate(world, pos, state, i, this.viewerCount);
 	}
 
-	private int getInRangeViewerCount(World world, BlockPos pos) {
-		int i = pos.getX();
-		int j = pos.getY();
-		int k = pos.getZ();
-		float f = 5.0F;
-		Box box = new Box(
-			(double)((float)i - 5.0F),
-			(double)((float)j - 5.0F),
-			(double)((float)k - 5.0F),
-			(double)((float)(i + 1) + 5.0F),
-			(double)((float)(j + 1) + 5.0F),
-			(double)((float)(k + 1) + 5.0F)
-		);
-		return world.getEntitiesByType(TypeFilter.instanceOf(PlayerEntity.class), box, this::isPlayerViewing).size();
+	private List<PlayerEntity> getViewingPlayers(World world, BlockPos pos) {
+		double d = this.maxBlockInteractionRange + 4.0;
+		Box box = new Box(pos).expand(d);
+		return world.getEntitiesByType(TypeFilter.instanceOf(PlayerEntity.class), box, this::isPlayerViewing);
 	}
 
 	public void updateViewerCount(World world, BlockPos pos, BlockState state) {
-		int i = this.getInRangeViewerCount(world, pos);
+		List<PlayerEntity> list = this.getViewingPlayers(world, pos);
+		this.maxBlockInteractionRange = 0.0;
+
+		for (PlayerEntity playerEntity : list) {
+			this.maxBlockInteractionRange = Math.max(playerEntity.getBlockInteractionRange(), this.maxBlockInteractionRange);
+		}
+
+		int i = list.size();
 		int j = this.viewerCount;
 		if (j != i) {
 			boolean bl = i != 0;

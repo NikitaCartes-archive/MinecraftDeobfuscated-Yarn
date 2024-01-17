@@ -78,11 +78,15 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.previousOutputTextField.setEditable(false);
 		this.previousOutputTextField.setText("-");
 		this.addSelectableChild(this.previousOutputTextField);
-		this.setInitialFocus(this.consoleCommandTextField);
 		this.commandSuggestor = new ChatInputSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
 		this.commandSuggestor.setWindowActive(true);
 		this.commandSuggestor.refresh();
 		this.setPreviousOutputText(bl);
+	}
+
+	@Override
+	protected void method_56131() {
+		this.setInitialFocus(this.consoleCommandTextField);
 	}
 
 	@Override

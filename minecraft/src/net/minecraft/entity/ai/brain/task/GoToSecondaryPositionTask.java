@@ -30,10 +30,10 @@ public class GoToSecondaryPositionTask {
 								} else {
 									GlobalPos globalPos2 = (GlobalPos)list.get(world.getRandom().nextInt(list.size()));
 									if (globalPos2 != null
-										&& world.getRegistryKey() == globalPos2.getDimension()
-										&& globalPos.getPos().isWithinDistance(entity.getPos(), (double)primaryPositionActivationDistance)) {
+										&& world.getRegistryKey() == globalPos2.dimension()
+										&& globalPos.pos().isWithinDistance(entity.getPos(), (double)primaryPositionActivationDistance)) {
 										if (time > mutableLong.getValue()) {
-											walkTarget.remember(new WalkTarget(globalPos2.getPos(), speed, completionRange));
+											walkTarget.remember(new WalkTarget(globalPos2.pos(), speed, completionRange));
 											mutableLong.setValue(time + 100L);
 										}
 

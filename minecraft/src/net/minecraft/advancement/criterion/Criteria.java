@@ -45,6 +45,8 @@ public class Criteria {
 	public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = register("bee_nest_destroyed", new BeeNestDestroyedCriterion());
 	public static final TargetHitCriterion TARGET_HIT = register("target_hit", new TargetHitCriterion());
 	public static final ItemCriterion ITEM_USED_ON_BLOCK = register("item_used_on_block", new ItemCriterion());
+	public static final DefaultBlockUseCriterion DEFAULT_BLOCK_USE = register("default_block_use", new DefaultBlockUseCriterion());
+	public static final AnyBlockUseCriterion ANY_BLOCK_USE = register("any_block_use", new AnyBlockUseCriterion());
 	public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = register(
 		"player_generates_container_loot", new PlayerGeneratesContainerLootCriterion()
 	);

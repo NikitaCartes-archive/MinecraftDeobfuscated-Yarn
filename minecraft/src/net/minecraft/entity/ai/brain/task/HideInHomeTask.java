@@ -42,7 +42,7 @@ public class HideInHomeTask {
 													entity.getRandom()
 												)
 									)
-									.or(() -> context.getOptionalValue(home).map(GlobalPos::getPos))
+									.or(() -> context.getOptionalValue(home).map(GlobalPos::pos))
 									.ifPresent(pos -> {
 										path.forget();
 										lookTarget.forget();

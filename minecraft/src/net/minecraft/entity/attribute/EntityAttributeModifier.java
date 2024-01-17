@@ -3,12 +3,17 @@ package net.minecraft.entity.attribute;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Uuids;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
@@ -84,7 +89,8 @@ public class EntityAttributeModifier {
 	public static EntityAttributeModifier fromNbt(NbtCompound nbt) {
 		try {
 			UUID uUID = nbt.getUuid("UUID");
-			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(nbt.getInt("Operation"));
+			EntityAttributeModifier.Operation operation = (EntityAttributeModifier.Operation)EntityAttributeModifier.Operation.ID_TO_VALUE
+				.apply(nbt.getInt("Operation"));
 			return new EntityAttributeModifier(uUID, nbt.getString("Name"), nbt.getDouble("Amount"), operation);
 		} catch (Exception var3) {
 			LOGGER.warn("Unable to create attribute: {}", var3.getMessage());
@@ -113,7 +119,12 @@ public class EntityAttributeModifier {
 		 */
 		MULTIPLY_TOTAL("multiply_total", 2);
 
-		private static final EntityAttributeModifier.Operation[] VALUES = new EntityAttributeModifier.Operation[]{ADDITION, MULTIPLY_BASE, MULTIPLY_TOTAL};
+		public static final IntFunction<EntityAttributeModifier.Operation> ID_TO_VALUE = ValueLists.createIdToValueFunction(
+			EntityAttributeModifier.Operation::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
+		public static final PacketCodec<ByteBuf, EntityAttributeModifier.Operation> PACKET_CODEC = PacketCodecs.indexed(
+			ID_TO_VALUE, EntityAttributeModifier.Operation::getId
+		);
 		public static final Codec<EntityAttributeModifier.Operation> CODEC = StringIdentifiable.createCodec(EntityAttributeModifier.Operation::values);
 		private final String name;
 		private final int id;
@@ -125,14 +136,6 @@ public class EntityAttributeModifier {
 
 		public int getId() {
 			return this.id;
-		}
-
-		public static EntityAttributeModifier.Operation fromId(int id) {
-			if (id >= 0 && id < VALUES.length) {
-				return VALUES[id];
-			} else {
-				throw new IllegalArgumentException("No operation with value " + id);
-			}
 		}
 
 		@Override

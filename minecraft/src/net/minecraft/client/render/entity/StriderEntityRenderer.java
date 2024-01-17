@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.SaddleFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.StriderEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.util.Identifier;
 
@@ -30,6 +31,11 @@ public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, Stri
 	protected float getShadowRadius(StriderEntity striderEntity) {
 		float f = super.getShadowRadius(striderEntity);
 		return striderEntity.isBaby() ? f * 0.5F : f;
+	}
+
+	protected void scale(StriderEntity striderEntity, MatrixStack matrixStack, float f) {
+		float g = striderEntity.getScaleFactor();
+		matrixStack.scale(g, g, g);
 	}
 
 	protected boolean isShaking(StriderEntity striderEntity) {

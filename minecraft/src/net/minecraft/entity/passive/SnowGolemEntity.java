@@ -131,7 +131,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 			this.sheared(SoundCategory.PLAYERS);
 			this.emitGameEvent(GameEvent.SHEAR, player);
 			if (!this.getWorld().isClient) {
-				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+				itemStack.damage(1, player, getSlotForHand(hand));
 			}
 
 			return ActionResult.success(this.getWorld().isClient);

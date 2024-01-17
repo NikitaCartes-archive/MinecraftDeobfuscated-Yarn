@@ -1,8 +1,11 @@
 package net.minecraft.network.packet.s2c.common;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
+import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 
 /**
  * A packet sent by the server; the client will reply with a pong packet on the
@@ -12,6 +15,7 @@ import net.minecraft.network.packet.Packet;
  * @see net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket
  */
 public class CommonPingS2CPacket implements Packet<ClientCommonPacketListener> {
+	public static final PacketCodec<PacketByteBuf, CommonPingS2CPacket> CODEC = Packet.createCodec(CommonPingS2CPacket::write, CommonPingS2CPacket::new);
 	/**
 	 * The parameter of this ping packet.
 	 * 
@@ -26,13 +30,17 @@ public class CommonPingS2CPacket implements Packet<ClientCommonPacketListener> {
 		this.parameter = parameter;
 	}
 
-	public CommonPingS2CPacket(PacketByteBuf buf) {
+	private CommonPingS2CPacket(PacketByteBuf buf) {
 		this.parameter = buf.readInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeInt(this.parameter);
+	}
+
+	@Override
+	public PacketIdentifier<CommonPingS2CPacket> getPacketId() {
+		return CommonPackets.PING;
 	}
 
 	public void apply(ClientCommonPacketListener clientCommonPacketListener) {

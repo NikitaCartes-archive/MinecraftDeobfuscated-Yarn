@@ -38,7 +38,7 @@ public class TabButtonWidget extends ClickableWidget {
 
 	@Override
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.drawGuiTexture(TAB_BUTTON_TEXTURES.get(this.isCurrentTab(), this.isHovered()), this.getX(), this.getY(), this.width, this.height);
+		context.drawGuiTexture(TAB_BUTTON_TEXTURES.get(this.isCurrentTab(), this.isSelected()), this.getX(), this.getY(), this.width, this.height);
 		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 		int i = this.active ? -1 : -6250336;
 		this.drawMessage(context, textRenderer, i);

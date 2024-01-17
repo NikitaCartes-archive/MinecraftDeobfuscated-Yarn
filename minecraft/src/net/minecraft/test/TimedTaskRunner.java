@@ -38,7 +38,7 @@ public class TimedTaskRunner {
 	public TimedTaskRunner expectMinDurationAndRun(int minDuration, Runnable task) {
 		this.tasks.add(TimedTask.create(() -> {
 			if (this.test.getTick() < this.tick + (long)minDuration) {
-				throw new GameTestException("Waiting");
+				throw new GameTestException("Test timed out before sequence completed");
 			} else {
 				this.tryRun(task);
 			}
@@ -50,7 +50,7 @@ public class TimedTaskRunner {
 		this.tasks.add(TimedTask.create(() -> {
 			if (this.test.getTick() < this.tick + (long)minDuration) {
 				this.tryRun(task);
-				throw new GameTestException("Waiting");
+				throw new GameTestException("Test timed out before sequence completed");
 			}
 		}));
 		return this;

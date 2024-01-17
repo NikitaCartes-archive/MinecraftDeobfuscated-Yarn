@@ -3,6 +3,7 @@ package net.minecraft.scoreboard;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.DataFixTypes;
@@ -34,7 +35,7 @@ public class ServerScoreboard extends Scoreboard {
 				.getPlayerManager()
 				.sendToAll(
 					new ScoreboardScoreUpdateS2CPacket(
-						scoreHolder.getNameForScoreboard(), objective.getName(), score.getScore(), score.getDisplayText(), score.getNumberFormat()
+						scoreHolder.getNameForScoreboard(), objective.getName(), score.getScore(), score.getDisplayText(), Optional.ofNullable(score.getNumberFormat())
 					)
 				);
 		}
@@ -176,7 +177,11 @@ public class ServerScoreboard extends Scoreboard {
 		for (ScoreboardEntry scoreboardEntry : this.getScoreboardEntries(objective)) {
 			list.add(
 				new ScoreboardScoreUpdateS2CPacket(
-					scoreboardEntry.owner(), objective.getName(), scoreboardEntry.value(), scoreboardEntry.display(), scoreboardEntry.numberFormatOverride()
+					scoreboardEntry.owner(),
+					objective.getName(),
+					scoreboardEntry.value(),
+					scoreboardEntry.display(),
+					Optional.ofNullable(scoreboardEntry.numberFormatOverride())
 				)
 			);
 		}

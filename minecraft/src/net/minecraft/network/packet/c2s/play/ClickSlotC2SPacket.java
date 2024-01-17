@@ -3,15 +3,23 @@ package net.minecraft.network.packet.c2s.play;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.util.function.IntFunction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.screen.slot.SlotActionType;
 
 public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, ClickSlotC2SPacket> CODEC = Packet.createCodec(ClickSlotC2SPacket::write, ClickSlotC2SPacket::new);
 	private static final int MAX_MODIFIED_STACKS = 128;
+	private static final PacketCodec<RegistryByteBuf, Int2ObjectMap<ItemStack>> STACK_MAP_CODEC = PacketCodecs.map(
+		PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128), PacketCodecs.SHORT.xmap(Short::intValue, Integer::shortValue), ItemStack.PACKET_CODEC
+	);
 	private final int syncId;
 	private final int revision;
 	private final int slot;
@@ -30,26 +38,29 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.modifiedStacks = Int2ObjectMaps.unmodifiable(modifiedStacks);
 	}
 
-	public ClickSlotC2SPacket(PacketByteBuf buf) {
+	private ClickSlotC2SPacket(RegistryByteBuf buf) {
 		this.syncId = buf.readByte();
 		this.revision = buf.readVarInt();
 		this.slot = buf.readShort();
 		this.button = buf.readByte();
 		this.actionType = buf.readEnumConstant(SlotActionType.class);
-		IntFunction<Int2ObjectOpenHashMap<ItemStack>> intFunction = PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128);
-		this.modifiedStacks = Int2ObjectMaps.unmodifiable(buf.readMap(intFunction, bufx -> Integer.valueOf(bufx.readShort()), PacketByteBuf::readItemStack));
-		this.stack = buf.readItemStack();
+		this.modifiedStacks = Int2ObjectMaps.unmodifiable(STACK_MAP_CODEC.decode(buf));
+		this.stack = ItemStack.PACKET_CODEC.decode(buf);
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeVarInt(this.revision);
 		buf.writeShort(this.slot);
 		buf.writeByte(this.button);
 		buf.writeEnumConstant(this.actionType);
-		buf.writeMap(this.modifiedStacks, PacketByteBuf::writeShort, PacketByteBuf::writeItemStack);
-		buf.writeItemStack(this.stack);
+		STACK_MAP_CODEC.encode(buf, this.modifiedStacks);
+		ItemStack.PACKET_CODEC.encode(buf, this.stack);
+	}
+
+	@Override
+	public PacketIdentifier<ClickSlotC2SPacket> getPacketId() {
+		return PlayPackets.CONTAINER_CLICK;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

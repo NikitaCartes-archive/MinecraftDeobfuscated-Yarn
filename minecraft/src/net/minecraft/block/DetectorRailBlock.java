@@ -44,12 +44,12 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState state) {
+	protected boolean emitsRedstonePower(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient) {
 			if (!(Boolean)state.get(POWERED)) {
 				this.updatePoweredStatus(world, pos, state);
@@ -58,19 +58,19 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(POWERED)) {
 			this.updatePoweredStatus(world, pos, state);
 		}
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+	protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		if (!(Boolean)state.get(POWERED)) {
 			return 0;
 		} else {
@@ -123,7 +123,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			BlockState blockState = this.updateCurves(state, world, pos, notify);
 			this.updatePoweredStatus(world, pos, blockState);
@@ -136,12 +136,12 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	protected boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		if ((Boolean)state.get(POWERED)) {
 			List<CommandBlockMinecartEntity> list = this.getCarts(world, pos, CommandBlockMinecartEntity.class, cart -> true);
 			if (!list.isEmpty()) {
@@ -174,7 +174,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
+	protected BlockState rotate(BlockState state, BlockRotation rotation) {
 		switch (rotation) {
 			case CLOCKWISE_180:
 				switch ((RailShape)state.get(SHAPE)) {
@@ -247,7 +247,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
+	protected BlockState mirror(BlockState state, BlockMirror mirror) {
 		RailShape railShape = state.get(SHAPE);
 		switch (mirror) {
 			case LEFT_RIGHT:

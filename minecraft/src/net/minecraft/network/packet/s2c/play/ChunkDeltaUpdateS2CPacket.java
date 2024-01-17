@@ -6,13 +6,19 @@ import java.util.function.BiConsumer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkSection;
 
 public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ChunkDeltaUpdateS2CPacket> CODEC = Packet.createCodec(
+		ChunkDeltaUpdateS2CPacket::write, ChunkDeltaUpdateS2CPacket::new
+	);
 	private static final int field_33341 = 12;
 	private final ChunkSectionPos sectionPos;
 	/**
@@ -40,7 +46,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	public ChunkDeltaUpdateS2CPacket(PacketByteBuf buf) {
+	private ChunkDeltaUpdateS2CPacket(PacketByteBuf buf) {
 		this.sectionPos = ChunkSectionPos.from(buf.readLong());
 		int i = buf.readVarInt();
 		this.positions = new short[i];
@@ -53,14 +59,18 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeLong(this.sectionPos.asLong());
 		buf.writeVarInt(this.positions.length);
 
 		for (int i = 0; i < this.positions.length; i++) {
 			buf.writeVarLong((long)Block.getRawIdFromState(this.blockStates[i]) << 12 | (long)this.positions[i]);
 		}
+	}
+
+	@Override
+	public PacketIdentifier<ChunkDeltaUpdateS2CPacket> getPacketId() {
+		return PlayPackets.SECTION_BLOCKS_UPDATE;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

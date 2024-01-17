@@ -18,7 +18,8 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -27,6 +28,8 @@ import net.minecraft.util.dynamic.Codecs;
 
 public final class Ingredient implements Predicate<ItemStack> {
 	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
+	public static final PacketCodec<RegistryByteBuf, Ingredient> PACKET_CODEC = ItemStack.LIST_PACKET_CODEC
+		.xmap(list -> ofEntries(list.stream().map(Ingredient.StackEntry::new)), ingredient -> Arrays.asList(ingredient.getMatchingStacks()));
 	private final Ingredient.Entry[] entries;
 	@Nullable
 	private ItemStack[] matchingStacks;
@@ -82,10 +85,6 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return this.ids;
 	}
 
-	public void write(PacketByteBuf buf) {
-		buf.writeCollection(Arrays.asList(this.getMatchingStacks()), PacketByteBuf::writeItemStack);
-	}
-
 	public boolean isEmpty() {
 		return this.entries.length == 0;
 	}
@@ -117,10 +116,6 @@ public final class Ingredient implements Predicate<ItemStack> {
 
 	public static Ingredient fromTag(TagKey<Item> tag) {
 		return ofEntries(Stream.of(new Ingredient.TagEntry(tag)));
-	}
-
-	public static Ingredient fromPacket(PacketByteBuf buf) {
-		return ofEntries(buf.readList(PacketByteBuf::readItemStack).stream().map(Ingredient.StackEntry::new));
 	}
 
 	private static Codec<Ingredient> createCodec(boolean allowEmpty) {

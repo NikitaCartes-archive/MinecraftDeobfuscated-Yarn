@@ -2,10 +2,14 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.damage.DamageTracker;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class EndCombatS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, EndCombatS2CPacket> CODEC = Packet.createCodec(EndCombatS2CPacket::write, EndCombatS2CPacket::new);
 	private final int timeSinceLastAttack;
 
 	public EndCombatS2CPacket(DamageTracker damageTracker) {
@@ -16,13 +20,17 @@ public class EndCombatS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.timeSinceLastAttack = timeSinceLastAttack;
 	}
 
-	public EndCombatS2CPacket(PacketByteBuf buf) {
+	private EndCombatS2CPacket(PacketByteBuf buf) {
 		this.timeSinceLastAttack = buf.readVarInt();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.timeSinceLastAttack);
+	}
+
+	@Override
+	public PacketIdentifier<EndCombatS2CPacket> getPacketId() {
+		return PlayPackets.PLAYER_COMBAT_END;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

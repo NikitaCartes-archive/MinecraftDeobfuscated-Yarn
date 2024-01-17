@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAttachmentType;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -67,12 +68,13 @@ public class SonicBoomTask extends MultiTickTask<WardenEntity> {
 				.filter(wardenEntity::isValidTarget)
 				.filter(target -> wardenEntity.isInRange(target, 15.0, 20.0))
 				.ifPresent(target -> {
-					Vec3d vec3d = wardenEntity.getPos().add(0.0, 1.6F, 0.0);
+					Vec3d vec3d = wardenEntity.getPos().add(wardenEntity.getAttachments().getPoint(EntityAttachmentType.WARDEN_CHEST, 0, wardenEntity.getYaw()));
 					Vec3d vec3d2 = target.getEyePos().subtract(vec3d);
 					Vec3d vec3d3 = vec3d2.normalize();
+					int i = MathHelper.floor(vec3d2.length()) + 7;
 
-					for (int i = 1; i < MathHelper.floor(vec3d2.length()) + 7; i++) {
-						Vec3d vec3d4 = vec3d.add(vec3d3.multiply((double)i));
+					for (int j = 1; j < i; j++) {
+						Vec3d vec3d4 = vec3d.add(vec3d3.multiply((double)j));
 						serverWorld.spawnParticles(ParticleTypes.SONIC_BOOM, vec3d4.x, vec3d4.y, vec3d4.z, 1, 0.0, 0.0, 0.0, 0.0);
 					}
 

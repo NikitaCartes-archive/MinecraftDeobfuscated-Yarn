@@ -33,7 +33,7 @@ public class WallPiglinHeadBlock extends WallSkullBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return (VoxelShape)SHAPES.get(state.get(FACING));
 	}
 }

@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -163,14 +163,14 @@ public class EnchantmentHelper {
 		return mutableInt.intValue();
 	}
 
-	public static float getAttackDamage(ItemStack stack, EntityGroup group) {
+	public static float getAttackDamage(ItemStack stack, @Nullable EntityType<?> entityType) {
 		MutableFloat mutableFloat = new MutableFloat();
-		forEachEnchantment((enchantment, level) -> mutableFloat.add(enchantment.getAttackDamage(level, group)), stack);
+		forEachEnchantment((enchantment, level) -> mutableFloat.add(enchantment.getAttackDamage(level, entityType)), stack);
 		return mutableFloat.floatValue();
 	}
 
 	public static float getSweepingMultiplier(LivingEntity entity) {
-		int i = getEquipmentLevel(Enchantments.SWEEPING, entity);
+		int i = getEquipmentLevel(Enchantments.SWEEPING_EDGE, entity);
 		return i > 0 ? SweepingEnchantment.getMultiplier(i) : 0.0F;
 	}
 
@@ -464,11 +464,10 @@ public class EnchantmentHelper {
 	 */
 	public static List<EnchantmentLevelEntry> getPossibleEntries(int power, ItemStack stack, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
-		Item item = stack.getItem();
 		boolean bl = stack.isOf(Items.BOOK);
 
 		for (Enchantment enchantment : Registries.ENCHANTMENT) {
-			if ((!enchantment.isTreasure() || treasureAllowed) && enchantment.isAvailableForRandomSelection() && (enchantment.target.isAcceptableItem(item) || bl)) {
+			if ((!enchantment.isTreasure() || treasureAllowed) && enchantment.isAvailableForRandomSelection() && (enchantment.isAcceptableItem(stack) || bl)) {
 				for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; i--) {
 					if (power >= enchantment.getMinPower(i) && power <= enchantment.getMaxPower(i)) {
 						list.add(new EnchantmentLevelEntry(enchantment, i));

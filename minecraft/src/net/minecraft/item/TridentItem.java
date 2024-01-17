@@ -27,7 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class TridentItem extends Item implements Vanishable {
+public class TridentItem extends Item {
 	public static final int field_30926 = 10;
 	public static final float ATTACK_DAMAGE = 8.0F;
 	public static final float field_30928 = 2.5F;
@@ -70,7 +70,7 @@ public class TridentItem extends Item implements Vanishable {
 				int j = EnchantmentHelper.getRiptide(stack);
 				if (j <= 0 || playerEntity.isTouchingWaterOrRain()) {
 					if (!world.isClient) {
-						stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(user.getActiveHand()));
+						stack.damage(1, playerEntity, LivingEntity.getSlotForHand(user.getActiveHand()));
 						if (j == 0) {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, stack);
 							tridentEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, 2.5F + (float)j * 0.5F, 1.0F);
@@ -136,14 +136,14 @@ public class TridentItem extends Item implements Vanishable {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
 		return true;
 	}
 
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		if ((double)state.getHardness(world, pos) != 0.0) {
-			stack.damage(2, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+			stack.damage(2, miner, EquipmentSlot.MAINHAND);
 		}
 
 		return true;

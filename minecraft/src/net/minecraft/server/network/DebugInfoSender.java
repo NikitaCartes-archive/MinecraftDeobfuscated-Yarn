@@ -153,7 +153,7 @@ public class DebugInfoSender {
 		} else if (object instanceof EntityLookTarget) {
 			return format(world, ((EntityLookTarget)object).getEntity());
 		} else if (object instanceof GlobalPos) {
-			return format(world, ((GlobalPos)object).getPos());
+			return format(world, ((GlobalPos)object).pos());
 		} else if (object instanceof BlockPosLookTarget) {
 			return format(world, ((BlockPosLookTarget)object).getBlockPos());
 		} else if (object instanceof DamageSource) {

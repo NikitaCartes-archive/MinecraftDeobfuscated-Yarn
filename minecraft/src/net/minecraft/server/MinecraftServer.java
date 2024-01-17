@@ -93,7 +93,6 @@ import net.minecraft.server.network.DemoServerPlayerInteractionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.network.SpawnLocating;
-import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplateManager;
@@ -105,7 +104,6 @@ import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.TimeHelper;
-import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WinNativeModuleUtil;
@@ -190,8 +188,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final long PLAYER_SAMPLE_UPDATE_INTERVAL_NANOS = 5L * TimeHelper.SECOND_IN_NANOS;
 	private static final long PREPARE_START_REGION_TICK_DELAY_NANOS = 10L * TimeHelper.MILLI_IN_NANOS;
 	private static final int field_33218 = 12;
-	public static final int START_TICKET_CHUNK_RADIUS = 11;
-	private static final int START_TICKET_CHUNKS = 441;
+	private static final int field_48466 = 5;
 	private static final int field_33220 = 6000;
 	private static final int field_47149 = 100;
 	private static final int field_33221 = 3;
@@ -344,7 +341,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		boolean bl = false;
 		Finishable finishable = FlightProfiler.INSTANCE.startWorldLoadProfiling();
 		this.saveProperties.addServerBrand(this.getServerModName(), this.getModStatus().isModded());
-		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
+		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory
+			.create(this.saveProperties.getGameRules().getInt(GameRules.SPAWN_CHUNK_RADIUS));
 		this.createWorlds(worldGenerationProgressListener);
 		this.updateDifficulty();
 		this.prepareStartRegion(worldGenerationProgressListener);
@@ -455,9 +453,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			int k = 0;
 			int l = 0;
 			int m = -1;
-			int n = 5;
 
-			for (int o = 0; o < MathHelper.square(11); o++) {
+			for (int n = 0; n < MathHelper.square(11); n++) {
 				if (j >= -5 && j <= 5 && k >= -5 && k <= 5) {
 					BlockPos blockPos2 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k));
 					if (blockPos2 != null) {
@@ -467,9 +464,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				}
 
 				if (j == k || j < 0 && j == -k || j > 0 && j == 1 - k) {
-					int p = l;
+					int o = l;
 					l = -m;
-					m = p;
+					m = o;
 				}
 
 				j += l;
@@ -481,13 +478,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					.getOptional(RegistryKeys.CONFIGURED_FEATURE)
 					.flatMap(featureRegistry -> featureRegistry.getEntry(MiscConfiguredFeatures.BONUS_CHEST))
 					.ifPresent(
-						feature -> ((ConfiguredFeature)feature.value())
-								.generate(
-									world,
-									serverChunkManager.getChunkGenerator(),
-									world.random,
-									new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ())
-								)
+						feature -> ((ConfiguredFeature)feature.value()).generate(world, serverChunkManager.getChunkGenerator(), world.random, worldProperties.getSpawnPos())
 					);
 			}
 		}
@@ -511,9 +502,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 		this.tickStartTimeNanos = Util.getMeasuringTimeNano();
-		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
+		serverWorld.setSpawnPos(blockPos, serverWorld.getSpawnAngle());
+		int i = this.getGameRules().getInt(GameRules.SPAWN_CHUNK_RADIUS);
+		int j = i > 0 ? MathHelper.square(WorldGenerationProgressListener.getStartRegionSize(i)) : 0;
 
-		while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
+		while (serverChunkManager.getTotalChunksLoadedCount() < j) {
 			this.tickStartTimeNanos = Util.getMeasuringTimeNano() + PREPARE_START_REGION_TICK_DELAY_NANOS;
 			this.runTasksTillTickEnd();
 		}
@@ -2054,6 +2047,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public boolean shouldLogIps() {
 		return true;
+	}
+
+	public boolean method_56040() {
+		return false;
 	}
 
 	static class DebugStart {

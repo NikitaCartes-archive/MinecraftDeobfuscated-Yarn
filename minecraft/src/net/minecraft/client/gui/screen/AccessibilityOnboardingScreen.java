@@ -33,6 +33,8 @@ public class AccessibilityOnboardingScreen extends Screen {
 	private final Runnable onClose;
 	@Nullable
 	private NarratedMultilineTextWidget textWidget;
+	@Nullable
+	private ClickableWidget field_48395;
 
 	public AccessibilityOnboardingScreen(GameOptions gameOptions, Runnable onClose) {
 		super(Text.translatable("accessibility.onboarding.screen.title"));
@@ -51,13 +53,9 @@ public class AccessibilityOnboardingScreen extends Screen {
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter().margin(2);
 		this.textWidget = new NarratedMultilineTextWidget(this.width - 16, this.title, this.textRenderer);
 		directionalLayoutWidget.add(this.textWidget, positioner -> positioner.marginBottom(16));
-		ClickableWidget clickableWidget = this.gameOptions.getNarrator().createWidget(this.gameOptions, 0, 0, 150);
-		clickableWidget.active = this.isNarratorUsable;
-		directionalLayoutWidget.add(clickableWidget);
-		if (this.isNarratorUsable) {
-			this.setInitialFocus(clickableWidget);
-		}
-
+		this.field_48395 = this.gameOptions.getNarrator().createWidget(this.gameOptions, 0, 0, 150);
+		this.field_48395.active = this.isNarratorUsable;
+		directionalLayoutWidget.add(this.field_48395);
 		directionalLayoutWidget.add(
 			AccessibilityOnboardingButtons.createAccessibilityButton(150, button -> this.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), false)
 		);
@@ -72,6 +70,15 @@ public class AccessibilityOnboardingScreen extends Screen {
 		simplePositioningWidget.refreshPositions();
 		SimplePositioningWidget.setPos(simplePositioningWidget, 0, i, this.width, this.height, 0.5F, 0.0F);
 		simplePositioningWidget.forEachChild(this::addDrawableChild);
+	}
+
+	@Override
+	protected void method_56131() {
+		if (this.isNarratorUsable && this.field_48395 != null) {
+			this.setInitialFocus(this.field_48395);
+		} else {
+			super.method_56131();
+		}
 	}
 
 	private int yMargin() {

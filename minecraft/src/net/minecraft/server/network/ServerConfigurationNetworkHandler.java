@@ -5,8 +5,10 @@ import com.mojang.logging.LogUtils;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
+import net.minecraft.class_9095;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ServerConfigurationPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.BrandCustomPayload;
@@ -100,9 +102,9 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 
 	@Override
 	public void onReady(ReadyC2SPacket packet) {
-		this.connection.disableAutoRead();
 		NetworkThreadUtils.forceMainThread(packet, this, this.server);
 		this.onTaskFinished(JoinWorldTask.KEY);
+		this.connection.method_56329(class_9095.field_48173.bind(RegistryByteBuf.makeFactory(this.server.getRegistryManager())));
 
 		try {
 			PlayerManager playerManager = this.server.getPlayerManager();
@@ -119,7 +121,6 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 
 			ServerPlayerEntity serverPlayerEntity = playerManager.createPlayer(this.profile, this.syncedOptions);
 			playerManager.onPlayerConnect(this.connection, serverPlayerEntity, this.createClientData(this.syncedOptions));
-			this.connection.enableAutoRead();
 		} catch (Exception var5) {
 			LOGGER.error("Couldn't place player in world", (Throwable)var5);
 			this.connection.send(new DisconnectS2CPacket(INVALID_PLAYER_DATA_TEXT));

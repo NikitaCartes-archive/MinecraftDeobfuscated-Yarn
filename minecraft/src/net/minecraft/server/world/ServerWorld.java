@@ -176,6 +176,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final ServerChunkManager chunkManager;
 	private final MinecraftServer server;
 	private final ServerWorldProperties worldProperties;
+	private int field_48271;
 	final EntityList entityList = new EntityList();
 	private final ServerEntityManager<Entity> entityManager;
 	private final GameEventDispatchManager gameEventDispatchManager;
@@ -1183,7 +1184,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		World.ExplosionSourceType explosionSourceType,
 		ParticleEffect particle,
 		ParticleEffect emitterParticle,
-		SoundEvent soundEvent
+		RegistryEntry<SoundEvent> soundEvent
 	) {
 		Explosion explosion = this.createExplosion(
 			entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, false, particle, emitterParticle, soundEvent
@@ -1279,6 +1280,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * 
 	 * @return the number of players the particle packet was sent to
 	 * 
+	 * @implNote If {@code count} is {@code 0}, a single particle will be spawned with its
+	 * velocity being {@code deltaX},{@code deltaY},{@code deltaZ} multiplied by {@code speed}.
+	 * 
 	 * @see #spawnParticles(ServerPlayerEntity, ParticleEffect, boolean, double, double, double, int, double, double, double, double)
 	 */
 	public <T extends ParticleEffect> int spawnParticles(
@@ -1302,6 +1306,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * coordinates.
 	 * 
 	 * @return whether the particle packet was sent
+	 * 
+	 * @implNote If {@code count} is {@code 0}, a single particle will be spawned with its
+	 * velocity being {@code deltaX},{@code deltaY},{@code deltaZ} multiplied by {@code speed}.
 	 * 
 	 * @see #spawnParticles(ParticleEffect, double, double, double, int, double, double, double, double)
 	 */
@@ -1445,11 +1452,23 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * @param pos the position of the spawn point
 	 */
 	public void setSpawnPos(BlockPos pos, float angle) {
-		ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
-		this.properties.setSpawnPos(pos, angle);
-		this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
-		this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
-		this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos, angle));
+		BlockPos blockPos = this.properties.getSpawnPos();
+		float f = this.properties.getSpawnAngle();
+		if (!blockPos.equals(pos) || f != angle) {
+			this.properties.setSpawnPos(pos, angle);
+			this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos, angle));
+		}
+
+		if (this.field_48271 > 1) {
+			this.getChunkManager().removeTicket(ChunkTicketType.START, new ChunkPos(blockPos), this.field_48271, Unit.INSTANCE);
+		}
+
+		int i = this.getGameRules().getInt(GameRules.SPAWN_CHUNK_RADIUS) + 1;
+		if (i > 1) {
+			this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), i, Unit.INSTANCE);
+		}
+
+		this.field_48271 = i;
 	}
 
 	/**

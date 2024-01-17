@@ -5,7 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
@@ -22,19 +24,21 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 				)
 				.apply(instance, DustColorTransitionParticleEffect::new)
 	);
+	public static final PacketCodec<RegistryByteBuf, DustColorTransitionParticleEffect> PACKET_CODEC = PacketCodec.tuple(
+		PacketCodecs.VECTOR3F,
+		effect -> effect.color,
+		PacketCodecs.VECTOR3F,
+		effect -> effect.toColor,
+		PacketCodecs.FLOAT,
+		effect -> effect.scale,
+		DustColorTransitionParticleEffect::new
+	);
 	public static final ParticleEffect.Factory<DustColorTransitionParticleEffect> FACTORY = new ParticleEffect.Factory<DustColorTransitionParticleEffect>() {
 		public DustColorTransitionParticleEffect read(ParticleType<DustColorTransitionParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			Vector3f vector3f = AbstractDustParticleEffect.readColor(stringReader);
 			stringReader.expect(' ');
 			float f = stringReader.readFloat();
 			Vector3f vector3f2 = AbstractDustParticleEffect.readColor(stringReader);
-			return new DustColorTransitionParticleEffect(vector3f, vector3f2, f);
-		}
-
-		public DustColorTransitionParticleEffect read(ParticleType<DustColorTransitionParticleEffect> particleType, PacketByteBuf packetByteBuf) {
-			Vector3f vector3f = AbstractDustParticleEffect.readColor(packetByteBuf);
-			float f = packetByteBuf.readFloat();
-			Vector3f vector3f2 = AbstractDustParticleEffect.readColor(packetByteBuf);
 			return new DustColorTransitionParticleEffect(vector3f, vector3f2, f);
 		}
 	};
@@ -51,14 +55,6 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 
 	public Vector3f getToColor() {
 		return this.toColor;
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) {
-		super.write(buf);
-		buf.writeFloat(this.toColor.x());
-		buf.writeFloat(this.toColor.y());
-		buf.writeFloat(this.toColor.z());
 	}
 
 	@Override

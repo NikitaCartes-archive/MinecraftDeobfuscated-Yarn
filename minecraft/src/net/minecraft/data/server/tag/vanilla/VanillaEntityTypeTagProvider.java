@@ -99,5 +99,43 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 				EntityType.ZOMBIE_HORSE
 			);
 		this.getOrCreateTagBuilder(EntityTypeTags.NON_CONTROLLING_RIDER).add(EntityType.SLIME, EntityType.MAGMA_CUBE);
+		this.getOrCreateTagBuilder(EntityTypeTags.ILLAGER).add(EntityType.EVOKER).add(EntityType.ILLUSIONER).add(EntityType.PILLAGER).add(EntityType.VINDICATOR);
+		this.getOrCreateTagBuilder(EntityTypeTags.AQUATIC)
+			.add(EntityType.TURTLE)
+			.add(EntityType.AXOLOTL)
+			.add(EntityType.GUARDIAN)
+			.add(EntityType.ELDER_GUARDIAN)
+			.add(EntityType.COD)
+			.add(EntityType.PUFFERFISH)
+			.add(EntityType.SALMON)
+			.add(EntityType.TROPICAL_FISH)
+			.add(EntityType.DOLPHIN)
+			.add(EntityType.SQUID)
+			.add(EntityType.GLOW_SQUID)
+			.add(EntityType.TADPOLE);
+		this.getOrCreateTagBuilder(EntityTypeTags.ARTHROPOD)
+			.add(EntityType.BEE)
+			.add(EntityType.ENDERMITE)
+			.add(EntityType.SILVERFISH)
+			.add(EntityType.SPIDER)
+			.add(EntityType.CAVE_SPIDER);
+		this.getOrCreateTagBuilder(EntityTypeTags.IGNORES_POISON_AND_REGEN).addTag(EntityTypeTags.UNDEAD);
+		this.getOrCreateTagBuilder(EntityTypeTags.INVERTED_HEALING_AND_HARM).addTag(EntityTypeTags.UNDEAD);
+		this.getOrCreateTagBuilder(EntityTypeTags.WITHER_FRIENDS).addTag(EntityTypeTags.UNDEAD);
+		this.getOrCreateTagBuilder(EntityTypeTags.ILLAGER_FRIENDS).addTag(EntityTypeTags.ILLAGER);
+		this.getOrCreateTagBuilder(EntityTypeTags.NOT_SCARY_FOR_PUFFERFISH)
+			.add(EntityType.TURTLE)
+			.add(EntityType.GUARDIAN)
+			.add(EntityType.ELDER_GUARDIAN)
+			.add(EntityType.COD)
+			.add(EntityType.PUFFERFISH)
+			.add(EntityType.SALMON)
+			.add(EntityType.TROPICAL_FISH)
+			.add(EntityType.DOLPHIN)
+			.add(EntityType.SQUID)
+			.add(EntityType.GLOW_SQUID)
+			.add(EntityType.TADPOLE);
+		this.getOrCreateTagBuilder(EntityTypeTags.SENSITIVE_TO_IMPALING).addTag(EntityTypeTags.AQUATIC);
+		this.getOrCreateTagBuilder(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS).addTag(EntityTypeTags.ARTHROPOD);
 	}
 }

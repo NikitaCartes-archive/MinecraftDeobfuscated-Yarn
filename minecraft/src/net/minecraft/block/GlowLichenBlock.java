@@ -53,7 +53,7 @@ public class GlowLichenBlock extends MultifaceGrowthBlock implements Fertilizabl
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
+	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
@@ -64,7 +64,7 @@ public class GlowLichenBlock extends MultifaceGrowthBlock implements Fertilizabl
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+	protected boolean canReplace(BlockState state, ItemPlacementContext context) {
 		return !context.getStack().isOf(Items.GLOW_LICHEN) || super.canReplace(state, context);
 	}
 
@@ -84,12 +84,12 @@ public class GlowLichenBlock extends MultifaceGrowthBlock implements Fertilizabl
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	protected FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
 	@Override
-	public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
 		return state.getFluidState().isEmpty();
 	}
 

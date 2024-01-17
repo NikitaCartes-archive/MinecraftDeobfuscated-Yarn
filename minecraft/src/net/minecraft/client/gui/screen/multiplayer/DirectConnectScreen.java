@@ -57,8 +57,12 @@ public class DirectConnectScreen extends Screen {
 				.dimensions(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20)
 				.build()
 		);
-		this.setInitialFocus(this.addressField);
 		this.onAddressFieldChanged();
+	}
+
+	@Override
+	protected void method_56131() {
+		this.setInitialFocus(this.addressField);
 	}
 
 	@Override

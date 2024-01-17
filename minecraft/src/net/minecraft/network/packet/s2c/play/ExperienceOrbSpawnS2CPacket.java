@@ -2,10 +2,16 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 
 public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ExperienceOrbSpawnS2CPacket> CODEC = Packet.createCodec(
+		ExperienceOrbSpawnS2CPacket::write, ExperienceOrbSpawnS2CPacket::new
+	);
 	private final int id;
 	private final double x;
 	private final double y;
@@ -20,7 +26,7 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 		this.experience = experienceOrbEntity.getExperienceAmount();
 	}
 
-	public ExperienceOrbSpawnS2CPacket(PacketByteBuf buf) {
+	private ExperienceOrbSpawnS2CPacket(PacketByteBuf buf) {
 		this.id = buf.readVarInt();
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
@@ -28,13 +34,17 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 		this.experience = buf.readShort();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
 		buf.writeDouble(this.z);
 		buf.writeShort(this.experience);
+	}
+
+	@Override
+	public PacketIdentifier<ExperienceOrbSpawnS2CPacket> getPacketId() {
+		return PlayPackets.ADD_EXPERIENCE_ORB;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

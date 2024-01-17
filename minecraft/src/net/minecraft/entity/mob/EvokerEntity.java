@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -105,12 +104,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			return true;
 		} else if (super.isTeammate(other)) {
 			return true;
-		} else if (other instanceof VexEntity) {
-			return this.isTeammate(((VexEntity)other).getOwner());
 		} else {
-			return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && other.getScoreboardTeam() == null
-				: false;
+			return other instanceof VexEntity vexEntity ? this.isTeammate(vexEntity.getOwner()) : false;
 		}
 	}
 

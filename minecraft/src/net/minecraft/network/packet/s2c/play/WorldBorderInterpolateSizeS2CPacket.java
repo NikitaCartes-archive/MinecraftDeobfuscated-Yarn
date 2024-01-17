@@ -1,11 +1,17 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.border.WorldBorder;
 
 public class WorldBorderInterpolateSizeS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, WorldBorderInterpolateSizeS2CPacket> CODEC = Packet.createCodec(
+		WorldBorderInterpolateSizeS2CPacket::write, WorldBorderInterpolateSizeS2CPacket::new
+	);
 	private final double size;
 	private final double sizeLerpTarget;
 	private final long sizeLerpTime;
@@ -16,17 +22,21 @@ public class WorldBorderInterpolateSizeS2CPacket implements Packet<ClientPlayPac
 		this.sizeLerpTime = worldBorder.getSizeLerpTime();
 	}
 
-	public WorldBorderInterpolateSizeS2CPacket(PacketByteBuf buf) {
+	private WorldBorderInterpolateSizeS2CPacket(PacketByteBuf buf) {
 		this.size = buf.readDouble();
 		this.sizeLerpTarget = buf.readDouble();
 		this.sizeLerpTime = buf.readVarLong();
 	}
 
-	@Override
-	public void write(PacketByteBuf buf) {
+	private void write(PacketByteBuf buf) {
 		buf.writeDouble(this.size);
 		buf.writeDouble(this.sizeLerpTarget);
 		buf.writeVarLong(this.sizeLerpTime);
+	}
+
+	@Override
+	public PacketIdentifier<WorldBorderInterpolateSizeS2CPacket> getPacketId() {
+		return PlayPackets.SET_BORDER_LERP_SIZE;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

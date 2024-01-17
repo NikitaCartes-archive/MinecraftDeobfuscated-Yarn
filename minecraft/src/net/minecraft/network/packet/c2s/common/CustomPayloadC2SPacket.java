@@ -1,44 +1,26 @@
 package net.minecraft.network.packet.c2s.common;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Map;
+import java.util.List;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerCommonPacketListener;
 import net.minecraft.network.packet.BrandCustomPayload;
+import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketIdentifier;
 import net.minecraft.network.packet.UnknownCustomPayload;
-import net.minecraft.util.Identifier;
 
 public record CustomPayloadC2SPacket(CustomPayload payload) implements Packet<ServerCommonPacketListener> {
 	private static final int MAX_PAYLOAD_SIZE = 32767;
-	private static final Map<Identifier, PacketByteBuf.PacketReader<? extends CustomPayload>> ID_TO_READER = ImmutableMap.<Identifier, PacketByteBuf.PacketReader<? extends CustomPayload>>builder()
-		.put(BrandCustomPayload.ID, BrandCustomPayload::new)
-		.build();
-
-	public CustomPayloadC2SPacket(PacketByteBuf buf) {
-		this(readPayload(buf.readIdentifier(), buf));
-	}
-
-	private static CustomPayload readPayload(Identifier id, PacketByteBuf buf) {
-		PacketByteBuf.PacketReader<? extends CustomPayload> packetReader = (PacketByteBuf.PacketReader<? extends CustomPayload>)ID_TO_READER.get(id);
-		return (CustomPayload)(packetReader != null ? (CustomPayload)packetReader.apply(buf) : readUnknownPayload(id, buf));
-	}
-
-	private static UnknownCustomPayload readUnknownPayload(Identifier id, PacketByteBuf buf) {
-		int i = buf.readableBytes();
-		if (i >= 0 && i <= 32767) {
-			buf.skipBytes(i);
-			return new UnknownCustomPayload(id);
-		} else {
-			throw new IllegalArgumentException("Payload may not be larger than 32767 bytes");
-		}
-	}
+	public static final PacketCodec<PacketByteBuf, CustomPayloadC2SPacket> CODEC = CustomPayload.<PacketByteBuf>createCodec(
+			identifier -> UnknownCustomPayload.createCodec(identifier, 32767), List.of(new CustomPayload.Type<>(BrandCustomPayload.KEY, BrandCustomPayload.CODEC))
+		)
+		.xmap(CustomPayloadC2SPacket::new, CustomPayloadC2SPacket::payload);
 
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeIdentifier(this.payload.id());
-		this.payload.write(buf);
+	public PacketIdentifier<CustomPayloadC2SPacket> getPacketId() {
+		return CommonPackets.CUSTOM_PAYLOAD_C2S;
 	}
 
 	public void apply(ServerCommonPacketListener serverCommonPacketListener) {

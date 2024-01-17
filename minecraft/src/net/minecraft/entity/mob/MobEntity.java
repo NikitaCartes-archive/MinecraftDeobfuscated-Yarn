@@ -40,7 +40,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
@@ -290,10 +289,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	public void playAmbientSound() {
-		SoundEvent soundEvent = this.getAmbientSound();
-		if (soundEvent != null) {
-			this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
-		}
+		this.playSound(this.getAmbientSound());
 	}
 
 	@Override
@@ -309,9 +305,9 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	@Override
-	protected void playHurtSound(DamageSource source) {
+	protected void playHurtSound(DamageSource damageSource) {
 		this.resetSoundDelay();
-		super.playHurtSound(source);
+		super.playHurtSound(damageSource);
 	}
 
 	private void resetSoundDelay() {
@@ -829,6 +825,15 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	 */
 	public int getMaxHeadRotation() {
 		return 75;
+	}
+
+	protected void clampHeadYaw() {
+		float f = (float)this.getMaxHeadRotation();
+		float g = this.getHeadYaw();
+		float h = MathHelper.wrapDegrees(this.bodyYaw - g);
+		float i = MathHelper.clamp(MathHelper.wrapDegrees(this.bodyYaw - g), -f, f);
+		float j = g + h - i;
+		this.setHeadYaw(j);
 	}
 
 	/**
@@ -1457,7 +1462,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 		float g = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 		if (target instanceof LivingEntity) {
-			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
+			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), target.getType());
 			g += (float)EnchantmentHelper.getKnockback(this);
 		}
 
@@ -1478,25 +1483,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 			}
 
-			if (target instanceof PlayerEntity playerEntity) {
-				this.disablePlayerShield(playerEntity, this.getMainHandStack(), playerEntity.isUsingItem() ? playerEntity.getActiveItem() : ItemStack.EMPTY);
-			}
-
 			this.applyDamageEffects(this, target);
 			this.onAttacking(target);
 		}
 
 		return bl;
-	}
-
-	private void disablePlayerShield(PlayerEntity player, ItemStack mobStack, ItemStack playerStack) {
-		if (!mobStack.isEmpty() && !playerStack.isEmpty() && mobStack.getItem() instanceof AxeItem && playerStack.isOf(Items.SHIELD)) {
-			float f = 0.25F + (float)EnchantmentHelper.getEfficiency(this) * 0.05F;
-			if (this.random.nextFloat() < f) {
-				player.getItemCooldownManager().set(Items.SHIELD, 100);
-				this.getWorld().sendEntityStatus(player, EntityStatuses.BREAK_SHIELD);
-			}
-		}
 	}
 
 	protected boolean isAffectedByDaylight() {

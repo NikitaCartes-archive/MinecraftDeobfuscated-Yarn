@@ -122,7 +122,7 @@ public class ItemEntity extends Entity implements Ownable {
 			this.prevY = this.getY();
 			this.prevZ = this.getZ();
 			Vec3d vec3d = this.getVelocity();
-			float f = this.getStandingEyeHeight() - 0.11111111F;
+			float f = this.getStandingEyeHeight();
 			if (this.isTouchingWater() && this.getFluidHeight(FluidTags.WATER) > (double)f) {
 				this.applyWaterBuoyancy();
 			} else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > (double)f) {

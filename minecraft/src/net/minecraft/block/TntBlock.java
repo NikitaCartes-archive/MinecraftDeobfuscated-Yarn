@@ -39,7 +39,7 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			if (world.isReceivingRedstonePower(pos)) {
 				primeTnt(world, pos);
@@ -49,7 +49,7 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (world.isReceivingRedstonePower(pos)) {
 			primeTnt(world, pos);
 			world.removeBlock(pos, false);
@@ -89,7 +89,7 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!stack.isOf(Items.FLINT_AND_STEEL) && !stack.isOf(Items.FIRE_CHARGE)) {
 			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		} else {
@@ -98,7 +98,7 @@ public class TntBlock extends Block {
 			Item item = stack.getItem();
 			if (!player.isCreative()) {
 				if (stack.isOf(Items.FLINT_AND_STEEL)) {
-					stack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+					stack.damage(1, player, LivingEntity.getSlotForHand(hand));
 				} else {
 					stack.decrement(1);
 				}
@@ -110,7 +110,7 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+	protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		if (!world.isClient) {
 			BlockPos blockPos = hit.getBlockPos();
 			Entity entity = projectile.getOwner();

@@ -38,7 +38,7 @@ public class SculkCatalystBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(BLOOM)) {
 			world.setBlockState(pos, state.with(BLOOM, Boolean.valueOf(false)), Block.NOTIFY_ALL);
 		}
@@ -57,12 +57,12 @@ public class SculkCatalystBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	protected BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
+	protected void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
 		super.onStacksDropped(state, world, pos, tool, dropExperience);
 		if (dropExperience) {
 			this.dropExperienceWhenMined(world, pos, tool, this.experience);
