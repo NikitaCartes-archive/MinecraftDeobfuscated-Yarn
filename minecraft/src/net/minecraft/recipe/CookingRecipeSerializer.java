@@ -3,8 +3,8 @@ package net.minecraft.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.dynamic.Codecs;
@@ -12,7 +12,7 @@ import net.minecraft.util.dynamic.Codecs;
 public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
 	private final AbstractCookingRecipe.RecipeFactory<T> recipeFactory;
 	private final Codec<T> codec;
-	private final PacketCodec<RegistryByteBuf, T> PACKET_CODEC;
+	private final PacketCodec<RegistryByteBuf, T> packetCodec;
 
 	public CookingRecipeSerializer(AbstractCookingRecipe.RecipeFactory<T> recipeFactory, int cookingTime) {
 		this.recipeFactory = recipeFactory;
@@ -27,7 +27,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 					)
 					.apply(instance, recipeFactory::create)
 		);
-		this.PACKET_CODEC = PacketCodec.of(this::write, this::read);
+		this.packetCodec = PacketCodec.ofStatic(this::write, this::read);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 
 	@Override
 	public PacketCodec<RegistryByteBuf, T> packetCodec() {
-		return this.PACKET_CODEC;
+		return this.packetCodec;
 	}
 
 	private T read(RegistryByteBuf buf) {

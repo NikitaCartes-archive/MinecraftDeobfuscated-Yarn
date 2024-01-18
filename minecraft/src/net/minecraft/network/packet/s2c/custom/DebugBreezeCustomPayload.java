@@ -11,7 +11,7 @@ public record DebugBreezeCustomPayload(DebugBreezeCustomPayload.BreezeInfo breez
 	public static final PacketCodec<PacketByteBuf, DebugBreezeCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugBreezeCustomPayload::write, DebugBreezeCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugBreezeCustomPayload> KEY = CustomPayload.id("debug/breeze");
+	public static final CustomPayload.Id<DebugBreezeCustomPayload> ID = CustomPayload.id("debug/breeze");
 
 	private DebugBreezeCustomPayload(PacketByteBuf buf) {
 		this(new DebugBreezeCustomPayload.BreezeInfo(buf));
@@ -23,7 +23,7 @@ public record DebugBreezeCustomPayload(DebugBreezeCustomPayload.BreezeInfo breez
 
 	@Override
 	public CustomPayload.Id<DebugBreezeCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 
 	public static record BreezeInfo(UUID uuid, int id, Integer attackTarget, BlockPos jumpTarget) {

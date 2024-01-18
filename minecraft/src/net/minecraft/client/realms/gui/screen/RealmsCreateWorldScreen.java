@@ -243,15 +243,15 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class FrameButton extends ButtonWidget {
-		private static final Identifier field_48384 = new Identifier("widget/slot_frame");
-		private static final int field_48385 = 60;
-		private static final int field_48386 = 2;
-		private static final int field_46130 = 56;
+		private static final Identifier TEXTURE = new Identifier("widget/slot_frame");
+		private static final int SIZE = 60;
+		private static final int TEXTURE_MARGIN = 2;
+		private static final int TEXTURE_SIZE = 56;
 		private final Identifier image;
 
-		FrameButton(Text text, Identifier identifier, ButtonWidget.PressAction pressAction) {
-			super(0, 0, 60, 60, text, pressAction, DEFAULT_NARRATION_SUPPLIER);
-			this.image = identifier;
+		FrameButton(Text message, Identifier image, ButtonWidget.PressAction onPress) {
+			super(0, 0, 60, 60, message, onPress, DEFAULT_NARRATION_SUPPLIER);
+			this.image = image;
 		}
 
 		@Override
@@ -264,7 +264,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 			int i = this.getX();
 			int j = this.getY();
 			context.drawTexture(this.image, i + 2, j + 2, 0.0F, 0.0F, 56, 56, 56, 56);
-			context.drawGuiTexture(field_48384, i, j, 60, 60);
+			context.drawGuiTexture(TEXTURE, i, j, 60, 60);
 			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = bl ? Colors.LIGHT_GRAY : Colors.WHITE;
 			context.drawCenteredTextWithShadow(RealmsCreateWorldScreen.this.textRenderer, this.getMessage(), i + 28, j - 14, k);

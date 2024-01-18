@@ -2,12 +2,12 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -68,7 +68,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	@Override
-	public PacketIdentifier<EntityStatusEffectS2CPacket> getPacketId() {
+	public PacketType<EntityStatusEffectS2CPacket> getPacketId() {
 		return PlayPackets.UPDATE_MOB_EFFECT;
 	}
 

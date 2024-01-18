@@ -3068,9 +3068,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			case 3009:
 				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.EGG_CRACK, UniformIntProvider.create(3, 6));
 				break;
-			case 3010:
-				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.GUST_DUST, UniformIntProvider.create(3, 6));
-				break;
 			case 3011:
 				TrialSpawnerLogic.addMobSpawnParticles(this.world, pos, random);
 				break;

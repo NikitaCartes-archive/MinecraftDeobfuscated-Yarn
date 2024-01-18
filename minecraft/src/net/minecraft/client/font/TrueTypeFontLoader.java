@@ -11,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9111;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -60,7 +59,7 @@ public record TrueTypeFontLoader(Identifier location, float size, float oversamp
 
 				try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 					PointerBuffer pointerBuffer = memoryStack.mallocPointer(1);
-					class_9111.method_56145(FreeType.FT_New_Memory_Face(class_9111.method_56143(), byteBuffer, 0L, pointerBuffer), "Initializing font face");
+					FreeTypeUtil.checkError(FreeType.FT_New_Memory_Face(FreeTypeUtil.initialize(), byteBuffer, 0L, pointerBuffer), "Initializing font face");
 					fT_Face = FT_Face.create(pointerBuffer.get());
 				}
 
@@ -69,7 +68,7 @@ public record TrueTypeFontLoader(Identifier location, float size, float oversamp
 					throw new IOException("Font is not in TTF format, was " + string);
 				}
 
-				class_9111.method_56145(FreeType.FT_Select_Charmap(fT_Face, FreeType.FT_ENCODING_UNICODE), "Find unicode charmap");
+				FreeTypeUtil.checkError(FreeType.FT_Select_Charmap(fT_Face, FreeType.FT_ENCODING_UNICODE), "Find unicode charmap");
 				var14 = new TrueTypeFont(byteBuffer, fT_Face, this.size, this.oversample, this.shift.x, this.shift.y, this.skip);
 			} catch (Throwable var11) {
 				if (inputStream != null) {

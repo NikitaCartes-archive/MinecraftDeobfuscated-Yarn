@@ -52,7 +52,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9111;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -61,6 +60,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.FontManager;
+import net.minecraft.client.font.FreeTypeUtil;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlDebug;
@@ -1251,7 +1251,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.guiAtlasManager.close();
 			this.textureManager.close();
 			this.resourceManager.close();
-			class_9111.method_56148();
+			FreeTypeUtil.release();
 			Util.shutdownExecutors();
 		} catch (Throwable var5) {
 			LOGGER.error("Shutdown failure!", var5);
@@ -1939,7 +1939,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.messageHandler.processDelayedMessages();
 		this.inGameHud.tick(this.paused);
 		this.profiler.pop();
-		this.gameRenderer.updateTargetedEntity(1.0F);
+		this.gameRenderer.updateCrosshairTarget(1.0F);
 		this.tutorialManager.tick(this.world, this.crosshairTarget);
 		this.profiler.push("gameMode");
 		if (!this.paused && this.world != null) {

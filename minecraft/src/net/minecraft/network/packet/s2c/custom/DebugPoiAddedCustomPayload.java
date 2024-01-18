@@ -9,7 +9,7 @@ public record DebugPoiAddedCustomPayload(BlockPos pos, String poiType, int freeT
 	public static final PacketCodec<PacketByteBuf, DebugPoiAddedCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugPoiAddedCustomPayload::write, DebugPoiAddedCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugPoiAddedCustomPayload> KEY = CustomPayload.id("debug/poi_added");
+	public static final CustomPayload.Id<DebugPoiAddedCustomPayload> ID = CustomPayload.id("debug/poi_added");
 
 	private DebugPoiAddedCustomPayload(PacketByteBuf buf) {
 		this(buf.readBlockPos(), buf.readString(), buf.readInt());
@@ -23,6 +23,6 @@ public record DebugPoiAddedCustomPayload(BlockPos pos, String poiType, int freeT
 
 	@Override
 	public CustomPayload.Id<DebugPoiAddedCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

@@ -484,7 +484,11 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ItemEntity> ITEM = register(
 		"item",
-		EntityType.Builder.<ItemEntity>create(ItemEntity::new, SpawnGroup.MISC).dimensions(0.25F, 0.25F).eyeHeight(0.1F).maxTrackingRange(6).trackingTickInterval(20)
+		EntityType.Builder.<ItemEntity>create(ItemEntity::new, SpawnGroup.MISC)
+			.dimensions(0.25F, 0.25F)
+			.eyeHeight(0.2125F)
+			.maxTrackingRange(6)
+			.trackingTickInterval(20)
 	);
 	public static final EntityType<DisplayEntity.ItemDisplayEntity> ITEM_DISPLAY = register(
 		"item_display",
@@ -533,7 +537,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<MagmaCubeEntity> MAGMA_CUBE = register(
 		"magma_cube",
-		EntityType.Builder.create(MagmaCubeEntity::new, SpawnGroup.MONSTER).makeFireImmune().dimensions(2.04F, 2.04F).eyeHeight(1.275F).maxTrackingRange(8)
+		EntityType.Builder.create(MagmaCubeEntity::new, SpawnGroup.MONSTER).makeFireImmune().dimensions(0.52F, 0.52F).eyeHeight(0.325F).maxTrackingRange(8)
 	);
 	public static final EntityType<MarkerEntity> MARKER = register(
 		"marker", EntityType.Builder.create(MarkerEntity::new, SpawnGroup.MISC).dimensions(0.0F, 0.0F).maxTrackingRange(0)
@@ -820,7 +824,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		EntityType.Builder.create(WardenEntity::new, SpawnGroup.MONSTER)
 			.dimensions(0.9F, 2.9F)
 			.passengerAttachments(3.15F)
-			.method_56075(EntityAttachmentType.WARDEN_CHEST, 0.0F, 1.6F, 0.0F)
+			.attachment(EntityAttachmentType.WARDEN_CHEST, 0.0F, 1.6F, 0.0F)
 			.maxTrackingRange(16)
 			.makeFireImmune()
 	);
@@ -1380,24 +1384,24 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		}
 
 		public EntityType.Builder<T> vehicleAttachment(Vec3d vehicleAttachment) {
-			return this.method_56076(EntityAttachmentType.VEHICLE, vehicleAttachment);
+			return this.attachment(EntityAttachmentType.VEHICLE, vehicleAttachment);
 		}
 
 		public EntityType.Builder<T> vehicleAttachment(float offsetY) {
-			return this.method_56075(EntityAttachmentType.VEHICLE, 0.0F, -offsetY, 0.0F);
+			return this.attachment(EntityAttachmentType.VEHICLE, 0.0F, -offsetY, 0.0F);
 		}
 
 		public EntityType.Builder<T> nameTagAttachment(float offsetY) {
-			return this.method_56075(EntityAttachmentType.NAME_TAG, 0.0F, offsetY, 0.0F);
+			return this.attachment(EntityAttachmentType.NAME_TAG, 0.0F, offsetY, 0.0F);
 		}
 
-		public EntityType.Builder<T> method_56075(EntityAttachmentType entityAttachmentType, float f, float g, float h) {
-			this.attachments = this.attachments.add(entityAttachmentType, f, g, h);
+		public EntityType.Builder<T> attachment(EntityAttachmentType type, float offsetX, float offsetY, float offsetZ) {
+			this.attachments = this.attachments.add(type, offsetX, offsetY, offsetZ);
 			return this;
 		}
 
-		public EntityType.Builder<T> method_56076(EntityAttachmentType entityAttachmentType, Vec3d vec3d) {
-			this.attachments = this.attachments.add(entityAttachmentType, vec3d);
+		public EntityType.Builder<T> attachment(EntityAttachmentType type, Vec3d offset) {
+			this.attachments = this.attachments.add(type, offset);
 			return this;
 		}
 

@@ -9,7 +9,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 public class QueueingWorldGenerationProgressListener implements WorldGenerationProgressListener {
 	private final WorldGenerationProgressListener progressListener;
 	private final TaskExecutor<Runnable> queue;
-	private boolean field_48272;
+	private boolean running;
 
 	private QueueingWorldGenerationProgressListener(WorldGenerationProgressListener progressListener, Executor executor) {
 		this.progressListener = progressListener;
@@ -29,20 +29,20 @@ public class QueueingWorldGenerationProgressListener implements WorldGenerationP
 
 	@Override
 	public void setChunkStatus(ChunkPos pos, @Nullable ChunkStatus status) {
-		if (this.field_48272) {
+		if (this.running) {
 			this.queue.send(() -> this.progressListener.setChunkStatus(pos, status));
 		}
 	}
 
 	@Override
 	public void start() {
-		this.field_48272 = true;
+		this.running = true;
 		this.queue.send(this.progressListener::start);
 	}
 
 	@Override
 	public void stop() {
-		this.field_48272 = false;
+		this.running = false;
 		this.queue.send(this.progressListener::stop);
 	}
 }

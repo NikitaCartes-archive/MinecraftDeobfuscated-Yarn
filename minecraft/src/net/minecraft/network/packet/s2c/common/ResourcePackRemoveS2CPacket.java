@@ -7,7 +7,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.util.Uuids;
 
 public record ResourcePackRemoveS2CPacket(Optional<UUID> id) implements Packet<ClientCommonPacketListener> {
@@ -24,7 +24,7 @@ public record ResourcePackRemoveS2CPacket(Optional<UUID> id) implements Packet<C
 	}
 
 	@Override
-	public PacketIdentifier<ResourcePackRemoveS2CPacket> getPacketId() {
+	public PacketType<ResourcePackRemoveS2CPacket> getPacketId() {
 		return CommonPackets.RESOURCE_PACK_POP;
 	}
 

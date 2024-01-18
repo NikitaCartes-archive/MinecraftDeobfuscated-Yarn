@@ -1,7 +1,7 @@
 package net.minecraft.entity.data;
 
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 
 public interface TrackedDataHandler<T> {
 	PacketCodec<? super RegistryByteBuf, T> codec();

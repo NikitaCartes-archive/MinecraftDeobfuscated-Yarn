@@ -1,6 +1,6 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.network.NetworkState;
+import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -114,8 +114,8 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
  */
 public interface ClientPlayPacketListener extends ClientPingResultPacketListener, ClientCommonPacketListener {
 	@Override
-	default NetworkState getState() {
-		return NetworkState.PLAY;
+	default NetworkPhase getPhase() {
+		return NetworkPhase.PLAY;
 	}
 
 	/**

@@ -208,7 +208,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Override
-	protected void method_56131() {
+	protected void setInitialFocus() {
 	}
 
 	@Override

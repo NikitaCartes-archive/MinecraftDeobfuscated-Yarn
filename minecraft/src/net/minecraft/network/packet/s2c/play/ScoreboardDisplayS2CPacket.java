@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -38,7 +38,7 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	@Override
-	public PacketIdentifier<ScoreboardDisplayS2CPacket> getPacketId() {
+	public PacketType<ScoreboardDisplayS2CPacket> getPacketId() {
 		return PlayPackets.SET_DISPLAY_OBJECTIVE;
 	}
 

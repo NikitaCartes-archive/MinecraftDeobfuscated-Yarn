@@ -391,6 +391,10 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 		return DataFixUtils.orElse(this.getEntryList(tag), List.of());
 	}
 
+	/**
+	 * {@return a random entry from {@code tag}, or an empty {@link Optional} if the
+	 * tag is empty}
+	 */
 	default Optional<RegistryEntry<T>> getRandomEntry(TagKey<T> tag, Random random) {
 		return this.getEntryList(tag).flatMap(entryList -> entryList.getRandom(random));
 	}

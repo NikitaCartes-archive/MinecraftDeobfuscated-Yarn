@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Identifier;
 
@@ -48,7 +48,7 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Override
-	public PacketIdentifier<AdvancementTabC2SPacket> getPacketId() {
+	public PacketType<AdvancementTabC2SPacket> getPacketId() {
 		return PlayPackets.SEEN_ADVANCEMENTS;
 	}
 

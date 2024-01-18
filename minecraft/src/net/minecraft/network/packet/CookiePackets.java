@@ -8,14 +8,14 @@ import net.minecraft.network.packet.s2c.common.CookieRequestS2CPacket;
 import net.minecraft.util.Identifier;
 
 public class CookiePackets {
-	public static final PacketIdentifier<CookieRequestS2CPacket> COOKIE_REQUEST = s2c("cookie_request");
-	public static final PacketIdentifier<CookieResponseC2SPacket> COOKIE_RESPONSE = c2s("cookie_response");
+	public static final PacketType<CookieRequestS2CPacket> COOKIE_REQUEST = s2c("cookie_request");
+	public static final PacketType<CookieResponseC2SPacket> COOKIE_RESPONSE = c2s("cookie_response");
 
-	private static <T extends Packet<ClientCookieRequestPacketListener>> PacketIdentifier<T> s2c(String id) {
-		return new PacketIdentifier<>(NetworkSide.CLIENTBOUND, new Identifier(id));
+	private static <T extends Packet<ClientCookieRequestPacketListener>> PacketType<T> s2c(String id) {
+		return new PacketType<>(NetworkSide.CLIENTBOUND, new Identifier(id));
 	}
 
-	private static <T extends Packet<ServerCookieResponsePacketListener>> PacketIdentifier<T> c2s(String id) {
-		return new PacketIdentifier<>(NetworkSide.SERVERBOUND, new Identifier(id));
+	private static <T extends Packet<ServerCookieResponsePacketListener>> PacketType<T> c2s(String id) {
+		return new PacketType<>(NetworkSide.SERVERBOUND, new Identifier(id));
 	}
 }

@@ -6,8 +6,8 @@ import java.util.stream.Stream;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.world.World;
 
@@ -80,7 +80,7 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 					)
 					.apply(instance, SmithingTransformRecipe::new)
 		);
-		public static final PacketCodec<RegistryByteBuf, SmithingTransformRecipe> PACKET_CODEC = PacketCodec.of(
+		public static final PacketCodec<RegistryByteBuf, SmithingTransformRecipe> PACKET_CODEC = PacketCodec.ofStatic(
 			SmithingTransformRecipe.Serializer::write, SmithingTransformRecipe.Serializer::read
 		);
 

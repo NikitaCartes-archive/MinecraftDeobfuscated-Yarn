@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
@@ -34,7 +34,7 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<CraftRequestC2SPacket> getPacketId() {
+	public PacketType<CraftRequestC2SPacket> getPacketId() {
 		return PlayPackets.PLACE_RECIPE;
 	}
 

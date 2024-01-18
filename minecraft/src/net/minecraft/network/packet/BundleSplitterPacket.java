@@ -9,5 +9,5 @@ public abstract class BundleSplitterPacket<T extends PacketListener> implements 
 	}
 
 	@Override
-	public abstract PacketIdentifier<? extends BundleSplitterPacket<T>> getPacketId();
+	public abstract PacketType<? extends BundleSplitterPacket<T>> getPacketId();
 }

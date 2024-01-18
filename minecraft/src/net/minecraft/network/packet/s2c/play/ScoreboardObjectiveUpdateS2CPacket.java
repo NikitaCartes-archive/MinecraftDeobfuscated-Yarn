@@ -1,11 +1,11 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.Optional;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -60,7 +60,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 	}
 
 	@Override
-	public PacketIdentifier<ScoreboardObjectiveUpdateS2CPacket> getPacketId() {
+	public PacketType<ScoreboardObjectiveUpdateS2CPacket> getPacketId() {
 		return PlayPackets.SET_OBJECTIVE;
 	}
 

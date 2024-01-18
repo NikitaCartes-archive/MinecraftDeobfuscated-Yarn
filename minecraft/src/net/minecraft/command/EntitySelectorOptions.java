@@ -92,7 +92,7 @@ public class EntitySelectorOptions {
 						reader.setSelectsName(true);
 					}
 
-					reader.setPredicate(readerx -> readerx.getName().getString().equals(string) != bl);
+					reader.setPredicate(entity -> entity.getName().getString().equals(string) != bl);
 				}
 			}, reader -> !reader.selectsName(), Text.translatable("argument.entity.options.name.description"));
 			putOption(

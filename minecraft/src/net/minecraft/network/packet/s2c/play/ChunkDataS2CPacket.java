@@ -2,11 +2,11 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.BitSet;
 import javax.annotation.Nullable;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
@@ -42,7 +42,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<ChunkDataS2CPacket> getPacketId() {
+	public PacketType<ChunkDataS2CPacket> getPacketId() {
 		return PlayPackets.LEVEL_CHUNK_WITH_LIGHT;
 	}
 

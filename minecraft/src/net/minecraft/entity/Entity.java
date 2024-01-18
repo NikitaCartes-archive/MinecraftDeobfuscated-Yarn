@@ -1362,7 +1362,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	/**
 	 * Emits a game event originating from this entity at this entity's position.
 	 * 
-	 * @see #emitGameEvent(GameEvent, Entity)
+	 * @see #emitGameEvent(RegistryEntry, Entity)
 	 */
 	public void emitGameEvent(RegistryEntry<GameEvent> event) {
 		this.emitGameEvent(event, this);

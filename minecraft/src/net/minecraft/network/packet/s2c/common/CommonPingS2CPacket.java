@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 /**
  * A packet sent by the server; the client will reply with a pong packet on the
@@ -39,7 +39,7 @@ public class CommonPingS2CPacket implements Packet<ClientCommonPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<CommonPingS2CPacket> getPacketId() {
+	public PacketType<CommonPingS2CPacket> getPacketId() {
 		return CommonPackets.PING;
 	}
 

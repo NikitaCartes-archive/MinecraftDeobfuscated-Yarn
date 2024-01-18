@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerQueryPingPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PingPackets;
 
 public class QueryPingC2SPacket implements Packet<ServerQueryPingPacketListener> {
@@ -24,7 +24,7 @@ public class QueryPingC2SPacket implements Packet<ServerQueryPingPacketListener>
 	}
 
 	@Override
-	public PacketIdentifier<QueryPingC2SPacket> getPacketId() {
+	public PacketType<QueryPingC2SPacket> getPacketId() {
 		return PingPackets.PING_REQUEST;
 	}
 

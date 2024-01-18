@@ -2,20 +2,18 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.Collection;
 import java.util.List;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.RecipeEntry;
 
 public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, SynchronizeRecipesS2CPacket> CODEC = PacketCodec.tuple(
-		RecipeEntry.PACKET_CODEC.mapResult(PacketCodecs.listMapper()),
-		synchronizeRecipesS2CPacket -> synchronizeRecipesS2CPacket.recipes,
-		SynchronizeRecipesS2CPacket::new
+		RecipeEntry.PACKET_CODEC.collect(PacketCodecs.toList()), packet -> packet.recipes, SynchronizeRecipesS2CPacket::new
 	);
 	private final List<RecipeEntry<?>> recipes;
 
@@ -24,7 +22,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	@Override
-	public PacketIdentifier<SynchronizeRecipesS2CPacket> getPacketId() {
+	public PacketType<SynchronizeRecipesS2CPacket> getPacketId() {
 		return PlayPackets.UPDATE_RECIPES;
 	}
 

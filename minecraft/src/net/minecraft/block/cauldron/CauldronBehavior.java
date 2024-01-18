@@ -369,7 +369,7 @@ public interface CauldronBehavior {
 	/**
 	 * Empties a cauldron if it's full.
 	 * 
-	 * @return a {@linkplain ItemActionResult#isAccepted successful} action result if emptied, {@link ItemActionResult#ASS_TO_DEFAULT_BLOCK_INTERACTION} otherwise
+	 * @return a {@linkplain ItemActionResult#isAccepted successful} action result if emptied, {@link ItemActionResult#PASS_TO_DEFAULT_BLOCK_INTERACTION} otherwise
 	 * 
 	 * @param output the item stack that replaces the interaction stack when the cauldron is emptied
 	 * @param fullPredicate a predicate used to check if the cauldron can be emptied into the output stack

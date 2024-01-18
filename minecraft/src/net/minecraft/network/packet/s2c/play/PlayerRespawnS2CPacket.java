@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record PlayerRespawnS2CPacket(CommonPlayerSpawnInfo commonPlayerSpawnInfo, byte flag) implements Packet<ClientPlayPacketListener> {
@@ -23,7 +23,7 @@ public record PlayerRespawnS2CPacket(CommonPlayerSpawnInfo commonPlayerSpawnInfo
 	}
 
 	@Override
-	public PacketIdentifier<PlayerRespawnS2CPacket> getPacketId() {
+	public PacketType<PlayerRespawnS2CPacket> getPacketId() {
 		return PlayPackets.RESPAWN;
 	}
 

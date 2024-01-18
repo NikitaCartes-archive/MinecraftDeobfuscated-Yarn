@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -42,7 +42,7 @@ public class PlayerActionC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<PlayerActionC2SPacket> getPacketId() {
+	public PacketType<PlayerActionC2SPacket> getPacketId() {
 		return PlayPackets.PLAYER_ACTION;
 	}
 

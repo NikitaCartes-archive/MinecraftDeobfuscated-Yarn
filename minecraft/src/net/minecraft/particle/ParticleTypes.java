@@ -2,9 +2,9 @@ package net.minecraft.particle;
 
 import com.mojang.serialization.Codec;
 import java.util.function.Function;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -131,10 +131,9 @@ public class ParticleTypes {
 	);
 	public static final DefaultParticleType EGG_CRACK = register("egg_crack", false);
 	public static final DefaultParticleType DUST_PLUME = register("dust_plume", false);
-	public static final DefaultParticleType GUST_DUST = register("gust_dust", false);
 	public static final DefaultParticleType TRIAL_SPAWNER_DETECTION = register("trial_spawner_detection", true);
 	public static final Codec<ParticleEffect> TYPE_CODEC = Registries.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
-	public static final PacketCodec<RegistryByteBuf, ParticleEffect> PACKET_CODEC = PacketCodecs.registry(RegistryKeys.PARTICLE_TYPE)
+	public static final PacketCodec<RegistryByteBuf, ParticleEffect> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.PARTICLE_TYPE)
 		.dispatch(ParticleEffect::getType, ParticleType::getPacketCodec);
 
 	private static DefaultParticleType register(String name, boolean alwaysShow) {

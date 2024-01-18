@@ -219,7 +219,7 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	@Override
-	protected void method_56131() {
+	protected void setInitialFocus() {
 		this.setInitialFocus(this.inputName);
 	}
 

@@ -8,7 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -49,7 +49,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	@Override
-	public PacketIdentifier<CommandSuggestionsS2CPacket> getPacketId() {
+	public PacketType<CommandSuggestionsS2CPacket> getPacketId() {
 		return PlayPackets.COMMAND_SUGGESTIONS;
 	}
 

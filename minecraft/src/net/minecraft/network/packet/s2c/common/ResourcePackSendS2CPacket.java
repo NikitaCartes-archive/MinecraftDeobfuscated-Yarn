@@ -7,7 +7,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.text.Text;
 
 public record ResourcePackSendS2CPacket(UUID id, String url, String hash, boolean required, @Nullable Text prompt) implements Packet<ClientCommonPacketListener> {
@@ -41,7 +41,7 @@ public record ResourcePackSendS2CPacket(UUID id, String url, String hash, boolea
 	}
 
 	@Override
-	public PacketIdentifier<ResourcePackSendS2CPacket> getPacketId() {
+	public PacketType<ResourcePackSendS2CPacket> getPacketId() {
 		return CommonPackets.RESOURCE_PACK_PUSH;
 	}
 

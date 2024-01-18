@@ -8,7 +8,7 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 /**
@@ -53,7 +53,7 @@ public record ChatMessageC2SPacket(
 	}
 
 	@Override
-	public PacketIdentifier<ChatMessageC2SPacket> getPacketId() {
+	public PacketType<ChatMessageC2SPacket> getPacketId() {
 		return PlayPackets.CHAT;
 	}
 

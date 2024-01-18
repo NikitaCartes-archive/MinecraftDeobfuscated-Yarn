@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.codec.RegistryByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -268,29 +268,29 @@ public class DataTracker {
 			return new DataTracker.SerializedEntry<>(data.getId(), trackedDataHandler, trackedDataHandler.copy(value));
 		}
 
-		public void write(RegistryByteBuf registryByteBuf) {
+		public void write(RegistryByteBuf buf) {
 			int i = TrackedDataHandlerRegistry.getId(this.handler);
 			if (i < 0) {
 				throw new EncoderException("Unknown serializer type " + this.handler);
 			} else {
-				registryByteBuf.writeByte(this.id);
-				registryByteBuf.writeVarInt(i);
-				this.handler.codec().encode(registryByteBuf, this.value);
+				buf.writeByte(this.id);
+				buf.writeVarInt(i);
+				this.handler.codec().encode(buf, this.value);
 			}
 		}
 
-		public static DataTracker.SerializedEntry<?> fromBuf(RegistryByteBuf registryByteBuf, int id) {
-			int i = registryByteBuf.readVarInt();
+		public static DataTracker.SerializedEntry<?> fromBuf(RegistryByteBuf buf, int id) {
+			int i = buf.readVarInt();
 			TrackedDataHandler<?> trackedDataHandler = TrackedDataHandlerRegistry.get(i);
 			if (trackedDataHandler == null) {
 				throw new DecoderException("Unknown serializer type " + i);
 			} else {
-				return fromBuf(registryByteBuf, id, trackedDataHandler);
+				return fromBuf(buf, id, trackedDataHandler);
 			}
 		}
 
-		private static <T> DataTracker.SerializedEntry<T> fromBuf(RegistryByteBuf registryByteBuf, int id, TrackedDataHandler<T> handler) {
-			return new DataTracker.SerializedEntry<>(id, handler, handler.codec().decode(registryByteBuf));
+		private static <T> DataTracker.SerializedEntry<T> fromBuf(RegistryByteBuf buf, int id, TrackedDataHandler<T> handler) {
+			return new DataTracker.SerializedEntry<>(id, handler, handler.codec().decode(buf));
 		}
 	}
 }

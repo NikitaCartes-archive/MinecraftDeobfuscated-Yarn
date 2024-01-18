@@ -372,7 +372,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * <p>Tools and melee weapons should override this to damage the stack.
 	 * 
 	 * @return whether the item's use stat should be incremented
-	 * @see ItemStack#damage(int, LivingEntity, java.util.function.Consumer)
+	 * @see ItemStack#damage(int, LivingEntity, EquipmentSlot)
 	 */
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		return false;
@@ -386,7 +386,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * 
 	 * @return whether the item's use stat should be incremented
 	 * @see net.minecraft.block.AbstractBlock.AbstractBlockState#getHardness
-	 * @see ItemStack#damage(int, LivingEntity, java.util.function.Consumer)
+	 * @see ItemStack#damage(int, LivingEntity, EquipmentSlot)
 	 */
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		return false;

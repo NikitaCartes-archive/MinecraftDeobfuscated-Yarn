@@ -17,15 +17,15 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 	private static final int RUN_TIME = 110;
 	private final EntityType<? extends AnimalEntity> targetType;
 	private final float speed;
-	private final int field_48327;
-	private static final int field_48328 = 2;
+	private final int approachDistance;
+	private static final int DEFAULT_APPROACH_DISTANCE = 2;
 	private long breedTime;
 
 	public BreedTask(EntityType<? extends AnimalEntity> targetType) {
 		this(targetType, 1.0F, 2);
 	}
 
-	public BreedTask(EntityType<? extends AnimalEntity> entityType, float f, int i) {
+	public BreedTask(EntityType<? extends AnimalEntity> targetType, float speed, int approachDistance) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.VISIBLE_MOBS,
@@ -41,9 +41,9 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 			),
 			110
 		);
-		this.targetType = entityType;
-		this.speed = f;
-		this.field_48327 = i;
+		this.targetType = targetType;
+		this.speed = speed;
+		this.approachDistance = approachDistance;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, AnimalEntity animalEntity) {
@@ -54,7 +54,7 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 		AnimalEntity animalEntity2 = (AnimalEntity)this.findBreedTarget(animalEntity).get();
 		animalEntity.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity2);
 		animalEntity2.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity);
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed, this.field_48327);
+		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed, this.approachDistance);
 		int i = 60 + animalEntity.getRandom().nextInt(50);
 		this.breedTime = l + (long)i;
 	}
@@ -75,7 +75,7 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 
 	protected void keepRunning(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
 		AnimalEntity animalEntity2 = this.getBreedTarget(animalEntity);
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed, this.field_48327);
+		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed, this.approachDistance);
 		if (animalEntity.isInRange(animalEntity2, 3.0)) {
 			if (l >= this.breedTime) {
 				animalEntity.breed(serverWorld, animalEntity2);

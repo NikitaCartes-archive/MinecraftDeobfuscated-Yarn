@@ -50,7 +50,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		this.updateTooltip(this.state, server.minigameName);
 	}
 
-	private void updateTooltip(RealmsWorldSlotButton.State state, String minigameName) {
+	private void updateTooltip(RealmsWorldSlotButton.State state, @Nullable String minigameName) {
 		Text text = switch (state.action) {
 			case JOIN -> ACTIVE_TOOLTIP;
 			case SWITCH_SLOT -> state.minigame ? MINIGAME_TOOLTIP : TOOLTIP;
@@ -61,7 +61,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		}
 
 		MutableText mutableText = Text.literal(state.slotName);
-		if (state.minigame) {
+		if (state.minigame && minigameName != null) {
 			mutableText = mutableText.append(ScreenTexts.SPACE).append(minigameName);
 		}
 

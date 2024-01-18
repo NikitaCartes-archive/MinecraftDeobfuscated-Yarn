@@ -6,7 +6,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public record LoginQueryResponseC2SPacket(int queryId, @Nullable LoginQueryResponsePayload response) implements Packet<ServerLoginPacketListener> {
 	public static final PacketCodec<PacketByteBuf, LoginQueryResponseC2SPacket> CODEC = Packet.createCodec(
@@ -46,7 +46,7 @@ public record LoginQueryResponseC2SPacket(int queryId, @Nullable LoginQueryRespo
 	}
 
 	@Override
-	public PacketIdentifier<LoginQueryResponseC2SPacket> getPacketId() {
+	public PacketType<LoginQueryResponseC2SPacket> getPacketId() {
 		return LoginPackets.CUSTOM_QUERY_ANSWER;
 	}
 

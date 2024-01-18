@@ -11,7 +11,7 @@ public record DebugVillageSectionsCustomPayload(Set<ChunkSectionPos> villageChun
 	public static final PacketCodec<PacketByteBuf, DebugVillageSectionsCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugVillageSectionsCustomPayload::write, DebugVillageSectionsCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugVillageSectionsCustomPayload> KEY = CustomPayload.id("debug/village_sections");
+	public static final CustomPayload.Id<DebugVillageSectionsCustomPayload> ID = CustomPayload.id("debug/village_sections");
 
 	private DebugVillageSectionsCustomPayload(PacketByteBuf buf) {
 		this(buf.readCollection(HashSet::new, PacketByteBuf::readChunkSectionPos), buf.readCollection(HashSet::new, PacketByteBuf::readChunkSectionPos));
@@ -24,6 +24,6 @@ public record DebugVillageSectionsCustomPayload(Set<ChunkSectionPos> villageChun
 
 	@Override
 	public CustomPayload.Id<DebugVillageSectionsCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

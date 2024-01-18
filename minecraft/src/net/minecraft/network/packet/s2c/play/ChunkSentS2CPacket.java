@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record ChunkSentS2CPacket(int batchSize) implements Packet<ClientPlayPacketListener> {
@@ -19,7 +19,7 @@ public record ChunkSentS2CPacket(int batchSize) implements Packet<ClientPlayPack
 	}
 
 	@Override
-	public PacketIdentifier<ChunkSentS2CPacket> getPacketId() {
+	public PacketType<ChunkSentS2CPacket> getPacketId() {
 		return PlayPackets.CHUNK_BATCH_FINISHED;
 	}
 

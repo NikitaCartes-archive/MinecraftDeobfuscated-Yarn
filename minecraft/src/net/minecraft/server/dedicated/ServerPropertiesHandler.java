@@ -100,7 +100,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean logIps = this.parseBoolean("log-ips", true);
 	private final ServerPropertiesHandler.WorldGenProperties worldGenProperties;
 	public final GeneratorOptions generatorOptions;
-	public boolean field_48270 = this.parseBoolean("accepts-transfers", false);
+	public boolean acceptsTransfers = this.parseBoolean("accepts-transfers", false);
 
 	public ServerPropertiesHandler(Properties properties) {
 		super(properties);

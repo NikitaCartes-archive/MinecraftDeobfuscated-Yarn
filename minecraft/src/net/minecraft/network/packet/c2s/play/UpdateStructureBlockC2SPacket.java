@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -121,7 +121,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	@Override
-	public PacketIdentifier<UpdateStructureBlockC2SPacket> getPacketId() {
+	public PacketType<UpdateStructureBlockC2SPacket> getPacketId() {
 		return PlayPackets.SET_STRUCTURE_BLOCK;
 	}
 

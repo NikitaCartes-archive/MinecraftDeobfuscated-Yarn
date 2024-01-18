@@ -3,11 +3,11 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Lists;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -124,7 +124,7 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<ExplosionS2CPacket> getPacketId() {
+	public PacketType<ExplosionS2CPacket> getPacketId() {
 		return PlayPackets.EXPLODE;
 	}
 

@@ -8,7 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
@@ -147,7 +147,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<TeamS2CPacket> getPacketId() {
+	public PacketType<TeamS2CPacket> getPacketId() {
 		return PlayPackets.SET_PLAYER_TEAM;
 	}
 

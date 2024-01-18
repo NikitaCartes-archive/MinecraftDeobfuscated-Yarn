@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class AcknowledgeReconfigurationC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -15,7 +15,7 @@ public class AcknowledgeReconfigurationC2SPacket implements Packet<ServerPlayPac
 	}
 
 	@Override
-	public PacketIdentifier<AcknowledgeReconfigurationC2SPacket> getPacketId() {
+	public PacketType<AcknowledgeReconfigurationC2SPacket> getPacketId() {
 		return PlayPackets.CONFIGURATION_ACKNOWLEDGED;
 	}
 

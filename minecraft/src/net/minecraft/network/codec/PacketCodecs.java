@@ -19,6 +19,7 @@ import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.encoding.StringEncoding;
 import net.minecraft.network.encoding.VarInts;
 import net.minecraft.network.encoding.VarLongs;
@@ -30,7 +31,18 @@ import net.minecraft.util.collection.IndexedIterable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+/**
+ * A set of pre-defined packet codecs.
+ * 
+ * @see PacketCodec
+ */
 public interface PacketCodecs {
+	/**
+	 * A codec for a boolean value.
+	 * 
+	 * @see io.netty.buffer.ByteBuf#readBoolean
+	 * @see io.netty.buffer.ByteBuf#writeBoolean
+	 */
 	PacketCodec<ByteBuf, Boolean> BOOL = new PacketCodec<ByteBuf, Boolean>() {
 		public Boolean decode(ByteBuf byteBuf) {
 			return byteBuf.readBoolean();
@@ -40,6 +52,12 @@ public interface PacketCodecs {
 			byteBuf.writeBoolean(boolean_);
 		}
 	};
+	/**
+	 * A codec for a byte value.
+	 * 
+	 * @see io.netty.buffer.ByteBuf#readByte
+	 * @see io.netty.buffer.ByteBuf#writeByte
+	 */
 	PacketCodec<ByteBuf, Byte> BYTE = new PacketCodec<ByteBuf, Byte>() {
 		public Byte decode(ByteBuf byteBuf) {
 			return byteBuf.readByte();
@@ -49,6 +67,12 @@ public interface PacketCodecs {
 			byteBuf.writeByte(byte_);
 		}
 	};
+	/**
+	 * A codec for a short value.
+	 * 
+	 * @see io.netty.buffer.ByteBuf#readShort
+	 * @see io.netty.buffer.ByteBuf#writeShort
+	 */
 	PacketCodec<ByteBuf, Short> SHORT = new PacketCodec<ByteBuf, Short>() {
 		public Short decode(ByteBuf byteBuf) {
 			return byteBuf.readShort();
@@ -58,6 +82,12 @@ public interface PacketCodecs {
 			byteBuf.writeShort(short_);
 		}
 	};
+	/**
+	 * A codec for a variable-length integer (var int) value.
+	 * 
+	 * @see net.minecraft.network.PacketByteBuf#readVarInt
+	 * @see net.minecraft.network.PacketByteBuf#writeVarInt
+	 */
 	PacketCodec<ByteBuf, Integer> VAR_INT = new PacketCodec<ByteBuf, Integer>() {
 		public Integer decode(ByteBuf byteBuf) {
 			return VarInts.read(byteBuf);
@@ -67,6 +97,12 @@ public interface PacketCodecs {
 			VarInts.write(byteBuf, integer);
 		}
 	};
+	/**
+	 * A codec for a variable-length long (var long) value.
+	 * 
+	 * @see net.minecraft.network.PacketByteBuf#readVarLong
+	 * @see net.minecraft.network.PacketByteBuf#writeVarLong
+	 */
 	PacketCodec<ByteBuf, Long> VAR_LONG = new PacketCodec<ByteBuf, Long>() {
 		public Long decode(ByteBuf byteBuf) {
 			return VarLongs.read(byteBuf);
@@ -76,6 +112,12 @@ public interface PacketCodecs {
 			VarLongs.write(byteBuf, long_);
 		}
 	};
+	/**
+	 * A codec for a float value.
+	 * 
+	 * @see io.netty.buffer.ByteBuf#readFloat
+	 * @see io.netty.buffer.ByteBuf#writeFloat
+	 */
 	PacketCodec<ByteBuf, Float> FLOAT = new PacketCodec<ByteBuf, Float>() {
 		public Float decode(ByteBuf byteBuf) {
 			return byteBuf.readFloat();
@@ -85,6 +127,12 @@ public interface PacketCodecs {
 			byteBuf.writeFloat(float_);
 		}
 	};
+	/**
+	 * A codec for a double value.
+	 * 
+	 * @see io.netty.buffer.ByteBuf#readDouble
+	 * @see io.netty.buffer.ByteBuf#writeDouble
+	 */
 	PacketCodec<ByteBuf, Double> DOUBLE = new PacketCodec<ByteBuf, Double>() {
 		public Double decode(ByteBuf byteBuf) {
 			return byteBuf.readDouble();
@@ -94,15 +142,44 @@ public interface PacketCodecs {
 			byteBuf.writeDouble(double_);
 		}
 	};
+	/**
+	 * A codec for a string value with maximum length {@value Short#MAX_VALUE}.
+	 * 
+	 * @see #string
+	 * @see net.minecraft.network.PacketByteBuf#readString()
+	 * @see net.minecraft.network.PacketByteBuf#writeString(String)
+	 */
 	PacketCodec<ByteBuf, String> STRING = string(32767);
+	/**
+	 * A codec for an NBT element of unlimited size.
+	 * 
+	 * @see #nbt
+	 * @see net.minecraft.network.PacketByteBuf#readNbt(NbtSizeTracker)
+	 * @see net.minecraft.network.PacketByteBuf#writeNbt(NbtElement)
+	 */
 	PacketCodec<ByteBuf, NbtElement> NBT_ELEMENT = nbt(NbtSizeTracker::ofUnlimitedBytes);
-	PacketCodec<ByteBuf, NbtCompound> NBT_COMPUND = nbt(NbtSizeTracker::ofUnlimitedBytes).xmap(nbt -> {
+	/**
+	 * A codec for an NBT compound of unlimited size.
+	 * 
+	 * @see #nbt
+	 * @see net.minecraft.network.PacketByteBuf#readNbt(NbtSizeTracker)
+	 * @see net.minecraft.network.PacketByteBuf#writeNbt(NbtElement)
+	 */
+	PacketCodec<ByteBuf, NbtCompound> NBT_COMPOUND = nbt(NbtSizeTracker::ofUnlimitedBytes).xmap(nbt -> {
 		if (nbt instanceof NbtCompound) {
 			return (NbtCompound)nbt;
 		} else {
 			throw new DecoderException("Not a compound tag: " + nbt);
 		}
 	}, nbt -> nbt);
+	/**
+	 * A codec for an optional NBT compound of up to {@value
+	 * net.minecraft.network.PacketByteBuf#MAX_READ_NBT_SIZE} bytes.
+	 * 
+	 * @see #nbt
+	 * @see net.minecraft.network.PacketByteBuf#readNbt(PacketByteBuf)
+	 * @see net.minecraft.network.PacketByteBuf#writeNbt(io.netty.buffer.ByteBuf, NbtElement)
+	 */
 	PacketCodec<ByteBuf, Optional<NbtCompound>> OPTIONAL_NBT = new PacketCodec<ByteBuf, Optional<NbtCompound>>() {
 		public Optional<NbtCompound> decode(ByteBuf byteBuf) {
 			return Optional.ofNullable(PacketByteBuf.readNbt(byteBuf));
@@ -112,6 +189,12 @@ public interface PacketCodecs {
 			PacketByteBuf.writeNbt(byteBuf, (NbtElement)optional.orElse(null));
 		}
 	};
+	/**
+	 * A codec for a {@link org.joml.Vector3f}.
+	 * 
+	 * @see net.minecraft.network.PacketByteBuf#readVector3f()
+	 * @see net.minecraft.network.PacketByteBuf#writeVector3f(Vector3f)
+	 */
 	PacketCodec<ByteBuf, Vector3f> VECTOR3F = new PacketCodec<ByteBuf, Vector3f>() {
 		public Vector3f decode(ByteBuf byteBuf) {
 			return PacketByteBuf.readVector3f(byteBuf);
@@ -121,7 +204,13 @@ public interface PacketCodecs {
 			PacketByteBuf.writeVector3f(byteBuf, vector3f);
 		}
 	};
-	PacketCodec<ByteBuf, Quaternionf> QUATERNION = new PacketCodec<ByteBuf, Quaternionf>() {
+	/**
+	 * A codec for a {@link org.joml.Quaternionf}.
+	 * 
+	 * @see net.minecraft.network.PacketByteBuf#readQuaternionf()
+	 * @see net.minecraft.network.PacketByteBuf#writeQuaternionf(Quaternionf)
+	 */
+	PacketCodec<ByteBuf, Quaternionf> QUATERNIONF = new PacketCodec<ByteBuf, Quaternionf>() {
 		public Quaternionf decode(ByteBuf byteBuf) {
 			return PacketByteBuf.readQuaternionf(byteBuf);
 		}
@@ -131,18 +220,32 @@ public interface PacketCodecs {
 		}
 	};
 
-	static PacketCodec<ByteBuf, String> string(int length) {
+	/**
+	 * {@return a codec for a string value with maximum length {@code maxLength}}
+	 * 
+	 * @see #STRING
+	 * @see net.minecraft.network.PacketByteBuf#readString(int)
+	 * @see net.minecraft.network.PacketByteBuf#writeString(String, int)
+	 */
+	static PacketCodec<ByteBuf, String> string(int maxLength) {
 		return new PacketCodec<ByteBuf, String>() {
 			public String decode(ByteBuf byteBuf) {
-				return StringEncoding.decode(byteBuf, length);
+				return StringEncoding.decode(byteBuf, maxLength);
 			}
 
 			public void encode(ByteBuf byteBuf, String string) {
-				StringEncoding.encode(byteBuf, string, length);
+				StringEncoding.encode(byteBuf, string, maxLength);
 			}
 		};
 	}
 
+	/**
+	 * {@return a codec for an NBT element}
+	 * 
+	 * @see #NBT_ELEMENT
+	 * @see net.minecraft.network.PacketByteBuf#readNbt(NbtSizeTracker)
+	 * @see net.minecraft.network.PacketByteBuf#writeNbt(NbtElement)
+	 */
 	static PacketCodec<ByteBuf, NbtElement> nbt(Supplier<NbtSizeTracker> sizeTracker) {
 		return new PacketCodec<ByteBuf, NbtElement>() {
 			public NbtElement decode(ByteBuf byteBuf) {
@@ -164,13 +267,27 @@ public interface PacketCodecs {
 		};
 	}
 
-	static <T> PacketCodec<ByteBuf, T> ofCodec(Codec<T> codec) {
+	/**
+	 * {@return a codec from DataFixerUpper codec {@code codec}}
+	 * 
+	 * <p>Internally, the data is serialized as an NBT element of unlimited size.
+	 */
+	static <T> PacketCodec<ByteBuf, T> codec(Codec<T> codec) {
 		return NBT_ELEMENT.xmap(
 			nbt -> Util.getResult(codec.parse(NbtOps.INSTANCE, nbt), error -> new DecoderException("Failed to decode: " + error + " " + nbt)),
 			value -> Util.getResult(codec.encodeStart(NbtOps.INSTANCE, (T)value), error -> new EncoderException("Failed to encode: " + error + " " + value))
 		);
 	}
 
+	/**
+	 * {@return a codec wrapping another codec, the value of which is optional}
+	 * 
+	 * <p>This can be used with {@link PacketCodec#collect} like
+	 * {@code codec.collect(PacketCodecs::optional)}.
+	 * 
+	 * @see net.minecraft.network.PacketByteBuf#readOptional
+	 * @see net.minecraft.network.PacketByteBuf#writeOptional
+	 */
 	static <B extends ByteBuf, V> PacketCodec<B, Optional<V>> optional(PacketCodec<B, V> codec) {
 		return new PacketCodec<B, Optional<V>>() {
 			public Optional<V> decode(B byteBuf) {
@@ -188,6 +305,15 @@ public interface PacketCodecs {
 		};
 	}
 
+	/**
+	 * {@return a codec for a collection of values}
+	 * 
+	 * @see net.minecraft.network.PacketByteBuf#readCollection
+	 * @see net.minecraft.network.PacketByteBuf#writeCollection
+	 * 
+	 * @param elementCodec the codec of the collection's elements
+	 * @param factory a function that, given the collection's size, returns a new empty collection
+	 */
 	static <B extends ByteBuf, V, C extends Collection<V>> PacketCodec<B, C> collection(IntFunction<C> factory, PacketCodec<? super B, V> elementCodec) {
 		return new PacketCodec<B, C>() {
 			public C decode(B byteBuf) {
@@ -211,23 +337,52 @@ public interface PacketCodecs {
 		};
 	}
 
-	static <B extends ByteBuf, V, C extends Collection<V>> PacketCodec.ResultFunction<B, V, C> collectionMapper(IntFunction<C> factory) {
-		return codec -> collection(factory, codec);
+	/**
+	 * Used to make a codec for a collection of values using {@link PacketCodec#collect}.
+	 * 
+	 * <p>For example, to make a codec for a set of values, write {@code
+	 * codec.collect(PacketCodecs.toCollection(HashSet::new))}.
+	 * 
+	 * @see #toList
+	 * 
+	 * @param collectionFactory a function that, given the collection's size, returns a new empty collection
+	 */
+	static <B extends ByteBuf, V, C extends Collection<V>> PacketCodec.ResultFunction<B, V, C> toCollection(IntFunction<C> collectionFactory) {
+		return codec -> collection(collectionFactory, codec);
 	}
 
-	static <B extends ByteBuf, V> PacketCodec.ResultFunction<B, V, List<V>> listMapper() {
+	/**
+	 * Used to make a codec for a list of values using {@link PacketCodec#collect}.
+	 * This creates an {@link java.util.ArrayList}, so the decoded result can be modified.
+	 * 
+	 * <p>For example, to make a codec for a list of values, write {@code
+	 * codec.collect(PacketCodecs.toList())}.
+	 * 
+	 * @see #toCollection
+	 */
+	static <B extends ByteBuf, V> PacketCodec.ResultFunction<B, V, List<V>> toList() {
 		return codec -> collection(ArrayList::new, codec);
 	}
 
+	/**
+	 * {@return a codec for a map}
+	 * 
+	 * @see net.minecraft.network.PacketByteBuf#readMap(IntFunction, PacketDecoder, PacketDecoder)
+	 * @see net.minecraft.network.PacketByteBuf#writeMap(java.util.Map, PacketEncoder, PacketEncoder)
+	 * 
+	 * @param factory a function that, given the map's size, returns a new empty map
+	 * @param keyCodec the codec for the map's keys
+	 * @param valueCodec the codec for the map's values
+	 */
 	static <B extends ByteBuf, K, V, M extends Map<K, V>> PacketCodec<B, M> map(
 		IntFunction<? extends M> factory, PacketCodec<? super B, K> keyCodec, PacketCodec<? super B, V> valueCodec
 	) {
 		return new PacketCodec<B, M>() {
 			public void encode(B byteBuf, M map) {
 				VarInts.write(byteBuf, map.size());
-				map.forEach((object, object2) -> {
-					keyCodec.encode(byteBuf, (K)object);
-					valueCodec.encode(byteBuf, (V)object2);
+				map.forEach((k, v) -> {
+					keyCodec.encode(byteBuf, (K)k);
+					valueCodec.encode(byteBuf, (V)v);
 				});
 			}
 
@@ -246,21 +401,38 @@ public interface PacketCodecs {
 		};
 	}
 
-	static <T> PacketCodec<ByteBuf, T> indexed(IntFunction<T> from, ToIntFunction<T> to) {
+	/**
+	 * {@return a codec for an indexed value}
+	 * 
+	 * <p>An example of an indexed value is an enum.
+	 * 
+	 * @see net.minecraft.util.function.ValueLists
+	 * @see net.minecraft.network.PacketByteBuf#encode(ToIntFunction, Object)
+	 * @see net.minecraft.network.PacketByteBuf#decode(IntFunction)
+	 * 
+	 * @param valueToIndex a function that gets a value's index
+	 * @param indexToValue a function that gets a value from its index
+	 */
+	static <T> PacketCodec<ByteBuf, T> indexed(IntFunction<T> indexToValue, ToIntFunction<T> valueToIndex) {
 		return new PacketCodec<ByteBuf, T>() {
 			public T decode(ByteBuf byteBuf) {
 				int i = VarInts.read(byteBuf);
-				return (T)from.apply(i);
+				return (T)indexToValue.apply(i);
 			}
 
 			public void encode(ByteBuf byteBuf, T object) {
-				int i = to.applyAsInt(object);
+				int i = valueToIndex.applyAsInt(object);
 				VarInts.write(byteBuf, i);
 			}
 		};
 	}
 
-	static <T> PacketCodec<ByteBuf, T> ofIterable(IndexedIterable<T> iterable) {
+	/**
+	 * {@return a codec for an entry of {@code iterable}}
+	 * 
+	 * @see #indexed
+	 */
+	static <T> PacketCodec<ByteBuf, T> entryOf(IndexedIterable<T> iterable) {
 		return indexed(iterable::getOrThrow, iterable::getRawIdOrThrow);
 	}
 
@@ -284,16 +456,55 @@ public interface PacketCodecs {
 		};
 	}
 
-	static <T> PacketCodec<RegistryByteBuf, T> registry(RegistryKey<? extends Registry<T>> registry) {
+	/**
+	 * {@return a codec for a {@link net.minecraft.registry.Registry}-registered value}
+	 * 
+	 * <p>This codec only works with {@link net.minecraft.network.RegistryByteBuf}, used
+	 * during the play phase. Consider using {@link #entryOf} for encoding a value of a
+	 * static registry during login or configuration phases.
+	 * 
+	 * @implNote The value is serialized as the corresponding raw ID (as {@link #VAR_INT
+	 * a var int}).
+	 * 
+	 * @see #entryOf
+	 */
+	static <T> PacketCodec<RegistryByteBuf, T> registryValue(RegistryKey<? extends Registry<T>> registry) {
 		return registry(registry, registryx -> registryx);
 	}
 
+	/**
+	 * {@return a codec for a reference {@link net.minecraft.registry.entry.RegistryEntry}}
+	 * 
+	 * <p>This codec only works with {@link net.minecraft.network.RegistryByteBuf}, used
+	 * during the play phase. Consider using {@link #entryOf} for encoding a value of a
+	 * static registry during login or configuration phases.
+	 * 
+	 * @implNote The value is serialized as the corresponding raw ID (as {@link #VAR_INT
+	 * a var int}). This does not handle direct (unregistered) entries.
+	 * 
+	 * @see #registryValue
+	 * @see #registryEntry(RegistryKey, PacketCodec)
+	 */
 	static <T> PacketCodec<RegistryByteBuf, RegistryEntry<T>> registryEntry(RegistryKey<? extends Registry<T>> registry) {
 		return registry(registry, Registry::getIndexedEntries);
 	}
 
+	/**
+	 * {@return a codec for a {@link net.minecraft.registry.entry.RegistryEntry}}
+	 * 
+	 * <p>This codec only works with {@link net.minecraft.network.RegistryByteBuf}, used
+	 * during the play phase. Consider using {@link #entryOf} for encoding a value of a
+	 * static registry during login or configuration phases.
+	 * 
+	 * @implNote If the entry is a reference entry, the value is serialized as the
+	 * corresponding raw ID (as {@link #VAR_INT a var int}). If it is a direct entry,
+	 * it is encoded using {@code directCodec}.
+	 * 
+	 * @see #registryValue
+	 * @see #registryEntry(RegistryKey)
+	 */
 	static <T> PacketCodec<RegistryByteBuf, RegistryEntry<T>> registryEntry(
-		RegistryKey<? extends Registry<T>> registry, PacketCodec<? super RegistryByteBuf, T> fallback
+		RegistryKey<? extends Registry<T>> registry, PacketCodec<? super RegistryByteBuf, T> directCodec
 	) {
 		return new PacketCodec<RegistryByteBuf, RegistryEntry<T>>() {
 			private static final int DIRECT_ENTRY_MARKER = 0;
@@ -304,7 +515,7 @@ public interface PacketCodecs {
 
 			public RegistryEntry<T> decode(RegistryByteBuf registryByteBuf) {
 				int i = VarInts.read(registryByteBuf);
-				return i == 0 ? RegistryEntry.of(fallback.decode(registryByteBuf)) : (RegistryEntry)this.getEntries(registryByteBuf).getOrThrow(i - 1);
+				return i == 0 ? RegistryEntry.of(directCodec.decode(registryByteBuf)) : (RegistryEntry)this.getEntries(registryByteBuf).getOrThrow(i - 1);
 			}
 
 			public void encode(RegistryByteBuf registryByteBuf, RegistryEntry<T> registryEntry) {
@@ -315,7 +526,7 @@ public interface PacketCodecs {
 						break;
 					case DIRECT:
 						VarInts.write(registryByteBuf, 0);
-						fallback.encode(registryByteBuf, registryEntry.value());
+						directCodec.encode(registryByteBuf, registryEntry.value());
 				}
 			}
 		};

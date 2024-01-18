@@ -140,10 +140,12 @@ public final class TrialSpawnerLogic {
 									return Optional.empty();
 								}
 
-								if (mobSpawnerEntry.getNbt().getSize() == 1 && mobSpawnerEntry.getNbt().contains("id", NbtElement.STRING_TYPE)) {
+								boolean bl = mobSpawnerEntry.getNbt().getSize() == 1 && mobSpawnerEntry.getNbt().contains("id", NbtElement.STRING_TYPE);
+								if (bl) {
 									mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.TRIAL_SPAWNER, null, null);
-									mobEntity.setPersistent();
 								}
+
+								mobEntity.setPersistent();
 							}
 
 							if (!world.spawnNewEntityAndPassengers(entity)) {

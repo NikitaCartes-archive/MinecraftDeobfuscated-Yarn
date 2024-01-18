@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record SimulationDistanceS2CPacket(int simulationDistance) implements Packet<ClientPlayPacketListener> {
@@ -21,7 +21,7 @@ public record SimulationDistanceS2CPacket(int simulationDistance) implements Pac
 	}
 
 	@Override
-	public PacketIdentifier<SimulationDistanceS2CPacket> getPacketId() {
+	public PacketType<SimulationDistanceS2CPacket> getPacketId() {
 		return PlayPackets.SET_SIMULATION_DISTANCE;
 	}
 

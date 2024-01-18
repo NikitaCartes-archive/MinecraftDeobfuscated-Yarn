@@ -170,7 +170,7 @@ public class InGameHud {
 			.addLayer(this::renderMiscOverlays)
 			.addLayer(this::renderCrosshair)
 			.addLayer(this::renderMainHud)
-			.addLayer(this::method_56136)
+			.addLayer(this::renderExperienceLevel)
 			.addLayer(this::renderStatusEffectOverlay)
 			.addLayer((context, tickDelta) -> this.bossBarHud.render(context));
 		LayeredDrawer layeredDrawer2 = new LayeredDrawer()
@@ -503,7 +503,7 @@ public class InGameHud {
 		JumpingMount jumpingMount = this.client.player.getJumpingMount();
 		if (jumpingMount != null) {
 			this.renderMountJumpBar(jumpingMount, context, i);
-		} else if (this.method_56135()) {
+		} else if (this.shouldRenderExperience()) {
 			this.renderExperienceBar(context, i);
 		}
 
@@ -613,23 +613,23 @@ public class InGameHud {
 		this.client.getProfiler().pop();
 	}
 
-	private void method_56136(DrawContext drawContext, float f) {
+	private void renderExperienceLevel(DrawContext context, float x) {
 		int i = this.client.player.experienceLevel;
-		if (this.method_56135() && i > 0) {
+		if (this.shouldRenderExperience() && i > 0) {
 			this.client.getProfiler().push("expLevel");
 			String string = i + "";
-			int j = (drawContext.getScaledWindowWidth() - this.getTextRenderer().getWidth(string)) / 2;
-			int k = drawContext.getScaledWindowHeight() - 31 - 4;
-			drawContext.drawText(this.getTextRenderer(), string, j + 1, k, 0, false);
-			drawContext.drawText(this.getTextRenderer(), string, j - 1, k, 0, false);
-			drawContext.drawText(this.getTextRenderer(), string, j, k + 1, 0, false);
-			drawContext.drawText(this.getTextRenderer(), string, j, k - 1, 0, false);
-			drawContext.drawText(this.getTextRenderer(), string, j, k, 8453920, false);
+			int j = (context.getScaledWindowWidth() - this.getTextRenderer().getWidth(string)) / 2;
+			int k = context.getScaledWindowHeight() - 31 - 4;
+			context.drawText(this.getTextRenderer(), string, j + 1, k, 0, false);
+			context.drawText(this.getTextRenderer(), string, j - 1, k, 0, false);
+			context.drawText(this.getTextRenderer(), string, j, k + 1, 0, false);
+			context.drawText(this.getTextRenderer(), string, j, k - 1, 0, false);
+			context.drawText(this.getTextRenderer(), string, j, k, 8453920, false);
 			this.client.getProfiler().pop();
 		}
 	}
 
-	private boolean method_56135() {
+	private boolean shouldRenderExperience() {
 		return this.client.player.getJumpingMount() == null && this.client.interactionManager.hasExperienceBar();
 	}
 

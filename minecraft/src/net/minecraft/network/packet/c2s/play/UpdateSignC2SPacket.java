@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 
@@ -41,7 +41,7 @@ public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<UpdateSignC2SPacket> getPacketId() {
+	public PacketType<UpdateSignC2SPacket> getPacketId() {
 		return PlayPackets.SIGN_UPDATE;
 	}
 

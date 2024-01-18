@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class BoatPaddleStateC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -34,7 +34,7 @@ public class BoatPaddleStateC2SPacket implements Packet<ServerPlayPacketListener
 	}
 
 	@Override
-	public PacketIdentifier<BoatPaddleStateC2SPacket> getPacketId() {
+	public PacketType<BoatPaddleStateC2SPacket> getPacketId() {
 		return PlayPackets.PADDLE_BOAT;
 	}
 

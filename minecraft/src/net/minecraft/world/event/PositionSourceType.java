@@ -1,8 +1,8 @@
 package net.minecraft.world.event;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 

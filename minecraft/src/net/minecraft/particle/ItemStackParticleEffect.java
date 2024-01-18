@@ -6,8 +6,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 
 public class ItemStackParticleEffect implements ParticleEffect {

@@ -22,7 +22,7 @@ import net.minecraft.util.dynamic.Codecs;
 
 public class TextCodecs {
 	public static final Codec<Text> CODEC = Codecs.createRecursive("Component", TextCodecs::createCodec);
-	public static final PacketCodec<ByteBuf, Text> PACKET_CODEC = PacketCodecs.ofCodec(CODEC);
+	public static final PacketCodec<ByteBuf, Text> PACKET_CODEC = PacketCodecs.codec(CODEC);
 	public static final Codec<Text> STRINGIFIED_CODEC = Codecs.STRINGIFIED_TEXT
 		.flatXmap(json -> CODEC.parse(JsonOps.INSTANCE, json), text -> CODEC.encodeStart(JsonOps.INSTANCE, text));
 

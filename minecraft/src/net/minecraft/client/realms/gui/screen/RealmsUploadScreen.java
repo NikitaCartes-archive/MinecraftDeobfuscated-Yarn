@@ -59,7 +59,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private final RealmsCreateWorldScreen parent;
 	private final LevelSummary selectedLevel;
 	@Nullable
-	private final WorldCreationTask field_48388;
+	private final WorldCreationTask creationTask;
 	private final long worldId;
 	private final int slotId;
 	private final UploadStatus uploadStatus;
@@ -83,34 +83,32 @@ public class RealmsUploadScreen extends RealmsScreen {
 	@Nullable
 	private Long previousTimeSnapshot;
 	private long bytesPerSecond;
-	private final ThreePartsLayoutWidget field_48389 = new ThreePartsLayoutWidget(this);
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 
-	public RealmsUploadScreen(
-		@Nullable WorldCreationTask worldCreationTask, long l, int i, RealmsCreateWorldScreen realmsCreateWorldScreen, LevelSummary levelSummary
-	) {
+	public RealmsUploadScreen(@Nullable WorldCreationTask creationTask, long worldId, int slotId, RealmsCreateWorldScreen parent, LevelSummary selectedLevel) {
 		super(NarratorManager.EMPTY);
-		this.field_48388 = worldCreationTask;
-		this.worldId = l;
-		this.slotId = i;
-		this.parent = realmsCreateWorldScreen;
-		this.selectedLevel = levelSummary;
+		this.creationTask = creationTask;
+		this.worldId = worldId;
+		this.slotId = slotId;
+		this.parent = parent;
+		this.selectedLevel = selectedLevel;
 		this.uploadStatus = new UploadStatus();
 		this.narrationRateLimiter = RateLimiter.create(0.1F);
 	}
 
 	@Override
 	public void init() {
-		this.backButton = this.field_48389.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.onBack()).build());
+		this.backButton = this.layout.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.onBack()).build());
 		this.backButton.visible = false;
-		this.cancelButton = this.field_48389.addFooter(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel()).build());
+		this.cancelButton = this.layout.addFooter(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel()).build());
 		if (!this.uploadStarted) {
 			if (this.parent.slot == -1) {
 				this.uploadStarted = true;
 				this.upload();
 			} else {
 				List<LongRunningTask> list = new ArrayList();
-				if (this.field_48388 != null) {
-					list.add(this.field_48388);
+				if (this.creationTask != null) {
+					list.add(this.creationTask);
 				}
 
 				list.add(new SwitchSlotTask(this.worldId, this.parent.slot, () -> {
@@ -126,15 +124,15 @@ public class RealmsUploadScreen extends RealmsScreen {
 			}
 		}
 
-		this.field_48389.forEachChild(element -> {
-			ClickableWidget var10000 = this.addDrawableChild(element);
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 		this.initTabNavigation();
 	}
 
 	@Override
 	protected void initTabNavigation() {
-		this.field_48389.refreshPositions();
+		this.layout.refreshPositions();
 	}
 
 	private void onBack() {
@@ -301,8 +299,8 @@ public class RealmsUploadScreen extends RealmsScreen {
 										FileUpload fileUpload = new FileUpload(
 											file, this.worldId, this.slotId, uploadInfo, this.client.getSession(), SharedConstants.getGameVersion().getName(), this.uploadStatus
 										);
-										fileUpload.upload(uploadResult -> {
-											if (uploadResult.statusCode >= 200 && uploadResult.statusCode < 300) {
+										fileUpload.upload(result -> {
+											if (result.statusCode >= 200 && result.statusCode < 300) {
 												this.uploadFinished = true;
 												this.status = Text.translatable("mco.upload.done");
 												if (this.backButton != null) {
@@ -310,10 +308,10 @@ public class RealmsUploadScreen extends RealmsScreen {
 												}
 
 												UploadTokenCache.invalidate(this.worldId);
-											} else if (uploadResult.statusCode == 400 && uploadResult.errorMessage != null) {
-												this.setStatusTexts(Text.translatable("mco.upload.failed", uploadResult.errorMessage));
+											} else if (result.statusCode == 400 && result.errorMessage != null) {
+												this.setStatusTexts(Text.translatable("mco.upload.failed", result.errorMessage));
 											} else {
-												this.setStatusTexts(Text.translatable("mco.upload.failed", uploadResult.statusCode));
+												this.setStatusTexts(Text.translatable("mco.upload.failed", result.statusCode));
 											}
 										});
 

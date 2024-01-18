@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -56,7 +56,7 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	@Override
-	public PacketIdentifier<EntityVelocityUpdateS2CPacket> getPacketId() {
+	public PacketType<EntityVelocityUpdateS2CPacket> getPacketId() {
 		return PlayPackets.SET_ENTITY_MOTION;
 	}
 

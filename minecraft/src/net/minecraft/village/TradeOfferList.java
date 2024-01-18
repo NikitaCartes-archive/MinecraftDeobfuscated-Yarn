@@ -6,13 +6,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 
 public class TradeOfferList extends ArrayList<TradeOffer> {
 	public static final PacketCodec<RegistryByteBuf, TradeOfferList> PACKET_CODEC = TradeOffer.PACKET_CODEC
-		.mapResult(PacketCodecs.collectionMapper(TradeOfferList::new));
+		.collect(PacketCodecs.toCollection(TradeOfferList::new));
 
 	public TradeOfferList() {
 	}

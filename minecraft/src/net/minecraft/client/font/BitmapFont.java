@@ -77,7 +77,7 @@ public class BitmapFont implements Font {
 					}
 
 					@Override
-					public float method_56130() {
+					public float getAscent() {
 						return (float)BitmapFontGlyph.this.ascent;
 					}
 

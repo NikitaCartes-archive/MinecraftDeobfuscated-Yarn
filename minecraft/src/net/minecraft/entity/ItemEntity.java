@@ -27,6 +27,8 @@ import net.minecraft.world.event.GameEvent;
 
 public class ItemEntity extends Entity implements Ownable {
 	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+	private static final float field_48703 = 0.1F;
+	public static final float field_48702 = 0.2125F;
 	private static final int DESPAWN_AGE = 6000;
 	private static final int CANNOT_PICK_UP_DELAY = 32767;
 	private static final int NEVER_DESPAWN_AGE = -32768;
@@ -122,10 +124,9 @@ public class ItemEntity extends Entity implements Ownable {
 			this.prevY = this.getY();
 			this.prevZ = this.getZ();
 			Vec3d vec3d = this.getVelocity();
-			float f = this.getStandingEyeHeight();
-			if (this.isTouchingWater() && this.getFluidHeight(FluidTags.WATER) > (double)f) {
+			if (this.isTouchingWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
 				this.applyWaterBuoyancy();
-			} else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > (double)f) {
+			} else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
 				this.applyLavaBuoyancy();
 			} else if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
@@ -142,12 +143,12 @@ public class ItemEntity extends Entity implements Ownable {
 
 			if (!this.isOnGround() || this.getVelocity().horizontalLengthSquared() > 1.0E-5F || (this.age + this.getId()) % 4 == 0) {
 				this.move(MovementType.SELF, this.getVelocity());
-				float g = 0.98F;
+				float f = 0.98F;
 				if (this.isOnGround()) {
-					g = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.98F;
+					f = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.98F;
 				}
 
-				this.setVelocity(this.getVelocity().multiply((double)g, 0.98, (double)g));
+				this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
 				if (this.isOnGround()) {
 					Vec3d vec3d2 = this.getVelocity();
 					if (vec3d2.y < 0.0) {

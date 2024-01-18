@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 
@@ -24,7 +24,7 @@ public record ProfilelessChatMessageS2CPacket(Text message, MessageType.Serializ
 	}
 
 	@Override
-	public PacketIdentifier<ProfilelessChatMessageS2CPacket> getPacketId() {
+	public PacketType<ProfilelessChatMessageS2CPacket> getPacketId() {
 		return PlayPackets.DISGUISED_CHAT;
 	}
 

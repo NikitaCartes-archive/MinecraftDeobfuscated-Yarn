@@ -10,7 +10,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9111;
 import net.minecraft.client.texture.NativeImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -25,23 +24,23 @@ public class TrueTypeFont implements Font {
 	@Nullable
 	private ByteBuffer buffer;
 	@Nullable
-	private FT_Face field_48383;
+	private FT_Face face;
 	final float oversample;
 	private final IntSet excludedCharacters = new IntArraySet();
 
-	public TrueTypeFont(ByteBuffer buffer, FT_Face fT_Face, float f, float oversample, float g, float shiftY, String excludedCharacters) {
+	public TrueTypeFont(ByteBuffer buffer, FT_Face face, float size, float oversample, float shiftX, float shiftY, String excludedCharacters) {
 		this.buffer = buffer;
-		this.field_48383 = fT_Face;
+		this.face = face;
 		this.oversample = oversample;
 		excludedCharacters.codePoints().forEach(this.excludedCharacters::add);
-		int i = Math.round(f * oversample);
-		FreeType.FT_Set_Pixel_Sizes(fT_Face, i, i);
-		float h = g * oversample;
-		float j = -shiftY * oversample;
+		int i = Math.round(size * oversample);
+		FreeType.FT_Set_Pixel_Sizes(face, i, i);
+		float f = shiftX * oversample;
+		float g = -shiftY * oversample;
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			FT_Vector fT_Vector = class_9111.method_56147(FT_Vector.malloc(memoryStack), h, j);
-			FreeType.FT_Set_Transform(fT_Face, null, fT_Vector);
+			FT_Vector fT_Vector = FreeTypeUtil.set(FT_Vector.malloc(memoryStack), f, g);
+			FreeType.FT_Set_Transform(face, null, fT_Vector);
 		}
 	}
 
@@ -56,9 +55,9 @@ public class TrueTypeFont implements Font {
 			if (i == 0) {
 				return null;
 			} else {
-				class_9111.method_56145(FreeType.FT_Load_Glyph(fT_Face, i, 4194312), "Loading glyph");
+				FreeTypeUtil.checkError(FreeType.FT_Load_Glyph(fT_Face, i, 4194312), "Loading glyph");
 				FT_GlyphSlot fT_GlyphSlot = (FT_GlyphSlot)Objects.requireNonNull(fT_Face.glyph(), "Glyph not initialized");
-				float f = class_9111.method_56146(fT_GlyphSlot.advance());
+				float f = FreeTypeUtil.getX(fT_GlyphSlot.advance());
 				FT_Bitmap fT_Bitmap = fT_GlyphSlot.bitmap();
 				int j = fT_GlyphSlot.bitmap_left();
 				int k = fT_GlyphSlot.bitmap_top();
@@ -70,8 +69,8 @@ public class TrueTypeFont implements Font {
 	}
 
 	FT_Face getInfo() {
-		if (this.buffer != null && this.field_48383 != null) {
-			return this.field_48383;
+		if (this.buffer != null && this.face != null) {
+			return this.face;
 		} else {
 			throw new IllegalStateException("Provider already closed");
 		}
@@ -79,9 +78,9 @@ public class TrueTypeFont implements Font {
 
 	@Override
 	public void close() {
-		if (this.field_48383 != null) {
-			class_9111.method_56145(FreeType.FT_Done_Face(this.field_48383), "Deleting face");
-			this.field_48383 = null;
+		if (this.face != null) {
+			FreeTypeUtil.checkError(FreeType.FT_Done_Face(this.face), "Deleting face");
+			this.face = null;
 		}
 
 		MemoryUtil.memFree(this.buffer);
@@ -114,13 +113,13 @@ public class TrueTypeFont implements Font {
 		private final float advance;
 		final int glyphIndex;
 
-		TtfGlyph(float f, float g, int y2, int y1, float advance, int i) {
-			this.width = y2;
-			this.height = y1;
+		TtfGlyph(float bearingX, float ascent, int width, int height, float advance, int glyphIndex) {
+			this.width = width;
+			this.height = height;
 			this.advance = advance / TrueTypeFont.this.oversample;
-			this.bearingX = f / TrueTypeFont.this.oversample;
-			this.ascent = g / TrueTypeFont.this.oversample;
-			this.glyphIndex = i;
+			this.bearingX = bearingX / TrueTypeFont.this.oversample;
+			this.ascent = ascent / TrueTypeFont.this.oversample;
+			this.glyphIndex = glyphIndex;
 		}
 
 		@Override
@@ -147,12 +146,12 @@ public class TrueTypeFont implements Font {
 				}
 
 				@Override
-				public float method_56129() {
+				public float getBearingX() {
 					return TtfGlyph.this.bearingX;
 				}
 
 				@Override
-				public float method_56130() {
+				public float getAscent() {
 					return TtfGlyph.this.ascent;
 				}
 

@@ -7,7 +7,7 @@ import net.minecraft.network.codec.ValueFirstEncoder;
 import net.minecraft.network.listener.PacketListener;
 
 public interface Packet<T extends PacketListener> {
-	PacketIdentifier<? extends Packet<T>> getPacketId();
+	PacketType<? extends Packet<T>> getPacketId();
 
 	void apply(T listener);
 

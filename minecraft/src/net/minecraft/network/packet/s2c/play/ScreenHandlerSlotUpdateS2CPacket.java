@@ -1,11 +1,11 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -41,7 +41,7 @@ public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacket
 	}
 
 	@Override
-	public PacketIdentifier<ScreenHandlerSlotUpdateS2CPacket> getPacketId() {
+	public PacketType<ScreenHandlerSlotUpdateS2CPacket> getPacketId() {
 		return PlayPackets.CONTAINER_SET_SLOT;
 	}
 

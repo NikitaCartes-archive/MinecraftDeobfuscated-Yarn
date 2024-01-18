@@ -448,7 +448,14 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.getWorld().playSound(this, this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch);
 	}
 
-	public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
+	/**
+	 * Plays {@code sound} to this player <strong>only</strong>.
+	 * 
+	 * <p>Use {@link #playSound(SoundEvent, float, float)} to play sound that can be heard by
+	 * nearby players. Unlike that method, this method should be called on only one side
+	 * (i.e. either the server or the client, alone).
+	 */
+	public void playSoundToPlayer(SoundEvent sound, SoundCategory category, float volume, float pitch) {
 	}
 
 	@Override
@@ -2147,17 +2154,38 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.getAttributeValue(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE);
 	}
 
-	public boolean canInteractWithEntity(Entity entity, double range) {
-		return entity.isRemoved() ? false : this.canInteractWithEntityIn(entity.getBoundingBox(), range);
+	/**
+	 * {@return whether the player can interact with {@code entity}}
+	 * 
+	 * <p>This returns {@code false} for {@linkplain Entity#isRemoved removed} entities.
+	 * 
+	 * @param additionalRange the player's additional interaction range added to {@linkplain
+	 * #getEntityInteractionRange the default range}
+	 */
+	public boolean canInteractWithEntity(Entity entity, double additionalRange) {
+		return entity.isRemoved() ? false : this.canInteractWithEntityIn(entity.getBoundingBox(), additionalRange);
 	}
 
-	public boolean canInteractWithEntityIn(Box box, double range) {
-		double d = this.getEntityInteractionRange() + range;
+	/**
+	 * {@return whether the player can interact with entity whose bounding box
+	 * is {@code box}}
+	 * 
+	 * @param additionalRange the player's additional interaction range added to {@linkplain
+	 * #getEntityInteractionRange the default range}
+	 */
+	public boolean canInteractWithEntityIn(Box box, double additionalRange) {
+		double d = this.getEntityInteractionRange() + additionalRange;
 		return box.squaredMagnitude(this.getEyePos()) < d * d;
 	}
 
-	public boolean canInteractWithBlockAt(BlockPos pos, double range) {
-		double d = this.getBlockInteractionRange() + range;
+	/**
+	 * {@return whether the player can interact with block at {@code pos}}
+	 * 
+	 * @param additionalRange the player's additional interaction range added to {@linkplain
+	 * #getBlockInteractionRange the default range}
+	 */
+	public boolean canInteractWithBlockAt(BlockPos pos, double additionalRange) {
+		double d = this.getBlockInteractionRange() + additionalRange;
 		return new Box(pos).squaredMagnitude(this.getEyePos()) < d * d;
 	}
 

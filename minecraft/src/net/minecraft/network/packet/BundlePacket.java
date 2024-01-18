@@ -14,5 +14,5 @@ public abstract class BundlePacket<T extends PacketListener> implements Packet<T
 	}
 
 	@Override
-	public abstract PacketIdentifier<? extends BundlePacket<T>> getPacketId();
+	public abstract PacketType<? extends BundlePacket<T>> getPacketId();
 }

@@ -397,7 +397,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		}
 
 		private static int getFadeTicks(StatusEffectInstance effect) {
-			return effect.getEffectType().value().getFadeOutTicks();
+			return effect.getEffectType().value().getFadeTicks();
 		}
 
 		public float calculate(LivingEntity entity, float tickDelta) {

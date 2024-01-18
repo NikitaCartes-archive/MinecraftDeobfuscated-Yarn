@@ -4,9 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.Optional;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -21,7 +21,7 @@ public class SoundEvent {
 	);
 	public static final Codec<RegistryEntry<SoundEvent>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.SOUND_EVENT, CODEC);
 	public static final PacketCodec<ByteBuf, SoundEvent> PACKET_CODEC = PacketCodec.tuple(
-		Identifier.PACKET_CODEC, SoundEvent::getId, PacketCodecs.FLOAT.mapResult(PacketCodecs::optional), SoundEvent::getStaticDistanceToTravel, SoundEvent::of
+		Identifier.PACKET_CODEC, SoundEvent::getId, PacketCodecs.FLOAT.collect(PacketCodecs::optional), SoundEvent::getStaticDistanceToTravel, SoundEvent::of
 	);
 	public static final PacketCodec<RegistryByteBuf, RegistryEntry<SoundEvent>> ENTRY_PACKET_CODEC = PacketCodecs.registryEntry(
 		RegistryKeys.SOUND_EVENT, PACKET_CODEC

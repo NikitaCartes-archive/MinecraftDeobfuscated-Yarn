@@ -12,8 +12,8 @@ import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimMaterials;
 import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.item.trim.ArmorTrimPatterns;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -109,7 +109,7 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 					)
 					.apply(instance, SmithingTrimRecipe::new)
 		);
-		public static final PacketCodec<RegistryByteBuf, SmithingTrimRecipe> PACKET_CODEC = PacketCodec.of(
+		public static final PacketCodec<RegistryByteBuf, SmithingTrimRecipe> PACKET_CODEC = PacketCodec.ofStatic(
 			SmithingTrimRecipe.Serializer::write, SmithingTrimRecipe.Serializer::read
 		);
 

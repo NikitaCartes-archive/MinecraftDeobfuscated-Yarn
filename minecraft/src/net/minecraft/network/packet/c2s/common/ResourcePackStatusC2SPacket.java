@@ -6,7 +6,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public record ResourcePackStatusC2SPacket(UUID id, ResourcePackStatusC2SPacket.Status status) implements Packet<ServerCommonPacketListener> {
 	public static final PacketCodec<PacketByteBuf, ResourcePackStatusC2SPacket> CODEC = Packet.createCodec(
@@ -23,7 +23,7 @@ public record ResourcePackStatusC2SPacket(UUID id, ResourcePackStatusC2SPacket.S
 	}
 
 	@Override
-	public PacketIdentifier<ResourcePackStatusC2SPacket> getPacketId() {
+	public PacketType<ResourcePackStatusC2SPacket> getPacketId() {
 		return CommonPackets.RESOURCE_PACK;
 	}
 

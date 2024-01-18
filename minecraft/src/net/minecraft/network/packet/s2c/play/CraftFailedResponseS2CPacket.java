@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
@@ -32,7 +32,7 @@ public class CraftFailedResponseS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	@Override
-	public PacketIdentifier<CraftFailedResponseS2CPacket> getPacketId() {
+	public PacketType<CraftFailedResponseS2CPacket> getPacketId() {
 		return PlayPackets.PLACE_GHOST_RECIPE;
 	}
 

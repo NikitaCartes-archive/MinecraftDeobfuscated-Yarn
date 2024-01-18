@@ -63,7 +63,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	}
 
 	@Override
-	protected void method_56131() {
+	protected void setInitialFocus() {
 		this.setInitialFocus(this.nameEdit);
 	}
 

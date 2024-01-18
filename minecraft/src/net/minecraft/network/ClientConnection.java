@@ -40,18 +40,14 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9097;
-import net.minecraft.class_9099;
-import net.minecraft.class_9103;
-import net.minecraft.class_9127;
-import net.minecraft.class_9130;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.handler.DecoderHandler;
+import net.minecraft.network.handler.EncoderHandler;
+import net.minecraft.network.handler.NetworkStateTransitions;
 import net.minecraft.network.handler.PacketBundleHandler;
 import net.minecraft.network.handler.PacketBundler;
 import net.minecraft.network.handler.PacketDeflater;
-import net.minecraft.network.handler.PacketEncoder;
 import net.minecraft.network.handler.PacketEncoderException;
 import net.minecraft.network.handler.PacketInflater;
 import net.minecraft.network.handler.PacketSizeLogger;
@@ -70,6 +66,9 @@ import net.minecraft.network.packet.c2s.handshake.ConnectionIntent;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
+import net.minecraft.network.state.HandshakeStates;
+import net.minecraft.network.state.LoginStates;
+import net.minecraft.network.state.QueryStates;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -107,12 +106,12 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	public static final Supplier<DefaultEventLoopGroup> LOCAL_CLIENT_IO_GROUP = Suppliers.memoize(
 		() -> new DefaultEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Client IO #%d").setDaemon(true).build())
 	);
-	private static final class_9127<ServerHandshakePacketListener> field_48514 = class_9097.field_48231;
+	private static final NetworkState<ServerHandshakePacketListener> C2S_HANDSHAKE_STATE = HandshakeStates.C2S;
 	/**
 	 * The side this connection is to.
 	 */
 	private final NetworkSide side;
-	private volatile boolean field_48515 = true;
+	private volatile boolean duringLogin = true;
 	private final Queue<Consumer<ClientConnection>> queuedTasks = Queues.<Consumer<ClientConnection>>newConcurrentLinkedQueue();
 	private Channel channel;
 	private SocketAddress address;
@@ -170,7 +169,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", ex);
 						if (this.getOppositeSide() == NetworkSide.CLIENTBOUND) {
-							Packet<?> packet = (Packet<?>)(this.field_48515 ? new LoginDisconnectS2CPacket(text) : new DisconnectS2CPacket(text));
+							Packet<?> packet = (Packet<?>)(this.duringLogin ? new LoginDisconnectS2CPacket(text) : new DisconnectS2CPacket(text));
 							this.send(packet, PacketCallbacks.always(() -> this.disconnect(text)));
 						} else {
 							this.disconnect(text);
@@ -213,50 +212,50 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		packet.apply((T)listener);
 	}
 
-	private void method_56332(class_9127<?> arg, PacketListener packetListener) {
-		Validate.notNull(packetListener, "packetListener");
-		NetworkSide networkSide = packetListener.getSide();
+	private void setPacketListener(NetworkState<?> state, PacketListener listener) {
+		Validate.notNull(listener, "packetListener");
+		NetworkSide networkSide = listener.getSide();
 		if (networkSide != this.side) {
 			throw new IllegalStateException("Trying to set listener for wrong side: connection is " + this.side + ", but listener is " + networkSide);
 		} else {
-			NetworkState networkState = packetListener.getState();
-			if (arg.id() != networkState) {
-				throw new IllegalStateException("Listener protocol (" + networkState + ") does not match requested one " + arg);
+			NetworkPhase networkPhase = listener.getPhase();
+			if (state.id() != networkPhase) {
+				throw new IllegalStateException("Listener protocol (" + networkPhase + ") does not match requested one " + state);
 			}
 		}
 	}
 
-	public <T extends PacketListener> void method_56330(class_9127<T> arg, T packetListener) {
-		this.method_56332(arg, packetListener);
-		if (arg.flow() != this.getSide()) {
-			throw new IllegalStateException("Invalid inbound protocol: " + arg.id());
+	public <T extends PacketListener> void transitionInbound(NetworkState<T> state, T packetListener) {
+		this.setPacketListener(state, packetListener);
+		if (state.side() != this.getSide()) {
+			throw new IllegalStateException("Invalid inbound protocol: " + state.id());
 		} else {
 			this.packetListener = packetListener;
 			this.prePlayStateListener = null;
-			class_9130.class_9132 lv = class_9130.method_56356(arg);
-			PacketBundleHandler packetBundleHandler = arg.bundlerInfo();
+			NetworkStateTransitions.DecoderTransitioner decoderTransitioner = NetworkStateTransitions.decoderTransitioner(state);
+			PacketBundleHandler packetBundleHandler = state.bundleHandler();
 			if (packetBundleHandler != null) {
 				PacketBundler packetBundler = new PacketBundler(packetBundleHandler);
-				lv = lv.andThen(channelHandlerContext -> channelHandlerContext.pipeline().addAfter("decoder", "bundler", packetBundler));
+				decoderTransitioner = decoderTransitioner.andThen(context -> context.pipeline().addAfter("decoder", "bundler", packetBundler));
 			}
 
-			this.channel.writeAndFlush(lv).syncUninterruptibly();
+			this.channel.writeAndFlush(decoderTransitioner).syncUninterruptibly();
 		}
 	}
 
-	public void method_56329(class_9127<?> arg) {
-		if (arg.flow() != this.getOppositeSide()) {
-			throw new IllegalStateException("Invalid outbound protocol: " + arg.id());
+	public void transitionOutbound(NetworkState<?> newState) {
+		if (newState.side() != this.getOppositeSide()) {
+			throw new IllegalStateException("Invalid outbound protocol: " + newState.id());
 		} else {
-			class_9130.class_9134 lv = class_9130.method_56357(arg);
-			PacketBundleHandler packetBundleHandler = arg.bundlerInfo();
+			NetworkStateTransitions.EncoderTransitioner encoderTransitioner = NetworkStateTransitions.encoderTransitioner(newState);
+			PacketBundleHandler packetBundleHandler = newState.bundleHandler();
 			if (packetBundleHandler != null) {
 				PacketUnbundler packetUnbundler = new PacketUnbundler(packetBundleHandler);
-				lv = lv.andThen(channelHandlerContext -> channelHandlerContext.pipeline().addAfter("encoder", "unbundler", packetUnbundler));
+				encoderTransitioner = encoderTransitioner.andThen(context -> context.pipeline().addAfter("encoder", "unbundler", packetUnbundler));
 			}
 
-			boolean bl = arg.id() == NetworkState.LOGIN;
-			this.channel.writeAndFlush(lv.andThen(channelHandlerContext -> this.field_48515 = bl)).syncUninterruptibly();
+			boolean bl = newState.id() == NetworkPhase.LOGIN;
+			this.channel.writeAndFlush(encoderTransitioner.andThen(context -> this.duringLogin = bl)).syncUninterruptibly();
 		}
 	}
 
@@ -264,12 +263,15 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	 * Sets the initial packet listener.
 	 * 
 	 * @throws IllegalStateException if the listener was already set
-	 * @see #setPacketListener
+	 * @see #transitionInbound
+	 * @see #transitionOutbound
 	 */
 	public void setInitialPacketListener(PacketListener packetListener) {
 		if (this.packetListener != null) {
 			throw new IllegalStateException("Listener already set");
-		} else if (this.side == NetworkSide.SERVERBOUND && packetListener.getSide() == NetworkSide.SERVERBOUND && packetListener.getState() == field_48514.id()) {
+		} else if (this.side == NetworkSide.SERVERBOUND
+			&& packetListener.getSide() == NetworkSide.SERVERBOUND
+			&& packetListener.getPhase() == C2S_HANDSHAKE_STATE.id()) {
 			this.packetListener = packetListener;
 		} else {
 			throw new IllegalStateException("Invalid initial listener");
@@ -277,30 +279,30 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	public void connect(String address, int port, ClientQueryPacketListener listener) {
-		this.connect(address, port, class_9103.field_48263, class_9103.field_48264, listener, ConnectionIntent.STATUS);
+		this.connect(address, port, QueryStates.C2S, QueryStates.S2C, listener, ConnectionIntent.STATUS);
 	}
 
 	public void connect(String address, int port, ClientLoginPacketListener listener) {
-		this.connect(address, port, class_9099.field_48247, class_9099.field_48248, listener, ConnectionIntent.LOGIN);
+		this.connect(address, port, LoginStates.C2S, LoginStates.S2C, listener, ConnectionIntent.LOGIN);
 	}
 
 	public <S extends ServerPacketListener, C extends ClientPacketListener> void connect(
-		String address, int port, class_9127<S> arg, class_9127<C> arg2, C clientPacketListener, boolean transfer
+		String address, int port, NetworkState<S> outboundState, NetworkState<C> inboundState, C prePlayStateListener, boolean transfer
 	) {
-		this.connect(address, port, arg, arg2, clientPacketListener, transfer ? ConnectionIntent.TRANSFER : ConnectionIntent.LOGIN);
+		this.connect(address, port, outboundState, inboundState, prePlayStateListener, transfer ? ConnectionIntent.TRANSFER : ConnectionIntent.LOGIN);
 	}
 
 	private <S extends ServerPacketListener, C extends ClientPacketListener> void connect(
-		String address, int port, class_9127<S> arg, class_9127<C> arg2, C prePlayStateListener, ConnectionIntent intent
+		String address, int port, NetworkState<S> outboundState, NetworkState<C> inboundState, C prePlayStateListener, ConnectionIntent intent
 	) {
-		if (arg.id() != arg2.id()) {
+		if (outboundState.id() != inboundState.id()) {
 			throw new IllegalStateException("Mismatched initial protocols");
 		} else {
 			this.prePlayStateListener = prePlayStateListener;
-			this.submit(clientConnection -> {
-				this.method_56330(arg2, prePlayStateListener);
-				clientConnection.sendImmediately(new HandshakeC2SPacket(SharedConstants.getGameVersion().getProtocolVersion(), address, port, intent), null, true);
-				this.method_56329(arg);
+			this.submit(connection -> {
+				this.transitionInbound(inboundState, prePlayStateListener);
+				connection.sendImmediately(new HandshakeC2SPacket(SharedConstants.getGameVersion().getProtocolVersion(), address, port, intent), null, true);
+				this.transitionOutbound(outboundState);
 			});
 		}
 	}
@@ -496,19 +498,19 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}).channel(class_).connect(address.getAddress(), address.getPort());
 	}
 
-	private static String method_56333(boolean bl) {
-		return bl ? "encoder" : "outbound_config";
+	private static String getOutboundHandlerName(boolean sendingSide) {
+		return sendingSide ? "encoder" : "outbound_config";
 	}
 
-	private static String method_56334(boolean bl) {
-		return bl ? "decoder" : "inbound_config";
+	private static String getInboundHandlerName(boolean receivingSide) {
+		return receivingSide ? "decoder" : "inbound_config";
 	}
 
 	public void addFlowControlHandler(ChannelPipeline pipeline) {
 		pipeline.addLast("hackfix", new ChannelOutboundHandlerAdapter() {
 			@Override
-			public void write(ChannelHandlerContext channelHandlerContext, Object object, ChannelPromise channelPromise) throws Exception {
-				super.write(channelHandlerContext, object, channelPromise);
+			public void write(ChannelHandlerContext context, Object value, ChannelPromise promise) throws Exception {
+				super.write(context, value, promise);
 			}
 		}).addLast("packet_handler", this);
 	}
@@ -519,9 +521,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		boolean bl2 = networkSide == NetworkSide.SERVERBOUND;
 		pipeline.addLast("splitter", new SplitterHandler(packetSizeLogger))
 			.addLast(new FlowControlHandler())
-			.addLast(method_56334(bl), (ChannelHandler)(bl ? new DecoderHandler<>(field_48514) : new class_9130.class_9131()))
+			.addLast(getInboundHandlerName(bl), (ChannelHandler)(bl ? new DecoderHandler<>(C2S_HANDSHAKE_STATE) : new NetworkStateTransitions.InboundConfigurer()))
 			.addLast("prepender", new SizePrepender())
-			.addLast(method_56333(bl2), (ChannelHandler)(bl2 ? new PacketEncoder<>(field_48514) : new class_9130.class_9133()));
+			.addLast(getOutboundHandlerName(bl2), (ChannelHandler)(bl2 ? new EncoderHandler<>(C2S_HANDSHAKE_STATE) : new NetworkStateTransitions.OutboundConfigurer()));
 	}
 
 	public static void addValidator(ChannelPipeline pipeline, NetworkSide side) {

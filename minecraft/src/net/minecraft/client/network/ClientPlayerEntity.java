@@ -492,8 +492,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
-		this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), event, category, volume, pitch, false);
+	public void playSoundToPlayer(SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), sound, category, volume, pitch, false);
 	}
 
 	@Override

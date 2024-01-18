@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.World;
 
@@ -36,7 +36,7 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Override
-	public abstract PacketIdentifier<? extends EntityS2CPacket> getPacketId();
+	public abstract PacketType<? extends EntityS2CPacket> getPacketId();
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntity(this);
@@ -110,7 +110,7 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 		}
 
 		@Override
-		public PacketIdentifier<EntityS2CPacket.MoveRelative> getPacketId() {
+		public PacketType<EntityS2CPacket.MoveRelative> getPacketId() {
 			return PlayPackets.MOVE_ENTITY_POS;
 		}
 	}
@@ -138,7 +138,7 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 		}
 
 		@Override
-		public PacketIdentifier<EntityS2CPacket.Rotate> getPacketId() {
+		public PacketType<EntityS2CPacket.Rotate> getPacketId() {
 			return PlayPackets.MOVE_ENTITY_ROT;
 		}
 	}
@@ -174,7 +174,7 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 		}
 
 		@Override
-		public PacketIdentifier<EntityS2CPacket.RotateAndMoveRelative> getPacketId() {
+		public PacketType<EntityS2CPacket.RotateAndMoveRelative> getPacketId() {
 			return PlayPackets.MOVE_ENTITY_POS_ROT;
 		}
 	}

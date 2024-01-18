@@ -7,7 +7,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientConfigurationPacketListener;
 import net.minecraft.network.packet.ConfigPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.util.Identifier;
 
 public record FeaturesS2CPacket(Set<Identifier> features) implements Packet<ClientConfigurationPacketListener> {
@@ -22,7 +22,7 @@ public record FeaturesS2CPacket(Set<Identifier> features) implements Packet<Clie
 	}
 
 	@Override
-	public PacketIdentifier<FeaturesS2CPacket> getPacketId() {
+	public PacketType<FeaturesS2CPacket> getPacketId() {
 		return ConfigPackets.UPDATE_ENABLED_FEATURES;
 	}
 

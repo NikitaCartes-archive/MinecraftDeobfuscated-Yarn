@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPingResultPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PingPackets;
 
 public record PingResultS2CPacket(long startTime) implements Packet<ClientPingResultPacketListener> {
@@ -19,7 +19,7 @@ public record PingResultS2CPacket(long startTime) implements Packet<ClientPingRe
 	}
 
 	@Override
-	public PacketIdentifier<PingResultS2CPacket> getPacketId() {
+	public PacketType<PingResultS2CPacket> getPacketId() {
 		return PingPackets.PONG_RESPONSE;
 	}
 

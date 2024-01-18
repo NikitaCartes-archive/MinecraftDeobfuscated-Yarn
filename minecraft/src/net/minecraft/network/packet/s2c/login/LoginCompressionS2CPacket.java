@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListener> {
 	public static final PacketCodec<PacketByteBuf, LoginCompressionS2CPacket> CODEC = Packet.createCodec(
@@ -26,7 +26,7 @@ public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListen
 	}
 
 	@Override
-	public PacketIdentifier<LoginCompressionS2CPacket> getPacketId() {
+	public PacketType<LoginCompressionS2CPacket> getPacketId() {
 		return LoginPackets.LOGIN_COMPRESSION;
 	}
 

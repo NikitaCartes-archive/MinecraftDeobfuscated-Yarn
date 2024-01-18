@@ -8,7 +8,7 @@ public record DebugGameTestClearCustomPayload() implements CustomPayload {
 	public static final PacketCodec<PacketByteBuf, DebugGameTestClearCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugGameTestClearCustomPayload::write, DebugGameTestClearCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugGameTestClearCustomPayload> KEY = CustomPayload.id("debug/game_test_clear");
+	public static final CustomPayload.Id<DebugGameTestClearCustomPayload> ID = CustomPayload.id("debug/game_test_clear");
 
 	private DebugGameTestClearCustomPayload(PacketByteBuf buf) {
 		this();
@@ -19,6 +19,6 @@ public record DebugGameTestClearCustomPayload() implements CustomPayload {
 
 	@Override
 	public CustomPayload.Id<DebugGameTestClearCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

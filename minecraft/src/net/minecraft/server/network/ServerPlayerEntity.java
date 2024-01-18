@@ -1710,10 +1710,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
+	public void playSoundToPlayer(SoundEvent sound, SoundCategory category, float volume, float pitch) {
 		this.networkHandler
 			.sendPacket(
-				new PlaySoundS2CPacket(Registries.SOUND_EVENT.getEntry(event), category, this.getX(), this.getY(), this.getZ(), volume, pitch, this.random.nextLong())
+				new PlaySoundS2CPacket(Registries.SOUND_EVENT.getEntry(sound), category, this.getX(), this.getY(), this.getZ(), volume, pitch, this.random.nextLong())
 			);
 	}
 

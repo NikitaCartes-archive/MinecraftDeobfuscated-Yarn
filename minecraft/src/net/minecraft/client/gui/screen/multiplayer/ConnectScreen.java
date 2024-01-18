@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9099;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.QuickPlay;
 import net.minecraft.client.QuickPlayLogger;
@@ -28,6 +27,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
+import net.minecraft.network.state.LoginStates;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -146,8 +146,8 @@ public class ConnectScreen extends Screen {
 						.connect(
 							inetSocketAddress.getHostName(),
 							inetSocketAddress.getPort(),
-							class_9099.field_48247,
-							class_9099.field_48248,
+							LoginStates.C2S,
+							LoginStates.S2C,
 							new ClientLoginNetworkHandler(
 								ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus, cookieStorage
 							),

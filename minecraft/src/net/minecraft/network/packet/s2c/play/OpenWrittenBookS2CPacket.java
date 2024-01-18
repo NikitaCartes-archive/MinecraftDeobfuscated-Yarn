@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Hand;
 
@@ -27,7 +27,7 @@ public class OpenWrittenBookS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Override
-	public PacketIdentifier<OpenWrittenBookS2CPacket> getPacketId() {
+	public PacketType<OpenWrittenBookS2CPacket> getPacketId() {
 		return PlayPackets.OPEN_BOOK;
 	}
 

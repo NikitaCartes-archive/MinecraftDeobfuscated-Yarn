@@ -14,44 +14,40 @@ import net.minecraft.entity.projectile.WindChargeEntity;
 
 @Environment(EnvType.CLIENT)
 public class WindChargeEntityModel extends SinglePartEntityModel<WindChargeEntity> {
+	private static final int field_48704 = 16;
 	private final ModelPart bone;
+	private final ModelPart windCharge;
+	private final ModelPart wind;
 
 	public WindChargeEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityTranslucent);
 		this.bone = root.getChild(EntityModelPartNames.BONE);
+		this.wind = this.bone.getChild("wind");
+		this.windCharge = this.bone.getChild("wind_charge");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BONE, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData modelPartData3 = modelPartData2.addChild("projectile", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData modelPartData4 = modelPartData3.addChild(
+		modelPartData2.addChild(
 			"wind",
 			ModelPartBuilder.create()
-				.uv(20, 112)
-				.cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F))
-				.uv(0, 8)
-				.cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F)),
-			ModelTransform.pivot(0.0F, 0.0F, 0.0F)
+				.uv(15, 20)
+				.cuboid(-4.0F, -1.0F, -4.0F, 8.0F, 2.0F, 8.0F, new Dilation(0.0F))
+				.uv(0, 9)
+				.cuboid(-3.0F, -2.0F, -3.0F, 6.0F, 4.0F, 6.0F, new Dilation(0.0F)),
+			ModelTransform.of(0.0F, 0.0F, 0.0F, 0.0F, -0.7854F, 0.0F)
 		);
-		modelPartData4.addChild(
-			"cube_r1",
-			ModelPartBuilder.create().uv(32, 24).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(-0.6F)),
-			ModelTransform.of(0.0F, 0.0F, 0.0F, -1.5708F, 0.0F, 1.5708F)
-		);
-		modelPartData4.addChild(
-			"cube_r2",
-			ModelPartBuilder.create().uv(16, 40).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(-0.3F)),
-			ModelTransform.of(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.5708F)
-		);
-		modelPartData3.addChild(
+		modelPartData2.addChild(
 			"wind_charge", ModelPartBuilder.create().uv(0, 0).cuboid(-2.0F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F)
 		);
-		return TexturedModelData.of(modelData, 64, 64);
+		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	public void setAngles(WindChargeEntity windChargeEntity, float f, float g, float h, float i, float j) {
+		this.windCharge.yaw = -h * 16.0F * (float) (Math.PI / 180.0);
+		this.wind.yaw = h * 16.0F * (float) (Math.PI / 180.0);
 	}
 
 	@Override

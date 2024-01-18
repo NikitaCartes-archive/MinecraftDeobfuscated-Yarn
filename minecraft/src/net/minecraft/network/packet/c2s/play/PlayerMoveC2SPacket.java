@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -29,7 +29,7 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 	}
 
 	@Override
-	public abstract PacketIdentifier<? extends PlayerMoveC2SPacket> getPacketId();
+	public abstract PacketType<? extends PlayerMoveC2SPacket> getPacketId();
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerMove(this);
@@ -96,7 +96,7 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 		}
 
 		@Override
-		public PacketIdentifier<PlayerMoveC2SPacket.Full> getPacketId() {
+		public PacketType<PlayerMoveC2SPacket.Full> getPacketId() {
 			return PlayPackets.MOVE_PLAYER_POS_ROT;
 		}
 	}
@@ -124,7 +124,7 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 		}
 
 		@Override
-		public PacketIdentifier<PlayerMoveC2SPacket.LookAndOnGround> getPacketId() {
+		public PacketType<PlayerMoveC2SPacket.LookAndOnGround> getPacketId() {
 			return PlayPackets.MOVE_PLAYER_ROT;
 		}
 	}
@@ -148,7 +148,7 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 		}
 
 		@Override
-		public PacketIdentifier<PlayerMoveC2SPacket.OnGroundOnly> getPacketId() {
+		public PacketType<PlayerMoveC2SPacket.OnGroundOnly> getPacketId() {
 			return PlayPackets.MOVE_PLAYER_STATUS_ONLY;
 		}
 	}
@@ -178,7 +178,7 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 		}
 
 		@Override
-		public PacketIdentifier<PlayerMoveC2SPacket.PositionAndOnGround> getPacketId() {
+		public PacketType<PlayerMoveC2SPacket.PositionAndOnGround> getPacketId() {
 			return PlayPackets.MOVE_PLAYER_POS;
 		}
 	}

@@ -571,11 +571,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public float getScale() {
 		AttributeContainer attributeContainer = this.getAttributes();
-		return attributeContainer == null ? 1.0F : this.method_56077((float)attributeContainer.getValue(EntityAttributes.GENERIC_SCALE));
+		return attributeContainer == null ? 1.0F : this.clampScale((float)attributeContainer.getValue(EntityAttributes.GENERIC_SCALE));
 	}
 
-	protected float method_56077(float f) {
-		return f;
+	protected float clampScale(float scale) {
+		return scale;
 	}
 
 	protected boolean shouldSwimInFluids() {

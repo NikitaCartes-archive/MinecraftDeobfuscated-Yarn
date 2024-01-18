@@ -7,7 +7,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientConfigurationPacketListener;
 import net.minecraft.network.packet.ConfigPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryOps;
@@ -28,7 +28,7 @@ public record DynamicRegistriesS2CPacket(DynamicRegistryManager.Immutable regist
 	}
 
 	@Override
-	public PacketIdentifier<DynamicRegistriesS2CPacket> getPacketId() {
+	public PacketType<DynamicRegistriesS2CPacket> getPacketId() {
 		return ConfigPackets.REGISTRY_DATA;
 	}
 

@@ -738,7 +738,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	}
 
 	/**
-	 * @see @link AbstractBlockState#getRaycastShape
+	 * @see AbstractBlockState#getRaycastShape
 	 */
 	protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.empty();
@@ -856,8 +856,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 	/**
 	 * Called server-side when a block gets ticked randomly. This can be overridden to implement
-	 * various logics, most commonly plant growth. Default implementation calls
-	 * {@link #scheduledTick}. To control the rate of the action, use {@code random}.
+	 * various logics, most commonly plant growth. Default implementation does
+	 * nothing. To control the rate of the action, use {@code random}.
 	 * 
 	 * <p>Random tick speed is controlled by the game rule {@link
 	 * net.minecraft.world.GameRules#RANDOM_TICK_SPEED randomTickSpeed} and can be disabled.
@@ -886,9 +886,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	/**
 	 * Called server-side when a block receives a scheduled tick. This can be used like a timer.
 	 * Scheduled ticks are added using {@link
-	 * WorldAccess#scheduleBlockTick(BlockPos, Block, int)}. Additionally, {@link
-	 * #randomTick} by default calls this method; override {@link #randomTick} to disable this
-	 * behavior.
+	 * WorldAccess#scheduleBlockTick(BlockPos, Block, int)}.
 	 * 
 	 * <p>Scheduled ticks are often used inside {@link #getStateForNeighborUpdate}.
 	 * 

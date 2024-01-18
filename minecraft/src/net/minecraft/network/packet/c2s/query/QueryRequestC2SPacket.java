@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerQueryPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.StatusPackets;
 
 public class QueryRequestC2SPacket implements Packet<ServerQueryPacketListener> {
@@ -15,7 +15,7 @@ public class QueryRequestC2SPacket implements Packet<ServerQueryPacketListener> 
 	}
 
 	@Override
-	public PacketIdentifier<QueryRequestC2SPacket> getPacketId() {
+	public PacketType<QueryRequestC2SPacket> getPacketId() {
 		return StatusPackets.STATUS_REQUEST;
 	}
 

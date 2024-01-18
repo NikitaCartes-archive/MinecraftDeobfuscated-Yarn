@@ -9,7 +9,7 @@ public record DebugWorldgenAttemptCustomPayload(BlockPos pos, float scale, float
 	public static final PacketCodec<PacketByteBuf, DebugWorldgenAttemptCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugWorldgenAttemptCustomPayload::write, DebugWorldgenAttemptCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugWorldgenAttemptCustomPayload> KEY = CustomPayload.id("debug/worldgen_attempt");
+	public static final CustomPayload.Id<DebugWorldgenAttemptCustomPayload> ID = CustomPayload.id("debug/worldgen_attempt");
 
 	private DebugWorldgenAttemptCustomPayload(PacketByteBuf buf) {
 		this(buf.readBlockPos(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat());
@@ -26,6 +26,6 @@ public record DebugWorldgenAttemptCustomPayload(BlockPos pos, float scale, float
 
 	@Override
 	public CustomPayload.Id<DebugWorldgenAttemptCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

@@ -4,12 +4,12 @@ import java.util.function.Function;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
@@ -18,9 +18,9 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	public static final PacketCodec<RegistryByteBuf, BlockEntityUpdateS2CPacket> CODEC = PacketCodec.tuple(
 		BlockPos.PACKET_CODEC,
 		BlockEntityUpdateS2CPacket::getPos,
-		PacketCodecs.registry(RegistryKeys.BLOCK_ENTITY_TYPE),
+		PacketCodecs.registryValue(RegistryKeys.BLOCK_ENTITY_TYPE),
 		BlockEntityUpdateS2CPacket::getBlockEntityType,
-		PacketCodecs.NBT_COMPUND,
+		PacketCodecs.NBT_COMPOUND,
 		BlockEntityUpdateS2CPacket::getNbt,
 		BlockEntityUpdateS2CPacket::new
 	);
@@ -43,7 +43,7 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	@Override
-	public PacketIdentifier<BlockEntityUpdateS2CPacket> getPacketId() {
+	public PacketType<BlockEntityUpdateS2CPacket> getPacketId() {
 		return PlayPackets.BLOCK_ENTITY_DATA;
 	}
 

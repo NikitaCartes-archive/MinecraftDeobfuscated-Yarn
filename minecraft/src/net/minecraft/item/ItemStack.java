@@ -48,9 +48,9 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -202,7 +202,7 @@ public final class ItemStack {
 				.apply(instance, ItemStack::new)
 	);
 	public static final PacketCodec<RegistryByteBuf, ItemStack> PACKET_CODEC = new PacketCodec<RegistryByteBuf, ItemStack>() {
-		private static final PacketCodec<RegistryByteBuf, Item> ITEM_PACKET_CODEC = PacketCodecs.registry(RegistryKeys.ITEM);
+		private static final PacketCodec<RegistryByteBuf, Item> ITEM_PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.ITEM);
 
 		public ItemStack decode(RegistryByteBuf registryByteBuf) {
 			if (!registryByteBuf.readBoolean()) {
@@ -233,9 +233,7 @@ public final class ItemStack {
 			}
 		}
 	};
-	public static final PacketCodec<RegistryByteBuf, List<ItemStack>> LIST_PACKET_CODEC = PACKET_CODEC.mapResult(
-		PacketCodecs.collectionMapper(DefaultedList::ofSize)
-	);
+	public static final PacketCodec<RegistryByteBuf, List<ItemStack>> LIST_PACKET_CODEC = PACKET_CODEC.collect(PacketCodecs.toCollection(DefaultedList::ofSize));
 	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * The empty item stack that holds no item.
@@ -548,11 +546,22 @@ public final class ItemStack {
 	 * @see Item#getMaxDamage
 	 * @see #isDamaged
 	 * @see #getDamage
+	 * @see #isUnbreakable
 	 */
 	public boolean isDamageable() {
 		return !this.isEmpty() && this.getItem().getMaxDamage() > 0 ? !this.isUnbreakable() : false;
 	}
 
+	/**
+	 * {@return whether the item stack can never be broken}
+	 * 
+	 * <p>Item stacks with {@value #UNBREAKABLE_KEY} NBT set to {@code 1b} cannot be damaged.
+	 * 
+	 * @see Item#getMaxDamage
+	 * @see #isDamaged
+	 * @see #getDamage
+	 * @see #isDamageable
+	 */
 	public boolean isUnbreakable() {
 		NbtCompound nbtCompound = this.getNbt();
 		return nbtCompound != null && nbtCompound.getBoolean("Unbreakable");
@@ -587,11 +596,11 @@ public final class ItemStack {
 	 * Sets the stack's damage to {@code damage}.
 	 * 
 	 * <p>This does not break the item if the damage reaches {@linkplain Item#getMaxDamage
-	 * the maximum}, unlike {@link #damage(int, LivingEntity, Consumer)}.
+	 * the maximum}, unlike {@link #damage(int, LivingEntity, EquipmentSlot)}.
 	 * 
 	 * @see #getDamage
-	 * @see #damage(int, Random, ServerPlayerEntity)
-	 * @see #damage(int, LivingEntity, Consumer)
+	 * @see #damage(int, Random, ServerPlayerEntity, Runnable)
+	 * @see #damage(int, LivingEntity, EquipmentSlot)
 	 */
 	public void setDamage(int damage) {
 		this.getOrCreateNbt().putInt("Damage", Math.max(0, damage));
@@ -602,22 +611,22 @@ public final class ItemStack {
 	}
 
 	/**
-	 * Damages this item stack. This method should be used when an entity, including a player,
-	 * damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
+	 * Damages this item stack. This method should be used when a non-entity, such as a
+	 * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
 	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
-	 * unbreaking enchantment} is applied to {@code amount} before damaging. Additionally,
-	 * if {@code entity} is a player in creative mode, the stack will not be damaged.
+	 * unbreaking enchantment} is applied to {@code amount} before damaging.
 	 * 
-	 * <p>If {@code entity} is a player, this triggers {@link
+	 * <p>If {@code player} is not {@code null}, this triggers {@link
 	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
 	 * 
-	 * <p>If the stack's damage is equal to or above {@linkplain Item#getMaxDamage the maximum
-	 * damage} (i.e. the item is "broken"), this will call {@code breakCallback}, decrement the
-	 * stack, and increment {@link net.minecraft.stat.Stats#BROKEN} if the stack is held
-	 * by a player. The callback should call {@link LivingEntity#sendEquipmentBreakStatus}
-	 * or {@link LivingEntity#sendToolBreakStatus}.
+	 * <p>When the item "breaks", that is, the stack's damage is equal to or above
+	 * {@linkplain Item#getMaxDamage the maximum damage}, {@code breakCallback} is run.
+	 * Callers should decrement the stack size inside the callback.
+	 * 
+	 * @param player the player that damaged the stack, or {@code null} if no player is involved
+	 * @param breakCallback a callback run when the item "breaks"
 	 */
-	public void damage(int amount, Random random, @Nullable ServerPlayerEntity entity, Runnable breakCallback) {
+	public void damage(int amount, Random random, @Nullable ServerPlayerEntity player, Runnable breakCallback) {
 		if (this.isDamageable()) {
 			if (amount > 0) {
 				int i = EnchantmentHelper.getLevel(Enchantments.UNBREAKING, this);
@@ -635,8 +644,8 @@ public final class ItemStack {
 				}
 			}
 
-			if (entity != null && amount != 0) {
-				Criteria.ITEM_DURABILITY_CHANGED.trigger(entity, this, this.getDamage() + amount);
+			if (player != null && amount != 0) {
+				Criteria.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
 			}
 
 			int i = this.getDamage() + amount;
@@ -648,19 +657,22 @@ public final class ItemStack {
 	}
 
 	/**
-	 * Damages this item stack. This method should be used when a non-entity, such as a
-	 * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
+	 * Damages this item stack. This method should be used when an entity, including a player,
+	 * damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
 	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
-	 * unbreaking enchantment} is applied to {@code amount} before damaging.
+	 * unbreaking enchantment} is applied to {@code amount} before damaging. Additionally,
+	 * if {@code entity} is a player in creative mode, the stack will not be damaged.
 	 * 
-	 * <p>If {@code player} is not {@code null}, this triggers {@link
+	 * <p>If {@code entity} is a player, this triggers {@link
 	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
 	 * 
-	 * <p>This method does not decrement the item count when the item "breaks". Callers should
-	 * check the returned value and decrement themselves.
+	 * <p>If the stack's damage is equal to or above {@linkplain Item#getMaxDamage the maximum
+	 * damage} (i.e. the item is "broken"), this will {@linkplain
+	 * LivingEntity#sendEquipmentBreakStatus send the equipment break status}, decrement the
+	 * stack, and increment {@link net.minecraft.stat.Stats#BROKEN} if the stack is held
+	 * by a player.
 	 * 
-	 * @return whether the stack's damage is equal to or above {@linkplain Item#getMaxDamage
-	 * the maximum damage} (i.e. whether the item is "broken")
+	 * @param slot the slot in which the stack is held
 	 */
 	public void damage(int amount, LivingEntity entity, EquipmentSlot slot) {
 		if (!entity.getWorld().isClient && (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).getAbilities().creativeMode)) {

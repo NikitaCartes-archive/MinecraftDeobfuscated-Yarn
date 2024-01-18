@@ -9,7 +9,7 @@ public record DebugHiveCustomPayload(DebugHiveCustomPayload.HiveInfo hiveInfo) i
 	public static final PacketCodec<PacketByteBuf, DebugHiveCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugHiveCustomPayload::write, DebugHiveCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugHiveCustomPayload> KEY = CustomPayload.id("debug/hive");
+	public static final CustomPayload.Id<DebugHiveCustomPayload> ID = CustomPayload.id("debug/hive");
 
 	private DebugHiveCustomPayload(PacketByteBuf buf) {
 		this(new DebugHiveCustomPayload.HiveInfo(buf));
@@ -21,7 +21,7 @@ public record DebugHiveCustomPayload(DebugHiveCustomPayload.HiveInfo hiveInfo) i
 
 	@Override
 	public CustomPayload.Id<DebugHiveCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 
 	public static record HiveInfo(BlockPos pos, String hiveType, int occupantCount, int honeyLevel, boolean sedated) {

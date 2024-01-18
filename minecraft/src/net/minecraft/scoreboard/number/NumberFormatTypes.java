@@ -3,9 +3,9 @@ package net.minecraft.scoreboard.number;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Optional;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -15,9 +15,9 @@ public class NumberFormatTypes {
 		.getCodec()
 		.dispatchMap(NumberFormat::getType, formatType -> formatType.getCodec().codec());
 	public static final Codec<NumberFormat> CODEC = REGISTRY_CODEC.codec();
-	public static final PacketCodec<RegistryByteBuf, NumberFormat> PACKET_CODEC = PacketCodecs.registry(RegistryKeys.NUMBER_FORMAT_TYPE)
+	public static final PacketCodec<RegistryByteBuf, NumberFormat> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.NUMBER_FORMAT_TYPE)
 		.dispatch(NumberFormat::getType, NumberFormatType::getPacketCodec);
-	public static final PacketCodec<RegistryByteBuf, Optional<NumberFormat>> OPTIONAL_PACKET_CODEC = PACKET_CODEC.mapResult(PacketCodecs::optional);
+	public static final PacketCodec<RegistryByteBuf, Optional<NumberFormat>> OPTIONAL_PACKET_CODEC = PACKET_CODEC.collect(PacketCodecs::optional);
 
 	public static NumberFormatType<?> registerAndGetDefault(Registry<NumberFormatType<?>> registry) {
 		Registry.register(registry, "blank", BlankNumberFormat.TYPE);

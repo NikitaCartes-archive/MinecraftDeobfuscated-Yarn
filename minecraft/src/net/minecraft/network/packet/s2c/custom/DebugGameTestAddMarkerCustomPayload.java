@@ -9,7 +9,7 @@ public record DebugGameTestAddMarkerCustomPayload(BlockPos pos, int color, Strin
 	public static final PacketCodec<PacketByteBuf, DebugGameTestAddMarkerCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugGameTestAddMarkerCustomPayload::write, DebugGameTestAddMarkerCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugGameTestAddMarkerCustomPayload> KEY = CustomPayload.id("debug/game_test_add_marker");
+	public static final CustomPayload.Id<DebugGameTestAddMarkerCustomPayload> ID = CustomPayload.id("debug/game_test_add_marker");
 
 	private DebugGameTestAddMarkerCustomPayload(PacketByteBuf buf) {
 		this(buf.readBlockPos(), buf.readInt(), buf.readString(), buf.readInt());
@@ -24,6 +24,6 @@ public record DebugGameTestAddMarkerCustomPayload(BlockPos pos, int color, Strin
 
 	@Override
 	public CustomPayload.Id<DebugGameTestAddMarkerCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

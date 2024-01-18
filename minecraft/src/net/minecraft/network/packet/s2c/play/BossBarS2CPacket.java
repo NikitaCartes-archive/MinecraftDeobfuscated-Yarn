@@ -7,7 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 
@@ -93,7 +93,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<BossBarS2CPacket> getPacketId() {
+	public PacketType<BossBarS2CPacket> getPacketId() {
 		return PlayPackets.BOSS_EVENT;
 	}
 

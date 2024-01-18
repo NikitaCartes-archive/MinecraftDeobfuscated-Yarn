@@ -176,7 +176,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final ServerChunkManager chunkManager;
 	private final MinecraftServer server;
 	private final ServerWorldProperties worldProperties;
-	private int field_48271;
+	private int spawnChunkRadius;
 	final EntityList entityList = new EntityList();
 	private final ServerEntityManager<Entity> entityManager;
 	private final GameEventDispatchManager gameEventDispatchManager;
@@ -1459,8 +1459,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos, angle));
 		}
 
-		if (this.field_48271 > 1) {
-			this.getChunkManager().removeTicket(ChunkTicketType.START, new ChunkPos(blockPos), this.field_48271, Unit.INSTANCE);
+		if (this.spawnChunkRadius > 1) {
+			this.getChunkManager().removeTicket(ChunkTicketType.START, new ChunkPos(blockPos), this.spawnChunkRadius, Unit.INSTANCE);
 		}
 
 		int i = this.getGameRules().getInt(GameRules.SPAWN_CHUNK_RADIUS) + 1;
@@ -1468,7 +1468,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), i, Unit.INSTANCE);
 		}
 
-		this.field_48271 = i;
+		this.spawnChunkRadius = i;
 	}
 
 	/**

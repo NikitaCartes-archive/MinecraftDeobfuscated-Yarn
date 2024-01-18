@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import net.minecraft.class_9157;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketCallbacks;
@@ -32,6 +31,7 @@ import net.minecraft.network.packet.s2c.login.LoginCompressionS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
+import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.text.Text;
@@ -72,13 +72,13 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	@Nullable
 	private GameProfile profile;
 	private final String serverId = "";
-	private final boolean field_48275;
+	private final boolean transferred;
 
-	public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection, boolean bl) {
+	public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection, boolean transferred) {
 		this.server = server;
 		this.connection = connection;
 		this.nonce = Ints.toByteArray(Random.create().nextInt());
-		this.field_48275 = bl;
+		this.transferred = transferred;
 	}
 
 	@Override
@@ -245,10 +245,10 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	@Override
 	public void onEnterConfiguration(EnterConfigurationC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.PROTOCOL_SWITCHING, "Unexpected login acknowledgement packet");
-		this.connection.method_56329(class_9157.field_48699);
-		ConnectedClientData connectedClientData = ConnectedClientData.createDefault((GameProfile)Objects.requireNonNull(this.profile), this.field_48275);
+		this.connection.transitionOutbound(ConfigurationStates.S2C);
+		ConnectedClientData connectedClientData = ConnectedClientData.createDefault((GameProfile)Objects.requireNonNull(this.profile), this.transferred);
 		ServerConfigurationNetworkHandler serverConfigurationNetworkHandler = new ServerConfigurationNetworkHandler(this.server, this.connection, connectedClientData);
-		this.connection.method_56330(class_9157.field_48698, serverConfigurationNetworkHandler);
+		this.connection.transitionInbound(ConfigurationStates.C2S, serverConfigurationNetworkHandler);
 		serverConfigurationNetworkHandler.sendConfigurations();
 		this.state = ServerLoginNetworkHandler.State.ACCEPTED;
 	}

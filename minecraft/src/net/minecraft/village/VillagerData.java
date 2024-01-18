@@ -2,9 +2,9 @@ package net.minecraft.village;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 
@@ -21,9 +21,9 @@ public class VillagerData {
 				.apply(instance, VillagerData::new)
 	);
 	public static final PacketCodec<RegistryByteBuf, VillagerData> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.registry(RegistryKeys.VILLAGER_TYPE),
+		PacketCodecs.registryValue(RegistryKeys.VILLAGER_TYPE),
 		data -> data.type,
-		PacketCodecs.registry(RegistryKeys.VILLAGER_PROFESSION),
+		PacketCodecs.registryValue(RegistryKeys.VILLAGER_PROFESSION),
 		data -> data.profession,
 		PacketCodecs.VAR_INT,
 		data -> data.level,

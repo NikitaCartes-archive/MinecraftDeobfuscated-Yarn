@@ -1,7 +1,7 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.NetworkSide;
-import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 import net.minecraft.util.crash.CrashCallable;
@@ -18,7 +18,7 @@ import net.minecraft.util.crash.CrashReportSection;
 public interface PacketListener {
 	NetworkSide getSide();
 
-	NetworkState getState();
+	NetworkPhase getPhase();
 
 	/**
 	 * Called when the connection this listener listens to has disconnected.
@@ -53,7 +53,7 @@ public interface PacketListener {
 
 	default void fillCrashReport(CrashReport report) {
 		CrashReportSection crashReportSection = report.addElement("Connection");
-		crashReportSection.add("Protocol", (CrashCallable<String>)(() -> this.getState().getId()));
+		crashReportSection.add("Protocol", (CrashCallable<String>)(() -> this.getPhase().getId()));
 		crashReportSection.add("Flow", (CrashCallable<String>)(() -> this.getSide().toString()));
 		this.addCustomCrashReportInfo(crashReportSection);
 	}

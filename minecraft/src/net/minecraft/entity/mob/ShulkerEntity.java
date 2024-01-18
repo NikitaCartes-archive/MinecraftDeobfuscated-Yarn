@@ -541,8 +541,8 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	@Override
-	protected float method_56077(float f) {
-		return Math.min(f, 3.0F);
+	protected float clampScale(float scale) {
+		return Math.min(scale, 3.0F);
 	}
 
 	public void setVariant(Optional<DyeColor> optional) {

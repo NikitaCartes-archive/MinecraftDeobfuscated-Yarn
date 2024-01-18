@@ -773,14 +773,14 @@ public class GameRenderer implements AutoCloseable {
 		this.client.worldRenderer.onResized(width, height);
 	}
 
-	public void updateTargetedEntity(float tickDelta) {
+	public void updateCrosshairTarget(float tickDelta) {
 		Entity entity = this.client.getCameraEntity();
 		if (entity != null) {
 			if (this.client.world != null && this.client.player != null) {
 				this.client.getProfiler().push("pick");
 				double d = this.client.player.getBlockInteractionRange();
 				double e = this.client.player.getEntityInteractionRange();
-				HitResult hitResult = this.method_56153(entity, d, e, tickDelta);
+				HitResult hitResult = this.findCrosshairTarget(entity, d, e, tickDelta);
 				this.client.crosshairTarget = hitResult;
 				this.client.targetedEntity = hitResult instanceof EntityHitResult entityHitResult ? entityHitResult.getEntity() : null;
 				this.client.getProfiler().pop();
@@ -788,33 +788,33 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	private HitResult method_56153(Entity entity, double d, double e, float f) {
-		double g = Math.max(d, e);
-		double h = MathHelper.square(g);
-		Vec3d vec3d = entity.getCameraPosVec(f);
-		HitResult hitResult = entity.raycast(g, f, false);
-		double i = hitResult.getPos().squaredDistanceTo(vec3d);
+	private HitResult findCrosshairTarget(Entity camera, double blockInteractionRange, double entityInteractionRange, float tickDelta) {
+		double d = Math.max(blockInteractionRange, entityInteractionRange);
+		double e = MathHelper.square(d);
+		Vec3d vec3d = camera.getCameraPosVec(tickDelta);
+		HitResult hitResult = camera.raycast(d, tickDelta, false);
+		double f = hitResult.getPos().squaredDistanceTo(vec3d);
 		if (hitResult.getType() != HitResult.Type.MISS) {
-			h = i;
-			g = Math.sqrt(i);
+			e = f;
+			d = Math.sqrt(f);
 		}
 
-		Vec3d vec3d2 = entity.getRotationVec(f);
-		Vec3d vec3d3 = vec3d.add(vec3d2.x * g, vec3d2.y * g, vec3d2.z * g);
-		float j = 1.0F;
-		Box box = entity.getBoundingBox().stretch(vec3d2.multiply(g)).expand(1.0, 1.0, 1.0);
-		EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.canHit(), h);
-		return entityHitResult != null && entityHitResult.getPos().squaredDistanceTo(vec3d) < i
-			? method_56154(entityHitResult, vec3d, e)
-			: method_56154(hitResult, vec3d, d);
+		Vec3d vec3d2 = camera.getRotationVec(tickDelta);
+		Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
+		float g = 1.0F;
+		Box box = camera.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
+		EntityHitResult entityHitResult = ProjectileUtil.raycast(camera, vec3d, vec3d3, box, entity -> !entity.isSpectator() && entity.canHit(), e);
+		return entityHitResult != null && entityHitResult.getPos().squaredDistanceTo(vec3d) < f
+			? ensureTargetInRange(entityHitResult, vec3d, entityInteractionRange)
+			: ensureTargetInRange(hitResult, vec3d, blockInteractionRange);
 	}
 
-	private static HitResult method_56154(HitResult hitResult, Vec3d vec3d, double d) {
-		Vec3d vec3d2 = hitResult.getPos();
-		if (!vec3d2.isInRange(vec3d, d)) {
-			Vec3d vec3d3 = hitResult.getPos();
-			Direction direction = Direction.getFacing(vec3d3.x - vec3d.x, vec3d3.y - vec3d.y, vec3d3.z - vec3d.z);
-			return BlockHitResult.createMissed(vec3d3, direction, BlockPos.ofFloored(vec3d3));
+	private static HitResult ensureTargetInRange(HitResult hitResult, Vec3d cameraPos, double interactionRange) {
+		Vec3d vec3d = hitResult.getPos();
+		if (!vec3d.isInRange(cameraPos, interactionRange)) {
+			Vec3d vec3d2 = hitResult.getPos();
+			Direction direction = Direction.getFacing(vec3d2.x - cameraPos.x, vec3d2.y - cameraPos.y, vec3d2.z - cameraPos.z);
+			return BlockHitResult.createMissed(vec3d2, direction, BlockPos.ofFloored(vec3d2));
 		} else {
 			return hitResult;
 		}
@@ -1189,7 +1189,7 @@ public class GameRenderer implements AutoCloseable {
 			this.client.setCameraEntity(this.client.player);
 		}
 
-		this.updateTargetedEntity(tickDelta);
+		this.updateCrosshairTarget(tickDelta);
 		this.client.getProfiler().push("center");
 		boolean bl = this.shouldRenderBlockOutline();
 		this.client.getProfiler().swap("camera");

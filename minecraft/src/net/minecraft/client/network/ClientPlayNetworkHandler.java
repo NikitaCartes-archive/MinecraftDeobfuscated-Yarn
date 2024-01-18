@@ -23,7 +23,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9157;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -260,6 +259,7 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPac
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
+import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -342,7 +342,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private final PingMeasurer pingMeasurer;
 	@Nullable
 	private WorldLoadingState worldLoadingState;
-	private boolean field_48403;
+	private boolean secureChatEnforced;
 	private boolean displayedUnsecureChatWarning = false;
 	private volatile boolean worldCleared;
 	private final Scoreboard scoreboard = new Scoreboard();
@@ -438,7 +438,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 		this.worldSession.setGameMode(commonPlayerSpawnInfo.gameMode(), packet.hardcore());
 		this.client.getQuickPlayLogger().save(this.client);
-		this.field_48403 = packet.enforcesSecureChat();
+		this.secureChatEnforced = packet.enforcesSecureChat();
 		if (this.serverInfo != null && !this.displayedUnsecureChatWarning && !this.isSecureChatEnforced()) {
 			SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, UNSECURE_SERVER_TOAST_TITLE, UNSECURE_SERVER_TOAST_TEXT);
 			this.client.getToastManager().add(systemToast);
@@ -781,8 +781,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.enterReconfiguration(new ReconfiguringScreen(RECONFIGURING_TEXT, this.connection));
 		this.connection
-			.method_56330(
-				class_9157.field_48699,
+			.transitionInbound(
+				ConfigurationStates.S2C,
 				new ClientConfigurationNetworkHandler(
 					this.client,
 					this.connection,
@@ -799,7 +799,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				)
 			);
 		this.sendPacket(AcknowledgeReconfigurationC2SPacket.INSTANCE);
-		this.connection.method_56329(class_9157.field_48698);
+		this.connection.transitionOutbound(ConfigurationStates.C2S);
 	}
 
 	@Override
@@ -1797,7 +1797,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	private boolean isSecureChatEnforced() {
-		return this.client.providesProfileKeys() && this.field_48403;
+		return this.client.providesProfileKeys() && this.secureChatEnforced;
 	}
 
 	@Override

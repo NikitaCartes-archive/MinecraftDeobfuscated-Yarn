@@ -12,9 +12,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -120,7 +120,7 @@ public class ChunkData {
 		public static final PacketCodec<RegistryByteBuf, ChunkData.BlockEntityData> PACKET_CODEC = PacketCodec.of(
 			ChunkData.BlockEntityData::write, ChunkData.BlockEntityData::new
 		);
-		public static final PacketCodec<RegistryByteBuf, List<ChunkData.BlockEntityData>> LIST_PACKET_CODEC = PACKET_CODEC.mapResult(PacketCodecs.listMapper());
+		public static final PacketCodec<RegistryByteBuf, List<ChunkData.BlockEntityData>> LIST_PACKET_CODEC = PACKET_CODEC.collect(PacketCodecs.toList());
 		final int localXz;
 		final int y;
 		final BlockEntityType<?> type;
@@ -137,14 +137,14 @@ public class ChunkData {
 		private BlockEntityData(RegistryByteBuf buf) {
 			this.localXz = buf.readByte();
 			this.y = buf.readShort();
-			this.type = PacketCodecs.registry(RegistryKeys.BLOCK_ENTITY_TYPE).decode(buf);
+			this.type = PacketCodecs.registryValue(RegistryKeys.BLOCK_ENTITY_TYPE).decode(buf);
 			this.nbt = buf.readNbt();
 		}
 
 		private void write(RegistryByteBuf buf) {
 			buf.writeByte(this.localXz);
 			buf.writeShort(this.y);
-			PacketCodecs.registry(RegistryKeys.BLOCK_ENTITY_TYPE).encode(buf, this.type);
+			PacketCodecs.registryValue(RegistryKeys.BLOCK_ENTITY_TYPE).encode(buf, this.type);
 			buf.writeNbt(this.nbt);
 		}
 

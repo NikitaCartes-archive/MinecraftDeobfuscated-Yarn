@@ -10,7 +10,7 @@ public record DebugRaidsCustomPayload(List<BlockPos> raidCenters) implements Cus
 	public static final PacketCodec<PacketByteBuf, DebugRaidsCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugRaidsCustomPayload::write, DebugRaidsCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugRaidsCustomPayload> KEY = CustomPayload.id("debug/raids");
+	public static final CustomPayload.Id<DebugRaidsCustomPayload> ID = CustomPayload.id("debug/raids");
 
 	private DebugRaidsCustomPayload(PacketByteBuf buf) {
 		this(buf.readList(BlockPos.PACKET_CODEC));
@@ -22,6 +22,6 @@ public record DebugRaidsCustomPayload(List<BlockPos> raidCenters) implements Cus
 
 	@Override
 	public CustomPayload.Id<DebugRaidsCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

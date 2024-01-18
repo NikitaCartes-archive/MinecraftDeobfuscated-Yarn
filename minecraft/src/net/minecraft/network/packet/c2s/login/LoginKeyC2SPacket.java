@@ -11,7 +11,7 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 	public static final PacketCodec<PacketByteBuf, LoginKeyC2SPacket> CODEC = Packet.createCodec(LoginKeyC2SPacket::write, LoginKeyC2SPacket::new);
@@ -43,7 +43,7 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<LoginKeyC2SPacket> getPacketId() {
+	public PacketType<LoginKeyC2SPacket> getPacketId() {
 		return LoginPackets.KEY;
 	}
 

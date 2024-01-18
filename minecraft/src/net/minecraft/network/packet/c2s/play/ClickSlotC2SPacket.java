@@ -5,12 +5,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.screen.slot.SlotActionType;
 
@@ -59,7 +59,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<ClickSlotC2SPacket> getPacketId() {
+	public PacketType<ClickSlotC2SPacket> getPacketId() {
 		return PlayPackets.CONTAINER_CLICK;
 	}
 

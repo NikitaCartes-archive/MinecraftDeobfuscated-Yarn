@@ -5,9 +5,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
@@ -29,7 +29,7 @@ import net.minecraft.world.World;
  */
 public interface Recipe<C extends Inventory> {
 	Codec<Recipe<?>> CODEC = Registries.RECIPE_SERIALIZER.getCodec().dispatch(Recipe::getSerializer, RecipeSerializer::codec);
-	PacketCodec<RegistryByteBuf, Recipe<?>> PACKET_CODEC = PacketCodecs.registry(RegistryKeys.RECIPE_SERIALIZER)
+	PacketCodec<RegistryByteBuf, Recipe<?>> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.RECIPE_SERIALIZER)
 		.dispatch(Recipe::getSerializer, RecipeSerializer::packetCodec);
 
 	/**

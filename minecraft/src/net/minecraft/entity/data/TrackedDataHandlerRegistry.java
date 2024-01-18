@@ -15,9 +15,9 @@ import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.encoding.VarInts;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -44,7 +44,7 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<String> STRING = TrackedDataHandler.create(PacketCodecs.STRING);
 	public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.PACKET_CODEC);
 	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = TrackedDataHandler.create(
-		TextCodecs.PACKET_CODEC.mapResult(PacketCodecs::optional)
+		TextCodecs.PACKET_CODEC.collect(PacketCodecs::optional)
 	);
 	public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>() {
 		@Override
@@ -56,7 +56,7 @@ public class TrackedDataHandlerRegistry {
 			return itemStack.copy();
 		}
 	};
-	public static final TrackedDataHandler<BlockState> BLOCK_STATE = TrackedDataHandler.create(PacketCodecs.ofIterable(Block.STATE_IDS));
+	public static final TrackedDataHandler<BlockState> BLOCK_STATE = TrackedDataHandler.create(PacketCodecs.entryOf(Block.STATE_IDS));
 	private static final PacketCodec<ByteBuf, Optional<BlockState>> OPTIONAL_BLOCK_STATE_CODEC = new PacketCodec<ByteBuf, Optional<BlockState>>() {
 		public void encode(ByteBuf byteBuf, Optional<BlockState> optional) {
 			if (optional.isPresent()) {
@@ -77,17 +77,17 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<EulerAngle> ROTATION = TrackedDataHandler.create(EulerAngle.PACKET_CODEC);
 	public static final TrackedDataHandler<BlockPos> BLOCK_POS = TrackedDataHandler.create(BlockPos.PACKET_CODEC);
 	public static final TrackedDataHandler<Optional<BlockPos>> OPTIONAL_BLOCK_POS = TrackedDataHandler.create(
-		BlockPos.PACKET_CODEC.mapResult(PacketCodecs::optional)
+		BlockPos.PACKET_CODEC.collect(PacketCodecs::optional)
 	);
 	public static final TrackedDataHandler<Direction> FACING = TrackedDataHandler.create(Direction.PACKET_CODEC);
-	public static final TrackedDataHandler<Optional<UUID>> OPTIONAL_UUID = TrackedDataHandler.create(Uuids.PACKET_CODEC.mapResult(PacketCodecs::optional));
+	public static final TrackedDataHandler<Optional<UUID>> OPTIONAL_UUID = TrackedDataHandler.create(Uuids.PACKET_CODEC.collect(PacketCodecs::optional));
 	public static final TrackedDataHandler<Optional<GlobalPos>> OPTIONAL_GLOBAL_POS = TrackedDataHandler.create(
-		GlobalPos.PACKET_CODEC.mapResult(PacketCodecs::optional)
+		GlobalPos.PACKET_CODEC.collect(PacketCodecs::optional)
 	);
 	public static final TrackedDataHandler<NbtCompound> NBT_COMPOUND = new TrackedDataHandler<NbtCompound>() {
 		@Override
 		public PacketCodec<? super RegistryByteBuf, NbtCompound> codec() {
-			return PacketCodecs.NBT_COMPUND;
+			return PacketCodecs.NBT_COMPOUND;
 		}
 
 		public NbtCompound copy(NbtCompound nbtCompound) {
@@ -107,15 +107,15 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = TrackedDataHandler.create(OPTIONAL_INT_CODEC);
 	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.create(EntityPose.PACKET_CODEC);
-	public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.create(PacketCodecs.registry(RegistryKeys.CAT_VARIANT));
-	public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.create(PacketCodecs.registry(RegistryKeys.FROG_VARIANT));
+	public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.create(PacketCodecs.registryValue(RegistryKeys.CAT_VARIANT));
+	public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.create(PacketCodecs.registryValue(RegistryKeys.FROG_VARIANT));
 	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.create(
 		PacketCodecs.registryEntry(RegistryKeys.PAINTING_VARIANT)
 	);
 	public static final TrackedDataHandler<ArmadilloEntity.State> ARMADILLO_STATE = TrackedDataHandler.create(ArmadilloEntity.State.PACKET_CODEC);
 	public static final TrackedDataHandler<SnifferEntity.State> SNIFFER_STATE = TrackedDataHandler.create(SnifferEntity.State.PACKET_CODEC);
 	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.create(PacketCodecs.VECTOR3F);
-	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.create(PacketCodecs.QUATERNION);
+	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.create(PacketCodecs.QUATERNIONF);
 
 	public static void register(TrackedDataHandler<?> handler) {
 		DATA_HANDLERS.add(handler);

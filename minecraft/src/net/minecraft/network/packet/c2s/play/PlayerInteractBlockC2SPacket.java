@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -36,7 +36,7 @@ public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketList
 	}
 
 	@Override
-	public PacketIdentifier<PlayerInteractBlockC2SPacket> getPacketId() {
+	public PacketType<PlayerInteractBlockC2SPacket> getPacketId() {
 		return PlayPackets.USE_ITEM_ON;
 	}
 

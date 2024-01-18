@@ -8,11 +8,11 @@ import java.util.Set;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Identifier;
 
@@ -49,7 +49,7 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	@Override
-	public PacketIdentifier<AdvancementUpdateS2CPacket> getPacketId() {
+	public PacketType<AdvancementUpdateS2CPacket> getPacketId() {
 		return PlayPackets.UPDATE_ADVANCEMENTS;
 	}
 

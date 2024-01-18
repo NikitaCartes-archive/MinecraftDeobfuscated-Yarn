@@ -7,7 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.World;
@@ -39,7 +39,7 @@ public class UpdateCommandBlockMinecartC2SPacket implements Packet<ServerPlayPac
 	}
 
 	@Override
-	public PacketIdentifier<UpdateCommandBlockMinecartC2SPacket> getPacketId() {
+	public PacketType<UpdateCommandBlockMinecartC2SPacket> getPacketId() {
 		return PlayPackets.SET_COMMAND_MINECART;
 	}
 

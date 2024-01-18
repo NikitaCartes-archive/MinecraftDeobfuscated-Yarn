@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerConfigurationPacketListener;
 import net.minecraft.network.packet.ConfigPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public class ReadyC2SPacket implements Packet<ServerConfigurationPacketListener> {
 	public static final ReadyC2SPacket INSTANCE = new ReadyC2SPacket();
@@ -15,7 +15,7 @@ public class ReadyC2SPacket implements Packet<ServerConfigurationPacketListener>
 	}
 
 	@Override
-	public PacketIdentifier<ReadyC2SPacket> getPacketId() {
+	public PacketType<ReadyC2SPacket> getPacketId() {
 		return ConfigPackets.FINISH_CONFIGURATION_C2S;
 	}
 

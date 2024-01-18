@@ -6,7 +6,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public record LoginHelloC2SPacket(String name, UUID profileId) implements Packet<ServerLoginPacketListener> {
 	public static final PacketCodec<PacketByteBuf, LoginHelloC2SPacket> CODEC = Packet.createCodec(LoginHelloC2SPacket::write, LoginHelloC2SPacket::new);
@@ -21,7 +21,7 @@ public record LoginHelloC2SPacket(String name, UUID profileId) implements Packet
 	}
 
 	@Override
-	public PacketIdentifier<LoginHelloC2SPacket> getPacketId() {
+	public PacketType<LoginHelloC2SPacket> getPacketId() {
 		return LoginPackets.HELLO_C2S;
 	}
 

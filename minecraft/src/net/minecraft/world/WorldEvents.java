@@ -285,7 +285,7 @@ public class WorldEvents {
 	 * An item is composted in a composter.
 	 * <br>Plays the appropriate composting sound event and spawns composter particles.
 	 * <p>A {@code 1} should be passed as extra data if the use of the composter added to the level of compost inside.
-	 * <p>Called by {@link net.minecraft.block.ComposterBlock#onUse(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.entity.player.PlayerEntity, net.minecraft.util.Hand, net.minecraft.util.hit.BlockHitResult) ComposterBlock#onUse},
+	 * <p>Called by {@link net.minecraft.block.ComposterBlock#onUse(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.entity.player.PlayerEntity, net.minecraft.util.hit.BlockHitResult) ComposterBlock#onUse},
 	 * {@link net.minecraft.block.ComposterBlock.ComposterInventory#markDirty() ComposterBlock.ComposterInventory#markDirty},
 	 * and {@link net.minecraft.entity.ai.brain.task.FarmerWorkTask#syncComposterEvent(net.minecraft.server.world.ServerWorld, net.minecraft.block.BlockState, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState) FarmerWorkTask#syncComposterEvent}
 	 */
@@ -484,10 +484,6 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.SnifferEggBlock#onBlockAdded(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, boolean) SnifferEggBlock#onBlockAdded}
 	 */
 	public static final int SNIFFER_EGG_CRACKS = 3009;
-	/**
-	 * A gust dust particle is spawned.
-	 */
-	public static final int GUST_DUST = 3010;
 	/**
 	 * A trial spawner spawns a mob. Triggered at the position of the spawner.
 	 * <br>Spawns mob spawn particles.

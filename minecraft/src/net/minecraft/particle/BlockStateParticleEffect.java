@@ -6,9 +6,9 @@ import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.BlockArgumentParser;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 
 public class BlockStateParticleEffect implements ParticleEffect {
@@ -26,7 +26,7 @@ public class BlockStateParticleEffect implements ParticleEffect {
 	}
 
 	public static PacketCodec<? super RegistryByteBuf, BlockStateParticleEffect> createPacketCodec(ParticleType<BlockStateParticleEffect> type) {
-		return PacketCodecs.ofIterable(Block.STATE_IDS).xmap(state -> new BlockStateParticleEffect(type, state), effect -> effect.blockState);
+		return PacketCodecs.entryOf(Block.STATE_IDS).xmap(state -> new BlockStateParticleEffect(type, state), effect -> effect.blockState);
 	}
 
 	public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> type, BlockState blockState) {

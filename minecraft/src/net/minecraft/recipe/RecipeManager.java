@@ -233,7 +233,6 @@ public class RecipeManager extends JsonDataLoader {
 	 * 
 	 * @throws com.google.gson.JsonParseException if the recipe JSON is invalid
 	 * @return the read recipe
-	 * @see RecipeSerializer#read
 	 * 
 	 * @param json the recipe JSON
 	 * @param id the recipe's ID

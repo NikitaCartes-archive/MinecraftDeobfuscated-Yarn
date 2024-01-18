@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.World;
 
@@ -31,7 +31,7 @@ public class EntityStatusS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<EntityStatusS2CPacket> getPacketId() {
+	public PacketType<EntityStatusS2CPacket> getPacketId() {
 		return PlayPackets.ENTITY_EVENT;
 	}
 

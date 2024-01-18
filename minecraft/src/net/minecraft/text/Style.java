@@ -612,6 +612,6 @@ public class Style {
 					.apply(instance, Style::of)
 		);
 		public static final Codec<Style> CODEC = MAP_CODEC.codec();
-		public static final PacketCodec<ByteBuf, Style> PACKET_CODEC = PacketCodecs.ofCodec(CODEC);
+		public static final PacketCodec<ByteBuf, Style> PACKET_CODEC = PacketCodecs.codec(CODEC);
 	}
 }

@@ -2,19 +2,19 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, BlockUpdateS2CPacket> CODEC = PacketCodec.tuple(
-		BlockPos.PACKET_CODEC, BlockUpdateS2CPacket::getPos, PacketCodecs.ofIterable(Block.STATE_IDS), BlockUpdateS2CPacket::getState, BlockUpdateS2CPacket::new
+		BlockPos.PACKET_CODEC, BlockUpdateS2CPacket::getPos, PacketCodecs.entryOf(Block.STATE_IDS), BlockUpdateS2CPacket::getState, BlockUpdateS2CPacket::new
 	);
 	private final BlockPos pos;
 	private final BlockState state;
@@ -29,7 +29,7 @@ public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<BlockUpdateS2CPacket> getPacketId() {
+	public PacketType<BlockUpdateS2CPacket> getPacketId() {
 		return PlayPackets.BLOCK_UPDATE;
 	}
 

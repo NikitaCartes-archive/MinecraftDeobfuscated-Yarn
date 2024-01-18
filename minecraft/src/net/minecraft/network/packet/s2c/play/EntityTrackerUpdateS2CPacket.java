@@ -3,11 +3,11 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record EntityTrackerUpdateS2CPacket(int id, List<DataTracker.SerializedEntry<?>> trackedValues) implements Packet<ClientPlayPacketListener> {
@@ -45,7 +45,7 @@ public record EntityTrackerUpdateS2CPacket(int id, List<DataTracker.SerializedEn
 	}
 
 	@Override
-	public PacketIdentifier<EntityTrackerUpdateS2CPacket> getPacketId() {
+	public PacketType<EntityTrackerUpdateS2CPacket> getPacketId() {
 		return PlayPackets.SET_ENTITY_DATA;
 	}
 

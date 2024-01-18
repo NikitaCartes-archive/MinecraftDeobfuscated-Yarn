@@ -7,7 +7,7 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 /**
@@ -54,7 +54,7 @@ public record CommandExecutionC2SPacket(
 	}
 
 	@Override
-	public PacketIdentifier<CommandExecutionC2SPacket> getPacketId() {
+	public PacketType<CommandExecutionC2SPacket> getPacketId() {
 		return PlayPackets.CHAT_COMMAND;
 	}
 

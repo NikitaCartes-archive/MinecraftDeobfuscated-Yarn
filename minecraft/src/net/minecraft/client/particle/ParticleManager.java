@@ -200,7 +200,6 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.SHRIEK, ShriekParticle.Factory::new);
 		this.registerFactory(ParticleTypes.EGG_CRACK, SuspendParticle.EggCrackFactory::new);
 		this.registerFactory(ParticleTypes.DUST_PLUME, DustPlumeParticle.Factory::new);
-		this.registerFactory(ParticleTypes.GUST_DUST, GustDustParticle.Factory::new);
 		this.registerFactory(ParticleTypes.TRIAL_SPAWNER_DETECTION, TrialSpawnerDetectionParticle.Factory::new);
 	}
 

@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.Difficulty;
 
@@ -27,7 +27,7 @@ public class UpdateDifficultyC2SPacket implements Packet<ServerPlayPacketListene
 	}
 
 	@Override
-	public PacketIdentifier<UpdateDifficultyC2SPacket> getPacketId() {
+	public PacketType<UpdateDifficultyC2SPacket> getPacketId() {
 		return PlayPackets.CHANGE_DIFFICULTY_C2S;
 	}
 

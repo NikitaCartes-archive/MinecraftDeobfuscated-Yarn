@@ -10,7 +10,7 @@ import net.minecraft.network.message.MessageBody;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 
@@ -70,7 +70,7 @@ public record ChatMessageS2CPacket(
 	}
 
 	@Override
-	public PacketIdentifier<ChatMessageS2CPacket> getPacketId() {
+	public PacketType<ChatMessageS2CPacket> getPacketId() {
 		return PlayPackets.PLAYER_CHAT;
 	}
 

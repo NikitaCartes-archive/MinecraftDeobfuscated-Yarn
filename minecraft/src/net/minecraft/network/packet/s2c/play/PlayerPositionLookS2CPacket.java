@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -51,7 +51,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	@Override
-	public PacketIdentifier<PlayerPositionLookS2CPacket> getPacketId() {
+	public PacketType<PlayerPositionLookS2CPacket> getPacketId() {
 		return PlayPackets.PLAYER_POSITION;
 	}
 

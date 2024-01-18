@@ -12,7 +12,7 @@ public record DebugGameEventCustomPayload(RegistryKey<GameEvent> gameEventType, 
 	public static final PacketCodec<PacketByteBuf, DebugGameEventCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugGameEventCustomPayload::write, DebugGameEventCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugGameEventCustomPayload> KEY = CustomPayload.id("debug/game_event");
+	public static final CustomPayload.Id<DebugGameEventCustomPayload> ID = CustomPayload.id("debug/game_event");
 
 	private DebugGameEventCustomPayload(PacketByteBuf buf) {
 		this(buf.readRegistryKey(RegistryKeys.GAME_EVENT), buf.readVec3d());
@@ -25,6 +25,6 @@ public record DebugGameEventCustomPayload(RegistryKey<GameEvent> gameEventType, 
 
 	@Override
 	public CustomPayload.Id<DebugGameEventCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

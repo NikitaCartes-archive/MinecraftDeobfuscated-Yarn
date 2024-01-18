@@ -5,8 +5,49 @@ import io.netty.buffer.ByteBuf;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * A codec that is used for serializing a packet.
+ * 
+ * <p>Packet codecs serialize to, and deserialize from, {@link net.minecraft.network.PacketByteBuf},
+ * which is a stream of data. To integrate the classic {@link net.minecraft.network.PacketByteBuf}-based
+ * code, use {@link #of(ValueFirstEncoder, PacketDecoder)}
+ * like this:
+ * 
+ * <pre>{@code
+ * public static final PacketCodec<PacketByteBuf, MyPacket> CODEC = PacketCodec.of(MyPacket::write, MyPacket::new);
+ * 
+ * private MyPacket(PacketByteBuf buf) {
+ * 	this.text = buf.readString();
+ * }
+ * 
+ * private void write(PacketByteBuf buf) {
+ * 	buf.writeString(this.text);
+ * }
+ * }</pre>
+ * 
+ * <p>While this serves similar functions as codecs in the DataFixerUpper library,
+ * the two are wholly separate and DataFixerUpper methods cannot be used with this.
+ * However, a packet codec may reference a regular codec by using {@link
+ * PacketCodecs#codec}, which serializes the data to NBT.
+ * 
+ * <p>See {@link PacketCodecs} for codecs to serialize various objects.
+ * 
+ * @param <B> the type of the buffer; {@link net.minecraft.network.RegistryByteBuf}
+ * for play-phase packets, {@link net.minecraft.network.PacketByteBuf} for other
+ * phases (like configuration)
+ * @param <V> the type of the value to be encoded/decoded
+ */
 public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B, V> {
-	static <B, V> PacketCodec<B, V> of(PacketEncoder<B, V> encoder, PacketDecoder<B, V> decoder) {
+	/**
+	 * {@return a packet codec from the {@code encoder} and {@code decoder}}
+	 * 
+	 * @apiNote This is useful for integrating with code that uses static methods for
+	 * packet writing, where the buffer is the first argument, like
+	 * {@code static void write(PacketByteBuf buf, Data data)}.
+	 * For code that uses instance methods like {@code void write(PacketByteBuf buf)},
+	 * use {@link #of(ValueFirstEncoder, PacketDecoder)}.
+	 */
+	static <B, V> PacketCodec<B, V> ofStatic(PacketEncoder<B, V> encoder, PacketDecoder<B, V> decoder) {
 		return new PacketCodec<B, V>() {
 			@Override
 			public V decode(B object) {
@@ -20,6 +61,14 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
+	/**
+	 * {@return a packet codec from the {@code encoder} and {@code decoder}}
+	 * 
+	 * @apiNote This is useful for integrating with code that uses instance methods for
+	 * packet writing, like {@code void write(PacketByteBuf buf)}.
+	 * For code that uses static methods like {@code static void write(PacketByteBuf buf, Data data)},
+	 * where the buffer is the first argument, use {@link #ofStatic(PacketEncoder, PacketDecoder)}.
+	 */
 	static <B, V> PacketCodec<B, V> of(ValueFirstEncoder<B, V> encoder, PacketDecoder<B, V> decoder) {
 		return new PacketCodec<B, V>() {
 			@Override
@@ -34,6 +83,14 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
+	/**
+	 * {@return a codec that always returns {@code value}}
+	 * 
+	 * <p>This does not encode anything. Instead, it throws {@link
+	 * IllegalStateException} when the value does not
+	 * equal {@code value}. This comparison is made with {@code equals()}, not
+	 * reference equality ({@code ==}).
+	 */
 	static <B, V> PacketCodec<B, V> unit(V value) {
 		return new PacketCodec<B, V>() {
 			@Override
@@ -50,10 +107,33 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
-	default <O> PacketCodec<B, O> mapResult(PacketCodec.ResultFunction<B, V, O> function) {
+	/**
+	 * {@return the result mapped with {@code function}}
+	 * 
+	 * <p>For example, passing {@code PacketCodecs::optional} makes the value
+	 * optional. Additionally, this method can be used like Stream {@link
+	 * java.util.stream.Collectors} - hence its name. For example, to make a codec
+	 * for a list of something, write {@code parentCodec.collect(PacketCodecs.toList())}.
+	 * 
+	 * @see PacketCodecs#optional
+	 * @see PacketCodecs#toCollection
+	 * @see PacketCodecs#toList
+	 */
+	default <O> PacketCodec<B, O> collect(PacketCodec.ResultFunction<B, V, O> function) {
 		return function.apply(this);
 	}
 
+	/**
+	 * {@return a codec that maps its encode input and decode output with {@code from}
+	 * and {@code to}, respectively}
+	 * 
+	 * <p>This can be used to transform a codec for a simple value (like a string)
+	 * into a corresponding, more complex value (like an identifier). An example:
+	 * 
+	 * <pre>{@code
+	 * public static final PacketCodec<ByteBuf, Identifier> PACKET_CODEC = PacketCodecs.STRING.xmap(Identifier::new, Identifier::toString);
+	 * }</pre>
+	 */
 	default <O> PacketCodec<B, O> xmap(Function<? super V, ? extends O> to, Function<? super O, ? extends V> from) {
 		return new PacketCodec<B, O>() {
 			@Override
@@ -82,6 +162,21 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
+	/**
+	 * {@return a codec that dispatches one of the sub-codecs based on the type}
+	 * 
+	 * <p>For example, subtypes of {@link net.minecraft.stat.Stat} requires different values
+	 * to be serialized, yet it makes sense to use the same codec for all stats.
+	 * This method should be called on the codec for the "type" - like {@link
+	 * net.minecraft.stat.StatType}. An example:
+	 * 
+	 * <p><pre>{@code
+	 * public static final PacketCodec<RegistryByteBuf, Thing<?>> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.THING_TYPE).dispatch(Thing::getType, ThingType::getPacketCodec);
+	 * }</pre>
+	 * 
+	 * @param codec a function that, given a "type", returns the codec for encoding/decoding the value
+	 * @param type a function that, given a value, returns its "type"
+	 */
 	default <U> PacketCodec<B, U> dispatch(Function<? super U, ? extends V> type, Function<? super V, ? extends PacketCodec<? super B, ? extends U>> codec) {
 		return new PacketCodec<B, U>() {
 			@Override
@@ -101,6 +196,9 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
+	/**
+	 * {@return a codec for encoding one value}
+	 */
 	static <B, C, T1> PacketCodec<B, C> tuple(PacketCodec<? super B, T1> codec, Function<C, T1> from, Function<T1, C> to) {
 		return new PacketCodec<B, C>() {
 			@Override
@@ -116,6 +214,9 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
+	/**
+	 * {@return a codec for encoding two values}
+	 */
 	static <B, C, T1, T2> PacketCodec<B, C> tuple(
 		PacketCodec<? super B, T1> codec1, Function<C, T1> from1, PacketCodec<? super B, T2> codec2, Function<C, T2> from2, BiFunction<T1, T2, C> to
 	) {
@@ -135,6 +236,9 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
+	/**
+	 * {@return a codec for encoding three values}
+	 */
 	static <B, C, T1, T2, T3> PacketCodec<B, C> tuple(
 		PacketCodec<? super B, T1> codec1,
 		Function<C, T1> from1,
@@ -162,6 +266,15 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
+	/**
+	 * {@return the same codec, casted to work with buffers of type {@code S}}
+	 * 
+	 * @apiNote For example, {@link net.minecraft.util.math.BlockPos#PACKET_CODEC}
+	 * is defined as {@code PacketCodec<ByteBuf, BlockPos>}. To use this codec
+	 * where {@link net.minecraft.network.PacketByteBuf} is expected, you can call
+	 * this method for easy casting, like: {@code PACKET_CODEC.cast()}.
+	 * Doing this is generally safe and will not result in exceptions.
+	 */
 	default <S extends B> PacketCodec<S, V> cast() {
 		return this;
 	}

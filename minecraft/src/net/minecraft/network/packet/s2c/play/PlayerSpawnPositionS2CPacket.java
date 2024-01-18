@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 
@@ -31,7 +31,7 @@ public class PlayerSpawnPositionS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	@Override
-	public PacketIdentifier<PlayerSpawnPositionS2CPacket> getPacketId() {
+	public PacketType<PlayerSpawnPositionS2CPacket> getPacketId() {
 		return PlayPackets.SET_DEFAULT_SPAWN_POSITION;
 	}
 

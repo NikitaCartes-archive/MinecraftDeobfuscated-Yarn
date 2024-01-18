@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
@@ -100,7 +100,9 @@ public class ShapedRecipe implements CraftingRecipe {
 					)
 					.apply(instance, ShapedRecipe::new)
 		);
-		public static final PacketCodec<RegistryByteBuf, ShapedRecipe> PACKET_CODEC = PacketCodec.of(ShapedRecipe.Serializer::write, ShapedRecipe.Serializer::read);
+		public static final PacketCodec<RegistryByteBuf, ShapedRecipe> PACKET_CODEC = PacketCodec.ofStatic(
+			ShapedRecipe.Serializer::write, ShapedRecipe.Serializer::read
+		);
 
 		@Override
 		public Codec<ShapedRecipe> codec() {

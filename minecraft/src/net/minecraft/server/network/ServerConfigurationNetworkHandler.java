@@ -5,10 +5,9 @@ import com.mojang.logging.LogUtils;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
-import net.minecraft.class_9095;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
-import net.minecraft.network.codec.RegistryByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.listener.ServerConfigurationPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.BrandCustomPayload;
@@ -21,6 +20,7 @@ import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
+import net.minecraft.network.state.PlayStateFactories;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.SerializableRegistries;
@@ -104,7 +104,7 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 	public void onReady(ReadyC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.server);
 		this.onTaskFinished(JoinWorldTask.KEY);
-		this.connection.method_56329(class_9095.field_48173.bind(RegistryByteBuf.makeFactory(this.server.getRegistryManager())));
+		this.connection.transitionOutbound(PlayStateFactories.S2C.bind(RegistryByteBuf.makeFactory(this.server.getRegistryManager())));
 
 		try {
 			PlayerManager playerManager = this.server.getPlayerManager();

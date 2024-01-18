@@ -7,7 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
@@ -69,7 +69,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	@Override
-	public PacketIdentifier<PlayerInteractEntityC2SPacket> getPacketId() {
+	public PacketType<PlayerInteractEntityC2SPacket> getPacketId() {
 		return PlayPackets.INTERACT;
 	}
 

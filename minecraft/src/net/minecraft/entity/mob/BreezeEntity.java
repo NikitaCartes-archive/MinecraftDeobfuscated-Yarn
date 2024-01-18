@@ -147,16 +147,6 @@ public class BreezeEntity extends HostileEntity {
 		return this;
 	}
 
-	public BreezeEntity addGustDustParticles() {
-		Vec3d vec3d = this.getPos().add(0.0, 0.1F, 0.0);
-
-		for (int i = 0; i < 20; i++) {
-			this.getWorld().addParticle(ParticleTypes.GUST_DUST, vec3d.x, vec3d.y, vec3d.z, 0.0, 0.0, 0.0);
-		}
-
-		return this;
-	}
-
 	public void addLongJumpingParticles() {
 		if (++this.longJumpingParticleAddCount <= 5) {
 			BlockState blockState = !this.getBlockStateAtPos().isAir() ? this.getBlockStateAtPos() : this.getSteppingBlockState();

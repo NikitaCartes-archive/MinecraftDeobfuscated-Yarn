@@ -95,9 +95,6 @@ import org.joml.Vector3f;
  *  <td>Codec-based (JSON)</td><td>{@link #decodeAsJson(Codec)}</td><td>{@link #encodeAsJson(Codec, Object)}</td>
  * </tr>
  * <tr>
- *  <td>{@link net.minecraft.registry.Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
- * </tr>
- * <tr>
  *  <td>Integer-identified value</td><td>{@link #decode(IntFunction)}</td><td>{@link #encode(ToIntFunction, Object)}</td>
  * </tr>
  * <tr>
@@ -168,9 +165,6 @@ import org.joml.Vector3f;
  * </tr>
  * <tr>
  *  <td>{@link NbtCompound}</td><td>{@link #readNbt()}</td><td>{@link #writeNbt(NbtCompound)}</td>
- * </tr>
- * <tr>
- *  <td>{@link ItemStack}</td><td>{@link #readItemStack()}</td><td>{@link #writeItemStack(ItemStack)}</td>
  * </tr>
  * <tr>
  *  <td>{@link String}</td><td>{@link #readString()}</td><td>{@link #writeString(String)}</td>
@@ -438,14 +432,14 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param mapFactory a factory that creates a map with a given size
 	 */
 	public <K, V, M extends Map<K, V>> M readMap(
-		IntFunction<M> mapFactory, PacketDecoder<? super PacketByteBuf, K> packetDecoder, PacketDecoder<? super PacketByteBuf, V> packetDecoder2
+		IntFunction<M> mapFactory, PacketDecoder<? super PacketByteBuf, K> keyReader, PacketDecoder<? super PacketByteBuf, V> valueReader
 	) {
 		int i = this.readVarInt();
 		M map = (M)mapFactory.apply(i);
 
 		for (int j = 0; j < i; j++) {
-			K object = packetDecoder.decode(this);
-			V object2 = packetDecoder2.decode(this);
+			K object = keyReader.decode(this);
+			V object2 = valueReader.decode(this);
 			map.put(object, object2);
 		}
 

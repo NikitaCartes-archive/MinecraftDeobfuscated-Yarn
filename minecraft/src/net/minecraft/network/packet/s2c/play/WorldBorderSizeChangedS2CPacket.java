@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.border.WorldBorder;
 
@@ -27,7 +27,7 @@ public class WorldBorderSizeChangedS2CPacket implements Packet<ClientPlayPacketL
 	}
 
 	@Override
-	public PacketIdentifier<WorldBorderSizeChangedS2CPacket> getPacketId() {
+	public PacketType<WorldBorderSizeChangedS2CPacket> getPacketId() {
 		return PlayPackets.SET_BORDER_SIZE;
 	}
 

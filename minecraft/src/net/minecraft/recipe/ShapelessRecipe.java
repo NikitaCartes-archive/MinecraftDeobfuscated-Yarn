@@ -5,8 +5,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
@@ -101,7 +101,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 					)
 					.apply(instance, ShapelessRecipe::new)
 		);
-		public static final PacketCodec<RegistryByteBuf, ShapelessRecipe> PACKET_CODEC = PacketCodec.of(
+		public static final PacketCodec<RegistryByteBuf, ShapelessRecipe> PACKET_CODEC = PacketCodec.ofStatic(
 			ShapelessRecipe.Serializer::write, ShapelessRecipe.Serializer::read
 		);
 
