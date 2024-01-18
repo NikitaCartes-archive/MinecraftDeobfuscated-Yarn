@@ -6,7 +6,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerCookieResponsePacketListener;
 import net.minecraft.network.packet.CookiePackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.util.Identifier;
 
 public record CookieResponseC2SPacket(Identifier key, @Nullable byte[] payload) implements Packet<ServerCookieResponsePacketListener> {
@@ -24,7 +24,7 @@ public record CookieResponseC2SPacket(Identifier key, @Nullable byte[] payload) 
 	}
 
 	@Override
-	public PacketIdentifier<CookieResponseC2SPacket> getPacketId() {
+	public PacketType<CookieResponseC2SPacket> getPacketId() {
 		return CookiePackets.COOKIE_RESPONSE;
 	}
 

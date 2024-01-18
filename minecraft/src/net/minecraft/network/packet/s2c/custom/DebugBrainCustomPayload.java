@@ -16,7 +16,7 @@ public record DebugBrainCustomPayload(DebugBrainCustomPayload.Brain brainDump) i
 	public static final PacketCodec<PacketByteBuf, DebugBrainCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugBrainCustomPayload::write, DebugBrainCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugBrainCustomPayload> KEY = CustomPayload.id("debug/brain");
+	public static final CustomPayload.Id<DebugBrainCustomPayload> ID = CustomPayload.id("debug/brain");
 
 	private DebugBrainCustomPayload(PacketByteBuf buf) {
 		this(new DebugBrainCustomPayload.Brain(buf));
@@ -28,7 +28,7 @@ public record DebugBrainCustomPayload(DebugBrainCustomPayload.Brain brainDump) i
 
 	@Override
 	public CustomPayload.Id<DebugBrainCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 
 	public static record Brain(

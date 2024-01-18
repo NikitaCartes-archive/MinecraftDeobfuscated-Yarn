@@ -1,10 +1,14 @@
-package net.minecraft.network.codec;
+package net.minecraft.network;
 
 import io.netty.buffer.ByteBuf;
 import java.util.function.Function;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 
+/**
+ * A packet byte buffer bound to a particular {@link DynamicRegistryManager} instance.
+ * 
+ * <p>This is used during the {@link NetworkStateType#PLAY} phase only.
+ */
 public class RegistryByteBuf extends PacketByteBuf {
 	private final DynamicRegistryManager registryManager;
 

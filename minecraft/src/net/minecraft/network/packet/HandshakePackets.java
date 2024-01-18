@@ -6,9 +6,9 @@ import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.util.Identifier;
 
 public class HandshakePackets {
-	public static final PacketIdentifier<HandshakeC2SPacket> INTENTION = c2s("intention");
+	public static final PacketType<HandshakeC2SPacket> INTENTION = c2s("intention");
 
-	private static <T extends Packet<ServerHandshakePacketListener>> PacketIdentifier<T> c2s(String id) {
-		return new PacketIdentifier<>(NetworkSide.SERVERBOUND, new Identifier(id));
+	private static <T extends Packet<ServerHandshakePacketListener>> PacketType<T> c2s(String id) {
+		return new PacketType<>(NetworkSide.SERVERBOUND, new Identifier(id));
 	}
 }

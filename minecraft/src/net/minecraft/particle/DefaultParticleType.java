@@ -2,8 +2,8 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 
 public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleEffect {

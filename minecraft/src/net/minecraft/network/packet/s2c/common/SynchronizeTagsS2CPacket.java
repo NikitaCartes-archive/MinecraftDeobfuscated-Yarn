@@ -6,7 +6,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.TagPacketSerializer;
@@ -30,7 +30,7 @@ public class SynchronizeTagsS2CPacket implements Packet<ClientCommonPacketListen
 	}
 
 	@Override
-	public PacketIdentifier<SynchronizeTagsS2CPacket> getPacketId() {
+	public PacketType<SynchronizeTagsS2CPacket> getPacketId() {
 		return CommonPackets.UPDATE_TAGS;
 	}
 

@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
@@ -58,7 +58,7 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<StopSoundS2CPacket> getPacketId() {
+	public PacketType<StopSoundS2CPacket> getPacketId() {
 		return PlayPackets.STOP_SOUND;
 	}
 

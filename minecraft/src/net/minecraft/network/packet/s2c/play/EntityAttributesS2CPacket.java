@@ -9,12 +9,12 @@ import java.util.UUID;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -24,7 +24,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	public static final PacketCodec<RegistryByteBuf, EntityAttributesS2CPacket> CODEC = PacketCodec.tuple(
 		PacketCodecs.VAR_INT,
 		EntityAttributesS2CPacket::getEntityId,
-		EntityAttributesS2CPacket.Entry.CODEC.mapResult(PacketCodecs.listMapper()),
+		EntityAttributesS2CPacket.Entry.CODEC.collect(PacketCodecs.toList()),
 		EntityAttributesS2CPacket::getEntries,
 		EntityAttributesS2CPacket::new
 	);
@@ -51,7 +51,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Override
-	public PacketIdentifier<EntityAttributesS2CPacket> getPacketId() {
+	public PacketType<EntityAttributesS2CPacket> getPacketId() {
 		return PlayPackets.UPDATE_ATTRIBUTES;
 	}
 
@@ -82,7 +82,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 			EntityAttributesS2CPacket.Entry::attribute,
 			PacketCodecs.DOUBLE,
 			EntityAttributesS2CPacket.Entry::base,
-			MODIFIER_CODEC.mapResult(PacketCodecs.collectionMapper(ArrayList::new)),
+			MODIFIER_CODEC.collect(PacketCodecs.toCollection(ArrayList::new)),
 			EntityAttributesS2CPacket.Entry::modifiers,
 			EntityAttributesS2CPacket.Entry::new
 		);

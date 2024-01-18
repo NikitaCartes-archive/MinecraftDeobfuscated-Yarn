@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class SelectMerchantTradeC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -26,7 +26,7 @@ public class SelectMerchantTradeC2SPacket implements Packet<ServerPlayPacketList
 	}
 
 	@Override
-	public PacketIdentifier<SelectMerchantTradeC2SPacket> getPacketId() {
+	public PacketType<SelectMerchantTradeC2SPacket> getPacketId() {
 		return PlayPackets.SELECT_TRADE;
 	}
 

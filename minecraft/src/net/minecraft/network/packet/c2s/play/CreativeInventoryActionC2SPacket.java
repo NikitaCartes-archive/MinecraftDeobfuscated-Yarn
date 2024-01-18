@@ -1,11 +1,11 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -31,7 +31,7 @@ public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacket
 	}
 
 	@Override
-	public PacketIdentifier<CreativeInventoryActionC2SPacket> getPacketId() {
+	public PacketType<CreativeInventoryActionC2SPacket> getPacketId() {
 		return PlayPackets.SET_CREATIVE_MODE_SLOT;
 	}
 

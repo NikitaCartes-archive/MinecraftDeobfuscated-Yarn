@@ -30,7 +30,7 @@ public class StatusEffect {
 		this.color = color;
 	}
 
-	public int getFadeOutTicks() {
+	public int getFadeTicks() {
 		return this.fadeTicks;
 	}
 

@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.world.border.WorldBorder;
 
@@ -27,7 +27,7 @@ public class WorldBorderWarningTimeChangedS2CPacket implements Packet<ClientPlay
 	}
 
 	@Override
-	public PacketIdentifier<WorldBorderWarningTimeChangedS2CPacket> getPacketId() {
+	public PacketType<WorldBorderWarningTimeChangedS2CPacket> getPacketId() {
 		return PlayPackets.SET_BORDER_WARNING_DELAY;
 	}
 

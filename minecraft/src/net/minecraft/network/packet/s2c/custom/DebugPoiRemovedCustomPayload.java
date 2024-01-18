@@ -9,7 +9,7 @@ public record DebugPoiRemovedCustomPayload(BlockPos pos) implements CustomPayloa
 	public static final PacketCodec<PacketByteBuf, DebugPoiRemovedCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugPoiRemovedCustomPayload::write, DebugPoiRemovedCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugPoiRemovedCustomPayload> KEY = CustomPayload.id("debug/poi_removed");
+	public static final CustomPayload.Id<DebugPoiRemovedCustomPayload> ID = CustomPayload.id("debug/poi_removed");
 
 	private DebugPoiRemovedCustomPayload(PacketByteBuf buf) {
 		this(buf.readBlockPos());
@@ -21,6 +21,6 @@ public record DebugPoiRemovedCustomPayload(BlockPos pos) implements CustomPayloa
 
 	@Override
 	public CustomPayload.Id<DebugPoiRemovedCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

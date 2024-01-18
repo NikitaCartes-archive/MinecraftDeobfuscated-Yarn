@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.Vec3d;
 
@@ -53,7 +53,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	@Override
-	public PacketIdentifier<EntityPositionS2CPacket> getPacketId() {
+	public PacketType<EntityPositionS2CPacket> getPacketId() {
 		return PlayPackets.TELEPORT_ENTITY;
 	}
 

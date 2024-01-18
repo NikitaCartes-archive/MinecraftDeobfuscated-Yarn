@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record RemoveMessageS2CPacket(MessageSignatureData.Indexed messageSignature) implements Packet<ClientPlayPacketListener> {
@@ -20,7 +20,7 @@ public record RemoveMessageS2CPacket(MessageSignatureData.Indexed messageSignatu
 	}
 
 	@Override
-	public PacketIdentifier<RemoveMessageS2CPacket> getPacketId() {
+	public PacketType<RemoveMessageS2CPacket> getPacketId() {
 		return PlayPackets.DELETE_CHAT;
 	}
 

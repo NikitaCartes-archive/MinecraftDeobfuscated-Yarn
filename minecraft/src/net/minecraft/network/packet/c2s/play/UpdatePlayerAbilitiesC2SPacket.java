@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -34,7 +34,7 @@ public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketLi
 	}
 
 	@Override
-	public PacketIdentifier<UpdatePlayerAbilitiesC2SPacket> getPacketId() {
+	public PacketType<UpdatePlayerAbilitiesC2SPacket> getPacketId() {
 		return PlayPackets.PLAYER_ABILITIES_C2S;
 	}
 

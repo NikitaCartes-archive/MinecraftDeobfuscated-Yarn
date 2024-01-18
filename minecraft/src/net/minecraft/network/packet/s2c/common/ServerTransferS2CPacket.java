@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public record ServerTransferS2CPacket(String host, int port) implements Packet<ClientCommonPacketListener> {
 	public static final PacketCodec<PacketByteBuf, ServerTransferS2CPacket> CODEC = Packet.createCodec(
@@ -22,7 +22,7 @@ public record ServerTransferS2CPacket(String host, int port) implements Packet<C
 	}
 
 	@Override
-	public PacketIdentifier<ServerTransferS2CPacket> getPacketId() {
+	public PacketType<ServerTransferS2CPacket> getPacketId() {
 		return CommonPackets.TRANSFER;
 	}
 

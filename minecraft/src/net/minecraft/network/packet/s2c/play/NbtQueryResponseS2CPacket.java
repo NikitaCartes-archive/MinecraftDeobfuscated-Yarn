@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class NbtQueryResponseS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -33,7 +33,7 @@ public class NbtQueryResponseS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Override
-	public PacketIdentifier<NbtQueryResponseS2CPacket> getPacketId() {
+	public PacketType<NbtQueryResponseS2CPacket> getPacketId() {
 		return PlayPackets.TAG_QUERY;
 	}
 

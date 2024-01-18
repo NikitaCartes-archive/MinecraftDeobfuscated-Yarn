@@ -14,7 +14,7 @@ public record DebugStructuresCustomPayload(RegistryKey<World> dimension, BlockBo
 	public static final PacketCodec<PacketByteBuf, DebugStructuresCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugStructuresCustomPayload::write, DebugStructuresCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugStructuresCustomPayload> KEY = CustomPayload.id("debug/structures");
+	public static final CustomPayload.Id<DebugStructuresCustomPayload> ID = CustomPayload.id("debug/structures");
 
 	private DebugStructuresCustomPayload(PacketByteBuf buf) {
 		this(buf.readRegistryKey(RegistryKeys.WORLD), readBox(buf), buf.readList(DebugStructuresCustomPayload.Piece::new));
@@ -28,7 +28,7 @@ public record DebugStructuresCustomPayload(RegistryKey<World> dimension, BlockBo
 
 	@Override
 	public CustomPayload.Id<DebugStructuresCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 
 	static BlockBox readBox(PacketByteBuf buf) {

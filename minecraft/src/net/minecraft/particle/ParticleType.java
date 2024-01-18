@@ -1,8 +1,8 @@
 package net.minecraft.particle;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 
 public abstract class ParticleType<T extends ParticleEffect> {
 	private final boolean alwaysShow;

@@ -3,11 +3,11 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.scoreboard.number.NumberFormatTypes;
@@ -39,7 +39,7 @@ public record ScoreboardScoreUpdateS2CPacket(
 	}
 
 	@Override
-	public PacketIdentifier<ScoreboardScoreUpdateS2CPacket> getPacketId() {
+	public PacketType<ScoreboardScoreUpdateS2CPacket> getPacketId() {
 		return PlayPackets.SET_SCORE;
 	}
 

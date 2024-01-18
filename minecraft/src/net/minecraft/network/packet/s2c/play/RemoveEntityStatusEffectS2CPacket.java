@@ -3,12 +3,12 @@ package net.minecraft.network.packet.s2c.play;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -24,7 +24,7 @@ public record RemoveEntityStatusEffectS2CPacket(int entityId, RegistryEntry<Stat
 	);
 
 	@Override
-	public PacketIdentifier<RemoveEntityStatusEffectS2CPacket> getPacketId() {
+	public PacketType<RemoveEntityStatusEffectS2CPacket> getPacketId() {
 		return PlayPackets.REMOVE_MOB_EFFECT;
 	}
 

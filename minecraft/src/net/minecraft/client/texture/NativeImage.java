@@ -24,7 +24,7 @@ import java.util.function.IntUnaryOperator;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9111;
+import net.minecraft.client.font.FreeTypeUtil;
 import net.minecraft.client.util.Untracker;
 import net.minecraft.util.PngMetadata;
 import net.minecraft.util.math.ColorHelper;
@@ -524,19 +524,19 @@ public final class NativeImage implements AutoCloseable {
 		this.writeTo(path.toPath());
 	}
 
-	public void makeGlyphBitmapSubpixel(FT_Face fT_Face, int i) {
+	public void makeGlyphBitmapSubpixel(FT_Face face, int glyphIndex) {
 		if (this.format.getChannelCount() != 1) {
 			throw new IllegalArgumentException("Can only write fonts into 1-component images.");
 		} else {
-			class_9111.method_56145(FreeType.FT_Load_Glyph(fT_Face, i, 4), "Loading glyph");
-			FT_GlyphSlot fT_GlyphSlot = (FT_GlyphSlot)Objects.requireNonNull(fT_Face.glyph(), "Glyph not initialized");
+			FreeTypeUtil.checkError(FreeType.FT_Load_Glyph(face, glyphIndex, 4), "Loading glyph");
+			FT_GlyphSlot fT_GlyphSlot = (FT_GlyphSlot)Objects.requireNonNull(face.glyph(), "Glyph not initialized");
 			FT_Bitmap fT_Bitmap = fT_GlyphSlot.bitmap();
 			if (fT_Bitmap.pixel_mode() != 2) {
 				throw new IllegalStateException("Rendered glyph was not 8-bit grayscale");
 			} else if (fT_Bitmap.width() == this.getWidth() && fT_Bitmap.rows() == this.getHeight()) {
-				int j = fT_Bitmap.width() * fT_Bitmap.rows();
-				ByteBuffer byteBuffer = (ByteBuffer)Objects.requireNonNull(fT_Bitmap.buffer(j), "Glyph has no bitmap");
-				MemoryUtil.memCopy(MemoryUtil.memAddress(byteBuffer), this.pointer, (long)j);
+				int i = fT_Bitmap.width() * fT_Bitmap.rows();
+				ByteBuffer byteBuffer = (ByteBuffer)Objects.requireNonNull(fT_Bitmap.buffer(i), "Glyph has no bitmap");
+				MemoryUtil.memCopy(MemoryUtil.memAddress(byteBuffer), this.pointer, (long)i);
 			} else {
 				throw new IllegalArgumentException(
 					String.format(

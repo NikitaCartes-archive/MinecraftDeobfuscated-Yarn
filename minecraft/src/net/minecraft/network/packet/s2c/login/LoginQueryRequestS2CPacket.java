@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.util.Identifier;
 
 public record LoginQueryRequestS2CPacket(int queryId, LoginQueryRequestPayload payload) implements Packet<ClientLoginPacketListener> {
@@ -39,7 +39,7 @@ public record LoginQueryRequestS2CPacket(int queryId, LoginQueryRequestPayload p
 	}
 
 	@Override
-	public PacketIdentifier<LoginQueryRequestS2CPacket> getPacketId() {
+	public PacketType<LoginQueryRequestS2CPacket> getPacketId() {
 		return LoginPackets.CUSTOM_QUERY;
 	}
 

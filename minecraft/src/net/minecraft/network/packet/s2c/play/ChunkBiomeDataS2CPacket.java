@@ -7,7 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
@@ -32,7 +32,7 @@ public record ChunkBiomeDataS2CPacket(List<ChunkBiomeDataS2CPacket.Serialized> c
 	}
 
 	@Override
-	public PacketIdentifier<ChunkBiomeDataS2CPacket> getPacketId() {
+	public PacketType<ChunkBiomeDataS2CPacket> getPacketId() {
 		return PlayPackets.CHUNKS_BIOMES;
 	}
 

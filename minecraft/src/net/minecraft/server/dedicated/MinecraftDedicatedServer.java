@@ -585,7 +585,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean method_56040() {
-		return this.propertiesLoader.getPropertiesHandler().field_48270;
+	public boolean acceptsTransfers() {
+		return this.propertiesLoader.getPropertiesHandler().acceptsTransfers;
 	}
 }

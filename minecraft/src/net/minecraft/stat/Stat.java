@@ -2,16 +2,16 @@ package net.minecraft.stat;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.util.Identifier;
 
 public class Stat<T> extends ScoreboardCriterion {
-	public static final PacketCodec<RegistryByteBuf, Stat<?>> PACKET_CODEC = PacketCodecs.registry(RegistryKeys.STAT_TYPE)
+	public static final PacketCodec<RegistryByteBuf, Stat<?>> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.STAT_TYPE)
 		.dispatch(Stat::getType, StatType::getPacketCodec);
 	private final StatFormatter formatter;
 	private final T value;

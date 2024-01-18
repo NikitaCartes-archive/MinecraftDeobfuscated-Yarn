@@ -847,12 +847,6 @@ public class TestContext {
 		}
 	}
 
-	public <N extends Number> void assertEquals(N actual, N expected, String name) {
-		if (!actual.equals(expected)) {
-			throw new GameTestException("Expected " + name + " to be " + expected + ", but was " + actual);
-		}
-	}
-
 	public void assertFalse(boolean condition, String message) {
 		if (condition) {
 			throw new GameTestException(message);

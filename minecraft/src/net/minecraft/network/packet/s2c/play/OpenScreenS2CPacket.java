@@ -1,11 +1,11 @@
 package net.minecraft.network.packet.s2c.play;
 
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandlerType;
@@ -16,7 +16,7 @@ public class OpenScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, OpenScreenS2CPacket> CODEC = PacketCodec.tuple(
 		PacketCodecs.VAR_INT,
 		OpenScreenS2CPacket::getSyncId,
-		PacketCodecs.registry(RegistryKeys.SCREEN_HANDLER),
+		PacketCodecs.registryValue(RegistryKeys.SCREEN_HANDLER),
 		OpenScreenS2CPacket::getScreenHandlerType,
 		TextCodecs.PACKET_CODEC,
 		OpenScreenS2CPacket::getName,
@@ -33,7 +33,7 @@ public class OpenScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<OpenScreenS2CPacket> getPacketId() {
+	public PacketType<OpenScreenS2CPacket> getPacketId() {
 		return PlayPackets.OPEN_SCREEN;
 	}
 

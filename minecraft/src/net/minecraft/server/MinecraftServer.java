@@ -2056,7 +2056,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return true;
 	}
 
-	public boolean method_56040() {
+	public boolean acceptsTransfers() {
 		return false;
 	}
 

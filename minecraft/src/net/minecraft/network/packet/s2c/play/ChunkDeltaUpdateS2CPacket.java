@@ -9,7 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -69,7 +69,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Override
-	public PacketIdentifier<ChunkDeltaUpdateS2CPacket> getPacketId() {
+	public PacketType<ChunkDeltaUpdateS2CPacket> getPacketId() {
 		return PlayPackets.SECTION_BLOCKS_UPDATE;
 	}
 

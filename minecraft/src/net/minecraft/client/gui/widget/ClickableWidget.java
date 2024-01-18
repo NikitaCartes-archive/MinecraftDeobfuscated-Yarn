@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9110;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -18,6 +17,7 @@ import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.tooltip.TooltipState;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.sound.SoundEvents;
@@ -46,7 +46,7 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	protected float alpha = 1.0F;
 	private int navigationOrder;
 	private boolean focused;
-	private final class_9110 tooltip = new class_9110();
+	private final TooltipState tooltip = new TooltipState();
 
 	public ClickableWidget(int x, int y, int width, int height, Text message) {
 		this.x = x;
@@ -66,21 +66,21 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		if (this.visible) {
 			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 			this.renderWidget(context, mouseX, mouseY, delta);
-			this.tooltip.method_56142(this.isHovered(), this.isFocused(), this.getNavigationFocus());
+			this.tooltip.render(this.isHovered(), this.isFocused(), this.getNavigationFocus());
 		}
 	}
 
 	public void setTooltip(@Nullable Tooltip tooltip) {
-		this.tooltip.method_56138(tooltip);
+		this.tooltip.setTooltip(tooltip);
 	}
 
 	@Nullable
 	public Tooltip getTooltip() {
-		return this.tooltip.method_56137();
+		return this.tooltip.getTooltip();
 	}
 
-	public void setTooltipDelay(Duration duration) {
-		this.tooltip.method_56141(duration);
+	public void setTooltipDelay(Duration tooltipDelay) {
+		this.tooltip.setDelay(tooltipDelay);
 	}
 
 	protected MutableText getNarrationMessage() {
@@ -268,7 +268,7 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	@Override
 	public final void appendNarrations(NarrationMessageBuilder builder) {
 		this.appendClickableNarrations(builder);
-		this.tooltip.method_56139(builder);
+		this.tooltip.appendNarrations(builder);
 	}
 
 	protected abstract void appendClickableNarrations(NarrationMessageBuilder builder);

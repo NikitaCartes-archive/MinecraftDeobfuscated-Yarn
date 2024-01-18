@@ -2,12 +2,12 @@ package net.minecraft.network.packet.c2s.play;
 
 import java.util.Optional;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -15,15 +15,15 @@ import net.minecraft.registry.entry.RegistryEntry;
 public record UpdateBeaconC2SPacket(Optional<RegistryEntry<StatusEffect>> primary, Optional<RegistryEntry<StatusEffect>> secondary)
 	implements Packet<ServerPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, UpdateBeaconC2SPacket> CODEC = PacketCodec.tuple(
-		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).mapResult(PacketCodecs::optional),
+		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).collect(PacketCodecs::optional),
 		UpdateBeaconC2SPacket::primary,
-		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).mapResult(PacketCodecs::optional),
+		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).collect(PacketCodecs::optional),
 		UpdateBeaconC2SPacket::secondary,
 		UpdateBeaconC2SPacket::new
 	);
 
 	@Override
-	public PacketIdentifier<UpdateBeaconC2SPacket> getPacketId() {
+	public PacketType<UpdateBeaconC2SPacket> getPacketId() {
 		return PlayPackets.SET_BEACON;
 	}
 

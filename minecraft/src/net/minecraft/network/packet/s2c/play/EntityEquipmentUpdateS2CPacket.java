@@ -5,11 +5,11 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -54,7 +54,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 	}
 
 	@Override
-	public PacketIdentifier<EntityEquipmentUpdateS2CPacket> getPacketId() {
+	public PacketType<EntityEquipmentUpdateS2CPacket> getPacketId() {
 		return PlayPackets.SET_EQUIPMENT;
 	}
 

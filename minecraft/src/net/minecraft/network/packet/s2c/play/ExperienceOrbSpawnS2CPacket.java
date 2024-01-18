@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -43,7 +43,7 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	@Override
-	public PacketIdentifier<ExperienceOrbSpawnS2CPacket> getPacketId() {
+	public PacketType<ExperienceOrbSpawnS2CPacket> getPacketId() {
 		return PlayPackets.ADD_EXPERIENCE_ORB;
 	}
 

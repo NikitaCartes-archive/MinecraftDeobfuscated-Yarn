@@ -9,7 +9,7 @@ public record DebugNeighborsUpdateCustomPayload(long time, BlockPos pos) impleme
 	public static final PacketCodec<PacketByteBuf, DebugNeighborsUpdateCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugNeighborsUpdateCustomPayload::write, DebugNeighborsUpdateCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugNeighborsUpdateCustomPayload> KEY = CustomPayload.id("debug/neighbors_update");
+	public static final CustomPayload.Id<DebugNeighborsUpdateCustomPayload> ID = CustomPayload.id("debug/neighbors_update");
 
 	private DebugNeighborsUpdateCustomPayload(PacketByteBuf buf) {
 		this(buf.readVarLong(), buf.readBlockPos());
@@ -22,6 +22,6 @@ public record DebugNeighborsUpdateCustomPayload(long time, BlockPos pos) impleme
 
 	@Override
 	public CustomPayload.Id<DebugNeighborsUpdateCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

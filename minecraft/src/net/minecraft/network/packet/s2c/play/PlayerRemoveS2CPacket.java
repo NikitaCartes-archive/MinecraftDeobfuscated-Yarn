@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Uuids;
 
@@ -22,7 +22,7 @@ public record PlayerRemoveS2CPacket(List<UUID> profileIds) implements Packet<Cli
 	}
 
 	@Override
-	public PacketIdentifier<PlayerRemoveS2CPacket> getPacketId() {
+	public PacketType<PlayerRemoveS2CPacket> getPacketId() {
 		return PlayPackets.PLAYER_INFO_REMOVE;
 	}
 

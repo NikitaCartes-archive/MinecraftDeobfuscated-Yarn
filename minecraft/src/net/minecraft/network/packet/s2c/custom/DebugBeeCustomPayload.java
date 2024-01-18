@@ -16,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 
 public record DebugBeeCustomPayload(DebugBeeCustomPayload.Bee beeInfo) implements CustomPayload {
 	public static final PacketCodec<PacketByteBuf, DebugBeeCustomPayload> CODEC = CustomPayload.codecOf(DebugBeeCustomPayload::write, DebugBeeCustomPayload::new);
-	public static final CustomPayload.Id<DebugBeeCustomPayload> KEY = CustomPayload.id("debug/bee");
+	public static final CustomPayload.Id<DebugBeeCustomPayload> ID = CustomPayload.id("debug/bee");
 
 	private DebugBeeCustomPayload(PacketByteBuf buf) {
 		this(new DebugBeeCustomPayload.Bee(buf));
@@ -28,7 +28,7 @@ public record DebugBeeCustomPayload(DebugBeeCustomPayload.Bee beeInfo) implement
 
 	@Override
 	public CustomPayload.Id<DebugBeeCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 
 	public static record Bee(

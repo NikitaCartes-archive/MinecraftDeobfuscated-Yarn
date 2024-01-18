@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 
 public record BrandCustomPayload(String brand) implements CustomPayload {
 	public static final PacketCodec<PacketByteBuf, BrandCustomPayload> CODEC = CustomPayload.codecOf(BrandCustomPayload::write, BrandCustomPayload::new);
-	public static final CustomPayload.Id<BrandCustomPayload> KEY = CustomPayload.id("brand");
+	public static final CustomPayload.Id<BrandCustomPayload> ID = CustomPayload.id("brand");
 
 	private BrandCustomPayload(PacketByteBuf buf) {
 		this(buf.readString());
@@ -17,6 +17,6 @@ public record BrandCustomPayload(String brand) implements CustomPayload {
 
 	@Override
 	public CustomPayload.Id<BrandCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

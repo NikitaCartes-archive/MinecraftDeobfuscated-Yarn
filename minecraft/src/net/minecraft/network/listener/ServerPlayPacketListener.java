@@ -1,6 +1,6 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.network.NetworkState;
+import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
 import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
@@ -53,8 +53,8 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
  */
 public interface ServerPlayPacketListener extends ServerQueryPingPacketListener, ServerCommonPacketListener {
 	@Override
-	default NetworkState getState() {
-		return NetworkState.PLAY;
+	default NetworkPhase getPhase() {
+		return NetworkPhase.PLAY;
 	}
 
 	void onHandSwing(HandSwingC2SPacket packet);

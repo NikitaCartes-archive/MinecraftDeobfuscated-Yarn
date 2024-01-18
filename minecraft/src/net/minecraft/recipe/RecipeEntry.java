@@ -1,7 +1,7 @@
 package net.minecraft.recipe;
 
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.util.Identifier;
 
 public record RecipeEntry<T extends Recipe<?>>(Identifier id, T value) {

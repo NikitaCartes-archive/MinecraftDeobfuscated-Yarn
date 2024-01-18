@@ -10,7 +10,7 @@ public record DebugGoalSelectorCustomPayload(int entityId, BlockPos pos, List<De
 	public static final PacketCodec<PacketByteBuf, DebugGoalSelectorCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugGoalSelectorCustomPayload::write, DebugGoalSelectorCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugGoalSelectorCustomPayload> KEY = CustomPayload.id("debug/goal_selector");
+	public static final CustomPayload.Id<DebugGoalSelectorCustomPayload> ID = CustomPayload.id("debug/goal_selector");
 
 	private DebugGoalSelectorCustomPayload(PacketByteBuf buf) {
 		this(buf.readInt(), buf.readBlockPos(), buf.readList(DebugGoalSelectorCustomPayload.Goal::new));
@@ -24,7 +24,7 @@ public record DebugGoalSelectorCustomPayload(int entityId, BlockPos pos, List<De
 
 	@Override
 	public CustomPayload.Id<DebugGoalSelectorCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 
 	public static record Goal(int priority, boolean isRunning, String name) {

@@ -161,19 +161,29 @@ public class CrafterBlock extends BlockWithEntity {
 			if (optionalx.isEmpty()) {
 				world.syncWorldEvent(WorldEvents.CRAFTER_FAILS, pos, 0);
 			} else {
-				crafterBlockEntity.setCraftingTicksRemaining(6);
-				world.setBlockState(pos, state.with(CRAFTING, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 				CraftingRecipe craftingRecipe = (CraftingRecipe)optionalx.get();
 				ItemStack itemStack = craftingRecipe.craft(crafterBlockEntity, world.getRegistryManager());
-				itemStack.onCraftByCrafter(world);
-				this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack, state);
-				craftingRecipe.getRemainder(crafterBlockEntity).forEach(stack -> this.transferOrSpawnStack(world, pos, crafterBlockEntity, stack, state));
-				crafterBlockEntity.method_11282().forEach(stack -> {
-					if (!stack.isEmpty()) {
-						stack.decrement(1);
+				if (itemStack.isEmpty()) {
+					world.syncWorldEvent(WorldEvents.CRAFTER_FAILS, pos, 0);
+				} else {
+					crafterBlockEntity.setCraftingTicksRemaining(6);
+					world.setBlockState(pos, state.with(CRAFTING, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+					itemStack.onCraftByCrafter(world);
+					this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack, state);
+
+					for(ItemStack itemStack2 : craftingRecipe.getRemainder(crafterBlockEntity)) {
+						if (!itemStack2.isEmpty()) {
+							this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack2, state);
+						}
 					}
-				});
-				crafterBlockEntity.markDirty();
+
+					crafterBlockEntity.method_11282().forEach(stack -> {
+						if (!stack.isEmpty()) {
+							stack.decrement(1);
+						}
+					});
+					crafterBlockEntity.markDirty();
+				}
 			}
 		}
 	}

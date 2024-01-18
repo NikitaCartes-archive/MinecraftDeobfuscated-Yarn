@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record ScoreboardScoreResetS2CPacket(String scoreHolderName, @Nullable String objectiveName) implements Packet<ClientPlayPacketListener> {
@@ -23,7 +23,7 @@ public record ScoreboardScoreResetS2CPacket(String scoreHolderName, @Nullable St
 	}
 
 	@Override
-	public PacketIdentifier<ScoreboardScoreResetS2CPacket> getPacketId() {
+	public PacketType<ScoreboardScoreResetS2CPacket> getPacketId() {
 		return PlayPackets.RESET_SCORE;
 	}
 

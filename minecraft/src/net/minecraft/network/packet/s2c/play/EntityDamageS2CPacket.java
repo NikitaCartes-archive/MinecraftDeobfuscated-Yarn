@@ -8,7 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -60,7 +60,7 @@ public record EntityDamageS2CPacket(int entityId, int sourceTypeId, int sourceCa
 	}
 
 	@Override
-	public PacketIdentifier<EntityDamageS2CPacket> getPacketId() {
+	public PacketType<EntityDamageS2CPacket> getPacketId() {
 		return PlayPackets.DAMAGE_EVENT;
 	}
 

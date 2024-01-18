@@ -52,7 +52,7 @@ public class EditWorldScreen extends Screen {
 	private final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical().spacing(5);
 	private final BooleanConsumer callback;
 	private final LevelStorage.Session storageSession;
-	private final TextFieldWidget field_48397;
+	private final TextFieldWidget nameFieldWidget;
 
 	public static EditWorldScreen create(MinecraftClient client, LevelStorage.Session session, BooleanConsumer callback) throws IOException {
 		LevelSummary levelSummary = session.getLevelSummary(session.readLevelProperties());
@@ -66,14 +66,14 @@ public class EditWorldScreen extends Screen {
 		TextRenderer textRenderer = client.textRenderer;
 		this.layout.add(new EmptyWidget(200, 20));
 		this.layout.add(new TextWidget(ENTER_NAME_TEXT, textRenderer));
-		this.field_48397 = this.layout.add(new TextFieldWidget(textRenderer, 200, 20, ENTER_NAME_TEXT));
-		this.field_48397.setText(levelName);
+		this.nameFieldWidget = this.layout.add(new TextFieldWidget(textRenderer, 200, 20, ENTER_NAME_TEXT));
+		this.nameFieldWidget.setText(levelName);
 		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.horizontal().spacing(4);
 		ButtonWidget buttonWidget = directionalLayoutWidget.add(
-			ButtonWidget.builder(SAVE_TEXT, buttonWidgetx -> this.commit(this.field_48397.getText())).width(98).build()
+			ButtonWidget.builder(SAVE_TEXT, button -> this.commit(this.nameFieldWidget.getText())).width(98).build()
 		);
 		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).width(98).build());
-		this.field_48397.setChangedListener(name -> buttonWidget.active = !Util.isBlank(name));
+		this.nameFieldWidget.setChangedListener(name -> buttonWidget.active = !Util.isBlank(name));
 		this.layout.add(ButtonWidget.builder(RESET_ICON_TEXT, buttonWidgetx -> {
 			session.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
 			buttonWidgetx.active = false;
@@ -111,8 +111,8 @@ public class EditWorldScreen extends Screen {
 	}
 
 	@Override
-	protected void method_56131() {
-		this.setInitialFocus(this.field_48397);
+	protected void setInitialFocus() {
+		this.setInitialFocus(this.nameFieldWidget);
 	}
 
 	@Override

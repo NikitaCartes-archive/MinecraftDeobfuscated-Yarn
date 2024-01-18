@@ -9,7 +9,7 @@ public record DebugPoiTicketCountCustomPayload(BlockPos pos, int freeTicketCount
 	public static final PacketCodec<PacketByteBuf, DebugPoiTicketCountCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugPoiTicketCountCustomPayload::write, DebugPoiTicketCountCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugPoiTicketCountCustomPayload> KEY = CustomPayload.id("debug/poi_ticket_count");
+	public static final CustomPayload.Id<DebugPoiTicketCountCustomPayload> ID = CustomPayload.id("debug/poi_ticket_count");
 
 	private DebugPoiTicketCountCustomPayload(PacketByteBuf buf) {
 		this(buf.readBlockPos(), buf.readInt());
@@ -22,6 +22,6 @@ public record DebugPoiTicketCountCustomPayload(BlockPos pos, int freeTicketCount
 
 	@Override
 	public CustomPayload.Id<DebugPoiTicketCountCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

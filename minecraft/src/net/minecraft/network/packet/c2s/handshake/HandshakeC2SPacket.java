@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.HandshakePackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public record HandshakeC2SPacket(int protocolVersion, String address, int port, ConnectionIntent intendedState) implements Packet<ServerHandshakePacketListener> {
 	public static final PacketCodec<PacketByteBuf, HandshakeC2SPacket> CODEC = Packet.createCodec(HandshakeC2SPacket::write, HandshakeC2SPacket::new);
@@ -31,7 +31,7 @@ public record HandshakeC2SPacket(int protocolVersion, String address, int port, 
 	}
 
 	@Override
-	public PacketIdentifier<HandshakeC2SPacket> getPacketId() {
+	public PacketType<HandshakeC2SPacket> getPacketId() {
 		return HandshakePackets.INTENTION;
 	}
 

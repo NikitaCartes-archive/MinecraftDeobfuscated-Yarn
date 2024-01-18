@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record DamageTiltS2CPacket(int id, float yaw) implements Packet<ClientPlayPacketListener> {
@@ -25,7 +25,7 @@ public record DamageTiltS2CPacket(int id, float yaw) implements Packet<ClientPla
 	}
 
 	@Override
-	public PacketIdentifier<DamageTiltS2CPacket> getPacketId() {
+	public PacketType<DamageTiltS2CPacket> getPacketId() {
 		return PlayPackets.HURT_ANIMATION;
 	}
 

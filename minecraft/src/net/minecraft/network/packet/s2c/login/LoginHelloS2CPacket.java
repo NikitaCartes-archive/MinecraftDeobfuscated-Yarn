@@ -8,38 +8,38 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	public static final PacketCodec<PacketByteBuf, LoginHelloS2CPacket> CODEC = Packet.createCodec(LoginHelloS2CPacket::write, LoginHelloS2CPacket::new);
 	private final String serverId;
 	private final byte[] publicKey;
 	private final byte[] nonce;
-	private final boolean field_48235;
+	private final boolean needsAuthentication;
 
-	public LoginHelloS2CPacket(String serverId, byte[] publicKey, byte[] nonce, boolean bl) {
+	public LoginHelloS2CPacket(String serverId, byte[] publicKey, byte[] nonce, boolean needsAuthentication) {
 		this.serverId = serverId;
 		this.publicKey = publicKey;
 		this.nonce = nonce;
-		this.field_48235 = bl;
+		this.needsAuthentication = needsAuthentication;
 	}
 
 	private LoginHelloS2CPacket(PacketByteBuf buf) {
 		this.serverId = buf.readString(20);
 		this.publicKey = buf.readByteArray();
 		this.nonce = buf.readByteArray();
-		this.field_48235 = buf.readBoolean();
+		this.needsAuthentication = buf.readBoolean();
 	}
 
 	private void write(PacketByteBuf buf) {
 		buf.writeString(this.serverId);
 		buf.writeByteArray(this.publicKey);
 		buf.writeByteArray(this.nonce);
-		buf.writeBoolean(this.field_48235);
+		buf.writeBoolean(this.needsAuthentication);
 	}
 
 	@Override
-	public PacketIdentifier<LoginHelloS2CPacket> getPacketId() {
+	public PacketType<LoginHelloS2CPacket> getPacketId() {
 		return LoginPackets.HELLO_S2C;
 	}
 
@@ -59,7 +59,7 @@ public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 		return this.nonce;
 	}
 
-	public boolean method_56013() {
-		return this.field_48235;
+	public boolean needsAuthentication() {
+		return this.needsAuthentication;
 	}
 }

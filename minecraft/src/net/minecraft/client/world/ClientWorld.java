@@ -876,7 +876,7 @@ public class ClientWorld extends World {
 		private final boolean hardcore;
 		private final GameRules gameRules;
 		private final boolean flatWorld;
-		private BlockPos field_48402;
+		private BlockPos spawnPos;
 		private float spawnAngle;
 		private long time;
 		private long timeOfDay;
@@ -893,7 +893,7 @@ public class ClientWorld extends World {
 
 		@Override
 		public BlockPos getSpawnPos() {
-			return this.field_48402;
+			return this.spawnPos;
 		}
 
 		@Override
@@ -921,7 +921,7 @@ public class ClientWorld extends World {
 
 		@Override
 		public void setSpawnPos(BlockPos pos, float angle) {
-			this.field_48402 = pos.toImmutable();
+			this.spawnPos = pos.toImmutable();
 			this.spawnAngle = angle;
 		}
 

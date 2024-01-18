@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record PlayerSessionC2SPacket(PublicPlayerSession.Serialized chatSession) implements Packet<ServerPlayPacketListener> {
@@ -20,7 +20,7 @@ public record PlayerSessionC2SPacket(PublicPlayerSession.Serialized chatSession)
 	}
 
 	@Override
-	public PacketIdentifier<PlayerSessionC2SPacket> getPacketId() {
+	public PacketType<PlayerSessionC2SPacket> getPacketId() {
 		return PlayPackets.CHAT_SESSION_UPDATE;
 	}
 

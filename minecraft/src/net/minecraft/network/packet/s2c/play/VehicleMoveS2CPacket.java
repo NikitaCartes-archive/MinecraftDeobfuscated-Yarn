@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -41,7 +41,7 @@ public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<VehicleMoveS2CPacket> getPacketId() {
+	public PacketType<VehicleMoveS2CPacket> getPacketId() {
 		return PlayPackets.MOVE_VEHICLE_S2C;
 	}
 

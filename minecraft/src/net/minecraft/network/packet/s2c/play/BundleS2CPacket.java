@@ -3,7 +3,7 @@ package net.minecraft.network.packet.s2c.play;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.BundlePacket;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class BundleS2CPacket extends BundlePacket<ClientPlayPacketListener> {
@@ -12,7 +12,7 @@ public class BundleS2CPacket extends BundlePacket<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<BundleS2CPacket> getPacketId() {
+	public PacketType<BundleS2CPacket> getPacketId() {
 		return PlayPackets.BUNDLE;
 	}
 

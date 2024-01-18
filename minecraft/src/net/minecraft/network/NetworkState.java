@@ -1,19 +1,24 @@
 package net.minecraft.network;
 
-public enum NetworkState {
-	HANDSHAKING("handshake"),
-	PLAY("play"),
-	STATUS("status"),
-	LOGIN("login"),
-	CONFIGURATION("configuration");
+import io.netty.buffer.ByteBuf;
+import java.util.function.Function;
+import javax.annotation.Nullable;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.handler.PacketBundleHandler;
+import net.minecraft.network.listener.PacketListener;
+import net.minecraft.network.packet.Packet;
 
-	private final String stateId;
+public interface NetworkState<T extends PacketListener> {
+	NetworkPhase id();
 
-	private NetworkState(String stateId) {
-		this.stateId = stateId;
-	}
+	NetworkSide side();
 
-	public String getId() {
-		return this.stateId;
+	PacketCodec<ByteBuf, Packet<? super T>> codec();
+
+	@Nullable
+	PacketBundleHandler bundleHandler();
+
+	public interface Factory<T extends PacketListener, B extends ByteBuf> {
+		NetworkState<T> bind(Function<ByteBuf, B> registryBinder);
 	}
 }

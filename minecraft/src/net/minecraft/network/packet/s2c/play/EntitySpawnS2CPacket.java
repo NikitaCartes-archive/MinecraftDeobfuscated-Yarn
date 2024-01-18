@@ -3,12 +3,12 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
@@ -94,7 +94,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	private EntitySpawnS2CPacket(RegistryByteBuf buf) {
 		this.id = buf.readVarInt();
 		this.uuid = buf.readUuid();
-		this.entityType = PacketCodecs.registry(RegistryKeys.ENTITY_TYPE).decode(buf);
+		this.entityType = PacketCodecs.registryValue(RegistryKeys.ENTITY_TYPE).decode(buf);
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
 		this.z = buf.readDouble();
@@ -110,7 +110,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	private void write(RegistryByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeUuid(this.uuid);
-		PacketCodecs.registry(RegistryKeys.ENTITY_TYPE).encode(buf, this.entityType);
+		PacketCodecs.registryValue(RegistryKeys.ENTITY_TYPE).encode(buf, this.entityType);
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
 		buf.writeDouble(this.z);
@@ -124,7 +124,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<EntitySpawnS2CPacket> getPacketId() {
+	public PacketType<EntitySpawnS2CPacket> getPacketId() {
 		return PlayPackets.ADD_ENTITY;
 	}
 

@@ -1,10 +1,10 @@
 package net.minecraft.network.packet.s2c.play;
 
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -64,7 +64,7 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<ParticleS2CPacket> getPacketId() {
+	public PacketType<ParticleS2CPacket> getPacketId() {
 		return PlayPackets.LEVEL_PARTICLES;
 	}
 

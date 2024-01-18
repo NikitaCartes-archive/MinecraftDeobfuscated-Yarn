@@ -28,8 +28,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9095;
-import net.minecraft.class_9157;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -67,7 +65,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.encryption.SignatureVerifier;
@@ -148,6 +145,7 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
+import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -233,10 +231,9 @@ public class ServerPlayNetworkHandler
 	private final MessageChainTaskQueue messageChainTaskQueue;
 	private boolean requestedReconfiguration;
 
-	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData) {
-		super(server, connection, clientData);
-		this.chunkDataSender = new ChunkDataSender(connection.isLocal());
-		connection.method_56330(class_9095.field_48172.bind(RegistryByteBuf.makeFactory(server.getRegistryManager())), this);
+	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection clientConnection, ServerPlayerEntity player, ConnectedClientData clientData) {
+		super(server, clientConnection, clientData);
+		this.chunkDataSender = new ChunkDataSender(clientConnection.isLocal());
 		this.player = player;
 		player.networkHandler = this;
 		player.getTextStream().onConnect();
@@ -1455,7 +1452,7 @@ public class ServerPlayNetworkHandler
 		this.requestedReconfiguration = true;
 		this.cleanUp();
 		this.sendPacket(EnterReconfigurationS2CPacket.INSTANCE);
-		this.connection.method_56329(class_9157.field_48699);
+		this.connection.transitionOutbound(ConfigurationStates.S2C);
 	}
 
 	@Override
@@ -1740,8 +1737,8 @@ public class ServerPlayNetworkHandler
 			throw new IllegalStateException("Client acknowledged config, but none was requested");
 		} else {
 			this.connection
-				.method_56330(
-					class_9157.field_48698, new ServerConfigurationNetworkHandler(this.server, this.connection, this.createClientData(this.player.getClientOptions()))
+				.transitionInbound(
+					ConfigurationStates.C2S, new ServerConfigurationNetworkHandler(this.server, this.connection, this.createClientData(this.player.getClientOptions()))
 				);
 		}
 	}

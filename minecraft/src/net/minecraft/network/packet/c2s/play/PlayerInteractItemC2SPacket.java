@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.Hand;
 
@@ -31,7 +31,7 @@ public class PlayerInteractItemC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	@Override
-	public PacketIdentifier<PlayerInteractItemC2SPacket> getPacketId() {
+	public PacketType<PlayerInteractItemC2SPacket> getPacketId() {
 		return PlayPackets.USE_ITEM;
 	}
 

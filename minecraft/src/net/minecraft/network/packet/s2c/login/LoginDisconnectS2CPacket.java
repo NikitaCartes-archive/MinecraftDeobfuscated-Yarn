@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.text.Text;
 
 public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListener> {
@@ -27,7 +27,7 @@ public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListene
 	}
 
 	@Override
-	public PacketIdentifier<LoginDisconnectS2CPacket> getPacketId() {
+	public PacketType<LoginDisconnectS2CPacket> getPacketId() {
 		return LoginPackets.LOGIN_DISCONNECT;
 	}
 

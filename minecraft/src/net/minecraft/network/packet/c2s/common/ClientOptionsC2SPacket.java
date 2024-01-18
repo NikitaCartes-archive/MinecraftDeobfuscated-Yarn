@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public record ClientOptionsC2SPacket(SyncedClientOptions options) implements Packet<ServerCommonPacketListener> {
 	public static final PacketCodec<PacketByteBuf, ClientOptionsC2SPacket> CODEC = Packet.createCodec(ClientOptionsC2SPacket::write, ClientOptionsC2SPacket::new);
@@ -19,7 +19,7 @@ public record ClientOptionsC2SPacket(SyncedClientOptions options) implements Pac
 	}
 
 	@Override
-	public PacketIdentifier<ClientOptionsC2SPacket> getPacketId() {
+	public PacketType<ClientOptionsC2SPacket> getPacketId() {
 		return CommonPackets.CLIENT_INFORMATION;
 	}
 

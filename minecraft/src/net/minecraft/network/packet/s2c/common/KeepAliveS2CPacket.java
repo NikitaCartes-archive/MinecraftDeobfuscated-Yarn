@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public class KeepAliveS2CPacket implements Packet<ClientCommonPacketListener> {
 	public static final PacketCodec<PacketByteBuf, KeepAliveS2CPacket> CODEC = Packet.createCodec(KeepAliveS2CPacket::write, KeepAliveS2CPacket::new);
@@ -24,7 +24,7 @@ public class KeepAliveS2CPacket implements Packet<ClientCommonPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<KeepAliveS2CPacket> getPacketId() {
+	public PacketType<KeepAliveS2CPacket> getPacketId() {
 		return CommonPackets.KEEP_ALIVE_S2C;
 	}
 

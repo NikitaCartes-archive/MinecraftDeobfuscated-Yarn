@@ -18,7 +18,7 @@ public class PacketBundler extends MessageToMessageDecoder<Packet<?>> {
 
 	protected void decode(ChannelHandlerContext channelHandlerContext, Packet<?> packet, List<Object> list) throws Exception {
 		if (this.currentBundler != null) {
-			method_56346(packet);
+			ensureNotTransitioning(packet);
 			Packet<?> packet2 = this.currentBundler.add(packet);
 			if (packet2 != null) {
 				this.currentBundler = null;
@@ -27,7 +27,7 @@ public class PacketBundler extends MessageToMessageDecoder<Packet<?>> {
 		} else {
 			PacketBundleHandler.Bundler bundler = this.handler.createBundler(packet);
 			if (bundler != null) {
-				method_56346(packet);
+				ensureNotTransitioning(packet);
 				this.currentBundler = bundler;
 			} else {
 				list.add(packet);
@@ -38,7 +38,7 @@ public class PacketBundler extends MessageToMessageDecoder<Packet<?>> {
 		}
 	}
 
-	private static void method_56346(Packet<?> packet) {
+	private static void ensureNotTransitioning(Packet<?> packet) {
 		if (packet.transitionsNetworkState()) {
 			throw new DecoderException("Terminal message received in bundle");
 		}

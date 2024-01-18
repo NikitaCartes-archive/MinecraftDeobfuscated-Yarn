@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record ChatSuggestionsS2CPacket(ChatSuggestionsS2CPacket.Action action, List<String> entries) implements Packet<ClientPlayPacketListener> {
@@ -23,7 +23,7 @@ public record ChatSuggestionsS2CPacket(ChatSuggestionsS2CPacket.Action action, L
 	}
 
 	@Override
-	public PacketIdentifier<ChatSuggestionsS2CPacket> getPacketId() {
+	public PacketType<ChatSuggestionsS2CPacket> getPacketId() {
 		return PlayPackets.CUSTOM_CHAT_COMPLETIONS;
 	}
 

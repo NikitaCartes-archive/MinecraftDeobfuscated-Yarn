@@ -34,7 +34,7 @@ import net.minecraft.util.math.ColorHelper;
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
 	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = new Identifier("icon/draft_report");
-	private static final Duration field_32418 = Duration.ofMillis(500L);
+	private static final Duration TOOLTIP_DELAY = Duration.ofMillis(500L);
 	private static final ButtonTextures REPORT_BUTTON_TEXTURES = new ButtonTextures(
 		new Identifier("social_interactions/report_button"),
 		new Identifier("social_interactions/report_button_disabled"),
@@ -114,7 +114,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			};
 			this.reportButton.active = this.canSendReports;
 			this.reportButton.setTooltip(this.getReportButtonTooltip());
-			this.reportButton.setTooltipDelay(field_32418);
+			this.reportButton.setTooltipDelay(TOOLTIP_DELAY);
 			this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, MUTE_BUTTON_TEXTURES, button -> {
 				socialInteractionsManager.hidePlayer(uuid);
 				this.onButtonClick(true, Text.translatable("gui.socialInteractions.hidden_in_chat", name));
@@ -125,7 +125,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 				}
 			};
 			this.hideButton.setTooltip(Tooltip.of(hideText, text));
-			this.hideButton.setTooltipDelay(field_32418);
+			this.hideButton.setTooltipDelay(TOOLTIP_DELAY);
 			this.showButton = new TexturedButtonWidget(0, 0, 20, 20, UNMUTE_BUTTON_TEXTURES, button -> {
 				socialInteractionsManager.showPlayer(uuid);
 				this.onButtonClick(false, Text.translatable("gui.socialInteractions.shown_in_chat", name));
@@ -136,7 +136,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 				}
 			};
 			this.showButton.setTooltip(Tooltip.of(showText, text2));
-			this.showButton.setTooltipDelay(field_32418);
+			this.showButton.setTooltipDelay(TOOLTIP_DELAY);
 			this.buttons = new ArrayList();
 			this.buttons.add(this.hideButton);
 			this.buttons.add(this.reportButton);

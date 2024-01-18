@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -34,7 +34,7 @@ public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	@Override
-	public PacketIdentifier<ItemPickupAnimationS2CPacket> getPacketId() {
+	public PacketType<ItemPickupAnimationS2CPacket> getPacketId() {
 		return PlayPackets.TAKE_ITEM_ENTITY;
 	}
 

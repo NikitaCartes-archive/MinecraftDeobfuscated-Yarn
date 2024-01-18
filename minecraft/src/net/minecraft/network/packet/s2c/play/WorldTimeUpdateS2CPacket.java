@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class WorldTimeUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -38,7 +38,7 @@ public class WorldTimeUpdateS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Override
-	public PacketIdentifier<WorldTimeUpdateS2CPacket> getPacketId() {
+	public PacketType<WorldTimeUpdateS2CPacket> getPacketId() {
 		return PlayPackets.SET_TIME;
 	}
 

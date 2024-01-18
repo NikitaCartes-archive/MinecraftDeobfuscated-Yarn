@@ -9,7 +9,7 @@ public record DebugPathCustomPayload(int entityId, Path path, float maxNodeDista
 	public static final PacketCodec<PacketByteBuf, DebugPathCustomPayload> CODEC = CustomPayload.codecOf(
 		DebugPathCustomPayload::write, DebugPathCustomPayload::new
 	);
-	public static final CustomPayload.Id<DebugPathCustomPayload> KEY = CustomPayload.id("debug/path");
+	public static final CustomPayload.Id<DebugPathCustomPayload> ID = CustomPayload.id("debug/path");
 
 	private DebugPathCustomPayload(PacketByteBuf buf) {
 		this(buf.readInt(), Path.fromBuf(buf), buf.readFloat());
@@ -23,6 +23,6 @@ public record DebugPathCustomPayload(int entityId, Path path, float maxNodeDista
 
 	@Override
 	public CustomPayload.Id<DebugPathCustomPayload> getId() {
-		return KEY;
+		return ID;
 	}
 }

@@ -4,11 +4,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9095;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
-import net.minecraft.network.codec.RegistryByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.listener.ClientConfigurationPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.CustomPayload;
@@ -16,6 +15,7 @@ import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
+import net.minecraft.network.state.PlayStateFactories;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -77,8 +77,8 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	public void onReady(ReadyS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.connection
-			.method_56330(
-				class_9095.field_48173.bind(RegistryByteBuf.makeFactory(this.registryManager)),
+			.transitionInbound(
+				PlayStateFactories.S2C.bind(RegistryByteBuf.makeFactory(this.registryManager)),
 				new ClientPlayNetworkHandler(
 					this.client,
 					this.connection,
@@ -88,7 +88,7 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 				)
 			);
 		this.connection.send(ReadyC2SPacket.INSTANCE);
-		this.connection.method_56329(class_9095.field_48172.bind(RegistryByteBuf.makeFactory(this.registryManager)));
+		this.connection.transitionOutbound(PlayStateFactories.C2S.bind(RegistryByteBuf.makeFactory(this.registryManager)));
 	}
 
 	@Override

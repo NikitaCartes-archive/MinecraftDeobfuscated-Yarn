@@ -6,7 +6,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> {
 	public static final PacketCodec<PacketByteBuf, LoginSuccessS2CPacket> CODEC = Packet.createCodec(LoginSuccessS2CPacket::write, LoginSuccessS2CPacket::new);
@@ -25,7 +25,7 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 	}
 
 	@Override
-	public PacketIdentifier<LoginSuccessS2CPacket> getPacketId() {
+	public PacketType<LoginSuccessS2CPacket> getPacketId() {
 		return LoginPackets.GAME_PROFILE;
 	}
 

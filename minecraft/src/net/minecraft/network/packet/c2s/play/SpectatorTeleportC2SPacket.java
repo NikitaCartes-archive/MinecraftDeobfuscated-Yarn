@@ -7,7 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.server.world.ServerWorld;
 
@@ -30,7 +30,7 @@ public class SpectatorTeleportC2SPacket implements Packet<ServerPlayPacketListen
 	}
 
 	@Override
-	public PacketIdentifier<SpectatorTeleportC2SPacket> getPacketId() {
+	public PacketType<SpectatorTeleportC2SPacket> getPacketId() {
 		return PlayPackets.TELEPORT_TO_ENTITY;
 	}
 

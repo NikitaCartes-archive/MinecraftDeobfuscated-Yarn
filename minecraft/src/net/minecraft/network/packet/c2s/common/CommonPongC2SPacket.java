@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 /**
  * This is a packet that is sent by the client during tick after receiving a
@@ -33,7 +33,7 @@ public class CommonPongC2SPacket implements Packet<ServerCommonPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<CommonPongC2SPacket> getPacketId() {
+	public PacketType<CommonPongC2SPacket> getPacketId() {
 		return CommonPackets.PONG;
 	}
 

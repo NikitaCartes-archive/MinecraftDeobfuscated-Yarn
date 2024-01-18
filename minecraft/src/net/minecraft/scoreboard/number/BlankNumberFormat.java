@@ -1,8 +1,8 @@
 package net.minecraft.scoreboard.number;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 

@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.BlockPos;
 
@@ -65,7 +65,7 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	@Override
-	public PacketIdentifier<UpdateCommandBlockC2SPacket> getPacketId() {
+	public PacketType<UpdateCommandBlockC2SPacket> getPacketId() {
 		return PlayPackets.SET_COMMAND_BLOCK;
 	}
 

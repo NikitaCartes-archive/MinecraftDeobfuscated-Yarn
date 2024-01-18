@@ -7,8 +7,8 @@ import io.netty.handler.codec.EncoderException;
 import java.nio.charset.StandardCharsets;
 
 public class StringEncoding {
-	public static String decode(ByteBuf buf, int length) {
-		int i = ByteBufUtil.utf8MaxBytes(length);
+	public static String decode(ByteBuf buf, int maxLength) {
+		int i = ByteBufUtil.utf8MaxBytes(maxLength);
 		int j = VarInts.read(buf);
 		if (j > i) {
 			throw new DecoderException("The received encoded string buffer length is longer than maximum allowed (" + j + " > " + i + ")");
@@ -21,8 +21,8 @@ public class StringEncoding {
 			} else {
 				String string = buf.toString(buf.readerIndex(), j, StandardCharsets.UTF_8);
 				buf.readerIndex(buf.readerIndex() + j);
-				if (string.length() > length) {
-					throw new DecoderException("The received string length is longer than maximum allowed (" + string.length() + " > " + length + ")");
+				if (string.length() > maxLength) {
+					throw new DecoderException("The received string length is longer than maximum allowed (" + string.length() + " > " + maxLength + ")");
 				} else {
 					return string;
 				}
@@ -30,16 +30,16 @@ public class StringEncoding {
 		}
 	}
 
-	public static void encode(ByteBuf buf, CharSequence string, int length) {
-		if (string.length() > length) {
-			throw new EncoderException("String too big (was " + string.length() + " characters, max " + length + ")");
+	public static void encode(ByteBuf buf, CharSequence string, int maxLength) {
+		if (string.length() > maxLength) {
+			throw new EncoderException("String too big (was " + string.length() + " characters, max " + maxLength + ")");
 		} else {
 			int i = ByteBufUtil.utf8MaxBytes(string);
 			ByteBuf byteBuf = buf.alloc().buffer(i);
 
 			try {
 				int j = ByteBufUtil.writeUtf8(byteBuf, string);
-				int k = ByteBufUtil.utf8MaxBytes(length);
+				int k = ByteBufUtil.utf8MaxBytes(maxLength);
 				if (j > k) {
 					throw new EncoderException("String too big (was " + j + " bytes encoded, max " + k + ")");
 				}

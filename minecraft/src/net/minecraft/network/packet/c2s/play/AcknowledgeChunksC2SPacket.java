@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record AcknowledgeChunksC2SPacket(float desiredChunksPerTick) implements Packet<ServerPlayPacketListener> {
@@ -21,7 +21,7 @@ public record AcknowledgeChunksC2SPacket(float desiredChunksPerTick) implements 
 	}
 
 	@Override
-	public PacketIdentifier<AcknowledgeChunksC2SPacket> getPacketId() {
+	public PacketType<AcknowledgeChunksC2SPacket> getPacketId() {
 		return PlayPackets.CHUNK_BATCH_RECEIVED;
 	}
 

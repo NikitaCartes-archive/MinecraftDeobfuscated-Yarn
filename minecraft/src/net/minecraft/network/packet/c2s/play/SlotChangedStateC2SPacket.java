@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record SlotChangedStateC2SPacket(int slotId, int screenHandlerId, boolean newState) implements Packet<ServerPlayPacketListener> {
@@ -23,7 +23,7 @@ public record SlotChangedStateC2SPacket(int slotId, int screenHandlerId, boolean
 	}
 
 	@Override
-	public PacketIdentifier<SlotChangedStateC2SPacket> getPacketId() {
+	public PacketType<SlotChangedStateC2SPacket> getPacketId() {
 		return PlayPackets.CONTAINER_SLOT_STATE_CHANGED;
 	}
 

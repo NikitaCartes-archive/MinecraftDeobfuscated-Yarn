@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 
 public class EnterConfigurationC2SPacket implements Packet<ServerLoginPacketListener> {
 	public static final EnterConfigurationC2SPacket INSTANCE = new EnterConfigurationC2SPacket();
@@ -15,7 +15,7 @@ public class EnterConfigurationC2SPacket implements Packet<ServerLoginPacketList
 	}
 
 	@Override
-	public PacketIdentifier<EnterConfigurationC2SPacket> getPacketId() {
+	public PacketType<EnterConfigurationC2SPacket> getPacketId() {
 		return LoginPackets.LOGIN_ACKNOWLEDGED;
 	}
 

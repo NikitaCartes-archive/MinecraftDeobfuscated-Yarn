@@ -4,8 +4,8 @@ import com.mojang.logging.LogUtils;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.NetworkPhase;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -26,9 +26,9 @@ public interface FlightProfiler {
 
 	void onTick(float tickTime);
 
-	void onPacketReceived(NetworkState state, PacketIdentifier<?> packetIdentifier, SocketAddress remoteAddress, int bytes);
+	void onPacketReceived(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes);
 
-	void onPacketSent(NetworkState state, PacketIdentifier<?> packetIdentifier, SocketAddress remoteAddress, int bytes);
+	void onPacketSent(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes);
 
 	@Nullable
 	Finishable startWorldLoadProfiling();
@@ -63,11 +63,11 @@ public interface FlightProfiler {
 		}
 
 		@Override
-		public void onPacketReceived(NetworkState state, PacketIdentifier<?> packetIdentifier, SocketAddress remoteAddress, int bytes) {
+		public void onPacketReceived(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes) {
 		}
 
 		@Override
-		public void onPacketSent(NetworkState state, PacketIdentifier<?> packetIdentifier, SocketAddress remoteAddress, int bytes) {
+		public void onPacketSent(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes) {
 		}
 
 		@Override

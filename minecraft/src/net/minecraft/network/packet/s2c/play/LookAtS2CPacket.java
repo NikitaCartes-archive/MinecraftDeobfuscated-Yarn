@@ -7,7 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -71,7 +71,7 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<LookAtS2CPacket> getPacketId() {
+	public PacketType<LookAtS2CPacket> getPacketId() {
 		return PlayPackets.PLAYER_LOOK_AT;
 	}
 

@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public class QueryEntityNbtC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -30,7 +30,7 @@ public class QueryEntityNbtC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Override
-	public PacketIdentifier<QueryEntityNbtC2SPacket> getPacketId() {
+	public PacketType<QueryEntityNbtC2SPacket> getPacketId() {
 		return PlayPackets.ENTITY_TAG_QUERY;
 	}
 

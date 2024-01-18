@@ -4,12 +4,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.util.math.MathHelper;
 
 public class TradeOffer {
-	public static final PacketCodec<RegistryByteBuf, TradeOffer> PACKET_CODEC = PacketCodec.of(TradeOffer::read, TradeOffer::write);
+	public static final PacketCodec<RegistryByteBuf, TradeOffer> PACKET_CODEC = PacketCodec.ofStatic(TradeOffer::write, TradeOffer::read);
 	private final ItemStack firstBuyItem;
 	private final ItemStack secondBuyItem;
 	private final ItemStack sellItem;
@@ -349,7 +349,7 @@ public class TradeOffer {
 		return new TradeOffer(this);
 	}
 
-	private static void read(RegistryByteBuf buf, TradeOffer offer) {
+	private static void write(RegistryByteBuf buf, TradeOffer offer) {
 		ItemStack.PACKET_CODEC.encode(buf, offer.getOriginalFirstBuyItem());
 		ItemStack.PACKET_CODEC.encode(buf, offer.getSellItem());
 		ItemStack.PACKET_CODEC.encode(buf, offer.getSecondBuyItem());
@@ -363,7 +363,7 @@ public class TradeOffer {
 		buf.writeBoolean(offer.shouldIgnoreNbt());
 	}
 
-	public static TradeOffer write(RegistryByteBuf buf) {
+	public static TradeOffer read(RegistryByteBuf buf) {
 		ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
 		ItemStack itemStack2 = ItemStack.PACKET_CODEC.decode(buf);
 		ItemStack itemStack3 = ItemStack.PACKET_CODEC.decode(buf);

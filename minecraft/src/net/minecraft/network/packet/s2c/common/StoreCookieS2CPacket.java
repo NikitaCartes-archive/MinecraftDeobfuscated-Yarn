@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.util.Identifier;
 
 public record StoreCookieS2CPacket(Identifier key, byte[] payload) implements Packet<ClientCommonPacketListener> {
@@ -22,7 +22,7 @@ public record StoreCookieS2CPacket(Identifier key, byte[] payload) implements Pa
 	}
 
 	@Override
-	public PacketIdentifier<StoreCookieS2CPacket> getPacketId() {
+	public PacketType<StoreCookieS2CPacket> getPacketId() {
 		return CommonPackets.STORE_COOKIE;
 	}
 

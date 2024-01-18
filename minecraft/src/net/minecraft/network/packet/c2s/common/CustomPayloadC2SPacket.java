@@ -8,7 +8,7 @@ import net.minecraft.network.packet.BrandCustomPayload;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.UnknownCustomPayload;
 import net.minecraft.util.Identifier;
 
@@ -16,12 +16,12 @@ public record CustomPayloadC2SPacket(CustomPayload payload) implements Packet<Se
 	private static final int MAX_PAYLOAD_SIZE = 32767;
 	public static final PacketCodec<PacketByteBuf, CustomPayloadC2SPacket> CODEC = CustomPayload.<PacketByteBuf>createCodec(
 			identifier -> UnknownCustomPayload.createCodec(identifier, 32767),
-			List.of(new CustomPayload.Type<PacketByteBuf, BrandCustomPayload>(BrandCustomPayload.KEY, BrandCustomPayload.CODEC))
+			List.of(new CustomPayload.Type<PacketByteBuf, BrandCustomPayload>(BrandCustomPayload.ID, BrandCustomPayload.CODEC))
 		)
 		.xmap(CustomPayloadC2SPacket::new, CustomPayloadC2SPacket::payload);
 
 	@Override
-	public PacketIdentifier<CustomPayloadC2SPacket> getPacketId() {
+	public PacketType<CustomPayloadC2SPacket> getPacketId() {
 		return CommonPackets.CUSTOM_PAYLOAD_C2S;
 	}
 

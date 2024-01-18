@@ -1,10 +1,10 @@
 package net.minecraft.network.packet.s2c.play;
 
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.RegistryByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
@@ -56,7 +56,7 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<PlaySoundS2CPacket> getPacketId() {
+	public PacketType<PlaySoundS2CPacket> getPacketId() {
 		return PlayPackets.SOUND;
 	}
 

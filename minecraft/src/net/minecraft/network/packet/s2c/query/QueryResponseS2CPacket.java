@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientQueryPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.StatusPackets;
 import net.minecraft.server.ServerMetadata;
 
@@ -20,7 +20,7 @@ public record QueryResponseS2CPacket(ServerMetadata metadata) implements Packet<
 	}
 
 	@Override
-	public PacketIdentifier<QueryResponseS2CPacket> getPacketId() {
+	public PacketType<QueryResponseS2CPacket> getPacketId() {
 		return StatusPackets.STATUS_RESPONSE;
 	}
 

@@ -13,7 +13,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.PacketIdentifier;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -72,7 +72,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public PacketIdentifier<PlayerListS2CPacket> getPacketId() {
+	public PacketType<PlayerListS2CPacket> getPacketId() {
 		return PlayPackets.PLAYER_INFO_UPDATE;
 	}
 
