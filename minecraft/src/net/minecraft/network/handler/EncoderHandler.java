@@ -36,7 +36,7 @@ public class EncoderHandler<T extends PacketListener> extends MessageToByteEncod
 
 			FlightProfiler.INSTANCE.onPacketSent(this.state.id(), packetType, channelHandlerContext.channel().remoteAddress(), j);
 		} catch (Throwable var10) {
-			LOGGER.error("Error receiving packet {}", packetType, var10);
+			LOGGER.error("Error sending packet {}", packetType, var10);
 			if (packet.isWritingErrorSkippable()) {
 				throw new PacketEncoderException(var10);
 			}

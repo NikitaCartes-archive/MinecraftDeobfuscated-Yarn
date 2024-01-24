@@ -12,6 +12,7 @@ import net.minecraft.network.listener.ClientConfigurationPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
+import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
@@ -26,8 +27,9 @@ import org.slf4j.Logger;
 public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandler implements TickablePacketListener, ClientConfigurationPacketListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final GameProfile profile;
-	private DynamicRegistryManager.Immutable registryManager;
 	private FeatureSet enabledFeatures;
+	private final DynamicRegistryManager.Immutable registryManager;
+	private final ClientRegistries clientRegistries = new ClientRegistries();
 
 	public ClientConfigurationNetworkHandler(MinecraftClient minecraftClient, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
 		super(minecraftClient, clientConnection, clientConnectionState);
@@ -42,11 +44,6 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	}
 
 	@Override
-	protected DynamicRegistryManager.Immutable getRegistryManager() {
-		return this.registryManager;
-	}
-
-	@Override
 	protected void onCustomPayload(CustomPayload payload) {
 		this.handleCustomPayload(payload);
 	}
@@ -58,14 +55,13 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	@Override
 	public void onDynamicRegistries(DynamicRegistriesS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		DynamicRegistryManager.Immutable immutable = ClientDynamicRegistryType.createCombinedDynamicRegistries()
-			.with(ClientDynamicRegistryType.REMOTE, packet.registryManager())
-			.getCombinedRegistryManager();
-		if (!this.connection.isLocal()) {
-			immutable.streamAllRegistries().forEach(entry -> entry.value().clearTags());
-		}
+		this.clientRegistries.putDynamicRegistry(packet.registry(), packet.entries());
+	}
 
-		this.registryManager = immutable;
+	@Override
+	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.clientRegistries.putTags(packet.getGroups());
 	}
 
 	@Override
@@ -76,19 +72,20 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	@Override
 	public void onReady(ReadyS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		DynamicRegistryManager.Immutable immutable = this.clientRegistries.createRegistryManager(this.registryManager, this.connection.isLocal());
 		this.connection
 			.transitionInbound(
-				PlayStateFactories.S2C.bind(RegistryByteBuf.makeFactory(this.registryManager)),
+				PlayStateFactories.S2C.bind(RegistryByteBuf.makeFactory(immutable)),
 				new ClientPlayNetworkHandler(
 					this.client,
 					this.connection,
 					new ClientConnectionState(
-						this.profile, this.worldSession, this.registryManager, this.enabledFeatures, this.brand, this.serverInfo, this.postDisconnectScreen, this.serverCookies
+						this.profile, this.worldSession, immutable, this.enabledFeatures, this.brand, this.serverInfo, this.postDisconnectScreen, this.serverCookies
 					)
 				)
 			);
 		this.connection.send(ReadyC2SPacket.INSTANCE);
-		this.connection.transitionOutbound(PlayStateFactories.C2S.bind(RegistryByteBuf.makeFactory(this.registryManager)));
+		this.connection.transitionOutbound(PlayStateFactories.C2S.bind(RegistryByteBuf.makeFactory(immutable)));
 	}
 
 	@Override

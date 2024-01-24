@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 public record RemoveEntityStatusEffectS2CPacket(int entityId, RegistryEntry<StatusEffect> effect) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, RemoveEntityStatusEffectS2CPacket> CODEC = PacketCodec.tuple(
 		PacketCodecs.VAR_INT,
-		removeEntityStatusEffectS2CPacket -> removeEntityStatusEffectS2CPacket.entityId,
+		packet -> packet.entityId,
 		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT),
 		RemoveEntityStatusEffectS2CPacket::effect,
 		RemoveEntityStatusEffectS2CPacket::new

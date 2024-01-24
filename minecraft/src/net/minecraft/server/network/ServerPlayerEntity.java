@@ -1878,7 +1878,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public CommonPlayerSpawnInfo createCommonPlayerSpawnInfo(ServerWorld world) {
 		return new CommonPlayerSpawnInfo(
-			world.getDimensionKey(),
+			world.getDimensionEntry(),
 			world.getRegistryKey(),
 			BiomeAccess.hashSeed(world.getSeed()),
 			this.interactionManager.getGameMode(),

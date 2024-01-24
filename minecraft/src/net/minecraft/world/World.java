@@ -101,7 +101,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public final Random random = Random.create();
 	@Deprecated
 	private final Random threadSafeRandom = Random.createThreadSafe();
-	private final RegistryKey<DimensionType> dimension;
 	private final RegistryEntry<DimensionType> dimensionEntry;
 	protected final MutableWorldProperties properties;
 	private final Supplier<Profiler> profiler;
@@ -127,7 +126,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.profiler = profiler;
 		this.properties = properties;
 		this.dimensionEntry = dimensionEntry;
-		this.dimension = (RegistryKey)dimensionEntry.getKey().orElseThrow(() -> new IllegalArgumentException("Dimension must be registered, got " + dimensionEntry));
 		final DimensionType dimensionType = (DimensionType)dimensionEntry.value();
 		this.registryKey = registryRef;
 		this.isClient = isClient;
@@ -1111,10 +1109,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public DimensionType getDimension() {
 		return (DimensionType)this.dimensionEntry.value();
-	}
-
-	public RegistryKey<DimensionType> getDimensionKey() {
-		return this.dimension;
 	}
 
 	public RegistryEntry<DimensionType> getDimensionEntry() {

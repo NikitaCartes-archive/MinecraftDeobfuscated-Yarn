@@ -98,7 +98,6 @@ public class RealmsBackupScreen extends RealmsScreen {
 			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width - 100, this.height - 35, 85, 20).build()
 		);
 		this.backupObjectSelectionList = this.addDrawableChild(new RealmsBackupScreen.BackupObjectSelectionList());
-		this.focusOn(this.backupObjectSelectionList);
 		this.updateButtonStates();
 	}
 

@@ -128,7 +128,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		}
 	}
 
-	protected void waitForTasks() {
+	public void waitForTasks() {
 		Thread.yield();
 		LockSupport.parkNanos("waiting for tasks", 100000L);
 	}

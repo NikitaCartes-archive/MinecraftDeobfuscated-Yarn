@@ -1,6 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.MessageType;
@@ -8,20 +8,16 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
-public record ProfilelessChatMessageS2CPacket(Text message, MessageType.Serialized chatType) implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, ProfilelessChatMessageS2CPacket> CODEC = Packet.createCodec(
-		ProfilelessChatMessageS2CPacket::write, ProfilelessChatMessageS2CPacket::new
+public record ProfilelessChatMessageS2CPacket(Text message, MessageType.Parameters chatType) implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, ProfilelessChatMessageS2CPacket> CODEC = PacketCodec.tuple(
+		TextCodecs.PACKET_CODEC,
+		ProfilelessChatMessageS2CPacket::message,
+		MessageType.Parameters.CODEC,
+		ProfilelessChatMessageS2CPacket::chatType,
+		ProfilelessChatMessageS2CPacket::new
 	);
-
-	private ProfilelessChatMessageS2CPacket(PacketByteBuf buf) {
-		this(buf.readUnlimitedText(), new MessageType.Serialized(buf));
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeText(this.message);
-		this.chatType.write(buf);
-	}
 
 	@Override
 	public PacketType<ProfilelessChatMessageS2CPacket> getPacketId() {

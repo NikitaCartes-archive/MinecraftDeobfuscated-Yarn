@@ -13,7 +13,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<RegistryByteBuf, ChunkDataS2CPacket> CODEC = Packet.createCodec(ChunkDataS2CPacket::method_55883, ChunkDataS2CPacket::new);
+	public static final PacketCodec<RegistryByteBuf, ChunkDataS2CPacket> CODEC = Packet.createCodec(ChunkDataS2CPacket::write, ChunkDataS2CPacket::new);
 	private final int chunkX;
 	private final int chunkZ;
 	private final ChunkData chunkData;
@@ -34,7 +34,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.lightData = new LightData(buf, this.chunkX, this.chunkZ);
 	}
 
-	private void method_55883(RegistryByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeInt(this.chunkX);
 		buf.writeInt(this.chunkZ);
 		this.chunkData.write(buf);

@@ -79,13 +79,18 @@ public abstract class StructurePlacement {
 	}
 
 	public boolean shouldGenerate(StructurePlacementCalculator calculator, int chunkX, int chunkZ) {
-		if (!this.isStartChunk(calculator, chunkX, chunkZ)) {
-			return false;
-		} else if (this.frequency < 1.0F && !this.frequencyReductionMethod.shouldGenerate(calculator.getStructureSeed(), this.salt, chunkX, chunkZ, this.frequency)) {
-			return false;
-		} else {
-			return !this.exclusionZone.isPresent() || !((StructurePlacement.ExclusionZone)this.exclusionZone.get()).shouldExclude(calculator, chunkX, chunkZ);
-		}
+		return this.isStartChunk(calculator, chunkX, chunkZ)
+			&& this.applyFrequencyReduction(chunkX, chunkZ, calculator.getStructureSeed())
+			&& this.applyExclusionZone(calculator, chunkX, chunkZ);
+	}
+
+	public boolean applyFrequencyReduction(int chunkX, int chunkZ, long seed) {
+		return !(this.frequency < 1.0F) || this.frequencyReductionMethod.shouldGenerate(seed, this.salt, chunkX, chunkZ, this.frequency);
+	}
+
+	public boolean applyExclusionZone(StructurePlacementCalculator calculator, int centerChunkX, int centerChunkZ) {
+		return !this.exclusionZone.isPresent()
+			|| !((StructurePlacement.ExclusionZone)this.exclusionZone.get()).shouldExclude(calculator, centerChunkX, centerChunkZ);
 	}
 
 	protected abstract boolean isStartChunk(StructurePlacementCalculator calculator, int chunkX, int chunkZ);

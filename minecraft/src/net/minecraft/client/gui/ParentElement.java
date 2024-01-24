@@ -111,10 +111,6 @@ public interface ParentElement extends Element {
 		return element != null ? GuiNavigationPath.of(this, element.getFocusedPath()) : null;
 	}
 
-	default void focusOn(@Nullable Element element) {
-		this.setFocused(element);
-	}
-
 	@Nullable
 	@Override
 	default GuiNavigationPath getNavigationPath(GuiNavigation navigation) {

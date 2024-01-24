@@ -39,6 +39,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SnowBlock;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -154,6 +155,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
 import net.minecraft.world.spawner.SpecialSpawner;
 import net.minecraft.world.storage.ChunkDataAccess;
+import net.minecraft.world.storage.ChunkPosKeyedStorage;
 import net.minecraft.world.storage.EntityChunkDataAccess;
 import net.minecraft.world.tick.TickManager;
 import net.minecraft.world.tick.WorldTickScheduler;
@@ -233,7 +235,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		ChunkGenerator chunkGenerator = dimensionOptions.chunkGenerator();
 		boolean bl = server.syncChunkWrites();
 		DataFixer dataFixer = server.getDataFixer();
-		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
+		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(
+			new ChunkPosKeyedStorage(session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, "entities", DataFixTypes.ENTITY_CHUNK), this, server
+		);
 		this.entityManager = new ServerEntityManager<>(Entity.class, new ServerWorld.ServerEntityHandler(), chunkDataAccess);
 		this.chunkManager = new ServerChunkManager(
 			this,

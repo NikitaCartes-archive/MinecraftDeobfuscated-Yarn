@@ -34,6 +34,7 @@ public interface EntityTypeTags {
 	TagKey<EntityType<?>> NOT_SCARY_FOR_PUFFERFISH = of("not_scary_for_pufferfish");
 	TagKey<EntityType<?>> SENSITIVE_TO_IMPALING = of("sensitive_to_impaling");
 	TagKey<EntityType<?>> SENSITIVE_TO_BANE_OF_ARTHROPODS = of("sensitive_to_bane_of_arthropods");
+	TagKey<EntityType<?>> NO_ANGER_FROM_WIND_CHARGE = of("no_anger_from_wind_charge");
 
 	private static TagKey<EntityType<?>> of(String id) {
 		return TagKey.of(RegistryKeys.ENTITY_TYPE, new Identifier(id));
