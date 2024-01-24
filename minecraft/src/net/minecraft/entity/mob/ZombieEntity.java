@@ -60,7 +60,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
@@ -302,8 +301,7 @@ public class ZombieEntity extends HostileEntity {
 					int o = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					BlockPos blockPos = new BlockPos(m, n, o);
 					EntityType<?> entityType = zombieEntity.getType();
-					SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
-					if (SpawnHelper.canSpawn(location, this.getWorld(), blockPos, entityType)
+					if (SpawnRestriction.isSpawnPosAllowed(entityType, this.getWorld(), blockPos)
 						&& SpawnRestriction.canSpawn(entityType, serverWorld, SpawnReason.REINFORCEMENT, blockPos, this.getWorld().random)) {
 						zombieEntity.setPosition((double)m, (double)n, (double)o);
 						if (!this.getWorld().isPlayerInRange((double)m, (double)n, (double)o, 7.0)

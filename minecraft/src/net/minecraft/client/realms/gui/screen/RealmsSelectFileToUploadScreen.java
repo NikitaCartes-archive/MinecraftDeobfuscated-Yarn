@@ -31,7 +31,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Text LOADING_ERROR_TEXT = Text.translatable("selectWorld.unable_to_load");
 	static final Text WORLD_LANG = Text.translatable("selectWorld.world");
 	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").withColor(Colors.RED);
-	static final Text CHEATS_TEXT = Text.translatable("selectWorld.cheats");
+	static final Text COMMANDS_TEXT = Text.translatable("selectWorld.commands");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	@Nullable
 	private final WorldCreationTask creationTask;
@@ -145,7 +145,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			}
 
 			if (summary.hasCheats()) {
-				text = Text.translatable("mco.upload.entry.cheats", text.getString(), RealmsSelectFileToUploadScreen.CHEATS_TEXT);
+				text = Text.translatable("mco.upload.entry.commands", text.getString(), RealmsSelectFileToUploadScreen.COMMANDS_TEXT);
 			}
 
 			this.details = text;

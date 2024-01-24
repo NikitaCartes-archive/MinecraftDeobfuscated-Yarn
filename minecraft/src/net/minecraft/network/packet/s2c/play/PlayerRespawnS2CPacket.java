@@ -1,6 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -8,18 +8,18 @@ import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record PlayerRespawnS2CPacket(CommonPlayerSpawnInfo commonPlayerSpawnInfo, byte flag) implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, PlayerRespawnS2CPacket> CODEC = Packet.createCodec(PlayerRespawnS2CPacket::write, PlayerRespawnS2CPacket::new);
+	public static final PacketCodec<RegistryByteBuf, PlayerRespawnS2CPacket> CODEC = Packet.createCodec(PlayerRespawnS2CPacket::write, PlayerRespawnS2CPacket::new);
 	public static final byte KEEP_ATTRIBUTES = 1;
 	public static final byte KEEP_TRACKED_DATA = 2;
 	public static final byte KEEP_ALL = 3;
 
-	private PlayerRespawnS2CPacket(PacketByteBuf buf) {
-		this(new CommonPlayerSpawnInfo(buf), buf.readByte());
+	private PlayerRespawnS2CPacket(RegistryByteBuf registryByteBuf) {
+		this(new CommonPlayerSpawnInfo(registryByteBuf), registryByteBuf.readByte());
 	}
 
-	private void write(PacketByteBuf buf) {
-		this.commonPlayerSpawnInfo.write(buf);
-		buf.writeByte(this.flag);
+	private void write(RegistryByteBuf registryByteBuf) {
+		this.commonPlayerSpawnInfo.write(registryByteBuf);
+		registryByteBuf.writeByte(this.flag);
 	}
 
 	@Override

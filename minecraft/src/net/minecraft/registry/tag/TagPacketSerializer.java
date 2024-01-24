@@ -24,7 +24,7 @@ public class TagPacketSerializer {
 	) {
 		return (Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized>)SerializableRegistries.streamRegistryManagerEntries(dynamicRegistryManager)
 			.map(registry -> Pair.of(registry.key(), serializeTags(registry.value())))
-			.filter(pair -> !((TagPacketSerializer.Serialized)pair.getSecond()).isEmpty())
+			.filter(pair -> ((TagPacketSerializer.Serialized)pair.getSecond()).size() > 0)
 			.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 	}
 
@@ -47,7 +47,7 @@ public class TagPacketSerializer {
 		return new TagPacketSerializer.Serialized(map);
 	}
 
-	public static <T> void loadTags(
+	static <T> void loadTags(
 		RegistryKey<? extends Registry<T>> registryKey, Registry<T> registry, TagPacketSerializer.Serialized serialized, TagPacketSerializer.Loader<T> loader
 	) {
 		serialized.contents
@@ -91,8 +91,16 @@ public class TagPacketSerializer {
 			return new TagPacketSerializer.Serialized(buf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readIntList));
 		}
 
-		public boolean isEmpty() {
-			return this.contents.isEmpty();
+		public int size() {
+			return this.contents.size();
+		}
+
+		public <T> void loadTo(Registry<T> registry) {
+			if (this.size() != 0) {
+				Map<TagKey<T>, List<RegistryEntry<T>>> map = new HashMap(this.size());
+				TagPacketSerializer.loadTags(registry.getKey(), registry, this, map::put);
+				registry.populateTags(map);
+			}
 		}
 	}
 }

@@ -306,7 +306,7 @@ public abstract class ChunkGenerator {
 		ChunkPos pos
 	) {
 		for (RegistryEntry<Structure> registryEntry : structures) {
-			StructurePresence structurePresence = structureAccessor.getStructurePresence(pos, registryEntry.value(), skipReferencedStructures);
+			StructurePresence structurePresence = structureAccessor.getStructurePresence(pos, registryEntry.value(), placement, skipReferencedStructures);
 			if (structurePresence != StructurePresence.START_NOT_PRESENT) {
 				if (!skipReferencedStructures && structurePresence == StructurePresence.START_PRESENT) {
 					return Pair.of(placement.getLocatePos(pos), registryEntry);

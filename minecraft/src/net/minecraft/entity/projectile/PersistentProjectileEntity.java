@@ -181,7 +181,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				vec3d2 = hitResult.getPos();
 			}
 
-			while (!this.isRemoved()) {
+			while (!this.isRemoved() && !this.deflected) {
 				EntityHitResult entityHitResult = this.getEntityCollision(vec3d3, vec3d2);
 				if (entityHitResult != null) {
 					hitResult = entityHitResult;
@@ -208,6 +208,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				hitResult = null;
 			}
 
+			this.deflected = false;
 			vec3d = this.getVelocity();
 			double e = vec3d.x;
 			double f = vec3d.y;

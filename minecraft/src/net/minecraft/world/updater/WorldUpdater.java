@@ -1,9 +1,6 @@
 package net.minecraft.world.updater;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
@@ -12,23 +9,28 @@ import it.unimi.dsi.fastutil.objects.Reference2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Reference2FloatOpenHashMap;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -38,37 +40,52 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.storage.ChunkPosKeyedStorage;
+import net.minecraft.world.storage.RecreatedChunkStorage;
+import net.minecraft.world.storage.RecreationStorage;
 import net.minecraft.world.storage.RegionFile;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.slf4j.Logger;
 
 public class WorldUpdater {
-	private static final Logger LOGGER = LogUtils.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
-	private final Registry<DimensionOptions> dimensionOptionsRegistry;
-	private final Set<RegistryKey<World>> worldKeys;
-	private final boolean eraseCache;
-	private final LevelStorage.Session session;
+	private static final String NEW_PREFIX = "new_";
+	static final MutableText UPGRADING_POI_TEXT = Text.translatable("optimizeWorld.stage.upgrading.poi");
+	static final MutableText FINISHED_POI_TEXT = Text.translatable("optimizeWorld.stage.finished.poi");
+	static final MutableText UPGRADING_ENTITIES_TEXT = Text.translatable("optimizeWorld.stage.upgrading.entities");
+	static final MutableText FINISHED_ENTITIES_TEXT = Text.translatable("optimizeWorld.stage.finished.entities");
+	static final MutableText UPGRADING_CHUNKS_TEXT = Text.translatable("optimizeWorld.stage.upgrading.chunks");
+	static final MutableText FINISHED_CHUNKS_TEXT = Text.translatable("optimizeWorld.stage.finished.chunks");
+	final Registry<DimensionOptions> dimensionOptionsRegistry;
+	final Set<RegistryKey<World>> worldKeys;
+	final boolean eraseCache;
+	final boolean recreateRegionFiles;
+	final LevelStorage.Session session;
 	private final Thread updateThread;
-	private final DataFixer dataFixer;
-	private volatile boolean keepUpgradingChunks = true;
+	final DataFixer dataFixer;
+	volatile boolean keepUpgradingChunks = true;
 	private volatile boolean done;
-	private volatile float progress;
-	private volatile int totalChunkCount;
-	private volatile int upgradedChunkCount;
-	private volatile int skippedChunkCount;
-	private final Reference2FloatMap<RegistryKey<World>> dimensionProgress = Reference2FloatMaps.synchronize(new Reference2FloatOpenHashMap<>());
-	private volatile Text status = Text.translatable("optimizeWorld.stage.counting");
-	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
-	private final PersistentStateManager persistentStateManager;
+	volatile float progress;
+	volatile int totalChunkCount;
+	volatile int totalRegionCount;
+	volatile int upgradedChunkCount;
+	volatile int skippedChunkCount;
+	final Reference2FloatMap<RegistryKey<World>> dimensionProgress = Reference2FloatMaps.synchronize(new Reference2FloatOpenHashMap<>());
+	volatile Text status = Text.translatable("optimizeWorld.stage.counting");
+	static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
+	final PersistentStateManager persistentStateManager;
 
-	public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, Registry<DimensionOptions> dimensionOptionsRegistry, boolean eraseCache) {
+	public WorldUpdater(
+		LevelStorage.Session session, DataFixer dataFixer, Registry<DimensionOptions> dimensionOptionsRegistry, boolean eraseCache, boolean recreateRegionFiles
+	) {
 		this.dimensionOptionsRegistry = dimensionOptionsRegistry;
 		this.worldKeys = (Set<RegistryKey<World>>)dimensionOptionsRegistry.getKeys().stream().map(RegistryKeys::toWorldKey).collect(Collectors.toUnmodifiableSet());
 		this.eraseCache = eraseCache;
 		this.dataFixer = dataFixer;
 		this.session = session;
 		this.persistentStateManager = new PersistentStateManager(this.session.getWorldDirectory(World.OVERWORLD).resolve("data").toFile(), dataFixer);
+		this.recreateRegionFiles = recreateRegionFiles;
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
@@ -88,154 +105,17 @@ public class WorldUpdater {
 	}
 
 	private void updateWorld() {
-		this.totalChunkCount = 0;
-		Builder<RegistryKey<World>, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
-
-		for (RegistryKey<World> registryKey : this.worldKeys) {
-			List<ChunkPos> list = this.getChunkPositions(registryKey);
-			builder.put(registryKey, list.listIterator());
-			this.totalChunkCount = this.totalChunkCount + list.size();
-		}
-
-		if (this.totalChunkCount == 0) {
-			this.done = true;
-		} else {
-			float f = (float)this.totalChunkCount;
-			ImmutableMap<RegistryKey<World>, ListIterator<ChunkPos>> immutableMap = builder.build();
-			Builder<RegistryKey<World>, VersionedChunkStorage> builder2 = ImmutableMap.builder();
-
-			for (RegistryKey<World> registryKey2 : this.worldKeys) {
-				Path path = this.session.getWorldDirectory(registryKey2);
-				builder2.put(registryKey2, new VersionedChunkStorage(path.resolve("region"), this.dataFixer, true));
-			}
-
-			ImmutableMap<RegistryKey<World>, VersionedChunkStorage> immutableMap2 = builder2.build();
-			long l = Util.getMeasuringTimeMs();
-			this.status = Text.translatable("optimizeWorld.stage.upgrading");
-
-			while (this.keepUpgradingChunks) {
-				boolean bl = false;
-				float g = 0.0F;
-
-				for (RegistryKey<World> registryKey3 : this.worldKeys) {
-					ListIterator<ChunkPos> listIterator = immutableMap.get(registryKey3);
-					VersionedChunkStorage versionedChunkStorage = immutableMap2.get(registryKey3);
-					if (listIterator.hasNext()) {
-						ChunkPos chunkPos = (ChunkPos)listIterator.next();
-						boolean bl2 = false;
-
-						try {
-							NbtCompound nbtCompound = (NbtCompound)((Optional)versionedChunkStorage.getNbt(chunkPos).join()).orElse(null);
-							if (nbtCompound != null) {
-								int i = VersionedChunkStorage.getDataVersion(nbtCompound);
-								ChunkGenerator chunkGenerator = this.dimensionOptionsRegistry.getOrThrow(RegistryKeys.toDimensionKey(registryKey3)).chunkGenerator();
-								NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(
-									registryKey3, () -> this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey()
-								);
-								ChunkPos chunkPos2 = new ChunkPos(nbtCompound2.getInt("xPos"), nbtCompound2.getInt("zPos"));
-								if (!chunkPos2.equals(chunkPos)) {
-									LOGGER.warn("Chunk {} has invalid position {}", chunkPos, chunkPos2);
-								}
-
-								boolean bl3 = i < SharedConstants.getGameVersion().getSaveVersion().getId();
-								if (this.eraseCache) {
-									bl3 = bl3 || nbtCompound2.contains("Heightmaps");
-									nbtCompound2.remove("Heightmaps");
-									bl3 = bl3 || nbtCompound2.contains("isLightOn");
-									nbtCompound2.remove("isLightOn");
-									NbtList nbtList = nbtCompound2.getList("sections", NbtElement.COMPOUND_TYPE);
-
-									for (int j = 0; j < nbtList.size(); j++) {
-										NbtCompound nbtCompound3 = nbtList.getCompound(j);
-										bl3 = bl3 || nbtCompound3.contains("BlockLight");
-										nbtCompound3.remove("BlockLight");
-										bl3 = bl3 || nbtCompound3.contains("SkyLight");
-										nbtCompound3.remove("SkyLight");
-									}
-								}
-
-								if (bl3) {
-									versionedChunkStorage.setNbt(chunkPos, nbtCompound2);
-									bl2 = true;
-								}
-							}
-						} catch (CompletionException | CrashException var26) {
-							Throwable throwable = var26.getCause();
-							if (!(throwable instanceof IOException)) {
-								throw var26;
-							}
-
-							LOGGER.error("Error upgrading chunk {}", chunkPos, throwable);
-						}
-
-						if (bl2) {
-							this.upgradedChunkCount++;
-						} else {
-							this.skippedChunkCount++;
-						}
-
-						bl = true;
-					}
-
-					float h = (float)listIterator.nextIndex() / f;
-					this.dimensionProgress.put(registryKey3, h);
-					g += h;
-				}
-
-				this.progress = g;
-				if (!bl) {
-					this.keepUpgradingChunks = false;
-				}
-			}
-
-			this.status = Text.translatable("optimizeWorld.stage.finished");
-
-			for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
-				try {
-					versionedChunkStorage2.close();
-				} catch (IOException var25) {
-					LOGGER.error("Error upgrading chunk", (Throwable)var25);
-				}
-			}
-
-			this.persistentStateManager.save();
-			l = Util.getMeasuringTimeMs() - l;
-			LOGGER.info("World optimizaton finished after {} ms", l);
-			this.done = true;
-		}
-	}
-
-	private List<ChunkPos> getChunkPositions(RegistryKey<World> world) {
-		File file = this.session.getWorldDirectory(world).toFile();
-		File file2 = new File(file, "region");
-		File[] files = file2.listFiles((directory, name) -> name.endsWith(".mca"));
-		if (files == null) {
-			return ImmutableList.of();
-		} else {
-			List<ChunkPos> list = Lists.<ChunkPos>newArrayList();
-
-			for (File file3 : files) {
-				Matcher matcher = REGION_FILE_PATTERN.matcher(file3.getName());
-				if (matcher.matches()) {
-					int i = Integer.parseInt(matcher.group(1)) << 5;
-					int j = Integer.parseInt(matcher.group(2)) << 5;
-
-					try (RegionFile regionFile = new RegionFile(file3.toPath(), file2.toPath(), true)) {
-						for (int k = 0; k < 32; k++) {
-							for (int l = 0; l < 32; l++) {
-								ChunkPos chunkPos = new ChunkPos(k + i, l + j);
-								if (regionFile.isChunkValid(chunkPos)) {
-									list.add(chunkPos);
-								}
-							}
-						}
-					} catch (Throwable var19) {
-					}
-				}
-			}
-
-			return list;
-		}
+		long l = Util.getMeasuringTimeMs();
+		LOGGER.info("Upgrading entities");
+		new WorldUpdater.EntitiesUpdate().update();
+		LOGGER.info("Upgrading POIs");
+		new WorldUpdater.PoiUpdate().update();
+		LOGGER.info("Upgrading blocks");
+		new WorldUpdater.RegionUpdate().update();
+		this.persistentStateManager.save();
+		l = Util.getMeasuringTimeMs() - l;
+		LOGGER.info("World optimizaton finished after {} seconds", l / 1000L);
+		this.done = true;
 	}
 
 	public boolean isDone() {
@@ -268,5 +148,306 @@ public class WorldUpdater {
 
 	public Text getStatus() {
 		return this.status;
+	}
+
+	abstract class ChunkPosKeyedStorageUpdate extends WorldUpdater.Update<ChunkPosKeyedStorage> {
+		ChunkPosKeyedStorageUpdate(DataFixTypes dataFixTypes, String string, MutableText mutableText, MutableText mutableText2) {
+			super(dataFixTypes, string, mutableText, mutableText2);
+		}
+
+		protected ChunkPosKeyedStorage openStorage(String string, Path path, Path path2) {
+			return (ChunkPosKeyedStorage)(WorldUpdater.this.recreateRegionFiles
+				? new RecreationStorage(path2, path.resolve("new_" + string), WorldUpdater.this.dataFixer, true, string, this.dataFixTypes)
+				: new ChunkPosKeyedStorage(path2, WorldUpdater.this.dataFixer, true, string, this.dataFixTypes));
+		}
+
+		protected boolean update(ChunkPosKeyedStorage chunkPosKeyedStorage, ChunkPos chunkPos, RegistryKey<World> registryKey) {
+			NbtCompound nbtCompound = (NbtCompound)((Optional)chunkPosKeyedStorage.read(chunkPos).join()).orElse(null);
+			if (nbtCompound != null) {
+				int i = VersionedChunkStorage.getDataVersion(nbtCompound);
+				NbtCompound nbtCompound2 = this.updateNbt(chunkPosKeyedStorage, nbtCompound);
+				boolean bl = i < SharedConstants.getGameVersion().getSaveVersion().getId();
+				if (bl || WorldUpdater.this.recreateRegionFiles) {
+					if (this.pendingUpdateFuture != null) {
+						this.pendingUpdateFuture.join();
+					}
+
+					this.pendingUpdateFuture = chunkPosKeyedStorage.set(chunkPos, nbtCompound2);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		protected abstract NbtCompound updateNbt(ChunkPosKeyedStorage storage, NbtCompound nbt);
+	}
+
+	class EntitiesUpdate extends WorldUpdater.ChunkPosKeyedStorageUpdate {
+		EntitiesUpdate() {
+			super(DataFixTypes.ENTITY_CHUNK, "entities", WorldUpdater.UPGRADING_ENTITIES_TEXT, WorldUpdater.FINISHED_ENTITIES_TEXT);
+		}
+
+		@Override
+		protected NbtCompound updateNbt(ChunkPosKeyedStorage storage, NbtCompound nbt) {
+			return storage.update(nbt, -1);
+		}
+	}
+
+	class PoiUpdate extends WorldUpdater.ChunkPosKeyedStorageUpdate {
+		PoiUpdate() {
+			super(DataFixTypes.POI_CHUNK, "poi", WorldUpdater.UPGRADING_POI_TEXT, WorldUpdater.FINISHED_POI_TEXT);
+		}
+
+		@Override
+		protected NbtCompound updateNbt(ChunkPosKeyedStorage storage, NbtCompound nbt) {
+			return storage.update(nbt, 1945);
+		}
+	}
+
+	static record Region(RegionFile file, List<ChunkPos> chunksToUpgrade) {
+	}
+
+	class RegionUpdate extends WorldUpdater.Update<VersionedChunkStorage> {
+		RegionUpdate() {
+			super(DataFixTypes.CHUNK, "region", WorldUpdater.UPGRADING_CHUNKS_TEXT, WorldUpdater.FINISHED_CHUNKS_TEXT);
+		}
+
+		protected boolean update(VersionedChunkStorage versionedChunkStorage, ChunkPos chunkPos, RegistryKey<World> registryKey) {
+			NbtCompound nbtCompound = (NbtCompound)((Optional)versionedChunkStorage.getNbt(chunkPos).join()).orElse(null);
+			if (nbtCompound != null) {
+				int i = VersionedChunkStorage.getDataVersion(nbtCompound);
+				ChunkGenerator chunkGenerator = WorldUpdater.this.dimensionOptionsRegistry.getOrThrow(RegistryKeys.toDimensionKey(registryKey)).chunkGenerator();
+				NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(
+					registryKey, () -> WorldUpdater.this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey()
+				);
+				ChunkPos chunkPos2 = new ChunkPos(nbtCompound2.getInt("xPos"), nbtCompound2.getInt("zPos"));
+				if (!chunkPos2.equals(chunkPos)) {
+					WorldUpdater.LOGGER.warn("Chunk {} has invalid position {}", chunkPos, chunkPos2);
+				}
+
+				boolean bl = i < SharedConstants.getGameVersion().getSaveVersion().getId();
+				if (WorldUpdater.this.eraseCache) {
+					bl = bl || nbtCompound2.contains("Heightmaps");
+					nbtCompound2.remove("Heightmaps");
+					bl = bl || nbtCompound2.contains("isLightOn");
+					nbtCompound2.remove("isLightOn");
+					NbtList nbtList = nbtCompound2.getList("sections", NbtElement.COMPOUND_TYPE);
+
+					for (int j = 0; j < nbtList.size(); j++) {
+						NbtCompound nbtCompound3 = nbtList.getCompound(j);
+						bl = bl || nbtCompound3.contains("BlockLight");
+						nbtCompound3.remove("BlockLight");
+						bl = bl || nbtCompound3.contains("SkyLight");
+						nbtCompound3.remove("SkyLight");
+					}
+				}
+
+				if (bl || WorldUpdater.this.recreateRegionFiles) {
+					if (this.pendingUpdateFuture != null) {
+						this.pendingUpdateFuture.join();
+					}
+
+					this.pendingUpdateFuture = versionedChunkStorage.setNbt(chunkPos, nbtCompound2);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		protected VersionedChunkStorage openStorage(String string, Path path, Path path2) {
+			return (VersionedChunkStorage)(WorldUpdater.this.recreateRegionFiles
+				? new RecreatedChunkStorage(path2, path.resolve("new_" + string), WorldUpdater.this.dataFixer, true)
+				: new VersionedChunkStorage(path2, WorldUpdater.this.dataFixer, true));
+		}
+	}
+
+	abstract class Update<T extends AutoCloseable> {
+		private final MutableText upgradingText;
+		private final MutableText finishedText;
+		private final String targetName;
+		@Nullable
+		protected CompletableFuture<Void> pendingUpdateFuture;
+		protected final DataFixTypes dataFixTypes;
+
+		Update(DataFixTypes dataFixTypes, String targetName, MutableText upgradingText, MutableText finishedText) {
+			this.dataFixTypes = dataFixTypes;
+			this.targetName = targetName;
+			this.upgradingText = upgradingText;
+			this.finishedText = finishedText;
+		}
+
+		public void update() {
+			WorldUpdater.this.totalRegionCount = 0;
+			WorldUpdater.this.totalChunkCount = 0;
+			WorldUpdater.this.upgradedChunkCount = 0;
+			WorldUpdater.this.skippedChunkCount = 0;
+			List<WorldUpdater.WorldData<T>> list = this.listWoldData(this.targetName);
+			if (WorldUpdater.this.totalChunkCount != 0) {
+				float f = (float)WorldUpdater.this.totalRegionCount;
+				WorldUpdater.this.status = this.upgradingText;
+
+				while (WorldUpdater.this.keepUpgradingChunks) {
+					boolean bl = false;
+					float g = 0.0F;
+
+					for (WorldUpdater.WorldData<T> worldData : list) {
+						RegistryKey<World> registryKey = worldData.dimensionKey;
+						ListIterator<WorldUpdater.Region> listIterator = worldData.files;
+						T autoCloseable = worldData.storage;
+						if (listIterator.hasNext()) {
+							WorldUpdater.Region region = (WorldUpdater.Region)listIterator.next();
+							boolean bl2 = true;
+
+							for (ChunkPos chunkPos : region.chunksToUpgrade) {
+								bl2 = bl2 && this.update(registryKey, autoCloseable, chunkPos);
+								bl = true;
+							}
+
+							if (WorldUpdater.this.recreateRegionFiles) {
+								if (bl2) {
+									this.recreate(region.file);
+								} else {
+									WorldUpdater.LOGGER.error("Failed to convert region file {}", region.file.getPath());
+								}
+							}
+						}
+
+						float h = (float)listIterator.nextIndex() / f;
+						WorldUpdater.this.dimensionProgress.put(registryKey, h);
+						g += h;
+					}
+
+					WorldUpdater.this.progress = g;
+					if (!bl) {
+						break;
+					}
+				}
+
+				WorldUpdater.this.status = this.finishedText;
+
+				for (WorldUpdater.WorldData<T> worldData2 : list) {
+					try {
+						worldData2.storage.close();
+					} catch (Exception var14) {
+						WorldUpdater.LOGGER.error("Error upgrading chunk", (Throwable)var14);
+					}
+				}
+			}
+		}
+
+		private List<WorldUpdater.WorldData<T>> listWoldData(String targetName) {
+			List<WorldUpdater.WorldData<T>> list = Lists.<WorldUpdater.WorldData<T>>newArrayList();
+
+			for (RegistryKey<World> registryKey : WorldUpdater.this.worldKeys) {
+				Path path = WorldUpdater.this.session.getWorldDirectory(registryKey);
+				Path path2 = path.resolve(targetName);
+				T autoCloseable = this.openStorage(targetName, path, path2);
+				ListIterator<WorldUpdater.Region> listIterator = this.enumerateRegions(targetName, registryKey);
+				list.add(new WorldUpdater.WorldData(registryKey, autoCloseable, listIterator));
+			}
+
+			return list;
+		}
+
+		protected abstract T openStorage(String targetName, Path worldDirectory, Path targetDirectory);
+
+		private ListIterator<WorldUpdater.Region> enumerateRegions(String targetName, RegistryKey<World> worldKey) {
+			List<WorldUpdater.Region> list = this.listRegions(worldKey, targetName);
+			WorldUpdater.this.totalRegionCount = WorldUpdater.this.totalRegionCount + list.size();
+			WorldUpdater.this.totalChunkCount = WorldUpdater.this.totalChunkCount + list.stream().mapToInt(region -> region.chunksToUpgrade.size()).sum();
+			return list.listIterator();
+		}
+
+		private List<WorldUpdater.Region> listRegions(RegistryKey<World> worldKey, String targetName) {
+			File file = WorldUpdater.this.session.getWorldDirectory(worldKey).toFile();
+			File file2 = new File(file, targetName);
+			File[] files = file2.listFiles((filex, name) -> name.endsWith(".mca"));
+			if (files == null) {
+				return List.of();
+			} else {
+				List<WorldUpdater.Region> list = Lists.<WorldUpdater.Region>newArrayList();
+
+				for (File file3 : files) {
+					Matcher matcher = WorldUpdater.REGION_FILE_PATTERN.matcher(file3.getName());
+					if (matcher.matches()) {
+						int i = Integer.parseInt(matcher.group(1)) << 5;
+						int j = Integer.parseInt(matcher.group(2)) << 5;
+						List<ChunkPos> list2 = Lists.<ChunkPos>newArrayList();
+
+						try (RegionFile regionFile = new RegionFile(file3.toPath(), file2.toPath(), true)) {
+							for (int k = 0; k < 32; k++) {
+								for (int l = 0; l < 32; l++) {
+									ChunkPos chunkPos = new ChunkPos(k + i, l + j);
+									if (regionFile.isChunkValid(chunkPos)) {
+										list2.add(chunkPos);
+									}
+								}
+							}
+
+							if (!list2.isEmpty()) {
+								list.add(new WorldUpdater.Region(regionFile, list2));
+							}
+						} catch (Throwable var21) {
+							WorldUpdater.LOGGER.error("Failed to read chunks from region file {}", file3.toPath(), var21);
+						}
+					}
+				}
+
+				return list;
+			}
+		}
+
+		private boolean update(RegistryKey<World> worldKey, T storage, ChunkPos chunkPos) {
+			boolean bl = false;
+
+			try {
+				bl = this.update(storage, chunkPos, worldKey);
+			} catch (CompletionException | CrashException var7) {
+				Throwable throwable = var7.getCause();
+				if (!(throwable instanceof IOException)) {
+					throw var7;
+				}
+
+				WorldUpdater.LOGGER.error("Error upgrading chunk {}", chunkPos, throwable);
+			}
+
+			if (bl) {
+				WorldUpdater.this.upgradedChunkCount++;
+			} else {
+				WorldUpdater.this.skippedChunkCount++;
+			}
+
+			return bl;
+		}
+
+		protected abstract boolean update(T storage, ChunkPos chunkPos, RegistryKey<World> worldKey);
+
+		private void recreate(RegionFile regionFile) {
+			if (WorldUpdater.this.recreateRegionFiles) {
+				if (this.pendingUpdateFuture != null) {
+					this.pendingUpdateFuture.join();
+				}
+
+				Path path = regionFile.getPath();
+				Path path2 = path.getParent();
+				Path path3 = path2.resolveSibling("new_" + path2.getFileName().toString()).resolve(path.getFileName().toString());
+
+				try {
+					if (path3.toFile().exists()) {
+						Files.delete(path);
+						Files.move(path3, path);
+					} else {
+						WorldUpdater.LOGGER.error("Failed to replace an old region file. New file {} does not exist.", path3);
+					}
+				} catch (IOException var6) {
+					WorldUpdater.LOGGER.error("Failed to replace an old region file", (Throwable)var6);
+				}
+			}
+		}
+	}
+
+	static record WorldData<T>(RegistryKey<World> dimensionKey, T storage, ListIterator<WorldUpdater.Region> files) {
 	}
 }

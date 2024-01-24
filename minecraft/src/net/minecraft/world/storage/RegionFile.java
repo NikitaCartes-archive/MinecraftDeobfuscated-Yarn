@@ -33,9 +33,10 @@ public class RegionFile implements AutoCloseable {
 	private static final int field_31422 = 128;
 	private static final int field_31423 = 256;
 	private static final int field_31424 = 0;
+	private final Path path;
 	private final FileChannel channel;
 	private final Path directory;
-	final ChunkStreamVersion outputChunkStreamVersion;
+	final ChunkCompressionFormat compressionFormat;
 	private final ByteBuffer header = ByteBuffer.allocateDirect(8192);
 	private final IntBuffer sectorData;
 	private final IntBuffer saveTimes;
@@ -43,11 +44,12 @@ public class RegionFile implements AutoCloseable {
 	protected final SectorMap sectors = new SectorMap();
 
 	public RegionFile(Path file, Path directory, boolean dsync) throws IOException {
-		this(file, directory, ChunkStreamVersion.DEFLATE, dsync);
+		this(file, directory, ChunkCompressionFormat.getCurrentFormat(), dsync);
 	}
 
-	public RegionFile(Path file, Path directory, ChunkStreamVersion outputChunkStreamVersion, boolean dsync) throws IOException {
-		this.outputChunkStreamVersion = outputChunkStreamVersion;
+	public RegionFile(Path path, Path directory, ChunkCompressionFormat compressionFormat, boolean dsync) throws IOException {
+		this.path = path;
+		this.compressionFormat = compressionFormat;
 		if (!Files.isDirectory(directory, new LinkOption[0])) {
 			throw new IllegalArgumentException("Expected directory, got " + directory.toAbsolutePath());
 		} else {
@@ -57,9 +59,9 @@ public class RegionFile implements AutoCloseable {
 			this.header.position(4096);
 			this.saveTimes = this.header.asIntBuffer();
 			if (dsync) {
-				this.channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.DSYNC);
+				this.channel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.DSYNC);
 			} else {
-				this.channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
+				this.channel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
 			}
 
 			this.sectors.allocate(0, 2);
@@ -67,10 +69,10 @@ public class RegionFile implements AutoCloseable {
 			int i = this.channel.read(this.header, 0L);
 			if (i != -1) {
 				if (i != 8192) {
-					LOGGER.warn("Region file {} has truncated header: {}", file, i);
+					LOGGER.warn("Region file {} has truncated header: {}", path, i);
 				}
 
-				long l = Files.size(file);
+				long l = Files.size(path);
 
 				for (int j = 0; j < 1024; j++) {
 					int k = this.sectorData.get(j);
@@ -78,13 +80,13 @@ public class RegionFile implements AutoCloseable {
 						int m = getOffset(k);
 						int n = getSize(k);
 						if (m < 2) {
-							LOGGER.warn("Region file {} has invalid sector at index: {}; sector {} overlaps with header", file, j, m);
+							LOGGER.warn("Region file {} has invalid sector at index: {}; sector {} overlaps with header", path, j, m);
 							this.sectorData.put(j, 0);
 						} else if (n == 0) {
-							LOGGER.warn("Region file {} has an invalid sector at index: {}; size has to be > 0", file, j);
+							LOGGER.warn("Region file {} has an invalid sector at index: {}; size has to be > 0", path, j);
 							this.sectorData.put(j, 0);
 						} else if ((long)m * 4096L > l) {
-							LOGGER.warn("Region file {} has an invalid sector at index: {}; sector {} is out of bounds", file, j, m);
+							LOGGER.warn("Region file {} has an invalid sector at index: {}; sector {} is out of bounds", path, j, m);
 							this.sectorData.put(j, 0);
 						} else {
 							this.sectors.allocate(m, n);
@@ -93,6 +95,10 @@ public class RegionFile implements AutoCloseable {
 				}
 			}
 		}
+	}
+
+	public Path getPath() {
+		return this.path;
 	}
 
 	private Path getExternalChunkPath(ChunkPos chunkPos) {
@@ -157,12 +163,12 @@ public class RegionFile implements AutoCloseable {
 
 	@Nullable
 	private DataInputStream decompress(ChunkPos pos, byte flags, InputStream stream) throws IOException {
-		ChunkStreamVersion chunkStreamVersion = ChunkStreamVersion.get(flags);
-		if (chunkStreamVersion == null) {
+		ChunkCompressionFormat chunkCompressionFormat = ChunkCompressionFormat.get(flags);
+		if (chunkCompressionFormat == null) {
 			LOGGER.error("Chunk {} has invalid chunk stream version {}", pos, flags);
 			return null;
 		} else {
-			return new DataInputStream(chunkStreamVersion.wrap(stream));
+			return new DataInputStream(chunkCompressionFormat.wrap(stream));
 		}
 	}
 
@@ -215,7 +221,7 @@ public class RegionFile implements AutoCloseable {
 					int l = byteBuffer.getInt();
 					byte b = byteBuffer.get();
 					if (hasChunkStreamVersionId(b)) {
-						if (!ChunkStreamVersion.exists(getChunkStreamVersionId(b))) {
+						if (!ChunkCompressionFormat.exists(getChunkStreamVersionId(b))) {
 							return false;
 						}
 
@@ -223,7 +229,7 @@ public class RegionFile implements AutoCloseable {
 							return false;
 						}
 					} else {
-						if (!ChunkStreamVersion.exists(b)) {
+						if (!ChunkCompressionFormat.exists(b)) {
 							return false;
 						}
 
@@ -246,7 +252,7 @@ public class RegionFile implements AutoCloseable {
 	}
 
 	public DataOutputStream getChunkOutputStream(ChunkPos pos) throws IOException {
-		return new DataOutputStream(this.outputChunkStreamVersion.wrap(new RegionFile.ChunkBuffer(pos)));
+		return new DataOutputStream(this.compressionFormat.wrap(new RegionFile.ChunkBuffer(pos)));
 	}
 
 	public void sync() throws IOException {
@@ -300,7 +306,7 @@ public class RegionFile implements AutoCloseable {
 	private ByteBuffer getHeaderBuf() {
 		ByteBuffer byteBuffer = ByteBuffer.allocate(5);
 		byteBuffer.putInt(1);
-		byteBuffer.put((byte)(this.outputChunkStreamVersion.getId() | 128));
+		byteBuffer.put((byte)(this.compressionFormat.getId() | 128));
 		byteBuffer.flip();
 		return byteBuffer;
 	}
@@ -379,7 +385,7 @@ public class RegionFile implements AutoCloseable {
 			super.write(0);
 			super.write(0);
 			super.write(0);
-			super.write(RegionFile.this.outputChunkStreamVersion.getId());
+			super.write(RegionFile.this.compressionFormat.getId());
 			this.pos = pos;
 		}
 

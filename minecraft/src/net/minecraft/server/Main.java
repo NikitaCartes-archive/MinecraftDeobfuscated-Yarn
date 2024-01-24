@@ -57,6 +57,7 @@ import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraft.world.level.storage.ParsedSaveProperties;
+import net.minecraft.world.storage.ChunkCompressionFormat;
 import net.minecraft.world.updater.WorldUpdater;
 import org.slf4j.Logger;
 
@@ -73,30 +74,31 @@ public class Main {
 		OptionSpec<Void> optionSpec4 = optionParser.accepts("bonusChest");
 		OptionSpec<Void> optionSpec5 = optionParser.accepts("forceUpgrade");
 		OptionSpec<Void> optionSpec6 = optionParser.accepts("eraseCache");
-		OptionSpec<Void> optionSpec7 = optionParser.accepts("safeMode", "Loads level with vanilla datapack only");
-		OptionSpec<Void> optionSpec8 = optionParser.accepts("help").forHelp();
-		OptionSpec<String> optionSpec9 = optionParser.accepts("universe").withRequiredArg().defaultsTo(".");
-		OptionSpec<String> optionSpec10 = optionParser.accepts("world").withRequiredArg();
-		OptionSpec<Integer> optionSpec11 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
-		OptionSpec<String> optionSpec12 = optionParser.accepts("serverId").withRequiredArg();
-		OptionSpec<Void> optionSpec13 = optionParser.accepts("jfrProfile");
-		OptionSpec<Path> optionSpec14 = optionParser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
-		OptionSpec<String> optionSpec15 = optionParser.nonOptions();
+		OptionSpec<Void> optionSpec7 = optionParser.accepts("recreateRegionFiles");
+		OptionSpec<Void> optionSpec8 = optionParser.accepts("safeMode", "Loads level with vanilla datapack only");
+		OptionSpec<Void> optionSpec9 = optionParser.accepts("help").forHelp();
+		OptionSpec<String> optionSpec10 = optionParser.accepts("universe").withRequiredArg().defaultsTo(".");
+		OptionSpec<String> optionSpec11 = optionParser.accepts("world").withRequiredArg();
+		OptionSpec<Integer> optionSpec12 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
+		OptionSpec<String> optionSpec13 = optionParser.accepts("serverId").withRequiredArg();
+		OptionSpec<Void> optionSpec14 = optionParser.accepts("jfrProfile");
+		OptionSpec<Path> optionSpec15 = optionParser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
+		OptionSpec<String> optionSpec16 = optionParser.nonOptions();
 
 		try {
 			OptionSet optionSet = optionParser.parse(args);
-			if (optionSet.has(optionSpec8)) {
+			if (optionSet.has(optionSpec9)) {
 				optionParser.printHelpOn(System.err);
 				return;
 			}
 
-			Path path = optionSet.valueOf(optionSpec14);
+			Path path = optionSet.valueOf(optionSpec15);
 			if (path != null) {
 				writePidFile(path);
 			}
 
 			CrashReport.initCrashReport();
-			if (optionSet.has(optionSpec13)) {
+			if (optionSet.has(optionSpec14)) {
 				FlightProfiler.INSTANCE.start(InstanceType.SERVER);
 			}
 
@@ -106,6 +108,7 @@ public class Main {
 			Path path2 = Paths.get("server.properties");
 			ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(path2);
 			serverPropertiesLoader.store();
+			ChunkCompressionFormat.setCurrentFormat(serverPropertiesLoader.getPropertiesHandler().regionFileCompression);
 			Path path3 = Paths.get("eula.txt");
 			EulaReader eulaReader = new EulaReader(path3);
 			if (optionSet.has(optionSpec2)) {
@@ -118,9 +121,9 @@ public class Main {
 				return;
 			}
 
-			File file = new File(optionSet.valueOf(optionSpec9));
+			File file = new File(optionSet.valueOf(optionSpec10));
 			ApiServices apiServices = ApiServices.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), file);
-			String string = (String)Optional.ofNullable(optionSet.valueOf(optionSpec10)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
+			String string = (String)Optional.ofNullable(optionSet.valueOf(optionSpec11)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
 			Dynamic<?> dynamic;
@@ -129,16 +132,16 @@ public class Main {
 				try {
 					dynamic = session.readLevelProperties();
 					levelSummary = session.getLevelSummary(dynamic);
-				} catch (NbtException | NbtCrashException | IOException var39) {
+				} catch (NbtException | NbtCrashException | IOException var41) {
 					LevelStorage.LevelSave levelSave = session.getDirectory();
-					LOGGER.warn("Failed to load world data from {}", levelSave.getLevelDatPath(), var39);
+					LOGGER.warn("Failed to load world data from {}", levelSave.getLevelDatPath(), var41);
 					LOGGER.info("Attempting to use fallback");
 
 					try {
 						dynamic = session.readOldLevelProperties();
 						levelSummary = session.getLevelSummary(dynamic);
-					} catch (NbtException | NbtCrashException | IOException var38) {
-						LOGGER.error("Failed to load world data from {}", levelSave.getLevelDatOldPath(), var38);
+					} catch (NbtException | NbtCrashException | IOException var40) {
+						LOGGER.error("Failed to load world data from {}", levelSave.getLevelDatOldPath(), var40);
 						LOGGER.error(
 							"Failed to load world data from {} and {}. World files may be corrupted. Shutting down.", levelSave.getLevelDatPath(), levelSave.getLevelDatOldPath()
 						);
@@ -162,7 +165,7 @@ public class Main {
 			}
 
 			Dynamic<?> dynamic2 = dynamic;
-			boolean bl = optionSet.has(optionSpec7);
+			boolean bl = optionSet.has(optionSpec8);
 			if (bl) {
 				LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
 			}
@@ -221,16 +224,17 @@ public class Main {
 							)
 					)
 					.get();
-			} catch (Exception var37) {
+			} catch (Exception var39) {
 				LOGGER.warn(
-					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var37
+					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var39
 				);
 				return;
 			}
 
 			DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
-			if (optionSet.has(optionSpec5)) {
-				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, immutable.get(RegistryKeys.DIMENSION));
+			boolean bl2 = optionSet.has(optionSpec7);
+			if (optionSet.has(optionSpec5) || bl2) {
+				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, immutable.get(RegistryKeys.DIMENSION), bl2);
 			}
 
 			SaveProperties saveProperties = saveLoader.saveProperties();
@@ -240,10 +244,10 @@ public class Main {
 					MinecraftDedicatedServer minecraftDedicatedServerx = new MinecraftDedicatedServer(
 						threadx, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), apiServices, WorldGenerationProgressLogger::create
 					);
-					minecraftDedicatedServerx.setServerPort(optionSet.valueOf(optionSpec11));
+					minecraftDedicatedServerx.setServerPort(optionSet.valueOf(optionSpec12));
 					minecraftDedicatedServerx.setDemo(optionSet.has(optionSpec3));
-					minecraftDedicatedServerx.setServerId(optionSet.valueOf(optionSpec12));
-					boolean blx = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec15).contains("nogui");
+					minecraftDedicatedServerx.setServerId(optionSet.valueOf(optionSpec13));
+					boolean blx = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec16).contains("nogui");
 					if (blx && !GraphicsEnvironment.isHeadless()) {
 						minecraftDedicatedServerx.createGui();
 					}
@@ -258,8 +262,8 @@ public class Main {
 			};
 			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var40) {
-			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable)var40);
+		} catch (Exception var42) {
+			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable)var42);
 		}
 	}
 
@@ -291,10 +295,15 @@ public class Main {
 	}
 
 	private static void forceUpgradeWorld(
-		LevelStorage.Session session, DataFixer dataFixer, boolean eraseCache, BooleanSupplier continueCheck, Registry<DimensionOptions> dimensionOptionsRegistry
+		LevelStorage.Session session,
+		DataFixer dataFixer,
+		boolean eraseCache,
+		BooleanSupplier continueCheck,
+		Registry<DimensionOptions> dimensionOptionsRegistry,
+		boolean recreateRegionFiles
 	) {
 		LOGGER.info("Forcing world upgrade!");
-		WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, dimensionOptionsRegistry, eraseCache);
+		WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, dimensionOptionsRegistry, eraseCache, recreateRegionFiles);
 		Text text = null;
 
 		while (!worldUpdater.isDone()) {
@@ -315,7 +324,7 @@ public class Main {
 			} else {
 				try {
 					Thread.sleep(1000L);
-				} catch (InterruptedException var10) {
+				} catch (InterruptedException var11) {
 				}
 			}
 		}

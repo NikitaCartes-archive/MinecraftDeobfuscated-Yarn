@@ -3881,16 +3881,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 					.orElse(null);
 			}
 		} else {
-			BlockPos blockPos;
+			BlockPos blockPos = bl2 ? ServerWorld.END_SPAWN_POS : destination.getSpawnPos();
+			destination.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
+			int i;
 			if (bl2) {
-				blockPos = ServerWorld.END_SPAWN_POS;
+				i = blockPos.getY();
 			} else {
-				blockPos = destination.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, destination.getSpawnPos());
+				i = destination.getWorldChunk(blockPos).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos.getX(), blockPos.getZ()) + 1;
 			}
 
-			destination.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
 			return new TeleportTarget(
-				new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
+				new Vec3d((double)blockPos.getX() + 0.5, (double)i, (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
 			);
 		}
 	}

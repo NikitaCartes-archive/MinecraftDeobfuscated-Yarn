@@ -76,6 +76,7 @@ public class BreezeBrain {
 			Activity.IDLE,
 			ImmutableList.of(
 				Pair.of(0, UpdateAttackTargetTask.create(breeze -> breeze.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
+				Pair.of(1, UpdateAttackTargetTask.create(BreezeEntity::getHurtBy)),
 				Pair.of(2, new BreezeBrain.SlideAroundTask(20, 40)),
 				Pair.of(3, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
 			)

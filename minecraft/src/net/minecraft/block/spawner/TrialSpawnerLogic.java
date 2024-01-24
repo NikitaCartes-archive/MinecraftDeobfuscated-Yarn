@@ -128,6 +128,13 @@ public final class TrialSpawnerLogic {
 					if (!SpawnRestriction.canSpawn((EntityType)optional.get(), world, SpawnReason.TRIAL_SPAWNER, blockPos, world.getRandom())) {
 						return Optional.empty();
 					} else {
+						if (mobSpawnerEntry.getCustomSpawnRules().isPresent()) {
+							MobSpawnerEntry.CustomSpawnRules customSpawnRules = (MobSpawnerEntry.CustomSpawnRules)mobSpawnerEntry.getCustomSpawnRules().get();
+							if (!customSpawnRules.canSpawn(blockPos, world)) {
+								return Optional.empty();
+							}
+						}
+
 						Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> {
 							entityx.refreshPositionAndAngles(d, e, f, random.nextFloat() * 360.0F, 0.0F);
 							return entityx;

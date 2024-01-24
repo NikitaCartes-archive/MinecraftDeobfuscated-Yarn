@@ -1,17 +1,13 @@
 package net.minecraft.world.storage;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
@@ -29,42 +25,38 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	private static final String ENTITIES_KEY = "Entities";
 	private static final String POSITION_KEY = "Position";
 	private final ServerWorld world;
-	private final StorageIoWorker dataLoadWorker;
+	private final ChunkPosKeyedStorage storage;
 	private final LongSet emptyChunks = new LongOpenHashSet();
 	private final TaskExecutor<Runnable> taskExecutor;
-	protected final DataFixer dataFixer;
 
-	public EntityChunkDataAccess(ServerWorld world, Path path, DataFixer dataFixer, boolean dsync, Executor executor) {
+	public EntityChunkDataAccess(ChunkPosKeyedStorage storage, ServerWorld world, Executor executor) {
+		this.storage = storage;
 		this.world = world;
-		this.dataFixer = dataFixer;
 		this.taskExecutor = TaskExecutor.create(executor, "entity-deserializer");
-		this.dataLoadWorker = new StorageIoWorker(path, dsync, "entities");
 	}
 
 	@Override
 	public CompletableFuture<ChunkDataList<Entity>> readChunkData(ChunkPos pos) {
-		return this.emptyChunks.contains(pos.toLong())
-			? CompletableFuture.completedFuture(emptyDataList(pos))
-			: this.dataLoadWorker.readChunkData(pos).thenApplyAsync(nbt -> {
-				if (nbt.isEmpty()) {
-					this.emptyChunks.add(pos.toLong());
-					return emptyDataList(pos);
-				} else {
-					try {
-						ChunkPos chunkPos2 = getChunkPos((NbtCompound)nbt.get());
-						if (!Objects.equals(pos, chunkPos2)) {
-							LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", pos, pos, chunkPos2);
-						}
-					} catch (Exception var6) {
-						LOGGER.warn("Failed to parse chunk {} position info", pos, var6);
+		return this.emptyChunks.contains(pos.toLong()) ? CompletableFuture.completedFuture(emptyDataList(pos)) : this.storage.read(pos).thenApplyAsync(nbt -> {
+			if (nbt.isEmpty()) {
+				this.emptyChunks.add(pos.toLong());
+				return emptyDataList(pos);
+			} else {
+				try {
+					ChunkPos chunkPos2 = getChunkPos((NbtCompound)nbt.get());
+					if (!Objects.equals(pos, chunkPos2)) {
+						LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", pos, pos, chunkPos2);
 					}
-
-					NbtCompound nbtCompound = this.fixChunkData((NbtCompound)nbt.get());
-					NbtList nbtList = nbtCompound.getList("Entities", NbtElement.COMPOUND_TYPE);
-					List<Entity> list = (List<Entity>)EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
-					return new ChunkDataList(pos, list);
+				} catch (Exception var6) {
+					LOGGER.warn("Failed to parse chunk {} position info", pos, var6);
 				}
-			}, this.taskExecutor::send);
+
+				NbtCompound nbtCompound = this.storage.update((NbtCompound)nbt.get(), -1);
+				NbtList nbtList = nbtCompound.getList("Entities", NbtElement.COMPOUND_TYPE);
+				List<Entity> list = (List<Entity>)EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
+				return new ChunkDataList(pos, list);
+			}
+		}, this.taskExecutor::send);
 	}
 
 	private static ChunkPos getChunkPos(NbtCompound chunkNbt) {
@@ -85,7 +77,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 		ChunkPos chunkPos = dataList.getChunkPos();
 		if (dataList.isEmpty()) {
 			if (this.emptyChunks.add(chunkPos.toLong())) {
-				this.dataLoadWorker.setResult(chunkPos, null);
+				this.storage.set(chunkPos, null);
 			}
 		} else {
 			NbtList nbtList = new NbtList();
@@ -98,7 +90,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 			NbtCompound nbtCompound = NbtHelper.putDataVersion(new NbtCompound());
 			nbtCompound.put("Entities", nbtList);
 			putChunkPos(nbtCompound, chunkPos);
-			this.dataLoadWorker.setResult(chunkPos, nbtCompound).exceptionally(ex -> {
+			this.storage.set(chunkPos, nbtCompound).exceptionally(ex -> {
 				LOGGER.error("Failed to store chunk {}", chunkPos, ex);
 				return null;
 			});
@@ -108,17 +100,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 
 	@Override
 	public void awaitAll(boolean sync) {
-		this.dataLoadWorker.completeAll(sync).join();
+		this.storage.completeAll(sync).join();
 		this.taskExecutor.awaitAll();
-	}
-
-	private NbtCompound fixChunkData(NbtCompound chunkNbt) {
-		int i = NbtHelper.getDataVersion(chunkNbt, -1);
-		return DataFixTypes.ENTITY_CHUNK.update(this.dataFixer, chunkNbt, i);
-	}
-
-	@Override
-	public void close() throws IOException {
-		this.dataLoadWorker.close();
 	}
 }

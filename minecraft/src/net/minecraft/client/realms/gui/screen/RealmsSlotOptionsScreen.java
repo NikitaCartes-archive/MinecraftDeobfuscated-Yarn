@@ -120,13 +120,12 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			this.addLabel(new RealmsLabel(text, this.width / 2, 26, 16711680));
 		}
 
-		this.nameEdit = new TextFieldWidget(
-			this.client.textRenderer, this.column1_x, row(1), this.column2_x, 20, null, Text.translatable("mco.configure.world.edit.slot.name")
+		this.nameEdit = this.addSelectableChild(
+			new TextFieldWidget(this.client.textRenderer, this.column1_x, row(1), this.column2_x, 20, null, Text.translatable("mco.configure.world.edit.slot.name"))
 		);
 		this.nameEdit.setMaxLength(10);
 		this.nameEdit.setText(this.slotName);
 		this.nameEdit.setChangedListener(this::setSlotName);
-		this.focusOn(this.nameEdit);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.pvp)
 				.build(i, row(1), this.column2_x, 20, Text.translatable("mco.configure.world.pvp"), (button, pvp) -> this.pvp = pvp)
@@ -223,7 +222,6 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(i, row(13), this.column2_x, 20).build()
 		);
-		this.addSelectableChild(this.nameEdit);
 	}
 
 	private CyclingButtonWidget.UpdateCallback<Boolean> getSpawnToggleButtonCallback(Text text, Consumer<Boolean> valueSetter) {

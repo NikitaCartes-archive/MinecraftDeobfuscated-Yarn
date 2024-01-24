@@ -17,7 +17,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -26,7 +25,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.collection.Pool;
@@ -218,17 +216,14 @@ public final class SpawnHelper {
 		} else if (!entityType.isSpawnableFarFromPlayer()
 			&& squaredDistance > (double)(entityType.getSpawnGroup().getImmediateDespawnRange() * entityType.getSpawnGroup().getImmediateDespawnRange())) {
 			return false;
-		} else if (entityType.isSummonable() && containsSpawnEntry(world, structureAccessor, chunkGenerator, group, spawnEntry, pos)) {
-			SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
-			if (!canSpawn(location, world, pos, entityType)) {
-				return false;
-			} else {
-				return !SpawnRestriction.canSpawn(entityType, world, SpawnReason.NATURAL, pos, world.random)
-					? false
-					: world.isSpaceEmpty(entityType.createSimpleBoundingBox((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5));
-			}
-		} else {
+		} else if (!entityType.isSummonable() || !containsSpawnEntry(world, structureAccessor, chunkGenerator, group, spawnEntry, pos)) {
 			return false;
+		} else if (!SpawnRestriction.isSpawnPosAllowed(entityType, world, pos)) {
+			return false;
+		} else {
+			return !SpawnRestriction.canSpawn(entityType, world, SpawnReason.NATURAL, pos, world.random)
+				? false
+				: world.isSpaceEmpty(entityType.createSimpleBoundingBox((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5));
 		}
 	}
 
@@ -318,32 +313,6 @@ public final class SpawnHelper {
 		}
 	}
 
-	public static boolean canSpawn(SpawnRestriction.Location location, WorldView world, BlockPos pos, @Nullable EntityType<?> entityType) {
-		if (location == SpawnRestriction.Location.NO_RESTRICTIONS) {
-			return true;
-		} else if (entityType != null && world.getWorldBorder().contains(pos)) {
-			BlockState blockState = world.getBlockState(pos);
-			FluidState fluidState = world.getFluidState(pos);
-			BlockPos blockPos = pos.up();
-			BlockPos blockPos2 = pos.down();
-			switch (location) {
-				case IN_WATER:
-					return fluidState.isIn(FluidTags.WATER) && !world.getBlockState(blockPos).isSolidBlock(world, blockPos);
-				case IN_LAVA:
-					return fluidState.isIn(FluidTags.LAVA);
-				case ON_GROUND:
-				default:
-					BlockState blockState2 = world.getBlockState(blockPos2);
-					return !blockState2.allowsSpawning(world, blockPos2, entityType)
-						? false
-						: isClearForSpawn(world, pos, blockState, fluidState, entityType)
-							&& isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos), entityType);
-			}
-		} else {
-			return false;
-		}
-	}
-
 	public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> biomeEntry, ChunkPos chunkPos, Random random) {
 		SpawnSettings spawnSettings = biomeEntry.value().getSpawnSettings();
 		Pool<SpawnSettings.SpawnEntry> pool = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
@@ -367,7 +336,7 @@ public final class SpawnHelper {
 
 						for (int q = 0; !bl && q < 4; q++) {
 							BlockPos blockPos = getEntitySpawnPos(world, spawnEntry.type, l, m);
-							if (spawnEntry.type.isSummonable() && canSpawn(SpawnRestriction.getLocation(spawnEntry.type), world, blockPos, spawnEntry.type)) {
+							if (spawnEntry.type.isSummonable() && SpawnRestriction.isSpawnPosAllowed(spawnEntry.type, world, blockPos)) {
 								float f = spawnEntry.type.getWidth();
 								double d = MathHelper.clamp((double)l, (double)i + (double)f, (double)i + 16.0 - (double)f);
 								double e = MathHelper.clamp((double)m, (double)j + (double)f, (double)j + 16.0 - (double)f);
@@ -423,14 +392,7 @@ public final class SpawnHelper {
 			} while (world.getBlockState(mutable).isAir() && mutable.getY() > world.getBottomY());
 		}
 
-		if (SpawnRestriction.getLocation(entityType) == SpawnRestriction.Location.ON_GROUND) {
-			BlockPos blockPos = mutable.down();
-			if (world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.LAND)) {
-				return blockPos;
-			}
-		}
-
-		return mutable.toImmutable();
+		return SpawnRestriction.getLocation(entityType).adjustPosition(world, mutable.toImmutable());
 	}
 
 	@FunctionalInterface

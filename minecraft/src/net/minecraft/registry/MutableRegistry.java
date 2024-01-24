@@ -10,7 +10,7 @@ import net.minecraft.registry.entry.RegistryEntry;
  * @see Registry
  */
 public interface MutableRegistry<T> extends Registry<T> {
-	RegistryEntry.Reference<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle);
+	RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, Lifecycle lifecycle);
 
 	/**
 	 * {@return whether the registry is empty}

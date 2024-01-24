@@ -85,6 +85,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean broadcastConsoleToOps = this.parseBoolean("broadcast-console-to-ops", true);
 	public final int maxWorldSize = this.transformedParseInt("max-world-size", maxWorldSize -> MathHelper.clamp(maxWorldSize, 1, 29999984), 29999984);
 	public final boolean syncChunkWrites = this.parseBoolean("sync-chunk-writes", true);
+	public final String regionFileCompression = this.getString("region-file-compression", "deflate");
 	public final boolean enableJmxMonitoring = this.parseBoolean("enable-jmx-monitoring", false);
 	public final boolean enableStatus = this.parseBoolean("enable-status", true);
 	public final boolean hideOnlinePlayers = this.parseBoolean("hide-online-players", false);

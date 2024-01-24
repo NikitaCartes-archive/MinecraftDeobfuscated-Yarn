@@ -6,10 +6,13 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.Range;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.LightType;
 
 public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules) {
 	public static final String ENTITY_KEY = "entity";
@@ -64,6 +67,10 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 
 		private static MapCodec<Range<Integer>> createLightLimitCodec(String name) {
 			return Codecs.validate(Range.CODEC.optionalFieldOf(name, DEFAULT), MobSpawnerEntry.CustomSpawnRules::validate);
+		}
+
+		public boolean canSpawn(BlockPos pos, ServerWorld world) {
+			return this.blockLightLimit.contains(world.getLightLevel(LightType.BLOCK, pos)) && this.skyLightLimit.contains(world.getLightLevel(LightType.SKY, pos));
 		}
 	}
 }

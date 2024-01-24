@@ -26,6 +26,7 @@ import net.minecraft.util.ApiServices;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -119,9 +120,10 @@ public class IntegratedServer extends MinecraftServer {
 		}
 	}
 
+	@Nullable
 	@Override
-	public void tickTickLog(long nanos) {
-		this.client.getDebugHud().pushToTickLog(nanos);
+	public PerformanceLog getPerformanceLog() {
+		return this.client.getDebugHud().getTickNanosLog();
 	}
 
 	private void incrementTotalWorldTimeStat() {

@@ -64,6 +64,7 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_ANVIL_USE = register("block.anvil.use");
 	public static final SoundEvent ENTITY_ARMADILLO_EAT = register("entity.armadillo.eat");
 	public static final SoundEvent ENTITY_ARMADILLO_HURT = register("entity.armadillo.hurt");
+	public static final SoundEvent ENTITY_ARMADILLO_HURT_REDUCED = register("entity.armadillo.hurt_reduced");
 	public static final SoundEvent ENTITY_ARMADILLO_AMBIENT = register("entity.armadillo.ambient");
 	public static final SoundEvent ENTITY_ARMADILLO_STEP = register("entity.armadillo.step");
 	public static final SoundEvent ENTITY_ARMADILLO_DEATH = register("entity.armadillo.death");

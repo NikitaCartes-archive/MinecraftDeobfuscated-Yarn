@@ -120,12 +120,14 @@ import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.EmptyProfileResult;
+import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
+import net.minecraft.util.profiler.ServerTickType;
 import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
@@ -246,6 +248,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected final ApiServices apiServices;
 	private long lastPlayerSampleUpdate;
 	private final Thread serverThread;
+	private long prevFullTickLogTime = Util.getMeasuringTimeNano();
+	private long tasksStartTime = Util.getMeasuringTimeNano();
+	private long waitTime;
 	private long tickStartTimeNanos = Util.getMeasuringTimeNano();
 	private long tickEndTimeNanos;
 	private boolean waitingForNextTick;
@@ -730,7 +735,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.profiler.swap("nextTickWait");
 				this.waitingForNextTick = true;
 				this.tickEndTimeNanos = Math.max(Util.getMeasuringTimeNano() + l, this.tickStartTimeNanos);
+				this.startTaskPerformanceLog();
 				this.runTasksTillTickEnd();
+				this.pushPerformanceLogs();
 				if (bl) {
 					this.tickManager.updateSprintTime();
 				}
@@ -739,6 +746,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.endTickMetrics();
 				this.loading = true;
 				FlightProfiler.INSTANCE.onTick(this.averageTickTime);
+				this.pushFullTickLog();
 			}
 		} catch (Throwable var46) {
 			LOGGER.error("Encountered an unexpected exception", var46);
@@ -765,6 +773,30 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 				this.exit();
 			}
+		}
+	}
+
+	private void pushFullTickLog() {
+		PerformanceLog performanceLog = this.getPerformanceLog();
+		if (performanceLog != null) {
+			long l = Util.getMeasuringTimeNano();
+			performanceLog.push(l - this.prevFullTickLogTime);
+			this.prevFullTickLogTime = l;
+		}
+	}
+
+	private void startTaskPerformanceLog() {
+		if (this.getPerformanceLog() != null) {
+			this.tasksStartTime = Util.getMeasuringTimeNano();
+			this.waitTime = 0L;
+		}
+	}
+
+	private void pushPerformanceLogs() {
+		PerformanceLog performanceLog = this.getPerformanceLog();
+		if (performanceLog != null) {
+			performanceLog.push(Util.getMeasuringTimeNano() - this.tasksStartTime - this.waitTime, ServerTickType.SCHEDULED_TASKS.ordinal());
+			performanceLog.push(this.waitTime, ServerTickType.IDLE.ordinal());
 		}
 	}
 
@@ -797,6 +829,16 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected void runTasksTillTickEnd() {
 		this.runTasks();
 		this.runTasks(() -> !this.shouldKeepTicking());
+	}
+
+	@Override
+	public void waitForTasks() {
+		boolean bl = this.getPerformanceLog() != null;
+		long l = bl ? Util.getMeasuringTimeNano() : 0L;
+		super.waitForTasks();
+		if (bl) {
+			this.waitTime = this.waitTime + (Util.getMeasuringTimeNano() - l);
+		}
 	}
 
 	protected ServerTask createTask(Runnable runnable) {
@@ -899,9 +941,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.recentTickTimesNanos += m;
 		this.tickTimes[i] = m;
 		this.averageTickTime = this.averageTickTime * 0.8F + (float)m / (float)TimeHelper.MILLI_IN_NANOS * 0.19999999F;
-		long n = Util.getMeasuringTimeNano();
-		this.tickTickLog(n - l);
+		this.pushTickLog(l);
 		this.profiler.pop();
+	}
+
+	private void pushTickLog(long tickStartTime) {
+		PerformanceLog performanceLog = this.getPerformanceLog();
+		if (performanceLog != null) {
+			performanceLog.push(Util.getMeasuringTimeNano() - tickStartTime, ServerTickType.TICK_SERVER_METHOD.ordinal());
+		}
 	}
 
 	private int getAutosaveInterval() {
@@ -924,7 +972,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	protected void tickTickLog(long nanos) {
+	@Nullable
+	protected PerformanceLog getPerformanceLog() {
+		return null;
 	}
 
 	private ServerMetadata createMetadata() {

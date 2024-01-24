@@ -77,7 +77,7 @@ public class OptimizeWorldScreen extends Screen {
 	) {
 		super(Text.translatable("optimizeWorld.title", levelInfo.getLevelName()));
 		this.callback = callback;
-		this.updater = new WorldUpdater(storageSession, dataFixer, dimensionOptionsRegistry, eraseCache);
+		this.updater = new WorldUpdater(storageSession, dataFixer, dimensionOptionsRegistry, eraseCache, false);
 	}
 
 	@Override

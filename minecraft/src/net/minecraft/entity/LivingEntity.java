@@ -44,6 +44,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTracker;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -1246,7 +1247,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			Entity entity2 = source.getAttacker();
 			if (entity2 != null) {
-				if (entity2 instanceof LivingEntity livingEntity2 && !source.isIn(DamageTypeTags.NO_ANGER)) {
+				if (entity2 instanceof LivingEntity livingEntity2
+					&& !source.isIn(DamageTypeTags.NO_ANGER)
+					&& (!source.isOf(DamageTypes.WIND_CHARGE) || !this.getType().isIn(EntityTypeTags.NO_ANGER_FROM_WIND_CHARGE))) {
 					this.setAttacker(livingEntity2);
 				}
 

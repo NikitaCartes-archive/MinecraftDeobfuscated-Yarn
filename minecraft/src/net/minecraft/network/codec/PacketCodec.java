@@ -170,7 +170,7 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 	 * This method should be called on the codec for the "type" - like {@link
 	 * net.minecraft.stat.StatType}. An example:
 	 * 
-	 * <p><pre>{@code
+	 * <pre>{@code
 	 * public static final PacketCodec<RegistryByteBuf, Thing<?>> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.THING_TYPE).dispatch(Thing::getType, ThingType::getPacketCodec);
 	 * }</pre>
 	 * 

@@ -32,6 +32,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	private Entity owner;
 	private boolean leftOwner;
 	private boolean shot;
+	protected boolean deflected;
 
 	public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -190,10 +191,13 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		HitResult.Type type = hitResult.getType();
 		if (type == HitResult.Type.ENTITY) {
 			EntityHitResult entityHitResult = (EntityHitResult)hitResult;
-			ProjectileDeflector projectileDeflector = entityHitResult.getEntity().getProjectileDeflector(this);
-			if (projectileDeflector != ProjectileDeflector.NONE) {
-				projectileDeflector.deflect(this, entityHitResult.getEntity(), this.random);
-				return;
+			if (!this.deflected) {
+				ProjectileDeflector projectileDeflector = entityHitResult.getEntity().getProjectileDeflector(this);
+				if (projectileDeflector != ProjectileDeflector.NONE) {
+					projectileDeflector.deflect(this, entityHitResult.getEntity(), this.random);
+					this.deflected = true;
+					return;
+				}
 			}
 
 			this.onEntityHit(entityHitResult);

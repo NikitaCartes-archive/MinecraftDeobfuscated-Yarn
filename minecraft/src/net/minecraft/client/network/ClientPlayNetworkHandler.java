@@ -114,7 +114,6 @@ import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageLink;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageSignatureStorage;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
@@ -263,10 +262,11 @@ import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreAccess;
@@ -386,7 +386,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		Collections.shuffle(list);
 		this.worldKeys = Sets.<RegistryKey<World>>newLinkedHashSet(list);
 		RegistryKey<World> registryKey = commonPlayerSpawnInfo.dimension();
-		RegistryEntry<DimensionType> registryEntry = this.combinedDynamicRegistries.get(RegistryKeys.DIMENSION_TYPE).entryOf(commonPlayerSpawnInfo.dimensionType());
+		RegistryEntry<DimensionType> registryEntry = commonPlayerSpawnInfo.dimensionType();
 		this.chunkLoadDistance = packet.viewDistance();
 		this.simulationDistance = packet.simulationDistance();
 		boolean bl = commonPlayerSpawnInfo.isDebug();
@@ -866,14 +866,15 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onChatMessage(ChatMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Optional<MessageBody> optional = packet.body().toBody(this.signatureStorage);
-		Optional<MessageType.Parameters> optional2 = packet.serializedParameters().toParameters(this.combinedDynamicRegistries);
-		if (!optional.isEmpty() && !optional2.isEmpty()) {
+		if (optional.isEmpty()) {
+			this.connection.disconnect(INVALID_PACKET_TEXT);
+		} else {
 			this.signatureStorage.add((MessageBody)optional.get(), packet.signature());
 			UUID uUID = packet.sender();
 			PlayerListEntry playerListEntry = this.getPlayerListEntry(uUID);
 			if (playerListEntry == null) {
 				LOGGER.error("Received player chat packet for unknown player with ID: {}", uUID);
-				this.client.getMessageHandler().onUnverifiedMessage(uUID, (MessageType.Parameters)optional2.get());
+				this.client.getMessageHandler().onUnverifiedMessage(uUID, packet.serializedParameters());
 			} else {
 				PublicPlayerSession publicPlayerSession = playerListEntry.getSession();
 				MessageLink messageLink;
@@ -886,25 +887,18 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				SignedMessage signedMessage = new SignedMessage(messageLink, packet.signature(), (MessageBody)optional.get(), packet.unsignedContent(), packet.filterMask());
 				signedMessage = playerListEntry.getMessageVerifier().ensureVerified(signedMessage);
 				if (signedMessage != null) {
-					this.client.getMessageHandler().onChatMessage(signedMessage, playerListEntry.getProfile(), (MessageType.Parameters)optional2.get());
+					this.client.getMessageHandler().onChatMessage(signedMessage, playerListEntry.getProfile(), packet.serializedParameters());
 				} else {
-					this.client.getMessageHandler().onUnverifiedMessage(uUID, (MessageType.Parameters)optional2.get());
+					this.client.getMessageHandler().onUnverifiedMessage(uUID, packet.serializedParameters());
 				}
 			}
-		} else {
-			this.connection.disconnect(INVALID_PACKET_TEXT);
 		}
 	}
 
 	@Override
 	public void onProfilelessChatMessage(ProfilelessChatMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Optional<MessageType.Parameters> optional = packet.chatType().toParameters(this.combinedDynamicRegistries);
-		if (optional.isEmpty()) {
-			this.connection.disconnect(INVALID_PACKET_TEXT);
-		} else {
-			this.client.getMessageHandler().onProfilelessMessage(packet.message(), (MessageType.Parameters)optional.get());
-		}
+		this.client.getMessageHandler().onProfilelessMessage(packet.message(), packet.chatType());
 	}
 
 	@Override
@@ -1070,7 +1064,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		CommonPlayerSpawnInfo commonPlayerSpawnInfo = packet.commonPlayerSpawnInfo();
 		RegistryKey<World> registryKey = commonPlayerSpawnInfo.dimension();
-		RegistryEntry<DimensionType> registryEntry = this.combinedDynamicRegistries.get(RegistryKeys.DIMENSION_TYPE).entryOf(commonPlayerSpawnInfo.dimensionType());
+		RegistryEntry<DimensionType> registryEntry = commonPlayerSpawnInfo.dimensionType();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
 			Map<String, MapState> map = this.world.getMapStates();
@@ -1550,8 +1544,14 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
-		super.onSynchronizeTags(packet);
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		packet.getGroups().forEach(this::handleSynchronizedTags);
 		this.refreshTagBasedData();
+	}
+
+	private <T> void handleSynchronizedTags(RegistryKey<? extends Registry<? extends T>> registryRef, TagPacketSerializer.Serialized tags) {
+		Registry<T> registry = this.combinedDynamicRegistries.get(registryRef);
+		tags.loadTo(registry);
 	}
 
 	private void refreshTagBasedData() {
@@ -2315,7 +2315,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		return this.worldKeys;
 	}
 
-	@Override
 	public DynamicRegistryManager.Immutable getRegistryManager() {
 		return this.combinedDynamicRegistries;
 	}

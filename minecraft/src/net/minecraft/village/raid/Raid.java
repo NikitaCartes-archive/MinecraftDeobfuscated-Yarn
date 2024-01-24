@@ -23,6 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnLocation;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.boss.BossBar;
@@ -55,7 +56,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 
 public class Raid {
@@ -625,6 +625,7 @@ public class Raid {
 	private BlockPos getRavagerSpawnLocation(int proximity, int tries) {
 		int i = proximity == 0 ? 2 : 2 - proximity;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		SpawnLocation spawnLocation = SpawnRestriction.getLocation(EntityType.RAVAGER);
 
 		for (int j = 0; j < tries; j++) {
 			float f = this.world.random.nextFloat() * (float) (Math.PI * 2);
@@ -637,7 +638,7 @@ public class Raid {
 				if (this.world.isRegionLoaded(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10)
 					&& this.world.shouldTickEntity(mutable)
 					&& (
-						SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER)
+						spawnLocation.isSpawnPositionOk(this.world, mutable, EntityType.RAVAGER)
 							|| this.world.getBlockState(mutable.down()).isOf(Blocks.SNOW) && this.world.getBlockState(mutable).isAir()
 					)) {
 					return mutable;

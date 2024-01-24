@@ -33,7 +33,7 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 			"Level game mode",
 			(CrashCallable<String>)(() -> String.format(
 					Locale.ROOT,
-					"Game mode: %s (ID %d). Hardcore: %b. Cheats: %b",
+					"Game mode: %s (ID %d). Hardcore: %b. Commands: %b",
 					this.getGameMode().getName(),
 					this.getGameMode().getId(),
 					this.isHardcore(),

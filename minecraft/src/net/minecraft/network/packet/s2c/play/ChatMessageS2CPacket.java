@@ -3,6 +3,7 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.FilterMask;
@@ -43,11 +44,11 @@ public record ChatMessageS2CPacket(
 	MessageBody.Serialized body,
 	@Nullable Text unsignedContent,
 	FilterMask filterMask,
-	MessageType.Serialized serializedParameters
+	MessageType.Parameters serializedParameters
 ) implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, ChatMessageS2CPacket> CODEC = Packet.createCodec(ChatMessageS2CPacket::write, ChatMessageS2CPacket::new);
+	public static final PacketCodec<RegistryByteBuf, ChatMessageS2CPacket> CODEC = Packet.createCodec(ChatMessageS2CPacket::write, ChatMessageS2CPacket::new);
 
-	private ChatMessageS2CPacket(PacketByteBuf buf) {
+	private ChatMessageS2CPacket(RegistryByteBuf buf) {
 		this(
 			buf.readUuid(),
 			buf.readVarInt(),
@@ -55,18 +56,18 @@ public record ChatMessageS2CPacket(
 			new MessageBody.Serialized(buf),
 			buf.readNullable(PacketByteBuf::readUnlimitedText),
 			FilterMask.readMask(buf),
-			new MessageType.Serialized(buf)
+			MessageType.Parameters.CODEC.decode(buf)
 		);
 	}
 
-	private void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeUuid(this.sender);
 		buf.writeVarInt(this.index);
 		buf.writeNullable(this.signature, MessageSignatureData::write);
 		this.body.write(buf);
 		buf.writeNullable(this.unsignedContent, PacketByteBuf::writeText);
 		FilterMask.writeMask(buf, this.filterMask);
-		this.serializedParameters.write(buf);
+		MessageType.Parameters.CODEC.encode(buf, this.serializedParameters);
 	}
 
 	@Override

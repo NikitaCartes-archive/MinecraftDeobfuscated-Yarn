@@ -38,13 +38,12 @@ public abstract class DebugChart {
 
 		for (int o = 0; o < k; o++) {
 			int p = x + o + 1;
-			long q = this.log.get(j + o);
-			m = Math.min(m, q);
-			n = Math.max(n, q);
-			l += q;
-			int r = this.getHeight((double)q);
-			int s = this.getColor(q);
-			context.fill(RenderLayer.getGuiOverlay(), p, i - r, p + 1, i, s);
+			int q = j + o;
+			long r = this.get(q);
+			m = Math.min(m, r);
+			n = Math.max(n, r);
+			l += r;
+			this.drawBar(context, i, p, q);
 		}
 
 		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + width - 1, i - 60, Colors.WHITE);
@@ -61,6 +60,25 @@ public abstract class DebugChart {
 		}
 
 		this.renderThresholds(context, x, width, i);
+	}
+
+	protected void drawBar(DrawContext context, int y, int x, int index) {
+		this.drawTotalBar(context, y, x, index);
+		this.drawOverlayBar(context, y, x, index);
+	}
+
+	protected void drawTotalBar(DrawContext context, int y, int x, int index) {
+		long l = this.log.get(index);
+		int i = this.getHeight((double)l);
+		int j = this.getColor(l);
+		context.fill(RenderLayer.getGuiOverlay(), x, y - i, x + 1, y, j);
+	}
+
+	protected void drawOverlayBar(DrawContext context, int y, int x, int index) {
+	}
+
+	protected long get(int index) {
+		return this.log.get(index);
 	}
 
 	protected void renderThresholds(DrawContext context, int x, int width, int height) {
@@ -80,7 +98,7 @@ public abstract class DebugChart {
 	protected int getColor(double value, double min, int minColor, double median, int medianColor, double max, int maxColor) {
 		value = MathHelper.clamp(value, min, max);
 		return value < median
-			? ColorHelper.Argb.lerp((float)(value / (median - min)), minColor, medianColor)
+			? ColorHelper.Argb.lerp((float)((value - min) / (median - min)), minColor, medianColor)
 			: ColorHelper.Argb.lerp((float)((value - median) / (max - median)), medianColor, maxColor);
 	}
 }

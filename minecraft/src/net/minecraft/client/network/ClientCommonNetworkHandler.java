@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,13 +48,6 @@ import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
 import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
-import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -118,8 +110,6 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	protected abstract void onCustomPayload(CustomPayload payload);
-
-	protected abstract DynamicRegistryManager.Immutable getRegistryManager();
 
 	@Override
 	public void onResourcePackSend(ResourcePackSendS2CPacket packet) {
@@ -192,23 +182,6 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 				false,
 				new CookieStorage(this.serverCookies)
 			);
-		}
-	}
-
-	@Override
-	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		packet.getGroups().forEach(this::handleSynchronizedTagGroup);
-	}
-
-	private <T> void handleSynchronizedTagGroup(RegistryKey<? extends Registry<? extends T>> registryRef, TagPacketSerializer.Serialized tags) {
-		if (!tags.isEmpty()) {
-			Registry<T> registry = (Registry<T>)this.getRegistryManager()
-				.getOptional(registryRef)
-				.orElseThrow(() -> new IllegalStateException("Unknown registry " + registryRef));
-			Map<TagKey<T>, List<RegistryEntry<T>>> map = new HashMap();
-			TagPacketSerializer.loadTags(registryRef, registry, tags, map::put);
-			registry.populateTags(map);
 		}
 	}
 

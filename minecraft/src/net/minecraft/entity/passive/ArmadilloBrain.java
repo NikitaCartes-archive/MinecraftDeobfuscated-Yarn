@@ -189,7 +189,7 @@ public class ArmadilloBrain {
 
 	public static class UnrollAndFleeTask extends FleeTask {
 		public UnrollAndFleeTask(float f) {
-			super(f);
+			super(f, entity -> entity.shouldEscapePowderSnow() || entity.isOnFire());
 		}
 
 		@Override

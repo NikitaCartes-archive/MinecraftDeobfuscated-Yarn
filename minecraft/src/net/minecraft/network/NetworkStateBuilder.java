@@ -98,18 +98,8 @@ public class NetworkStateBuilder<T extends PacketListener, B extends ByteBuf> {
 	}
 
 	static record NetworkStateImpl<L extends PacketListener>(
-		NetworkPhase id, NetworkSide flow, PacketCodec<ByteBuf, Packet<? super L>> codec, @Nullable PacketBundleHandler bundlerInfo
+		NetworkPhase id, NetworkSide side, PacketCodec<ByteBuf, Packet<? super L>> codec, @Nullable PacketBundleHandler bundleHandler
 	) implements NetworkState<L> {
-		@Nullable
-		@Override
-		public PacketBundleHandler bundleHandler() {
-			return this.bundlerInfo;
-		}
-
-		@Override
-		public NetworkSide side() {
-			return this.flow;
-		}
 	}
 
 	static record PacketType<T extends PacketListener, P extends Packet<? super T>, B extends ByteBuf>(

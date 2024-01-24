@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileDeflector;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -45,7 +46,7 @@ public class BreezeEntity extends HostileEntity {
 	public AnimationState shootingAnimationState = new AnimationState();
 	public AnimationState field_47270 = new AnimationState();
 	private int longJumpingParticleAddCount = 0;
-	private int field_47815 = 0;
+	private int ticksUntilWhirlSound = 0;
 	private static final ProjectileDeflector PROJECTILE_DEFLECTOR = (projectile, hitEntity, random) -> {
 		hitEntity.getWorld().playSoundFromEntity(hitEntity, SoundEvents.ENTITY_BREEZE_DEFLECT, hitEntity.getSoundCategory(), 1.0F, 1.0F);
 		ProjectileDeflector.SIMPLE.deflect(projectile, hitEntity, random);
@@ -79,11 +80,6 @@ public class BreezeEntity extends HostileEntity {
 	@Override
 	protected Brain.Profile<BreezeEntity> createBrainProfile() {
 		return Brain.createProfile(BreezeBrain.MEMORY_MODULES, BreezeBrain.SENSORS);
-	}
-
-	@Override
-	public boolean canTarget(LivingEntity target) {
-		return target.getType() != EntityType.BREEZE && super.canTarget(target);
 	}
 
 	@Override
@@ -134,8 +130,8 @@ public class BreezeEntity extends HostileEntity {
 			this.slidingAnimationState.stop();
 		}
 
-		this.field_47815 = this.field_47815 == 0 ? this.random.nextBetween(1, 80) : this.field_47815 - 1;
-		if (this.field_47815 == 0) {
+		this.ticksUntilWhirlSound = this.ticksUntilWhirlSound == 0 ? this.random.nextBetween(1, 80) : this.ticksUntilWhirlSound - 1;
+		if (this.ticksUntilWhirlSound == 0) {
 			this.playWhirlSound();
 		}
 
@@ -213,6 +209,14 @@ public class BreezeEntity extends HostileEntity {
 		return this.isOnGround() ? SoundEvents.ENTITY_BREEZE_IDLE_GROUND : SoundEvents.ENTITY_BREEZE_IDLE_AIR;
 	}
 
+	public Optional<LivingEntity> getHurtBy() {
+		return this.getBrain()
+			.getOptionalRegisteredMemory(MemoryModuleType.HURT_BY)
+			.map(DamageSource::getAttacker)
+			.filter(attacker -> attacker instanceof LivingEntity)
+			.map(livingAttacker -> (LivingEntity)livingAttacker);
+	}
+
 	public boolean isWithinShortRange(Vec3d pos) {
 		Vec3d vec3d = this.getBlockPos().toCenterPos();
 		return pos.isWithinRangeOf(vec3d, 4.0, 10.0);
@@ -237,7 +241,7 @@ public class BreezeEntity extends HostileEntity {
 
 	@Override
 	public boolean canTarget(EntityType<?> type) {
-		return type == EntityType.PLAYER;
+		return type == EntityType.PLAYER || type == EntityType.IRON_GOLEM;
 	}
 
 	@Override

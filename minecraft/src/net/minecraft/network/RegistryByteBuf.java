@@ -7,7 +7,7 @@ import net.minecraft.registry.DynamicRegistryManager;
 /**
  * A packet byte buffer bound to a particular {@link DynamicRegistryManager} instance.
  * 
- * <p>This is used during the {@link NetworkStateType#PLAY} phase only.
+ * <p>This is used during the {@link NetworkPhase#PLAY} phase only.
  */
 public class RegistryByteBuf extends PacketByteBuf {
 	private final DynamicRegistryManager registryManager;

@@ -3,6 +3,7 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -25,9 +26,9 @@ public record GameJoinS2CPacket(
 	CommonPlayerSpawnInfo commonPlayerSpawnInfo,
 	boolean enforcesSecureChat
 ) implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, GameJoinS2CPacket> CODEC = Packet.createCodec(GameJoinS2CPacket::write, GameJoinS2CPacket::new);
+	public static final PacketCodec<RegistryByteBuf, GameJoinS2CPacket> CODEC = Packet.createCodec(GameJoinS2CPacket::write, GameJoinS2CPacket::new);
 
-	private GameJoinS2CPacket(PacketByteBuf buf) {
+	private GameJoinS2CPacket(RegistryByteBuf buf) {
 		this(
 			buf.readInt(),
 			buf.readBoolean(),
@@ -43,7 +44,7 @@ public record GameJoinS2CPacket(
 		);
 	}
 
-	private void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeInt(this.playerEntityId);
 		buf.writeBoolean(this.hardcore);
 		buf.writeCollection(this.dimensionIds, PacketByteBuf::writeRegistryKey);

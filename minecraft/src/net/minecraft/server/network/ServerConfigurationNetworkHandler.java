@@ -2,9 +2,12 @@ package net.minecraft.server.network;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DynamicOps;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.RegistryByteBuf;
@@ -22,7 +25,7 @@ import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.state.PlayStateFactories;
 import net.minecraft.registry.CombinedDynamicRegistries;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.registry.tag.TagPacketSerializer;
@@ -67,10 +70,11 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 		this.sendPacket(new CustomPayloadS2CPacket(new BrandCustomPayload(this.server.getServerModName())));
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = this.server.getCombinedDynamicRegistries();
 		this.sendPacket(new FeaturesS2CPacket(FeatureFlags.FEATURE_MANAGER.toId(this.server.getSaveProperties().getEnabledFeatures())));
-		this.sendPacket(
-			new DynamicRegistriesS2CPacket(
-				new DynamicRegistryManager.ImmutableImpl(SerializableRegistries.streamDynamicEntries(combinedDynamicRegistries)).toImmutable()
-			)
+		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, combinedDynamicRegistries.getCombinedRegistryManager());
+		SerializableRegistries.forEachSyncedRegistry(
+			dynamicOps,
+			combinedDynamicRegistries.getSucceedingRegistryManagers(ServerDynamicRegistryType.WORLDGEN),
+			(registryRef, entries) -> this.sendPacket(new DynamicRegistriesS2CPacket(registryRef, entries))
 		);
 		this.sendPacket(new SynchronizeTagsS2CPacket(TagPacketSerializer.serializeTags(combinedDynamicRegistries)));
 		this.queueSendResourcePackTask();

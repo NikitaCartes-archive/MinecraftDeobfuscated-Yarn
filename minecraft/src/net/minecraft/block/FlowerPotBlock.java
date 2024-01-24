@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
-import java.util.stream.Stream;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -51,11 +50,6 @@ public class FlowerPotBlock extends Block {
 	}
 
 	@Override
-	protected BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
-	}
-
-	@Override
 	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		BlockState blockState = (stack.getItem() instanceof BlockItem blockItem
 				? (Block)CONTENT_TO_POTTED.getOrDefault(blockItem.getBlock(), Blocks.AIR)
@@ -83,14 +77,10 @@ public class FlowerPotBlock extends Block {
 			return ActionResult.CONSUME;
 		} else {
 			ItemStack itemStack = new ItemStack(this.content);
-			Stream.of(Hand.MAIN_HAND, Hand.OFF_HAND)
-				.filter(hand -> player.getStackInHand(hand).isEmpty())
-				.findFirst()
-				.ifPresentOrElse(hand -> player.setStackInHand(hand, itemStack), () -> {
-					if (!player.giveItemStack(itemStack)) {
-						player.dropItem(itemStack, false);
-					}
-				});
+			if (!player.giveItemStack(itemStack)) {
+				player.dropItem(itemStack, false);
+			}
+
 			world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), Block.NOTIFY_ALL);
 			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 			return ActionResult.success(world.isClient);

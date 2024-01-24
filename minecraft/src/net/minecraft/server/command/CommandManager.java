@@ -53,6 +53,7 @@ import net.minecraft.server.dedicated.command.SaveOffCommand;
 import net.minecraft.server.dedicated.command.SaveOnCommand;
 import net.minecraft.server.dedicated.command.SetIdleTimeoutCommand;
 import net.minecraft.server.dedicated.command.StopCommand;
+import net.minecraft.server.dedicated.command.TransferCommand;
 import net.minecraft.server.dedicated.command.WhitelistCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -170,6 +171,7 @@ public class CommandManager {
 			SaveOnCommand.register(this.dispatcher);
 			SetIdleTimeoutCommand.register(this.dispatcher);
 			StopCommand.register(this.dispatcher);
+			TransferCommand.register(this.dispatcher);
 			WhitelistCommand.register(this.dispatcher);
 		}
 

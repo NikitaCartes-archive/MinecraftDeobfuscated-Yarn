@@ -3,8 +3,6 @@ package net.minecraft.text;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nullable;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Formatting;
@@ -101,7 +99,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 */
 	public static enum Parameter implements StringIdentifiable {
 		SENDER("sender", (content, params) -> params.name()),
-		TARGET("target", (content, params) -> params.targetName()),
+		TARGET("target", (content, params) -> (Text)params.targetName().orElse(ScreenTexts.EMPTY)),
 		CONTENT("content", (content, params) -> content);
 
 		public static final Codec<Decoration.Parameter> CODEC = StringIdentifiable.createCodec(Decoration.Parameter::values);
@@ -117,8 +115,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		 * {@return the text obtained by applying the passed values to the parameter}
 		 */
 		public Text apply(Text content, MessageType.Parameters params) {
-			Text text = this.selector.select(content, params);
-			return (Text)Objects.requireNonNullElse(text, ScreenTexts.EMPTY);
+			return this.selector.select(content, params);
 		}
 
 		@Override
@@ -130,7 +127,6 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		 * A functional interface that selects the text from the passed parameters.
 		 */
 		public interface Selector {
-			@Nullable
 			Text select(Text content, MessageType.Parameters params);
 		}
 	}

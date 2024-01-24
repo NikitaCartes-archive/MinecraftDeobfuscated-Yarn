@@ -26,6 +26,7 @@ import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructurePresence;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.structure.Structure;
 
 public class StructureAccessor {
@@ -169,8 +170,8 @@ public class StructureAccessor {
 		return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
 	}
 
-	public StructurePresence getStructurePresence(ChunkPos chunkPos, Structure structure, boolean skipExistingChunk) {
-		return this.locator.getStructurePresence(chunkPos, structure, skipExistingChunk);
+	public StructurePresence getStructurePresence(ChunkPos chunkPos, Structure structure, StructurePlacement placement, boolean skipReferencedStructures) {
+		return this.locator.getStructurePresence(chunkPos, structure, placement, skipReferencedStructures);
 	}
 
 	public void incrementReferences(StructureStart structureStart) {

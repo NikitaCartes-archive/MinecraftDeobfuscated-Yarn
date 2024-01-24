@@ -3,15 +3,19 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public record CommonPlayerSpawnInfo(
-	RegistryKey<DimensionType> dimensionType,
+	RegistryEntry<DimensionType> dimensionType,
 	RegistryKey<World> dimension,
 	long seed,
 	GameMode gameMode,
@@ -21,9 +25,13 @@ public record CommonPlayerSpawnInfo(
 	Optional<GlobalPos> lastDeathLocation,
 	int portalCooldown
 ) {
-	public CommonPlayerSpawnInfo(PacketByteBuf buf) {
+	private static final PacketCodec<RegistryByteBuf, RegistryEntry<DimensionType>> DIMENSION_TYPE_PACKET_CODEC = PacketCodecs.registryEntry(
+		RegistryKeys.DIMENSION_TYPE
+	);
+
+	public CommonPlayerSpawnInfo(RegistryByteBuf buf) {
 		this(
-			buf.readRegistryKey(RegistryKeys.DIMENSION_TYPE),
+			DIMENSION_TYPE_PACKET_CODEC.decode(buf),
 			buf.readRegistryKey(RegistryKeys.WORLD),
 			buf.readLong(),
 			GameMode.byId(buf.readByte()),
@@ -35,8 +43,8 @@ public record CommonPlayerSpawnInfo(
 		);
 	}
 
-	public void write(PacketByteBuf buf) {
-		buf.writeRegistryKey(this.dimensionType);
+	public void write(RegistryByteBuf buf) {
+		DIMENSION_TYPE_PACKET_CODEC.encode(buf, this.dimensionType);
 		buf.writeRegistryKey(this.dimension);
 		buf.writeLong(this.seed);
 		buf.writeByte(this.gameMode.getId());

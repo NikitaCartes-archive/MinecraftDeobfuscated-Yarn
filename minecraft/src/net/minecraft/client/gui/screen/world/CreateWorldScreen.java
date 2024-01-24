@@ -615,7 +615,7 @@ public class CreateWorldScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	class GameTab extends GridScreenTab {
 		private static final Text GAME_TAB_TITLE_TEXT = Text.translatable("createWorld.tab.game.title");
-		private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands");
+		private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands.new");
 		private final TextFieldWidget worldNameField;
 
 		GameTab() {

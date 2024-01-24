@@ -31,7 +31,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
 /**
@@ -54,9 +53,6 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	private boolean frozen;
 	@Nullable
 	private Map<T, RegistryEntry.Reference<T>> intrusiveValueToEntry;
-	@Nullable
-	private List<RegistryEntry.Reference<T>> cachedEntries;
-	private int nextId;
 	private final RegistryWrapper.Impl<T> wrapper = new RegistryWrapper.Impl<T>() {
 		@Override
 		public RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
@@ -110,14 +106,6 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 		return "Registry[" + this.key + " (" + this.lifecycle + ")]";
 	}
 
-	private List<RegistryEntry.Reference<T>> getEntries() {
-		if (this.cachedEntries == null) {
-			this.cachedEntries = this.rawIdToEntry.stream().filter(Objects::nonNull).toList();
-		}
-
-		return this.cachedEntries;
-	}
-
 	private void assertNotFrozen() {
 		if (this.frozen) {
 			throw new IllegalStateException("Registry is already frozen");
@@ -130,10 +118,11 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 		}
 	}
 
-	public RegistryEntry.Reference<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle) {
+	@Override
+	public RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, Lifecycle lifecycle) {
 		this.assertNotFrozen(key);
-		Validate.notNull(key);
-		Validate.notNull(value);
+		Objects.requireNonNull(key);
+		Objects.requireNonNull(value);
 		if (this.idToEntry.containsKey(key.getValue())) {
 			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate key '" + key + "' to registry")));
 		}
@@ -151,28 +140,19 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 
 			reference.setRegistryKey(key);
 		} else {
-			reference = (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, keyx -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), keyx));
+			reference = (RegistryEntry.Reference<T>)this.keyToEntry
+				.computeIfAbsent(key, registryKey -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), registryKey));
 		}
 
 		this.keyToEntry.put(key, reference);
 		this.idToEntry.put(key.getValue(), reference);
 		this.valueToEntry.put(value, reference);
-		this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), rawId + 1));
-		this.rawIdToEntry.set(rawId, reference);
-		this.entryToRawId.put(value, rawId);
-		if (this.nextId <= rawId) {
-			this.nextId = rawId + 1;
-		}
-
+		int i = this.rawIdToEntry.size();
+		this.rawIdToEntry.add(reference);
+		this.entryToRawId.put(value, i);
 		this.entryToLifecycle.put(value, lifecycle);
 		this.lifecycle = this.lifecycle.add(lifecycle);
-		this.cachedEntries = null;
 		return reference;
-	}
-
-	@Override
-	public RegistryEntry.Reference<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle) {
-		return this.set(this.nextId, key, entry, lifecycle);
 	}
 
 	@Nullable
@@ -201,7 +181,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	@Nullable
 	@Override
 	public T get(int index) {
-		return index >= 0 && index < this.rawIdToEntry.size() ? getValue((RegistryEntry.Reference<T>)this.rawIdToEntry.get(index)) : null;
+		return (T)(index >= 0 && index < this.rawIdToEntry.size() ? ((RegistryEntry.Reference)this.rawIdToEntry.get(index)).value() : null);
 	}
 
 	@Override
@@ -252,7 +232,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	}
 
 	public Iterator<T> iterator() {
-		return Iterators.transform(this.getEntries().iterator(), RegistryEntry::value);
+		return Iterators.transform(this.rawIdToEntry.iterator(), RegistryEntry::value);
 	}
 
 	@Nullable
@@ -284,7 +264,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 
 	@Override
 	public Stream<RegistryEntry.Reference<T>> streamEntries() {
-		return this.getEntries().stream();
+		return this.rawIdToEntry.stream();
 	}
 
 	@Override
@@ -321,7 +301,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 
 	@Override
 	public Optional<RegistryEntry.Reference<T>> getRandom(Random random) {
-		return Util.getRandomOrEmpty(this.getEntries(), random);
+		return Util.getRandomOrEmpty(this.rawIdToEntry, random);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class SaveLoading {
 				lifecycledResourceManager, combinedDynamicRegistries, ServerDynamicRegistryType.WORLDGEN, RegistryLoader.DYNAMIC_REGISTRIES
 			);
 			DynamicRegistryManager.Immutable immutable = combinedDynamicRegistries2.getPrecedingRegistryManagers(ServerDynamicRegistryType.DIMENSIONS);
-			DynamicRegistryManager.Immutable immutable2 = RegistryLoader.load(lifecycledResourceManager, immutable, RegistryLoader.DIMENSION_REGISTRIES);
+			DynamicRegistryManager.Immutable immutable2 = RegistryLoader.loadFromResource(lifecycledResourceManager, immutable, RegistryLoader.DIMENSION_REGISTRIES);
 			DataConfiguration dataConfiguration = pair.getFirst();
 			SaveLoading.LoadContext<D> loadContext = loadContextSupplier.get(
 				new SaveLoading.LoadContextSupplierContext(lifecycledResourceManager, dataConfiguration, immutable, immutable2)
@@ -78,7 +78,7 @@ public class SaveLoading {
 		List<RegistryLoader.Entry<?>> entries
 	) {
 		DynamicRegistryManager.Immutable immutable = combinedDynamicRegistries.getPrecedingRegistryManagers(type);
-		return RegistryLoader.load(resourceManager, immutable, entries);
+		return RegistryLoader.loadFromResource(resourceManager, immutable, entries);
 	}
 
 	private static CombinedDynamicRegistries<ServerDynamicRegistryType> withRegistriesLoaded(

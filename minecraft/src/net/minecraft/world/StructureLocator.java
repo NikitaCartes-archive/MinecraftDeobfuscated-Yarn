@@ -27,9 +27,9 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.storage.NbtScannable;
@@ -41,8 +41,6 @@ public class StructureLocator {
 	private static final int START_NOT_PRESENT_REFERENCE = -1;
 	private final NbtScannable chunkIoWorker;
 	private final DynamicRegistryManager registryManager;
-	private final Registry<Biome> biomeRegistry;
-	private final Registry<Structure> structureRegistry;
 	private final StructureTemplateManager structureTemplateManager;
 	private final RegistryKey<World> worldKey;
 	private final ChunkGenerator chunkGenerator;
@@ -76,11 +74,9 @@ public class StructureLocator {
 		this.biomeSource = biomeSource;
 		this.seed = seed;
 		this.dataFixer = dataFixer;
-		this.biomeRegistry = registryManager.get(RegistryKeys.BIOME);
-		this.structureRegistry = registryManager.get(RegistryKeys.STRUCTURE);
 	}
 
-	public StructurePresence getStructurePresence(ChunkPos pos, Structure type, boolean skipReferencedStructures) {
+	public StructurePresence getStructurePresence(ChunkPos pos, Structure type, StructurePlacement placement, boolean skipReferencedStructures) {
 		long l = pos.toLong();
 		Object2IntMap<Structure> object2IntMap = this.cachedStructuresByChunkPos.get(l);
 		if (object2IntMap != null) {
@@ -89,6 +85,8 @@ public class StructureLocator {
 			StructurePresence structurePresence = this.getStructurePresence(pos, type, skipReferencedStructures, l);
 			if (structurePresence != null) {
 				return structurePresence;
+			} else if (!placement.applyFrequencyReduction(pos.x, pos.z, this.seed)) {
+				return StructurePresence.START_NOT_PRESENT;
 			} else {
 				boolean bl = ((Long2BooleanMap)this.generationPossibilityByStructure.computeIfAbsent(type, structure2 -> new Long2BooleanOpenHashMap()))
 					.computeIfAbsent(l, (Long2BooleanFunction)(chunkPos -> this.isGenerationPossible(pos, type)));

@@ -3,17 +3,20 @@ package net.minecraft.network.message;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Decoration;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 
 /**
@@ -131,27 +134,33 @@ public record MessageType(Decoration chat, Decoration narration) {
 
 	public static MessageType.Parameters params(RegistryKey<MessageType> typeKey, DynamicRegistryManager registryManager, Text name) {
 		Registry<MessageType> registry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
-		return registry.getOrThrow(typeKey).params(name);
-	}
-
-	public MessageType.Parameters params(Text name) {
-		return new MessageType.Parameters(this, name);
+		return new MessageType.Parameters(registry.entryOf(typeKey), name);
 	}
 
 	/**
 	 * A record holding the message type and the decoration parameters.
 	 */
-	public static record Parameters(MessageType type, Text name, @Nullable Text targetName) {
-		Parameters(MessageType type, Text name) {
-			this(type, name, null);
+	public static record Parameters(RegistryEntry<MessageType> type, Text name, Optional<Text> targetName) {
+		public static final PacketCodec<RegistryByteBuf, MessageType.Parameters> CODEC = PacketCodec.tuple(
+			PacketCodecs.registryEntry(RegistryKeys.MESSAGE_TYPE),
+			MessageType.Parameters::type,
+			TextCodecs.PACKET_CODEC,
+			MessageType.Parameters::name,
+			TextCodecs.PACKET_CODEC.collect(PacketCodecs::optional),
+			MessageType.Parameters::targetName,
+			MessageType.Parameters::new
+		);
+
+		Parameters(RegistryEntry<MessageType> type, Text name) {
+			this(type, name, Optional.empty());
 		}
 
 		public Text applyChatDecoration(Text content) {
-			return this.type.chat().apply(content, this);
+			return this.type.value().chat().apply(content, this);
 		}
 
 		public Text applyNarrationDecoration(Text content) {
-			return this.type.narration().apply(content, this);
+			return this.type.value().narration().apply(content, this);
 		}
 
 		/**
@@ -162,40 +171,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 		 * net.minecraft.server.command.MessageCommand}.
 		 */
 		public MessageType.Parameters withTargetName(Text targetName) {
-			return new MessageType.Parameters(this.type, this.name, targetName);
-		}
-
-		/**
-		 * {@return a serialized version of this instance used in packets}
-		 */
-		public MessageType.Serialized toSerialized(DynamicRegistryManager registryManager) {
-			Registry<MessageType> registry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
-			return new MessageType.Serialized(registry.getRawId(this.type), this.name, this.targetName);
-		}
-	}
-
-	/**
-	 * The serialized version of {@link MessageType.Parameters} that is used in packets.
-	 */
-	public static record Serialized(int typeId, Text name, @Nullable Text targetName) {
-		public Serialized(PacketByteBuf buf) {
-			this(buf.readVarInt(), buf.readUnlimitedText(), buf.readNullable(PacketByteBuf::readUnlimitedText));
-		}
-
-		public void write(PacketByteBuf buf) {
-			buf.writeVarInt(this.typeId);
-			buf.writeText(this.name);
-			buf.writeNullable(this.targetName, PacketByteBuf::writeText);
-		}
-
-		/**
-		 * {@return a deserialized version of this instance, or {@link Optional#empty} if
-		 * {@link #typeId} is unknown to the client}
-		 */
-		public Optional<MessageType.Parameters> toParameters(DynamicRegistryManager registryManager) {
-			Registry<MessageType> registry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
-			MessageType messageType = registry.get(this.typeId);
-			return Optional.ofNullable(messageType).map(type -> new MessageType.Parameters(type, this.name, this.targetName));
+			return new MessageType.Parameters(this.type, this.name, Optional.of(targetName));
 		}
 	}
 }

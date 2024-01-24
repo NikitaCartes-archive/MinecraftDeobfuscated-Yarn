@@ -147,7 +147,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 				? Text.empty().append(Text.translatable("gameMode.hardcore").withColor(Colors.RED))
 				: Text.translatable("gameMode." + this.getGameMode().getName());
 			if (this.hasCheats()) {
-				mutableText.append(", ").append(Text.translatable("selectWorld.cheats"));
+				mutableText.append(", ").append(Text.translatable("selectWorld.commands"));
 			}
 
 			if (this.isExperimental()) {

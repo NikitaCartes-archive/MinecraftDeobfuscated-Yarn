@@ -3,6 +3,7 @@ package net.minecraft.world;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnLocation;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.passive.TraderLlamaEntity;
@@ -129,13 +130,14 @@ public class WanderingTraderManager implements SpecialSpawner {
 	@Nullable
 	private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int range) {
 		BlockPos blockPos = null;
+		SpawnLocation spawnLocation = SpawnRestriction.getLocation(EntityType.WANDERING_TRADER);
 
 		for (int i = 0; i < 10; i++) {
 			int j = pos.getX() + this.random.nextInt(range * 2) - range;
 			int k = pos.getZ() + this.random.nextInt(range * 2) - range;
 			int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, j, k);
 			BlockPos blockPos2 = new BlockPos(j, l, k);
-			if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, world, blockPos2, EntityType.WANDERING_TRADER)) {
+			if (spawnLocation.isSpawnPositionOk(world, blockPos2, EntityType.WANDERING_TRADER)) {
 				blockPos = blockPos2;
 				break;
 			}

@@ -2,7 +2,6 @@ package net.minecraft.world.storage;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -13,7 +12,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -22,7 +20,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -37,33 +34,26 @@ import org.slf4j.Logger;
 public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String SECTIONS_KEY = "Sections";
-	private final StorageIoWorker worker;
+	private final ChunkPosKeyedStorage storageAccess;
 	private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<>();
 	private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();
 	private final Function<Runnable, Codec<R>> codecFactory;
 	private final Function<Runnable, R> factory;
-	private final DataFixer dataFixer;
-	private final DataFixTypes dataFixTypes;
-	private final DynamicRegistryManager dynamicRegistryManager;
+	private final DynamicRegistryManager registryManager;
 	protected final HeightLimitView world;
 
 	public SerializingRegionBasedStorage(
-		Path path,
+		ChunkPosKeyedStorage storageAccess,
 		Function<Runnable, Codec<R>> codecFactory,
 		Function<Runnable, R> factory,
-		DataFixer dataFixer,
-		DataFixTypes dataFixTypes,
-		boolean dsync,
-		DynamicRegistryManager dynamicRegistryManager,
+		DynamicRegistryManager registryManager,
 		HeightLimitView world
 	) {
+		this.storageAccess = storageAccess;
 		this.codecFactory = codecFactory;
 		this.factory = factory;
-		this.dataFixer = dataFixer;
-		this.dataFixTypes = dataFixTypes;
-		this.dynamicRegistryManager = dynamicRegistryManager;
+		this.registryManager = registryManager;
 		this.world = world;
-		this.worker = new StorageIoWorker(path, dsync, path.getFileName().toString());
 	}
 
 	protected void tick(BooleanSupplier shouldKeepTicking) {
@@ -123,12 +113,12 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	private void loadDataAt(ChunkPos pos) {
 		Optional<NbtCompound> optional = (Optional<NbtCompound>)this.loadNbt(pos).join();
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, this.dynamicRegistryManager);
-		this.update(pos, registryOps, (NbtElement)optional.orElse(null));
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, this.registryManager);
+		this.update(pos, registryOps, (NbtCompound)optional.orElse(null));
 	}
 
 	private CompletableFuture<Optional<NbtCompound>> loadNbt(ChunkPos pos) {
-		return this.worker.readChunkData(pos).exceptionally(throwable -> {
+		return this.storageAccess.read(pos).exceptionally(throwable -> {
 			if (throwable instanceof IOException iOException) {
 				LOGGER.error("Error reading chunk {} data from disk", pos, iOException);
 				return Optional.empty();
@@ -138,18 +128,18 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		});
 	}
 
-	private <T> void update(ChunkPos pos, DynamicOps<T> ops, @Nullable T data) {
-		if (data == null) {
+	private void update(ChunkPos pos, RegistryOps<NbtElement> ops, @Nullable NbtCompound nbt) {
+		if (nbt == null) {
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				this.loadedElements.put(chunkSectionPosAsLong(pos, i), Optional.empty());
 			}
 		} else {
-			Dynamic<T> dynamic = new Dynamic<>(ops, data);
+			Dynamic<NbtElement> dynamic = new Dynamic<>(ops, nbt);
 			int j = getDataVersion(dynamic);
 			int k = SharedConstants.getGameVersion().getSaveVersion().getId();
 			boolean bl = j != k;
-			Dynamic<T> dynamic2 = this.dataFixTypes.update(this.dataFixer, dynamic, j, k);
-			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
+			Dynamic<NbtElement> dynamic2 = this.storageAccess.update(dynamic, j);
+			OptionalDynamic<NbtElement> optionalDynamic = dynamic2.get("Sections");
 
 			for (int l = this.world.getBottomSectionCoord(); l < this.world.getTopSectionCoord(); l++) {
 				long m = chunkSectionPosAsLong(pos, l);
@@ -168,11 +158,11 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	private void save(ChunkPos pos) {
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, this.dynamicRegistryManager);
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, this.registryManager);
 		Dynamic<NbtElement> dynamic = this.serialize(pos, registryOps);
 		NbtElement nbtElement = dynamic.getValue();
 		if (nbtElement instanceof NbtCompound) {
-			this.worker.setResult(pos, (NbtCompound)nbtElement);
+			this.storageAccess.set(pos, (NbtCompound)nbtElement);
 		} else {
 			LOGGER.error("Expected compound tag, got {}", nbtElement);
 		}
@@ -238,6 +228,6 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	public void close() throws IOException {
-		this.worker.close();
+		this.storageAccess.close();
 	}
 }

@@ -56,6 +56,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.PerformanceLog;
+import net.minecraft.util.profiler.ServerTickType;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
@@ -99,10 +100,10 @@ public class DebugHud {
 	private boolean renderingChartVisible;
 	private boolean renderingAndTickChartsVisible;
 	private boolean packetSizeAndPingChartsVisible;
-	private final PerformanceLog frameNanosLog = new PerformanceLog();
-	private final PerformanceLog tickNanosLog = new PerformanceLog();
-	private final PerformanceLog pingLog = new PerformanceLog();
-	private final PerformanceLog packetSizeLog = new PerformanceLog();
+	private final PerformanceLog frameNanosLog = new PerformanceLog(1);
+	private final PerformanceLog tickNanosLog = new PerformanceLog(ServerTickType.values().length);
+	private final PerformanceLog pingLog = new PerformanceLog(1);
+	private final PerformanceLog packetSizeLog = new PerformanceLog(1);
 	private final RenderingChart renderingChart;
 	private final TickChart tickChart;
 	private final PingChart pingChart;
@@ -592,8 +593,8 @@ public class DebugHud {
 		this.frameNanosLog.push(value);
 	}
 
-	public void pushToTickLog(long value) {
-		this.tickNanosLog.push(value);
+	public PerformanceLog getTickNanosLog() {
+		return this.tickNanosLog;
 	}
 
 	public PerformanceLog getPingLog() {

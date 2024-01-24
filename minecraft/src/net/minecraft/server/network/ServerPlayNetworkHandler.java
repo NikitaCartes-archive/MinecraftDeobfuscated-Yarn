@@ -1413,14 +1413,14 @@ public class ServerPlayNetworkHandler
 				message.signedBody().toSerialized(this.signatureStorage),
 				message.unsignedContent(),
 				message.filterMask(),
-				params.toSerialized(this.player.getWorld().getRegistryManager())
+				params
 			)
 		);
 		this.addPendingAcknowledgment(message);
 	}
 
 	public void sendProfilelessChatMessage(Text message, MessageType.Parameters params) {
-		this.sendPacket(new ProfilelessChatMessageS2CPacket(message, params.toSerialized(this.player.getWorld().getRegistryManager())));
+		this.sendPacket(new ProfilelessChatMessageS2CPacket(message, params));
 	}
 
 	public SocketAddress getConnectionAddress() {
