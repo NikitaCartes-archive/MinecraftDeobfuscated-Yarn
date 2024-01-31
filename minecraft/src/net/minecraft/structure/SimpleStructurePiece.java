@@ -48,10 +48,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	}
 
 	public SimpleStructurePiece(
-		StructurePieceType type,
-		NbtCompound nbt,
-		StructureTemplateManager structureTemplateManager,
-		Function<Identifier, StructurePlacementData> placementDataGetter
+		StructurePieceType type, NbtCompound nbt, StructureTemplateManager structureTemplateManager, Function<Identifier, StructurePlacementData> placementDataGetter
 	) {
 		super(type, nbt);
 		this.setOrientation(Direction.NORTH);

@@ -12,9 +12,7 @@ import net.minecraft.registry.tag.ItemTags;
 
 public class VanillaItemTagProvider extends ItemTagProvider {
 	public VanillaItemTagProvider(
-		DataOutput dataOutput,
-		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture,
-		CompletableFuture<TagProvider.TagLookup<Block>> completableFuture2
+		DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture, CompletableFuture<TagProvider.TagLookup<Block>> completableFuture2
 	) {
 		super(dataOutput, completableFuture, completableFuture2);
 	}
@@ -299,9 +297,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 				Items.LEATHER_CHESTPLATE, Items.CHAINMAIL_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.IRON_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE
 			);
 		this.getOrCreateTagBuilder(ItemTags.HEAD_ARMOR)
-			.add(
-				Items.LEATHER_HELMET, Items.CHAINMAIL_HELMET, Items.GOLDEN_HELMET, Items.IRON_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET, Items.TURTLE_HELMET
-			);
+			.add(Items.LEATHER_HELMET, Items.CHAINMAIL_HELMET, Items.GOLDEN_HELMET, Items.IRON_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET, Items.TURTLE_HELMET);
 		this.getOrCreateTagBuilder(ItemTags.SKULLS)
 			.add(Items.PLAYER_HEAD, Items.CREEPER_HEAD, Items.ZOMBIE_HEAD, Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, Items.DRAGON_HEAD, Items.PIGLIN_HEAD);
 		this.getOrCreateTagBuilder(ItemTags.TRIMMABLE_ARMOR)
@@ -398,5 +394,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.add(Items.COMPASS)
 			.add(Items.CARVED_PUMPKIN)
 			.addTag(ItemTags.SKULLS);
+		this.getOrCreateTagBuilder(ItemTags.DYEABLE)
+			.add(Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS, Items.LEATHER_HORSE_ARMOR);
 	}
 }

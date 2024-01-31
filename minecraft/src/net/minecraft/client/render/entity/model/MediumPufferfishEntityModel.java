@@ -36,9 +36,7 @@ public class MediumPufferfishEntityModel<T extends Entity> extends SinglePartEnt
 			ModelTransform.pivot(-2.5F, 17.0F, -1.5F)
 		);
 		modelPartData.addChild(
-			EntityModelPartNames.LEFT_BLUE_FIN,
-			ModelPartBuilder.create().uv(24, 3).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F),
-			ModelTransform.pivot(2.5F, 17.0F, -1.5F)
+			EntityModelPartNames.LEFT_BLUE_FIN, ModelPartBuilder.create().uv(24, 3).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F), ModelTransform.pivot(2.5F, 17.0F, -1.5F)
 		);
 		modelPartData.addChild(
 			"top_front_fin",

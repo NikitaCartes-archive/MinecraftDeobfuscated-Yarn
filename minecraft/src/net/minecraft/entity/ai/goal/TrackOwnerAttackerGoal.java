@@ -25,9 +25,7 @@ public class TrackOwnerAttackerGoal extends TrackTargetGoal {
 			} else {
 				this.attacker = livingEntity.getAttacker();
 				int i = livingEntity.getLastAttackedTime();
-				return i != this.lastAttackedTime
-					&& this.canTrack(this.attacker, TargetPredicate.DEFAULT)
-					&& this.tameable.canAttackWithOwner(this.attacker, livingEntity);
+				return i != this.lastAttackedTime && this.canTrack(this.attacker, TargetPredicate.DEFAULT) && this.tameable.canAttackWithOwner(this.attacker, livingEntity);
 			}
 		} else {
 			return false;

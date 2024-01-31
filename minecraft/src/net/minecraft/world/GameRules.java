@@ -46,9 +46,7 @@ public class GameRules {
 	 * <li>Whether a wither killing an entity will place or drop a wither rose
 	 * </ul>
 	 */
-	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_GRIEFING = register(
-		"mobGriefing", GameRules.Category.MOBS, GameRules.BooleanRule.create(true)
-	);
+	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_GRIEFING = register("mobGriefing", GameRules.Category.MOBS, GameRules.BooleanRule.create(true));
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether player inventories should be persist through respawning.
 	 */
@@ -119,9 +117,7 @@ public class GameRules {
 	/**
 	 * A {@linkplain Rule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
 	 */
-	public static final GameRules.Key<GameRules.IntRule> MAX_ENTITY_CRAMMING = register(
-		"maxEntityCramming", GameRules.Category.MOBS, GameRules.IntRule.create(24)
-	);
+	public static final GameRules.Key<GameRules.IntRule> MAX_ENTITY_CRAMMING = register("maxEntityCramming", GameRules.Category.MOBS, GameRules.IntRule.create(24));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_WEATHER_CYCLE = register(
 		"doWeatherCycle", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true)
 	);
@@ -160,9 +156,7 @@ public class GameRules {
 	 * 
 	 * <p>If this rule is set to {@code true} while raids are occurring, the raids will be stopped.
 	 */
-	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_RAIDS = register(
-		"disableRaids", GameRules.Category.MOBS, GameRules.BooleanRule.create(false)
-	);
+	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_RAIDS = register("disableRaids", GameRules.Category.MOBS, GameRules.BooleanRule.create(false));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_INSOMNIA = register("doInsomnia", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true));
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether a player should immediately respawn upon death.

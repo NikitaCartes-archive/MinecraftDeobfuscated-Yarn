@@ -159,9 +159,9 @@ public class WorldTickScheduler<T> implements QueryableTickScheduler<T> {
 
 			while(this.isTickableTicksCountUnder(maxTicks)) {
 				OrderedTick<T> orderedTick2 = chunkTickScheduler.peekNextTick();
-				if (orderedTick2 == null
-					|| orderedTick2.triggerTick() > tick
-					|| orderedTick != null && OrderedTick.BASIC_COMPARATOR.compare(orderedTick2, orderedTick) > 0) {
+				if (orderedTick2 == null || orderedTick2.triggerTick() > tick || orderedTick != null && OrderedTick.BASIC_COMPARATOR.compare(orderedTick2, orderedTick) > 0
+					)
+				 {
 					break;
 				}
 

@@ -54,9 +54,7 @@ public class ResourcePackOrganizer {
 
 	void refreshEnabledProfiles() {
 		this.resourcePackManager
-			.setEnabledProfiles(
-				(Collection<String>)Lists.reverse(this.enabledPacks).stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList())
-			);
+			.setEnabledProfiles((Collection<String>)Lists.reverse(this.enabledPacks).stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList()));
 	}
 
 	public void apply() {

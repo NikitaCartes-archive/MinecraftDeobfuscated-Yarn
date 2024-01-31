@@ -1513,9 +1513,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		@Nullable
 		public <T extends BlockEntity> BlockEntityTicker<T> getBlockEntityTicker(World world, BlockEntityType<T> blockEntityType) {
-			return this.getBlock() instanceof BlockEntityProvider
-				? ((BlockEntityProvider)this.getBlock()).getTicker(world, this.asBlockState(), blockEntityType)
-				: null;
+			return this.getBlock() instanceof BlockEntityProvider ? ((BlockEntityProvider)this.getBlock()).getTicker(world, this.asBlockState(), blockEntityType) : null;
 		}
 
 		public boolean isOf(Block block) {

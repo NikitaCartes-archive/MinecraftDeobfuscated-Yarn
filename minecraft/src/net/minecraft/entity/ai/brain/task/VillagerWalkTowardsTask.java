@@ -12,9 +12,7 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 
 public class VillagerWalkTowardsTask {
-	public static SingleTickTask<VillagerEntity> create(
-		MemoryModuleType<GlobalPos> destination, float speed, int completionRange, int maxDistance, int maxRunTime
-	) {
+	public static SingleTickTask<VillagerEntity> create(MemoryModuleType<GlobalPos> destination, float speed, int completionRange, int maxDistance, int maxRunTime) {
 		return TaskTriggerer.task(
 			context -> context.<MemoryQueryResult, MemoryQueryResult, MemoryQueryResult>group(
 						context.queryMemoryOptional(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE),

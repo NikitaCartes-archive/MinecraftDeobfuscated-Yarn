@@ -85,7 +85,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.serverThread = Thread.currentThread();
 		File file = session.getWorldDirectory(world.getRegistryKey()).resolve("data").toFile();
 		file.mkdirs();
-		this.persistentStateManager = new PersistentStateManager(file, dataFixer);
+		this.persistentStateManager = new PersistentStateManager(file, dataFixer, world.getRegistryManager());
 		this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(
 			world,
 			session,
@@ -366,9 +366,7 @@ public class ServerChunkManager extends ChunkManager {
 			if (this.world.getServer().getTickManager().shouldTick()) {
 				profiler.swap("naturalSpawnCount");
 				int i = this.ticketManager.getTickedChunkCount();
-				SpawnHelper.Info info = SpawnHelper.setupSpawn(
-					i, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.threadedAnvilChunkStorage)
-				);
+				SpawnHelper.Info info = SpawnHelper.setupSpawn(i, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.threadedAnvilChunkStorage));
 				this.spawnInfo = info;
 				profiler.swap("spawnAndTick");
 				boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);

@@ -1,6 +1,7 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
@@ -20,12 +21,13 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.Merchant;
@@ -35,9 +37,11 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.slf4j.Logger;
 
 public abstract class MerchantEntity extends PassiveEntity implements InventoryOwner, Npc, Merchant {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final Logger field_48833 = LogUtils.getLogger();
 	public static final int field_30599 = 300;
 	private static final int INVENTORY_SIZE = 8;
 	@Nullable
@@ -53,14 +57,12 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	}
 
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	public int getHeadRollingTimeLeft() {
@@ -158,7 +160,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		super.writeCustomDataToNbt(nbt);
 		TradeOfferList tradeOfferList = this.getOffers();
 		if (!tradeOfferList.isEmpty()) {
-			nbt.put("Offers", tradeOfferList.toNbt());
+			nbt.put("Offers", Util.getResult(TradeOfferList.CODEC.encodeStart(NbtOps.INSTANCE, tradeOfferList), IllegalStateException::new));
 		}
 
 		this.writeInventory(nbt);
@@ -167,8 +169,11 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
-			this.offers = new TradeOfferList(nbt.getCompound("Offers"));
+		if (nbt.contains("Offers")) {
+			TradeOfferList.CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("Offers"))
+				.resultOrPartial(Util.addPrefix("Failed to load offers: ", field_48833::warn))
+				.ifPresent(tradeOfferList -> this.offers = tradeOfferList);
 		}
 
 		this.readInventory(nbt);

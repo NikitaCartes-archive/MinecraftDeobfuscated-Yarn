@@ -650,9 +650,7 @@ public class BlockStateFlattening {
 		putStates(
 			533, "{Name:'minecraft:piston',Properties:{extended:'false',facing:'east'}}", "{Name:'minecraft:piston',Properties:{extended:'false',facing:'east'}}"
 		);
-		putStates(
-			536, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'down'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'down'}}"
-		);
+		putStates(536, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'down'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'down'}}");
 		putStates(537, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'up'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'up'}}");
 		putStates(
 			538, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'north'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'north'}}"
@@ -660,12 +658,8 @@ public class BlockStateFlattening {
 		putStates(
 			539, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'south'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'south'}}"
 		);
-		putStates(
-			540, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'west'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'west'}}"
-		);
-		putStates(
-			541, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'east'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'east'}}"
-		);
+		putStates(540, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'west'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'west'}}");
+		putStates(541, "{Name:'minecraft:piston',Properties:{extended:'true',facing:'east'}}", "{Name:'minecraft:piston',Properties:{extended:'true',facing:'east'}}");
 		putStates(
 			544,
 			"{Name:'minecraft:piston_head',Properties:{facing:'down',short:'false',type:'normal'}}",
@@ -760,9 +754,7 @@ public class BlockStateFlattening {
 			"{Name:'minecraft:piston_extension',Properties:{facing:'down',type:'normal'}}"
 		);
 		putStates(
-			577,
-			"{Name:'minecraft:moving_piston',Properties:{facing:'up',type:'normal'}}",
-			"{Name:'minecraft:piston_extension',Properties:{facing:'up',type:'normal'}}"
+			577, "{Name:'minecraft:moving_piston',Properties:{facing:'up',type:'normal'}}", "{Name:'minecraft:piston_extension',Properties:{facing:'up',type:'normal'}}"
 		);
 		putStates(
 			578,
@@ -790,9 +782,7 @@ public class BlockStateFlattening {
 			"{Name:'minecraft:piston_extension',Properties:{facing:'down',type:'sticky'}}"
 		);
 		putStates(
-			585,
-			"{Name:'minecraft:moving_piston',Properties:{facing:'up',type:'sticky'}}",
-			"{Name:'minecraft:piston_extension',Properties:{facing:'up',type:'sticky'}}"
+			585, "{Name:'minecraft:moving_piston',Properties:{facing:'up',type:'sticky'}}", "{Name:'minecraft:piston_extension',Properties:{facing:'up',type:'sticky'}}"
 		);
 		putStates(
 			586,
@@ -889,9 +879,7 @@ public class BlockStateFlattening {
 		);
 		putStates(703, "{Name:'minecraft:smooth_quartz'}", "{Name:'minecraft:double_stone_slab',Properties:{seamless:'true',variant:'quartz'}}");
 		putStates(704, "{Name:'minecraft:stone_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:stone_slab',Properties:{half:'bottom',variant:'stone'}}");
-		putStates(
-			705, "{Name:'minecraft:sandstone_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:stone_slab',Properties:{half:'bottom',variant:'sandstone'}}"
-		);
+		putStates(705, "{Name:'minecraft:sandstone_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:stone_slab',Properties:{half:'bottom',variant:'sandstone'}}");
 		putStates(
 			706, "{Name:'minecraft:petrified_oak_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:stone_slab',Properties:{half:'bottom',variant:'wood_old'}}"
 		);
@@ -912,9 +900,7 @@ public class BlockStateFlattening {
 		putStates(715, "{Name:'minecraft:cobblestone_slab',Properties:{type:'top'}}", "{Name:'minecraft:stone_slab',Properties:{half:'top',variant:'cobblestone'}}");
 		putStates(716, "{Name:'minecraft:brick_slab',Properties:{type:'top'}}", "{Name:'minecraft:stone_slab',Properties:{half:'top',variant:'brick'}}");
 		putStates(717, "{Name:'minecraft:stone_brick_slab',Properties:{type:'top'}}", "{Name:'minecraft:stone_slab',Properties:{half:'top',variant:'stone_brick'}}");
-		putStates(
-			718, "{Name:'minecraft:nether_brick_slab',Properties:{type:'top'}}", "{Name:'minecraft:stone_slab',Properties:{half:'top',variant:'nether_brick'}}"
-		);
+		putStates(718, "{Name:'minecraft:nether_brick_slab',Properties:{type:'top'}}", "{Name:'minecraft:stone_slab',Properties:{half:'top',variant:'nether_brick'}}");
 		putStates(719, "{Name:'minecraft:quartz_slab',Properties:{type:'top'}}", "{Name:'minecraft:stone_slab',Properties:{half:'top',variant:'quartz'}}");
 		putStates(720, "{Name:'minecraft:bricks'}", "{Name:'minecraft:brick_block'}");
 		putStates(736, "{Name:'minecraft:tnt',Properties:{unstable:'false'}}", "{Name:'minecraft:tnt',Properties:{explode:'false'}}");
@@ -3247,14 +3233,10 @@ public class BlockStateFlattening {
 			"{Name:'minecraft:lever',Properties:{facing:'down_x',powered:'true'}}"
 		);
 		putStates(
-			1113,
-			"{Name:'minecraft:lever',Properties:{face:'wall',facing:'east',powered:'true'}}",
-			"{Name:'minecraft:lever',Properties:{facing:'east',powered:'true'}}"
+			1113, "{Name:'minecraft:lever',Properties:{face:'wall',facing:'east',powered:'true'}}", "{Name:'minecraft:lever',Properties:{facing:'east',powered:'true'}}"
 		);
 		putStates(
-			1114,
-			"{Name:'minecraft:lever',Properties:{face:'wall',facing:'west',powered:'true'}}",
-			"{Name:'minecraft:lever',Properties:{facing:'west',powered:'true'}}"
+			1114, "{Name:'minecraft:lever',Properties:{face:'wall',facing:'west',powered:'true'}}", "{Name:'minecraft:lever',Properties:{facing:'west',powered:'true'}}"
 		);
 		putStates(
 			1115,
@@ -3401,9 +3383,7 @@ public class BlockStateFlattening {
 		putStates(1149, "{Name:'minecraft:iron_door',Properties:{facing:'south',half:'upper',hinge:'left',open:'true',powered:'false'}}");
 		putStates(1150, "{Name:'minecraft:iron_door',Properties:{facing:'west',half:'upper',hinge:'left',open:'true',powered:'false'}}");
 		putStates(1151, "{Name:'minecraft:iron_door',Properties:{facing:'north',half:'upper',hinge:'left',open:'true',powered:'false'}}");
-		putStates(
-			1152, "{Name:'minecraft:oak_pressure_plate',Properties:{powered:'false'}}", "{Name:'minecraft:wooden_pressure_plate',Properties:{powered:'false'}}"
-		);
+		putStates(1152, "{Name:'minecraft:oak_pressure_plate',Properties:{powered:'false'}}", "{Name:'minecraft:wooden_pressure_plate',Properties:{powered:'false'}}");
 		putStates(1153, "{Name:'minecraft:oak_pressure_plate',Properties:{powered:'true'}}", "{Name:'minecraft:wooden_pressure_plate',Properties:{powered:'true'}}");
 		putStates(1168, "{Name:'minecraft:redstone_ore',Properties:{lit:'false'}}", "{Name:'minecraft:redstone_ore'}");
 		putStates(1184, "{Name:'minecraft:redstone_ore',Properties:{lit:'true'}}", "{Name:'minecraft:lit_redstone_ore'}");
@@ -4760,9 +4740,7 @@ public class BlockStateFlattening {
 		putStates(2018, "{Name:'minecraft:birch_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:wooden_slab',Properties:{half:'bottom',variant:'birch'}}");
 		putStates(2019, "{Name:'minecraft:jungle_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:wooden_slab',Properties:{half:'bottom',variant:'jungle'}}");
 		putStates(2020, "{Name:'minecraft:acacia_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:wooden_slab',Properties:{half:'bottom',variant:'acacia'}}");
-		putStates(
-			2021, "{Name:'minecraft:dark_oak_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:wooden_slab',Properties:{half:'bottom',variant:'dark_oak'}}"
-		);
+		putStates(2021, "{Name:'minecraft:dark_oak_slab',Properties:{type:'bottom'}}", "{Name:'minecraft:wooden_slab',Properties:{half:'bottom',variant:'dark_oak'}}");
 		putStates(2024, "{Name:'minecraft:oak_slab',Properties:{type:'top'}}", "{Name:'minecraft:wooden_slab',Properties:{half:'top',variant:'oak'}}");
 		putStates(2025, "{Name:'minecraft:spruce_slab',Properties:{type:'top'}}", "{Name:'minecraft:wooden_slab',Properties:{half:'top',variant:'spruce'}}");
 		putStates(2026, "{Name:'minecraft:birch_slab',Properties:{type:'top'}}", "{Name:'minecraft:wooden_slab',Properties:{half:'top',variant:'birch'}}");
@@ -6032,34 +6010,22 @@ public class BlockStateFlattening {
 			2361, "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'9'}}", "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'9'}}"
 		);
 		putStates(
-			2362,
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'10'}}",
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'10'}}"
+			2362, "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'10'}}", "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'10'}}"
 		);
 		putStates(
-			2363,
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'11'}}",
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'11'}}"
+			2363, "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'11'}}", "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'11'}}"
 		);
 		putStates(
-			2364,
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'12'}}",
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'12'}}"
+			2364, "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'12'}}", "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'12'}}"
 		);
 		putStates(
-			2365,
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'13'}}",
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'13'}}"
+			2365, "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'13'}}", "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'13'}}"
 		);
 		putStates(
-			2366,
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'14'}}",
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'14'}}"
+			2366, "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'14'}}", "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'14'}}"
 		);
 		putStates(
-			2367,
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'15'}}",
-			"{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'15'}}"
+			2367, "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'15'}}", "{Name:'minecraft:light_weighted_pressure_plate',Properties:{power:'15'}}"
 		);
 		putStates(
 			2368, "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'0'}}", "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'0'}}"
@@ -6092,34 +6058,22 @@ public class BlockStateFlattening {
 			2377, "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'9'}}", "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'9'}}"
 		);
 		putStates(
-			2378,
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'10'}}",
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'10'}}"
+			2378, "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'10'}}", "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'10'}}"
 		);
 		putStates(
-			2379,
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'11'}}",
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'11'}}"
+			2379, "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'11'}}", "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'11'}}"
 		);
 		putStates(
-			2380,
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'12'}}",
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'12'}}"
+			2380, "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'12'}}", "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'12'}}"
 		);
 		putStates(
-			2381,
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'13'}}",
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'13'}}"
+			2381, "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'13'}}", "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'13'}}"
 		);
 		putStates(
-			2382,
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'14'}}",
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'14'}}"
+			2382, "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'14'}}", "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'14'}}"
 		);
 		putStates(
-			2383,
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'15'}}",
-			"{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'15'}}"
+			2383, "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'15'}}", "{Name:'minecraft:heavy_weighted_pressure_plate',Properties:{power:'15'}}"
 		);
 		putStates(
 			2384,
@@ -6281,36 +6235,16 @@ public class BlockStateFlattening {
 			"{Name:'minecraft:comparator',Properties:{facing:'east',mode:'subtract',powered:'true'}}",
 			"{Name:'minecraft:powered_comparator',Properties:{facing:'east',mode:'subtract',powered:'true'}}"
 		);
-		putStates(
-			2416, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'0'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'0'}}"
-		);
-		putStates(
-			2417, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'1'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'1'}}"
-		);
-		putStates(
-			2418, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'2'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'2'}}"
-		);
-		putStates(
-			2419, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'3'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'3'}}"
-		);
-		putStates(
-			2420, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'4'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'4'}}"
-		);
-		putStates(
-			2421, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'5'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'5'}}"
-		);
-		putStates(
-			2422, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'6'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'6'}}"
-		);
-		putStates(
-			2423, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'7'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'7'}}"
-		);
-		putStates(
-			2424, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'8'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'8'}}"
-		);
-		putStates(
-			2425, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'9'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'9'}}"
-		);
+		putStates(2416, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'0'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'0'}}");
+		putStates(2417, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'1'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'1'}}");
+		putStates(2418, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'2'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'2'}}");
+		putStates(2419, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'3'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'3'}}");
+		putStates(2420, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'4'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'4'}}");
+		putStates(2421, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'5'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'5'}}");
+		putStates(2422, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'6'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'6'}}");
+		putStates(2423, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'7'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'7'}}");
+		putStates(2424, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'8'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'8'}}");
+		putStates(2425, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'9'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'9'}}");
 		putStates(
 			2426, "{Name:'minecraft:daylight_detector',Properties:{inverted:'false',power:'10'}}", "{Name:'minecraft:daylight_detector',Properties:{power:'10'}}"
 		);
@@ -6499,14 +6433,10 @@ public class BlockStateFlattening {
 			2529, "{Name:'minecraft:dropper',Properties:{facing:'up',triggered:'false'}}", "{Name:'minecraft:dropper',Properties:{facing:'up',triggered:'false'}}"
 		);
 		putStates(
-			2530,
-			"{Name:'minecraft:dropper',Properties:{facing:'north',triggered:'false'}}",
-			"{Name:'minecraft:dropper',Properties:{facing:'north',triggered:'false'}}"
+			2530, "{Name:'minecraft:dropper',Properties:{facing:'north',triggered:'false'}}", "{Name:'minecraft:dropper',Properties:{facing:'north',triggered:'false'}}"
 		);
 		putStates(
-			2531,
-			"{Name:'minecraft:dropper',Properties:{facing:'south',triggered:'false'}}",
-			"{Name:'minecraft:dropper',Properties:{facing:'south',triggered:'false'}}"
+			2531, "{Name:'minecraft:dropper',Properties:{facing:'south',triggered:'false'}}", "{Name:'minecraft:dropper',Properties:{facing:'south',triggered:'false'}}"
 		);
 		putStates(
 			2532, "{Name:'minecraft:dropper',Properties:{facing:'west',triggered:'false'}}", "{Name:'minecraft:dropper',Properties:{facing:'west',triggered:'false'}}"
@@ -9057,17 +8987,13 @@ public class BlockStateFlattening {
 			3779, "{Name:'minecraft:orange_glazed_terracotta',Properties:{facing:'east'}}", "{Name:'minecraft:orange_glazed_terracotta',Properties:{facing:'east'}}"
 		);
 		putStates(
-			3792,
-			"{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'south'}}",
-			"{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'south'}}"
+			3792, "{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'south'}}", "{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'south'}}"
 		);
 		putStates(
 			3793, "{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'west'}}", "{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'west'}}"
 		);
 		putStates(
-			3794,
-			"{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'north'}}",
-			"{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'north'}}"
+			3794, "{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'north'}}", "{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'north'}}"
 		);
 		putStates(
 			3795, "{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'east'}}", "{Name:'minecraft:magenta_glazed_terracotta',Properties:{facing:'east'}}"
@@ -9152,9 +9078,7 @@ public class BlockStateFlattening {
 			"{Name:'minecraft:silver_glazed_terracotta',Properties:{facing:'south'}}"
 		);
 		putStates(
-			3889,
-			"{Name:'minecraft:light_gray_glazed_terracotta',Properties:{facing:'west'}}",
-			"{Name:'minecraft:silver_glazed_terracotta',Properties:{facing:'west'}}"
+			3889, "{Name:'minecraft:light_gray_glazed_terracotta',Properties:{facing:'west'}}", "{Name:'minecraft:silver_glazed_terracotta',Properties:{facing:'west'}}"
 		);
 		putStates(
 			3890,
@@ -9162,9 +9086,7 @@ public class BlockStateFlattening {
 			"{Name:'minecraft:silver_glazed_terracotta',Properties:{facing:'north'}}"
 		);
 		putStates(
-			3891,
-			"{Name:'minecraft:light_gray_glazed_terracotta',Properties:{facing:'east'}}",
-			"{Name:'minecraft:silver_glazed_terracotta',Properties:{facing:'east'}}"
+			3891, "{Name:'minecraft:light_gray_glazed_terracotta',Properties:{facing:'east'}}", "{Name:'minecraft:silver_glazed_terracotta',Properties:{facing:'east'}}"
 		);
 		putStates(
 			3904, "{Name:'minecraft:cyan_glazed_terracotta',Properties:{facing:'south'}}", "{Name:'minecraft:cyan_glazed_terracotta',Properties:{facing:'south'}}"

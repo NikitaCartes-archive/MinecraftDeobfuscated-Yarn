@@ -187,9 +187,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	public static void playEffects(World world, BlockPos pos, boolean fill) {
 		BlockState blockState = world.getBlockState(pos);
-		world.playSoundAtBlockCenter(
-			pos, fill ? SoundEvents.BLOCK_COMPOSTER_FILL_SUCCESS : SoundEvents.BLOCK_COMPOSTER_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F, false
-		);
+		world.playSoundAtBlockCenter(pos, fill ? SoundEvents.BLOCK_COMPOSTER_FILL_SUCCESS : SoundEvents.BLOCK_COMPOSTER_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 		double d = blockState.getOutlineShape(world, pos).getEndingCoord(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
 		double e = 0.13125F;
 		double f = 0.7375F;

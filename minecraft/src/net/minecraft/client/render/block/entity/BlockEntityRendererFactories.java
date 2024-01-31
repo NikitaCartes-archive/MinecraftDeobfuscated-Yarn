@@ -54,5 +54,6 @@ public class BlockEntityRendererFactories {
 		register(BlockEntityType.BRUSHABLE_BLOCK, BrushableBlockEntityRenderer::new);
 		register(BlockEntityType.DECORATED_POT, DecoratedPotBlockEntityRenderer::new);
 		register(BlockEntityType.TRIAL_SPAWNER, TrialSpawnerBlockEntityRenderer::new);
+		register(BlockEntityType.VAULT, VaultBlockEntityRenderer::new);
 	}
 }

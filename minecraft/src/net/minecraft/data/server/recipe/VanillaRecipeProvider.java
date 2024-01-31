@@ -36,6 +36,7 @@ import net.minecraft.recipe.SmokingRecipe;
 import net.minecraft.recipe.SuspiciousStewRecipe;
 import net.minecraft.recipe.TippedArrowRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -53,16 +54,17 @@ public class VanillaRecipeProvider extends RecipeProvider {
 	private static final ImmutableList<ItemConvertible> REDSTONE_ORES = ImmutableList.of(Items.REDSTONE_ORE, Items.DEEPSLATE_REDSTONE_ORE);
 	private static final ImmutableList<ItemConvertible> EMERALD_ORES = ImmutableList.of(Items.EMERALD_ORE, Items.DEEPSLATE_EMERALD_ORE);
 
-	public VanillaRecipeProvider(DataOutput dataOutput) {
-		super(dataOutput);
+	public VanillaRecipeProvider(DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
+		super(dataOutput, completableFuture);
 	}
 
 	@Override
-	public CompletableFuture<?> run(DataWriter writer) {
+	public CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup) {
 		return CompletableFuture.allOf(
-			super.run(writer),
+			super.run(writer, registryLookup),
 			this.saveRecipeAdvancement(
 				writer,
+				registryLookup,
 				Advancement.Builder.createUntelemetered()
 					.criterion("impossible", Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
 					.build(CraftingRecipeJsonBuilder.ROOT)
@@ -2464,9 +2466,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			)
 			.criterion("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
 			.offerTo(exporter, "mossy_stone_brick_slab_from_mossy_stone_brick_stonecutting");
-		SingleItemRecipeJsonBuilder.createStonecutting(
-				Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_STONE_BRICK_STAIRS
-			)
+		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_STONE_BRICK_STAIRS)
 			.criterion("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
 			.offerTo(exporter, "mossy_stone_brick_stairs_from_mossy_stone_brick_stonecutting");
 		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), RecipeCategory.DECORATIONS, Blocks.MOSSY_STONE_BRICK_WALL)

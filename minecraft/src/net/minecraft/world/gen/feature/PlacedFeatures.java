@@ -102,9 +102,7 @@ public class PlacedFeatures {
 		return createEntry(feature, featureConfig, BlockPredicate.IS_AIR);
 	}
 
-	public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(
-		F feature, FC featureConfig, BlockPredicate predicate
-	) {
+	public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(F feature, FC featureConfig, BlockPredicate predicate) {
 		return createEntry(feature, featureConfig, BlockFilterPlacementModifier.of(predicate));
 	}
 }

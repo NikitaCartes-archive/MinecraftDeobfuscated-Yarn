@@ -4,7 +4,6 @@ import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
@@ -38,7 +37,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 			}
 		}
 
-		return !itemStack.isEmpty() && itemStack.hasNbt() && i > 0;
+		return !itemStack.isEmpty() && i > 0;
 	}
 
 	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
@@ -64,11 +63,9 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 			}
 		}
 
-		if (!itemStack.isEmpty() && itemStack.hasNbt() && i >= 1 && WrittenBookItem.getGeneration(itemStack) < 2) {
-			ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK, i);
-			NbtCompound nbtCompound = itemStack.getNbt().copy();
-			nbtCompound.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
-			itemStack3.setNbt(nbtCompound);
+		if (!itemStack.isEmpty() && i >= 1 && WrittenBookItem.getGeneration(itemStack) < 2) {
+			ItemStack itemStack3 = itemStack.copyWithCount(i);
+			itemStack3.getOrCreateNbt().putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
 			return itemStack3;
 		} else {
 			return ItemStack.EMPTY;

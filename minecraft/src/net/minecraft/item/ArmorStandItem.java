@@ -36,7 +36,7 @@ public class ArmorStandItem extends Item {
 			if (world.isSpaceEmpty(null, box) && world.getOtherEntities(null, box).isEmpty()) {
 				if (world instanceof ServerWorld serverWorld) {
 					Consumer<ArmorStandEntity> consumer = EntityType.copier(serverWorld, itemStack, context.getPlayer());
-					ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getNbt(), consumer, blockPos, SpawnReason.SPAWN_EGG, true, true);
+					ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, consumer, blockPos, SpawnReason.SPAWN_EGG, true, true);
 					if (armorStandEntity == null) {
 						return ActionResult.FAIL;
 					}

@@ -3,12 +3,12 @@ package net.minecraft.client.gui.hud.debug;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9194;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.PerformanceLog;
 
 @Environment(EnvType.CLIENT)
 public class PacketSizeChart extends DebugChart {
@@ -19,8 +19,8 @@ public class PacketSizeChart extends DebugChart {
 	private static final int field_45924 = 1048576;
 	private static final int field_45925 = 1048576;
 
-	public PacketSizeChart(TextRenderer textRenderer, PerformanceLog performanceLog) {
-		super(textRenderer, performanceLog);
+	public PacketSizeChart(TextRenderer textRenderer, class_9194 arg) {
+		super(textRenderer, arg);
 	}
 
 	@Override

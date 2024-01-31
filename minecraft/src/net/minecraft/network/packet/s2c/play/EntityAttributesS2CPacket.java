@@ -38,9 +38,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		for(EntityAttributeInstance entityAttributeInstance : attributes) {
 			this.entries
 				.add(
-					new EntityAttributesS2CPacket.Entry(
-						entityAttributeInstance.getAttribute(), entityAttributeInstance.getBaseValue(), entityAttributeInstance.getModifiers()
-					)
+					new EntityAttributesS2CPacket.Entry(entityAttributeInstance.getAttribute(), entityAttributeInstance.getBaseValue(), entityAttributeInstance.getModifiers())
 				);
 		}
 	}

@@ -100,9 +100,7 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 				return false;
 			} else {
 				PlayerPublicKey.PublicKeyData publicKeyData = (PlayerPublicKey.PublicKeyData)o;
-				return this.expiresAt.equals(publicKeyData.expiresAt)
-					&& this.key.equals(publicKeyData.key)
-					&& Arrays.equals(this.keySignature, publicKeyData.keySignature);
+				return this.expiresAt.equals(publicKeyData.expiresAt) && this.key.equals(publicKeyData.key) && Arrays.equals(this.keySignature, publicKeyData.keySignature);
 			}
 		}
 	}

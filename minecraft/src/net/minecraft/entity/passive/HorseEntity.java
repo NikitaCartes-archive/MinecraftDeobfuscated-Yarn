@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityAttachmentType;
 import net.minecraft.entity.EntityAttachments;
@@ -8,10 +7,8 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.VariantHolder;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -23,7 +20,6 @@ import net.minecraft.item.AnimalArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
@@ -37,7 +33,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class HorseEntity extends AbstractHorseEntity implements VariantHolder<HorseColor> {
-	private static final UUID HORSE_ARMOR_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HorseEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.HORSE
 		.getDimensions()
@@ -65,32 +60,12 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("Variant", this.getHorseVariant());
-		if (!this.items.getStack(1).isEmpty()) {
-			nbt.put("ArmorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
-		}
-	}
-
-	public ItemStack getArmorType() {
-		return this.getEquippedStack(EquipmentSlot.CHEST);
-	}
-
-	private void equipArmor(ItemStack stack) {
-		this.equipStack(EquipmentSlot.CHEST, stack);
-		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.setHorseVariant(nbt.getInt("Variant"));
-		if (nbt.contains("ArmorItem", NbtElement.COMPOUND_TYPE)) {
-			ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("ArmorItem"));
-			if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
-				this.items.setStack(1, itemStack);
-			}
-		}
-
-		this.updateSaddle();
 	}
 
 	private void setHorseVariant(int variant) {
@@ -118,33 +93,10 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 	}
 
 	@Override
-	protected void updateSaddle() {
-		if (!this.getWorld().isClient) {
-			super.updateSaddle();
-			this.setArmorTypeFromStack(this.items.getStack(1));
-			this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
-		}
-	}
-
-	private void setArmorTypeFromStack(ItemStack stack) {
-		this.equipArmor(stack);
-		if (!this.getWorld().isClient) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(HORSE_ARMOR_BONUS_ID);
-			if (this.isHorseArmor(stack)) {
-				int i = ((AnimalArmorItem)stack.getItem()).getBonus();
-				if (i != 0) {
-					this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR)
-						.addTemporaryModifier(new EntityAttributeModifier(HORSE_ARMOR_BONUS_ID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION));
-				}
-			}
-		}
-	}
-
-	@Override
 	public void onInventoryChanged(Inventory sender) {
-		ItemStack itemStack = this.getArmorType();
+		ItemStack itemStack = this.getBodyArmor();
 		super.onInventoryChanged(sender);
-		ItemStack itemStack2 = this.getArmorType();
+		ItemStack itemStack2 = this.getBodyArmor();
 		if (this.age > 20 && this.isHorseArmor(itemStack2) && itemStack != itemStack2) {
 			this.playSound(SoundEvents.ENTITY_HORSE_ARMOR, 0.5F, 1.0F);
 		}
@@ -265,8 +217,8 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 	}
 
 	@Override
-	public boolean isHorseArmor(ItemStack item) {
-		Item var3 = item.getItem();
+	public boolean isHorseArmor(ItemStack stack) {
+		Item var3 = stack.getItem();
 		if (var3 instanceof AnimalArmorItem animalArmorItem && animalArmorItem.getType() == AnimalArmorItem.Type.EQUESTRIAN) {
 			return true;
 		}
@@ -276,9 +228,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
 		HorseColor horseColor;
 		if (entityData instanceof HorseEntity.HorseData) {
@@ -289,7 +239,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 		}
 
 		this.setHorseVariant(horseColor, Util.getRandom((HorseMarking[])HorseMarking.values(), random));
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Override

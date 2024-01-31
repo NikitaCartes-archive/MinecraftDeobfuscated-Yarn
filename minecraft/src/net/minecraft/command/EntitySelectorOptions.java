@@ -514,9 +514,7 @@ public class EntitySelectorOptions {
 		String string = suggestionBuilder.getRemaining().toLowerCase(Locale.ROOT);
 
 		for(Entry<String, EntitySelectorOptions.SelectorOption> entry : OPTIONS.entrySet()) {
-			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).condition.test(reader) && ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)
-				)
-			 {
+			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).condition.test(reader) && ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)) {
 				suggestionBuilder.suggest((String)entry.getKey() + "=", ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
 			}
 		}

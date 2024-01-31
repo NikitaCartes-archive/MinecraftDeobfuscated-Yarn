@@ -28,9 +28,7 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
-			EntityModelPartNames.RIGHT_ARM,
-			ModelPartBuilder.create().uv(40, 16).cuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F),
-			ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
+			EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(40, 16).cuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F), ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.LEFT_ARM,

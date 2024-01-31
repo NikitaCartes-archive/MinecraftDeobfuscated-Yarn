@@ -368,9 +368,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		RabbitEntity.RabbitType rabbitType = getTypeFromPos(world, this.getBlockPos());
 		if (entityData instanceof RabbitEntity.RabbitData) {
 			rabbitType = ((RabbitEntity.RabbitData)entityData).type;
@@ -379,7 +377,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 		}
 
 		this.setVariant(rabbitType);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	private static RabbitEntity.RabbitType getTypeFromPos(WorldAccess world, BlockPos pos) {

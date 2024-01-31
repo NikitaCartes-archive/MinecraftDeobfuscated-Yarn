@@ -49,6 +49,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.World;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -265,7 +266,8 @@ public class Keyboard {
 			switch(hitResult.getType()) {
 				case BLOCK:
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-					BlockState blockState = this.client.player.getWorld().getBlockState(blockPos);
+					World world = this.client.player.getWorld();
+					BlockState blockState = world.getBlockState(blockPos);
 					if (hasQueryPermission) {
 						if (queryServer) {
 							this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, nbt -> {
@@ -273,8 +275,8 @@ public class Keyboard {
 								this.debugLog("debug.inspect.server.block");
 							});
 						} else {
-							BlockEntity blockEntity = this.client.player.getWorld().getBlockEntity(blockPos);
-							NbtCompound nbtCompound = blockEntity != null ? blockEntity.createNbt() : null;
+							BlockEntity blockEntity = world.getBlockEntity(blockPos);
+							NbtCompound nbtCompound = blockEntity != null ? blockEntity.createNbt(world.getRegistryManager()) : null;
 							this.copyBlock(blockState, blockPos, nbtCompound);
 							this.debugLog("debug.inspect.client.block");
 						}

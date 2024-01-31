@@ -280,6 +280,7 @@ public class BlockEntityType<T extends BlockEntity> {
 	public static final BlockEntityType<TrialSpawnerBlockEntity> TRIAL_SPAWNER = create(
 		"trial_spawner", BlockEntityType.Builder.create(TrialSpawnerBlockEntity::new, Blocks.TRIAL_SPAWNER)
 	);
+	public static final BlockEntityType<VaultBlockEntity> VAULT = create("vault", BlockEntityType.Builder.create(VaultBlockEntity::new, Blocks.VAULT));
 	private final BlockEntityType.BlockEntityFactory<? extends T> factory;
 	private final Set<Block> blocks;
 	private final Type<?> type;

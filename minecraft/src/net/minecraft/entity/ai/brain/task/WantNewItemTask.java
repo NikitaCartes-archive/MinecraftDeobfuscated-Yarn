@@ -11,9 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 public class WantNewItemTask<E extends PiglinEntity> {
 	public static Task<LivingEntity> create(int range) {
 		return TaskTriggerer.task(
-			context -> context.group(
-						context.queryMemoryValue(MemoryModuleType.ADMIRING_ITEM), context.queryMemoryOptional(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM)
-					)
+			context -> context.group(context.queryMemoryValue(MemoryModuleType.ADMIRING_ITEM), context.queryMemoryOptional(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM))
 					.apply(context, (admiringItem, nearestVisibleWantedItem) -> (world, entity, time) -> {
 							if (!entity.getOffHandStack().isEmpty()) {
 								return false;

@@ -68,9 +68,7 @@ public class PointOfInterestTypes {
 		.stream()
 		.flatMap(block -> block.getStateManager().getStates().stream())
 		.collect(ImmutableSet.toImmutableSet());
-	private static final Map<BlockState, RegistryEntry<PointOfInterestType>> POI_STATES_TO_TYPE = Maps.<BlockState, RegistryEntry<PointOfInterestType>>newHashMap(
-		
-	);
+	private static final Map<BlockState, RegistryEntry<PointOfInterestType>> POI_STATES_TO_TYPE = Maps.<BlockState, RegistryEntry<PointOfInterestType>>newHashMap();
 
 	private static Set<BlockState> getStatesOfBlock(Block block) {
 		return ImmutableSet.copyOf(block.getStateManager().getStates());

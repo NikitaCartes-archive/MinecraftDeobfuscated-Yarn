@@ -96,14 +96,13 @@ public class EditWorldScreen extends Screen {
 
 			Util.getOperatingSystem().open(path.toFile());
 		}).width(200).build());
-		this.layout
-			.add(ButtonWidget.builder(OPTIMIZE_TEXT, button -> client.setScreen(new BackupPromptScreen(() -> client.setScreen(this), (backup, eraseCache) -> {
-					if (backup) {
-						backupLevel(session);
-					}
-	
-					client.setScreen(OptimizeWorldScreen.create(client, this.callback, client.getDataFixer(), session, eraseCache));
-				}, CONFIRM_TITLE_TEXT, CONFIRM_DESCRIPTION_TEXT, true))).width(200).build());
+		this.layout.add(ButtonWidget.builder(OPTIMIZE_TEXT, button -> client.setScreen(new BackupPromptScreen(() -> client.setScreen(this), (backup, eraseCache) -> {
+				if (backup) {
+					backupLevel(session);
+				}
+
+				client.setScreen(OptimizeWorldScreen.create(client, this.callback, client.getDataFixer(), session, eraseCache));
+			}, CONFIRM_TITLE_TEXT, CONFIRM_DESCRIPTION_TEXT, true))).width(200).build());
 		this.layout.add(new EmptyWidget(200, 20));
 		this.layout.add(directionalLayoutWidget);
 		this.layout.forEachChild(child -> {

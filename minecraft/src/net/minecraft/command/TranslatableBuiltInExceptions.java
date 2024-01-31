@@ -34,9 +34,7 @@ public class TranslatableBuiltInExceptions implements BuiltInExceptionProvider {
 	private static final DynamicCommandExceptionType LITERAL_INCORRECT = new DynamicCommandExceptionType(
 		expected -> Text.stringifiedTranslatable("argument.literal.incorrect", expected)
 	);
-	private static final SimpleCommandExceptionType READER_EXPECTED_START_QUOTE = new SimpleCommandExceptionType(
-		Text.translatable("parsing.quote.expected.start")
-	);
+	private static final SimpleCommandExceptionType READER_EXPECTED_START_QUOTE = new SimpleCommandExceptionType(Text.translatable("parsing.quote.expected.start"));
 	private static final SimpleCommandExceptionType READER_EXPECTED_END_QUOTE = new SimpleCommandExceptionType(Text.translatable("parsing.quote.expected.end"));
 	private static final DynamicCommandExceptionType READER_INVALID_ESCAPE = new DynamicCommandExceptionType(
 		character -> Text.stringifiedTranslatable("parsing.quote.escape", character)

@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.World;
 
 public class ArmorDyeRecipe extends SpecialCraftingRecipe {
@@ -23,7 +24,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		for(int i = 0; i < recipeInputInventory.size(); ++i) {
 			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
-				if (itemStack2.getItem() instanceof DyeableItem) {
+				if (itemStack2.isIn(ItemTags.DYEABLE)) {
 					if (!itemStack.isEmpty()) {
 						return false;
 					}
@@ -49,19 +50,20 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		for(int i = 0; i < recipeInputInventory.size(); ++i) {
 			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
-				Item item = itemStack2.getItem();
-				if (item instanceof DyeableItem) {
+				if (itemStack2.isIn(ItemTags.DYEABLE)) {
 					if (!itemStack.isEmpty()) {
 						return ItemStack.EMPTY;
 					}
 
 					itemStack = itemStack2.copy();
 				} else {
-					if (!(item instanceof DyeItem)) {
+					Item var8 = itemStack2.getItem();
+					if (!(var8 instanceof DyeItem)) {
 						return ItemStack.EMPTY;
 					}
 
-					list.add((DyeItem)item);
+					DyeItem dyeItem = (DyeItem)var8;
+					list.add(dyeItem);
 				}
 			}
 		}

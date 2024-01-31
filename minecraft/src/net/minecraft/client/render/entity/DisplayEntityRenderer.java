@@ -54,7 +54,6 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 				matrixStack.multiply(this.getBillboardRotation(renderState, displayEntity, g, new Quaternionf()));
 				AffineTransformation affineTransformation = renderState.transformation().interpolate(h);
 				matrixStack.multiplyPositionMatrix(affineTransformation.getMatrix());
-				matrixStack.peek().getNormalMatrix().rotate(affineTransformation.getLeftRotation()).rotate(affineTransformation.getRightRotation());
 				this.render(displayEntity, object, matrixStack, vertexConsumerProvider, k, h);
 				matrixStack.pop();
 			}

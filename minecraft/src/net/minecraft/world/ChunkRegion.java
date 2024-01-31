@@ -237,7 +237,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 					blockEntity = ((BlockEntityProvider)blockState.getBlock()).createBlockEntity(pos, blockState);
 				} else {
-					blockEntity = BlockEntity.createFromNbt(pos, blockState, nbtCompound);
+					blockEntity = BlockEntity.createFromNbt(pos, blockState, nbtCompound, this.world.getRegistryManager());
 				}
 
 				if (blockEntity != null) {

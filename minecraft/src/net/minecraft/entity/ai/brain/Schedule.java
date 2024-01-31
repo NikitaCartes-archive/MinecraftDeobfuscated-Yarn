@@ -46,12 +46,7 @@ public class Schedule {
 	}
 
 	protected List<ScheduleRule> getOtherRules(Activity activity) {
-		return (List<ScheduleRule>)this.scheduleRules
-			.entrySet()
-			.stream()
-			.filter(rule -> rule.getKey() != activity)
-			.map(Entry::getValue)
-			.collect(Collectors.toList());
+		return (List<ScheduleRule>)this.scheduleRules.entrySet().stream().filter(rule -> rule.getKey() != activity).map(Entry::getValue).collect(Collectors.toList());
 	}
 
 	public Activity getActivityForTime(int time) {

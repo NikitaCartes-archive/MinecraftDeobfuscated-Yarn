@@ -114,9 +114,7 @@ public class SystemDetails {
 
 	private void addVirtualMemoryGroup(VirtualMemory virtualMemory) {
 		this.addSection("Virtual memory max (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getVirtualMax() / 1048576.0F)));
-		this.addSection(
-			"Virtual memory used (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getVirtualInUse() / 1048576.0F))
-		);
+		this.addSection("Virtual memory used (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getVirtualInUse() / 1048576.0F)));
 		this.addSection("Swap memory total (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getSwapTotal() / 1048576.0F)));
 		this.addSection("Swap memory used (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getSwapUsed() / 1048576.0F)));
 	}

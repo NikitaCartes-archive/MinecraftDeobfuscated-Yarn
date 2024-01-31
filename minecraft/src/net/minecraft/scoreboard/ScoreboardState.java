@@ -6,6 +6,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.scoreboard.number.NumberFormatTypes;
 import net.minecraft.text.Text;
@@ -132,7 +133,7 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		nbt.put("Objectives", this.objectivesToNbt());
 		nbt.put("PlayerScores", this.scoreboard.toNbt());
 		nbt.put("Teams", this.teamsToNbt());

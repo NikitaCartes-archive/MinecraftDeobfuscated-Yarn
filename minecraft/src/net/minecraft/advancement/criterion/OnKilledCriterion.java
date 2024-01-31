@@ -90,9 +90,7 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 			return Criteria.PLAYER_KILLED_ENTITY
 				.create(
 					new OnKilledCriterion.Conditions(
-						Optional.empty(),
-						Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(killedEntityPredicateBuilder)),
-						Optional.of(killingBlowBuilder.build())
+						Optional.empty(), Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(killedEntityPredicateBuilder)), Optional.of(killingBlowBuilder.build())
 					)
 				);
 		}

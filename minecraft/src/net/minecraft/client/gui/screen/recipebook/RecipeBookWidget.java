@@ -42,9 +42,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable, Element, Selectable, RecipeDisplayListener {
-	public static final ButtonTextures BUTTON_TEXTURES = new ButtonTextures(
-		new Identifier("recipe_book/button"), new Identifier("recipe_book/button_highlighted")
-	);
+	public static final ButtonTextures BUTTON_TEXTURES = new ButtonTextures(new Identifier("recipe_book/button"), new Identifier("recipe_book/button_highlighted"));
 	private static final ButtonTextures FILTER_BUTTON_TEXTURES = new ButtonTextures(
 		new Identifier("recipe_book/filter_enabled"),
 		new Identifier("recipe_book/filter_disabled"),

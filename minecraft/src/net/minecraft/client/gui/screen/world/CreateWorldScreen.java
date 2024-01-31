@@ -238,9 +238,7 @@ public class CreateWorldScreen extends Screen {
 			.toConfig(generatorOptionsHolder.dimensionOptionsRegistry());
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = generatorOptionsHolder.combinedDynamicRegistries()
 			.with(ServerDynamicRegistryType.DIMENSIONS, dimensionsConfig.toDynamicRegistryManager());
-		Lifecycle lifecycle = FeatureFlags.isNotVanilla(generatorOptionsHolder.dataConfiguration().enabledFeatures())
-			? Lifecycle.experimental()
-			: Lifecycle.stable();
+		Lifecycle lifecycle = FeatureFlags.isNotVanilla(generatorOptionsHolder.dataConfiguration().enabledFeatures()) ? Lifecycle.experimental() : Lifecycle.stable();
 		Lifecycle lifecycle2 = combinedDynamicRegistries.getCombinedRegistryManager().getRegistryLifecycle();
 		Lifecycle lifecycle3 = lifecycle2.add(lifecycle);
 		boolean bl = !this.recreated && lifecycle2 == Lifecycle.stable();

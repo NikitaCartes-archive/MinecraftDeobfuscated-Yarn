@@ -91,9 +91,7 @@ public class GoatEntityModel<T extends GoatEntity> extends QuadrupedEntityModel<
 			ModelTransform.pivot(0.0F, 24.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			EntityModelPartNames.LEFT_HIND_LEG,
-			ModelPartBuilder.create().uv(36, 29).cuboid(0.0F, 4.0F, 0.0F, 3.0F, 6.0F, 3.0F),
-			ModelTransform.pivot(1.0F, 14.0F, 4.0F)
+			EntityModelPartNames.LEFT_HIND_LEG, ModelPartBuilder.create().uv(36, 29).cuboid(0.0F, 4.0F, 0.0F, 3.0F, 6.0F, 3.0F), ModelTransform.pivot(1.0F, 14.0F, 4.0F)
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.RIGHT_HIND_LEG,

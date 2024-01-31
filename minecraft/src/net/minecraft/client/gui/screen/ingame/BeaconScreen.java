@@ -94,9 +94,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		for(int l = 0; l < j - 1; ++l) {
 			RegistryEntry<StatusEffect> registryEntry = (RegistryEntry)((List)BeaconBlockEntity.EFFECTS_BY_LEVEL.get(3)).get(l);
-			BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(
-				this.x + 167 + l * 24 - k / 2, this.y + 47, registryEntry, false, 3
-			);
+			BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(this.x + 167 + l * 24 - k / 2, this.y + 47, registryEntry, false, 3);
 			effectButtonWidget.active = false;
 			this.addButton(effectButtonWidget);
 		}

@@ -21,9 +21,7 @@ public class BlockEntityCustomNameToTextFix extends DataFix {
 	public TypeRewriteRule makeRule() {
 		OpticFinder<String> opticFinder = DSL.fieldFinder("id", IdentifierNormalizingSchema.getIdentifierType());
 		return this.fixTypeEverywhereTyped(
-			"BlockEntityCustomNameToComponentFix",
-			this.getInputSchema().getType(TypeReferences.BLOCK_ENTITY),
-			typed -> typed.update(DSL.remainderFinder(), dynamic -> {
+			"BlockEntityCustomNameToComponentFix", this.getInputSchema().getType(TypeReferences.BLOCK_ENTITY), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
 					Optional<String> optional = typed.getOptional(opticFinder);
 					return optional.isPresent() && Objects.equals(optional.get(), "minecraft:command_block") ? dynamic : EntityCustomNameToTextFix.fixCustomName(dynamic);
 				})

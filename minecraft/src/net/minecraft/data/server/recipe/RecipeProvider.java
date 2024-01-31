@@ -40,6 +40,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -48,6 +49,7 @@ import net.minecraft.util.Identifier;
 public abstract class RecipeProvider implements DataProvider {
 	final DataOutput.PathResolver recipesPathResolver;
 	final DataOutput.PathResolver advancementsPathResolver;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
 	private static final Map<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>> VARIANT_FACTORIES = ImmutableMap.builder(
 			
 		)
@@ -64,21 +66,24 @@ public abstract class RecipeProvider implements DataProvider {
 		.put(BlockFamily.Variant.SIGN, (BiFunction)(output, input) -> createSignRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.SLAB, (BiFunction)(output, input) -> createSlabRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.STAIRS, (BiFunction)(output, input) -> createStairsRecipe(output, Ingredient.ofItems(input)))
-		.put(
-			BlockFamily.Variant.PRESSURE_PLATE, (BiFunction)(output, input) -> createPressurePlateRecipe(RecipeCategory.REDSTONE, output, Ingredient.ofItems(input))
-		)
+		.put(BlockFamily.Variant.PRESSURE_PLATE, (BiFunction)(output, input) -> createPressurePlateRecipe(RecipeCategory.REDSTONE, output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.POLISHED, (BiFunction)(output, input) -> createCondensingRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.TRAPDOOR, (BiFunction)(output, input) -> createTrapdoorRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.WALL, (BiFunction)(output, input) -> getWallRecipe(RecipeCategory.DECORATIONS, output, Ingredient.ofItems(input)))
 		.build();
 
-	public RecipeProvider(DataOutput output) {
+	public RecipeProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
 		this.recipesPathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "recipes");
 		this.advancementsPathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "advancements");
+		this.registryLookupFuture = registryLookupFuture;
 	}
 
 	@Override
-	public CompletableFuture<?> run(DataWriter writer) {
+	public final CompletableFuture<?> run(DataWriter writer) {
+		return this.registryLookupFuture.thenCompose(registryLookup -> this.run(writer, registryLookup));
+	}
+
+	protected CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup) {
 		final Set<Identifier> set = Sets.<Identifier>newHashSet();
 		final List<CompletableFuture<?>> list = new ArrayList();
 		this.generate(
@@ -88,11 +93,11 @@ public abstract class RecipeProvider implements DataProvider {
 					if (!set.add(recipeId)) {
 						throw new IllegalStateException("Duplicate recipe " + recipeId);
 					} else {
-						list.add(DataProvider.writeCodecToPath(writer, Recipe.CODEC, recipe, RecipeProvider.this.recipesPathResolver.resolveJson(recipeId)));
+						list.add(DataProvider.writeCodecToPath(writer, registryLookup, Recipe.CODEC, recipe, RecipeProvider.this.recipesPathResolver.resolveJson(recipeId)));
 						if (advancement != null) {
 							list.add(
 								DataProvider.writeCodecToPath(
-									writer, Advancement.CODEC, advancement.value(), RecipeProvider.this.advancementsPathResolver.resolveJson(advancement.id())
+									writer, registryLookup, Advancement.CODEC, advancement.value(), RecipeProvider.this.advancementsPathResolver.resolveJson(advancement.id())
 								)
 							);
 						}
@@ -108,8 +113,10 @@ public abstract class RecipeProvider implements DataProvider {
 		return CompletableFuture.allOf((CompletableFuture[])list.toArray(i -> new CompletableFuture[i]));
 	}
 
-	protected CompletableFuture<?> saveRecipeAdvancement(DataWriter cache, AdvancementEntry advancement) {
-		return DataProvider.writeCodecToPath(cache, Advancement.CODEC, advancement.value(), this.advancementsPathResolver.resolveJson(advancement.id()));
+	protected CompletableFuture<?> saveRecipeAdvancement(DataWriter cache, RegistryWrapper.WrapperLookup registryLookup, AdvancementEntry advancement) {
+		return DataProvider.writeCodecToPath(
+			cache, registryLookup, Advancement.CODEC, advancement.value(), this.advancementsPathResolver.resolveJson(advancement.id())
+		);
 	}
 
 	protected abstract void generate(RecipeExporter exporter);

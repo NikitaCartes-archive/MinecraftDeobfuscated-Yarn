@@ -166,15 +166,7 @@ public class ChunkSerializer {
 				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			chunk = new WorldChunk(
-				world.toServerWorld(),
-				chunkPos,
-				upgradeData,
-				chunkTickScheduler,
-				chunkTickScheduler2,
-				m,
-				chunkSections,
-				getEntityLoadingCallback(world, nbt),
-				blendingData
+				world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, getEntityLoadingCallback(world, nbt), blendingData
 			);
 		} else {
 			SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(
@@ -342,7 +334,7 @@ public class ChunkSerializer {
 		NbtList nbtList2 = new NbtList();
 
 		for(BlockPos blockPos : chunk.getBlockEntityPositions()) {
-			NbtCompound nbtCompound3 = chunk.getPackedBlockEntityNbt(blockPos);
+			NbtCompound nbtCompound3 = chunk.getPackedBlockEntityNbt(blockPos, world.getRegistryManager());
 			if (nbtCompound3 != null) {
 				nbtList2.add(nbtCompound3);
 			}
@@ -408,7 +400,7 @@ public class ChunkSerializer {
 						chunk.addPendingBlockEntityNbt(nbtCompound);
 					} else {
 						BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
-						BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, chunk.getBlockState(blockPos), nbtCompound);
+						BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, chunk.getBlockState(blockPos), nbtCompound, world.getRegistryManager());
 						if (blockEntity != null) {
 							chunk.setBlockEntity(blockEntity);
 						}

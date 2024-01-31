@@ -72,11 +72,7 @@ public class ShriekParticle extends SpriteBillboardParticle {
 	}
 
 	private void vertex(VertexConsumer vertexConsumer, Vector3f pos, float u, float v, int light) {
-		vertexConsumer.vertex((double)pos.x(), (double)pos.y(), (double)pos.z())
-			.texture(u, v)
-			.color(this.red, this.green, this.blue, this.alpha)
-			.light(light)
-			.next();
+		vertexConsumer.vertex((double)pos.x(), (double)pos.y(), (double)pos.z()).texture(u, v).color(this.red, this.green, this.blue, this.alpha).light(light).next();
 	}
 
 	@Override
@@ -106,9 +102,7 @@ public class ShriekParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(
-			ShriekParticleEffect shriekParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
-		) {
+		public Particle createParticle(ShriekParticleEffect shriekParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			ShriekParticle shriekParticle = new ShriekParticle(clientWorld, d, e, f, shriekParticleEffect.getDelay());
 			shriekParticle.setSprite(this.spriteProvider);
 			shriekParticle.setAlpha(1.0F);

@@ -29,7 +29,7 @@ public class ItemColors {
 	public static ItemColors create(BlockColors blockColors) {
 		ItemColors itemColors = new ItemColors();
 		itemColors.register(
-			(stack, tintIndex) -> tintIndex > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack),
+			(stack, tintIndex) -> tintIndex > 0 ? -1 : DyeableItem.getColor(stack),
 			Items.LEATHER_HELMET,
 			Items.LEATHER_CHESTPLATE,
 			Items.LEATHER_LEGGINGS,

@@ -36,9 +36,7 @@ public class AdvancementCriteriaRenameFix extends DataFix {
 			advancement -> advancement.update(
 					"criteria",
 					criteria -> criteria.updateMapValues(
-							pair -> pair.mapFirst(
-									key -> DataFixUtils.orElse(key.asString().map(keyString -> key.createString((String)this.renamer.apply(keyString))).result(), key)
-								)
+							pair -> pair.mapFirst(key -> DataFixUtils.orElse(key.asString().map(keyString -> key.createString((String)this.renamer.apply(keyString))).result(), key))
 						)
 				)
 		);

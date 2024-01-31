@@ -125,7 +125,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 			if (resourcePackPolicy != ServerInfo.ResourcePackPolicy.PROMPT && (!bl || resourcePackPolicy != ServerInfo.ResourcePackPolicy.DISABLED)) {
 				this.client.getServerResourcePackProvider().addResourcePack(uUID, uRL, string);
 			} else {
-				this.client.setScreen(this.createConfirmServerResourcePackScreen(uUID, uRL, string, bl, packet.prompt()));
+				this.client.setScreen(this.createConfirmServerResourcePackScreen(uUID, uRL, string, bl, (Text)packet.prompt().orElse(null)));
 			}
 		}
 	}
@@ -187,7 +187,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 
 	@Override
 	public void onDisconnect(DisconnectS2CPacket packet) {
-		this.connection.disconnect(packet.getReason());
+		this.connection.disconnect(packet.reason());
 	}
 
 	protected void sendQueuedPackets() {

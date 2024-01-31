@@ -620,6 +620,8 @@ public abstract class RenderLayer extends RenderPhase {
 			)
 			.build(false)
 	);
+	private static final RenderLayer FAST_CLOUDS = getClouds(false);
+	private static final RenderLayer FANCY_CLOUDS = getClouds(true);
 	public static final RenderLayer.MultiPhase LINES = of(
 		"lines",
 		VertexFormats.LINES,
@@ -1029,6 +1031,33 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getEndGateway() {
 		return END_GATEWAY;
+	}
+
+	private static RenderLayer.MultiPhase getClouds(boolean fancy) {
+		return of(
+			"clouds",
+			VertexFormats.POSITION_TEXTURE_COLOR_NORMAL,
+			VertexFormat.DrawMode.QUADS,
+			786432,
+			false,
+			false,
+			RenderLayer.MultiPhaseParameters.builder()
+				.program(CLOUDS_PROGRAM)
+				.texture(new RenderPhase.Texture(WorldRenderer.CLOUDS, false, false))
+				.transparency(TRANSLUCENT_TRANSPARENCY)
+				.cull(DISABLE_CULLING)
+				.writeMaskState(fancy ? DEPTH_MASK : ALL_MASK)
+				.target(CLOUDS_TARGET)
+				.build(true)
+		);
+	}
+
+	public static RenderLayer getFastClouds() {
+		return FAST_CLOUDS;
+	}
+
+	public static RenderLayer getFancyClouds() {
+		return FANCY_CLOUDS;
 	}
 
 	public static RenderLayer getLines() {

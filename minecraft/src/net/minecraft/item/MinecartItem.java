@@ -96,13 +96,7 @@ public class MinecartItem extends Item {
 				}
 
 				AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(
-					serverWorld,
-					(double)blockPos.getX() + 0.5,
-					(double)blockPos.getY() + 0.0625 + d,
-					(double)blockPos.getZ() + 0.5,
-					this.type,
-					itemStack,
-					context.getPlayer()
+					serverWorld, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.0625 + d, (double)blockPos.getZ() + 0.5, this.type, itemStack, context.getPlayer()
 				);
 				serverWorld.spawnEntity(abstractMinecartEntity);
 				serverWorld.emitGameEvent(GameEvent.ENTITY_PLACE, blockPos, GameEvent.Emitter.of(context.getPlayer(), serverWorld.getBlockState(blockPos.down())));

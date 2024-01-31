@@ -19,6 +19,7 @@ import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -100,13 +101,7 @@ public interface CauldronBehavior {
 	 * @see #fillCauldron
 	 */
 	CauldronBehavior FILL_WITH_WATER = (state, world, pos, player, hand, stack) -> fillCauldron(
-			world,
-			pos,
-			player,
-			hand,
-			stack,
-			Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)),
-			SoundEvents.ITEM_BUCKET_EMPTY
+			world, pos, player, hand, stack, Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)), SoundEvents.ITEM_BUCKET_EMPTY
 		);
 	/**
 	 * A behavior that fills cauldrons with lava.
@@ -139,12 +134,7 @@ public interface CauldronBehavior {
 			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
-				ItemStack itemStack = new ItemStack(Blocks.SHULKER_BOX);
-				if (stack.hasNbt()) {
-					itemStack.setNbt(stack.getNbt().copy());
-				}
-
-				player.setStackInHand(hand, itemStack);
+				player.setStackInHand(hand, stack.copyNbtToNewStack(Blocks.SHULKER_BOX, 1));
 				player.incrementStat(Stats.CLEAN_SHULKER_BOX);
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
@@ -185,22 +175,18 @@ public interface CauldronBehavior {
 	 * A behavior that cleans {@linkplain net.minecraft.item.DyeableItem dyeable items}.
 	 */
 	CauldronBehavior CLEAN_DYEABLE_ITEM = (state, world, pos, player, hand, stack) -> {
-		Item item = stack.getItem();
-		if (!(item instanceof DyeableItem)) {
+		if (!stack.isIn(ItemTags.DYEABLE)) {
+			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		} else if (!DyeableItem.hasColor(stack)) {
 			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
-			DyeableItem dyeableItem = (DyeableItem)item;
-			if (!dyeableItem.hasColor(stack)) {
-				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-			} else {
-				if (!world.isClient) {
-					dyeableItem.removeColor(stack);
-					player.incrementStat(Stats.CLEAN_ARMOR);
-					LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
-				}
-
-				return ItemActionResult.success(world.isClient);
+			if (!world.isClient) {
+				DyeableItem.removeColor(stack);
+				player.incrementStat(Stats.CLEAN_ARMOR);
+				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
+
+			return ItemActionResult.success(world.isClient);
 		}
 	};
 

@@ -194,9 +194,7 @@ public class VegetationConfiguredFeatures {
 				PlacedFeatures.createEntry(
 					Feature.SIMPLE_BLOCK,
 					new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.MELON)),
-					BlockPredicate.allOf(
-						BlockPredicate.replaceable(), BlockPredicate.noFluid(), BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.GRASS_BLOCK)
-					)
+					BlockPredicate.allOf(BlockPredicate.replaceable(), BlockPredicate.noFluid(), BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.GRASS_BLOCK))
 				)
 			)
 		);
@@ -433,10 +431,7 @@ public class VegetationConfiguredFeatures {
 			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry9, 0.2F), new RandomFeatureEntry(registryEntry10, 0.1F)), registryEntry25)
 		);
 		ConfiguredFeatures.register(
-			featureRegisterable,
-			MEADOW_TREES,
-			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry11, 0.5F)), registryEntry26)
+			featureRegisterable, MEADOW_TREES, Feature.RANDOM_SELECTOR, new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry11, 0.5F)), registryEntry26)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
@@ -478,9 +473,7 @@ public class VegetationConfiguredFeatures {
 			featureRegisterable,
 			TREES_PLAINS,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(
-				List.of(new RandomFeatureEntry(PlacedFeatures.createEntry(registryEntry3), 0.33333334F)), PlacedFeatures.createEntry(registryEntry4)
-			)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(PlacedFeatures.createEntry(registryEntry3), 0.33333334F)), PlacedFeatures.createEntry(registryEntry4))
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
@@ -492,9 +485,7 @@ public class VegetationConfiguredFeatures {
 			featureRegisterable,
 			TREES_OLD_GROWTH_SPRUCE_TAIGA,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(
-				List.of(new RandomFeatureEntry(registryEntry20, 0.33333334F), new RandomFeatureEntry(registryEntry12, 0.33333334F)), registryEntry13
-			)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry20, 0.33333334F), new RandomFeatureEntry(registryEntry12, 0.33333334F)), registryEntry13)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,

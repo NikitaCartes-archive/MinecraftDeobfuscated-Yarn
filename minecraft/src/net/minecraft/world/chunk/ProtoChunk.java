@@ -17,6 +17,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
@@ -265,9 +266,9 @@ public class ProtoChunk extends Chunk {
 
 	@Nullable
 	@Override
-	public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
+	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registryLookup) {
 		BlockEntity blockEntity = this.getBlockEntity(pos);
-		return blockEntity != null ? blockEntity.createNbtWithIdentifyingData() : (NbtCompound)this.blockEntityNbts.get(pos);
+		return blockEntity != null ? blockEntity.createNbtWithIdentifyingData(registryLookup) : (NbtCompound)this.blockEntityNbts.get(pos);
 	}
 
 	@Override

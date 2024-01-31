@@ -87,9 +87,7 @@ public class LevelLoadingScreen extends Screen {
 		context.drawCenteredTextWithShadow(this.textRenderer, this.getPercentage(), i, j - k, 16777215);
 	}
 
-	public static void drawChunkMap(
-		DrawContext context, WorldGenerationProgressTracker progressProvider, int centerX, int centerY, int pixelSize, int pixelMargin
-	) {
+	public static void drawChunkMap(DrawContext context, WorldGenerationProgressTracker progressProvider, int centerX, int centerY, int pixelSize, int pixelMargin) {
 		int i = pixelSize + pixelMargin;
 		int j = progressProvider.getCenterSize();
 		int k = j * i - pixelMargin;

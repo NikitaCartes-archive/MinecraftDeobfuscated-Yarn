@@ -304,12 +304,9 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class WorldTemplateObjectSelectionListEntry
-		extends AlwaysSelectedEntryListWidget.Entry<RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionListEntry> {
+	class WorldTemplateObjectSelectionListEntry extends AlwaysSelectedEntryListWidget.Entry<RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionListEntry> {
 		private static final ButtonTextures LINK_TEXTURES = new ButtonTextures(new Identifier("icon/link"), new Identifier("icon/link_highlighted"));
-		private static final ButtonTextures VIDEO_LINK_TEXTURES = new ButtonTextures(
-			new Identifier("icon/video_link"), new Identifier("icon/video_link_highlighted")
-		);
+		private static final ButtonTextures VIDEO_LINK_TEXTURES = new ButtonTextures(new Identifier("icon/video_link"), new Identifier("icon/video_link_highlighted"));
 		private static final Text INFO_TOOLTIP_TEXT = Text.translatable("mco.template.info.tooltip");
 		private static final Text TRAILER_TOOLTIP_TEXT = Text.translatable("mco.template.trailer.tooltip");
 		public final WorldTemplate mTemplate;

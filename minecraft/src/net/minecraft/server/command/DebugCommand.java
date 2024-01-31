@@ -79,9 +79,7 @@ public class DebugCommand {
 			double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
 			double e = (double)profileResult.getTickSpan() / d;
 			source.sendFeedback(
-				() -> Text.translatable(
-						"commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format(Locale.ROOT, "%.2f", e)
-					),
+				() -> Text.translatable("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format(Locale.ROOT, "%.2f", e)),
 				true
 			);
 			return (int)e;

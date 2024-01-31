@@ -1,5 +1,6 @@
 package net.minecraft.server.network;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
@@ -17,7 +18,11 @@ public class SendResourcePackTask implements ServerPlayerConfigurationTask {
 	public void sendPacket(Consumer<Packet<?>> sender) {
 		sender.accept(
 			new ResourcePackSendS2CPacket(
-				this.packProperties.id(), this.packProperties.url(), this.packProperties.hash(), this.packProperties.isRequired(), this.packProperties.prompt()
+				this.packProperties.id(),
+				this.packProperties.url(),
+				this.packProperties.hash(),
+				this.packProperties.isRequired(),
+				Optional.ofNullable(this.packProperties.prompt())
 			)
 		);
 	}

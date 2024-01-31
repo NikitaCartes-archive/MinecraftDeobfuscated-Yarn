@@ -172,10 +172,6 @@ public class VertexBuffer implements AutoCloseable {
 			program.projectionMat.set(projectionMatrix);
 		}
 
-		if (program.viewRotationMat != null) {
-			program.viewRotationMat.set(RenderSystem.getInverseViewRotationMatrix());
-		}
-
 		if (program.colorModulator != null) {
 			program.colorModulator.set(RenderSystem.getShaderColor());
 		}

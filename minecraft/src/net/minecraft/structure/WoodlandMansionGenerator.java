@@ -153,9 +153,7 @@ public class WoodlandMansionGenerator {
 			this.random = random;
 		}
 
-		public void generate(
-			BlockPos pos, BlockRotation rotation, List<WoodlandMansionGenerator.Piece> pieces, WoodlandMansionGenerator.MansionParameters parameters
-		) {
+		public void generate(BlockPos pos, BlockRotation rotation, List<WoodlandMansionGenerator.Piece> pieces, WoodlandMansionGenerator.MansionParameters parameters) {
 			WoodlandMansionGenerator.GenerationPiece generationPiece = new WoodlandMansionGenerator.GenerationPiece();
 			generationPiece.position = pos;
 			generationPiece.rotation = rotation;
@@ -641,9 +639,7 @@ public class WoodlandMansionGenerator {
 				BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
 				blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 14);
 				pieces.add(
-					new WoodlandMansionGenerator.Piece(
-						this.manager, pool.getMediumGenericRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_180)
-					)
+					new WoodlandMansionGenerator.Piece(this.manager, pool.getMediumGenericRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_180))
 				);
 			} else if (entranceDirection == Direction.WEST && connectedRoomDirection == Direction.EAST) {
 				BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 15);
@@ -1168,7 +1164,7 @@ public class WoodlandMansionGenerator {
 					if (mobEntity != null) {
 						mobEntity.setPersistent();
 						mobEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-						mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+						mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.STRUCTURE, null);
 						world.spawnEntityAndPassengers(mobEntity);
 						world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 					}

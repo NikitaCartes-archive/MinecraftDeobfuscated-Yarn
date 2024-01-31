@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.ToIntFunction;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
@@ -33,8 +35,9 @@ public interface DataProvider {
 
 	String getName();
 
-	static <T> CompletableFuture<?> writeCodecToPath(DataWriter writer, Codec<T> codec, T value, Path path) {
-		JsonElement jsonElement = Util.getResult(codec.encodeStart(JsonOps.INSTANCE, value), IllegalStateException::new);
+	static <T> CompletableFuture<?> writeCodecToPath(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup, Codec<T> codec, T value, Path path) {
+		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, registryLookup);
+		JsonElement jsonElement = Util.getResult(codec.encodeStart(registryOps, value), IllegalStateException::new);
 		return writeToPath(writer, jsonElement, path);
 	}
 

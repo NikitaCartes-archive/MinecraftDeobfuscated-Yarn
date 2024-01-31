@@ -25,9 +25,7 @@ public class StopSoundCommand {
 						CommandManager.argument("sound", IdentifierArgumentType.identifier())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
-								context -> execute(
-										context.getSource(), EntityArgumentType.getPlayers(context, "targets"), null, IdentifierArgumentType.getIdentifier(context, "sound")
-									)
+								context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), null, IdentifierArgumentType.getIdentifier(context, "sound"))
 							)
 					)
 			);

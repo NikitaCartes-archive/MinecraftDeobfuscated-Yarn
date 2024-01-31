@@ -1,13 +1,15 @@
 package net.minecraft.data.server.loottable.vanilla;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.server.loottable.LootTableProvider;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.RegistryWrapper;
 
 public class VanillaLootTableProviders {
-	public static LootTableProvider createVanillaProvider(DataOutput output) {
+	public static LootTableProvider createVanillaProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
 		return new LootTableProvider(
 			output,
 			LootTables.getAll(),
@@ -19,7 +21,8 @@ public class VanillaLootTableProviders {
 				new LootTableProvider.LootTypeGenerator(VanillaBarterLootTableGenerator::new, LootContextTypes.BARTER),
 				new LootTableProvider.LootTypeGenerator(VanillaGiftLootTableGenerator::new, LootContextTypes.GIFT),
 				new LootTableProvider.LootTypeGenerator(VanillaArchaeologyLootTableGenerator::new, LootContextTypes.ARCHAEOLOGY)
-			)
+			),
+			registryLookupFuture
 		);
 	}
 }

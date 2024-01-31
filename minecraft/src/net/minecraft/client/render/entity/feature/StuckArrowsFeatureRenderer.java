@@ -30,14 +30,7 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 
 	@Override
 	protected void renderObject(
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		Entity entity,
-		float directionX,
-		float directionY,
-		float directionZ,
-		float tickDelta
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta
 	) {
 		float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
 		ArrowEntity arrowEntity = new ArrowEntity(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), ItemStack.EMPTY);

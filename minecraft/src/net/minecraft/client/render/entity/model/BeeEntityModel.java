@@ -146,9 +146,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		modelPartData2.addChild(
 			"middle_legs", ModelPartBuilder.create().cuboid("middle_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 3), ModelTransform.pivot(1.5F, 3.0F, 0.0F)
 		);
-		modelPartData2.addChild(
-			"back_legs", ModelPartBuilder.create().cuboid("back_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 5), ModelTransform.pivot(1.5F, 3.0F, 2.0F)
-		);
+		modelPartData2.addChild("back_legs", ModelPartBuilder.create().cuboid("back_legs", -5.0F, 0.0F, 0.0F, 7, 2, 0, 26, 5), ModelTransform.pivot(1.5F, 3.0F, 2.0F));
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 

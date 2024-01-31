@@ -14,6 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
@@ -58,8 +59,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		nbt.putString("name", this.getTemplateName());
 		nbt.putString("author", this.author);
 		nbt.putString("metadata", this.metadata);
@@ -81,8 +82,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		this.setTemplateName(nbt.getString("name"));
 		this.author = nbt.getString("author");
 		this.metadata = nbt.getString("metadata");
@@ -97,19 +98,19 @@ public class StructureBlockBlockEntity extends BlockEntity {
 
 		try {
 			this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
-		} catch (IllegalArgumentException var11) {
+		} catch (IllegalArgumentException var12) {
 			this.rotation = BlockRotation.NONE;
 		}
 
 		try {
 			this.mirror = BlockMirror.valueOf(nbt.getString("mirror"));
-		} catch (IllegalArgumentException var10) {
+		} catch (IllegalArgumentException var11) {
 			this.mirror = BlockMirror.NONE;
 		}
 
 		try {
 			this.mode = StructureBlockMode.valueOf(nbt.getString("mode"));
-		} catch (IllegalArgumentException var9) {
+		} catch (IllegalArgumentException var10) {
 			this.mode = StructureBlockMode.DATA;
 		}
 
@@ -142,8 +143,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		return this.createNbt();
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		return this.createNbt(registryLookup);
 	}
 
 	public boolean openScreen(PlayerEntity player) {

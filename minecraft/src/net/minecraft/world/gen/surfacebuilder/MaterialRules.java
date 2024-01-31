@@ -49,9 +49,7 @@ public class MaterialRules {
 		return new MaterialRules.StoneDepthMaterialCondition(offset, addSurfaceDepth, 0, verticalSurfaceType);
 	}
 
-	public static MaterialRules.MaterialCondition stoneDepth(
-		int offset, boolean addSurfaceDepth, int secondaryDepthRange, VerticalSurfaceType verticalSurfaceType
-	) {
+	public static MaterialRules.MaterialCondition stoneDepth(int offset, boolean addSurfaceDepth, int secondaryDepthRange, VerticalSurfaceType verticalSurfaceType) {
 		return new MaterialRules.StoneDepthMaterialCondition(offset, addSurfaceDepth, secondaryDepthRange, verticalSurfaceType);
 	}
 
@@ -175,10 +173,7 @@ public class MaterialRules {
 
 	static final class BiomeMaterialCondition implements MaterialRules.MaterialCondition {
 		static final CodecHolder<MaterialRules.BiomeMaterialCondition> CODEC = CodecHolder.of(
-			RegistryKey.createCodec(RegistryKeys.BIOME)
-				.listOf()
-				.fieldOf("biome_is")
-				.xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes)
+			RegistryKey.createCodec(RegistryKeys.BIOME).listOf().fieldOf("biome_is").xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes)
 		);
 		private final List<RegistryKey<Biome>> biomes;
 		final Predicate<RegistryKey<Biome>> predicate;

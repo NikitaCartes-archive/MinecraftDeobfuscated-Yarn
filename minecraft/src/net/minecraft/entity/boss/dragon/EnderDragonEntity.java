@@ -183,14 +183,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			if (!this.isSilent() && !this.phaseManager.getCurrent().isSittingOrHovering() && --this.ticksUntilNextGrowl < 0) {
 				this.getWorld()
 					.playSound(
-						this.getX(),
-						this.getY(),
-						this.getZ(),
-						SoundEvents.ENTITY_ENDER_DRAGON_GROWL,
-						this.getSoundCategory(),
-						2.5F,
-						0.8F + this.random.nextFloat() * 0.3F,
-						false
+						this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_GROWL, this.getSoundCategory(), 2.5F, 0.8F + this.random.nextFloat() * 0.3F, false
 					);
 				this.ticksUntilNextGrowl = 200 + this.random.nextInt(200);
 			}
@@ -557,8 +550,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			float f = (this.random.nextFloat() - 0.5F) * 8.0F;
 			float g = (this.random.nextFloat() - 0.5F) * 4.0F;
 			float h = (this.random.nextFloat() - 0.5F) * 8.0F;
-			this.getWorld()
-				.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX() + (double)f, this.getY() + 2.0 + (double)g, this.getZ() + (double)h, 0.0, 0.0, 0.0);
+			this.getWorld().addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX() + (double)f, this.getY() + 2.0 + (double)g, this.getZ() + (double)h, 0.0, 0.0, 0.0);
 		}
 
 		boolean bl = this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT);

@@ -42,7 +42,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 
 	public RegistryEntryPredicateArgumentType(CommandRegistryAccess registryAccess, RegistryKey<? extends Registry<T>> registryRef) {
 		this.registryRef = registryRef;
-		this.registryWrapper = registryAccess.createWrapper(registryRef);
+		this.registryWrapper = registryAccess.getWrapperOrThrow(registryRef);
 	}
 
 	public static <T> RegistryEntryPredicateArgumentType<T> registryEntryPredicate(

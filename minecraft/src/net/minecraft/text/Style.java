@@ -4,10 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Formatting;
@@ -614,6 +614,6 @@ public class Style {
 					.apply(instance, Style::of)
 		);
 		public static final Codec<Style> CODEC = MAP_CODEC.codec();
-		public static final PacketCodec<ByteBuf, Style> PACKET_CODEC = PacketCodecs.codec(CODEC);
+		public static final PacketCodec<RegistryByteBuf, Style> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 	}
 }

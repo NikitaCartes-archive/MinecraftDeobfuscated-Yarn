@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity;
 
-import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -20,6 +19,7 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -85,25 +85,25 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		}
 
 		if (!itemStack.isEmpty()) {
-			OptionalInt optionalInt = itemFrameEntity.getMapId();
+			MapId mapId = itemFrameEntity.getMapId();
 			if (bl) {
 				matrixStack.translate(0.0F, 0.0F, 0.5F);
 			} else {
 				matrixStack.translate(0.0F, 0.0F, 0.4375F);
 			}
 
-			int j = optionalInt.isPresent() ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
+			int j = mapId != null ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)j * 360.0F / 8.0F));
-			if (optionalInt.isPresent()) {
+			if (mapId != null) {
 				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 				float h = 0.0078125F;
 				matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
 				matrixStack.translate(-64.0F, -64.0F, 0.0F);
-				MapState mapState = FilledMapItem.getMapState(optionalInt.getAsInt(), itemFrameEntity.getWorld());
+				MapState mapState = FilledMapItem.getMapState(mapId, itemFrameEntity.getWorld());
 				matrixStack.translate(0.0F, 0.0F, -1.0F);
 				if (mapState != null) {
 					int k = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE | 210, i);
-					MinecraftClient.getInstance().gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, optionalInt.getAsInt(), mapState, true, k);
+					MinecraftClient.getInstance().gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapId, mapState, true, k);
 				}
 			} else {
 				int l = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_LIGHT_COORDINATE, i);

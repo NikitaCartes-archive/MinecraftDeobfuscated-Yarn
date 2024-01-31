@@ -399,9 +399,7 @@ public final class Biome {
 			instance -> instance.group(
 						Codec.BOOL.fieldOf("has_precipitation").forGetter(weather -> weather.hasPrecipitation),
 						Codec.FLOAT.fieldOf("temperature").forGetter(weather -> weather.temperature),
-						Biome.TemperatureModifier.CODEC
-							.optionalFieldOf("temperature_modifier", Biome.TemperatureModifier.NONE)
-							.forGetter(weather -> weather.temperatureModifier),
+						Biome.TemperatureModifier.CODEC.optionalFieldOf("temperature_modifier", Biome.TemperatureModifier.NONE).forGetter(weather -> weather.temperatureModifier),
 						Codec.FLOAT.fieldOf("downfall").forGetter(weather -> weather.downfall)
 					)
 					.apply(instance, Biome.Weather::new)

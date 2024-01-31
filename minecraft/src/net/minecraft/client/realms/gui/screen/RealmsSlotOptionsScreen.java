@@ -198,9 +198,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget6 = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.commandBlocks)
-				.build(
-					i, row(9), this.column2_x, 20, Text.translatable("mco.configure.world.commandBlocks"), (button, commandBlocks) -> this.commandBlocks = commandBlocks
-				)
+				.build(i, row(9), this.column2_x, 20, Text.translatable("mco.configure.world.commandBlocks"), (button, commandBlocks) -> this.commandBlocks = commandBlocks)
 		);
 		if (this.worldType != RealmsServer.WorldType.NORMAL) {
 			cyclingButtonWidget.active = false;

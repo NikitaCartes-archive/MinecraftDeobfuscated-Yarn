@@ -264,9 +264,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	private void fall() {
 		this.inGround = false;
 		Vec3d vec3d = this.getVelocity();
-		this.setVelocity(
-			vec3d.multiply((double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F))
-		);
+		this.setVelocity(vec3d.multiply((double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F)));
 		this.life = 0;
 	}
 

@@ -22,8 +22,7 @@ import net.minecraft.world.WorldView;
 
 public class BannerBlock extends AbstractBannerBlock {
 	public static final MapCodec<BannerBlock> CODEC = RecordCodecBuilder.mapCodec(
-		instance -> instance.group(DyeColor.CODEC.fieldOf("color").forGetter(AbstractBannerBlock::getColor), createSettingsCodec())
-				.apply(instance, BannerBlock::new)
+		instance -> instance.group(DyeColor.CODEC.fieldOf("color").forGetter(AbstractBannerBlock::getColor), createSettingsCodec()).apply(instance, BannerBlock::new)
 	);
 	public static final IntProperty ROTATION = Properties.ROTATION;
 	private static final Map<DyeColor, Block> COLORED_BANNERS = Maps.<DyeColor, Block>newHashMap();

@@ -93,16 +93,7 @@ public class LightDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private static void drawFace(
-		MatrixStack matrices,
-		VertexConsumer vertexConsumer,
-		Direction direction,
-		double cameraX,
-		double cameraY,
-		double cameraZ,
-		int x,
-		int y,
-		int z,
-		Vector4f color
+		MatrixStack matrices, VertexConsumer vertexConsumer, Direction direction, double cameraX, double cameraY, double cameraZ, int x, int y, int z, Vector4f color
 	) {
 		float f = (float)((double)ChunkSectionPos.getBlockCoord(x) - cameraX);
 		float g = (float)((double)ChunkSectionPos.getBlockCoord(y) - cameraY);

@@ -227,7 +227,7 @@ public class TadpoleEntity extends FishEntity {
 			FrogEntity frogEntityx = EntityType.FROG.create(this.getWorld());
 			if (frogEntityx != null) {
 				frogEntityx.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-				frogEntityx.initialize(serverWorld, this.getWorld().getLocalDifficulty(frogEntityx.getBlockPos()), SpawnReason.CONVERSION, null, null);
+				frogEntityx.initialize(serverWorld, this.getWorld().getLocalDifficulty(frogEntityx.getBlockPos()), SpawnReason.CONVERSION, null);
 				frogEntityx.setAiDisabled(this.isAiDisabled());
 				if (this.hasCustomName()) {
 					frogEntityx.setCustomName(this.getCustomName());

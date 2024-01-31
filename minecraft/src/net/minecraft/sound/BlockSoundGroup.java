@@ -931,6 +931,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_WET_SPONGE_HIT,
 		SoundEvents.BLOCK_WET_SPONGE_FALL
 	);
+	public static final BlockSoundGroup VAULT = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_VAULT_BREAK,
+		SoundEvents.BLOCK_VAULT_STEP,
+		SoundEvents.BLOCK_VAULT_PLACE,
+		SoundEvents.BLOCK_VAULT_HIT,
+		SoundEvents.BLOCK_VAULT_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

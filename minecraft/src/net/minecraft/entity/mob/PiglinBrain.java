@@ -255,9 +255,7 @@ public class PiglinBrain {
 
 	private static ImmutableList<Pair<SingleTickTask<LivingEntity>, Integer>> makeFollowTasks() {
 		return ImmutableList.of(
-			Pair.of(LookAtMobTask.create(EntityType.PLAYER, 8.0F), 1),
-			Pair.of(LookAtMobTask.create(EntityType.PIGLIN, 8.0F), 1),
-			Pair.of(LookAtMobTask.create(8.0F), 1)
+			Pair.of(LookAtMobTask.create(EntityType.PLAYER, 8.0F), 1), Pair.of(LookAtMobTask.create(EntityType.PIGLIN, 8.0F), 1), Pair.of(LookAtMobTask.create(8.0F), 1)
 		);
 	}
 
@@ -283,9 +281,7 @@ public class PiglinBrain {
 	}
 
 	private static Task<PiglinEntity> goToNemesisTask() {
-		return MemoryTransferTask.create(
-			PiglinEntity::isBaby, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.AVOID_TARGET, GO_TO_NEMESIS_MEMORY_DURATION
-		);
+		return MemoryTransferTask.create(PiglinEntity::isBaby, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.AVOID_TARGET, GO_TO_NEMESIS_MEMORY_DURATION);
 	}
 
 	private static Task<PiglinEntity> makeFleeFromZombifiedPiglinTask() {
@@ -649,9 +645,9 @@ public class PiglinBrain {
 	}
 
 	public static boolean wearsGoldArmor(LivingEntity entity) {
-		for(ItemStack itemStack : entity.getArmorItems()) {
+		for(ItemStack itemStack : entity.getAllArmorItems()) {
 			Item item = itemStack.getItem();
-			if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial() == ArmorMaterials.GOLD) {
+			if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial().matches(ArmorMaterials.GOLD)) {
 				return true;
 			}
 		}

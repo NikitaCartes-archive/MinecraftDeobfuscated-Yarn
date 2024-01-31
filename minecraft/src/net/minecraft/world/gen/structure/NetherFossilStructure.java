@@ -42,9 +42,7 @@ public class NetherFossilStructure extends Structure {
 		while(l > k) {
 			BlockState blockState = verticalBlockSample.getState(l);
 			BlockState blockState2 = verticalBlockSample.getState(--l);
-			if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(EmptyBlockView.INSTANCE, mutable.setY(l), Direction.UP))
-				)
-			 {
+			if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(EmptyBlockView.INSTANCE, mutable.setY(l), Direction.UP))) {
 				break;
 			}
 		}

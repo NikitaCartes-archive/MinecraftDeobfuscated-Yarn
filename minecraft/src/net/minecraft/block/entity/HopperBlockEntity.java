@@ -19,6 +19,7 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
@@ -42,8 +43,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.readLootTable(nbt)) {
 			Inventories.readNbt(nbt, this.inventory);
@@ -53,8 +54,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		if (!this.writeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory);
 		}
@@ -358,7 +359,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	private static boolean canMergeItems(ItemStack first, ItemStack second) {
-		return first.getCount() <= first.getMaxCount() && ItemStack.canCombine(first, second);
+		return first.getCount() <= first.getMaxCount() && ItemStack.areItemsAndNbtEqual(first, second);
 	}
 
 	@Override

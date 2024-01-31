@@ -15,10 +15,7 @@ public class ZombieEntityRenderer extends ZombieBaseEntityRenderer<ZombieEntity,
 
 	public ZombieEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer, EntityModelLayer legsArmorLayer, EntityModelLayer bodyArmorLayer) {
 		super(
-			ctx,
-			new ZombieEntityModel<>(ctx.getPart(layer)),
-			new ZombieEntityModel<>(ctx.getPart(legsArmorLayer)),
-			new ZombieEntityModel<>(ctx.getPart(bodyArmorLayer))
+			ctx, new ZombieEntityModel<>(ctx.getPart(layer)), new ZombieEntityModel<>(ctx.getPart(legsArmorLayer)), new ZombieEntityModel<>(ctx.getPart(bodyArmorLayer))
 		);
 	}
 }

@@ -8,7 +8,6 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec3i;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -232,7 +231,7 @@ public interface VertexConsumer {
 		int[] js = quad.getVertexData();
 		Vec3i vec3i = quad.getFace().getVector();
 		Matrix4f matrix4f = matrixEntry.getPositionMatrix();
-		Vector3f vector3f = matrixEntry.getNormalMatrix().transform(new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ()));
+		Vector3f vector3f = matrixEntry.method_56820((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), new Vector3f());
 		int i = 8;
 		int j = js.length / 8;
 
@@ -271,6 +270,10 @@ public interface VertexConsumer {
 		}
 	}
 
+	default VertexConsumer vertex(MatrixStack.Entry matrix, float x, float y, float z) {
+		return this.vertex(matrix.getPositionMatrix(), x, y, z);
+	}
+
 	/**
 	 * Specifies the {@linkplain VertexFormats#POSITION_ELEMENT
 	 * position element} of the current vertex.
@@ -285,8 +288,8 @@ public interface VertexConsumer {
 	 * MatrixStack.Entry#getPositionMatrix}
 	 */
 	default VertexConsumer vertex(Matrix4f matrix, float x, float y, float z) {
-		Vector4f vector4f = matrix.transform(new Vector4f(x, y, z, 1.0F));
-		return this.vertex((double)vector4f.x(), (double)vector4f.y(), (double)vector4f.z());
+		Vector3f vector3f = matrix.transformPosition(x, y, z, new Vector3f());
+		return this.vertex((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z());
 	}
 
 	/**
@@ -297,13 +300,9 @@ public interface VertexConsumer {
 	 * accepting a normal element.
 	 * 
 	 * @return this consumer, for chaining
-	 * 
-	 * @param matrix the matrix that will be applied to the normal vector, typically {@link
-	 * net.minecraft.client.util.math.MatrixStack.Entry#getNormalMatrix
-	 * MatrixStack.Entry#getNormalMatrix}
 	 */
-	default VertexConsumer normal(Matrix3f matrix, float x, float y, float z) {
-		Vector3f vector3f = matrix.transform(new Vector3f(x, y, z));
+	default VertexConsumer normal(MatrixStack.Entry matrix, float x, float y, float z) {
+		Vector3f vector3f = matrix.method_56820(x, y, z, new Vector3f());
 		return this.normal(vector3f.x(), vector3f.y(), vector3f.z());
 	}
 }

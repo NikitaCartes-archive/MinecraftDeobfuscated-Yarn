@@ -99,7 +99,7 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 					if (witchEntity != null) {
 						witchEntity.setPersistent();
 						witchEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
-						witchEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
+						witchEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null);
 						world.spawnEntityAndPassengers(witchEntity);
 					}
 				}
@@ -118,7 +118,7 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 				if (catEntity != null) {
 					catEntity.setPersistent();
 					catEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
-					catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
+					catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null);
 					world.spawnEntityAndPassengers(catEntity);
 				}
 			}

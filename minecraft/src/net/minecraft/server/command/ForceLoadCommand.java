@@ -25,9 +25,7 @@ public class ForceLoadCommand {
 	private static final Dynamic2CommandExceptionType QUERY_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
 		(chunkPos, registryKey) -> Text.stringifiedTranslatable("commands.forceload.query.failure", chunkPos, registryKey)
 	);
-	private static final SimpleCommandExceptionType ADDED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(
-		Text.translatable("commands.forceload.added.failure")
-	);
+	private static final SimpleCommandExceptionType ADDED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.forceload.added.failure"));
 	private static final SimpleCommandExceptionType REMOVED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("commands.forceload.removed.failure")
 	);

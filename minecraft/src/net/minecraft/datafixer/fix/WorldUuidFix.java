@@ -51,8 +51,7 @@ public class WorldUuidFix extends AbstractUuidFix {
 			dynamicx -> dynamicx.updateMapValues(
 					pair -> pair.mapSecond(
 							dynamicxx -> dynamicxx.update(
-									"Players",
-									dynamic2 -> dynamicxx.createList(dynamic2.asStream().map(dynamicxxxx -> (Dynamic)createArrayFromCompoundUuid(dynamicxxxx).orElseGet(() -> {
+									"Players", dynamic2 -> dynamicxx.createList(dynamic2.asStream().map(dynamicxxxx -> (Dynamic)createArrayFromCompoundUuid(dynamicxxxx).orElseGet(() -> {
 												LOGGER.warn("CustomBossEvents contains invalid UUIDs.");
 												return dynamicxxxx;
 											})))

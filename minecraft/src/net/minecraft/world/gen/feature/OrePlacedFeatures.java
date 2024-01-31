@@ -132,10 +132,7 @@ public class OrePlacedFeatures {
 			featureRegisterable, ORE_GRANITE_LOWER, registryEntry9, modifiersWithCount(2, HeightRangePlacementModifier.uniform(YOffset.fixed(0), YOffset.fixed(60)))
 		);
 		PlacedFeatures.register(
-			featureRegisterable,
-			ORE_DIORITE_UPPER,
-			registryEntry10,
-			modifiersWithRarity(6, HeightRangePlacementModifier.uniform(YOffset.fixed(64), YOffset.fixed(128)))
+			featureRegisterable, ORE_DIORITE_UPPER, registryEntry10, modifiersWithRarity(6, HeightRangePlacementModifier.uniform(YOffset.fixed(64), YOffset.fixed(128)))
 		);
 		PlacedFeatures.register(
 			featureRegisterable, ORE_DIORITE_LOWER, registryEntry10, modifiersWithCount(2, HeightRangePlacementModifier.uniform(YOffset.fixed(0), YOffset.fixed(60)))
@@ -162,10 +159,7 @@ public class OrePlacedFeatures {
 			featureRegisterable, ORE_IRON_UPPER, registryEntry15, modifiersWithCount(90, HeightRangePlacementModifier.trapezoid(YOffset.fixed(80), YOffset.fixed(384)))
 		);
 		PlacedFeatures.register(
-			featureRegisterable,
-			ORE_IRON_MIDDLE,
-			registryEntry15,
-			modifiersWithCount(10, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-24), YOffset.fixed(56)))
+			featureRegisterable, ORE_IRON_MIDDLE, registryEntry15, modifiersWithCount(10, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-24), YOffset.fixed(56)))
 		);
 		PlacedFeatures.register(
 			featureRegisterable, ORE_IRON_SMALL, registryEntry16, modifiersWithCount(10, HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(72)))
@@ -198,10 +192,7 @@ public class OrePlacedFeatures {
 			modifiersWithCount(7, HeightRangePlacementModifier.trapezoid(YOffset.aboveBottom(-80), YOffset.aboveBottom(80)))
 		);
 		PlacedFeatures.register(
-			featureRegisterable,
-			ORE_DIAMOND_MEDIUM,
-			registryEntry21,
-			modifiersWithCount(2, HeightRangePlacementModifier.uniform(YOffset.fixed(-64), YOffset.fixed(-4)))
+			featureRegisterable, ORE_DIAMOND_MEDIUM, registryEntry21, modifiersWithCount(2, HeightRangePlacementModifier.uniform(YOffset.fixed(-64), YOffset.fixed(-4)))
 		);
 		PlacedFeatures.register(
 			featureRegisterable,

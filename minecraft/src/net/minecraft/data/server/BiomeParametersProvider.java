@@ -56,8 +56,7 @@ public class BiomeParametersProvider implements DataProvider {
 	}
 
 	private static <E> CompletableFuture<?> write(Path path, DataWriter writer, DynamicOps<JsonElement> ops, Encoder<E> codec, E biomeSource) {
-		Optional<JsonElement> optional = codec.encodeStart(ops, biomeSource)
-			.resultOrPartial(error -> LOGGER.error("Couldn't serialize element {}: {}", path, error));
+		Optional<JsonElement> optional = codec.encodeStart(ops, biomeSource).resultOrPartial(error -> LOGGER.error("Couldn't serialize element {}: {}", path, error));
 		return optional.isPresent() ? DataProvider.writeToPath(writer, (JsonElement)optional.get(), path) : CompletableFuture.completedFuture(null);
 	}
 

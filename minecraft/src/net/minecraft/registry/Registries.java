@@ -36,6 +36,8 @@ import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.Instruments;
 import net.minecraft.item.Item;
@@ -225,6 +227,7 @@ public class Registries {
 	public static final Registry<ItemGroup> ITEM_GROUP = create(RegistryKeys.ITEM_GROUP, ItemGroups::registerAndGetDefault);
 	public static final Registry<Criterion<?>> CRITERION = create(RegistryKeys.CRITERION, Criteria::getDefault);
 	public static final Registry<NumberFormatType<?>> NUMBER_FORMAT_TYPE = create(RegistryKeys.NUMBER_FORMAT_TYPE, NumberFormatTypes::registerAndGetDefault);
+	public static final Registry<ArmorMaterial> ARMOR_MATERIAL = create(RegistryKeys.ARMOR_MATERIAL, ArmorMaterials::getDefault);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {

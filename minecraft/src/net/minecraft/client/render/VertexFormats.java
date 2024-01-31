@@ -16,9 +16,7 @@ public class VertexFormats {
 	public static final VertexFormatElement TEXTURE_ELEMENT = new VertexFormatElement(0, VertexFormatElement.ComponentType.FLOAT, VertexFormatElement.Type.UV, 2);
 	public static final VertexFormatElement OVERLAY_ELEMENT = new VertexFormatElement(1, VertexFormatElement.ComponentType.SHORT, VertexFormatElement.Type.UV, 2);
 	public static final VertexFormatElement LIGHT_ELEMENT = new VertexFormatElement(2, VertexFormatElement.ComponentType.SHORT, VertexFormatElement.Type.UV, 2);
-	public static final VertexFormatElement NORMAL_ELEMENT = new VertexFormatElement(
-		0, VertexFormatElement.ComponentType.BYTE, VertexFormatElement.Type.NORMAL, 3
-	);
+	public static final VertexFormatElement NORMAL_ELEMENT = new VertexFormatElement(0, VertexFormatElement.ComponentType.BYTE, VertexFormatElement.Type.NORMAL, 3);
 	public static final VertexFormatElement PADDING_ELEMENT = new VertexFormatElement(
 		0, VertexFormatElement.ComponentType.BYTE, VertexFormatElement.Type.PADDING, 1
 	);

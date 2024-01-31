@@ -84,9 +84,7 @@ public class AllayBrain {
 				Pair.of(
 					4,
 					new RandomTask<>(
-						ImmutableList.of(
-							Pair.of(StrollTask.createSolidTargeting(1.0F), 2), Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 2), Pair.of(new WaitTask(30, 60), 1)
-						)
+						ImmutableList.of(Pair.of(StrollTask.createSolidTargeting(1.0F), 2), Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 2), Pair.of(new WaitTask(30, 60), 1))
 					)
 				)
 			),

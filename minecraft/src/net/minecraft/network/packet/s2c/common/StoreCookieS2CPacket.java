@@ -1,7 +1,9 @@
 package net.minecraft.network.packet.s2c.common;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.packet.CommonPackets;
 import net.minecraft.network.packet.Packet;
@@ -10,15 +12,16 @@ import net.minecraft.util.Identifier;
 
 public record StoreCookieS2CPacket(Identifier key, byte[] payload) implements Packet<ClientCommonPacketListener> {
 	public static final PacketCodec<PacketByteBuf, StoreCookieS2CPacket> CODEC = Packet.createCodec(StoreCookieS2CPacket::write, StoreCookieS2CPacket::new);
-	public static final int MAX_COOKIE_LENGTH = 5120;
+	private static final int MAX_COOKIE_LENGTH = 5120;
+	public static final PacketCodec<ByteBuf, byte[]> field_49011 = PacketCodecs.byteArray(5120);
 
 	private StoreCookieS2CPacket(PacketByteBuf buf) {
-		this(buf.readIdentifier(), buf.readByteArray(5120));
+		this(buf.readIdentifier(), field_49011.decode(buf));
 	}
 
 	private void write(PacketByteBuf buf) {
 		buf.writeIdentifier(this.key);
-		buf.writeByteArray(this.payload);
+		field_49011.encode(buf, this.payload);
 	}
 
 	@Override

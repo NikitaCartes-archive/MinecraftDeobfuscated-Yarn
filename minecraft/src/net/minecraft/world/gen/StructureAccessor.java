@@ -68,9 +68,7 @@ public class StructureAccessor {
 	 * are computed from the structure references of the given section's chunk.
 	 */
 	public List<StructureStart> getStructureStarts(ChunkSectionPos sectionPos, Structure structure) {
-		LongSet longSet = this.world
-			.getChunk(sectionPos.getSectionX(), sectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES)
-			.getStructureReferences(structure);
+		LongSet longSet = this.world.getChunk(sectionPos.getSectionX(), sectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(structure);
 		Builder<StructureStart> builder = ImmutableList.builder();
 		this.acceptStructureStarts(structure, longSet, builder::add);
 		return builder.build();

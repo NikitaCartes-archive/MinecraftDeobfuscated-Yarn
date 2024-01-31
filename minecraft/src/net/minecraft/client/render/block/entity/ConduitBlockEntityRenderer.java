@@ -31,9 +31,7 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 	public static final SpriteIdentifier WIND_VERTICAL_TEXTURE = new SpriteIdentifier(
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/wind_vertical")
 	);
-	public static final SpriteIdentifier OPEN_EYE_TEXTURE = new SpriteIdentifier(
-		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/open_eye")
-	);
+	public static final SpriteIdentifier OPEN_EYE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/open_eye"));
 	public static final SpriteIdentifier CLOSED_EYE_TEXTURE = new SpriteIdentifier(
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/closed_eye")
 	);

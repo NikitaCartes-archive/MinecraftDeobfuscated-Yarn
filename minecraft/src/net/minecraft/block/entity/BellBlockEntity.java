@@ -156,8 +156,7 @@ public class BellBlockEntity extends BlockEntity {
 				entity -> {
 					float f = 1.0F;
 					double d = Math.sqrt(
-						(entity.getX() - (double)pos.getX()) * (entity.getX() - (double)pos.getX())
-							+ (entity.getZ() - (double)pos.getZ()) * (entity.getZ() - (double)pos.getZ())
+						(entity.getX() - (double)pos.getX()) * (entity.getX() - (double)pos.getX()) + (entity.getZ() - (double)pos.getZ()) * (entity.getZ() - (double)pos.getZ())
 					);
 					double e = (double)((float)pos.getX() + 0.5F) + 1.0 / d * (entity.getX() - (double)pos.getX());
 					double g = (double)((float)pos.getZ() + 0.5F) + 1.0 / d * (entity.getZ() - (double)pos.getZ());

@@ -73,9 +73,7 @@ public class IllagerEntityModel<T extends IllagerEntity> extends SinglePartEntit
 			ModelTransform.pivot(2.0F, 12.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			EntityModelPartNames.RIGHT_ARM,
-			ModelPartBuilder.create().uv(40, 46).cuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F),
-			ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
+			EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(40, 46).cuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F), ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.LEFT_ARM,

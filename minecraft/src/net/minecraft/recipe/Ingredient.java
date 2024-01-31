@@ -179,8 +179,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 
 	static record TagEntry(TagKey<Item> tag) implements Ingredient.Entry {
 		static final Codec<Ingredient.TagEntry> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("tag").forGetter(entry -> entry.tag))
-					.apply(instance, Ingredient.TagEntry::new)
+			instance -> instance.group(TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("tag").forGetter(entry -> entry.tag)).apply(instance, Ingredient.TagEntry::new)
 		);
 
 		public boolean equals(Object o) {

@@ -16,6 +16,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -53,8 +54,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		nbt.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
 			nbt.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
@@ -66,8 +67,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		this.age = nbt.getLong("Age");
 		if (nbt.contains("ExitPortal", NbtElement.COMPOUND_TYPE)) {
 			BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("ExitPortal"));
@@ -133,8 +134,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		return this.createNbt();
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		return this.createNbt(registryLookup);
 	}
 
 	private static void startTeleportCooldown(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {

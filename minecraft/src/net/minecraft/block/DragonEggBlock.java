@@ -47,9 +47,7 @@ public class DragonEggBlock extends FallingBlock {
 
 		for(int i = 0; i < 1000; ++i) {
 			BlockPos blockPos = pos.add(
-				world.random.nextInt(16) - world.random.nextInt(16),
-				world.random.nextInt(8) - world.random.nextInt(8),
-				world.random.nextInt(16) - world.random.nextInt(16)
+				world.random.nextInt(16) - world.random.nextInt(16), world.random.nextInt(8) - world.random.nextInt(8), world.random.nextInt(16) - world.random.nextInt(16)
 			);
 			if (world.getBlockState(blockPos).isAir() && worldBorder.contains(blockPos)) {
 				if (world.isClient) {

@@ -88,12 +88,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"nether_forest_vegetation", new NetherForestVegetationFeature(NetherForestVegetationFeatureConfig.VEGETATION_CODEC)
 	);
 	public static final Feature<DefaultFeatureConfig> WEEPING_VINES = register("weeping_vines", new WeepingVinesFeature(DefaultFeatureConfig.CODEC));
-	public static final Feature<TwistingVinesFeatureConfig> TWISTING_VINES = register(
-		"twisting_vines", new TwistingVinesFeature(TwistingVinesFeatureConfig.CODEC)
-	);
-	public static final Feature<BasaltColumnsFeatureConfig> BASALT_COLUMNS = register(
-		"basalt_columns", new BasaltColumnsFeature(BasaltColumnsFeatureConfig.CODEC)
-	);
+	public static final Feature<TwistingVinesFeatureConfig> TWISTING_VINES = register("twisting_vines", new TwistingVinesFeature(TwistingVinesFeatureConfig.CODEC));
+	public static final Feature<BasaltColumnsFeatureConfig> BASALT_COLUMNS = register("basalt_columns", new BasaltColumnsFeature(BasaltColumnsFeatureConfig.CODEC));
 	public static final Feature<DeltaFeatureConfig> DELTA_FEATURE = register("delta_feature", new DeltaFeature(DeltaFeatureConfig.CODEC));
 	public static final Feature<ReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = register(
 		"netherrack_replace_blobs", new ReplaceBlobsFeature(ReplaceBlobsFeatureConfig.CODEC)

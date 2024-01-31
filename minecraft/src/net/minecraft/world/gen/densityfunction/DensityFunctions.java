@@ -243,9 +243,7 @@ public class DensityFunctions {
 		);
 		DensityFunction densityFunction5 = DensityFunctionTypes.mul(densityFunction4, jaggedNoise.halfNegative());
 		DensityFunction densityFunction6 = createInitialDensityFunction(densityFunction2, DensityFunctionTypes.add(densityFunction3, densityFunction5));
-		densityFunctionRegisterable.register(
-			slopedCheeseKey, DensityFunctionTypes.add(densityFunction6, entryHolder(densityFunctionLookup, BASE_3D_NOISE_OVERWORLD))
-		);
+		densityFunctionRegisterable.register(slopedCheeseKey, DensityFunctionTypes.add(densityFunction6, entryHolder(densityFunctionLookup, BASE_3D_NOISE_OVERWORLD)));
 	}
 
 	private static DensityFunction registerAndGetHolder(

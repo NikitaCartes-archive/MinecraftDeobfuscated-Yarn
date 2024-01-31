@@ -36,9 +36,7 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 
 		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(LocationPredicate.Builder location) {
 			return Criteria.LOCATION
-				.create(
-					new TickCriterion.Conditions(Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().location(location))))
-				);
+				.create(new TickCriterion.Conditions(Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().location(location)))));
 		}
 
 		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(EntityPredicate.Builder entity) {

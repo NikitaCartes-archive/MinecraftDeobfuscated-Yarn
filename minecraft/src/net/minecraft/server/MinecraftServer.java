@@ -100,6 +100,7 @@ import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
+import net.minecraft.util.DebugSampleType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
@@ -744,10 +745,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				}
 
 				this.profiler.pop();
+				this.pushFullTickLog();
 				this.endTickMetrics();
 				this.loading = true;
 				FlightProfiler.INSTANCE.onTick(this.averageTickTime);
-				this.pushFullTickLog();
 			}
 		} catch (Throwable var46) {
 			LOGGER.error("Encountered an unexpected exception", var46);
@@ -778,24 +779,24 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void pushFullTickLog() {
-		PerformanceLog performanceLog = this.getPerformanceLog();
-		if (performanceLog != null) {
-			long l = Util.getMeasuringTimeNano();
-			performanceLog.push(l - this.prevFullTickLogTime);
-			this.prevFullTickLogTime = l;
+		long l = Util.getMeasuringTimeNano();
+		if (this.method_56626()) {
+			this.getPerformanceLog().push(l - this.prevFullTickLogTime);
 		}
+
+		this.prevFullTickLogTime = l;
 	}
 
 	private void startTaskPerformanceLog() {
-		if (this.getPerformanceLog() != null) {
+		if (this.method_56626()) {
 			this.tasksStartTime = Util.getMeasuringTimeNano();
 			this.waitTime = 0L;
 		}
 	}
 
 	private void pushPerformanceLogs() {
-		PerformanceLog performanceLog = this.getPerformanceLog();
-		if (performanceLog != null) {
+		if (this.method_56626()) {
+			PerformanceLog performanceLog = this.getPerformanceLog();
 			performanceLog.push(Util.getMeasuringTimeNano() - this.tasksStartTime - this.waitTime, ServerTickType.SCHEDULED_TASKS.ordinal());
 			performanceLog.push(this.waitTime, ServerTickType.IDLE.ordinal());
 		}
@@ -834,7 +835,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	@Override
 	public void waitForTasks() {
-		boolean bl = this.getPerformanceLog() != null;
+		boolean bl = this.method_56626();
 		long l = bl ? Util.getMeasuringTimeNano() : 0L;
 		super.waitForTasks();
 		if (bl) {
@@ -947,9 +948,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void pushTickLog(long tickStartTime) {
-		PerformanceLog performanceLog = this.getPerformanceLog();
-		if (performanceLog != null) {
-			performanceLog.push(Util.getMeasuringTimeNano() - tickStartTime, ServerTickType.TICK_SERVER_METHOD.ordinal());
+		if (this.method_56626()) {
+			this.getPerformanceLog().push(Util.getMeasuringTimeNano() - tickStartTime, ServerTickType.TICK_SERVER_METHOD.ordinal());
 		}
 	}
 
@@ -973,19 +973,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	@Nullable
-	protected PerformanceLog getPerformanceLog() {
-		return null;
-	}
+	protected abstract PerformanceLog getPerformanceLog();
+
+	public abstract boolean method_56626();
 
 	private ServerMetadata createMetadata() {
 		ServerMetadata.Players players = this.createMetadataPlayers();
 		return new ServerMetadata(
-			Text.of(this.motd),
-			Optional.of(players),
-			Optional.of(ServerMetadata.Version.create()),
-			Optional.ofNullable(this.favicon),
-			this.shouldEnforceSecureProfile()
+			Text.of(this.motd), Optional.of(players), Optional.of(ServerMetadata.Version.create()), Optional.ofNullable(this.favicon), this.shouldEnforceSecureProfile()
 		);
 	}
 
@@ -1613,9 +1608,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 							LOGGER.info("Found new data pack {}, loading it automatically", string2);
 							set.add(string2);
 						} else {
-							LOGGER.info(
-								"Found new data pack {}, but can't load it due to missing features {}", string2, FeatureFlags.printMissingFlags(enabledFeatures, featureSet)
-							);
+							LOGGER.info("Found new data pack {}, but can't load it due to missing features {}", string2, FeatureFlags.printMissingFlags(enabledFeatures, featureSet));
 						}
 					}
 
@@ -1983,7 +1976,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.profiler.startTick();
 	}
 
-	private void endTickMetrics() {
+	public void endTickMetrics() {
 		this.profiler.endTick();
 		this.recorder.endTick();
 	}
@@ -2104,6 +2097,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public boolean shouldLogIps() {
 		return true;
+	}
+
+	public void method_56625(ServerPlayerEntity serverPlayerEntity, DebugSampleType debugSampleType) {
 	}
 
 	public boolean acceptsTransfers() {

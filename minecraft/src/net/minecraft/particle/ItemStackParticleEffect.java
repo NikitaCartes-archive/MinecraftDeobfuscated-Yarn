@@ -9,12 +9,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 
 public class ItemStackParticleEffect implements ParticleEffect {
 	public static final ParticleEffect.Factory<ItemStackParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<ItemStackParticleEffect>() {
-		public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public ItemStackParticleEffect read(
+			ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup
+		) throws CommandSyntaxException {
 			stringReader.expect(' ');
-			ItemStringReader.ItemResult itemResult = ItemStringReader.item(Registries.ITEM.getReadOnlyWrapper(), stringReader);
+			ItemStringReader.ItemResult itemResult = new ItemStringReader(wrapperLookup).consume(stringReader);
 			ItemStack itemStack = new ItemStackArgument(itemResult.item(), itemResult.nbt()).createStack(1, false);
 			return new ItemStackParticleEffect(particleType, itemStack);
 		}
@@ -36,7 +39,7 @@ public class ItemStackParticleEffect implements ParticleEffect {
 	}
 
 	@Override
-	public String asString() {
+	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
 		return Registries.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getRegistryEntry(), this.stack.getNbt()).asString();
 	}
 

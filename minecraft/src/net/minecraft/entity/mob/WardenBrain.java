@@ -95,9 +95,7 @@ public class WardenBrain {
 
 	public static void updateActivities(WardenEntity warden) {
 		warden.getBrain()
-			.resetPossibleActivities(
-				ImmutableList.of(Activity.EMERGE, Activity.DIG, Activity.ROAR, Activity.FIGHT, Activity.INVESTIGATE, Activity.SNIFF, Activity.IDLE)
-			);
+			.resetPossibleActivities(ImmutableList.of(Activity.EMERGE, Activity.DIG, Activity.ROAR, Activity.FIGHT, Activity.INVESTIGATE, Activity.SNIFF, Activity.IDLE));
 	}
 
 	protected static Brain<?> create(WardenEntity warden, Dynamic<?> dynamic) {
@@ -163,10 +161,7 @@ public class WardenBrain {
 
 	private static void addSniffActivities(Brain<WardenEntity> brain) {
 		brain.setTaskList(
-			Activity.SNIFF,
-			5,
-			ImmutableList.of(FindRoarTargetTask.create(WardenEntity::getPrimeSuspect), new SniffTask<>(SNIFF_DURATION)),
-			MemoryModuleType.IS_SNIFFING
+			Activity.SNIFF, 5, ImmutableList.of(FindRoarTargetTask.create(WardenEntity::getPrimeSuspect), new SniffTask<>(SNIFF_DURATION)), MemoryModuleType.IS_SNIFFING
 		);
 	}
 

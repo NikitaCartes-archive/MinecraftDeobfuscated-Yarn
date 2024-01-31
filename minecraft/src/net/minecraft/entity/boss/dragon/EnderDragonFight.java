@@ -572,8 +572,6 @@ public class EnderDragonFight {
 					)
 					.apply(instance, EnderDragonFight.Data::new)
 		);
-		public static final EnderDragonFight.Data DEFAULT = new EnderDragonFight.Data(
-			true, false, false, false, Optional.empty(), Optional.empty(), Optional.empty()
-		);
+		public static final EnderDragonFight.Data DEFAULT = new EnderDragonFight.Data(true, false, false, false, Optional.empty(), Optional.empty(), Optional.empty());
 	}
 }

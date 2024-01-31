@@ -413,9 +413,7 @@ public class StructureBlockScreen extends Screen {
 			this.inputPosX.render(context, mouseX, mouseY, delta);
 			this.inputPosY.render(context, mouseX, mouseY, delta);
 			this.inputPosZ.render(context, mouseX, mouseY, delta);
-			context.drawTextWithShadow(
-				this.textRenderer, INCLUDE_ENTITIES_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(INCLUDE_ENTITIES_TEXT), 150, 10526880
-			);
+			context.drawTextWithShadow(this.textRenderer, INCLUDE_ENTITIES_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(INCLUDE_ENTITIES_TEXT), 150, 10526880);
 		}
 
 		if (structureBlockMode == StructureBlockMode.SAVE) {

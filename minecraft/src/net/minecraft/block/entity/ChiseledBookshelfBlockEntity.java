@@ -11,6 +11,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.collection.DefaultedList;
@@ -48,14 +49,14 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		this.inventory.clear();
 		Inventories.readNbt(nbt, this.inventory);
 		this.lastInteractedSlot = nbt.getInt("last_interacted_slot");
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		Inventories.writeNbt(nbt, this.inventory, true);
 		nbt.putInt("last_interacted_slot", this.lastInteractedSlot);
 	}
@@ -112,14 +113,16 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 
 	@Override
 	public boolean canTransferTo(Inventory hopperInventory, int slot, ItemStack stack) {
-		return hopperInventory.containsAny((Predicate<ItemStack>)(stack2 -> {
-			if (stack2.isEmpty()) {
-				return true;
-			} else {
-				return ItemStack.canCombine(stack, stack2)
-					&& stack2.getCount() + stack.getCount() <= Math.min(stack2.getMaxCount(), hopperInventory.getMaxCountPerStack());
-			}
-		}));
+		return hopperInventory.containsAny(
+			(Predicate<ItemStack>)(stack2 -> {
+				if (stack2.isEmpty()) {
+					return true;
+				} else {
+					return ItemStack.areItemsAndNbtEqual(stack, stack2)
+						&& stack2.getCount() + stack.getCount() <= Math.min(stack2.getMaxCount(), hopperInventory.getMaxCountPerStack());
+				}
+			})
+		);
 	}
 
 	@Override

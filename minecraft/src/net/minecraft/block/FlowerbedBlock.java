@@ -68,9 +68,7 @@ public class FlowerbedBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
-		return !context.shouldCancelInteraction() && context.getStack().isOf(this.asItem()) && state.get(FLOWER_AMOUNT) < 4
-			? true
-			: super.canReplace(state, context);
+		return !context.shouldCancelInteraction() && context.getStack().isOf(this.asItem()) && state.get(FLOWER_AMOUNT) < 4 ? true : super.canReplace(state, context);
 	}
 
 	@Override

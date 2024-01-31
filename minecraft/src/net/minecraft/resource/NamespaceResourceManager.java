@@ -89,9 +89,7 @@ public class NamespaceResourceManager implements ResourceManager {
 		return Optional.empty();
 	}
 
-	private static Resource createResource(
-		ResourcePack pack, Identifier id, InputSupplier<InputStream> supplier, InputSupplier<ResourceMetadata> metadataSupplier
-	) {
+	private static Resource createResource(ResourcePack pack, Identifier id, InputSupplier<InputStream> supplier, InputSupplier<ResourceMetadata> metadataSupplier) {
 		return new Resource(pack, wrapForDebug(id, pack, supplier), metadataSupplier);
 	}
 

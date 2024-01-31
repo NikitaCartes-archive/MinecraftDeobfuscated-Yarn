@@ -86,8 +86,6 @@ public class SoundLoader {
 	}
 
 	public CompletableFuture<?> loadStatic(Collection<Sound> sounds) {
-		return CompletableFuture.allOf(
-			(CompletableFuture[])sounds.stream().map(sound -> this.loadStatic(sound.getLocation())).toArray(i -> new CompletableFuture[i])
-		);
+		return CompletableFuture.allOf((CompletableFuture[])sounds.stream().map(sound -> this.loadStatic(sound.getLocation())).toArray(i -> new CompletableFuture[i]));
 	}
 }

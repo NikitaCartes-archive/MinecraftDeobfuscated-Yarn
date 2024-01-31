@@ -168,8 +168,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		if (!ctx.canReplaceExisting() && direction.getAxis().isHorizontal()) {
 			blockState = blockState.with(FACING, direction).with(HALF, ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
 		} else {
-			blockState = blockState.with(FACING, ctx.getHorizontalPlayerFacing().getOpposite())
-				.with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
+			blockState = blockState.with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
 		}
 
 		if (ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())) {

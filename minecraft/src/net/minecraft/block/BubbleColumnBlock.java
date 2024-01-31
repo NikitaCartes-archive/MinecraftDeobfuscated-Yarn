@@ -150,14 +150,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 			);
 			if (random.nextInt(200) == 0) {
 				world.playSound(
-					d,
-					e,
-					f,
-					SoundEvents.BLOCK_BUBBLE_COLUMN_UPWARDS_AMBIENT,
-					SoundCategory.BLOCKS,
-					0.2F + random.nextFloat() * 0.2F,
-					0.9F + random.nextFloat() * 0.15F,
-					false
+					d, e, f, SoundEvents.BLOCK_BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundCategory.BLOCKS, 0.2F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.15F, false
 				);
 			}
 		}

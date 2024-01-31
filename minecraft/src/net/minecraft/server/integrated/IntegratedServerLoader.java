@@ -178,9 +178,7 @@ public class IntegratedServerLoader {
 				);
 				return new SaveLoading.LoadContext(
 					new CurrentSettings(
-						parsedSaveProperties.properties().getLevelInfo(),
-						parsedSaveProperties.properties().getGeneratorOptions(),
-						parsedSaveProperties.dimensions().dimensions()
+						parsedSaveProperties.properties().getLevelInfo(), parsedSaveProperties.properties().getGeneratorOptions(), parsedSaveProperties.dimensions().dimensions()
 					),
 					context.dimensionsRegistryManager()
 				);

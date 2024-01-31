@@ -150,9 +150,7 @@ public class Schema705 extends IdentifierNormalizingSchema {
 			"minecraft:spawner_minecart",
 			(Function<String, TypeTemplate>)(name -> DSL.optionalFields("DisplayTile", TypeReferences.BLOCK_NAME.in(schema), TypeReferences.UNTAGGED_SPAWNER.in(schema)))
 		);
-		schema.register(
-			map, "minecraft:spectral_arrow", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("inTile", TypeReferences.BLOCK_NAME.in(schema)))
-		);
+		schema.register(map, "minecraft:spectral_arrow", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("inTile", TypeReferences.BLOCK_NAME.in(schema))));
 		targetEntityItems(schema, map, "minecraft:spider");
 		targetEntityItems(schema, map, "minecraft:squid");
 		targetEntityItems(schema, map, "minecraft:stray");

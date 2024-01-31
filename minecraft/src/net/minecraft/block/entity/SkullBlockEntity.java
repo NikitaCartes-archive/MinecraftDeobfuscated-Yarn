@@ -19,6 +19,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.ApiServices;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
@@ -85,8 +86,8 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		if (this.owner != null) {
 			NbtCompound nbtCompound = new NbtCompound();
 			NbtHelper.writeGameProfile(nbtCompound, this.owner);
@@ -99,8 +100,8 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 			this.setOwner(NbtHelper.toGameProfile(nbt.getCompound("SkullOwner")));
 		} else if (nbt.contains("ExtraType", NbtElement.STRING_TYPE)) {
@@ -143,8 +144,8 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		return this.createNbt();
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		return this.createNbt(registryLookup);
 	}
 
 	public void setOwner(@Nullable GameProfile owner) {

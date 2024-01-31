@@ -632,9 +632,7 @@ public final class VanillaBiomeParameters {
 					registryKey2
 				);
 				if (weirdness.max() < 0L) {
-					this.writeBiomeParameters(
-						parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[4], weirdness, 0.0F, registryKey6
-					);
+					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[4], weirdness, 0.0F, registryKey6);
 					this.writeBiomeParameters(
 						parameters,
 						parameterRange,
@@ -673,9 +671,7 @@ public final class VanillaBiomeParameters {
 					registryKey4
 				);
 				if (weirdness.max() < 0L) {
-					this.writeBiomeParameters(
-						parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey6
-					);
+					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey6);
 				} else {
 					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey);
 				}

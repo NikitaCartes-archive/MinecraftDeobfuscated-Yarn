@@ -14,6 +14,7 @@ import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardScoreResetS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardScoreUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.PersistentState;
@@ -35,7 +36,11 @@ public class ServerScoreboard extends Scoreboard {
 				.getPlayerManager()
 				.sendToAll(
 					new ScoreboardScoreUpdateS2CPacket(
-						scoreHolder.getNameForScoreboard(), objective.getName(), score.getScore(), score.getDisplayText(), Optional.ofNullable(score.getNumberFormat())
+						scoreHolder.getNameForScoreboard(),
+						objective.getName(),
+						score.getScore(),
+						Optional.ofNullable(score.getDisplayText()),
+						Optional.ofNullable(score.getNumberFormat())
 					)
 				);
 		}
@@ -180,7 +185,7 @@ public class ServerScoreboard extends Scoreboard {
 					scoreboardEntry.owner(),
 					objective.getName(),
 					scoreboardEntry.value(),
-					scoreboardEntry.display(),
+					Optional.ofNullable(scoreboardEntry.display()),
 					Optional.ofNullable(scoreboardEntry.numberFormatOverride())
 				)
 			);
@@ -248,7 +253,7 @@ public class ServerScoreboard extends Scoreboard {
 		return scoreboardState;
 	}
 
-	private ScoreboardState stateFromNbt(NbtCompound nbt) {
+	private ScoreboardState stateFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		return this.createState().readNbt(nbt);
 	}
 

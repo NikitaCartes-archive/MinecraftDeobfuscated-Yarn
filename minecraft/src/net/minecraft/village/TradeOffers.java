@@ -23,7 +23,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.FilledMapItem;
@@ -40,6 +39,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
@@ -774,9 +774,7 @@ public class TradeOffers {
 							VillagerType.SNOW,
 							VillagerType.TAIGA
 						),
-						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(Items.CHAINMAIL_LEGGINGS, 7, 1, 12, 5, 0.05F), VillagerType.JUNGLE, VillagerType.SWAMP
-						),
+						TradeOffers.TypedWrapperFactory.of(new TradeOffers.SellItemFactory(Items.CHAINMAIL_LEGGINGS, 7, 1, 12, 5, 0.05F), VillagerType.JUNGLE, VillagerType.SWAMP),
 						TradeOffers.TypedWrapperFactory.of(
 							new TradeOffers.SellItemFactory(Items.IRON_CHESTPLATE, 9, 1, 12, 5, 0.05F),
 							VillagerType.DESERT,
@@ -896,8 +894,7 @@ public class TradeOffers {
 							VillagerType.PLAINS
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, enchant(Items.DIAMOND_BOOTS, Enchantments.PROTECTION, 1), 1, 3, 30, 0.05F),
-							VillagerType.PLAINS
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, enchant(Items.DIAMOND_BOOTS, Enchantments.PROTECTION, 1), 1, 3, 30, 0.05F), VillagerType.PLAINS
 						),
 						TradeOffers.TypedWrapperFactory.of(
 							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 6, enchant(Items.DIAMOND_HELMET, Enchantments.BINDING_CURSE, 1), 1, 3, 30, 0.05F),
@@ -908,8 +905,7 @@ public class TradeOffers {
 							VillagerType.SAVANNA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, enchant(Items.DIAMOND_BOOTS, Enchantments.FROST_WALKER, 1), 1, 3, 30, 0.05F),
-							VillagerType.SNOW
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, enchant(Items.DIAMOND_BOOTS, Enchantments.FROST_WALKER, 1), 1, 3, 30, 0.05F), VillagerType.SNOW
 						),
 						TradeOffers.TypedWrapperFactory.of(
 							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 3, 12, enchant(Items.DIAMOND_HELMET, Enchantments.AQUA_AFFINITY, 1), 1, 3, 30, 0.05F),
@@ -1145,9 +1141,7 @@ public class TradeOffers {
 				.put(VillagerType.PLAINS, new TradeOffers.EnchantBookFactory(experience, Enchantments.PUNCH, Enchantments.SMITE, Enchantments.BANE_OF_ARTHROPODS))
 				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(experience, Enchantments.KNOCKBACK, Enchantments.BINDING_CURSE, Enchantments.SWEEPING_EDGE))
 				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(experience, Enchantments.AQUA_AFFINITY, Enchantments.LOOTING, Enchantments.FROST_WALKER))
-				.put(
-					VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(experience, Enchantments.DEPTH_STRIDER, Enchantments.RESPIRATION, Enchantments.VANISHING_CURSE)
-				)
+				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(experience, Enchantments.DEPTH_STRIDER, Enchantments.RESPIRATION, Enchantments.VANISHING_CURSE))
 				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(experience, Enchantments.BLAST_PROTECTION, Enchantments.FIRE_ASPECT, Enchantments.FLAME))
 				.build()
 		);
@@ -1344,7 +1338,7 @@ public class TradeOffers {
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
 			ItemStack itemStack2 = new ItemStack(this.sell);
-			if (this.sell instanceof DyeableArmorItem) {
+			if (itemStack2.isIn(ItemTags.DYEABLE)) {
 				List<DyeItem> list = Lists.<DyeItem>newArrayList();
 				list.add(getDye(random));
 				if (random.nextFloat() > 0.7F) {

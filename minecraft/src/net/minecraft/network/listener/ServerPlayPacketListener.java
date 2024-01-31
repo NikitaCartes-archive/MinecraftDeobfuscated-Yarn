@@ -15,6 +15,7 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.DebugSampleSubscriptionC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
@@ -148,4 +149,6 @@ public interface ServerPlayPacketListener extends ServerQueryPingPacketListener,
 	void onAcknowledgeReconfiguration(AcknowledgeReconfigurationC2SPacket packet);
 
 	void onAcknowledgeChunks(AcknowledgeChunksC2SPacket packet);
+
+	void onDebugSampleSubcription(DebugSampleSubscriptionC2SPacket packet);
 }

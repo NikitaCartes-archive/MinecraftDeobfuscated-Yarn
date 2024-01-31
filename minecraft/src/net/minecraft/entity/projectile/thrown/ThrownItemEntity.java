@@ -9,6 +9,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.world.World;
 
 public abstract class ThrownItemEntity extends ThrownEntity implements FlyingItemEntity {
@@ -26,42 +27,35 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 		super(entityType, livingEntity, world);
 	}
 
-	public void setItem(ItemStack item) {
-		if (!item.isOf(this.getDefaultItem()) || item.hasNbt()) {
-			this.getDataTracker().set(ITEM, item.copyWithCount(1));
-		}
+	public void setItem(ItemStack stack) {
+		this.getDataTracker().set(ITEM, stack.copyWithCount(1));
 	}
 
 	protected abstract Item getDefaultItem();
 
-	protected ItemStack getItem() {
+	@Override
+	public ItemStack getStack() {
 		return this.getDataTracker().get(ITEM);
 	}
 
 	@Override
-	public ItemStack getStack() {
-		ItemStack itemStack = this.getItem();
-		return itemStack.isEmpty() ? new ItemStack(this.getDefaultItem()) : itemStack;
-	}
-
-	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(ITEM, new ItemStack(this.getDefaultItem()));
 	}
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		ItemStack itemStack = this.getItem();
-		if (!itemStack.isEmpty()) {
-			nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
-		}
+		nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
-		this.setItem(itemStack);
+		if (nbt.contains("Item", NbtElement.COMPOUND_TYPE)) {
+			this.setItem(ItemStack.fromNbt(nbt.getCompound("Item")));
+		} else {
+			this.setItem(new ItemStack(this.getDefaultItem()));
+		}
 	}
 }

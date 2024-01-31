@@ -24,6 +24,7 @@ import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.DebugSampleS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
@@ -334,4 +335,6 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onStartChunkSend(StartChunkSendS2CPacket packet);
 
 	void onChunkSent(ChunkSentS2CPacket packet);
+
+	void onDebugSample(DebugSampleS2CPacket packet);
 }

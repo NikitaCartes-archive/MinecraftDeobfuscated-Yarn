@@ -38,10 +38,7 @@ public class PointOfInterestSet {
 				instance -> instance.group(
 							RecordCodecBuilder.point(updateListener),
 							Codec.BOOL.optionalFieldOf("Valid", Boolean.valueOf(false)).forGetter(poiSet -> poiSet.valid),
-							PointOfInterest.createCodec(updateListener)
-								.listOf()
-								.fieldOf("Records")
-								.forGetter(poiSet -> ImmutableList.copyOf(poiSet.pointsOfInterestByPos.values()))
+							PointOfInterest.createCodec(updateListener).listOf().fieldOf("Records").forGetter(poiSet -> ImmutableList.copyOf(poiSet.pointsOfInterestByPos.values()))
 						)
 						.apply(instance, PointOfInterestSet::new)
 			)

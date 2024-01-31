@@ -530,16 +530,10 @@ public class VegetationPlacedFeatures {
 		PlacedFeatures.register(featureRegisterable, TREES_TAIGA, registryEntry31, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
 		PlacedFeatures.register(featureRegisterable, TREES_GROVE, registryEntry32, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
 		PlacedFeatures.register(
-			featureRegisterable,
-			TREES_BADLANDS,
-			registryEntry33,
-			treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(5, 0.1F, 1), Blocks.OAK_SAPLING)
+			featureRegisterable, TREES_BADLANDS, registryEntry33, treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(5, 0.1F, 1), Blocks.OAK_SAPLING)
 		);
 		PlacedFeatures.register(
-			featureRegisterable,
-			TREES_SNOWY,
-			registryEntry34,
-			treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1), Blocks.SPRUCE_SAPLING)
+			featureRegisterable, TREES_SNOWY, registryEntry34, treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1), Blocks.SPRUCE_SAPLING)
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
@@ -556,10 +550,7 @@ public class VegetationPlacedFeatures {
 		PlacedFeatures.register(featureRegisterable, TREES_SAVANNA, registryEntry37, treeModifiers(PlacedFeatures.createCountExtraModifier(1, 0.1F, 1)));
 		PlacedFeatures.register(featureRegisterable, BIRCH_TALL, registryEntry38, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
 		PlacedFeatures.register(
-			featureRegisterable,
-			TREES_BIRCH,
-			registryEntry39,
-			treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1), Blocks.BIRCH_SAPLING)
+			featureRegisterable, TREES_BIRCH, registryEntry39, treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1), Blocks.BIRCH_SAPLING)
 		);
 		PlacedFeatures.register(featureRegisterable, TREES_WINDSWEPT_FOREST, registryEntry40, treeModifiers(PlacedFeatures.createCountExtraModifier(3, 0.1F, 1)));
 		PlacedFeatures.register(featureRegisterable, TREES_WINDSWEPT_HILLS, registryEntry40, treeModifiers(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1)));

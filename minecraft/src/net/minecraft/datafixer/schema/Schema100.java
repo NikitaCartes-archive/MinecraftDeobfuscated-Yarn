@@ -14,7 +14,14 @@ public class Schema100 extends Schema {
 	}
 
 	protected static TypeTemplate targetItems(Schema schema) {
-		return DSL.optionalFields("ArmorItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "HandItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)));
+		return DSL.optionalFields(
+			"ArmorItems",
+			DSL.list(TypeReferences.ITEM_STACK.in(schema)),
+			"HandItems",
+			DSL.list(TypeReferences.ITEM_STACK.in(schema)),
+			"body_armor_item",
+			TypeReferences.ITEM_STACK.in(schema)
+		);
 	}
 
 	protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {

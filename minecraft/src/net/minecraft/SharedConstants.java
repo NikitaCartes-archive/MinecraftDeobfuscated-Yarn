@@ -15,7 +15,7 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3806;
+	public static final int WORLD_VERSION = 3809;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
@@ -28,9 +28,9 @@ public class SharedConstants {
 	private static final int field_29708 = 30;
 	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 24;
+	public static final int RESOURCE_PACK_VERSION = 25;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 29;
+	public static final int DATA_PACK_VERSION = 30;
 	@Deprecated
 	public static final int field_39963 = 1;
 	public static final int field_39964 = 1;
@@ -86,6 +86,7 @@ public class SharedConstants {
 	public static final boolean field_46154 = false;
 	public static final boolean field_47176 = false;
 	public static final boolean field_47177 = false;
+	public static final boolean field_48778 = false;
 	public static final boolean field_47178 = false;
 	public static final boolean field_34368 = false;
 	public static final boolean field_29710 = false;

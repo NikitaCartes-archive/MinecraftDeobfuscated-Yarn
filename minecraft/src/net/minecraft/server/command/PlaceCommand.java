@@ -50,9 +50,7 @@ public class PlaceCommand {
 	private static final DynamicCommandExceptionType TEMPLATE_INVALID_EXCEPTION = new DynamicCommandExceptionType(
 		id -> Text.stringifiedTranslatable("commands.place.template.invalid", id)
 	);
-	private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.translatable("commands.place.template.failed")
-	);
+	private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.place.template.failed"));
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
 		StructureTemplateManager structureTemplateManager = context.getSource().getWorld().getStructureTemplateManager();
 		return CommandSource.suggestIdentifiers(structureTemplateManager.streamTemplates(), builder);
@@ -77,9 +75,7 @@ public class PlaceCommand {
 									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 										.executes(
 											context -> executePlaceFeature(
-													context.getSource(),
-													RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"),
-													BlockPosArgumentType.getLoadedBlockPos(context, "pos")
+													context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), BlockPosArgumentType.getLoadedBlockPos(context, "pos")
 												)
 										)
 								)

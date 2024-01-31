@@ -51,8 +51,7 @@ public class ServerPackCommand {
 				.then(
 					CommandManager.literal("pop")
 						.then(
-							CommandManager.argument("uuid", UuidArgumentType.uuid())
-								.executes(context -> executePop(context.getSource(), UuidArgumentType.getUuid(context, "uuid")))
+							CommandManager.argument("uuid", UuidArgumentType.uuid()).executes(context -> executePop(context.getSource(), UuidArgumentType.getUuid(context, "uuid")))
 						)
 				)
 		);

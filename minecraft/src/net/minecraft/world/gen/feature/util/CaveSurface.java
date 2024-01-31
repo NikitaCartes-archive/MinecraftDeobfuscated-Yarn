@@ -74,13 +74,7 @@ public abstract class CaveSurface {
 	}
 
 	private static OptionalInt getCaveSurface(
-		TestableWorld world,
-		int height,
-		Predicate<BlockState> canGenerate,
-		Predicate<BlockState> canReplace,
-		BlockPos.Mutable mutablePos,
-		int y,
-		Direction direction
+		TestableWorld world, int height, Predicate<BlockState> canGenerate, Predicate<BlockState> canReplace, BlockPos.Mutable mutablePos, int y, Direction direction
 	) {
 		mutablePos.setY(y);
 

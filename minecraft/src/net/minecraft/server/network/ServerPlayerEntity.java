@@ -1352,8 +1352,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void requestTeleportOffset(double offsetX, double offsetY, double offsetZ) {
-		this.networkHandler
-			.requestTeleport(this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, this.getYaw(), this.getPitch(), PositionFlag.VALUES);
+		this.networkHandler.requestTeleport(this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, this.getYaw(), this.getPitch(), PositionFlag.VALUES);
 	}
 
 	@Override

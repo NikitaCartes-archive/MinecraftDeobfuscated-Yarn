@@ -79,20 +79,18 @@ public class FunctionCommand {
 		dispatcher.register(
 			CommandManager.literal("function")
 				.requires(source -> source.hasPermissionLevel(2))
-				.then(
-					CommandManager.argument("name", CommandFunctionArgumentType.commandFunction()).suggests(SUGGESTION_PROVIDER).executes(new FunctionCommand.Command() {
-						@Nullable
-						@Override
-						protected NbtCompound getArguments(CommandContext<ServerCommandSource> context) {
-							return null;
-						}
-					}).then(CommandManager.argument("arguments", NbtCompoundArgumentType.nbtCompound()).executes(new FunctionCommand.Command() {
-						@Override
-						protected NbtCompound getArguments(CommandContext<ServerCommandSource> context) {
-							return NbtCompoundArgumentType.getNbtCompound(context, "arguments");
-						}
-					})).then(literalArgumentBuilder)
-				)
+				.then(CommandManager.argument("name", CommandFunctionArgumentType.commandFunction()).suggests(SUGGESTION_PROVIDER).executes(new FunctionCommand.Command() {
+					@Nullable
+					@Override
+					protected NbtCompound getArguments(CommandContext<ServerCommandSource> context) {
+						return null;
+					}
+				}).then(CommandManager.argument("arguments", NbtCompoundArgumentType.nbtCompound()).executes(new FunctionCommand.Command() {
+					@Override
+					protected NbtCompound getArguments(CommandContext<ServerCommandSource> context) {
+						return NbtCompoundArgumentType.getNbtCompound(context, "arguments");
+					}
+				})).then(literalArgumentBuilder))
 		);
 	}
 

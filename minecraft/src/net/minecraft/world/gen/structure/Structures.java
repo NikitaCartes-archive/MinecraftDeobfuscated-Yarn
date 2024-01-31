@@ -42,9 +42,7 @@ public class Structures {
 		return new Structure.Config(biomes, spawns, featureStep, terrainAdaptation);
 	}
 
-	private static Structure.Config createConfig(
-		RegistryEntryList<Biome> biomes, GenerationStep.Feature featureStep, StructureTerrainAdaptation terrainAdaptation
-	) {
+	private static Structure.Config createConfig(RegistryEntryList<Biome> biomes, GenerationStep.Feature featureStep, StructureTerrainAdaptation terrainAdaptation) {
 		return createConfig(biomes, Map.of(), featureStep, terrainAdaptation);
 	}
 
@@ -60,9 +58,7 @@ public class Structures {
 			new JigsawStructure(
 				createConfig(
 					registryEntryLookup.getOrThrow(BiomeTags.PILLAGER_OUTPOST_HAS_STRUCTURE),
-					Map.of(
-						SpawnGroup.MONSTER, new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1)))
-					),
+					Map.of(SpawnGroup.MONSTER, new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1)))),
 					GenerationStep.Feature.SURFACE_STRUCTURES,
 					StructureTerrainAdaptation.BEARD_THIN
 				),

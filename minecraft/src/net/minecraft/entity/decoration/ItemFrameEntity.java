@@ -1,7 +1,6 @@
 package net.minecraft.entity.decoration;
 
 import com.mojang.logging.LogUtils;
-import java.util.OptionalInt;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
@@ -18,6 +17,7 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -237,35 +237,30 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		}
 	}
 
-	private void removeFromFrame(ItemStack itemStack) {
-		this.getMapId().ifPresent(i -> {
-			MapState mapState = FilledMapItem.getMapState(i, this.getWorld());
+	private void removeFromFrame(ItemStack stack) {
+		MapId mapId = this.getMapId();
+		if (mapId != null) {
+			MapState mapState = FilledMapItem.getMapState(mapId, this.getWorld());
 			if (mapState != null) {
 				mapState.removeFrame(this.attachmentPos, this.getId());
 				mapState.setDirty(true);
 			}
-		});
-		itemStack.setHolder(null);
+		}
+
+		stack.setHolder(null);
 	}
 
 	public ItemStack getHeldItemStack() {
 		return this.getDataTracker().get(ITEM_STACK);
 	}
 
-	public OptionalInt getMapId() {
-		ItemStack itemStack = this.getHeldItemStack();
-		if (itemStack.isOf(Items.FILLED_MAP)) {
-			Integer integer = FilledMapItem.getMapId(itemStack);
-			if (integer != null) {
-				return OptionalInt.of(integer);
-			}
-		}
-
-		return OptionalInt.empty();
+	@Nullable
+	public MapId getMapId() {
+		return FilledMapItem.getMapId(this.getHeldItemStack());
 	}
 
 	public boolean containsMap() {
-		return this.getMapId().isPresent();
+		return this.getMapId() != null;
 	}
 
 	public void setHeldItemStack(ItemStack stack) {

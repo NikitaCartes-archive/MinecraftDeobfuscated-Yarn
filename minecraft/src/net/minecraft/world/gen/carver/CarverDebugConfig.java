@@ -8,11 +8,7 @@ import net.minecraft.block.Blocks;
 
 public class CarverDebugConfig {
 	public static final CarverDebugConfig DEFAULT = new CarverDebugConfig(
-		false,
-		Blocks.ACACIA_BUTTON.getDefaultState(),
-		Blocks.CANDLE.getDefaultState(),
-		Blocks.ORANGE_STAINED_GLASS.getDefaultState(),
-		Blocks.GLASS.getDefaultState()
+		false, Blocks.ACACIA_BUTTON.getDefaultState(), Blocks.CANDLE.getDefaultState(), Blocks.ORANGE_STAINED_GLASS.getDefaultState(), Blocks.GLASS.getDefaultState()
 	);
 	public static final Codec<CarverDebugConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(

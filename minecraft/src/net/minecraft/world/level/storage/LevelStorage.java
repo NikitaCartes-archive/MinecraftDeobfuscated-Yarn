@@ -155,7 +155,7 @@ public class LevelStorage {
 	public static ParsedSaveProperties parseSaveProperties(
 		Dynamic<?> dynamic, DataConfiguration dataConfiguration, Registry<DimensionOptions> dimensionsRegistry, DynamicRegistryManager.Immutable registryManager
 	) {
-		Dynamic<?> dynamic2 = wrap(dynamic, registryManager);
+		Dynamic<?> dynamic2 = RegistryOps.method_56622(dynamic, registryManager);
 		Dynamic<?> dynamic3 = dynamic2.get("WorldGenSettings").orElseEmptyMap();
 		WorldGenSettings worldGenSettings = (WorldGenSettings)WorldGenSettings.CODEC
 			.parse(dynamic3)
@@ -167,11 +167,6 @@ public class LevelStorage {
 			dynamic2, levelInfo, dimensionsConfig.specialWorldProperty(), worldGenSettings.generatorOptions(), lifecycle
 		);
 		return new ParsedSaveProperties(levelProperties, dimensionsConfig);
-	}
-
-	private static <T> Dynamic<T> wrap(Dynamic<T> dynamic, DynamicRegistryManager.Immutable registryManager) {
-		RegistryOps<T> registryOps = RegistryOps.of(dynamic.getOps(), registryManager);
-		return new Dynamic<>(registryOps, dynamic.getValue());
 	}
 
 	public String getFormatName() {

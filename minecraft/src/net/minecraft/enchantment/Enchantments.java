@@ -43,9 +43,7 @@ public class Enchantments {
 	);
 	public static final Enchantment KNOCKBACK = register("knockback", new KnockbackEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
 	public static final Enchantment FIRE_ASPECT = register("fire_aspect", new FireAspectEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
-	public static final Enchantment LOOTING = register(
-		"looting", new LuckEnchantment(Enchantment.Rarity.RARE, ItemTags.SWORD_ENCHANTABLE, EquipmentSlot.MAINHAND)
-	);
+	public static final Enchantment LOOTING = register("looting", new LuckEnchantment(Enchantment.Rarity.RARE, ItemTags.SWORD_ENCHANTABLE, EquipmentSlot.MAINHAND));
 	public static final Enchantment SWEEPING_EDGE = register("sweeping_edge", new SweepingEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
 	public static final Enchantment EFFICIENCY = register("efficiency", new EfficiencyEnchantment(Enchantment.Rarity.COMMON, EquipmentSlot.MAINHAND));
 	public static final Enchantment SILK_TOUCH = register("silk_touch", new SilkTouchEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.MAINHAND));

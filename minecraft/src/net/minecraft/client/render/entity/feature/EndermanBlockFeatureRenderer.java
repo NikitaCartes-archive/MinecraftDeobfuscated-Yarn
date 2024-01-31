@@ -15,9 +15,7 @@ import net.minecraft.util.math.RotationAxis;
 public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
 	private final BlockRenderManager blockRenderManager;
 
-	public EndermanBlockFeatureRenderer(
-		FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> context, BlockRenderManager blockRenderManager
-	) {
+	public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> context, BlockRenderManager blockRenderManager) {
 		super(context);
 		this.blockRenderManager = blockRenderManager;
 	}

@@ -102,9 +102,7 @@ public class SocialInteractionsScreen extends Screen {
 			ButtonWidget.builder(ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)).dimensions(j, 45, i, 20).build()
 		);
 		this.hiddenTabButton = this.addDrawableChild(
-			ButtonWidget.builder(HIDDEN_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN))
-				.dimensions((j + k - i) / 2 + 1, 45, i, 20)
-				.build()
+			ButtonWidget.builder(HIDDEN_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN)).dimensions((j + k - i) / 2 + 1, 45, i, 20).build()
 		);
 		this.blockedTabButton = this.addDrawableChild(
 			ButtonWidget.builder(BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED)).dimensions(k - i + 1, 45, i, 20).build()

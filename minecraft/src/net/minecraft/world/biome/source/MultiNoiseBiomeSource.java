@@ -22,9 +22,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	/**
 	 * Used to parse a custom biome source, when a preset hasn't been provided.
 	 */
-	public static final MapCodec<MultiNoiseUtil.Entries<RegistryEntry<Biome>>> CUSTOM_CODEC = MultiNoiseUtil.Entries.<RegistryEntry<Biome>>createCodec(
-			BIOME_CODEC
-		)
+	public static final MapCodec<MultiNoiseUtil.Entries<RegistryEntry<Biome>>> CUSTOM_CODEC = MultiNoiseUtil.Entries.<RegistryEntry<Biome>>createCodec(BIOME_CODEC)
 		.fieldOf("biomes");
 	private static final MapCodec<RegistryEntry<MultiNoiseBiomeSourceParameterList>> PRESET_CODEC = MultiNoiseBiomeSourceParameterList.REGISTRY_CODEC
 		.fieldOf("preset")

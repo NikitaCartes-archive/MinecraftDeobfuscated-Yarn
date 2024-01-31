@@ -59,8 +59,9 @@ public interface SpriteOpener {
 			AnimationResourceMetadata animationResourceMetadata = (AnimationResourceMetadata)resourceMetadata.decode(AnimationResourceMetadata.READER)
 				.orElse(AnimationResourceMetadata.EMPTY);
 			SpriteDimensions spriteDimensions = animationResourceMetadata.getSize(nativeImage.getWidth(), nativeImage.getHeight());
-			if (MathHelper.isMultipleOf(nativeImage.getWidth(), spriteDimensions.width())
-				&& MathHelper.isMultipleOf(nativeImage.getHeight(), spriteDimensions.height())) {
+			if (MathHelper.isMultipleOf(nativeImage.getWidth(), spriteDimensions.width()) && MathHelper.isMultipleOf(nativeImage.getHeight(), spriteDimensions.height())
+				)
+			 {
 				return new SpriteContents(id, spriteDimensions, nativeImage, resourceMetadata);
 			} else {
 				LOGGER.error(

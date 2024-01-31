@@ -116,9 +116,7 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public static class Rotate extends EntityS2CPacket {
-		public static final PacketCodec<PacketByteBuf, EntityS2CPacket.Rotate> CODEC = Packet.createCodec(
-			EntityS2CPacket.Rotate::write, EntityS2CPacket.Rotate::read
-		);
+		public static final PacketCodec<PacketByteBuf, EntityS2CPacket.Rotate> CODEC = Packet.createCodec(EntityS2CPacket.Rotate::write, EntityS2CPacket.Rotate::read);
 
 		public Rotate(int entityId, byte yaw, byte pitch, boolean onGround) {
 			super(entityId, (short)0, (short)0, (short)0, yaw, pitch, onGround, true, false);

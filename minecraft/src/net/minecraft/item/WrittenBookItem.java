@@ -49,7 +49,8 @@ public class WrittenBookItem extends Item {
 	}
 
 	public static int getGeneration(ItemStack stack) {
-		return stack.getNbt().getInt("generation");
+		NbtCompound nbtCompound = stack.getNbt();
+		return nbtCompound != null ? nbtCompound.getInt("generation") : 0;
 	}
 
 	public static int getPageCount(ItemStack stack) {

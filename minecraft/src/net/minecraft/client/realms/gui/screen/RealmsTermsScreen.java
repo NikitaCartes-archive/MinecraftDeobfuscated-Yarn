@@ -23,8 +23,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text TITLE = Text.translatable("mco.terms.title");
 	private static final Text SENTENCE_ONE_TEXT = Text.translatable("mco.terms.sentence.1");
-	private static final Text SENTENCE_TWO_TEXT = ScreenTexts.space()
-		.append(Text.translatable("mco.terms.sentence.2").fillStyle(Style.EMPTY.withUnderline(true)));
+	private static final Text SENTENCE_TWO_TEXT = ScreenTexts.space().append(Text.translatable("mco.terms.sentence.2").fillStyle(Style.EMPTY.withUnderline(true)));
 	private final Screen parent;
 	private final RealmsServer realmsServer;
 	private boolean onLink;

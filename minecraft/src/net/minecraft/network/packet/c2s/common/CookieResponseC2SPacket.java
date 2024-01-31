@@ -7,6 +7,7 @@ import net.minecraft.network.listener.ServerCookieResponsePacketListener;
 import net.minecraft.network.packet.CookiePackets;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
+import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
 import net.minecraft.util.Identifier;
 
 public record CookieResponseC2SPacket(Identifier key, @Nullable byte[] payload) implements Packet<ServerCookieResponsePacketListener> {
@@ -15,12 +16,12 @@ public record CookieResponseC2SPacket(Identifier key, @Nullable byte[] payload) 
 	);
 
 	private CookieResponseC2SPacket(PacketByteBuf buf) {
-		this(buf.readIdentifier(), buf.readNullable(bufx -> bufx.readByteArray(5120)));
+		this(buf.readIdentifier(), buf.readNullable(StoreCookieS2CPacket.field_49011));
 	}
 
 	private void write(PacketByteBuf buf) {
 		buf.writeIdentifier(this.key);
-		buf.writeNullable(this.payload, PacketByteBuf::writeByteArray);
+		buf.writeNullable(this.payload, StoreCookieS2CPacket.field_49011);
 	}
 
 	@Override

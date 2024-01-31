@@ -51,9 +51,7 @@ public class WorldCreator {
 	private final List<WorldCreator.WorldType> extendedWorldTypes = new ArrayList();
 	private GameRules gameRules = new GameRules();
 
-	public WorldCreator(
-		Path savesDirectory, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed
-	) {
+	public WorldCreator(Path savesDirectory, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed) {
 		this.savesDirectory = savesDirectory;
 		this.generatorOptionsHolder = generatorOptionsHolder;
 		this.worldType = new WorldCreator.WorldType((RegistryEntry<WorldPreset>)getWorldPreset(generatorOptionsHolder, defaultWorldType).orElse(null));
@@ -246,9 +244,7 @@ public class WorldCreator {
 		Registry<WorldPreset> registry = this.getGeneratorOptionsHolder().getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET);
 		this.normalWorldTypes.clear();
 		this.normalWorldTypes
-			.addAll(
-				(Collection)getWorldPresetList(registry, WorldPresetTags.NORMAL).orElseGet(() -> registry.streamEntries().map(WorldCreator.WorldType::new).toList())
-			);
+			.addAll((Collection)getWorldPresetList(registry, WorldPresetTags.NORMAL).orElseGet(() -> registry.streamEntries().map(WorldCreator.WorldType::new).toList()));
 		this.extendedWorldTypes.clear();
 		this.extendedWorldTypes.addAll((Collection)getWorldPresetList(registry, WorldPresetTags.EXTENDED).orElse(this.normalWorldTypes));
 		RegistryEntry<WorldPreset> registryEntry = this.worldType.preset();

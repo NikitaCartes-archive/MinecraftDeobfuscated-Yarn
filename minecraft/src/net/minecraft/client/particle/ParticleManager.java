@@ -34,12 +34,10 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.DefaultParticleType;
@@ -125,7 +123,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.EFFECT, SpellParticle.DefaultFactory::new);
 		this.registerFactory(ParticleTypes.ELDER_GUARDIAN, new ElderGuardianAppearanceParticle.Factory());
 		this.registerFactory(ParticleTypes.ENCHANTED_HIT, DamageParticle.EnchantedHitFactory::new);
-		this.registerFactory(ParticleTypes.ENCHANT, EnchantGlyphParticle.EnchantFactory::new);
+		this.registerFactory(ParticleTypes.ENCHANT, ConnectionParticle.EnchantFactory::new);
 		this.registerFactory(ParticleTypes.END_ROD, EndRodParticle.Factory::new);
 		this.registerFactory(ParticleTypes.ENTITY_EFFECT, SpellParticle.EntityFactory::new);
 		this.registerFactory(ParticleTypes.EXPLOSION_EMITTER, new ExplosionEmitterParticle.Factory());
@@ -152,7 +150,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.LARGE_SMOKE, LargeFireSmokeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.LAVA, LavaEmberParticle.Factory::new);
 		this.registerFactory(ParticleTypes.MYCELIUM, SuspendParticle.MyceliumFactory::new);
-		this.registerFactory(ParticleTypes.NAUTILUS, EnchantGlyphParticle.NautilusFactory::new);
+		this.registerFactory(ParticleTypes.NAUTILUS, ConnectionParticle.NautilusFactory::new);
 		this.registerFactory(ParticleTypes.NOTE, NoteParticle.Factory::new);
 		this.registerFactory(ParticleTypes.POOF, ExplosionSmokeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.PORTAL, PortalParticle.Factory::new);
@@ -202,6 +200,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.EGG_CRACK, SuspendParticle.EggCrackFactory::new);
 		this.registerFactory(ParticleTypes.DUST_PLUME, DustPlumeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.TRIAL_SPAWNER_DETECTION, TrialSpawnerDetectionParticle.Factory::new);
+		this.registerFactory(ParticleTypes.VAULT_CONNECTION, ConnectionParticle.VaultConnectionFactory::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {
@@ -429,15 +428,9 @@ public class ParticleManager implements ResourceReloader {
 		}
 	}
 
-	public void renderParticles(
-		MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, LightmapTextureManager lightmapTextureManager, Camera camera, float tickDelta
-	) {
+	public void renderParticles(LightmapTextureManager lightmapTextureManager, Camera camera, float tickDelta) {
 		lightmapTextureManager.enable();
 		RenderSystem.enableDepthTest();
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
-		RenderSystem.applyModelViewMatrix();
 
 		for(ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
 			Iterable<Particle> iterable = (Iterable)this.particles.get(particleTextureSheet);
@@ -450,8 +443,8 @@ public class ParticleManager implements ResourceReloader {
 				for(Particle particle : iterable) {
 					try {
 						particle.buildGeometry(bufferBuilder, camera, tickDelta);
-					} catch (Throwable var17) {
-						CrashReport crashReport = CrashReport.create(var17, "Rendering Particle");
+					} catch (Throwable var14) {
+						CrashReport crashReport = CrashReport.create(var14, "Rendering Particle");
 						CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
 						crashReportSection.add("Particle", particle::toString);
 						crashReportSection.add("Particle Type", particleTextureSheet::toString);
@@ -463,8 +456,6 @@ public class ParticleManager implements ResourceReloader {
 			}
 		}
 
-		matrixStack.pop();
-		RenderSystem.applyModelViewMatrix();
 		RenderSystem.depthMask(true);
 		RenderSystem.disableBlend();
 		lightmapTextureManager.disable();

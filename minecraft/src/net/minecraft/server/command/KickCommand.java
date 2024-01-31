@@ -25,9 +25,7 @@ public class KickCommand {
 						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), Text.translatable("multiplayer.disconnect.kicked")))
 						.then(
 							CommandManager.argument("reason", MessageArgumentType.message())
-								.executes(
-									context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), MessageArgumentType.getMessage(context, "reason"))
-								)
+								.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), MessageArgumentType.getMessage(context, "reason")))
 						)
 				)
 		);

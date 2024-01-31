@@ -350,9 +350,7 @@ public class AdvancementCommand {
 		}
 	}
 
-	private static List<AdvancementEntry> select(
-		CommandContext<ServerCommandSource> context, AdvancementEntry advancement, AdvancementCommand.Selection selection
-	) {
+	private static List<AdvancementEntry> select(CommandContext<ServerCommandSource> context, AdvancementEntry advancement, AdvancementCommand.Selection selection) {
 		AdvancementManager advancementManager = context.getSource().getServer().getAdvancementLoader().getManager();
 		PlacedAdvancement placedAdvancement = advancementManager.get(advancement);
 		if (placedAdvancement == null) {

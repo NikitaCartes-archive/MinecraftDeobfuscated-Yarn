@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentStateManager;
 
@@ -26,7 +27,7 @@ public class DataCommandStorage {
 
 	private net.minecraft.world.PersistentState.Type<DataCommandStorage.PersistentState> getPersistentStateType(String namespace) {
 		return new net.minecraft.world.PersistentState.Type<>(
-			() -> this.createStorage(namespace), nbt -> this.createStorage(namespace).readNbt(nbt), DataFixTypes.SAVED_DATA_COMMAND_STORAGE
+			() -> this.createStorage(namespace), (nbt, wrapperLookup) -> this.createStorage(namespace).readNbt(nbt), DataFixTypes.SAVED_DATA_COMMAND_STORAGE
 		);
 	}
 
@@ -64,7 +65,7 @@ public class DataCommandStorage {
 		}
 
 		@Override
-		public NbtCompound writeNbt(NbtCompound nbt) {
+		public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 			NbtCompound nbtCompound = new NbtCompound();
 			this.map.forEach((key, value) -> nbtCompound.put(key, value.copy()));
 			nbt.put("contents", nbtCompound);

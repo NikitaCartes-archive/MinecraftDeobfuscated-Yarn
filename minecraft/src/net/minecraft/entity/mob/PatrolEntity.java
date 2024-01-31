@@ -66,9 +66,7 @@ public abstract class PatrolEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		if (spawnReason != SpawnReason.PATROL
 			&& spawnReason != SpawnReason.EVENT
 			&& spawnReason != SpawnReason.STRUCTURE
@@ -86,7 +84,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.patrolling = true;
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

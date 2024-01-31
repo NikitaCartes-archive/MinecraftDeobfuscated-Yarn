@@ -59,9 +59,7 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 					setScreen(
 						(Screen)(bl
 							? new RealmsBrokenWorldScreen(this.lastScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME)
-							: new RealmsGenericErrorScreen(
-								Text.translatable("mco.brokenworld.nonowner.title"), Text.translatable("mco.brokenworld.nonowner.error"), this.lastScreen
-							))
+							: new RealmsGenericErrorScreen(Text.translatable("mco.brokenworld.nonowner.title"), Text.translatable("mco.brokenworld.nonowner.error"), this.lastScreen))
 					);
 					return;
 				default:

@@ -14,8 +14,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBlockEntity> {
@@ -156,17 +154,14 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 		float v2
 	) {
 		MatrixStack.Entry entry = matrices.peek();
-		Matrix4f matrix4f = entry.getPositionMatrix();
-		Matrix3f matrix3f = entry.getNormalMatrix();
-		renderBeamFace(matrix4f, matrix3f, vertices, red, green, blue, alpha, yOffset, height, x1, z1, x2, z2, u1, u2, v1, v2);
-		renderBeamFace(matrix4f, matrix3f, vertices, red, green, blue, alpha, yOffset, height, x4, z4, x3, z3, u1, u2, v1, v2);
-		renderBeamFace(matrix4f, matrix3f, vertices, red, green, blue, alpha, yOffset, height, x2, z2, x4, z4, u1, u2, v1, v2);
-		renderBeamFace(matrix4f, matrix3f, vertices, red, green, blue, alpha, yOffset, height, x3, z3, x1, z1, u1, u2, v1, v2);
+		renderBeamFace(entry, vertices, red, green, blue, alpha, yOffset, height, x1, z1, x2, z2, u1, u2, v1, v2);
+		renderBeamFace(entry, vertices, red, green, blue, alpha, yOffset, height, x4, z4, x3, z3, u1, u2, v1, v2);
+		renderBeamFace(entry, vertices, red, green, blue, alpha, yOffset, height, x2, z2, x4, z4, u1, u2, v1, v2);
+		renderBeamFace(entry, vertices, red, green, blue, alpha, yOffset, height, x3, z3, x1, z1, u1, u2, v1, v2);
 	}
 
 	private static void renderBeamFace(
-		Matrix4f positionMatrix,
-		Matrix3f normalMatrix,
+		MatrixStack.Entry matrix,
 		VertexConsumer vertices,
 		float red,
 		float green,
@@ -183,36 +178,21 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 		float v1,
 		float v2
 	) {
-		renderBeamVertex(positionMatrix, normalMatrix, vertices, red, green, blue, alpha, height, x1, z1, u2, v1);
-		renderBeamVertex(positionMatrix, normalMatrix, vertices, red, green, blue, alpha, yOffset, x1, z1, u2, v2);
-		renderBeamVertex(positionMatrix, normalMatrix, vertices, red, green, blue, alpha, yOffset, x2, z2, u1, v2);
-		renderBeamVertex(positionMatrix, normalMatrix, vertices, red, green, blue, alpha, height, x2, z2, u1, v1);
+		renderBeamVertex(matrix, vertices, red, green, blue, alpha, height, x1, z1, u2, v1);
+		renderBeamVertex(matrix, vertices, red, green, blue, alpha, yOffset, x1, z1, u2, v2);
+		renderBeamVertex(matrix, vertices, red, green, blue, alpha, yOffset, x2, z2, u1, v2);
+		renderBeamVertex(matrix, vertices, red, green, blue, alpha, height, x2, z2, u1, v1);
 	}
 
-	/**
-	 * @param v the top-most coordinate of the texture region
-	 * @param u the left-most coordinate of the texture region
-	 */
 	private static void renderBeamVertex(
-		Matrix4f positionMatrix,
-		Matrix3f normalMatrix,
-		VertexConsumer vertices,
-		float red,
-		float green,
-		float blue,
-		float alpha,
-		int y,
-		float x,
-		float z,
-		float u,
-		float v
+		MatrixStack.Entry matrix, VertexConsumer vertices, float red, float green, float blue, float alpha, int y, float x, float z, float u, float v
 	) {
-		vertices.vertex(positionMatrix, x, (float)y, z)
+		vertices.vertex(matrix, x, (float)y, z)
 			.color(red, green, blue, alpha)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
-			.normal(normalMatrix, 0.0F, 1.0F, 0.0F)
+			.normal(matrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 

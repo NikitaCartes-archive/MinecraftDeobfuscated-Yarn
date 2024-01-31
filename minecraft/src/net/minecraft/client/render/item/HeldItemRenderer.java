@@ -20,6 +20,7 @@ import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
@@ -223,8 +224,8 @@ public class HeldItemRenderer {
 		matrices.scale(0.38F, 0.38F, 0.38F);
 		matrices.translate(-0.5F, -0.5F, 0.0F);
 		matrices.scale(0.0078125F, 0.0078125F, 0.0078125F);
-		Integer integer = FilledMapItem.getMapId(stack);
-		MapState mapState = FilledMapItem.getMapState(integer, this.client.world);
+		MapId mapId = FilledMapItem.getMapId(stack);
+		MapState mapState = FilledMapItem.getMapState(mapId, this.client.world);
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		vertexConsumer.vertex(matrix4f, -7.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(swingProgress).next();
@@ -232,7 +233,7 @@ public class HeldItemRenderer {
 		vertexConsumer.vertex(matrix4f, 135.0F, -7.0F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(swingProgress).next();
 		vertexConsumer.vertex(matrix4f, -7.0F, -7.0F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(swingProgress).next();
 		if (mapState != null) {
-			this.client.gameRenderer.getMapRenderer().draw(matrices, vertexConsumers, integer, mapState, false, swingProgress);
+			this.client.gameRenderer.getMapRenderer().draw(matrices, vertexConsumers, mapId, mapState, false, swingProgress);
 		}
 	}
 

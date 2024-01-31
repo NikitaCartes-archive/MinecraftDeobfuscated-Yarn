@@ -49,6 +49,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 		TrialSpawnerData trialSpawnerData = logic.getData();
 		TrialSpawnerConfig trialSpawnerConfig = logic.getConfig();
 		EntityDetector entityDetector = logic.getEntityDetector();
+		EntityDetector.Selector selector = logic.getEntitySelector();
 		TrialSpawnerState var10000;
 		switch(this) {
 			case INACTIVE:
@@ -58,7 +59,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 				if (!trialSpawnerData.hasSpawnData()) {
 					var10000 = INACTIVE;
 				} else {
-					trialSpawnerData.updatePlayers(world, pos, entityDetector, trialSpawnerConfig.requiredPlayerRange());
+					trialSpawnerData.updatePlayers(world, pos, entityDetector, selector, trialSpawnerConfig.requiredPlayerRange());
 					var10000 = trialSpawnerData.players.isEmpty() ? this : ACTIVE;
 				}
 				break;
@@ -67,7 +68,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 					var10000 = INACTIVE;
 				} else {
 					int i = trialSpawnerData.getAdditionalPlayers(pos);
-					trialSpawnerData.updatePlayers(world, pos, entityDetector, trialSpawnerConfig.requiredPlayerRange());
+					trialSpawnerData.updatePlayers(world, pos, entityDetector, selector, trialSpawnerConfig.requiredPlayerRange());
 					if (trialSpawnerData.hasSpawnedAllMobs(trialSpawnerConfig, i)) {
 						if (trialSpawnerData.areMobsDead()) {
 							trialSpawnerData.cooldownEnd = world.getTime() + (long)trialSpawnerConfig.targetCooldownLength();

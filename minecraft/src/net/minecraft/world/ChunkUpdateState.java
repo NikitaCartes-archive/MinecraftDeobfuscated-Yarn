@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 
 public class ChunkUpdateState extends PersistentState {
 	private static final String REMAINING_KEY = "Remaining";
@@ -24,12 +25,12 @@ public class ChunkUpdateState extends PersistentState {
 		this(new LongOpenHashSet(), new LongOpenHashSet());
 	}
 
-	public static ChunkUpdateState fromNbt(NbtCompound nbt) {
+	public static ChunkUpdateState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		return new ChunkUpdateState(new LongOpenHashSet(nbt.getLongArray("All")), new LongOpenHashSet(nbt.getLongArray("Remaining")));
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		nbt.putLongArray("All", this.all.toLongArray());
 		nbt.putLongArray("Remaining", this.remaining.toLongArray());
 		return nbt;

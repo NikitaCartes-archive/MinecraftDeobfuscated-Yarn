@@ -141,11 +141,7 @@ public class TreeConfiguredFeatures {
 					1,
 					0,
 					new WeightedListIntProvider(
-						DataPool.<IntProvider>builder()
-							.add(ConstantIntProvider.create(1), 1)
-							.add(ConstantIntProvider.create(2), 1)
-							.add(ConstantIntProvider.create(3), 1)
-							.build()
+						DataPool.<IntProvider>builder().add(ConstantIntProvider.create(1), 1).add(ConstantIntProvider.create(2), 1).add(ConstantIntProvider.create(3), 1).build()
 					),
 					UniformIntProvider.create(2, 4),
 					UniformIntProvider.create(-4, -3),
@@ -415,9 +411,7 @@ public class TreeConfiguredFeatures {
 				.decorators(ImmutableList.of(new AlterGroundTreeDecorator(BlockStateProvider.of(Blocks.PODZOL))))
 				.build()
 		);
-		ConfiguredFeatures.register(
-			featureRegisterable, SUPER_BIRCH_BEES_0002, Feature.TREE, superBirch().decorators(ImmutableList.of(beehiveTreeDecorator)).build()
-		);
+		ConfiguredFeatures.register(featureRegisterable, SUPER_BIRCH_BEES_0002, Feature.TREE, superBirch().decorators(ImmutableList.of(beehiveTreeDecorator)).build());
 		ConfiguredFeatures.register(featureRegisterable, SUPER_BIRCH_BEES, Feature.TREE, superBirch().decorators(ImmutableList.of(beehiveTreeDecorator5)).build());
 		ConfiguredFeatures.register(
 			featureRegisterable,
@@ -462,13 +456,7 @@ public class TreeConfiguredFeatures {
 			new TreeFeatureConfig.Builder(
 					BlockStateProvider.of(Blocks.MANGROVE_LOG),
 					new UpwardsBranchingTrunkPlacer(
-						2,
-						1,
-						4,
-						UniformIntProvider.create(1, 4),
-						0.5F,
-						UniformIntProvider.create(0, 1),
-						registryEntryLookup.getOrThrow(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
+						2, 1, 4, UniformIntProvider.create(1, 4), 0.5F, UniformIntProvider.create(0, 1), registryEntryLookup.getOrThrow(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
 					),
 					BlockStateProvider.of(Blocks.MANGROVE_LEAVES),
 					new RandomSpreadFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), ConstantIntProvider.create(2), 70),
@@ -517,13 +505,7 @@ public class TreeConfiguredFeatures {
 			new TreeFeatureConfig.Builder(
 					BlockStateProvider.of(Blocks.MANGROVE_LOG),
 					new UpwardsBranchingTrunkPlacer(
-						4,
-						1,
-						9,
-						UniformIntProvider.create(1, 6),
-						0.5F,
-						UniformIntProvider.create(0, 1),
-						registryEntryLookup.getOrThrow(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
+						4, 1, 9, UniformIntProvider.create(1, 6), 0.5F, UniformIntProvider.create(0, 1), registryEntryLookup.getOrThrow(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
 					),
 					BlockStateProvider.of(Blocks.MANGROVE_LEAVES),
 					new RandomSpreadFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), ConstantIntProvider.create(2), 70),

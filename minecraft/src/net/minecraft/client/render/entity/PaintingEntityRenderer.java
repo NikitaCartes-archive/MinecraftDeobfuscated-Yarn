@@ -18,8 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
@@ -56,8 +54,6 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		MatrixStack matrices, VertexConsumer vertexConsumer, PaintingEntity entity, int width, int height, Sprite paintingSprite, Sprite backSprite
 	) {
 		MatrixStack.Entry entry = matrices.peek();
-		Matrix4f matrix4f = entry.getPositionMatrix();
-		Matrix3f matrix3f = entry.getNormalMatrix();
 		float f = (float)(-width) / 2.0F;
 		float g = (float)(-height) / 2.0F;
 		float h = 0.5F;
@@ -109,54 +105,43 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 				float ah = paintingSprite.getFrameU((float)(d * (double)(u - (w + 1))));
 				float ai = paintingSprite.getFrameV((float)(e * (double)(v - x)));
 				float aj = paintingSprite.getFrameV((float)(e * (double)(v - (x + 1))));
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, ah, ai, -0.5F, 0, 0, -1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, ag, ai, -0.5F, 0, 0, -1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, ag, aj, -0.5F, 0, 0, -1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, ah, aj, -0.5F, 0, 0, -1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, j, k, 0.5F, 0, 0, 1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, i, k, 0.5F, 0, 0, 1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, i, l, 0.5F, 0, 0, 1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, j, l, 0.5F, 0, 0, 1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, m, o, -0.5F, 0, 1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, n, o, -0.5F, 0, 1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, n, p, 0.5F, 0, 1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, m, p, 0.5F, 0, 1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, m, o, 0.5F, 0, -1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, n, o, 0.5F, 0, -1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, n, p, -0.5F, 0, -1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, m, p, -0.5F, 0, -1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, r, s, 0.5F, -1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, r, t, 0.5F, -1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, q, t, -0.5F, -1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, q, s, -0.5F, -1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, r, s, -0.5F, 1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, r, t, -0.5F, 1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, q, t, 0.5F, 1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, q, s, 0.5F, 1, 0, 0, af);
+				this.vertex(entry, vertexConsumer, y, ab, ah, ai, -0.5F, 0, 0, -1, af);
+				this.vertex(entry, vertexConsumer, z, ab, ag, ai, -0.5F, 0, 0, -1, af);
+				this.vertex(entry, vertexConsumer, z, aa, ag, aj, -0.5F, 0, 0, -1, af);
+				this.vertex(entry, vertexConsumer, y, aa, ah, aj, -0.5F, 0, 0, -1, af);
+				this.vertex(entry, vertexConsumer, y, aa, j, k, 0.5F, 0, 0, 1, af);
+				this.vertex(entry, vertexConsumer, z, aa, i, k, 0.5F, 0, 0, 1, af);
+				this.vertex(entry, vertexConsumer, z, ab, i, l, 0.5F, 0, 0, 1, af);
+				this.vertex(entry, vertexConsumer, y, ab, j, l, 0.5F, 0, 0, 1, af);
+				this.vertex(entry, vertexConsumer, y, aa, m, o, -0.5F, 0, 1, 0, af);
+				this.vertex(entry, vertexConsumer, z, aa, n, o, -0.5F, 0, 1, 0, af);
+				this.vertex(entry, vertexConsumer, z, aa, n, p, 0.5F, 0, 1, 0, af);
+				this.vertex(entry, vertexConsumer, y, aa, m, p, 0.5F, 0, 1, 0, af);
+				this.vertex(entry, vertexConsumer, y, ab, m, o, 0.5F, 0, -1, 0, af);
+				this.vertex(entry, vertexConsumer, z, ab, n, o, 0.5F, 0, -1, 0, af);
+				this.vertex(entry, vertexConsumer, z, ab, n, p, -0.5F, 0, -1, 0, af);
+				this.vertex(entry, vertexConsumer, y, ab, m, p, -0.5F, 0, -1, 0, af);
+				this.vertex(entry, vertexConsumer, y, aa, r, s, 0.5F, -1, 0, 0, af);
+				this.vertex(entry, vertexConsumer, y, ab, r, t, 0.5F, -1, 0, 0, af);
+				this.vertex(entry, vertexConsumer, y, ab, q, t, -0.5F, -1, 0, 0, af);
+				this.vertex(entry, vertexConsumer, y, aa, q, s, -0.5F, -1, 0, 0, af);
+				this.vertex(entry, vertexConsumer, z, aa, r, s, -0.5F, 1, 0, 0, af);
+				this.vertex(entry, vertexConsumer, z, ab, r, t, -0.5F, 1, 0, 0, af);
+				this.vertex(entry, vertexConsumer, z, ab, q, t, 0.5F, 1, 0, 0, af);
+				this.vertex(entry, vertexConsumer, z, aa, q, s, 0.5F, 1, 0, 0, af);
 			}
 		}
 	}
 
 	private void vertex(
-		Matrix4f positionMatrix,
-		Matrix3f normalMatrix,
-		VertexConsumer vertexConsumer,
-		float x,
-		float y,
-		float u,
-		float v,
-		float z,
-		int normalX,
-		int normalY,
-		int normalZ,
-		int light
+		MatrixStack.Entry matrix, VertexConsumer vertexConsumer, float x, float y, float u, float v, float z, int normalX, int normalY, int normalZ, int light
 	) {
-		vertexConsumer.vertex(positionMatrix, x, y, z)
+		vertexConsumer.vertex(matrix, x, y, z)
 			.color(255, 255, 255, 255)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(light)
-			.normal(normalMatrix, (float)normalX, (float)normalY, (float)normalZ)
+			.normal(matrix, (float)normalX, (float)normalY, (float)normalZ)
 			.next();
 	}
 }

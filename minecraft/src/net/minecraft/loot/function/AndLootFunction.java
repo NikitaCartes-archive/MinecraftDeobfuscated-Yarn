@@ -11,8 +11,7 @@ import net.minecraft.loot.context.LootContext;
 
 public class AndLootFunction implements LootFunction {
 	public static final Codec<AndLootFunction> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(LootFunctionTypes.CODEC.listOf().fieldOf("functions").forGetter(function -> function.terms))
-				.apply(instance, AndLootFunction::new)
+		instance -> instance.group(LootFunctionTypes.CODEC.listOf().fieldOf("functions").forGetter(function -> function.terms)).apply(instance, AndLootFunction::new)
 	);
 	public static final Codec<AndLootFunction> INLINE_CODEC = LootFunctionTypes.CODEC.listOf().xmap(AndLootFunction::new, function -> function.terms);
 	private final List<LootFunction> terms;

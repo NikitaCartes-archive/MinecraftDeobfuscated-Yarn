@@ -46,9 +46,7 @@ public class WanderNearTargetGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.mob.getNavigation().isIdle()
-			&& this.target.isAlive()
-			&& this.target.squaredDistanceTo(this.mob) < (double)(this.maxDistance * this.maxDistance);
+		return !this.mob.getNavigation().isIdle() && this.target.isAlive() && this.target.squaredDistanceTo(this.mob) < (double)(this.maxDistance * this.maxDistance);
 	}
 
 	@Override

@@ -13,9 +13,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.screen.ScreenTexts;
@@ -26,7 +24,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
@@ -57,7 +54,7 @@ public class OptimizeWorldScreen extends Screen {
 				SaveProperties saveProperties = saveLoader.saveProperties();
 				DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
 				storageSession.backupLevelDataFile(immutable, saveProperties);
-				var10 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutable.get(RegistryKeys.DIMENSION));
+				var10 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutable);
 			}
 
 			return var10;
@@ -73,11 +70,11 @@ public class OptimizeWorldScreen extends Screen {
 		LevelStorage.Session storageSession,
 		LevelInfo levelInfo,
 		boolean eraseCache,
-		Registry<DimensionOptions> dimensionOptionsRegistry
+		DynamicRegistryManager registryManager
 	) {
 		super(Text.translatable("optimizeWorld.title", levelInfo.getLevelName()));
 		this.callback = callback;
-		this.updater = new WorldUpdater(storageSession, dataFixer, dimensionOptionsRegistry, eraseCache, false);
+		this.updater = new WorldUpdater(storageSession, dataFixer, registryManager, eraseCache, false);
 	}
 
 	@Override

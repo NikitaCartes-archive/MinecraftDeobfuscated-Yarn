@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenTexts;
@@ -100,7 +101,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 				return ItemActionResult.CONSUME;
 			} else {
 				ItemStack itemStackx = decoratedPotBlockEntity.getStack();
-				if (!stack.isEmpty() && (itemStackx.isEmpty() || ItemStack.canCombine(itemStackx, stack) && itemStackx.getCount() < itemStackx.getMaxCount())) {
+				if (!stack.isEmpty() && (itemStackx.isEmpty() || ItemStack.areItemsAndNbtEqual(itemStackx, stack) && itemStackx.getCount() < itemStackx.getMaxCount())) {
 					decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.POSITIVE);
 					player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 					ItemStack itemStack2 = player.isCreative() ? stack.copyWithCount(1) : stack.split(1);
@@ -181,9 +182,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
 		BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
-			builder.addDynamicDrop(
-				SHERDS_DYNAMIC_DROP_ID, lootConsumer -> decoratedPotBlockEntity.getSherds().stream().map(Item::getDefaultStack).forEach(lootConsumer)
-			);
+			builder.addDynamicDrop(SHERDS_DYNAMIC_DROP_ID, lootConsumer -> decoratedPotBlockEntity.getSherds().stream().map(Item::getDefaultStack).forEach(lootConsumer));
 		}
 
 		return super.getDroppedStacks(state, builder);
@@ -212,8 +211,10 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-		super.appendTooltip(stack, world, tooltip, options);
+	public void appendTooltip(
+		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
+	) {
+		super.appendTooltip(stack, world, tooltip, options, registryManager);
 		DecoratedPotBlockEntity.Sherds sherds = DecoratedPotBlockEntity.Sherds.fromNbt(BlockItem.getBlockEntityNbt(stack));
 		if (!sherds.equals(DecoratedPotBlockEntity.Sherds.DEFAULT)) {
 			tooltip.add(ScreenTexts.EMPTY);

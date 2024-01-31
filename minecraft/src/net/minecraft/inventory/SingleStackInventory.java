@@ -10,11 +10,11 @@ import net.minecraft.item.ItemStack;
 public interface SingleStackInventory extends Inventory {
 	ItemStack getStack();
 
-	ItemStack decreaseStack(int count);
+	default ItemStack decreaseStack(int count) {
+		return this.getStack().split(count);
+	}
 
 	void setStack(ItemStack stack);
-
-	BlockEntity asBlockEntity();
 
 	default ItemStack emptyStack() {
 		return this.decreaseStack(this.getMaxCountPerStack());
@@ -57,8 +57,12 @@ public interface SingleStackInventory extends Inventory {
 		}
 	}
 
-	@Override
-	default boolean canPlayerUse(PlayerEntity player) {
-		return Inventory.canPlayerUse(this.asBlockEntity(), player);
+	public interface SingleStackBlockEntityInventory extends SingleStackInventory {
+		BlockEntity asBlockEntity();
+
+		@Override
+		default boolean canPlayerUse(PlayerEntity player) {
+			return Inventory.canPlayerUse(this.asBlockEntity(), player);
+		}
 	}
 }

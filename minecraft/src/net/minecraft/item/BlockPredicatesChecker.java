@@ -10,6 +10,7 @@ import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 
 /**
@@ -45,10 +46,11 @@ public class BlockPredicatesChecker {
 			return true;
 		} else if (pos.getBlockEntity() == null && cachedPos.getBlockEntity() == null) {
 			return true;
+		} else if (pos.getBlockEntity() != null && cachedPos.getBlockEntity() != null) {
+			DynamicRegistryManager dynamicRegistryManager = pos.getWorld().getRegistryManager();
+			return Objects.equals(pos.getBlockEntity().createNbtWithId(dynamicRegistryManager), cachedPos.getBlockEntity().createNbtWithId(dynamicRegistryManager));
 		} else {
-			return pos.getBlockEntity() != null && cachedPos.getBlockEntity() != null
-				? Objects.equals(pos.getBlockEntity().createNbtWithId(), cachedPos.getBlockEntity().createNbtWithId())
-				: false;
+			return false;
 		}
 	}
 

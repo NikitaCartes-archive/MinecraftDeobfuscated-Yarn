@@ -376,29 +376,25 @@ public class ChunkPalettedStorageFix extends DataFix {
 
 	private static void buildBed(Map<String, Dynamic<?>> out, int colorId, String color) {
 		out.put(
-			"southfalsefoot" + colorId,
-			BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'foot'}}")
+			"southfalsefoot" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'foot'}}")
 		);
 		out.put(
 			"westfalsefoot" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'false',part:'foot'}}")
 		);
 		out.put(
-			"northfalsefoot" + colorId,
-			BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'foot'}}")
+			"northfalsefoot" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'foot'}}")
 		);
 		out.put(
 			"eastfalsefoot" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'false',part:'foot'}}")
 		);
 		out.put(
-			"southfalsehead" + colorId,
-			BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'head'}}")
+			"southfalsehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'head'}}")
 		);
 		out.put(
 			"westfalsehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'false',part:'head'}}")
 		);
 		out.put(
-			"northfalsehead" + colorId,
-			BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'head'}}")
+			"northfalsehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'head'}}")
 		);
 		out.put(
 			"eastfalsehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'false',part:'head'}}")

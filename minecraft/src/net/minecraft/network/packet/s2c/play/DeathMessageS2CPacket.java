@@ -1,32 +1,19 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
-public class DeathMessageS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, DeathMessageS2CPacket> CODEC = Packet.createCodec(DeathMessageS2CPacket::write, DeathMessageS2CPacket::new);
-	private final int entityId;
-	private final Text message;
-
-	public DeathMessageS2CPacket(int entityId, Text message) {
-		this.entityId = entityId;
-		this.message = message;
-	}
-
-	private DeathMessageS2CPacket(PacketByteBuf buf) {
-		this.entityId = buf.readVarInt();
-		this.message = buf.readUnlimitedText();
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.entityId);
-		buf.writeText(this.message);
-	}
+public record DeathMessageS2CPacket(int playerId, Text message) implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, DeathMessageS2CPacket> CODEC = PacketCodec.tuple(
+		PacketCodecs.VAR_INT, DeathMessageS2CPacket::playerId, TextCodecs.REGISTRY_PACKET_CODEC, DeathMessageS2CPacket::message, DeathMessageS2CPacket::new
+	);
 
 	@Override
 	public PacketType<DeathMessageS2CPacket> getPacketId() {
@@ -40,13 +27,5 @@ public class DeathMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public boolean isWritingErrorSkippable() {
 		return true;
-	}
-
-	public int getEntityId() {
-		return this.entityId;
-	}
-
-	public Text getMessage() {
-		return this.message;
 	}
 }

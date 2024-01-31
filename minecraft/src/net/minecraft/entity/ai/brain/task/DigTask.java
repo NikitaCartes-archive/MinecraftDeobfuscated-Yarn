@@ -11,9 +11,7 @@ import net.minecraft.sound.SoundEvents;
 
 public class DigTask<E extends WardenEntity> extends MultiTickTask<E> {
 	public DigTask(int duration) {
-		super(
-			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), duration
-		);
+		super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), duration);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, E wardenEntity, long l) {

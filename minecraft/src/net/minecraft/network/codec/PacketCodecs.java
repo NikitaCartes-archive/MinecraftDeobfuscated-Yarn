@@ -25,6 +25,7 @@ import net.minecraft.network.encoding.VarInts;
 import net.minecraft.network.encoding.VarLongs;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
@@ -142,6 +143,15 @@ public interface PacketCodecs {
 			byteBuf.writeDouble(double_);
 		}
 	};
+	PacketCodec<ByteBuf, byte[]> field_48987 = new PacketCodec<ByteBuf, byte[]>() {
+		public byte[] method_56407(ByteBuf byteBuf) {
+			return PacketByteBuf.readByteArray(byteBuf);
+		}
+
+		public void method_56408(ByteBuf byteBuf, byte[] bs) {
+			PacketByteBuf.writeByteArray(byteBuf, bs);
+		}
+	};
 	/**
 	 * A codec for a string value with maximum length {@value Short#MAX_VALUE}.
 	 * 
@@ -220,6 +230,22 @@ public interface PacketCodecs {
 		}
 	};
 
+	static PacketCodec<ByteBuf, byte[]> byteArray(int maxLength) {
+		return new PacketCodec<ByteBuf, byte[]>() {
+			public byte[] decode(ByteBuf buf) {
+				return PacketByteBuf.readByteArray(buf, maxLength);
+			}
+
+			public void encode(ByteBuf buf, byte[] value) {
+				if (value.length > maxLength) {
+					throw new EncoderException("ByteArray with size " + value.length + " is bigger than allowed " + maxLength);
+				} else {
+					PacketByteBuf.writeByteArray(buf, value);
+				}
+			}
+		};
+	}
+
 	/**
 	 * {@return a codec for a string value with maximum length {@code maxLength}}
 	 * 
@@ -277,6 +303,22 @@ public interface PacketCodecs {
 			nbt -> Util.getResult(codec.parse(NbtOps.INSTANCE, nbt), error -> new DecoderException("Failed to decode: " + error + " " + nbt)),
 			value -> Util.getResult(codec.encodeStart(NbtOps.INSTANCE, (T)value), error -> new EncoderException("Failed to encode: " + error + " " + value))
 		);
+	}
+
+	static <T> PacketCodec<RegistryByteBuf, T> registryCodec(Codec<T> codec) {
+		return new PacketCodec<RegistryByteBuf, T>() {
+			public T decode(RegistryByteBuf registryByteBuf) {
+				NbtElement nbtElement = PacketCodecs.NBT_ELEMENT.decode(registryByteBuf);
+				RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, registryByteBuf.getRegistryManager());
+				return Util.getResult(codec.parse(registryOps, nbtElement), string -> new DecoderException("Failed to decode: " + string + " " + nbtElement));
+			}
+
+			public void encode(RegistryByteBuf registryByteBuf, T object) {
+				RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, registryByteBuf.getRegistryManager());
+				NbtElement nbtElement = Util.getResult(codec.encodeStart(registryOps, object), string -> new EncoderException("Failed to encode: " + string + " " + object));
+				PacketCodecs.NBT_ELEMENT.encode(registryByteBuf, nbtElement);
+			}
+		};
 	}
 
 	/**

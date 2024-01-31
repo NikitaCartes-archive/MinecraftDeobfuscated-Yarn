@@ -15,9 +15,7 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SpawnDensityCapper {
 	private final Long2ObjectMap<List<ServerPlayerEntity>> chunkPosToMobSpawnablePlayers = new Long2ObjectOpenHashMap();
-	private final Map<ServerPlayerEntity, SpawnDensityCapper.DensityCap> playersToDensityCap = Maps.<ServerPlayerEntity, SpawnDensityCapper.DensityCap>newHashMap(
-		
-	);
+	private final Map<ServerPlayerEntity, SpawnDensityCapper.DensityCap> playersToDensityCap = Maps.<ServerPlayerEntity, SpawnDensityCapper.DensityCap>newHashMap();
 	private final ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
 
 	public SpawnDensityCapper(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {

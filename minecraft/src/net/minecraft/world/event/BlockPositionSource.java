@@ -12,8 +12,7 @@ import net.minecraft.world.World;
 
 public class BlockPositionSource implements PositionSource {
 	public static final Codec<BlockPositionSource> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(BlockPos.CODEC.fieldOf("pos").forGetter(blockPositionSource -> blockPositionSource.pos))
-				.apply(instance, BlockPositionSource::new)
+		instance -> instance.group(BlockPos.CODEC.fieldOf("pos").forGetter(blockPositionSource -> blockPositionSource.pos)).apply(instance, BlockPositionSource::new)
 	);
 	public static final PacketCodec<RegistryByteBuf, BlockPositionSource> PACKET_CODEC = PacketCodec.tuple(
 		BlockPos.PACKET_CODEC, source -> source.pos, BlockPositionSource::new

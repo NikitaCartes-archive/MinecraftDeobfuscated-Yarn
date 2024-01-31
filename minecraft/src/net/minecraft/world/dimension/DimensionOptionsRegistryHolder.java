@@ -196,9 +196,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 		List<Entry> list = new ArrayList();
 		streamAll(stream)
 			.forEach(
-				key -> existingRegistry.getOrEmpty(key)
-						.or(() -> this.dimensions.getOrEmpty(key))
-						.ifPresent(dimensionOptions -> list.add(new Entry(key, dimensionOptions)))
+				key -> existingRegistry.getOrEmpty(key).or(() -> this.dimensions.getOrEmpty(key)).ifPresent(dimensionOptions -> list.add(new Entry(key, dimensionOptions)))
 			);
 		Lifecycle lifecycle = list.size() == VANILLA_KEY_COUNT ? Lifecycle.stable() : Lifecycle.experimental();
 		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry(RegistryKeys.DIMENSION, lifecycle);

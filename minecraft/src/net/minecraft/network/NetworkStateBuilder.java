@@ -63,9 +63,7 @@ public class NetworkStateBuilder<T extends PacketListener, B extends ByteBuf> {
 		return bufUpgrader -> new NetworkStateBuilder.NetworkStateImpl<>(this.type, this.side, this.createCodec(bufUpgrader, list), packetBundleHandler);
 	}
 
-	private static <L extends PacketListener> NetworkState<L> build(
-		NetworkPhase type, NetworkSide side, Consumer<NetworkStateBuilder<L, PacketByteBuf>> registrar
-	) {
+	private static <L extends PacketListener> NetworkState<L> build(NetworkPhase type, NetworkSide side, Consumer<NetworkStateBuilder<L, PacketByteBuf>> registrar) {
 		NetworkStateBuilder<L, PacketByteBuf> networkStateBuilder = new NetworkStateBuilder<>(type, side);
 		registrar.accept(networkStateBuilder);
 		return networkStateBuilder.build(PacketByteBuf::new);

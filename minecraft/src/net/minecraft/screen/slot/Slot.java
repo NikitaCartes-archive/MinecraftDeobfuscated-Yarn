@@ -144,7 +144,7 @@ public class Slot {
 			int i = Math.min(Math.min(count, stack.getCount()), this.getMaxItemCount(stack) - itemStack.getCount());
 			if (itemStack.isEmpty()) {
 				this.setStack(stack.split(i));
-			} else if (ItemStack.canCombine(itemStack, stack)) {
+			} else if (ItemStack.areItemsAndNbtEqual(itemStack, stack)) {
 				stack.decrement(i);
 				itemStack.increment(i);
 				this.setStack(itemStack);

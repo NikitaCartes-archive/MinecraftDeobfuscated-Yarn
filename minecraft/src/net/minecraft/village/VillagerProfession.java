@@ -26,9 +26,7 @@ public record VillagerProfession(
 	ImmutableSet<Block> secondaryJobSites,
 	@Nullable SoundEvent workSound
 ) {
-	public static final Predicate<RegistryEntry<PointOfInterestType>> IS_ACQUIRABLE_JOB_SITE = poiType -> poiType.isIn(
-			PointOfInterestTypeTags.ACQUIRABLE_JOB_SITE
-		);
+	public static final Predicate<RegistryEntry<PointOfInterestType>> IS_ACQUIRABLE_JOB_SITE = poiType -> poiType.isIn(PointOfInterestTypeTags.ACQUIRABLE_JOB_SITE);
 	public static final VillagerProfession NONE = register("none", PointOfInterestType.NONE, IS_ACQUIRABLE_JOB_SITE, null);
 	public static final VillagerProfession ARMORER = register("armorer", PointOfInterestTypes.ARMORER, SoundEvents.ENTITY_VILLAGER_WORK_ARMORER);
 	public static final VillagerProfession BUTCHER = register("butcher", PointOfInterestTypes.BUTCHER, SoundEvents.ENTITY_VILLAGER_WORK_BUTCHER);

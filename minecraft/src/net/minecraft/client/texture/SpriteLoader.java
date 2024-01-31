@@ -137,9 +137,7 @@ public class SpriteLoader {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static record StitchResult(
-		int width, int height, int mipLevel, Sprite missing, Map<Identifier, Sprite> regions, CompletableFuture<Void> readyForUpload
-	) {
+	public static record StitchResult(int width, int height, int mipLevel, Sprite missing, Map<Identifier, Sprite> regions, CompletableFuture<Void> readyForUpload) {
 		public CompletableFuture<SpriteLoader.StitchResult> whenComplete() {
 			return this.readyForUpload.thenApply(void_ -> this);
 		}

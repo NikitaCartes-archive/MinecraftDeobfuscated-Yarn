@@ -23,6 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
@@ -366,9 +367,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Override
-	public void replaceWithStateForNeighborUpdate(
-		Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth
-	) {
+	public void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth) {
 		this.neighborUpdater.replaceWithStateForNeighborUpdate(direction, neighborState, pos, neighborPos, flags, maxUpdateDepth);
 	}
 
@@ -1028,11 +1027,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Nullable
-	public abstract MapState getMapState(String id);
+	public abstract MapState getMapState(MapId id);
 
-	public abstract void putMapState(String id, MapState state);
+	public abstract void putMapState(MapId id, MapState state);
 
-	public abstract int getNextMapId();
+	public abstract MapId getNextMapId();
 
 	public void syncGlobalEvent(int eventId, BlockPos pos, int data) {
 	}

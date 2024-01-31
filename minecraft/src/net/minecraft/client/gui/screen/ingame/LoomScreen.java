@@ -118,10 +118,10 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		if (this.bannerPatterns != null && !this.hasTooManyPatterns) {
 			context.getMatrices().push();
 			context.getMatrices().translate((float)(i + 139), (float)(j + 52), 0.0F);
-			context.getMatrices().scale(24.0F, -24.0F, 1.0F);
-			context.getMatrices().translate(0.5F, 0.5F, 0.5F);
+			context.getMatrices().scale(24.0F, 24.0F, 1.0F);
+			context.getMatrices().translate(0.5F, -0.5F, 0.5F);
 			float f = 0.6666667F;
-			context.getMatrices().scale(0.6666667F, -0.6666667F, -0.6666667F);
+			context.getMatrices().scale(0.6666667F, 0.6666667F, -0.6666667F);
 			this.bannerField.pitch = 0.0F;
 			this.bannerField.pivotY = -32.0F;
 			BannerBlockEntityRenderer.renderCanvas(

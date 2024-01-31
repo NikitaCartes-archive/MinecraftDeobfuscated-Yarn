@@ -32,8 +32,7 @@ public record ReferenceLootCondition(Identifier id) implements LootCondition {
 			reporter.getDataLookup()
 				.getElementOptional(lootDataKey)
 				.ifPresentOrElse(
-					predicate -> predicate.validate(reporter.makeChild(".{" + this.id + "}", lootDataKey)),
-					() -> reporter.report("Unknown condition table called " + this.id)
+					predicate -> predicate.validate(reporter.makeChild(".{" + this.id + "}", lootDataKey)), () -> reporter.report("Unknown condition table called " + this.id)
 				);
 		}
 	}

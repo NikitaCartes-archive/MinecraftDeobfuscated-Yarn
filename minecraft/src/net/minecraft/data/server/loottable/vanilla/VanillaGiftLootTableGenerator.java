@@ -65,9 +65,7 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 		exporter.accept(
 			LootTables.HERO_OF_THE_VILLAGE_CLERIC_GIFT_GAMEPLAY,
 			LootTable.builder()
-				.pool(
-					LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.REDSTONE)).with(ItemEntry.builder(Items.LAPIS_LAZULI))
-				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.REDSTONE)).with(ItemEntry.builder(Items.LAPIS_LAZULI)))
 		);
 		exporter.accept(
 			LootTables.HERO_OF_THE_VILLAGE_FARMER_GIFT_GAMEPLAY,

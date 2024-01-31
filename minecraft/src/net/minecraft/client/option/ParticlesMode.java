@@ -12,9 +12,7 @@ public enum ParticlesMode implements TranslatableOption {
 	DECREASED(1, "options.particles.decreased"),
 	MINIMAL(2, "options.particles.minimal");
 
-	private static final IntFunction<ParticlesMode> BY_ID = ValueLists.createIdToValueFunction(
-		ParticlesMode::getId, values(), ValueLists.OutOfBoundsHandling.WRAP
-	);
+	private static final IntFunction<ParticlesMode> BY_ID = ValueLists.createIdToValueFunction(ParticlesMode::getId, values(), ValueLists.OutOfBoundsHandling.WRAP);
 	private final int id;
 	private final String translationKey;
 

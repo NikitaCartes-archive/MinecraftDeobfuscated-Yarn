@@ -34,8 +34,7 @@ public class TimeCommand {
 					CommandManager.literal("query")
 						.then(CommandManager.literal("daytime").executes(context -> executeQuery(context.getSource(), getDayTime(context.getSource().getWorld()))))
 						.then(
-							CommandManager.literal("gametime")
-								.executes(context -> executeQuery(context.getSource(), (int)(context.getSource().getWorld().getTime() % 2147483647L)))
+							CommandManager.literal("gametime").executes(context -> executeQuery(context.getSource(), (int)(context.getSource().getWorld().getTime() % 2147483647L)))
 						)
 						.then(
 							CommandManager.literal("day")

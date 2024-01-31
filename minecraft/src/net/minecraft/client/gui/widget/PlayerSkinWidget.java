@@ -19,7 +19,6 @@ import net.minecraft.client.util.SkinTextures;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class PlayerSkinWidget extends ClickableWidget {
@@ -48,10 +47,13 @@ public class PlayerSkinWidget extends ClickableWidget {
 		float f = (float)this.getHeight() / 2.125F;
 		context.getMatrices().scale(f, f, f);
 		context.getMatrices().translate(0.0F, -0.0625F, 0.0F);
-		Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
-		matrix4f.rotateAround(RotationAxis.POSITIVE_X.rotationDegrees(this.xRotation), 0.0F, -1.0625F, 0.0F);
+		context.getMatrices().multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.xRotation), 0.0F, -1.0625F, 0.0F);
 		context.getMatrices().multiply(RotationAxis.POSITIVE_Y.rotationDegrees(this.yRotation));
+		context.draw();
+		DiffuseLighting.method_56819(RotationAxis.POSITIVE_X.rotationDegrees(this.xRotation));
 		this.models.draw(context, (SkinTextures)this.skinSupplier.get());
+		context.draw();
+		DiffuseLighting.enableGuiDepthLighting();
 		context.getMatrices().pop();
 	}
 
@@ -91,10 +93,8 @@ public class PlayerSkinWidget extends ClickableWidget {
 		}
 
 		public void draw(DrawContext context, SkinTextures skinTextures) {
-			context.draw();
-			DiffuseLighting.method_34742();
 			context.getMatrices().push();
-			context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling(1.0F, 1.0F, -1.0F));
+			context.getMatrices().scale(1.0F, 1.0F, -1.0F);
 			context.getMatrices().translate(0.0F, -1.5F, 0.0F);
 			PlayerEntityModel<?> playerEntityModel = skinTextures.model() == SkinTextures.Model.SLIM ? this.slimModel : this.wideModel;
 			RenderLayer renderLayer = playerEntityModel.getLayer(skinTextures.texture());
@@ -102,8 +102,6 @@ public class PlayerSkinWidget extends ClickableWidget {
 				context.getMatrices(), context.getVertexConsumers().getBuffer(renderLayer), 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F
 			);
 			context.getMatrices().pop();
-			context.draw();
-			DiffuseLighting.enableGuiDepthLighting();
 		}
 	}
 }

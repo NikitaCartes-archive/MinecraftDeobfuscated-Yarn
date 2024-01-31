@@ -110,8 +110,7 @@ public class FlatChunkGeneratorConfig {
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structureOverrides, biome, this.features);
 
 		for(FlatChunkGeneratorLayer flatChunkGeneratorLayer : layers) {
-			flatChunkGeneratorConfig.layers
-				.add(new FlatChunkGeneratorLayer(flatChunkGeneratorLayer.getThickness(), flatChunkGeneratorLayer.getBlockState().getBlock()));
+			flatChunkGeneratorConfig.layers.add(new FlatChunkGeneratorLayer(flatChunkGeneratorLayer.getThickness(), flatChunkGeneratorLayer.getBlockState().getBlock()));
 			flatChunkGeneratorConfig.updateLayerBlocks();
 		}
 

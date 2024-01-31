@@ -34,8 +34,10 @@ public class SnowballEntity extends ThrownItemEntity {
 	}
 
 	private ParticleEffect getParticleParameters() {
-		ItemStack itemStack = this.getItem();
-		return (ParticleEffect)(itemStack.isEmpty() ? ParticleTypes.ITEM_SNOWBALL : new ItemStackParticleEffect(ParticleTypes.ITEM, itemStack));
+		ItemStack itemStack = this.getStack();
+		return (ParticleEffect)(!itemStack.isEmpty() && !itemStack.isOf(this.getDefaultItem())
+			? new ItemStackParticleEffect(ParticleTypes.ITEM, itemStack)
+			: ParticleTypes.ITEM_SNOWBALL);
 	}
 
 	@Override

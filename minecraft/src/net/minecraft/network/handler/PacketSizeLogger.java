@@ -1,13 +1,13 @@
 package net.minecraft.network.handler;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import net.minecraft.util.profiler.PerformanceLog;
+import net.minecraft.class_9191;
 
 public class PacketSizeLogger {
 	private final AtomicInteger packetSizeInBytes = new AtomicInteger();
-	private final PerformanceLog log;
+	private final class_9191 log;
 
-	public PacketSizeLogger(PerformanceLog log) {
+	public PacketSizeLogger(class_9191 log) {
 		this.log = log;
 	}
 

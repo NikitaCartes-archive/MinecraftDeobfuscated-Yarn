@@ -58,12 +58,8 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 			}
 		}
 
-		ItemStack itemStack3 = ShulkerBoxBlock.getItemStack(dyeItem.getColor());
-		if (itemStack.hasNbt()) {
-			itemStack3.setNbt(itemStack.getNbt().copy());
-		}
-
-		return itemStack3;
+		Block block = ShulkerBoxBlock.get(dyeItem.getColor());
+		return itemStack.copyNbtToNewStack(block, 1);
 	}
 
 	@Override

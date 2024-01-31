@@ -1,35 +1,24 @@
 package net.minecraft.network.packet.s2c.play;
 
+import io.netty.buffer.ByteBuf;
 import java.util.Optional;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
-public class ServerMetadataS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, ServerMetadataS2CPacket> CODEC = Packet.createCodec(
-		ServerMetadataS2CPacket::write, ServerMetadataS2CPacket::new
+public record ServerMetadataS2CPacket(Text description, Optional<byte[]> favicon) implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<ByteBuf, ServerMetadataS2CPacket> CODEC = PacketCodec.tuple(
+		TextCodecs.PACKET_CODEC,
+		ServerMetadataS2CPacket::description,
+		PacketCodecs.field_48987.collect(PacketCodecs::optional),
+		ServerMetadataS2CPacket::favicon,
+		ServerMetadataS2CPacket::new
 	);
-	private final Text description;
-	private final Optional<byte[]> favicon;
-
-	public ServerMetadataS2CPacket(Text description, Optional<byte[]> favicon) {
-		this.description = description;
-		this.favicon = favicon;
-	}
-
-	private ServerMetadataS2CPacket(PacketByteBuf buf) {
-		this.description = buf.readUnlimitedText();
-		this.favicon = buf.readOptional(PacketByteBuf::readByteArray);
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeText(this.description);
-		buf.writeOptional(this.favicon, PacketByteBuf::writeByteArray);
-	}
 
 	@Override
 	public PacketType<ServerMetadataS2CPacket> getPacketId() {
@@ -38,13 +27,5 @@ public class ServerMetadataS2CPacket implements Packet<ClientPlayPacketListener>
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onServerMetadata(this);
-	}
-
-	public Text getDescription() {
-		return this.description;
-	}
-
-	public Optional<byte[]> getFavicon() {
-		return this.favicon;
 	}
 }

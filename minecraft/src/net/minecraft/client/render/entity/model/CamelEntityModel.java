@@ -65,9 +65,7 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 			EntityModelPartNames.LEFT_EAR, ModelPartBuilder.create().uv(45, 0).cuboid(-0.5F, 0.5F, -1.0F, 3.0F, 1.0F, 2.0F), ModelTransform.pivot(2.5F, -21.0F, -9.5F)
 		);
 		modelPartData3.addChild(
-			EntityModelPartNames.RIGHT_EAR,
-			ModelPartBuilder.create().uv(67, 0).cuboid(-2.5F, 0.5F, -1.0F, 3.0F, 1.0F, 2.0F),
-			ModelTransform.pivot(-2.5F, -21.0F, -9.5F)
+			EntityModelPartNames.RIGHT_EAR, ModelPartBuilder.create().uv(67, 0).cuboid(-2.5F, 0.5F, -1.0F, 3.0F, 1.0F, 2.0F), ModelTransform.pivot(-2.5F, -21.0F, -9.5F)
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.LEFT_HIND_LEG,

@@ -31,9 +31,7 @@ public class SpawnPointCommand {
 						.then(
 							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 								.executes(
-									context -> execute(
-											context.getSource(), EntityArgumentType.getPlayers(context, "targets"), BlockPosArgumentType.getValidBlockPos(context, "pos"), 0.0F
-										)
+									context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), BlockPosArgumentType.getValidBlockPos(context, "pos"), 0.0F)
 								)
 								.then(
 									CommandManager.argument("angle", AngleArgumentType.angle())
@@ -62,20 +60,12 @@ public class SpawnPointCommand {
 		if (targets.size() == 1) {
 			source.sendFeedback(
 				() -> Text.translatable(
-						"commands.spawnpoint.success.single",
-						pos.getX(),
-						pos.getY(),
-						pos.getZ(),
-						angle,
-						string,
-						((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+						"commands.spawnpoint.success.single", pos.getX(), pos.getY(), pos.getZ(), angle, string, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 					),
 				true
 			);
 		} else {
-			source.sendFeedback(
-				() -> Text.translatable("commands.spawnpoint.success.multiple", pos.getX(), pos.getY(), pos.getZ(), angle, string, targets.size()), true
-			);
+			source.sendFeedback(() -> Text.translatable("commands.spawnpoint.success.multiple", pos.getX(), pos.getY(), pos.getZ(), angle, string, targets.size()), true);
 		}
 
 		return targets.size();

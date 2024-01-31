@@ -42,8 +42,7 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		public static AdvancementCriterion<PlayerInteractedWithEntityCriterion.Conditions> create(
 			Optional<LootContextPredicate> playerPredicate, ItemPredicate.Builder item, Optional<LootContextPredicate> entity
 		) {
-			return Criteria.PLAYER_INTERACTED_WITH_ENTITY
-				.create(new PlayerInteractedWithEntityCriterion.Conditions(playerPredicate, Optional.of(item.build()), entity));
+			return Criteria.PLAYER_INTERACTED_WITH_ENTITY.create(new PlayerInteractedWithEntityCriterion.Conditions(playerPredicate, Optional.of(item.build()), entity));
 		}
 
 		public static AdvancementCriterion<PlayerInteractedWithEntityCriterion.Conditions> create(ItemPredicate.Builder item, Optional<LootContextPredicate> entity) {

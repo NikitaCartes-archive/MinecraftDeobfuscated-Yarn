@@ -79,9 +79,7 @@ public class UpgradeData {
 		}
 
 		addNeighborTicks(nbt, "neighbor_block_ticks", id -> Registries.BLOCK.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Blocks.AIR)), this.blockTicks);
-		addNeighborTicks(
-			nbt, "neighbor_fluid_ticks", id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Fluids.EMPTY)), this.fluidTicks
-		);
+		addNeighborTicks(nbt, "neighbor_fluid_ticks", id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Fluids.EMPTY)), this.fluidTicks);
 	}
 
 	private static <T> void addNeighborTicks(NbtCompound nbt, String key, Function<String, Optional<T>> nameToType, List<Tick<T>> ticks) {
@@ -295,25 +293,19 @@ public class UpgradeData {
 			Blocks.DARK_OAK_WALL_HANGING_SIGN
 		) {
 			@Override
-			public BlockState getUpdatedState(
-				BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos
-			) {
+			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
 				return oldState;
 			}
 		},
 		DEFAULT {
 			@Override
-			public BlockState getUpdatedState(
-				BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos
-			) {
+			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
 				return oldState.getStateForNeighborUpdate(direction, world.getBlockState(otherPos), world, currentPos, otherPos);
 			}
 		},
 		CHEST(Blocks.CHEST, Blocks.TRAPPED_CHEST) {
 			@Override
-			public BlockState getUpdatedState(
-				BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos
-			) {
+			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
 				if (otherState.isOf(oldState.getBlock())
 					&& direction.getAxis().isHorizontal()
 					&& oldState.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE
@@ -338,21 +330,12 @@ public class UpgradeData {
 			}
 		},
 		LEAVES(
-			true,
-			Blocks.ACACIA_LEAVES,
-			Blocks.CHERRY_LEAVES,
-			Blocks.BIRCH_LEAVES,
-			Blocks.DARK_OAK_LEAVES,
-			Blocks.JUNGLE_LEAVES,
-			Blocks.OAK_LEAVES,
-			Blocks.SPRUCE_LEAVES
+			true, Blocks.ACACIA_LEAVES, Blocks.CHERRY_LEAVES, Blocks.BIRCH_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES
 		) {
 			private final ThreadLocal<List<ObjectSet<BlockPos>>> distanceToPositions = ThreadLocal.withInitial(() -> Lists.newArrayListWithCapacity(7));
 
 			@Override
-			public BlockState getUpdatedState(
-				BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos
-			) {
+			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
 				BlockState blockState = oldState.getStateForNeighborUpdate(direction, world.getBlockState(otherPos), world, currentPos, otherPos);
 				if (oldState != blockState) {
 					int i = blockState.get(Properties.DISTANCE_1_7);
@@ -401,9 +384,7 @@ public class UpgradeData {
 		},
 		STEM_BLOCK(Blocks.MELON_STEM, Blocks.PUMPKIN_STEM) {
 			@Override
-			public BlockState getUpdatedState(
-				BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos
-			) {
+			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
 				if (oldState.get(StemBlock.AGE) == 7) {
 					Block block = oldState.isOf(Blocks.PUMPKIN_STEM) ? Blocks.PUMPKIN : Blocks.MELON;
 					if (otherState.isOf(block)) {

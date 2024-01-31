@@ -117,9 +117,7 @@ public class RegistryLoader {
 		}
 	}
 
-	private static RegistryOps.RegistryInfoGetter createInfoGetter(
-		DynamicRegistryManager baseRegistryManager, List<RegistryLoader.Loader<?>> additionalRegistries
-	) {
+	private static RegistryOps.RegistryInfoGetter createInfoGetter(DynamicRegistryManager baseRegistryManager, List<RegistryLoader.Loader<?>> additionalRegistries) {
 		final Map<RegistryKey<? extends Registry<?>>, RegistryOps.RegistryInfo<?>> map = new HashMap();
 		baseRegistryManager.streamAllRegistries().forEach(entry -> map.put(entry.key(), createInfo(entry.value())));
 		additionalRegistries.forEach(loader -> map.put(loader.registry.getKey(), createInfo(loader.registry)));

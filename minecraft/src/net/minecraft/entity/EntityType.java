@@ -204,8 +204,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.trackingTickInterval(20)
 	);
 	public static final EntityType<AxolotlEntity> AXOLOTL = register(
-		"axolotl",
-		EntityType.Builder.<AxolotlEntity>create(AxolotlEntity::new, SpawnGroup.AXOLOTLS).dimensions(0.75F, 0.42F).eyeHeight(0.2751F).maxTrackingRange(10)
+		"axolotl", EntityType.Builder.<AxolotlEntity>create(AxolotlEntity::new, SpawnGroup.AXOLOTLS).dimensions(0.75F, 0.42F).eyeHeight(0.2751F).maxTrackingRange(10)
 	);
 	public static final EntityType<BatEntity> BAT = register(
 		"bat", EntityType.Builder.<BatEntity>create(BatEntity::new, SpawnGroup.AMBIENT).dimensions(0.5F, 0.9F).eyeHeight(0.45F).maxTrackingRange(5)
@@ -383,10 +382,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ExperienceOrbEntity> EXPERIENCE_ORB = register(
 		"experience_orb",
-		EntityType.Builder.<ExperienceOrbEntity>create(ExperienceOrbEntity::new, SpawnGroup.MISC)
-			.dimensions(0.5F, 0.5F)
-			.maxTrackingRange(6)
-			.trackingTickInterval(20)
+		EntityType.Builder.<ExperienceOrbEntity>create(ExperienceOrbEntity::new, SpawnGroup.MISC).dimensions(0.5F, 0.5F).maxTrackingRange(6).trackingTickInterval(20)
 	);
 	public static final EntityType<EyeOfEnderEntity> EYE_OF_ENDER = register(
 		"eye_of_ender",
@@ -463,8 +459,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.maxTrackingRange(10)
 	);
 	public static final EntityType<GoatEntity> GOAT = register(
-		"goat",
-		EntityType.Builder.<GoatEntity>create(GoatEntity::new, SpawnGroup.CREATURE).dimensions(0.9F, 1.3F).passengerAttachments(1.1125F).maxTrackingRange(10)
+		"goat", EntityType.Builder.<GoatEntity>create(GoatEntity::new, SpawnGroup.CREATURE).dimensions(0.9F, 1.3F).passengerAttachments(1.1125F).maxTrackingRange(10)
 	);
 	public static final EntityType<GuardianEntity> GUARDIAN = register(
 		"guardian",
@@ -1076,17 +1071,14 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		ServerWorld world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY
 	) {
 		Consumer<T> consumer;
-		NbtCompound nbtCompound;
 		if (stack != null) {
-			nbtCompound = stack.getNbt();
 			consumer = copier(world, stack, player);
 		} else {
 			consumer = entity -> {
 			};
-			nbtCompound = null;
 		}
 
-		return this.spawn(world, nbtCompound, consumer, pos, spawnReason, alignPosition, invertY);
+		return this.spawn(world, consumer, pos, spawnReason, alignPosition, invertY);
 	}
 
 	public static <T extends Entity> Consumer<T> copier(ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
@@ -1109,20 +1101,12 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 
 	@Nullable
 	public T spawn(ServerWorld world, BlockPos pos, SpawnReason reason) {
-		return this.spawn(world, (NbtCompound)null, null, pos, reason, false, false);
+		return this.spawn(world, null, pos, reason, false, false);
 	}
 
 	@Nullable
-	public T spawn(
-		ServerWorld world,
-		@Nullable NbtCompound itemNbt,
-		@Nullable Consumer<T> afterConsumer,
-		BlockPos pos,
-		SpawnReason reason,
-		boolean alignPosition,
-		boolean invertY
-	) {
-		T entity = this.create(world, itemNbt, afterConsumer, pos, reason, alignPosition, invertY);
+	public T spawn(ServerWorld world, @Nullable Consumer<T> afterConsumer, BlockPos pos, SpawnReason reason, boolean alignPosition, boolean invertY) {
+		T entity = this.create(world, afterConsumer, pos, reason, alignPosition, invertY);
 		if (entity != null) {
 			world.spawnEntityAndPassengers(entity);
 		}
@@ -1131,15 +1115,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	}
 
 	@Nullable
-	public T create(
-		ServerWorld world,
-		@Nullable NbtCompound itemNbt,
-		@Nullable Consumer<T> afterConsumer,
-		BlockPos pos,
-		SpawnReason reason,
-		boolean alignPosition,
-		boolean invertY
-	) {
+	public T create(ServerWorld world, @Nullable Consumer<T> afterConsumer, BlockPos pos, SpawnReason reason, boolean alignPosition, boolean invertY) {
 		T entity = this.create(world);
 		if (entity == null) {
 			return null;
@@ -1158,7 +1134,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			if (entity instanceof MobEntity mobEntity) {
 				mobEntity.headYaw = mobEntity.getYaw();
 				mobEntity.bodyYaw = mobEntity.getYaw();
-				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), reason, null, itemNbt);
+				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), reason, null);
 				mobEntity.playAmbientSound();
 			}
 

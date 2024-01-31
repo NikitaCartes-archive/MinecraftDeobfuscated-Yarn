@@ -12,8 +12,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
@@ -52,25 +50,23 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		matrixStack.scale(0.3F, 0.3F, 0.3F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
 		MatrixStack.Entry entry = matrixStack.peek();
-		Matrix4f matrix4f = entry.getPositionMatrix();
-		Matrix3f matrix3f = entry.getNormalMatrix();
-		vertex(vertexConsumer, matrix4f, matrix3f, -0.5F, -0.25F, s, 255, u, h, m, i);
-		vertex(vertexConsumer, matrix4f, matrix3f, 0.5F, -0.25F, s, 255, u, k, m, i);
-		vertex(vertexConsumer, matrix4f, matrix3f, 0.5F, 0.75F, s, 255, u, k, l, i);
-		vertex(vertexConsumer, matrix4f, matrix3f, -0.5F, 0.75F, s, 255, u, h, l, i);
+		vertex(vertexConsumer, entry, -0.5F, -0.25F, s, 255, u, h, m, i);
+		vertex(vertexConsumer, entry, 0.5F, -0.25F, s, 255, u, k, m, i);
+		vertex(vertexConsumer, entry, 0.5F, 0.75F, s, 255, u, k, l, i);
+		vertex(vertexConsumer, entry, -0.5F, 0.75F, s, 255, u, h, l, i);
 		matrixStack.pop();
 		super.render(experienceOrbEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	private static void vertex(
-		VertexConsumer vertexConsumer, Matrix4f positionMatrix, Matrix3f normalMatrix, float x, float y, int red, int green, int blue, float u, float v, int light
+		VertexConsumer vertexConsumer, MatrixStack.Entry matrix, float x, float y, int red, int green, int blue, float u, float v, int light
 	) {
-		vertexConsumer.vertex(positionMatrix, x, y, 0.0F)
+		vertexConsumer.vertex(matrix, x, y, 0.0F)
 			.color(red, green, blue, 128)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(light)
-			.normal(normalMatrix, 0.0F, 1.0F, 0.0F)
+			.normal(matrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 

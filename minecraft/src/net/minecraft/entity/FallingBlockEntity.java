@@ -174,14 +174,14 @@ public class FallingBlockEntity extends Entity {
 									if (this.blockEntityData != null && this.block.hasBlockEntity()) {
 										BlockEntity blockEntity = this.getWorld().getBlockEntity(blockPos);
 										if (blockEntity != null) {
-											NbtCompound nbtCompound = blockEntity.createNbt();
+											NbtCompound nbtCompound = blockEntity.createNbt(this.getWorld().getRegistryManager());
 
 											for(String string : this.blockEntityData.getKeys()) {
 												nbtCompound.put(string, this.blockEntityData.get(string).copy());
 											}
 
 											try {
-												blockEntity.readNbt(nbtCompound);
+												blockEntity.readNbt(nbtCompound, this.getWorld().getRegistryManager());
 											} catch (Exception var15) {
 												LOGGER.error("Failed to load block entity from falling block", var15);
 											}
@@ -207,9 +207,7 @@ public class FallingBlockEntity extends Entity {
 						}
 					}
 				} else if (!this.getWorld().isClient
-					&& (this.timeFalling > 100 && (blockPos.getY() <= this.getWorld().getBottomY() || blockPos.getY() > this.getWorld().getTopY()) || this.timeFalling > 600)
-					)
-				 {
+					&& (this.timeFalling > 100 && (blockPos.getY() <= this.getWorld().getBottomY() || blockPos.getY() > this.getWorld().getTopY()) || this.timeFalling > 600)) {
 					if (this.dropItem && this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 						this.dropItem(block);
 					}

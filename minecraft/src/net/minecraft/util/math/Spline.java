@@ -131,9 +131,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 			if (this.locations.isEmpty()) {
 				throw new IllegalStateException("No elements added");
 			} else {
-				return Spline.Implementation.build(
-					this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray()
-				);
+				return Spline.Implementation.build(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
 			}
 		}
 	}

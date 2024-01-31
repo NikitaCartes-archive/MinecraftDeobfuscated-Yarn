@@ -24,9 +24,7 @@ public class Bans {
 	private static final Text SKIN_DESCRIPTION = Text.translatable("gui.banned.skin.description", Text.literal("https://aka.ms/mcjavamoderation"));
 
 	public static ConfirmLinkScreen createBanScreen(BooleanConsumer callback, BanDetails banDetails) {
-		return new ConfirmLinkScreen(
-			callback, getTitle(banDetails), getDescriptionText(banDetails), "https://aka.ms/mcjavamoderation", ScreenTexts.ACKNOWLEDGE, true
-		);
+		return new ConfirmLinkScreen(callback, getTitle(banDetails), getDescriptionText(banDetails), "https://aka.ms/mcjavamoderation", ScreenTexts.ACKNOWLEDGE, true);
 	}
 
 	public static ConfirmLinkScreen createSkinBanScreen(Runnable onClose) {
@@ -90,9 +88,7 @@ public class Bans {
 	private static Text getDurationText(BanDetails banDetails) {
 		if (isTemporary(banDetails)) {
 			Text text = getTemporaryBanDurationText(banDetails);
-			return Text.translatable(
-				"gui.banned.description.temporary", Text.translatable("gui.banned.description.temporary.duration", text).formatted(Formatting.BOLD)
-			);
+			return Text.translatable("gui.banned.description.temporary", Text.translatable("gui.banned.description.temporary.duration", text).formatted(Formatting.BOLD));
 		} else {
 			return Text.translatable("gui.banned.description.permanent").formatted(Formatting.BOLD);
 		}

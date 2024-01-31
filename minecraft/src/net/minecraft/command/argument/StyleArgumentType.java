@@ -7,6 +7,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Collection;
 import java.util.List;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -17,21 +19,23 @@ public class StyleArgumentType implements ArgumentType<Style> {
 	public static final DynamicCommandExceptionType INVALID_STYLE_EXCEPTION = new DynamicCommandExceptionType(
 		style -> Text.stringifiedTranslatable("argument.style.invalid", style)
 	);
+	private final RegistryWrapper.WrapperLookup field_48932;
 
-	private StyleArgumentType() {
+	private StyleArgumentType(RegistryWrapper.WrapperLookup wrapperLookup) {
+		this.field_48932 = wrapperLookup;
 	}
 
 	public static Style getStyle(CommandContext<ServerCommandSource> context, String style) {
 		return context.getArgument(style, Style.class);
 	}
 
-	public static StyleArgumentType style() {
-		return new StyleArgumentType();
+	public static StyleArgumentType style(CommandRegistryAccess commandRegistryAccess) {
+		return new StyleArgumentType(commandRegistryAccess);
 	}
 
 	public Style parse(StringReader stringReader) throws CommandSyntaxException {
 		try {
-			return JsonReaderUtils.parse(stringReader, Style.Codecs.CODEC);
+			return JsonReaderUtils.parse(this.field_48932, stringReader, Style.Codecs.CODEC);
 		} catch (Exception var4) {
 			String string = var4.getCause() != null ? var4.getCause().getMessage() : var4.getMessage();
 			throw INVALID_STYLE_EXCEPTION.createWithContext(stringReader, string);

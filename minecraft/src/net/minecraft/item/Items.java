@@ -535,9 +535,7 @@ public class Items {
 	public static final Item CHISELED_RED_SANDSTONE = register(Blocks.CHISELED_RED_SANDSTONE);
 	public static final Item CUT_RED_SANDSTONE = register(Blocks.CUT_RED_SANDSTONE);
 	public static final Item RED_SANDSTONE_STAIRS = register(Blocks.RED_SANDSTONE_STAIRS);
-	public static final Item REPEATING_COMMAND_BLOCK = register(
-		new OperatorOnlyBlockItem(Blocks.REPEATING_COMMAND_BLOCK, new Item.Settings().rarity(Rarity.EPIC))
-	);
+	public static final Item REPEATING_COMMAND_BLOCK = register(new OperatorOnlyBlockItem(Blocks.REPEATING_COMMAND_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item CHAIN_COMMAND_BLOCK = register(new OperatorOnlyBlockItem(Blocks.CHAIN_COMMAND_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item MAGMA_BLOCK = register(Blocks.MAGMA_BLOCK);
 	public static final Item NETHER_WART_BLOCK = register(Blocks.NETHER_WART_BLOCK);
@@ -843,10 +841,14 @@ public class Items {
 	public static final Item BAMBOO_CHEST_RAFT = register("bamboo_chest_raft", new BoatItem(true, BoatEntity.Type.BAMBOO, new Item.Settings().maxCount(1)));
 	public static final Item STRUCTURE_BLOCK = register(new OperatorOnlyBlockItem(Blocks.STRUCTURE_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item JIGSAW = register(new OperatorOnlyBlockItem(Blocks.JIGSAW, new Item.Settings().rarity(Rarity.EPIC)));
-	public static final Item TURTLE_HELMET = register("turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings()));
+	public static final Item TURTLE_HELMET = register(
+		"turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(275))
+	);
 	public static final Item TURTLE_SCUTE = register("turtle_scute", new Item(new Item.Settings()));
 	public static final Item ARMADILLO_SCUTE = register("armadillo_scute", new Item(new Item.Settings()));
-	public static final Item WOLF_ARMOR = register("wolf_armor", new AnimalArmorItem(11, AnimalArmorItem.Type.CANINE, null, new Item.Settings().maxCount(1)));
+	public static final Item WOLF_ARMOR = register(
+		"wolf_armor", new AnimalArmorItem(ArmorMaterials.ARMADILLO, AnimalArmorItem.Type.CANINE, new Item.Settings().maxCount(1))
+	);
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64)));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().food(FoodComponents.APPLE)));
 	public static final Item BOW = register("bow", new BowItem(new Item.Settings().maxDamage(384)));
@@ -892,12 +894,8 @@ public class Items {
 	public static final Item DIAMOND_AXE = register("diamond_axe", new AxeItem(ToolMaterials.DIAMOND, 5.0F, -3.0F, new Item.Settings()));
 	public static final Item DIAMOND_HOE = register("diamond_hoe", new HoeItem(ToolMaterials.DIAMOND, -3, 0.0F, new Item.Settings()));
 	public static final Item NETHERITE_SWORD = register("netherite_sword", new SwordItem(ToolMaterials.NETHERITE, 3, -2.4F, new Item.Settings().fireproof()));
-	public static final Item NETHERITE_SHOVEL = register(
-		"netherite_shovel", new ShovelItem(ToolMaterials.NETHERITE, 1.5F, -3.0F, new Item.Settings().fireproof())
-	);
-	public static final Item NETHERITE_PICKAXE = register(
-		"netherite_pickaxe", new PickaxeItem(ToolMaterials.NETHERITE, 1, -2.8F, new Item.Settings().fireproof())
-	);
+	public static final Item NETHERITE_SHOVEL = register("netherite_shovel", new ShovelItem(ToolMaterials.NETHERITE, 1.5F, -3.0F, new Item.Settings().fireproof()));
+	public static final Item NETHERITE_PICKAXE = register("netherite_pickaxe", new PickaxeItem(ToolMaterials.NETHERITE, 1, -2.8F, new Item.Settings().fireproof()));
 	public static final Item NETHERITE_AXE = register("netherite_axe", new AxeItem(ToolMaterials.NETHERITE, 5.0F, -3.0F, new Item.Settings().fireproof()));
 	public static final Item NETHERITE_HOE = register("netherite_hoe", new HoeItem(ToolMaterials.NETHERITE, -4, 0.0F, new Item.Settings().fireproof()));
 	public static final Item STICK = register("stick", new Item(new Item.Settings()));
@@ -909,47 +907,92 @@ public class Items {
 	public static final Item WHEAT_SEEDS = register("wheat_seeds", new AliasedBlockItem(Blocks.WHEAT, new Item.Settings()));
 	public static final Item WHEAT = register("wheat", new Item(new Item.Settings()));
 	public static final Item BREAD = register("bread", new Item(new Item.Settings().food(FoodComponents.BREAD)));
-	public static final Item LEATHER_HELMET = register("leather_helmet", new DyeableArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings()));
+	public static final Item LEATHER_HELMET = register(
+		"leather_helmet", new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(5)))
+	);
 	public static final Item LEATHER_CHESTPLATE = register(
-		"leather_chestplate", new DyeableArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings())
+		"leather_chestplate",
+		new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(5)))
 	);
 	public static final Item LEATHER_LEGGINGS = register(
-		"leather_leggings", new DyeableArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.LEGGINGS, new Item.Settings())
+		"leather_leggings",
+		new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(5)))
 	);
-	public static final Item LEATHER_BOOTS = register("leather_boots", new DyeableArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.BOOTS, new Item.Settings()));
-	public static final Item CHAINMAIL_HELMET = register("chainmail_helmet", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.HELMET, new Item.Settings()));
+	public static final Item LEATHER_BOOTS = register(
+		"leather_boots", new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(5)))
+	);
+	public static final Item CHAINMAIL_HELMET = register(
+		"chainmail_helmet", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(15)))
+	);
 	public static final Item CHAINMAIL_CHESTPLATE = register(
-		"chainmail_chestplate", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.CHESTPLATE, new Item.Settings())
+		"chainmail_chestplate",
+		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(15)))
 	);
 	public static final Item CHAINMAIL_LEGGINGS = register(
-		"chainmail_leggings", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.LEGGINGS, new Item.Settings())
+		"chainmail_leggings",
+		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(15)))
 	);
-	public static final Item CHAINMAIL_BOOTS = register("chainmail_boots", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.BOOTS, new Item.Settings()));
-	public static final Item IRON_HELMET = register("iron_helmet", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Settings()));
-	public static final Item IRON_CHESTPLATE = register("iron_chestplate", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
-	public static final Item IRON_LEGGINGS = register("iron_leggings", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Settings()));
-	public static final Item IRON_BOOTS = register("iron_boots", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Settings()));
-	public static final Item DIAMOND_HELMET = register("diamond_helmet", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.HELMET, new Item.Settings()));
+	public static final Item CHAINMAIL_BOOTS = register(
+		"chainmail_boots", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(15)))
+	);
+	public static final Item IRON_HELMET = register(
+		"iron_helmet", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(15)))
+	);
+	public static final Item IRON_CHESTPLATE = register(
+		"iron_chestplate",
+		new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(15)))
+	);
+	public static final Item IRON_LEGGINGS = register(
+		"iron_leggings", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(15)))
+	);
+	public static final Item IRON_BOOTS = register(
+		"iron_boots", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(15)))
+	);
+	public static final Item DIAMOND_HELMET = register(
+		"diamond_helmet", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(33)))
+	);
 	public static final Item DIAMOND_CHESTPLATE = register(
-		"diamond_chestplate", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.CHESTPLATE, new Item.Settings())
+		"diamond_chestplate",
+		new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(33)))
 	);
-	public static final Item DIAMOND_LEGGINGS = register("diamond_leggings", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.LEGGINGS, new Item.Settings()));
-	public static final Item DIAMOND_BOOTS = register("diamond_boots", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.BOOTS, new Item.Settings()));
-	public static final Item GOLDEN_HELMET = register("golden_helmet", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.HELMET, new Item.Settings()));
-	public static final Item GOLDEN_CHESTPLATE = register("golden_chestplate", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
-	public static final Item GOLDEN_LEGGINGS = register("golden_leggings", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.LEGGINGS, new Item.Settings()));
-	public static final Item GOLDEN_BOOTS = register("golden_boots", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Item.Settings()));
+	public static final Item DIAMOND_LEGGINGS = register(
+		"diamond_leggings",
+		new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(33)))
+	);
+	public static final Item DIAMOND_BOOTS = register(
+		"diamond_boots", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(33)))
+	);
+	public static final Item GOLDEN_HELMET = register(
+		"golden_helmet", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(7)))
+	);
+	public static final Item GOLDEN_CHESTPLATE = register(
+		"golden_chestplate",
+		new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(7)))
+	);
+	public static final Item GOLDEN_LEGGINGS = register(
+		"golden_leggings",
+		new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(7)))
+	);
+	public static final Item GOLDEN_BOOTS = register(
+		"golden_boots", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(7)))
+	);
 	public static final Item NETHERITE_HELMET = register(
-		"netherite_helmet", new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.HELMET, new Item.Settings().fireproof())
+		"netherite_helmet",
+		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.HELMET, new Item.Settings().fireproof().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(37)))
 	);
 	public static final Item NETHERITE_CHESTPLATE = register(
-		"netherite_chestplate", new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.CHESTPLATE, new Item.Settings().fireproof())
+		"netherite_chestplate",
+		new ArmorItem(
+			ArmorMaterials.NETHERITE, ArmorItem.Type.CHESTPLATE, new Item.Settings().fireproof().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(37))
+		)
 	);
 	public static final Item NETHERITE_LEGGINGS = register(
-		"netherite_leggings", new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.LEGGINGS, new Item.Settings().fireproof())
+		"netherite_leggings",
+		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.LEGGINGS, new Item.Settings().fireproof().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(37)))
 	);
 	public static final Item NETHERITE_BOOTS = register(
-		"netherite_boots", new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof())
+		"netherite_boots",
+		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(37)))
 	);
 	public static final Item FLINT = register("flint", new Item(new Item.Settings()));
 	public static final Item PORKCHOP = register("porkchop", new Item(new Item.Settings().food(FoodComponents.PORKCHOP)));
@@ -972,9 +1015,7 @@ public class Items {
 		"mangrove_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.MANGROVE_SIGN, Blocks.MANGROVE_WALL_SIGN)
 	);
 	public static final Item BAMBOO_SIGN = register("bamboo_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.BAMBOO_SIGN, Blocks.BAMBOO_WALL_SIGN));
-	public static final Item CRIMSON_SIGN = register(
-		"crimson_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.CRIMSON_SIGN, Blocks.CRIMSON_WALL_SIGN)
-	);
+	public static final Item CRIMSON_SIGN = register("crimson_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.CRIMSON_SIGN, Blocks.CRIMSON_WALL_SIGN));
 	public static final Item WARPED_SIGN = register("warped_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.WARPED_SIGN, Blocks.WARPED_WALL_SIGN));
 	public static final Item OAK_HANGING_SIGN = register(
 		"oak_hanging_sign", new HangingSignItem(Blocks.OAK_HANGING_SIGN, Blocks.OAK_WALL_HANGING_SIGN, new Item.Settings().maxCount(16))
@@ -1154,9 +1195,7 @@ public class Items {
 	public static final Item FOX_SPAWN_EGG = register("fox_spawn_egg", new SpawnEggItem(EntityType.FOX, 14005919, 13396256, new Item.Settings()));
 	public static final Item FROG_SPAWN_EGG = register("frog_spawn_egg", new SpawnEggItem(EntityType.FROG, 13661252, 16762748, new Item.Settings()));
 	public static final Item GHAST_SPAWN_EGG = register("ghast_spawn_egg", new SpawnEggItem(EntityType.GHAST, 16382457, 12369084, new Item.Settings()));
-	public static final Item GLOW_SQUID_SPAWN_EGG = register(
-		"glow_squid_spawn_egg", new SpawnEggItem(EntityType.GLOW_SQUID, 611926, 8778172, new Item.Settings())
-	);
+	public static final Item GLOW_SQUID_SPAWN_EGG = register("glow_squid_spawn_egg", new SpawnEggItem(EntityType.GLOW_SQUID, 611926, 8778172, new Item.Settings()));
 	public static final Item GOAT_SPAWN_EGG = register("goat_spawn_egg", new SpawnEggItem(EntityType.GOAT, 10851452, 5589310, new Item.Settings()));
 	public static final Item GUARDIAN_SPAWN_EGG = register("guardian_spawn_egg", new SpawnEggItem(EntityType.GUARDIAN, 5931634, 15826224, new Item.Settings()));
 	public static final Item HOGLIN_SPAWN_EGG = register("hoglin_spawn_egg", new SpawnEggItem(EntityType.HOGLIN, 13004373, 6251620, new Item.Settings()));
@@ -1169,9 +1208,7 @@ public class Items {
 	public static final Item MAGMA_CUBE_SPAWN_EGG = register(
 		"magma_cube_spawn_egg", new SpawnEggItem(EntityType.MAGMA_CUBE, 3407872, 16579584, new Item.Settings())
 	);
-	public static final Item MOOSHROOM_SPAWN_EGG = register(
-		"mooshroom_spawn_egg", new SpawnEggItem(EntityType.MOOSHROOM, 10489616, 12040119, new Item.Settings())
-	);
+	public static final Item MOOSHROOM_SPAWN_EGG = register("mooshroom_spawn_egg", new SpawnEggItem(EntityType.MOOSHROOM, 10489616, 12040119, new Item.Settings()));
 	public static final Item MULE_SPAWN_EGG = register("mule_spawn_egg", new SpawnEggItem(EntityType.MULE, 1769984, 5321501, new Item.Settings()));
 	public static final Item OCELOT_SPAWN_EGG = register("ocelot_spawn_egg", new SpawnEggItem(EntityType.OCELOT, 15720061, 5653556, new Item.Settings()));
 	public static final Item PANDA_SPAWN_EGG = register("panda_spawn_egg", new SpawnEggItem(EntityType.PANDA, 15198183, 1776418, new Item.Settings()));
@@ -1293,16 +1330,16 @@ public class Items {
 	public static final Item RABBIT_HIDE = register("rabbit_hide", new Item(new Item.Settings()));
 	public static final Item ARMOR_STAND = register("armor_stand", new ArmorStandItem(new Item.Settings().maxCount(16)));
 	public static final Item IRON_HORSE_ARMOR = register(
-		"iron_horse_armor", new AnimalArmorItem(5, AnimalArmorItem.Type.EQUESTRIAN, "iron", new Item.Settings().maxCount(1))
+		"iron_horse_armor", new AnimalArmorItem(ArmorMaterials.IRON, AnimalArmorItem.Type.EQUESTRIAN, new Item.Settings().maxCount(1))
 	);
 	public static final Item GOLDEN_HORSE_ARMOR = register(
-		"golden_horse_armor", new AnimalArmorItem(7, AnimalArmorItem.Type.EQUESTRIAN, "gold", new Item.Settings().maxCount(1))
+		"golden_horse_armor", new AnimalArmorItem(ArmorMaterials.GOLD, AnimalArmorItem.Type.EQUESTRIAN, new Item.Settings().maxCount(1))
 	);
 	public static final Item DIAMOND_HORSE_ARMOR = register(
-		"diamond_horse_armor", new AnimalArmorItem(11, AnimalArmorItem.Type.EQUESTRIAN, "diamond", new Item.Settings().maxCount(1))
+		"diamond_horse_armor", new AnimalArmorItem(ArmorMaterials.DIAMOND, AnimalArmorItem.Type.EQUESTRIAN, new Item.Settings().maxCount(1))
 	);
 	public static final Item LEATHER_HORSE_ARMOR = register(
-		"leather_horse_armor", new DyeableAnimalArmorItem(3, AnimalArmorItem.Type.EQUESTRIAN, "leather", new Item.Settings().maxCount(1))
+		"leather_horse_armor", new AnimalArmorItem(ArmorMaterials.LEATHER, AnimalArmorItem.Type.EQUESTRIAN, new Item.Settings().maxCount(1))
 	);
 	public static final Item LEAD = register("lead", new LeadItem(new Item.Settings()));
 	public static final Item NAME_TAG = register("name_tag", new NameTagItem(new Item.Settings()));
@@ -1579,6 +1616,7 @@ public class Items {
 	public static final Item WAXED_OXIDIZED_COPPER_BULB = register(Blocks.WAXED_OXIDIZED_COPPER_BULB);
 	public static final Item TRIAL_SPAWNER = register(Blocks.TRIAL_SPAWNER);
 	public static final Item TRIAL_KEY = register("trial_key", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
+	public static final Item field_48847 = register(Blocks.VAULT);
 
 	public static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

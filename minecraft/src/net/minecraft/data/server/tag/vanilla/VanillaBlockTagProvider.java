@@ -1600,7 +1600,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT, Blocks.MOSS_BLOCK, Blocks.MUD, Blocks.MUDDY_MANGROVE_ROOTS);
 		this.getOrCreateTagBuilder(BlockTags.SNIFFER_EGG_HATCH_BOOST).add(Blocks.MOSS_BLOCK);
 		ValueLookupTagProvider.ObjectBuilder<Block> objectBuilder = this.getOrCreateTagBuilder(BlockTags.REPLACEABLE);
-		lookup.getWrapperOrThrow(RegistryKeys.BLOCK).filter(block -> block.getDefaultState().isReplaceable()).streamKeys().forEach(objectBuilder::add);
+		lookup.getWrapperOrThrow(RegistryKeys.BLOCK).withPredicateFilter(block -> block.getDefaultState().isReplaceable()).streamKeys().forEach(objectBuilder::add);
 		this.getOrCreateTagBuilder(BlockTags.ENCHANTMENT_POWER_PROVIDER).add(Blocks.BOOKSHELF);
 		this.getOrCreateTagBuilder(BlockTags.ENCHANTMENT_POWER_TRANSMITTER).addTag(BlockTags.REPLACEABLE);
 		this.getOrCreateTagBuilder(BlockTags.MAINTAINS_FARMLAND)

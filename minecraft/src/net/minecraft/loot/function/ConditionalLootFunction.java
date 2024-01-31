@@ -13,6 +13,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 
 public abstract class ConditionalLootFunction implements LootFunction {
@@ -21,7 +22,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 
 	protected ConditionalLootFunction(List<LootCondition> conditions) {
 		this.conditions = conditions;
-		this.predicate = LootConditionTypes.matchingAll(conditions);
+		this.predicate = Util.allOf(conditions);
 	}
 
 	protected static <T extends ConditionalLootFunction> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {

@@ -68,9 +68,7 @@ public class MoveThroughVillageGoal extends Goal {
 								return Double.NEGATIVE_INFINITY;
 							} else {
 								Optional<BlockPos> optionalxx = serverWorld.getPointOfInterestStorage()
-									.getPosition(
-										poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), this::shouldVisit, pos, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
-									);
+									.getPosition(poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), this::shouldVisit, pos, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 								return optionalxx.map(blockPos2x -> -blockPos2x.getSquaredDistance(blockPos)).orElse(Double.NEGATIVE_INFINITY);
 							}
 						}

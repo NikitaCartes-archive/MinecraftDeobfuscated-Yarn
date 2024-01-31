@@ -8,6 +8,8 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.lang.reflect.Field;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 
 public class JsonReaderUtils {
 	private static final Field POS = Util.make(() -> {
@@ -37,20 +39,20 @@ public class JsonReaderUtils {
 		}
 	}
 
-	public static <T> T parse(StringReader stringReader, Codec<T> codec) {
+	public static <T> T parse(RegistryWrapper.WrapperLookup registryLookup, StringReader stringReader, Codec<T> codec) {
 		JsonReader jsonReader = new JsonReader(new java.io.StringReader(stringReader.getRemaining()));
 		jsonReader.setLenient(false);
 
-		Object var4;
+		Object var5;
 		try {
 			JsonElement jsonElement = Streams.parse(jsonReader);
-			var4 = Util.getResult(codec.parse(JsonOps.INSTANCE, jsonElement), JsonParseException::new);
-		} catch (StackOverflowError var8) {
-			throw new JsonParseException(var8);
+			var5 = Util.getResult(codec.parse(RegistryOps.of(JsonOps.INSTANCE, registryLookup), jsonElement), JsonParseException::new);
+		} catch (StackOverflowError var9) {
+			throw new JsonParseException(var9);
 		} finally {
 			stringReader.setCursor(stringReader.getCursor() + getPos(jsonReader));
 		}
 
-		return (T)var4;
+		return (T)var5;
 	}
 }

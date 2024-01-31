@@ -1,9 +1,7 @@
 package net.minecraft.data.server.tag;
 
 import com.google.common.collect.Maps;
-import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.JsonOps;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -39,9 +37,7 @@ public abstract class TagProvider<T> implements DataProvider {
 	protected final RegistryKey<? extends Registry<T>> registryRef;
 	private final Map<Identifier, TagBuilder> tagBuilders = Maps.<Identifier, TagBuilder>newLinkedHashMap();
 
-	protected TagProvider(
-		DataOutput output, RegistryKey<? extends Registry<T>> registryRef, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture
-	) {
+	protected TagProvider(DataOutput output, RegistryKey<? extends Registry<T>> registryRef, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
 		this(output, registryRef, registryLookupFuture, CompletableFuture.completedFuture(TagProvider.TagLookup.empty()));
 	}
 
@@ -97,9 +93,8 @@ public abstract class TagProvider<T> implements DataProvider {
 											)
 										);
 									} else {
-										JsonElement jsonElement = TagFile.CODEC.encodeStart(JsonOps.INSTANCE, new TagFile(list, false)).getOrThrow(false, LOGGER::error);
 										Path path = this.pathResolver.resolveJson(identifier);
-										return DataProvider.writeToPath(writer, jsonElement, path);
+										return DataProvider.writeCodecToPath(writer, info.contents, TagFile.CODEC, (T)(new TagFile(list, false)), path);
 									}
 								}
 							)

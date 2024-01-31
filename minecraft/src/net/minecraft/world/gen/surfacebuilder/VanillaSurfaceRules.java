@@ -140,9 +140,7 @@ public class VanillaSurfaceRules {
 				MaterialRules.biome(BiomeKeys.JAGGED_PEAKS),
 				MaterialRules.sequence(MaterialRules.condition(materialCondition13, STONE), MaterialRules.condition(materialCondition9, SNOW_BLOCK))
 			),
-			MaterialRules.condition(
-				MaterialRules.biome(BiomeKeys.GROVE), MaterialRules.sequence(materialRule6, MaterialRules.condition(materialCondition9, SNOW_BLOCK))
-			),
+			MaterialRules.condition(MaterialRules.biome(BiomeKeys.GROVE), MaterialRules.sequence(materialRule6, MaterialRules.condition(materialCondition9, SNOW_BLOCK))),
 			materialRule4,
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.WINDSWEPT_SAVANNA),
@@ -256,9 +254,7 @@ public class VanillaSurfaceRules {
 			MaterialRules.condition(
 				materialCondition10,
 				MaterialRules.sequence(
-					MaterialRules.condition(
-						MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition12, MaterialRules.condition(materialCondition11, WATER))
-					),
+					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition12, MaterialRules.condition(materialCondition11, WATER))),
 					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, materialRule7),
 					MaterialRules.condition(materialCondition14, MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_6, SANDSTONE)),
 					MaterialRules.condition(materialCondition15, MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_30, SANDSTONE))

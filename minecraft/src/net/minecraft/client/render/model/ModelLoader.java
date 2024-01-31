@@ -337,12 +337,7 @@ public class ModelLoader {
 														map3.put(state, pair);
 														throw new RuntimeException(
 															"Overlapping definition with: "
-																+ (String)((Entry)modelVariantMap.getVariantMap()
-																		.entrySet()
-																		.stream()
-																		.filter(entry -> entry.getValue() == pair2xx.getFirst())
-																		.findFirst()
-																		.get())
+																+ (String)((Entry)modelVariantMap.getVariantMap().entrySet().stream().filter(entry -> entry.getValue() == pair2xx.getFirst()).findFirst().get())
 																	.getKey()
 														);
 													}
@@ -482,9 +477,7 @@ public class ModelLoader {
 			} else {
 				UnbakedModel unbakedModel = this.getOrLoadModel(id);
 				if (unbakedModel instanceof JsonUnbakedModel jsonUnbakedModel && jsonUnbakedModel.getRootModel() == ModelLoader.GENERATION_MARKER) {
-					return ModelLoader.ITEM_MODEL_GENERATOR
-						.create(this.textureGetter, jsonUnbakedModel)
-						.bake(this, jsonUnbakedModel, this.textureGetter, settings, id, false);
+					return ModelLoader.ITEM_MODEL_GENERATOR.create(this.textureGetter, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.textureGetter, settings, id, false);
 				}
 
 				BakedModel bakedModel2 = unbakedModel.bake(this, this.textureGetter, settings, id);

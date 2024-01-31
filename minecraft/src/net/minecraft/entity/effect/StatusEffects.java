@@ -31,9 +31,7 @@ public class StatusEffects {
 	public static final RegistryEntry<StatusEffect> MINING_FATIGUE = register(
 		"mining_fatigue",
 		new StatusEffect(StatusEffectCategory.HARMFUL, 4866583)
-			.addAttributeModifier(
-				EntityAttributes.GENERIC_ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-			)
+			.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
 	);
 	public static final RegistryEntry<StatusEffect> STRENGTH = register(
 		"strength",

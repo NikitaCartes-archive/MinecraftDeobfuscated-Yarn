@@ -92,9 +92,7 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(0, 25).cuboid(-2.0F, 0.0F, -2.0F, 3.0F, 3.0F, 4.0F), ModelTransform.pivot(-3.5F, -3.0F, 4.0F)
 		);
 		modelPartData10.addChild(
-			EntityModelPartNames.RIGHT_FOOT,
-			ModelPartBuilder.create().uv(18, 32).cuboid(-4.0F, 0.01F, -4.0F, 8.0F, 0.0F, 8.0F),
-			ModelTransform.pivot(-2.0F, 3.0F, 0.0F)
+			EntityModelPartNames.RIGHT_FOOT, ModelPartBuilder.create().uv(18, 32).cuboid(-4.0F, 0.01F, -4.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(-2.0F, 3.0F, 0.0F)
 		);
 		return TexturedModelData.of(modelData, 48, 48);
 	}

@@ -38,9 +38,7 @@ public class ChaseCommand {
 								.executes(context -> startClient(context.getSource(), StringArgumentType.getString(context, "host"), 10000))
 								.then(
 									CommandManager.argument("port", IntegerArgumentType.integer(1, 65535))
-										.executes(
-											context -> startClient(context.getSource(), StringArgumentType.getString(context, "host"), IntegerArgumentType.getInteger(context, "port"))
-										)
+										.executes(context -> startClient(context.getSource(), StringArgumentType.getString(context, "host"), IntegerArgumentType.getInteger(context, "port")))
 								)
 						)
 						.executes(context -> startClient(context.getSource(), "localhost", 10000))

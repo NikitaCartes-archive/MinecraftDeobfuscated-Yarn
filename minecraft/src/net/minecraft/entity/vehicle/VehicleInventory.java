@@ -104,8 +104,7 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 			}
 
 			this.setLootTableId(null);
-			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
-				.add(LootContextParameters.ORIGIN, this.getPos());
+			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld()).add(LootContextParameters.ORIGIN, this.getPos());
 			if (player != null) {
 				builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
 			}

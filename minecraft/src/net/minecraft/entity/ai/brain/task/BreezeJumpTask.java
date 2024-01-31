@@ -79,8 +79,9 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 				BlockPos blockPos = getPosToJumpTo(breezeEntity, BreezeMovementUtil.getRandomPosBehindTarget(livingEntity, breezeEntity.getRandom()));
 				if (blockPos == null) {
 					return false;
-				} else if (!BreezeMovementUtil.canMoveTo(breezeEntity, blockPos.toCenterPos())
-					&& !BreezeMovementUtil.canMoveTo(breezeEntity, blockPos.up(4).toCenterPos())) {
+				} else if (!BreezeMovementUtil.canMoveTo(breezeEntity, blockPos.toCenterPos()) && !BreezeMovementUtil.canMoveTo(breezeEntity, blockPos.up(4).toCenterPos())
+					)
+				 {
 					return false;
 				} else {
 					breezeEntity.getBrain().remember(MemoryModuleType.BREEZE_JUMP_TARGET, blockPos);

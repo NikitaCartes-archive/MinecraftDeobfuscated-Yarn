@@ -89,8 +89,7 @@ public abstract class StructurePlacement {
 	}
 
 	public boolean applyExclusionZone(StructurePlacementCalculator calculator, int centerChunkX, int centerChunkZ) {
-		return !this.exclusionZone.isPresent()
-			|| !((StructurePlacement.ExclusionZone)this.exclusionZone.get()).shouldExclude(calculator, centerChunkX, centerChunkZ);
+		return !this.exclusionZone.isPresent() || !((StructurePlacement.ExclusionZone)this.exclusionZone.get()).shouldExclude(calculator, centerChunkX, centerChunkZ);
 	}
 
 	protected abstract boolean isStartChunk(StructurePlacementCalculator calculator, int chunkX, int chunkZ);
@@ -132,9 +131,7 @@ public abstract class StructurePlacement {
 	public static record ExclusionZone(RegistryEntry<StructureSet> otherSet, int chunkCount) {
 		public static final Codec<StructurePlacement.ExclusionZone> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET, StructureSet.CODEC, false)
-							.fieldOf("other_set")
-							.forGetter(StructurePlacement.ExclusionZone::otherSet),
+						RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET, StructureSet.CODEC, false).fieldOf("other_set").forGetter(StructurePlacement.ExclusionZone::otherSet),
 						Codec.intRange(1, 16).fieldOf("chunk_count").forGetter(StructurePlacement.ExclusionZone::chunkCount)
 					)
 					.apply(instance, StructurePlacement.ExclusionZone::new)

@@ -44,9 +44,7 @@ public class RamImpactTask extends MultiTickTask<GoatEntity> {
 		Function<GoatEntity, SoundEvent> impactSoundFactory,
 		Function<GoatEntity, SoundEvent> hornBreakSoundFactory
 	) {
-		super(
-			ImmutableMap.of(MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.RAM_TARGET, MemoryModuleState.VALUE_PRESENT), 200
-		);
+		super(ImmutableMap.of(MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.RAM_TARGET, MemoryModuleState.VALUE_PRESENT), 200);
 		this.cooldownRangeFactory = cooldownRangeFactory;
 		this.targetPredicate = targetPredicate;
 		this.speed = speed;
@@ -77,9 +75,7 @@ public class RamImpactTask extends MultiTickTask<GoatEntity> {
 		Brain<?> brain = goatEntity.getBrain();
 		if (!list.isEmpty()) {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			livingEntity.damage(
-				serverWorld.getDamageSources().mobAttackNoAggro(goatEntity), (float)goatEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-			);
+			livingEntity.damage(serverWorld.getDamageSources().mobAttackNoAggro(goatEntity), (float)goatEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
 			int i = goatEntity.hasStatusEffect(StatusEffects.SPEED) ? goatEntity.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1 : 0;
 			int j = goatEntity.hasStatusEffect(StatusEffects.SLOWNESS) ? goatEntity.getStatusEffect(StatusEffects.SLOWNESS).getAmplifier() + 1 : 0;
 			float f = 0.25F * (float)(i - j);

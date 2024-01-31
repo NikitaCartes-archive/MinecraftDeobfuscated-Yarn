@@ -27,11 +27,7 @@ public class PigEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
 			EntityModelPartNames.HEAD,
-			ModelPartBuilder.create()
-				.uv(0, 0)
-				.cuboid(-4.0F, -4.0F, -8.0F, 8.0F, 8.0F, 8.0F, dilation)
-				.uv(16, 16)
-				.cuboid(-2.0F, 0.0F, -9.0F, 4.0F, 3.0F, 1.0F, dilation),
+			ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, -8.0F, 8.0F, 8.0F, 8.0F, dilation).uv(16, 16).cuboid(-2.0F, 0.0F, -9.0F, 4.0F, 3.0F, 1.0F, dilation),
 			ModelTransform.pivot(0.0F, 12.0F, -6.0F)
 		);
 		return TexturedModelData.of(modelData, 64, 32);

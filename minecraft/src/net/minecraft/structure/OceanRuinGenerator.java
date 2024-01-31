@@ -290,7 +290,7 @@ public class OceanRuinGenerator {
 				if (drownedEntity != null) {
 					drownedEntity.setPersistent();
 					drownedEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-					drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+					drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null);
 					world.spawnEntityAndPassengers(drownedEntity);
 					if (pos.getY() > world.getSeaLevel()) {
 						world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);

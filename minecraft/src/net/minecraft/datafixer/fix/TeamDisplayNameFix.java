@@ -22,9 +22,7 @@ public class TeamDisplayNameFix extends DataFix {
 		if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.TEAM))) {
 			throw new IllegalStateException("Team type is not what was expected.");
 		} else {
-			return this.fixTypeEverywhere(
-				"TeamDisplayNameFix", type, dynamicOps -> pair -> pair.mapSecond(dynamic -> dynamic.update("DisplayName", TextFixes::fixText))
-			);
+			return this.fixTypeEverywhere("TeamDisplayNameFix", type, dynamicOps -> pair -> pair.mapSecond(dynamic -> dynamic.update("DisplayName", TextFixes::fixText)));
 		}
 	}
 }

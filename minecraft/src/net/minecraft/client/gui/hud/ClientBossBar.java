@@ -14,9 +14,7 @@ public class ClientBossBar extends BossBar {
 	protected float healthLatest;
 	protected long timeHealthSet;
 
-	public ClientBossBar(
-		UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog
-	) {
+	public ClientBossBar(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
 		super(uuid, name, color, style);
 		this.healthLatest = percent;
 		this.percent = percent;

@@ -700,9 +700,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 								.conditionally(this.killedByFrog().invert())
 						)
-						.with(
-							ItemEntry.builder(Items.SLIME_BALL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))).conditionally(this.killedByFrog())
-						)
+						.with(ItemEntry.builder(Items.SLIME_BALL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))).conditionally(this.killedByFrog()))
 						.conditionally(
 							EntityPropertiesLootCondition.builder(
 								LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().typeSpecific(SlimePredicate.of(NumberRange.IntRange.exactly(1)))
@@ -856,8 +854,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 		this.register(EntityType.VEX, LootTable.builder());
 		this.register(EntityType.VILLAGER, LootTable.builder());
 		this.register(
-			EntityType.WARDEN,
-			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.SCULK_CATALYST)))
+			EntityType.WARDEN, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.SCULK_CATALYST)))
 		);
 		this.register(EntityType.WANDERING_TRADER, LootTable.builder());
 		this.register(

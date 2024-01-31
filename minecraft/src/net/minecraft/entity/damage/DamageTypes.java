@@ -103,6 +103,5 @@ public interface DamageTypes {
 		);
 		damageTypeRegisterable.register(OUTSIDE_BORDER, new DamageType("outsideBorder", 0.0F));
 		damageTypeRegisterable.register(GENERIC_KILL, new DamageType("genericKill", 0.0F));
-		damageTypeRegisterable.register(WIND_CHARGE, new DamageType("mob", 0.1F));
 	}
 }

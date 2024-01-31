@@ -37,6 +37,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
@@ -63,7 +64,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Nullable
 	private NbtElement gossipData;
 	@Nullable
-	private NbtCompound offerData;
+	private TradeOfferList offerData;
 	private int xp;
 
 	public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
@@ -88,7 +89,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
 		if (this.offerData != null) {
-			nbt.put("Offers", this.offerData);
+			nbt.put("Offers", Util.getResult(TradeOfferList.CODEC.encodeStart(NbtOps.INSTANCE, this.offerData), IllegalStateException::new));
 		}
 
 		if (this.gossipData != null) {
@@ -111,8 +112,11 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
 		}
 
-		if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
-			this.offerData = nbt.getCompound("Offers");
+		if (nbt.contains("Offers")) {
+			TradeOfferList.CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("Offers"))
+				.resultOrPartial(Util.addPrefix("Failed to load offers: ", LOGGER::warn))
+				.ifPresent(tradeOfferList -> this.offerData = tradeOfferList);
 		}
 
 		if (nbt.contains("Gossips", NbtElement.LIST_TYPE)) {
@@ -230,11 +234,11 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		if (this.offerData != null) {
-			villagerEntity.setOffers(new TradeOfferList(this.offerData));
+			villagerEntity.setOffers(this.offerData.copy());
 		}
 
 		villagerEntity.setExperience(this.xp);
-		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
+		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null);
 		villagerEntity.reinitializeBrain(world);
 		if (this.converter != null) {
 			PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
@@ -305,7 +309,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		return ItemStack.EMPTY;
 	}
 
-	public void setOfferData(NbtCompound offerData) {
+	public void setOfferData(TradeOfferList offerData) {
 		this.offerData = offerData;
 	}
 
@@ -315,11 +319,9 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Override

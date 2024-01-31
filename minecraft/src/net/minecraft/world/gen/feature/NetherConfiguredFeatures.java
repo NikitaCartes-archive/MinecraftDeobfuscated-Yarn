@@ -43,9 +43,7 @@ public class NetherConfiguredFeatures {
 			featureRegisterable,
 			DELTA,
 			Feature.DELTA_FEATURE,
-			new DeltaFeatureConfig(
-				Blocks.LAVA.getDefaultState(), Blocks.MAGMA_BLOCK.getDefaultState(), UniformIntProvider.create(3, 7), UniformIntProvider.create(0, 2)
-			)
+			new DeltaFeatureConfig(Blocks.LAVA.getDefaultState(), Blocks.MAGMA_BLOCK.getDefaultState(), UniformIntProvider.create(3, 7), UniformIntProvider.create(0, 2))
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,

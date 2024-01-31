@@ -180,11 +180,11 @@ public class BlockItem extends Item {
 						return false;
 					}
 
-					NbtCompound nbtCompound2 = blockEntity.createNbt();
+					NbtCompound nbtCompound2 = blockEntity.createNbt(world.getRegistryManager());
 					NbtCompound nbtCompound3 = nbtCompound2.copy();
 					nbtCompound2.copyFrom(nbtCompound);
 					if (!nbtCompound2.equals(nbtCompound3)) {
-						blockEntity.readNbt(nbtCompound2);
+						blockEntity.readNbt(nbtCompound2, world.getRegistryManager());
 						blockEntity.markDirty();
 						return true;
 					}
@@ -203,7 +203,7 @@ public class BlockItem extends Item {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		super.appendTooltip(stack, world, tooltip, context);
-		this.getBlock().appendTooltip(stack, world, tooltip, context);
+		this.getBlock().appendTooltip(stack, world, tooltip, context, world != null ? world.getRegistryManager() : null);
 	}
 
 	public Block getBlock() {

@@ -1367,9 +1367,7 @@ public class GameOptions {
 							JsonElement jsonElement = JsonParser.parseReader(jsonReader);
 							DataResult<T> dataResult = option.getCodec().parse(JsonOps.INSTANCE, jsonElement);
 							dataResult.error()
-								.ifPresent(
-									partialResult -> GameOptions.LOGGER.error("Error parsing option value " + string + " for option " + option + ": " + partialResult.message())
-								);
+								.ifPresent(partialResult -> GameOptions.LOGGER.error("Error parsing option value " + string + " for option " + option + ": " + partialResult.message()));
 							dataResult.result().ifPresent(option::setValue);
 						}
 					}

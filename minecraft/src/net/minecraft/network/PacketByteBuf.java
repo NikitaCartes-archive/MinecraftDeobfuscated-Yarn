@@ -49,7 +49,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.network.codec.PacketDecoder;
 import net.minecraft.network.codec.PacketEncoder;
@@ -61,8 +60,6 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -573,7 +570,12 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Nullable
 	public <T> T readNullable(PacketDecoder<? super PacketByteBuf, T> reader) {
-		return this.readBoolean() ? reader.decode(this) : null;
+		return readNullable(this, reader);
+	}
+
+	@Nullable
+	public static <T, B extends ByteBuf> T readNullable(B buf, PacketDecoder<? super B, T> reader) {
+		return buf.readBoolean() ? reader.decode(buf) : null;
 	}
 
 	/**
@@ -584,11 +586,15 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readNullable(PacketByteBuf.PacketReader)
 	 */
 	public <T> void writeNullable(@Nullable T value, PacketEncoder<? super PacketByteBuf, T> writer) {
+		writeNullable(this, value, writer);
+	}
+
+	public static <T, B extends ByteBuf> void writeNullable(B buf, @Nullable T value, PacketEncoder<? super B, T> writer) {
 		if (value != null) {
-			this.writeBoolean(true);
-			writer.encode(this, value);
+			buf.writeBoolean(true);
+			writer.encode(buf, value);
 		} else {
-			this.writeBoolean(false);
+			buf.writeBoolean(false);
 		}
 	}
 
@@ -631,7 +637,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return the read byte array
 	 */
 	public byte[] readByteArray() {
-		return this.readByteArray(this.readableBytes());
+		return readByteArray(this);
+	}
+
+	public static byte[] readByteArray(ByteBuf buf) {
+		return readByteArray(buf, buf.readableBytes());
 	}
 
 	/**
@@ -644,9 +654,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param array the array to write
 	 */
 	public PacketByteBuf writeByteArray(byte[] array) {
-		this.writeVarInt(array.length);
-		this.writeBytes(array);
+		writeByteArray(this, array);
 		return this;
+	}
+
+	public static void writeByteArray(ByteBuf buf, byte[] array) {
+		VarInts.write(buf, array.length);
+		buf.writeBytes(array);
 	}
 
 	/**
@@ -663,12 +677,16 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param maxSize the max length of the read array
 	 */
 	public byte[] readByteArray(int maxSize) {
-		int i = this.readVarInt();
+		return readByteArray(this, maxSize);
+	}
+
+	public static byte[] readByteArray(ByteBuf buf, int maxSize) {
+		int i = VarInts.read(buf);
 		if (i > maxSize) {
 			throw new DecoderException("ByteArray with size " + i + " is bigger than allowed " + maxSize);
 		} else {
 			byte[] bs = new byte[i];
-			this.readBytes(bs);
+			buf.readBytes(bs);
 			return bs;
 		}
 	}
@@ -1024,46 +1042,6 @@ public class PacketByteBuf extends ByteBuf {
 		this.writeDouble(vec.getX());
 		this.writeDouble(vec.getY());
 		this.writeDouble(vec.getZ());
-	}
-
-	/**
-	 * Reads a text from this buf. A text is represented as an NBT-encoded data
-	 * with {@linkplain NbtSizeTracker the maximum size} as {@value #MAX_READ_NBT_SIZE}.
-	 * 
-	 * @return the read text
-	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
-	 * @throws net.minecraft.nbt.NbtSizeValidationException if the serialized text is too big
-	 * @see #readUnlimitedText()
-	 * @see #writeText(Text)
-	 * @see #MAX_READ_NBT_SIZE
-	 */
-	public Text readText() {
-		return this.decode(NbtOps.INSTANCE, TextCodecs.CODEC, NbtSizeTracker.of(2097152L));
-	}
-
-	/**
-	 * Reads a text from this buf. A text is represented as an NBT-encoded data.
-	 * Unlike {@link #readText()}, this method can read an unlimited amount of text.
-	 * 
-	 * @return the read text
-	 * @see #readText()
-	 * @see #writeText(Text)
-	 */
-	public Text readUnlimitedText() {
-		return this.decode(NbtOps.INSTANCE, TextCodecs.CODEC);
-	}
-
-	/**
-	 * Writes a text to this buf. A text is represented as an NBT-encoded data.
-	 * 
-	 * @return this buf, for chaining
-	 * @see #readText()
-	 * @see #readUnlimitedText()
-	 * 
-	 * @param text the text to write
-	 */
-	public PacketByteBuf writeText(Text text) {
-		return this.encode(NbtOps.INSTANCE, TextCodecs.CODEC, text);
 	}
 
 	/**

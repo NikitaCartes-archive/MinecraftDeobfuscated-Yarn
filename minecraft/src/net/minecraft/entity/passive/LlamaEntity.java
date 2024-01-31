@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.VariantHolder;
@@ -44,7 +45,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.ItemTags;
@@ -66,7 +66,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	private static final int MAX_STRENGTH = 5;
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
 	private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.LLAMA
 		.getDimensions()
@@ -104,9 +103,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("Variant", this.getVariant().id);
 		nbt.putInt("Strength", this.getStrength());
-		if (!this.items.getStack(1).isEmpty()) {
-			nbt.put("DecorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
-		}
 	}
 
 	@Override
@@ -114,11 +110,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		this.setStrength(nbt.getInt("Strength"));
 		super.readCustomDataFromNbt(nbt);
 		this.setVariant(LlamaEntity.Variant.byId(nbt.getInt("Variant")));
-		if (nbt.contains("DecorItem", NbtElement.COMPOUND_TYPE)) {
-			this.items.setStack(1, ItemStack.fromNbt(nbt.getCompound("DecorItem")));
-		}
-
-		this.updateSaddle();
 	}
 
 	@Override
@@ -146,7 +137,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(STRENGTH, 0);
-		this.dataTracker.startTracking(CARPET_COLOR, -1);
 		this.dataTracker.startTracking(VARIANT, 0);
 	}
 
@@ -160,7 +150,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Override
 	protected int getInventorySize() {
-		return this.hasChest() ? 2 + 3 * this.getInventoryColumns() : super.getInventorySize();
+		return this.hasChest() ? 1 + 3 * this.getInventoryColumns() : super.getInventorySize();
 	}
 
 	@Override
@@ -236,9 +226,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
 		this.initializeStrength(random);
 		LlamaEntity.Variant variant;
@@ -250,7 +238,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		}
 
 		this.setVariant(variant);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Override
@@ -305,13 +293,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	public boolean hasArmorInSlot() {
-		return !this.items.getStack(1).isEmpty();
-	}
-
-	@Override
-	public boolean isHorseArmor(ItemStack item) {
-		return item.isIn(ItemTags.WOOL_CARPETS);
+	public boolean isHorseArmor(ItemStack stack) {
+		return stack.isIn(ItemTags.WOOL_CARPETS);
 	}
 
 	@Override
@@ -329,18 +312,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		}
 	}
 
-	@Override
-	protected void updateSaddle() {
-		if (!this.getWorld().isClient) {
-			super.updateSaddle();
-			this.setCarpetColor(getColorFromCarpet(this.items.getStack(1)));
-		}
-	}
-
-	private void setCarpetColor(@Nullable DyeColor color) {
-		this.dataTracker.set(CARPET_COLOR, color == null ? -1 : color.getId());
-	}
-
 	@Nullable
 	private static DyeColor getColorFromCarpet(ItemStack color) {
 		Block block = Block.getBlockFromItem(color.getItem());
@@ -349,8 +320,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Nullable
 	public DyeColor getCarpetColor() {
-		int i = this.dataTracker.get(CARPET_COLOR);
-		return i == -1 ? null : DyeColor.byId(i);
+		return getColorFromCarpet(this.getEquippedStack(EquipmentSlot.BODY));
 	}
 
 	@Override

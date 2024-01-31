@@ -64,9 +64,7 @@ public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> 
 		CommandContext<ServerCommandSource> context, String name, RegistryKey<Registry<T>> registryRef, DynamicCommandExceptionType invalidException
 	) throws CommandSyntaxException {
 		RegistryKey<T> registryKey = getKey(context, name, registryRef, invalidException);
-		return (RegistryEntry.Reference<T>)getRegistry(context, registryRef)
-			.getEntry(registryKey)
-			.orElseThrow(() -> invalidException.create(registryKey.getValue()));
+		return (RegistryEntry.Reference<T>)getRegistry(context, registryRef).getEntry(registryKey).orElseThrow(() -> invalidException.create(registryKey.getValue()));
 	}
 
 	public static RegistryEntry.Reference<ConfiguredFeature<?, ?>> getConfiguredFeatureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {

@@ -11,9 +11,7 @@ import net.minecraft.util.math.Vec3d;
  */
 public class AboveGroundTargeting {
 	@Nullable
-	public static Vec3d find(
-		PathAwareEntity entity, int horizontalRange, int verticalRange, double x, double z, float angle, int maxAboveSolid, int minAboveSolid
-	) {
+	public static Vec3d find(PathAwareEntity entity, int horizontalRange, int verticalRange, double x, double z, float angle, int maxAboveSolid, int minAboveSolid) {
 		boolean bl = NavigationConditions.isPositionTargetInRange(entity, horizontalRange);
 		return FuzzyPositions.guessBestPathTarget(
 			entity,

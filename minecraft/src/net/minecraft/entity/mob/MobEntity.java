@@ -1,8 +1,10 @@
 package net.minecraft.entity.mob;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,6 +73,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -146,6 +149,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	protected final float[] handDropChances = new float[2];
 	private final DefaultedList<ItemStack> armorItems = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	protected final float[] armorDropChances = new float[4];
+	private ItemStack bodyArmor = ItemStack.EMPTY;
+	protected float bodyArmorDropChance;
 	private boolean canPickUpLoot;
 	private boolean persistent;
 	private final Map<PathNodeType, Float> pathfindingPenalties = Maps.newEnumMap(PathNodeType.class);
@@ -172,6 +177,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		this.visibilityCache = new MobVisibilityCache(this);
 		Arrays.fill(this.armorDropChances, 0.085F);
 		Arrays.fill(this.handDropChances, 0.085F);
+		this.bodyArmorDropChance = 0.085F;
 		if (world != null && !world.isClient) {
 			this.initGoals();
 		}
@@ -334,6 +340,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				}
 			}
 
+			if (!this.bodyArmor.isEmpty() && this.bodyArmorDropChance <= 1.0F) {
+				i += 1 + this.random.nextInt(3);
+			}
+
 			return i;
 		} else {
 			return this.experiencePoints;
@@ -347,8 +357,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
 				double g = 10.0;
-				this.getWorld()
-					.addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
+				this.getWorld().addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
 			}
 		} else {
 			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_SPAWN_EFFECTS);
@@ -413,23 +422,23 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		nbt.put("ArmorItems", nbtList);
 		NbtList nbtList2 = new NbtList();
 
+		for(float f : this.armorDropChances) {
+			nbtList2.add(NbtFloat.of(f));
+		}
+
+		nbt.put("ArmorDropChances", nbtList2);
+		NbtList nbtList3 = new NbtList();
+
 		for(ItemStack itemStack2 : this.handItems) {
 			NbtCompound nbtCompound2 = new NbtCompound();
 			if (!itemStack2.isEmpty()) {
 				itemStack2.writeNbt(nbtCompound2);
 			}
 
-			nbtList2.add(nbtCompound2);
+			nbtList3.add(nbtCompound2);
 		}
 
-		nbt.put("HandItems", nbtList2);
-		NbtList nbtList3 = new NbtList();
-
-		for(float f : this.armorDropChances) {
-			nbtList3.add(NbtFloat.of(f));
-		}
-
-		nbt.put("ArmorDropChances", nbtList3);
+		nbt.put("HandItems", nbtList3);
 		NbtList nbtList4 = new NbtList();
 
 		for(float g : this.handDropChances) {
@@ -437,19 +446,24 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		}
 
 		nbt.put("HandDropChances", nbtList4);
+		if (!this.bodyArmor.isEmpty()) {
+			nbt.put("body_armor_item", this.bodyArmor.writeNbt(new NbtCompound()));
+			nbt.putFloat("body_armor_drop_chance", this.bodyArmorDropChance);
+		}
+
 		if (this.holdingEntity != null) {
-			NbtCompound nbtCompound2 = new NbtCompound();
+			NbtCompound nbtCompound3 = new NbtCompound();
 			if (this.holdingEntity instanceof LivingEntity) {
 				UUID uUID = this.holdingEntity.getUuid();
-				nbtCompound2.putUuid("UUID", uUID);
+				nbtCompound3.putUuid("UUID", uUID);
 			} else if (this.holdingEntity instanceof AbstractDecorationEntity) {
 				BlockPos blockPos = ((AbstractDecorationEntity)this.holdingEntity).getDecorationBlockPos();
-				nbtCompound2.putInt("X", blockPos.getX());
-				nbtCompound2.putInt("Y", blockPos.getY());
-				nbtCompound2.putInt("Z", blockPos.getZ());
+				nbtCompound3.putInt("X", blockPos.getX());
+				nbtCompound3.putInt("Y", blockPos.getY());
+				nbtCompound3.putInt("Z", blockPos.getZ());
 			}
 
-			nbt.put("Leash", nbtCompound2);
+			nbt.put("Leash", nbtCompound3);
 		} else if (this.leashNbt != null) {
 			nbt.put("Leash", this.leashNbt.copy());
 		}
@@ -483,19 +497,19 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			}
 		}
 
-		if (nbt.contains("HandItems", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("HandItems", NbtElement.COMPOUND_TYPE);
-
-			for(int i = 0; i < this.handItems.size(); ++i) {
-				this.handItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
-			}
-		}
-
 		if (nbt.contains("ArmorDropChances", NbtElement.LIST_TYPE)) {
 			NbtList nbtList = nbt.getList("ArmorDropChances", NbtElement.FLOAT_TYPE);
 
 			for(int i = 0; i < nbtList.size(); ++i) {
 				this.armorDropChances[i] = nbtList.getFloat(i);
+			}
+		}
+
+		if (nbt.contains("HandItems", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("HandItems", NbtElement.COMPOUND_TYPE);
+
+			for(int i = 0; i < this.handItems.size(); ++i) {
+				this.handItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
@@ -505,6 +519,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			for(int i = 0; i < nbtList.size(); ++i) {
 				this.handDropChances[i] = nbtList.getFloat(i);
 			}
+		}
+
+		if (nbt.contains("body_armor_item", NbtElement.COMPOUND_TYPE)) {
+			this.bodyArmor = ItemStack.fromNbt(nbt.getCompound("body_armor_item"));
+			this.bodyArmorDropChance = nbt.getFloat("body_armor_drop_chance");
 		}
 
 		if (nbt.contains("Leash", NbtElement.COMPOUND_TYPE)) {
@@ -569,11 +588,9 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	public void tickMovement() {
 		super.tickMovement();
 		this.getWorld().getProfiler().push("looting");
-		if (!this.getWorld().isClient
-			&& this.canPickUpLoot()
-			&& this.isAlive()
-			&& !this.dead
-			&& this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+		if (!this.getWorld().isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+			)
+		 {
 			Vec3i vec3i = this.getItemPickUpRangeExpander();
 
 			for(ItemEntity itemEntity : this.getWorld()
@@ -646,6 +663,9 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				break;
 			case ARMOR:
 				this.armorDropChances[slot.getEntitySlotId()] = 2.0F;
+				break;
+			case BODY:
+				this.bodyArmorDropChance = 2.0F;
 		}
 	}
 
@@ -770,41 +790,42 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	@Override
 	protected final void tickNewAi() {
 		++this.despawnCounter;
-		this.getWorld().getProfiler().push("sensing");
+		Profiler profiler = this.getWorld().getProfiler();
+		profiler.push("sensing");
 		this.visibilityCache.clear();
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		int i = this.getWorld().getServer().getTicks() + this.getId();
 		if (i % 2 != 0 && this.age > 1) {
-			this.getWorld().getProfiler().push("targetSelector");
+			profiler.push("targetSelector");
 			this.targetSelector.tickGoals(false);
-			this.getWorld().getProfiler().pop();
-			this.getWorld().getProfiler().push("goalSelector");
+			profiler.pop();
+			profiler.push("goalSelector");
 			this.goalSelector.tickGoals(false);
-			this.getWorld().getProfiler().pop();
+			profiler.pop();
 		} else {
-			this.getWorld().getProfiler().push("targetSelector");
+			profiler.push("targetSelector");
 			this.targetSelector.tick();
-			this.getWorld().getProfiler().pop();
-			this.getWorld().getProfiler().push("goalSelector");
+			profiler.pop();
+			profiler.push("goalSelector");
 			this.goalSelector.tick();
-			this.getWorld().getProfiler().pop();
+			profiler.pop();
 		}
 
-		this.getWorld().getProfiler().push("navigation");
+		profiler.push("navigation");
 		this.navigation.tick();
-		this.getWorld().getProfiler().pop();
-		this.getWorld().getProfiler().push("mob tick");
+		profiler.pop();
+		profiler.push("mob tick");
 		this.mobTick();
-		this.getWorld().getProfiler().pop();
-		this.getWorld().getProfiler().push("controls");
-		this.getWorld().getProfiler().push("move");
+		profiler.pop();
+		profiler.push("controls");
+		profiler.push("move");
 		this.moveControl.tick();
-		this.getWorld().getProfiler().swap("look");
+		profiler.swap("look");
 		this.lookControl.tick();
-		this.getWorld().getProfiler().swap("jump");
+		profiler.swap("jump");
 		this.jumpControl.tick();
-		this.getWorld().getProfiler().pop();
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
+		profiler.pop();
 		this.sendAiDebugData();
 	}
 
@@ -943,16 +964,38 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		return this.armorItems;
 	}
 
+	public ItemStack getBodyArmor() {
+		return this.bodyArmor;
+	}
+
+	public boolean hasArmorSlot() {
+		return false;
+	}
+
+	public boolean isWearingBodyArmor() {
+		return !this.getEquippedStack(EquipmentSlot.BODY).isEmpty();
+	}
+
+	public boolean isHorseArmor(ItemStack stack) {
+		return false;
+	}
+
+	public void equipBodyArmor(ItemStack stack) {
+		this.equipLootStack(EquipmentSlot.BODY, stack);
+	}
+
+	@Override
+	public Iterable<ItemStack> getAllArmorItems() {
+		return (Iterable<ItemStack>)(this.bodyArmor.isEmpty() ? this.armorItems : Iterables.concat(this.armorItems, List.of(this.bodyArmor)));
+	}
+
 	@Override
 	public ItemStack getEquippedStack(EquipmentSlot slot) {
-		switch(slot.getType()) {
-			case HAND:
-				return this.handItems.get(slot.getEntitySlotId());
-			case ARMOR:
-				return this.armorItems.get(slot.getEntitySlotId());
-			default:
-				return ItemStack.EMPTY;
-		}
+		return switch(slot.getType()) {
+			case HAND -> (ItemStack)this.handItems.get(slot.getEntitySlotId());
+			case ARMOR -> (ItemStack)this.armorItems.get(slot.getEntitySlotId());
+			case BODY -> this.bodyArmor;
+		};
 	}
 
 	@Override
@@ -964,6 +1007,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				break;
 			case ARMOR:
 				this.onEquipStack(slot, this.armorItems.set(slot.getEntitySlotId(), stack), stack);
+				break;
+			case BODY:
+				ItemStack itemStack = this.bodyArmor;
+				this.bodyArmor = stack;
+				this.onEquipStack(slot, itemStack, stack);
 		}
 	}
 
@@ -993,7 +1041,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		return switch(slot.getType()) {
 			case HAND -> this.handDropChances[slot.getEntitySlotId()];
 			case ARMOR -> this.armorDropChances[slot.getEntitySlotId()];
-			default -> 0.0F;
+			case BODY -> this.bodyArmorDropChance;
 		};
 	}
 
@@ -1115,20 +1163,13 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	@Nullable
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(
 				new EntityAttributeModifier("Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE)
 			);
-		if (random.nextFloat() < 0.05F) {
-			this.setLeftHanded(true);
-		} else {
-			this.setLeftHanded(false);
-		}
-
+		this.setLeftHanded(random.nextFloat() < 0.05F);
 		return entityData;
 	}
 
@@ -1143,6 +1184,9 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				break;
 			case ARMOR:
 				this.armorDropChances[slot.getEntitySlotId()] = chance;
+				break;
+			case BODY:
+				this.bodyArmorDropChance = chance;
 		}
 	}
 
@@ -1542,7 +1586,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	protected void removeFromDimension() {
 		super.removeFromDimension();
 		this.detachLeash(true, false);
-		this.getItemsEquipped().forEach(stack -> {
+		this.getEquippedItems().forEach(stack -> {
 			if (!stack.isEmpty()) {
 				stack.setCount(0);
 			}

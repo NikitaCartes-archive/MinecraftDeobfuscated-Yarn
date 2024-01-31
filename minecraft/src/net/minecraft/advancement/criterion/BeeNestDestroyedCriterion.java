@@ -46,9 +46,7 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		) {
 			return Criteria.BEE_NEST_DESTROYED
 				.create(
-					new BeeNestDestroyedCriterion.Conditions(
-						Optional.empty(), Optional.of(block.getRegistryEntry()), Optional.of(itemPredicateBuilder.build()), beeCountRange
-					)
+					new BeeNestDestroyedCriterion.Conditions(Optional.empty(), Optional.of(block.getRegistryEntry()), Optional.of(itemPredicateBuilder.build()), beeCountRange)
 				);
 		}
 
