@@ -17,8 +17,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEntity> {
@@ -39,13 +37,11 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			matrixStack.multiply(this.dispatcher.getRotation());
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 			MatrixStack.Entry entry = matrixStack.peek();
-			Matrix4f matrix4f = entry.getPositionMatrix();
-			Matrix3f matrix3f = entry.getNormalMatrix();
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
-			vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 0, 0, 1);
-			vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 0, 1, 1);
-			vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
-			vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 1, 0, 0);
+			vertex(vertexConsumer, entry, i, 0.0F, 0, 0, 1);
+			vertex(vertexConsumer, entry, i, 1.0F, 0, 1, 1);
+			vertex(vertexConsumer, entry, i, 1.0F, 1, 1, 0);
+			vertex(vertexConsumer, entry, i, 0.0F, 1, 0, 0);
 			matrixStack.pop();
 			int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
 			ItemStack itemStack = playerEntity.getMainHandStack();
@@ -105,13 +101,13 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		return (float)value / (float)max;
 	}
 
-	private static void vertex(VertexConsumer buffer, Matrix4f matrix, Matrix3f normalMatrix, int light, float x, int y, int u, int v) {
+	private static void vertex(VertexConsumer buffer, MatrixStack.Entry matrix, int light, float x, int y, int u, int v) {
 		buffer.vertex(matrix, x - 0.5F, (float)y - 0.5F, 0.0F)
 			.color(255, 255, 255, 255)
 			.texture((float)u, (float)v)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(light)
-			.normal(normalMatrix, 0.0F, 1.0F, 0.0F)
+			.normal(matrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
@@ -126,7 +122,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		i /= l;
 		j /= l;
 		k /= l;
-		buffer.vertex(matrices.getPositionMatrix(), f, g, h).color(0, 0, 0, 255).normal(matrices.getNormalMatrix(), i, j, k).next();
+		buffer.vertex(matrices, f, g, h).color(0, 0, 0, 255).normal(matrices, i, j, k).next();
 	}
 
 	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {

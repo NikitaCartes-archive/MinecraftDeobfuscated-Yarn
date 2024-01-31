@@ -99,7 +99,7 @@ public class StructureTemplate {
 					BlockEntity blockEntity = world.getBlockEntity(blockPos4);
 					StructureTemplate.StructureBlockInfo structureBlockInfo;
 					if (blockEntity != null) {
-						structureBlockInfo = new StructureTemplate.StructureBlockInfo(blockPos5, blockState, blockEntity.createNbtWithId());
+						structureBlockInfo = new StructureTemplate.StructureBlockInfo(blockPos5, blockState, blockEntity.createNbtWithId(world.getRegistryManager()));
 					} else {
 						structureBlockInfo = new StructureTemplate.StructureBlockInfo(blockPos5, blockState, null);
 					}
@@ -277,7 +277,7 @@ public class StructureTemplate {
 										structureBlockInfo.nbt.putLong("LootTableSeed", random.nextLong());
 									}
 
-									blockEntity.readNbt(structureBlockInfo.nbt);
+									blockEntity.readNbt(structureBlockInfo.nbt, world.getRegistryManager());
 								}
 							}
 
@@ -443,7 +443,7 @@ public class StructureTemplate {
 					f += entity.applyMirror(mirror) - entity.getYaw();
 					entity.refreshPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.getPitch());
 					if (initializeMobs && entity instanceof MobEntity) {
-						((MobEntity)entity).initialize(world, world.getLocalDifficulty(BlockPos.ofFloored(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
+						((MobEntity)entity).initialize(world, world.getLocalDifficulty(BlockPos.ofFloored(vec3d2)), SpawnReason.STRUCTURE, null);
 					}
 
 					world.spawnEntityAndPassengers(entity);

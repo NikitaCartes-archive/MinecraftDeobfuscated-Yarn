@@ -174,14 +174,14 @@ public class FallingBlockEntity extends Entity {
 									if (this.blockEntityData != null && this.block.hasBlockEntity()) {
 										BlockEntity blockEntity = this.getWorld().getBlockEntity(blockPos);
 										if (blockEntity != null) {
-											NbtCompound nbtCompound = blockEntity.createNbt();
+											NbtCompound nbtCompound = blockEntity.createNbt(this.getWorld().getRegistryManager());
 
 											for (String string : this.blockEntityData.getKeys()) {
 												nbtCompound.put(string, this.blockEntityData.get(string).copy());
 											}
 
 											try {
-												blockEntity.readNbt(nbtCompound);
+												blockEntity.readNbt(nbtCompound, this.getWorld().getRegistryManager());
 											} catch (Exception var15) {
 												LOGGER.error("Failed to load block entity from falling block", (Throwable)var15);
 											}

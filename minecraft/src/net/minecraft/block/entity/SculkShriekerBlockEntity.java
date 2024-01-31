@@ -20,6 +20,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.registry.tag.TagKey;
@@ -77,8 +78,8 @@ public class SculkShriekerBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("warning_level", NbtElement.NUMBER_TYPE)) {
 			this.warningLevel = nbt.getInt("warning_level");
 		}
@@ -92,8 +93,8 @@ public class SculkShriekerBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		nbt.putInt("warning_level", this.warningLevel);
 		Vibrations.ListenerData.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.vibrationListenerData)

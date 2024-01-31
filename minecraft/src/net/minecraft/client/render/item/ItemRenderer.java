@@ -131,8 +131,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl2);
 				VertexConsumer vertexConsumer;
 				if (usesDynamicDisplay(stack) && stack.hasGlint()) {
-					matrices.push();
-					MatrixStack.Entry entry = matrices.peek();
+					MatrixStack.Entry entry = matrices.peek().copy();
 					if (renderMode == ModelTransformationMode.GUI) {
 						MatrixUtil.scale(entry.getPositionMatrix(), 0.5F);
 					} else if (renderMode.isFirstPerson()) {
@@ -144,8 +143,6 @@ public class ItemRenderer implements SynchronousResourceReloader {
 					} else {
 						vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumers, renderLayer, entry);
 					}
-
-					matrices.pop();
 				} else if (bl2) {
 					vertexConsumer = getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
 				} else {
@@ -172,17 +169,11 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	}
 
 	public static VertexConsumer getDynamicDisplayGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
-		return VertexConsumers.union(
-			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getPositionMatrix(), entry.getNormalMatrix(), 0.0078125F),
-			provider.getBuffer(layer)
-		);
+		return VertexConsumers.union(new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry, 0.0078125F), provider.getBuffer(layer));
 	}
 
 	public static VertexConsumer getDirectDynamicDisplayGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
-		return VertexConsumers.union(
-			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getPositionMatrix(), entry.getNormalMatrix(), 0.0078125F),
-			provider.getBuffer(layer)
-		);
+		return VertexConsumers.union(new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry, 0.0078125F), provider.getBuffer(layer));
 	}
 
 	public static VertexConsumer getItemGlintConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {

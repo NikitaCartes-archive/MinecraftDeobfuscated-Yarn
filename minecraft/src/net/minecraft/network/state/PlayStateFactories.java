@@ -30,6 +30,7 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.DebugSampleSubscriptionC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
@@ -97,6 +98,7 @@ import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.DebugSampleS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
@@ -204,6 +206,7 @@ public class PlayStateFactories {
 				.add(PlayPackets.CONTAINER_SLOT_STATE_CHANGED, SlotChangedStateC2SPacket.CODEC)
 				.add(CookiePackets.COOKIE_RESPONSE, CookieResponseC2SPacket.CODEC)
 				.add(CommonPackets.CUSTOM_PAYLOAD_C2S, CustomPayloadC2SPacket.CODEC)
+				.add(PlayPackets.DEBUG_SAMPLE_SUBSCRIPTION, DebugSampleSubscriptionC2SPacket.CODEC)
 				.add(PlayPackets.EDIT_BOOK, BookUpdateC2SPacket.CODEC)
 				.add(PlayPackets.ENTITY_TAG_QUERY, QueryEntityNbtC2SPacket.CODEC)
 				.add(PlayPackets.INTERACT, PlayerInteractEntityC2SPacket.CODEC)
@@ -272,6 +275,7 @@ public class PlayStateFactories {
 				.add(PlayPackets.CUSTOM_CHAT_COMPLETIONS, ChatSuggestionsS2CPacket.CODEC)
 				.add(CommonPackets.CUSTOM_PAYLOAD_S2C, CustomPayloadS2CPacket.PLAY_CODEC)
 				.add(PlayPackets.DAMAGE_EVENT, EntityDamageS2CPacket.CODEC)
+				.add(PlayPackets.DEBUG_SAMPLE, DebugSampleS2CPacket.CODEC)
 				.add(PlayPackets.DELETE_CHAT, RemoveMessageS2CPacket.CODEC)
 				.add(CommonPackets.DISCONNECT, DisconnectS2CPacket.CODEC)
 				.add(PlayPackets.DISGUISED_CHAT, ProfilelessChatMessageS2CPacket.CODEC)

@@ -2,28 +2,33 @@ package net.minecraft.entity.effect;
 
 import com.google.common.collect.ComparisonChain;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 
 public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int INFINITE = -1;
-	private static final String ID_NBT_KEY = "id";
-	private static final String AMBIENT_NBT_KEY = "ambient";
-	private static final String HIDDEN_EFFECT_NBT_KEY = "hidden_effect";
-	private static final String AMPLIFIER_NBT_KEY = "amplifier";
-	private static final String DURATION_NBT_KEY = "duration";
-	private static final String SHOW_PARTICLES_NBT_KEY = "show_particles";
-	private static final String SHOW_ICON_NBT_KEY = "show_icon";
+	public static final Codec<StatusEffectInstance> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Registries.STATUS_EFFECT.createEntryCodec().fieldOf("id").forGetter(StatusEffectInstance::getEffectType),
+					StatusEffectInstance.Parameters.CODEC.forGetter(StatusEffectInstance::asParameters)
+				)
+				.apply(instance, StatusEffectInstance::new)
+	);
 	private final RegistryEntry<StatusEffect> type;
 	private int duration;
 	private int amplifier;
@@ -82,6 +87,29 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	public StatusEffectInstance(StatusEffectInstance instance) {
 		this.type = instance.type;
 		this.copyFrom(instance);
+	}
+
+	private StatusEffectInstance(RegistryEntry<StatusEffect> effect, StatusEffectInstance.Parameters parameters) {
+		this(
+			effect,
+			parameters.duration(),
+			parameters.amplifier(),
+			parameters.ambient(),
+			parameters.showParticles(),
+			parameters.showIcon(),
+			(StatusEffectInstance)parameters.hiddenEffect().map(parametersx -> new StatusEffectInstance(effect, parametersx)).orElse(null)
+		);
+	}
+
+	private StatusEffectInstance.Parameters asParameters() {
+		return new StatusEffectInstance.Parameters(
+			this.getAmplifier(),
+			this.getDuration(),
+			this.isAmbient(),
+			this.shouldShowParticles(),
+			this.shouldShowIcon(),
+			Optional.ofNullable(this.hiddenEffect).map(StatusEffectInstance::asParameters)
+		);
 	}
 
 	/**
@@ -270,52 +298,13 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return 31 * i + (this.ambient ? 1 : 0);
 	}
 
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		Identifier identifier = ((RegistryKey)this.type.getKey().orElseThrow()).getValue();
-		nbt.putString("id", identifier.toString());
-		this.writeTypelessNbt(nbt);
-		return nbt;
-	}
-
-	private void writeTypelessNbt(NbtCompound nbt) {
-		nbt.putByte("amplifier", (byte)this.getAmplifier());
-		nbt.putInt("duration", this.getDuration());
-		nbt.putBoolean("ambient", this.isAmbient());
-		nbt.putBoolean("show_particles", this.shouldShowParticles());
-		nbt.putBoolean("show_icon", this.shouldShowIcon());
-		if (this.hiddenEffect != null) {
-			NbtCompound nbtCompound = new NbtCompound();
-			this.hiddenEffect.writeNbt(nbtCompound);
-			nbt.put("hidden_effect", nbtCompound);
-		}
+	public NbtElement writeNbt() {
+		return Util.getResult(CODEC.encodeStart(NbtOps.INSTANCE, this), IllegalStateException::new);
 	}
 
 	@Nullable
 	public static StatusEffectInstance fromNbt(NbtCompound nbt) {
-		Identifier identifier = Identifier.tryParse(nbt.getString("id"));
-		return identifier == null ? null : (StatusEffectInstance)Registries.STATUS_EFFECT.getEntry(identifier).map(effect -> fromNbt(effect, nbt)).orElse(null);
-	}
-
-	private static StatusEffectInstance fromNbt(RegistryEntry<StatusEffect> effect, NbtCompound nbt) {
-		int i = nbt.getByte("amplifier");
-		int j = nbt.getInt("duration");
-		boolean bl = nbt.getBoolean("ambient");
-		boolean bl2 = true;
-		if (nbt.contains("show_particles", NbtElement.BYTE_TYPE)) {
-			bl2 = nbt.getBoolean("show_particles");
-		}
-
-		boolean bl3 = bl2;
-		if (nbt.contains("show_icon", NbtElement.BYTE_TYPE)) {
-			bl3 = nbt.getBoolean("show_icon");
-		}
-
-		StatusEffectInstance statusEffectInstance = null;
-		if (nbt.contains("hidden_effect", NbtElement.COMPOUND_TYPE)) {
-			statusEffectInstance = fromNbt(effect, nbt.getCompound("hidden_effect"));
-		}
-
-		return new StatusEffectInstance(effect, j, Math.max(i, 0), bl, bl2, bl3, statusEffectInstance);
+		return (StatusEffectInstance)CODEC.parse(NbtOps.INSTANCE, nbt).resultOrPartial(LOGGER::error).orElse(null);
 	}
 
 	public int compareTo(StatusEffectInstance statusEffectInstance) {
@@ -406,6 +395,31 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			}
 
 			return MathHelper.lerp(tickDelta, this.prevFactor, this.factor);
+		}
+	}
+
+	static record Parameters(
+		int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<StatusEffectInstance.Parameters> hiddenEffect
+	) {
+		private static final Codec<Integer> AMPLIFIER_CODEC = Codecs.validate(Codec.BYTE.xmap(Byte::intValue, Integer::byteValue), Codec.checkRange(0, 127));
+		public static final MapCodec<StatusEffectInstance.Parameters> CODEC = Codecs.createRecursiveMap(
+			codec -> RecordCodecBuilder.mapCodec(
+					instance -> instance.group(
+								Codecs.createStrictOptionalFieldCodec(AMPLIFIER_CODEC, "amplifier", 0).forGetter(StatusEffectInstance.Parameters::amplifier),
+								Codecs.createStrictOptionalFieldCodec(Codec.INT, "duration", 0).forGetter(StatusEffectInstance.Parameters::duration),
+								Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "ambient", false).forGetter(StatusEffectInstance.Parameters::ambient),
+								Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_particles", true).forGetter(StatusEffectInstance.Parameters::showParticles),
+								Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_icon").forGetter(parameters -> Optional.of(parameters.showIcon())),
+								Codecs.createStrictOptionalFieldCodec(codec, "hidden_effect").forGetter(StatusEffectInstance.Parameters::hiddenEffect)
+							)
+							.apply(instance, StatusEffectInstance.Parameters::create)
+				)
+		);
+
+		private static StatusEffectInstance.Parameters create(
+			int amplifier, int duration, boolean ambient, boolean showParticles, Optional<Boolean> showIcon, Optional<StatusEffectInstance.Parameters> hiddenEffect
+		) {
+			return new StatusEffectInstance.Parameters(amplifier, duration, ambient, showParticles, (Boolean)showIcon.orElse(showParticles), hiddenEffect);
 		}
 	}
 }

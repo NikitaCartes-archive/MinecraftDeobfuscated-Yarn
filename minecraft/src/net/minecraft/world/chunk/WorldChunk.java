@@ -28,6 +28,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.crash.CrashCallable;
@@ -392,10 +393,10 @@ public class WorldChunk extends Chunk {
 
 	@Nullable
 	@Override
-	public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
+	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registryLookup) {
 		BlockEntity blockEntity = this.getBlockEntity(pos);
 		if (blockEntity != null && !blockEntity.isRemoved()) {
-			NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
+			NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData(this.world.getRegistryManager());
 			nbtCompound.putBoolean("keepPacked", false);
 			return nbtCompound;
 		} else {
@@ -477,7 +478,7 @@ public class WorldChunk extends Chunk {
 		consumer.accept((ChunkData.BlockEntityVisitor)(pos, blockEntityType, nbtx) -> {
 			BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
 			if (blockEntity != null && nbtx != null && blockEntity.getType() == blockEntityType) {
-				blockEntity.readNbt(nbtx);
+				blockEntity.readNbt(nbtx, this.world.getRegistryManager());
 			}
 		});
 	}
@@ -543,7 +544,7 @@ public class WorldChunk extends Chunk {
 				LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", pos, blockState);
 			}
 		} else {
-			blockEntity = BlockEntity.createFromNbt(pos, blockState, nbt);
+			blockEntity = BlockEntity.createFromNbt(pos, blockState, nbt, this.world.getRegistryManager());
 		}
 
 		if (blockEntity != null) {

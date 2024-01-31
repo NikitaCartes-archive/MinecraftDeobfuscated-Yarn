@@ -1,28 +1,18 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
-public class SubtitleS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, SubtitleS2CPacket> CODEC = Packet.createCodec(SubtitleS2CPacket::write, SubtitleS2CPacket::new);
-	private final Text subtitle;
-
-	public SubtitleS2CPacket(Text subtitle) {
-		this.subtitle = subtitle;
-	}
-
-	private SubtitleS2CPacket(PacketByteBuf buf) {
-		this.subtitle = buf.readUnlimitedText();
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeText(this.subtitle);
-	}
+public record SubtitleS2CPacket(Text text) implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, SubtitleS2CPacket> CODEC = PacketCodec.tuple(
+		TextCodecs.REGISTRY_PACKET_CODEC, SubtitleS2CPacket::text, SubtitleS2CPacket::new
+	);
 
 	@Override
 	public PacketType<SubtitleS2CPacket> getPacketId() {
@@ -31,9 +21,5 @@ public class SubtitleS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSubtitle(this);
-	}
-
-	public Text getSubtitle() {
-		return this.subtitle;
 	}
 }

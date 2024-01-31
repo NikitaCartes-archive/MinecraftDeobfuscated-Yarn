@@ -28,14 +28,13 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeSupplier;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import net.minecraft.util.math.MathHelper;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
@@ -74,12 +73,11 @@ public class RenderSystem {
 		indexConsumer.accept(firstVertexIndex + 2);
 		indexConsumer.accept(firstVertexIndex + 1);
 	});
-	private static Matrix3f inverseViewRotationMatrix = new Matrix3f().zero();
 	private static Matrix4f projectionMatrix = new Matrix4f();
 	private static Matrix4f savedProjectionMatrix = new Matrix4f();
 	private static VertexSorter vertexSorting = VertexSorter.BY_DISTANCE;
 	private static VertexSorter savedVertexSorting = VertexSorter.BY_DISTANCE;
-	private static final MatrixStack modelViewStack = new MatrixStack();
+	private static final Matrix4fStack modelViewStack = new Matrix4fStack(16);
 	private static Matrix4f modelViewMatrix = new Matrix4f();
 	private static Matrix4f textureMatrix = new Matrix4f();
 	private static final int[] shaderTextures = new int[12];
@@ -707,9 +705,9 @@ public class RenderSystem {
 		setShaderTexture(1, 0);
 	}
 
-	public static void setupLevelDiffuseLighting(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f) {
+	public static void setupLevelDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		assertOnRenderThread();
-		GlStateManager.setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
+		setShaderLights(vector3f, vector3f2);
 	}
 
 	public static void setupGuiFlatDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
@@ -847,15 +845,6 @@ public class RenderSystem {
 		}
 	}
 
-	public static void setInverseViewRotationMatrix(Matrix3f inverseViewRotationMatrix) {
-		Matrix3f matrix3f = new Matrix3f(inverseViewRotationMatrix);
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> inverseViewRotationMatrix = matrix3f);
-		} else {
-			RenderSystem.inverseViewRotationMatrix = matrix3f;
-		}
-	}
-
 	public static void setTextureMatrix(Matrix4f textureMatrix) {
 		Matrix4f matrix4f = new Matrix4f(textureMatrix);
 		if (!isOnRenderThread()) {
@@ -874,7 +863,7 @@ public class RenderSystem {
 	}
 
 	public static void applyModelViewMatrix() {
-		Matrix4f matrix4f = new Matrix4f(modelViewStack.peek().getPositionMatrix());
+		Matrix4f matrix4f = new Matrix4f(modelViewStack);
 		if (!isOnRenderThread()) {
 			recordRenderCall(() -> modelViewMatrix = matrix4f);
 		} else {
@@ -913,17 +902,12 @@ public class RenderSystem {
 		return projectionMatrix;
 	}
 
-	public static Matrix3f getInverseViewRotationMatrix() {
-		assertOnRenderThread();
-		return inverseViewRotationMatrix;
-	}
-
 	public static Matrix4f getModelViewMatrix() {
 		assertOnRenderThread();
 		return modelViewMatrix;
 	}
 
-	public static MatrixStack getModelViewStack() {
+	public static Matrix4fStack getModelViewStack() {
 		return modelViewStack;
 	}
 

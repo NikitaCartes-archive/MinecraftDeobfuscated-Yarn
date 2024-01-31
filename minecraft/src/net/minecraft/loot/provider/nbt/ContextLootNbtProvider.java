@@ -19,7 +19,7 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 		@Override
 		public NbtElement getNbt(LootContext context) {
 			BlockEntity blockEntity = context.get(LootContextParameters.BLOCK_ENTITY);
-			return blockEntity != null ? blockEntity.createNbtWithIdentifyingData() : null;
+			return blockEntity != null ? blockEntity.createNbtWithIdentifyingData(blockEntity.getWorld().getRegistryManager()) : null;
 		}
 
 		@Override

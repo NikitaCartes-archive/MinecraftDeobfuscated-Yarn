@@ -62,11 +62,11 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 			if (optional.isEmpty()) {
 				LOGGER.warn("Unable to find texture {}", identifier2);
 			} else {
-				Sprite sprite = new Sprite(identifier2, (Resource)optional.get(), map.size());
+				AtlasSprite atlasSprite = new AtlasSprite(identifier2, (Resource)optional.get(), map.size());
 
 				for (Entry<String, Supplier<IntUnaryOperator>> entry : map.entrySet()) {
 					Identifier identifier3 = identifier.withSuffixedPath("_" + (String)entry.getKey());
-					regions.add(identifier3, new PalettedPermutationsAtlasSource.PalettedSpriteRegion(sprite, (Supplier<IntUnaryOperator>)entry.getValue(), identifier3));
+					regions.add(identifier3, new PalettedPermutationsAtlasSource.PalettedSpriteRegion(atlasSprite, (Supplier<IntUnaryOperator>)entry.getValue(), identifier3));
 				}
 			}
 		}
@@ -142,7 +142,8 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record PalettedSpriteRegion(Sprite baseImage, Supplier<IntUnaryOperator> palette, Identifier permutationLocation) implements AtlasSource.SpriteRegion {
+	static record PalettedSpriteRegion(AtlasSprite baseImage, Supplier<IntUnaryOperator> palette, Identifier permutationLocation)
+		implements AtlasSource.SpriteRegion {
 		@Nullable
 		public SpriteContents apply(SpriteOpener spriteOpener) {
 			Object var3;

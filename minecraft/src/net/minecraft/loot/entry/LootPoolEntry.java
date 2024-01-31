@@ -11,6 +11,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 
 public abstract class LootPoolEntry implements EntryCombiner {
@@ -19,7 +20,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 
 	protected LootPoolEntry(List<LootCondition> conditions) {
 		this.conditions = conditions;
-		this.conditionPredicate = LootConditionTypes.matchingAll(conditions);
+		this.conditionPredicate = Util.allOf(conditions);
 	}
 
 	protected static <T extends LootPoolEntry> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {

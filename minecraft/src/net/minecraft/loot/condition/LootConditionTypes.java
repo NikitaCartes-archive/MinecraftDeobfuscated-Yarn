@@ -1,8 +1,6 @@
 package net.minecraft.loot.condition;
 
 import com.mojang.serialization.Codec;
-import java.util.List;
-import java.util.function.Predicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -34,51 +32,5 @@ public class LootConditionTypes {
 
 	private static LootConditionType register(String id, Codec<? extends LootCondition> codec) {
 		return Registry.register(Registries.LOOT_CONDITION_TYPE, new Identifier(id), new LootConditionType(codec));
-	}
-
-	/**
-	 * Returns a predicate that returns true only if all its element predicates
-	 * return true, as if applied by logical and.
-	 */
-	public static <T> Predicate<T> matchingAll(List<? extends Predicate<T>> predicates) {
-		List<Predicate<T>> list = List.copyOf(predicates);
-
-		return switch (list.size()) {
-			case 0 -> predicatesx -> true;
-			case 1 -> (Predicate)list.get(0);
-			case 2 -> ((Predicate)list.get(0)).and((Predicate)list.get(1));
-			default -> operand -> {
-			for (Predicate<T> predicate : list) {
-				if (!predicate.test(operand)) {
-					return false;
-				}
-			}
-
-			return true;
-		};
-		};
-	}
-
-	/**
-	 * Returns a predicate that returns true if any its element predicates
-	 * return true, as if applied by logical or.
-	 */
-	public static <T> Predicate<T> matchingAny(List<? extends Predicate<T>> predicates) {
-		List<Predicate<T>> list = List.copyOf(predicates);
-
-		return switch (list.size()) {
-			case 0 -> predicatesx -> false;
-			case 1 -> (Predicate)list.get(0);
-			case 2 -> ((Predicate)list.get(0)).or((Predicate)list.get(1));
-			default -> operand -> {
-			for (Predicate<T> predicate : list) {
-				if (predicate.test(operand)) {
-					return true;
-				}
-			}
-
-			return false;
-		};
-		};
 	}
 }

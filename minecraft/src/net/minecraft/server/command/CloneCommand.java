@@ -250,7 +250,7 @@ public class CloneCommand {
 							if (filter.test(cachedBlockPosition)) {
 								BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos6);
 								if (blockEntity != null) {
-									NbtCompound nbtCompound = blockEntity.createNbt();
+									NbtCompound nbtCompound = blockEntity.createNbt(source.getRegistryManager());
 									list2.add(new CloneCommand.BlockInfo(blockPos7, blockState, nbtCompound));
 									deque.addLast(blockPos6);
 								} else if (!blockState.isOpaqueFullCube(serverWorld, blockPos6) && !blockState.isFullCube(serverWorld, blockPos6)) {
@@ -300,7 +300,7 @@ public class CloneCommand {
 				for (CloneCommand.BlockInfo blockInfo2x : list2) {
 					BlockEntity blockEntity4 = serverWorld2.getBlockEntity(blockInfo2x.pos);
 					if (blockInfo2x.blockEntityNbt != null && blockEntity4 != null) {
-						blockEntity4.readNbt(blockInfo2x.blockEntityNbt);
+						blockEntity4.readNbt(blockInfo2x.blockEntityNbt, serverWorld2.getRegistryManager());
 						blockEntity4.markDirty();
 					}
 

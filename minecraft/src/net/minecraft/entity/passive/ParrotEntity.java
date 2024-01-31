@@ -137,15 +137,13 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		this.setVariant(Util.getRandom(ParrotEntity.Variant.values(), world.getRandom()));
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(false);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Override

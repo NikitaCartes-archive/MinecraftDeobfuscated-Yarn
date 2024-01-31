@@ -1,81 +1,38 @@
 package net.minecraft.network.packet.s2c.play;
 
-import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.item.map.MapIcon;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.text.Text;
 
-public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, MapUpdateS2CPacket> CODEC = Packet.createCodec(MapUpdateS2CPacket::write, MapUpdateS2CPacket::new);
-	private final int id;
-	private final byte scale;
-	private final boolean locked;
-	@Nullable
-	private final List<MapIcon> icons;
-	@Nullable
-	private final MapState.UpdateData updateData;
+public record MapUpdateS2CPacket(MapId mapId, byte scale, boolean locked, Optional<List<MapIcon>> icons, Optional<MapState.UpdateData> updateData)
+	implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, MapUpdateS2CPacket> CODEC = PacketCodec.tuple(
+		MapId.CODEC,
+		MapUpdateS2CPacket::mapId,
+		PacketCodecs.BYTE,
+		MapUpdateS2CPacket::scale,
+		PacketCodecs.BOOL,
+		MapUpdateS2CPacket::locked,
+		MapIcon.CODEC.collect(PacketCodecs.toList()).collect(PacketCodecs::optional),
+		MapUpdateS2CPacket::icons,
+		MapState.UpdateData.CODEC,
+		MapUpdateS2CPacket::updateData,
+		MapUpdateS2CPacket::new
+	);
 
-	public MapUpdateS2CPacket(int id, byte scale, boolean locked, @Nullable Collection<MapIcon> icons, @Nullable MapState.UpdateData updateData) {
-		this.id = id;
-		this.scale = scale;
-		this.locked = locked;
-		this.icons = icons != null ? Lists.<MapIcon>newArrayList(icons) : null;
-		this.updateData = updateData;
-	}
-
-	private MapUpdateS2CPacket(PacketByteBuf buf) {
-		this.id = buf.readVarInt();
-		this.scale = buf.readByte();
-		this.locked = buf.readBoolean();
-		this.icons = buf.readNullable(buf2 -> buf2.readList(buf3 -> {
-				MapIcon.Type type = buf3.readEnumConstant(MapIcon.Type.class);
-				byte b = buf3.readByte();
-				byte c = buf3.readByte();
-				byte d = (byte)(buf3.readByte() & 15);
-				Text text = buf3.readNullable(PacketByteBuf::readUnlimitedText);
-				return new MapIcon(type, b, c, d, text);
-			}));
-		int i = buf.readUnsignedByte();
-		if (i > 0) {
-			int j = buf.readUnsignedByte();
-			int k = buf.readUnsignedByte();
-			int l = buf.readUnsignedByte();
-			byte[] bs = buf.readByteArray();
-			this.updateData = new MapState.UpdateData(k, l, i, j, bs);
-		} else {
-			this.updateData = null;
-		}
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.id);
-		buf.writeByte(this.scale);
-		buf.writeBoolean(this.locked);
-		buf.writeNullable(this.icons, (buf2, icons) -> buf2.writeCollection(icons, (b, icon) -> {
-				b.writeEnumConstant(icon.type());
-				b.writeByte(icon.x());
-				b.writeByte(icon.z());
-				b.writeByte(icon.rotation() & 15);
-				b.writeNullable(icon.text(), PacketByteBuf::writeText);
-			}));
-		if (this.updateData != null) {
-			buf.writeByte(this.updateData.width);
-			buf.writeByte(this.updateData.height);
-			buf.writeByte(this.updateData.startX);
-			buf.writeByte(this.updateData.startZ);
-			buf.writeByteArray(this.updateData.colors);
-		} else {
-			buf.writeByte(0);
-		}
+	public MapUpdateS2CPacket(MapId mapId, byte scale, boolean locked, @Nullable Collection<MapIcon> icons, @Nullable MapState.UpdateData updateData) {
+		this(mapId, scale, locked, icons != null ? Optional.of(List.copyOf(icons)) : Optional.empty(), Optional.ofNullable(updateData));
 	}
 
 	@Override
@@ -87,25 +44,8 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onMapUpdate(this);
 	}
 
-	public int getId() {
-		return this.id;
-	}
-
 	public void apply(MapState mapState) {
-		if (this.icons != null) {
-			mapState.replaceIcons(this.icons);
-		}
-
-		if (this.updateData != null) {
-			this.updateData.setColorsTo(mapState);
-		}
-	}
-
-	public byte getScale() {
-		return this.scale;
-	}
-
-	public boolean isLocked() {
-		return this.locked;
+		this.icons.ifPresent(mapState::replaceIcons);
+		this.updateData.ifPresent(updateData -> updateData.setColorsTo(mapState));
 	}
 }

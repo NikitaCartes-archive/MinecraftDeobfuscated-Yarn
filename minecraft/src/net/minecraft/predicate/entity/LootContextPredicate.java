@@ -7,6 +7,7 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.util.Util;
 
 /**
  * A list of loot conditions applied to entities. All conditions must match for this
@@ -21,7 +22,7 @@ public class LootContextPredicate {
 
 	LootContextPredicate(List<LootCondition> conditions) {
 		this.conditions = conditions;
-		this.combinedCondition = LootConditionTypes.matchingAll(conditions);
+		this.combinedCondition = Util.allOf(conditions);
 	}
 
 	public static LootContextPredicate create(LootCondition... conditions) {

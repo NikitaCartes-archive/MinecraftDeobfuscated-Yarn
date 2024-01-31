@@ -169,36 +169,37 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 		return SoundEvents.ENTITY_TROPICAL_FISH_FLOP;
 	}
 
+	@Override
+	public void copyDataFromNbt(NbtCompound nbt) {
+		super.copyDataFromNbt(nbt);
+		if (nbt.contains("BucketVariantTag", NbtElement.INT_TYPE)) {
+			this.setTropicalFishVariant(nbt.getInt("BucketVariantTag"));
+		}
+	}
+
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-		if (spawnReason == SpawnReason.BUCKET && entityNbt != null && entityNbt.contains("BucketVariantTag", NbtElement.INT_TYPE)) {
-			this.setTropicalFishVariant(entityNbt.getInt("BucketVariantTag"));
-			return entityData;
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+		entityData = super.initialize(world, difficulty, spawnReason, entityData);
+		Random random = world.getRandom();
+		TropicalFishEntity.Variant variant;
+		if (entityData instanceof TropicalFishEntity.TropicalFishData tropicalFishData) {
+			variant = tropicalFishData.variant;
+		} else if ((double)random.nextFloat() < 0.9) {
+			variant = Util.getRandom(COMMON_VARIANTS, random);
+			entityData = new TropicalFishEntity.TropicalFishData(this, variant);
 		} else {
-			Random random = world.getRandom();
-			TropicalFishEntity.Variant variant;
-			if (entityData instanceof TropicalFishEntity.TropicalFishData tropicalFishData) {
-				variant = tropicalFishData.variant;
-			} else if ((double)random.nextFloat() < 0.9) {
-				variant = Util.getRandom(COMMON_VARIANTS, random);
-				entityData = new TropicalFishEntity.TropicalFishData(this, variant);
-			} else {
-				this.commonSpawn = false;
-				TropicalFishEntity.Variety[] varietys = TropicalFishEntity.Variety.values();
-				DyeColor[] dyeColors = DyeColor.values();
-				TropicalFishEntity.Variety variety = Util.getRandom(varietys, random);
-				DyeColor dyeColor = Util.getRandom(dyeColors, random);
-				DyeColor dyeColor2 = Util.getRandom(dyeColors, random);
-				variant = new TropicalFishEntity.Variant(variety, dyeColor, dyeColor2);
-			}
-
-			this.setTropicalFishVariant(variant.getId());
-			return entityData;
+			this.commonSpawn = false;
+			TropicalFishEntity.Variety[] varietys = TropicalFishEntity.Variety.values();
+			DyeColor[] dyeColors = DyeColor.values();
+			TropicalFishEntity.Variety variety = Util.getRandom(varietys, random);
+			DyeColor dyeColor = Util.getRandom(dyeColors, random);
+			DyeColor dyeColor2 = Util.getRandom(dyeColors, random);
+			variant = new TropicalFishEntity.Variant(variety, dyeColor, dyeColor2);
 		}
+
+		this.setTropicalFishVariant(variant.getId());
+		return entityData;
 	}
 
 	public static boolean canTropicalFishSpawn(EntityType<TropicalFishEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {

@@ -1102,6 +1102,7 @@ public class ItemGroups {
 						entries.add(Items.DRAGON_EGG);
 						entries.add(Items.END_PORTAL_FRAME);
 						entries.add(Items.ENDER_EYE);
+						entries.add(Items.field_48847);
 						entries.add(Items.INFESTED_STONE);
 						entries.add(Items.INFESTED_COBBLESTONE);
 						entries.add(Items.INFESTED_STONE_BRICKS);

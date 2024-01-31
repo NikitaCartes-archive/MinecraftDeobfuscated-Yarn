@@ -3,45 +3,44 @@ package net.minecraft.item;
 import java.util.List;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.tag.ItemTags;
 
 public interface DyeableItem {
 	String COLOR_KEY = "color";
 	String DISPLAY_KEY = "display";
 	int DEFAULT_COLOR = 10511680;
 
-	default boolean hasColor(ItemStack stack) {
+	static boolean hasColor(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getSubNbt("display");
 		return nbtCompound != null && nbtCompound.contains("color", NbtElement.NUMBER_TYPE);
 	}
 
-	default int getColor(ItemStack stack) {
+	static int getColor(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getSubNbt("display");
 		return nbtCompound != null && nbtCompound.contains("color", NbtElement.NUMBER_TYPE) ? nbtCompound.getInt("color") : 10511680;
 	}
 
-	default void removeColor(ItemStack stack) {
+	static void removeColor(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getSubNbt("display");
 		if (nbtCompound != null && nbtCompound.contains("color")) {
 			nbtCompound.remove("color");
 		}
 	}
 
-	default void setColor(ItemStack stack, int color) {
+	static void setColor(ItemStack stack, int color) {
 		stack.getOrCreateSubNbt("display").putInt("color", color);
 	}
 
 	static ItemStack blendAndSetColor(ItemStack stack, List<DyeItem> colors) {
-		ItemStack itemStack = ItemStack.EMPTY;
-		int[] is = new int[3];
-		int i = 0;
-		int j = 0;
-		DyeableItem dyeableItem = null;
-		Item item = stack.getItem();
-		if (item instanceof DyeableItem) {
-			dyeableItem = (DyeableItem)item;
-			itemStack = stack.copyWithCount(1);
-			if (dyeableItem.hasColor(stack)) {
-				int k = dyeableItem.getColor(itemStack);
+		if (!stack.isIn(ItemTags.DYEABLE)) {
+			return ItemStack.EMPTY;
+		} else {
+			int[] is = new int[3];
+			int i = 0;
+			int j = 0;
+			ItemStack itemStack = stack.copyWithCount(1);
+			if (hasColor(stack)) {
+				int k = getColor(itemStack);
 				float f = (float)(k >> 16 & 0xFF) / 255.0F;
 				float g = (float)(k >> 8 & 0xFF) / 255.0F;
 				float h = (float)(k & 0xFF) / 255.0F;
@@ -63,11 +62,7 @@ public interface DyeableItem {
 				is[2] += n;
 				j++;
 			}
-		}
 
-		if (dyeableItem == null) {
-			return ItemStack.EMPTY;
-		} else {
 			int k = is[0] / j;
 			int o = is[1] / j;
 			int p = is[2] / j;
@@ -76,9 +71,9 @@ public interface DyeableItem {
 			k = (int)((float)k * h / q);
 			o = (int)((float)o * h / q);
 			p = (int)((float)p * h / q);
-			int var26 = (k << 8) + o;
-			var26 = (var26 << 8) + p;
-			dyeableItem.setColor(itemStack, var26);
+			int var24 = (k << 8) + o;
+			var24 = (var24 << 8) + p;
+			setColor(itemStack, var24);
 			return itemStack;
 		}
 	}

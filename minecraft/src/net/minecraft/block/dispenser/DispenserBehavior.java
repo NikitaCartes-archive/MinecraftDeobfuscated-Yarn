@@ -214,7 +214,7 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.pos().offset(direction);
 				ServerWorld serverWorld = pointer.world();
 				Consumer<ArmorStandEntity> consumer = EntityType.copier(entity -> entity.setYaw(direction.asRotation()), serverWorld, stack, null);
-				ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.spawn(serverWorld, stack.getNbt(), consumer, blockPos, SpawnReason.DISPENSER, false, false);
+				ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.spawn(serverWorld, consumer, blockPos, SpawnReason.DISPENSER, false, false);
 				if (armorStandEntity != null) {
 					stack.decrement(1);
 				}
@@ -252,8 +252,8 @@ public interface DispenserBehavior {
 
 				for (AbstractHorseEntity abstractHorseEntity : pointer.world()
 					.getEntitiesByClass(AbstractHorseEntity.class, new Box(blockPos), entity -> entity.isAlive() && entity.hasArmorSlot())) {
-					if (abstractHorseEntity.isHorseArmor(stack) && !abstractHorseEntity.hasArmorInSlot() && abstractHorseEntity.isTame()) {
-						abstractHorseEntity.getStackReference(401).set(stack.split(1));
+					if (abstractHorseEntity.isHorseArmor(stack) && !abstractHorseEntity.isWearingBodyArmor() && abstractHorseEntity.isTame()) {
+						abstractHorseEntity.equipBodyArmor(stack.split(1));
 						this.setSuccess(true);
 						return stack;
 					}

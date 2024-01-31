@@ -636,9 +636,9 @@ public class PiglinBrain {
 	}
 
 	public static boolean wearsGoldArmor(LivingEntity entity) {
-		for (ItemStack itemStack : entity.getArmorItems()) {
+		for (ItemStack itemStack : entity.getAllArmorItems()) {
 			Item item = itemStack.getItem();
-			if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial() == ArmorMaterials.GOLD) {
+			if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial().matches(ArmorMaterials.GOLD)) {
 				return true;
 			}
 		}

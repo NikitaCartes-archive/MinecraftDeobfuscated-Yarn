@@ -1,10 +1,6 @@
 package net.minecraft.entity.mob;
 
-import com.google.common.collect.Maps;
-import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.EntityData;
@@ -144,13 +140,11 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
 		this.initEquipment(random, difficulty);
 		this.updateEnchantments(random, difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Override
@@ -164,9 +158,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 		if (random.nextInt(300) == 0) {
 			ItemStack itemStack = this.getMainHandStack();
 			if (itemStack.isOf(Items.CROSSBOW)) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack);
-				map.putIfAbsent(Enchantments.PIERCING, 1);
-				EnchantmentHelper.set(map, itemStack);
+				itemStack.addEnchantment(Enchantments.PIERCING, 1);
 				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 			}
 		}
@@ -234,15 +226,13 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 		boolean bl = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl) {
 			ItemStack itemStack = new ItemStack(Items.CROSSBOW);
-			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
 			if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
-				map.put(Enchantments.QUICK_CHARGE, 2);
+				itemStack.addEnchantment(Enchantments.QUICK_CHARGE, 2);
 			} else if (wave > raid.getMaxWaves(Difficulty.EASY)) {
-				map.put(Enchantments.QUICK_CHARGE, 1);
+				itemStack.addEnchantment(Enchantments.QUICK_CHARGE, 1);
 			}
 
-			map.put(Enchantments.MULTISHOT, 1);
-			EnchantmentHelper.set(map, itemStack);
+			itemStack.addEnchantment(Enchantments.MULTISHOT, 1);
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 		}
 	}

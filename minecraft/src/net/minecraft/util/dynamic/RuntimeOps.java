@@ -343,9 +343,9 @@ public class RuntimeOps implements DynamicOps<Object> {
 		if (map instanceof Map<?, ?> map2) {
 			Map<Object, Object> map3 = new LinkedHashMap(map2);
 			map3.remove(key);
-			return DataResult.success(Map.copyOf(map3));
+			return Map.copyOf(map3);
 		} else {
-			return DataResult.error(() -> "Not a map: " + map);
+			return map;
 		}
 	}
 

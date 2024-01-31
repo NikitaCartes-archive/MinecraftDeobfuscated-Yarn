@@ -1164,7 +1164,7 @@ public class WoodlandMansionGenerator {
 					if (mobEntity != null) {
 						mobEntity.setPersistent();
 						mobEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-						mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+						mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.STRUCTURE, null);
 						world.spawnEntityAndPassengers(mobEntity);
 						world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 					}

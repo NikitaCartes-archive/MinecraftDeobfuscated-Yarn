@@ -31,7 +31,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.ArmadilloEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -146,16 +145,14 @@ public class SpiderEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+		entityData = super.initialize(world, difficulty, spawnReason, entityData);
 		Random random = world.getRandom();
 		if (random.nextInt(100) == 0) {
 			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.getWorld());
 			if (skeletonEntity != null) {
 				skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
-				skeletonEntity.initialize(world, difficulty, spawnReason, null, null);
+				skeletonEntity.initialize(world, difficulty, spawnReason, null);
 				skeletonEntity.startRiding(this);
 			}
 		}

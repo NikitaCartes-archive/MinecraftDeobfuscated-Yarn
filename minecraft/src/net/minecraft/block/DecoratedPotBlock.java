@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenTexts;
@@ -98,7 +99,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 				return ItemActionResult.CONSUME;
 			} else {
 				ItemStack itemStack = decoratedPotBlockEntity.getStack();
-				if (!stack.isEmpty() && (itemStack.isEmpty() || ItemStack.canCombine(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount())) {
+				if (!stack.isEmpty() && (itemStack.isEmpty() || ItemStack.areItemsAndNbtEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount())) {
 					decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.POSITIVE);
 					player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 					ItemStack itemStack2 = player.isCreative() ? stack.copyWithCount(1) : stack.split(1);
@@ -207,8 +208,10 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-		super.appendTooltip(stack, world, tooltip, options);
+	public void appendTooltip(
+		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
+	) {
+		super.appendTooltip(stack, world, tooltip, options, registryManager);
 		DecoratedPotBlockEntity.Sherds sherds = DecoratedPotBlockEntity.Sherds.fromNbt(BlockItem.getBlockEntityNbt(stack));
 		if (!sherds.equals(DecoratedPotBlockEntity.Sherds.DEFAULT)) {
 			tooltip.add(ScreenTexts.EMPTY);

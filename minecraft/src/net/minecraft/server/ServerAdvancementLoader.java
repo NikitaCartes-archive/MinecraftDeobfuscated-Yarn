@@ -19,6 +19,8 @@ import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementPositioner;
 import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.loot.LootManager;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.ErrorReporter;
@@ -32,22 +34,25 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().create();
 	private Map<Identifier, AdvancementEntry> advancements = Map.of();
 	private AdvancementManager manager = new AdvancementManager();
+	private final RegistryWrapper.WrapperLookup registryLookup;
 	private final LootManager conditionManager;
 
-	public ServerAdvancementLoader(LootManager conditionManager) {
+	public ServerAdvancementLoader(RegistryWrapper.WrapperLookup registryLookup, LootManager conditionManager) {
 		super(GSON, "advancements");
+		this.registryLookup = registryLookup;
 		this.conditionManager = conditionManager;
 	}
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
+		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, this.registryLookup);
 		Builder<Identifier, AdvancementEntry> builder = ImmutableMap.builder();
 		map.forEach((id, json) -> {
 			try {
-				Advancement advancement = Util.getResult(Advancement.CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new);
+				Advancement advancement = Util.getResult(Advancement.CODEC.parse(registryOps, json), JsonParseException::new);
 				this.validate(id, advancement);
 				builder.put(id, new AdvancementEntry(id, advancement));
-			} catch (Exception var5x) {
-				LOGGER.error("Parsing error loading custom advancement {}: {}", id, var5x.getMessage());
+			} catch (Exception var6x) {
+				LOGGER.error("Parsing error loading custom advancement {}: {}", id, var6x.getMessage());
 			}
 		});
 		this.advancements = builder.buildOrThrow();

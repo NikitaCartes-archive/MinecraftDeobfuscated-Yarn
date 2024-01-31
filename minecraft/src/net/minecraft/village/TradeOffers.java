@@ -22,7 +22,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.FilledMapItem;
@@ -39,6 +38,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
@@ -1335,7 +1335,7 @@ public class TradeOffers {
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
 			ItemStack itemStack2 = new ItemStack(this.sell);
-			if (this.sell instanceof DyeableArmorItem) {
+			if (itemStack2.isIn(ItemTags.DYEABLE)) {
 				List<DyeItem> list = Lists.<DyeItem>newArrayList();
 				list.add(getDye(random));
 				if (random.nextFloat() > 0.7F) {

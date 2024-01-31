@@ -82,7 +82,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem().hasRecipeRemainder()) {
 					defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
-				} else if (itemStack.hasNbt() && BannerBlockEntity.getPatternCount(itemStack) > 0) {
+				} else if (BannerBlockEntity.getPatternCount(itemStack) > 0) {
 					defaultedList.set(i, itemStack.copyWithCount(1));
 				}
 			}

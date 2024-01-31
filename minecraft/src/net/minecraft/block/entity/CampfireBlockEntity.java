@@ -18,6 +18,7 @@ import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
@@ -120,8 +121,8 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		this.itemsBeingCooked.clear();
 		Inventories.readNbt(nbt, this.itemsBeingCooked);
 		if (nbt.contains("CookingTimes", NbtElement.INT_ARRAY_TYPE)) {
@@ -136,8 +137,8 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		Inventories.writeNbt(nbt, this.itemsBeingCooked, true);
 		nbt.putIntArray("CookingTimes", this.cookingTimes);
 		nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
@@ -148,7 +149,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
 		NbtCompound nbtCompound = new NbtCompound();
 		Inventories.writeNbt(nbtCompound, this.itemsBeingCooked, true);
 		return nbtCompound;

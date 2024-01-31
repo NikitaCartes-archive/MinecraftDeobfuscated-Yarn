@@ -64,7 +64,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	private AbstractHorseEntity getHorse(LocalDifficulty localDifficulty) {
 		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.getWorld());
 		if (skeletonHorseEntity != null) {
-			skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.getWorld(), localDifficulty, SpawnReason.TRIGGERED, null, null);
+			skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.getWorld(), localDifficulty, SpawnReason.TRIGGERED, null);
 			skeletonHorseEntity.setPosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
 			skeletonHorseEntity.timeUntilRegen = 60;
 			skeletonHorseEntity.setPersistent();
@@ -79,7 +79,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, AbstractHorseEntity vehicle) {
 		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.getWorld());
 		if (skeletonEntity != null) {
-			skeletonEntity.initialize((ServerWorld)vehicle.getWorld(), localDifficulty, SpawnReason.TRIGGERED, null, null);
+			skeletonEntity.initialize((ServerWorld)vehicle.getWorld(), localDifficulty, SpawnReason.TRIGGERED, null);
 			skeletonEntity.setPosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
 			skeletonEntity.timeUntilRegen = 60;
 			skeletonEntity.setPersistent();

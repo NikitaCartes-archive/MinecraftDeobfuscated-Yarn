@@ -13,6 +13,7 @@ import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.scoreboard.number.NumberFormatTypes;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
 public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, ScoreboardObjectiveUpdateS2CPacket> CODEC = Packet.createCodec(
@@ -43,7 +44,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 			this.type = ScoreboardCriterion.RenderType.INTEGER;
 			this.numberFormat = Optional.empty();
 		} else {
-			this.displayName = buf.readUnlimitedText();
+			this.displayName = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
 			this.type = buf.readEnumConstant(ScoreboardCriterion.RenderType.class);
 			this.numberFormat = NumberFormatTypes.OPTIONAL_PACKET_CODEC.decode(buf);
 		}
@@ -53,7 +54,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		buf.writeString(this.name);
 		buf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			buf.writeText(this.displayName);
+			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.displayName);
 			buf.writeEnumConstant(this.type);
 			NumberFormatTypes.OPTIONAL_PACKET_CODEC.encode(buf, this.numberFormat);
 		}

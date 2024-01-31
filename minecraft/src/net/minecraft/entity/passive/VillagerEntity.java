@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.List;
@@ -532,12 +531,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		if (nbt.contains("VillagerData", NbtElement.COMPOUND_TYPE)) {
-			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("VillagerData")));
-			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
-		}
-
-		if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
-			this.offers = new TradeOfferList(nbt.getCompound("Offers"));
+			VillagerData.CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("VillagerData"))
+				.resultOrPartial(LOGGER::error)
+				.ifPresent(villagerData -> this.dataTracker.set(VILLAGER_DATA, villagerData));
 		}
 
 		if (nbt.contains("FoodLevel", NbtElement.BYTE_TYPE)) {
@@ -777,9 +774,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		if (spawnReason == SpawnReason.BREEDING) {
 			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
 		}
@@ -795,7 +790,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			this.natural = true;
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Nullable
@@ -811,7 +806,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 
 		VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, serverWorld, villagerType);
-		villagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.BREEDING, null, null);
+		villagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.BREEDING, null);
 		return villagerEntity;
 	}
 
@@ -822,7 +817,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			WitchEntity witchEntity = EntityType.WITCH.create(world);
 			if (witchEntity != null) {
 				witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-				witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
+				witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null);
 				witchEntity.setAiDisabled(this.isAiDisabled());
 				if (this.hasCustomName()) {
 					witchEntity.setCustomName(this.getCustomName());

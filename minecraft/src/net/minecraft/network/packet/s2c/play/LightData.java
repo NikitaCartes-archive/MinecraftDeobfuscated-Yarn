@@ -1,10 +1,13 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
+import io.netty.buffer.ByteBuf;
 import java.util.BitSet;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
@@ -12,6 +15,7 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public class LightData {
+	private static final PacketCodec<ByteBuf, byte[]> CODEC = PacketCodecs.byteArray(2048);
 	private final BitSet initedSky;
 	private final BitSet initedBlock;
 	private final BitSet uninitedSky;
@@ -43,8 +47,8 @@ public class LightData {
 		this.initedBlock = buf.readBitSet();
 		this.uninitedSky = buf.readBitSet();
 		this.uninitedBlock = buf.readBitSet();
-		this.skyNibbles = buf.readList(b -> b.readByteArray(2048));
-		this.blockNibbles = buf.readList(b -> b.readByteArray(2048));
+		this.skyNibbles = buf.readList(CODEC);
+		this.blockNibbles = buf.readList(CODEC);
 	}
 
 	public void write(PacketByteBuf buf) {
@@ -52,8 +56,8 @@ public class LightData {
 		buf.writeBitSet(this.initedBlock);
 		buf.writeBitSet(this.uninitedSky);
 		buf.writeBitSet(this.uninitedBlock);
-		buf.writeCollection(this.skyNibbles, PacketByteBuf::writeByteArray);
-		buf.writeCollection(this.blockNibbles, PacketByteBuf::writeByteArray);
+		buf.writeCollection(this.skyNibbles, CODEC);
+		buf.writeCollection(this.blockNibbles, CODEC);
 	}
 
 	private void putChunk(ChunkPos pos, LightingProvider lightProvider, LightType type, int y, BitSet initialized, BitSet uninitialized, List<byte[]> nibbles) {

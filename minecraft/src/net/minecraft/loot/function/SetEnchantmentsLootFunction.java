@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootCondition;
@@ -65,9 +63,9 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Object2IntMap<Enchantment> object2IntMap = new Object2IntOpenHashMap<>();
 		this.enchantments.forEach((enchantment, numberProvider) -> object2IntMap.put((Enchantment)enchantment.value(), numberProvider.nextInt(context)));
-		if (stack.getItem() == Items.BOOK) {
+		if (stack.isOf(Items.BOOK)) {
 			ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
-			object2IntMap.forEach((enchantment, level) -> EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry(enchantment, level)));
+			object2IntMap.forEach(itemStack::addEnchantment);
 			return itemStack;
 		} else {
 			Map<Enchantment, Integer> map = EnchantmentHelper.get(stack);

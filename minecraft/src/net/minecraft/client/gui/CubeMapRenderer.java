@@ -13,10 +13,9 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 @Environment(EnvType.CLIENT)
 public class CubeMapRenderer {
@@ -36,11 +35,9 @@ public class CubeMapRenderer {
 			.setPerspective(1.4835298F, (float)client.getWindow().getFramebufferWidth() / (float)client.getWindow().getFramebufferHeight(), 0.05F, 10.0F);
 		RenderSystem.backupProjectionMatrix();
 		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_DISTANCE);
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.loadIdentity();
-		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
-		RenderSystem.applyModelViewMatrix();
+		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+		matrix4fStack.pushMatrix();
+		matrix4fStack.rotationX((float) Math.PI);
 		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 		RenderSystem.enableBlend();
 		RenderSystem.disableCull();
@@ -48,13 +45,13 @@ public class CubeMapRenderer {
 		int i = 2;
 
 		for (int j = 0; j < 4; j++) {
-			matrixStack.push();
+			matrix4fStack.pushMatrix();
 			float f = ((float)(j % 2) / 2.0F - 0.5F) / 256.0F;
 			float g = ((float)(j / 2) / 2.0F - 0.5F) / 256.0F;
 			float h = 0.0F;
-			matrixStack.translate(f, g, 0.0F);
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(x));
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(y));
+			matrix4fStack.translate(f, g, 0.0F);
+			matrix4fStack.rotateX(x * (float) (Math.PI / 180.0));
+			matrix4fStack.rotateY(y * (float) (Math.PI / 180.0));
 			RenderSystem.applyModelViewMatrix();
 
 			for (int k = 0; k < 6; k++) {
@@ -106,14 +103,13 @@ public class CubeMapRenderer {
 				tessellator.draw();
 			}
 
-			matrixStack.pop();
-			RenderSystem.applyModelViewMatrix();
+			matrix4fStack.popMatrix();
 			RenderSystem.colorMask(true, true, true, false);
 		}
 
 		RenderSystem.colorMask(true, true, true, true);
 		RenderSystem.restoreProjectionMatrix();
-		matrixStack.pop();
+		matrix4fStack.popMatrix();
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.depthMask(true);
 		RenderSystem.enableCull();

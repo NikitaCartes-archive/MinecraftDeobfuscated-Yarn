@@ -7,6 +7,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -33,24 +34,17 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	}
 
 	public void setItem(ItemStack stack) {
-		if (!stack.isOf(Items.ENDER_EYE) || stack.hasNbt()) {
-			this.getDataTracker().set(ITEM, stack.copyWithCount(1));
-		}
-	}
-
-	private ItemStack getTrackedItem() {
-		return this.getDataTracker().get(ITEM);
+		this.getDataTracker().set(ITEM, stack.copyWithCount(1));
 	}
 
 	@Override
 	public ItemStack getStack() {
-		ItemStack itemStack = this.getTrackedItem();
-		return itemStack.isEmpty() ? new ItemStack(Items.ENDER_EYE) : itemStack;
+		return this.getDataTracker().get(ITEM);
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(ITEM, this.getItem());
 	}
 
 	@Override
@@ -167,16 +161,20 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
-		ItemStack itemStack = this.getTrackedItem();
-		if (!itemStack.isEmpty()) {
-			nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
-		}
+		nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
-		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
-		this.setItem(itemStack);
+		if (nbt.contains("Item", NbtElement.COMPOUND_TYPE)) {
+			this.setItem(ItemStack.fromNbt(nbt.getCompound("Item")));
+		} else {
+			this.setItem(this.getItem());
+		}
+	}
+
+	private ItemStack getItem() {
+		return new ItemStack(Items.ENDER_EYE);
 	}
 
 	@Override

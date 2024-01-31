@@ -352,4 +352,22 @@ public abstract class Particle {
 	public Optional<ParticleGroup> getGroup() {
 		return Optional.empty();
 	}
+
+	@Environment(EnvType.CLIENT)
+	public static record DynamicAlpha(float startAlpha, float endAlpha, float startAtNormalizedAge, float endAtNormalizedAge) {
+		public static final Particle.DynamicAlpha OPAQUE = new Particle.DynamicAlpha(1.0F, 1.0F, 0.0F, 1.0F);
+
+		public boolean isOpaque() {
+			return this.startAlpha >= 1.0F && this.endAlpha >= 1.0F;
+		}
+
+		public float getAlpha(int age, int maxAge, float tickDelta) {
+			if (MathHelper.approximatelyEquals(this.startAlpha, this.endAlpha)) {
+				return this.startAlpha;
+			} else {
+				float f = MathHelper.getLerpProgress(((float)age + tickDelta) / (float)maxAge, this.startAtNormalizedAge, this.endAtNormalizedAge);
+				return MathHelper.clampedLerp(this.startAlpha, this.endAlpha, f);
+			}
+		}
+	}
 }

@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
@@ -34,7 +35,9 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 		DustColorTransitionParticleEffect::new
 	);
 	public static final ParticleEffect.Factory<DustColorTransitionParticleEffect> FACTORY = new ParticleEffect.Factory<DustColorTransitionParticleEffect>() {
-		public DustColorTransitionParticleEffect read(ParticleType<DustColorTransitionParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public DustColorTransitionParticleEffect read(
+			ParticleType<DustColorTransitionParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup
+		) throws CommandSyntaxException {
 			Vector3f vector3f = AbstractDustParticleEffect.readColor(stringReader);
 			stringReader.expect(' ');
 			float f = stringReader.readFloat();
@@ -58,7 +61,7 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 	}
 
 	@Override
-	public String asString() {
+	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
 		return String.format(
 			Locale.ROOT,
 			"%s %.2f %.2f %.2f %.2f %.2f %.2f %.2f",

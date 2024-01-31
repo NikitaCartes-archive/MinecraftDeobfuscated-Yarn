@@ -31,6 +31,7 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
@@ -226,8 +227,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		Inventories.readNbt(nbt, this.inventory);
 		this.burnTime = nbt.getShort("BurnTime");
@@ -242,8 +243,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		nbt.putShort("BurnTime", (short)this.burnTime);
 		nbt.putShort("CookTime", (short)this.cookTime);
 		nbt.putShort("CookTimeTotal", (short)this.cookTimeTotal);
@@ -431,7 +432,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		ItemStack itemStack = this.inventory.get(slot);
-		boolean bl = !stack.isEmpty() && ItemStack.canCombine(itemStack, stack);
+		boolean bl = !stack.isEmpty() && ItemStack.areItemsAndNbtEqual(itemStack, stack);
 		this.inventory.set(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());

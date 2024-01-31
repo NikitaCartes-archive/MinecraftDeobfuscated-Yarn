@@ -23,7 +23,8 @@ public enum EquipmentSlot implements StringIdentifiable {
 	FEET(EquipmentSlot.Type.ARMOR, 0, 1, "feet"),
 	LEGS(EquipmentSlot.Type.ARMOR, 1, 2, "legs"),
 	CHEST(EquipmentSlot.Type.ARMOR, 2, 3, "chest"),
-	HEAD(EquipmentSlot.Type.ARMOR, 3, 4, "head");
+	HEAD(EquipmentSlot.Type.ARMOR, 3, 4, "head"),
+	BODY(EquipmentSlot.Type.BODY, 0, 6, "body");
 
 	public static final StringIdentifiable.EnumCodec<EquipmentSlot> CODEC = StringIdentifiable.createCodec(EquipmentSlot::values);
 	private final EquipmentSlot.Type type;
@@ -132,6 +133,7 @@ public enum EquipmentSlot implements StringIdentifiable {
 	 */
 	public static enum Type {
 		HAND,
-		ARMOR;
+		ARMOR,
+		BODY;
 	}
 }

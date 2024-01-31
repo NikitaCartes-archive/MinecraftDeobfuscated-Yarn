@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -31,13 +30,7 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 
 	@Override
 	public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
-		ItemStack itemStack = this.result.copy();
-		NbtCompound nbtCompound = inventory.getStack(1).getNbt();
-		if (nbtCompound != null) {
-			itemStack.setNbt(nbtCompound.copy());
-		}
-
-		return itemStack;
+		return inventory.getStack(1).copyNbtToNewStack(this.result.getItem(), this.result.getCount());
 	}
 
 	@Override

@@ -3,9 +3,9 @@ package net.minecraft.client.gui.hud.debug;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9194;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.profiler.PerformanceLog;
 
 @Environment(EnvType.CLIENT)
 public class PingChart extends DebugChart {
@@ -14,8 +14,8 @@ public class PingChart extends DebugChart {
 	private static final int field_45933 = -16711936;
 	private static final int field_45934 = 500;
 
-	public PingChart(TextRenderer textRenderer, PerformanceLog performanceLog) {
-		super(textRenderer, performanceLog);
+	public PingChart(TextRenderer textRenderer, class_9194 arg) {
+		super(textRenderer, arg);
 	}
 
 	@Override

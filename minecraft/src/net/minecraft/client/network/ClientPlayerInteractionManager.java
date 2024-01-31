@@ -266,7 +266,7 @@ public class ClientPlayerInteractionManager {
 
 	private boolean isCurrentlyBreaking(BlockPos pos) {
 		ItemStack itemStack = this.client.player.getMainHandStack();
-		return pos.equals(this.currentBreakingPos) && ItemStack.canCombine(itemStack, this.selectedStack);
+		return pos.equals(this.currentBreakingPos) && ItemStack.areItemsAndNbtEqual(itemStack, this.selectedStack);
 	}
 
 	private void syncSelectedSlot() {

@@ -23,6 +23,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9211;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -91,10 +92,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
@@ -171,6 +172,7 @@ import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.DebugSampleS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
@@ -264,7 +266,6 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -328,7 +329,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private int simulationDistance = 3;
 	private final Random random = Random.createThreadSafe();
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
-	private final RecipeManager recipeManager = new RecipeManager();
+	private final RecipeManager recipeManager;
 	private final UUID sessionId = UUID.randomUUID();
 	private Set<RegistryKey<World>> worldKeys;
 	private final DynamicRegistryManager.Immutable combinedDynamicRegistries;
@@ -340,6 +341,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
 	private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
 	private final PingMeasurer pingMeasurer;
+	private final class_9211 field_48933;
 	@Nullable
 	private WorldLoadingState worldLoadingState;
 	private boolean secureChatEnforced;
@@ -355,6 +357,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.advancementHandler = new ClientAdvancementManager(client, this.worldSession);
 		this.commandSource = new ClientCommandSource(this, client);
 		this.pingMeasurer = new PingMeasurer(this, client.getDebugHud().getPingLog());
+		this.recipeManager = new RecipeManager(this.combinedDynamicRegistries);
+		this.field_48933 = new class_9211(this, client.getDebugHud());
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -1067,7 +1071,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		RegistryEntry<DimensionType> registryEntry = commonPlayerSpawnInfo.dimensionType();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
-			Map<String, MapState> map = this.world.getMapStates();
+			Map<MapId, MapState> map = this.world.getMapStates();
 			boolean bl = commonPlayerSpawnInfo.isDebug();
 			boolean bl2 = commonPlayerSpawnInfo.isFlat();
 			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
@@ -1249,7 +1253,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.client.world.getBlockEntity(blockPos, packet.getBlockEntityType()).ifPresent(blockEntity -> {
 			NbtCompound nbtCompound = packet.getNbt();
 			if (!nbtCompound.isEmpty()) {
-				blockEntity.readNbt(nbtCompound);
+				blockEntity.readNbt(nbtCompound, this.combinedDynamicRegistries);
 			}
 
 			if (blockEntity instanceof CommandBlockBlockEntity && this.client.currentScreen instanceof CommandBlockScreen) {
@@ -1270,9 +1274,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getId());
-		if (entity != null) {
-			packet.getEquipmentList().forEach(pair -> entity.equipStack((EquipmentSlot)pair.getFirst(), (ItemStack)pair.getSecond()));
+		if (this.world.getEntityById(packet.getId()) instanceof LivingEntity livingEntity) {
+			packet.getEquipmentList().forEach(pair -> livingEntity.equipStack((EquipmentSlot)pair.getFirst(), (ItemStack)pair.getSecond()));
 		}
 	}
 
@@ -1385,16 +1388,15 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onMapUpdate(MapUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		MapRenderer mapRenderer = this.client.gameRenderer.getMapRenderer();
-		int i = packet.getId();
-		String string = FilledMapItem.getMapName(i);
-		MapState mapState = this.client.world.getMapState(string);
+		MapId mapId = packet.mapId();
+		MapState mapState = this.client.world.getMapState(mapId);
 		if (mapState == null) {
-			mapState = MapState.of(packet.getScale(), packet.isLocked(), this.client.world.getRegistryKey());
-			this.client.world.putClientsideMapState(string, mapState);
+			mapState = MapState.of(packet.scale(), packet.locked(), this.client.world.getRegistryKey());
+			this.client.world.putClientsideMapState(mapId, mapState);
 		}
 
 		packet.apply(mapState);
-		mapRenderer.updateTexture(i, mapState);
+		mapRenderer.updateTexture(mapId, mapState);
 	}
 
 	@Override
@@ -1428,9 +1430,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onCommandTree(CommandTreeS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.commandDispatcher = new CommandDispatcher<>(
-			packet.getCommandTree(CommandRegistryAccess.of((RegistryWrapper.WrapperLookup)this.combinedDynamicRegistries, this.enabledFeatures))
-		);
+		this.commandDispatcher = new CommandDispatcher<>(packet.getCommandTree(CommandRegistryAccess.of(this.combinedDynamicRegistries, this.enabledFeatures)));
 	}
 
 	@Override
@@ -1442,7 +1442,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onCommandSuggestions(CommandSuggestionsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.commandSource.onCommandSuggestions(packet.getCompletionId(), packet.getSuggestions());
+		this.commandSource.onCommandSuggestions(packet.id(), packet.getSuggestions());
 	}
 
 	@Override
@@ -1574,10 +1574,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onDeathMessage(DeathMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getEntityId());
+		Entity entity = this.world.getEntityById(packet.playerId());
 		if (entity == this.client.player) {
 			if (this.client.player.showsDeathScreen()) {
-				this.client.setScreen(new DeathScreen(packet.getMessage(), this.world.getLevelProperties().isHardcore()));
+				this.client.setScreen(new DeathScreen(packet.message(), this.world.getLevelProperties().isHardcore()));
 			} else {
 				this.client.player.requestRespawn();
 			}
@@ -1660,8 +1660,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onServerMetadata(ServerMetadataS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (this.serverInfo != null) {
-			this.serverInfo.label = packet.getDescription();
-			packet.getFavicon().map(ServerInfo::validateFavicon).ifPresent(this.serverInfo::setFavicon);
+			this.serverInfo.label = packet.description();
+			packet.favicon().map(ServerInfo::validateFavicon).ifPresent(this.serverInfo::setFavicon);
 			ServerList.updateServerListEntry(this.serverInfo);
 		}
 	}
@@ -1675,19 +1675,19 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onOverlayMessage(OverlayMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.setOverlayMessage(packet.getMessage(), false);
+		this.client.inGameHud.setOverlayMessage(packet.text(), false);
 	}
 
 	@Override
 	public void onTitle(TitleS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.setTitle(packet.getTitle());
+		this.client.inGameHud.setTitle(packet.text());
 	}
 
 	@Override
 	public void onSubtitle(SubtitleS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.setSubtitle(packet.getSubtitle());
+		this.client.inGameHud.setSubtitle(packet.text());
 	}
 
 	@Override
@@ -1699,8 +1699,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onPlayerListHeader(PlayerListHeaderS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.getPlayerListHud().setHeader(packet.getHeader().getString().isEmpty() ? null : packet.getHeader());
-		this.client.inGameHud.getPlayerListHud().setFooter(packet.getFooter().getString().isEmpty() ? null : packet.getFooter());
+		this.client.inGameHud.getPlayerListHud().setHeader(packet.header().getString().isEmpty() ? null : packet.header());
+		this.client.inGameHud.getPlayerListHud().setFooter(packet.footer().getString().isEmpty() ? null : packet.footer());
 	}
 
 	@Override
@@ -1990,7 +1990,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		if (scoreboardObjective != null) {
 			ScoreAccess scoreAccess = this.scoreboard.getOrCreateScore(scoreHolder, scoreboardObjective, true);
 			scoreAccess.setScore(packet.score());
-			scoreAccess.setDisplayText(packet.display());
+			scoreAccess.setDisplayText((Text)packet.display().orElse(null));
 			scoreAccess.setNumberFormat((NumberFormat)packet.numberFormat().orElse(null));
 		} else {
 			LOGGER.warn("Received packet for unknown scoreboard objective: {}", string);
@@ -2232,6 +2232,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	@Override
+	public void onDebugSample(DebugSampleS2CPacket packet) {
+		this.client.getDebugHud().method_56828(packet.sample(), packet.debugSampleType());
+	}
+
+	@Override
 	public void onPingResult(PingResultS2CPacket packet) {
 		this.pingMeasurer.onPingResult(packet);
 	}
@@ -2382,6 +2387,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			this.pingMeasurer.ping();
 		}
 
+		this.field_48933.method_56830();
 		this.worldSession.tick();
 		if (this.worldLoadingState != null) {
 			this.worldLoadingState.tick();

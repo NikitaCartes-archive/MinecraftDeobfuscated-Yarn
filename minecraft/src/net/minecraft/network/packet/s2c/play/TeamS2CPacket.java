@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -12,10 +13,11 @@ import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Formatting;
 
 public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, TeamS2CPacket> CODEC = Packet.createCodec(TeamS2CPacket::write, TeamS2CPacket::new);
+	public static final PacketCodec<RegistryByteBuf, TeamS2CPacket> CODEC = Packet.createCodec(TeamS2CPacket::write, TeamS2CPacket::new);
 	/**
 	 * The {@link #packetType} that creates a new team with a few players. Has value
 	 * {@value}.
@@ -82,7 +84,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		);
 	}
 
-	private TeamS2CPacket(PacketByteBuf buf) {
+	private TeamS2CPacket(RegistryByteBuf buf) {
 		this.teamName = buf.readString();
 		this.packetType = buf.readByte();
 		if (containsTeamInfo(this.packetType)) {
@@ -98,7 +100,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	private void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeString(this.teamName);
 		buf.writeByte(this.packetType);
 		if (containsTeamInfo(this.packetType)) {
@@ -121,29 +123,20 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Nullable
 	public TeamS2CPacket.Operation getPlayerListOperation() {
-		switch (this.packetType) {
-			case 0:
-			case 3:
-				return TeamS2CPacket.Operation.ADD;
-			case 1:
-			case 2:
-			default:
-				return null;
-			case 4:
-				return TeamS2CPacket.Operation.REMOVE;
-		}
+		return switch (this.packetType) {
+			case 0, 3 -> TeamS2CPacket.Operation.ADD;
+			default -> null;
+			case 4 -> TeamS2CPacket.Operation.REMOVE;
+		};
 	}
 
 	@Nullable
 	public TeamS2CPacket.Operation getTeamOperation() {
-		switch (this.packetType) {
-			case 0:
-				return TeamS2CPacket.Operation.ADD;
-			case 1:
-				return TeamS2CPacket.Operation.REMOVE;
-			default:
-				return null;
-		}
+		return switch (this.packetType) {
+			case 0 -> TeamS2CPacket.Operation.ADD;
+			case 1 -> TeamS2CPacket.Operation.REMOVE;
+			default -> null;
+		};
 	}
 
 	@Override
@@ -191,14 +184,14 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.suffix = team.getSuffix();
 		}
 
-		public SerializableTeam(PacketByteBuf buf) {
-			this.displayName = buf.readUnlimitedText();
+		public SerializableTeam(RegistryByteBuf buf) {
+			this.displayName = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
 			this.friendlyFlags = buf.readByte();
 			this.nameTagVisibilityRule = buf.readString(40);
 			this.collisionRule = buf.readString(40);
 			this.color = buf.readEnumConstant(Formatting.class);
-			this.prefix = buf.readUnlimitedText();
-			this.suffix = buf.readUnlimitedText();
+			this.prefix = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
+			this.suffix = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
 		}
 
 		public Text getDisplayName() {
@@ -229,14 +222,14 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 			return this.suffix;
 		}
 
-		public void write(PacketByteBuf buf) {
-			buf.writeText(this.displayName);
+		public void write(RegistryByteBuf buf) {
+			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.displayName);
 			buf.writeByte(this.friendlyFlags);
 			buf.writeString(this.nameTagVisibilityRule);
 			buf.writeString(this.collisionRule);
 			buf.writeEnumConstant(this.color);
-			buf.writeText(this.prefix);
-			buf.writeText(this.suffix);
+			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.prefix);
+			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.suffix);
 		}
 	}
 }

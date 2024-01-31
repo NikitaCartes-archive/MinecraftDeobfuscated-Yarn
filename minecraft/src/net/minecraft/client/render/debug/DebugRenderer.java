@@ -20,7 +20,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class DebugRenderer {
@@ -208,7 +207,7 @@ public class DebugRenderer {
 			double f = camera.getPos().z;
 			matrices.push();
 			matrices.translate((float)(x - d), (float)(y - e) + 0.07F, (float)(z - f));
-			matrices.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
+			matrices.multiply(camera.getRotation());
 			matrices.scale(-size, -size, size);
 			float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0F : 0.0F;
 			g -= offset / size;

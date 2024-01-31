@@ -76,8 +76,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.GameMode;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 
@@ -174,10 +174,6 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	private static ShaderProgram positionColorTexLightmapProgram;
 	@Nullable
-	private static ShaderProgram positionTexColorNormalProgram;
-	@Nullable
-	private static ShaderProgram positionTexLightmapColorProgram;
-	@Nullable
 	private static ShaderProgram renderTypeSolidProgram;
 	@Nullable
 	private static ShaderProgram renderTypeCutoutMippedProgram;
@@ -263,6 +259,8 @@ public class GameRenderer implements AutoCloseable {
 	private static ShaderProgram renderTypeEndPortalProgram;
 	@Nullable
 	private static ShaderProgram renderTypeEndGatewayProgram;
+	@Nullable
+	private static ShaderProgram renderTypeCloudsProgram;
 	@Nullable
 	private static ShaderProgram renderTypeLinesProgram;
 	@Nullable
@@ -497,17 +495,8 @@ public class GameRenderer implements AutoCloseable {
 			list2.add(Pair.of(new ShaderProgram(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR), program -> positionTexColorProgram = program));
 			list2.add(
 				Pair.of(
-					new ShaderProgram(factory, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL), program -> positionTexColorNormalProgram = program
+					new ShaderProgram(factory, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shaderProgram -> renderTypeSolidProgram = shaderProgram
 				)
-			);
-			list2.add(
-				Pair.of(
-					new ShaderProgram(factory, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR),
-					program -> positionTexLightmapColorProgram = program
-				)
-			);
-			list2.add(
-				Pair.of(new ShaderProgram(factory, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), program -> renderTypeSolidProgram = program)
 			);
 			list2.add(
 				Pair.of(
@@ -682,6 +671,9 @@ public class GameRenderer implements AutoCloseable {
 			);
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_end_portal", VertexFormats.POSITION), program -> renderTypeEndPortalProgram = program));
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_end_gateway", VertexFormats.POSITION), program -> renderTypeEndGatewayProgram = program));
+			list2.add(
+				Pair.of(new ShaderProgram(factory, "rendertype_clouds", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL), program -> renderTypeCloudsProgram = program)
+			);
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_lines", VertexFormats.LINES), program -> renderTypeLinesProgram = program));
 			list2.add(
 				Pair.of(
@@ -901,18 +893,18 @@ public class GameRenderer implements AutoCloseable {
 		this.zoomY = zoomY;
 		this.setBlockOutlineEnabled(false);
 		this.setRenderHand(false);
-		this.renderWorld(1.0F, 0L, new MatrixStack());
+		this.renderWorld(1.0F, 0L);
 		this.zoom = 1.0F;
 	}
 
-	private void renderHand(MatrixStack matrices, Camera camera, float tickDelta) {
+	private void renderHand(Camera camera, float tickDelta) {
 		if (!this.renderingPanorama) {
 			this.loadProjectionMatrix(this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false)));
-			matrices.loadIdentity();
-			matrices.push();
-			this.tiltViewWhenHurt(matrices, tickDelta);
+			MatrixStack matrixStack = new MatrixStack();
+			matrixStack.push();
+			this.tiltViewWhenHurt(matrixStack, tickDelta);
 			if (this.client.options.getBobView().getValue()) {
-				this.bobView(matrices, tickDelta);
+				this.bobView(matrixStack, tickDelta);
 			}
 
 			boolean bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
@@ -924,7 +916,7 @@ public class GameRenderer implements AutoCloseable {
 				this.firstPersonRenderer
 					.renderItem(
 						tickDelta,
-						matrices,
+						matrixStack,
 						this.buffers.getEntityVertexConsumers(),
 						this.client.player,
 						this.client.getEntityRenderDispatcher().getLight(this.client.player, tickDelta)
@@ -932,14 +924,9 @@ public class GameRenderer implements AutoCloseable {
 				this.lightmapTextureManager.disable();
 			}
 
-			matrices.pop();
+			matrixStack.pop();
 			if (this.client.options.getPerspective().isFirstPerson() && !bl) {
-				InGameOverlayRenderer.renderOverlays(this.client, matrices);
-				this.tiltViewWhenHurt(matrices, tickDelta);
-			}
-
-			if (this.client.options.getBobView().getValue()) {
-				this.bobView(matrices, tickDelta);
+				InGameOverlayRenderer.renderOverlays(this.client, matrixStack);
 			}
 		}
 	}
@@ -949,25 +936,18 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	public Matrix4f getBasicProjectionMatrix(double fov) {
-		MatrixStack matrixStack = new MatrixStack();
-		matrixStack.peek().getPositionMatrix().identity();
+		Matrix4f matrix4f = new Matrix4f();
 		if (this.zoom != 1.0F) {
-			matrixStack.translate(this.zoomX, -this.zoomY, 0.0F);
-			matrixStack.scale(this.zoom, this.zoom, 1.0F);
+			matrix4f.translate(this.zoomX, -this.zoomY, 0.0F);
+			matrix4f.scale(this.zoom, this.zoom, 1.0F);
 		}
 
-		matrixStack.peek()
-			.getPositionMatrix()
-			.mul(
-				new Matrix4f()
-					.setPerspective(
-						(float)(fov * (float) (Math.PI / 180.0)),
-						(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
-						0.05F,
-						this.getFarPlaneDistance()
-					)
-			);
-		return matrixStack.peek().getPositionMatrix();
+		return matrix4f.perspective(
+			(float)(fov * (float) (Math.PI / 180.0)),
+			(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
+			0.05F,
+			this.getFarPlaneDistance()
+		);
 	}
 
 	public float getFarPlaneDistance() {
@@ -1000,7 +980,7 @@ public class GameRenderer implements AutoCloseable {
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			if (bl && tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
-				this.renderWorld(tickDelta, startTime, new MatrixStack());
+				this.renderWorld(tickDelta, startTime);
 				this.updateWorldIcon();
 				this.client.worldRenderer.drawEntityOutlinesFramebuffer();
 				if (this.postProcessor != null && this.postProcessorEnabled) {
@@ -1025,10 +1005,9 @@ public class GameRenderer implements AutoCloseable {
 					21000.0F
 				);
 			RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
-			MatrixStack matrixStack = RenderSystem.getModelViewStack();
-			matrixStack.push();
-			matrixStack.loadIdentity();
-			matrixStack.translate(0.0F, 0.0F, -11000.0F);
+			Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+			matrix4fStack.pushMatrix();
+			matrix4fStack.translation(0.0F, 0.0F, -11000.0F);
 			RenderSystem.applyModelViewMatrix();
 			DiffuseLighting.enableGuiDepthLighting();
 			DrawContext drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());
@@ -1105,7 +1084,7 @@ public class GameRenderer implements AutoCloseable {
 			}
 
 			drawContext.draw();
-			matrixStack.pop();
+			matrix4fStack.popMatrix();
 			RenderSystem.applyModelViewMatrix();
 		}
 	}
@@ -1183,7 +1162,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	public void renderWorld(float tickDelta, long limitTime, MatrixStack matrices) {
+	public void renderWorld(float tickDelta, long limitTime) {
 		this.lightmapTextureManager.update(tickDelta);
 		if (this.client.getCameraEntity() == null) {
 			this.client.setCameraEntity(this.client.player);
@@ -1203,41 +1182,39 @@ public class GameRenderer implements AutoCloseable {
 			this.client.world.getTickManager().shouldSkipTick(entity) ? 1.0F : tickDelta
 		);
 		this.viewDistance = (float)(this.client.options.getClampedViewDistance() * 16);
-		MatrixStack matrixStack = new MatrixStack();
 		double d = this.getFov(camera, tickDelta, true);
-		matrixStack.multiplyPositionMatrix(this.getBasicProjectionMatrix(d));
+		Matrix4f matrix4f = this.getBasicProjectionMatrix(d);
+		MatrixStack matrixStack = new MatrixStack();
 		this.tiltViewWhenHurt(matrixStack, camera.getLastTickDelta());
 		if (this.client.options.getBobView().getValue()) {
 			this.bobView(matrixStack, camera.getLastTickDelta());
 		}
 
+		matrix4f.mul(matrixStack.peek().getPositionMatrix());
 		float f = this.client.options.getDistortionEffectScale().getValue().floatValue();
 		float g = MathHelper.lerp(tickDelta, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity) * f * f;
 		if (g > 0.0F) {
 			int i = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
 			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;
 			h *= h;
-			RotationAxis rotationAxis = RotationAxis.of(new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F));
-			matrixStack.multiply(rotationAxis.rotationDegrees(((float)this.ticks + tickDelta) * (float)i));
-			matrixStack.scale(1.0F / h, 1.0F, 1.0F);
-			float j = -((float)this.ticks + tickDelta) * (float)i;
-			matrixStack.multiply(rotationAxis.rotationDegrees(j));
+			Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
+			float j = ((float)this.ticks + tickDelta) * (float)i * (float) (Math.PI / 180.0);
+			matrix4f.rotate(j, vector3f);
+			matrix4f.scale(1.0F / h, 1.0F, 1.0F);
+			matrix4f.rotate(-j, vector3f);
 		}
 
-		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 		this.loadProjectionMatrix(matrix4f);
-		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
-		Matrix3f matrix3f = new Matrix3f(matrices.peek().getNormalMatrix()).invert();
-		RenderSystem.setInverseViewRotationMatrix(matrix3f);
+		Matrix4f matrix4f2 = new Matrix4f()
+			.rotationXYZ(camera.getPitch() * (float) (Math.PI / 180.0), camera.getYaw() * (float) (Math.PI / 180.0) + (float) Math.PI, 0.0F);
 		this.client
 			.worldRenderer
-			.setupFrustum(matrices, camera.getPos(), this.getBasicProjectionMatrix(Math.max(d, (double)this.client.options.getFov().getValue().intValue())));
-		this.client.worldRenderer.render(matrices, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);
+			.setupFrustum(camera.getPos(), matrix4f2, this.getBasicProjectionMatrix(Math.max(d, (double)this.client.options.getFov().getValue().intValue())));
+		this.client.worldRenderer.render(tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f2, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
 			RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-			this.renderHand(matrices, camera, tickDelta);
+			this.renderHand(camera, tickDelta);
 		}
 
 		this.client.getProfiler().pop();
@@ -1381,16 +1358,6 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	public static ShaderProgram getPositionColorTexLightmapProgram() {
 		return positionColorTexLightmapProgram;
-	}
-
-	@Nullable
-	public static ShaderProgram getPositionTexColorNormalProgram() {
-		return positionTexColorNormalProgram;
-	}
-
-	@Nullable
-	public static ShaderProgram getPositionTexLightmapColorProgram() {
-		return positionTexLightmapColorProgram;
 	}
 
 	@Nullable
@@ -1606,6 +1573,11 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	public static ShaderProgram getRenderTypeEndGatewayProgram() {
 		return renderTypeEndGatewayProgram;
+	}
+
+	@Nullable
+	public static ShaderProgram getRenderTypeCloudsProgram() {
+		return renderTypeCloudsProgram;
 	}
 
 	/**

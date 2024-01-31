@@ -98,7 +98,7 @@ public class ZombieSiegeManager implements SpecialSpawner {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(world);
-				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.EVENT, null, null);
+				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.EVENT, null);
 			} catch (Exception var5) {
 				LOGGER.warn("Failed to create zombie for village siege at {}", vec3d, var5);
 				return;

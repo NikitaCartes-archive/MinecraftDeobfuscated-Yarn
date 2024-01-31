@@ -21,6 +21,7 @@ import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -48,7 +49,7 @@ public class LootPool {
 	LootPool(List<LootPoolEntry> entries, List<LootCondition> conditions, List<LootFunction> functions, LootNumberProvider rolls, LootNumberProvider bonusRolls) {
 		this.entries = entries;
 		this.conditions = conditions;
-		this.predicate = LootConditionTypes.matchingAll(conditions);
+		this.predicate = Util.allOf(conditions);
 		this.functions = functions;
 		this.javaFunctions = LootFunctionTypes.join(functions);
 		this.rolls = rolls;

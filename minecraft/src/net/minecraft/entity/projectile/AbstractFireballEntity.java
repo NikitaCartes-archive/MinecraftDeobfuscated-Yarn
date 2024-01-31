@@ -9,6 +9,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.world.World;
 
 public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity implements FlyingItemEntity {
@@ -27,39 +28,36 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	}
 
 	public void setItem(ItemStack stack) {
-		if (!stack.isOf(Items.FIRE_CHARGE) || stack.hasNbt()) {
-			this.getDataTracker().set(ITEM, stack.copyWithCount(1));
-		}
-	}
-
-	protected ItemStack getItem() {
-		return this.getDataTracker().get(ITEM);
+		this.getDataTracker().set(ITEM, stack.copyWithCount(1));
 	}
 
 	@Override
 	public ItemStack getStack() {
-		ItemStack itemStack = this.getItem();
-		return itemStack.isEmpty() ? new ItemStack(Items.FIRE_CHARGE) : itemStack;
+		return this.getDataTracker().get(ITEM);
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(ITEM, this.getItem());
 	}
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		ItemStack itemStack = this.getItem();
-		if (!itemStack.isEmpty()) {
-			nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
-		}
+		nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
-		this.setItem(itemStack);
+		if (nbt.contains("Item", NbtElement.COMPOUND_TYPE)) {
+			this.setItem(ItemStack.fromNbt(nbt.getCompound("Item")));
+		} else {
+			this.setItem(this.getItem());
+		}
+	}
+
+	private ItemStack getItem() {
+		return new ItemStack(Items.FIRE_CHARGE);
 	}
 }

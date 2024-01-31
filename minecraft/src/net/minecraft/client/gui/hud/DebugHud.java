@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9191;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
@@ -46,6 +47,7 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.DebugSampleType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -55,7 +57,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.ServerTickType;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
@@ -100,21 +101,22 @@ public class DebugHud {
 	private boolean renderingChartVisible;
 	private boolean renderingAndTickChartsVisible;
 	private boolean packetSizeAndPingChartsVisible;
-	private final PerformanceLog frameNanosLog = new PerformanceLog(1);
-	private final PerformanceLog tickNanosLog = new PerformanceLog(ServerTickType.values().length);
-	private final PerformanceLog pingLog = new PerformanceLog(1);
-	private final PerformanceLog packetSizeLog = new PerformanceLog(1);
+	private final class_9191 frameNanosLog = new class_9191(1);
+	private final class_9191 tickNanosLog = new class_9191(ServerTickType.values().length);
+	private final class_9191 pingLog = new class_9191(1);
+	private final class_9191 packetSizeLog = new class_9191(1);
+	private final Map<DebugSampleType, class_9191> field_48931 = Map.of(DebugSampleType.TICK_TIME, this.tickNanosLog);
 	private final RenderingChart renderingChart;
 	private final TickChart tickChart;
 	private final PingChart pingChart;
 	private final PacketSizeChart packetSizeChart;
 
-	public DebugHud(MinecraftClient client) {
-		this.client = client;
+	public DebugHud(MinecraftClient minecraftClient) {
+		this.client = minecraftClient;
 		this.allocationRateCalculator = new DebugHud.AllocationRateCalculator();
-		this.textRenderer = client.textRenderer;
+		this.textRenderer = minecraftClient.textRenderer;
 		this.renderingChart = new RenderingChart(this.textRenderer, this.frameNanosLog);
-		this.tickChart = new TickChart(this.textRenderer, this.tickNanosLog, () -> client.world.getTickManager().getMillisPerTick());
+		this.tickChart = new TickChart(this.textRenderer, this.tickNanosLog, () -> minecraftClient.world.getTickManager().getMillisPerTick());
 		this.pingChart = new PingChart(this.textRenderer, this.pingLog);
 		this.packetSizeChart = new PacketSizeChart(this.textRenderer, this.packetSizeLog);
 	}
@@ -136,7 +138,7 @@ public class DebugHud {
 				int i = context.getScaledWindowWidth();
 				int j = i / 2;
 				this.renderingChart.render(context, 0, this.renderingChart.getWidth(j));
-				if (this.client.getServer() != null) {
+				if (this.tickNanosLog.method_56663() > 0) {
 					int k = this.tickChart.getWidth(j);
 					this.tickChart.render(context, i - k, k);
 				}
@@ -562,6 +564,10 @@ public class DebugHud {
 		return this.shouldShowDebugHud() && this.packetSizeAndPingChartsVisible;
 	}
 
+	public boolean shouldRenderTickCharts() {
+		return this.shouldShowDebugHud() && this.renderingAndTickChartsVisible;
+	}
+
 	public void toggleDebugHud() {
 		this.showDebugHud = !this.showDebugHud;
 	}
@@ -593,23 +599,30 @@ public class DebugHud {
 		this.frameNanosLog.push(value);
 	}
 
-	public PerformanceLog getTickNanosLog() {
+	public class_9191 getTickNanosLog() {
 		return this.tickNanosLog;
 	}
 
-	public PerformanceLog getPingLog() {
+	public class_9191 getPingLog() {
 		return this.pingLog;
 	}
 
-	public PerformanceLog getPacketSizeLog() {
+	public class_9191 getPacketSizeLog() {
 		return this.packetSizeLog;
+	}
+
+	public void method_56828(long[] ls, DebugSampleType debugSampleType) {
+		class_9191 lv = (class_9191)this.field_48931.get(debugSampleType);
+		if (lv != null) {
+			lv.method_56650(ls);
+		}
 	}
 
 	public void clear() {
 		this.showDebugHud = false;
-		this.tickNanosLog.reset();
-		this.pingLog.reset();
-		this.packetSizeLog.reset();
+		this.tickNanosLog.method_56664();
+		this.pingLog.method_56664();
+		this.packetSizeLog.method_56664();
 	}
 
 	@Environment(EnvType.CLIENT)

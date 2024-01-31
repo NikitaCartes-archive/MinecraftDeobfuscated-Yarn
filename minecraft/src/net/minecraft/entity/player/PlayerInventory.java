@@ -77,7 +77,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	private boolean canStackAddMore(ItemStack existingStack, ItemStack stack) {
 		return !existingStack.isEmpty()
-			&& ItemStack.canCombine(existingStack, stack)
+			&& ItemStack.areItemsAndNbtEqual(existingStack, stack)
 			&& existingStack.isStackable()
 			&& existingStack.getCount() < existingStack.getMaxCount()
 			&& existingStack.getCount() < this.getMaxCountPerStack();
@@ -127,7 +127,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	public int getSlotWithStack(ItemStack stack) {
 		for (int i = 0; i < this.main.size(); i++) {
-			if (!this.main.get(i).isEmpty() && ItemStack.canCombine(stack, this.main.get(i))) {
+			if (!this.main.get(i).isEmpty() && ItemStack.areItemsAndNbtEqual(stack, this.main.get(i))) {
 				return i;
 			}
 		}
@@ -145,7 +145,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (int i = 0; i < this.main.size(); i++) {
 			ItemStack itemStack = this.main.get(i);
 			if (!this.main.get(i).isEmpty()
-				&& ItemStack.canCombine(stack, this.main.get(i))
+				&& ItemStack.areItemsAndNbtEqual(stack, this.main.get(i))
 				&& !this.main.get(i).isDamaged()
 				&& !itemStack.hasEnchantments()
 				&& !itemStack.hasCustomName()) {
@@ -211,15 +211,10 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	private int addStack(int slot, ItemStack stack) {
-		Item item = stack.getItem();
 		int i = stack.getCount();
 		ItemStack itemStack = this.getStack(slot);
 		if (itemStack.isEmpty()) {
-			itemStack = new ItemStack(item, 0);
-			if (stack.hasNbt()) {
-				itemStack.setNbt(stack.getNbt().copy());
-			}
-
+			itemStack = stack.copyWithCount(0);
 			this.setStack(slot, itemStack);
 		}
 
@@ -565,7 +560,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public boolean contains(ItemStack stack) {
 		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack : list) {
-				if (!itemStack.isEmpty() && ItemStack.canCombine(itemStack, stack)) {
+				if (!itemStack.isEmpty() && ItemStack.areItemsAndNbtEqual(itemStack, stack)) {
 					return true;
 				}
 			}

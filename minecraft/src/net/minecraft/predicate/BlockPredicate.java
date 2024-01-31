@@ -45,7 +45,7 @@ public record BlockPredicate(Optional<TagKey<Block>> tag, Optional<RegistryEntry
 			} else {
 				if (this.nbt.isPresent()) {
 					BlockEntity blockEntity = world.getBlockEntity(pos);
-					if (blockEntity == null || !((NbtPredicate)this.nbt.get()).test(blockEntity.createNbtWithIdentifyingData())) {
+					if (blockEntity == null || !((NbtPredicate)this.nbt.get()).test(blockEntity.createNbtWithIdentifyingData(world.getRegistryManager()))) {
 						return false;
 					}
 				}

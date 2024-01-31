@@ -32,7 +32,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 	private final RegistryWrapper<Block> registryWrapper;
 
 	public BlockPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		this.registryWrapper = commandRegistryAccess.createWrapper(RegistryKeys.BLOCK);
+		this.registryWrapper = commandRegistryAccess.getWrapperOrThrow(RegistryKeys.BLOCK);
 	}
 
 	public static BlockPredicateArgumentType blockPredicate(CommandRegistryAccess commandRegistryAccess) {
@@ -96,7 +96,8 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.createNbtWithIdentifyingData(), true);
+					return blockEntity != null
+						&& NbtHelper.matches(this.nbt, blockEntity.createNbtWithIdentifyingData(cachedBlockPosition.getWorld().getRegistryManager()), true);
 				}
 			}
 		}
@@ -144,7 +145,8 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.createNbtWithIdentifyingData(), true);
+					return blockEntity != null
+						&& NbtHelper.matches(this.nbt, blockEntity.createNbtWithIdentifyingData(cachedBlockPosition.getWorld().getRegistryManager()), true);
 				}
 			}
 		}

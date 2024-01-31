@@ -9,10 +9,6 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-import net.minecraft.util.JsonHelper;
-import org.apache.commons.lang3.StringUtils;
 
 public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 	public ItemWrittenBookPagesStrictJsonFix(Schema outputSchema, boolean changesType) {
@@ -20,49 +16,12 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 	}
 
 	public Dynamic<?> fixBookPages(Dynamic<?> dynamic) {
-		return dynamic.update("pages", dynamic2 -> DataFixUtils.orElse(dynamic2.asStreamOpt().map(stream -> stream.map(dynamicxx -> {
-					if (dynamicxx.asString().result().isEmpty()) {
-						return dynamicxx;
-					} else {
-						String string = dynamicxx.asString("");
-						Text text = null;
-						if (!"null".equals(string) && !StringUtils.isEmpty(string)) {
-							if (string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
-								try {
-									text = JsonHelper.deserializeNullable(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
-									if (text == null) {
-										text = ScreenTexts.EMPTY;
-									}
-								} catch (Exception var6) {
-								}
-
-								if (text == null) {
-									try {
-										text = Text.Serialization.fromJson(string);
-									} catch (Exception var5) {
-									}
-								}
-
-								if (text == null) {
-									try {
-										text = Text.Serialization.fromLenientJson(string);
-									} catch (Exception var4) {
-									}
-								}
-
-								if (text == null) {
-									text = Text.literal(string);
-								}
-							} else {
-								text = Text.literal(string);
-							}
-						} else {
-							text = ScreenTexts.EMPTY;
-						}
-
-						return dynamicxx.createString(Text.Serialization.toJsonString(text));
-					}
-				})).map(dynamic::createList).result(), dynamic.emptyList()));
+		return dynamic.update(
+			"pages",
+			dynamic2 -> DataFixUtils.orElse(
+					dynamic2.asStreamOpt().map(stream -> stream.map(TextFixes::method_56629)).map(dynamic::createList).result(), dynamic.emptyList()
+				)
+		);
 	}
 
 	@Override

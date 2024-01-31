@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.Collection;
 import java.util.Collections;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -58,7 +59,7 @@ public class BossBarCommand {
 			context.getSource().getServer().getBossBarManager().getIds(), builder
 		);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("bossbar")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -67,7 +68,7 @@ public class BossBarCommand {
 						.then(
 							CommandManager.argument("id", IdentifierArgumentType.identifier())
 								.then(
-									CommandManager.argument("name", TextArgumentType.text())
+									CommandManager.argument("name", TextArgumentType.text(registryAccess))
 										.executes(
 											context -> addBossBar(context.getSource(), IdentifierArgumentType.getIdentifier(context, "id"), TextArgumentType.getTextArgument(context, "name"))
 										)
@@ -91,7 +92,7 @@ public class BossBarCommand {
 								.then(
 									CommandManager.literal("name")
 										.then(
-											CommandManager.argument("name", TextArgumentType.text())
+											CommandManager.argument("name", TextArgumentType.text(registryAccess))
 												.executes(context -> setName(context.getSource(), getBossBar(context), TextArgumentType.getTextArgument(context, "name")))
 										)
 								)

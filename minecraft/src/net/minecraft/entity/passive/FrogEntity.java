@@ -258,9 +258,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	}
 
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
 		if (registryEntry.isIn(BiomeTags.SPAWNS_COLD_VARIANT_FROGS)) {
 			this.setVariant(FrogVariant.COLD);
@@ -271,7 +269,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		}
 
 		FrogBrain.coolDownLongJump(this, world.getRandom());
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	public static DefaultAttributeContainer.Builder createFrogAttributes() {

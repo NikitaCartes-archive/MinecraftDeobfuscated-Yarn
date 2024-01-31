@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
+import io.netty.buffer.ByteBuf;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.DataFixTypes;
@@ -20,11 +22,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -111,7 +117,7 @@ public class MapState extends PersistentState {
 		return new MapState(0, 0, scale, false, false, locked, dimension);
 	}
 
-	public static MapState fromNbt(NbtCompound nbt) {
+	public static MapState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		RegistryKey<World> registryKey = (RegistryKey<World>)DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, nbt.get("dimension")))
 			.resultOrPartial(LOGGER::error)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + nbt.get("dimension")));
@@ -127,26 +133,27 @@ public class MapState extends PersistentState {
 			mapState.colors = bs;
 		}
 
-		NbtList nbtList = nbt.getList("banners", NbtElement.COMPOUND_TYPE);
-
-		for (int k = 0; k < nbtList.size(); k++) {
-			MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(nbtList.getCompound(k));
+		for (MapBannerMarker mapBannerMarker : (List)MapBannerMarker.CODEC
+			.listOf()
+			.parse(NbtOps.INSTANCE, nbt.get("banners"))
+			.resultOrPartial(string -> LOGGER.warn("Failed to parse map banner: '{}'", string))
+			.orElse(List.of())) {
 			mapState.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
 			mapState.addIcon(
 				mapBannerMarker.getIconType(),
 				null,
 				mapBannerMarker.getKey(),
-				(double)mapBannerMarker.getPos().getX(),
-				(double)mapBannerMarker.getPos().getZ(),
+				(double)mapBannerMarker.pos().getX(),
+				(double)mapBannerMarker.pos().getZ(),
 				180.0,
-				mapBannerMarker.getName()
+				(Text)mapBannerMarker.name().orElse(null)
 			);
 		}
 
-		NbtList nbtList2 = nbt.getList("frames", NbtElement.COMPOUND_TYPE);
+		NbtList nbtList = nbt.getList("frames", NbtElement.COMPOUND_TYPE);
 
-		for (int l = 0; l < nbtList2.size(); l++) {
-			MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(nbtList2.getCompound(l));
+		for (int k = 0; k < nbtList.size(); k++) {
+			MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(nbtList.getCompound(k));
 			mapState.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
 			mapState.addIcon(
 				MapIcon.Type.FRAME,
@@ -163,7 +170,7 @@ public class MapState extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		Identifier.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.dimension.getValue())
 			.resultOrPartial(LOGGER::error)
@@ -175,20 +182,14 @@ public class MapState extends PersistentState {
 		nbt.putBoolean("trackingPosition", this.showIcons);
 		nbt.putBoolean("unlimitedTracking", this.unlimitedTracking);
 		nbt.putBoolean("locked", this.locked);
+		nbt.put("banners", Util.getResult(MapBannerMarker.LIST_CODEC.encodeStart(NbtOps.INSTANCE, List.copyOf(this.banners.values())), IllegalStateException::new));
 		NbtList nbtList = new NbtList();
 
-		for (MapBannerMarker mapBannerMarker : this.banners.values()) {
-			nbtList.add(mapBannerMarker.getNbt());
-		}
-
-		nbt.put("banners", nbtList);
-		NbtList nbtList2 = new NbtList();
-
 		for (MapFrameMarker mapFrameMarker : this.frames.values()) {
-			nbtList2.add(mapFrameMarker.toNbt());
+			nbtList.add(mapFrameMarker.toNbt());
 		}
 
-		nbt.put("frames", nbtList2);
+		nbt.put("frames", nbtList);
 		return nbt;
 	}
 
@@ -218,8 +219,8 @@ public class MapState extends PersistentState {
 	}
 
 	private static Predicate<ItemStack> getEqualPredicate(ItemStack stack) {
-		Integer integer = FilledMapItem.getMapId(stack);
-		return other -> other == stack ? true : other.isOf(stack.getItem()) && Objects.equals(integer, FilledMapItem.getMapId(other));
+		MapId mapId = FilledMapItem.getMapId(stack);
+		return other -> other == stack ? true : other.isOf(stack.getItem()) && Objects.equals(mapId, FilledMapItem.getMapId(other));
 	}
 
 	public void update(PlayerEntity player, ItemStack stack) {
@@ -380,7 +381,7 @@ public class MapState extends PersistentState {
 			}
 		}
 
-		MapIcon mapIcon = new MapIcon(type, b, c, d, text);
+		MapIcon mapIcon = new MapIcon(type, b, c, d, Optional.ofNullable(text));
 		MapIcon mapIcon2 = (MapIcon)this.icons.put(key, mapIcon);
 		if (!mapIcon.equals(mapIcon2)) {
 			if (mapIcon2 != null && mapIcon2.type().shouldUseIconCountLimit()) {
@@ -396,9 +397,9 @@ public class MapState extends PersistentState {
 	}
 
 	@Nullable
-	public Packet<?> getPlayerMarkerPacket(int id, PlayerEntity player) {
+	public Packet<?> getPlayerMarkerPacket(MapId mapId, PlayerEntity player) {
 		MapState.PlayerUpdateTracker playerUpdateTracker = (MapState.PlayerUpdateTracker)this.updateTrackersByPlayer.get(player);
-		return playerUpdateTracker == null ? null : playerUpdateTracker.getPacket(id);
+		return playerUpdateTracker == null ? null : playerUpdateTracker.getPacket(mapId);
 	}
 
 	private void markDirty(int x, int z) {
@@ -445,7 +446,7 @@ public class MapState extends PersistentState {
 
 			if (!this.iconCountNotLessThan(256)) {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-				this.addIcon(mapBannerMarker.getIconType(), world, mapBannerMarker.getKey(), d, e, 180.0, mapBannerMarker.getName());
+				this.addIcon(mapBannerMarker.getIconType(), world, mapBannerMarker.getKey(), d, e, 180.0, (Text)mapBannerMarker.name().orElse(null));
 				return true;
 			}
 		}
@@ -458,8 +459,8 @@ public class MapState extends PersistentState {
 
 		while (iterator.hasNext()) {
 			MapBannerMarker mapBannerMarker = (MapBannerMarker)iterator.next();
-			if (mapBannerMarker.getPos().getX() == x && mapBannerMarker.getPos().getZ() == z) {
-				MapBannerMarker mapBannerMarker2 = MapBannerMarker.fromWorldBlock(world, mapBannerMarker.getPos());
+			if (mapBannerMarker.pos().getX() == x && mapBannerMarker.pos().getZ() == z) {
+				MapBannerMarker mapBannerMarker2 = MapBannerMarker.fromWorldBlock(world, mapBannerMarker.pos());
 				if (!mapBannerMarker.equals(mapBannerMarker2)) {
 					iterator.remove();
 					this.removeIcon(mapBannerMarker.getKey());
@@ -560,7 +561,7 @@ public class MapState extends PersistentState {
 		}
 
 		@Nullable
-		Packet<?> getPacket(int mapId) {
+		Packet<?> getPacket(MapId mapId) {
 			MapState.UpdateData updateData;
 			if (this.dirty) {
 				this.dirty = false;
@@ -600,19 +601,33 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	public static class UpdateData {
-		public final int startX;
-		public final int startZ;
-		public final int width;
-		public final int height;
-		public final byte[] colors;
+	public static record UpdateData(int startX, int startZ, int width, int height, byte[] colors) {
+		public static final PacketCodec<ByteBuf, Optional<MapState.UpdateData>> CODEC = PacketCodec.ofStatic(MapState.UpdateData::encode, MapState.UpdateData::decode);
 
-		public UpdateData(int startX, int startZ, int width, int height, byte[] colors) {
-			this.startX = startX;
-			this.startZ = startZ;
-			this.width = width;
-			this.height = height;
-			this.colors = colors;
+		private static void encode(ByteBuf buf, Optional<MapState.UpdateData> updateData) {
+			if (updateData.isPresent()) {
+				MapState.UpdateData updateData2 = (MapState.UpdateData)updateData.get();
+				buf.writeByte(updateData2.width);
+				buf.writeByte(updateData2.height);
+				buf.writeByte(updateData2.startX);
+				buf.writeByte(updateData2.startZ);
+				PacketByteBuf.writeByteArray(buf, updateData2.colors);
+			} else {
+				buf.writeByte(0);
+			}
+		}
+
+		private static Optional<MapState.UpdateData> decode(ByteBuf buf) {
+			int i = buf.readUnsignedByte();
+			if (i > 0) {
+				int j = buf.readUnsignedByte();
+				int k = buf.readUnsignedByte();
+				int l = buf.readUnsignedByte();
+				byte[] bs = PacketByteBuf.readByteArray(buf);
+				return Optional.of(new MapState.UpdateData(k, l, i, j, bs));
+			} else {
+				return Optional.empty();
+			}
 		}
 
 		public void setColorsTo(MapState mapState) {

@@ -14,8 +14,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>> extends StuckObjectsFeatureRenderer<T, M> {
@@ -53,24 +51,20 @@ public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends Play
 		for (int n = 0; n < 4; n++) {
 			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
 			MatrixStack.Entry entry = matrices.peek();
-			Matrix4f matrix4f = entry.getPositionMatrix();
-			Matrix3f matrix3f = entry.getNormalMatrix();
-			produceVertex(vertexConsumer, matrix4f, matrix3f, -4.5F, -1, 0.0F, 0.0F, light);
-			produceVertex(vertexConsumer, matrix4f, matrix3f, 4.5F, -1, 0.125F, 0.0F, light);
-			produceVertex(vertexConsumer, matrix4f, matrix3f, 4.5F, 1, 0.125F, 0.0625F, light);
-			produceVertex(vertexConsumer, matrix4f, matrix3f, -4.5F, 1, 0.0F, 0.0625F, light);
+			produceVertex(vertexConsumer, entry, -4.5F, -1, 0.0F, 0.0F, light);
+			produceVertex(vertexConsumer, entry, 4.5F, -1, 0.125F, 0.0F, light);
+			produceVertex(vertexConsumer, entry, 4.5F, 1, 0.125F, 0.0625F, light);
+			produceVertex(vertexConsumer, entry, -4.5F, 1, 0.0F, 0.0625F, light);
 		}
 	}
 
-	private static void produceVertex(
-		VertexConsumer vertexConsumer, Matrix4f vertexTransform, Matrix3f normalTransform, float x, int y, float u, float v, int light
-	) {
-		vertexConsumer.vertex(vertexTransform, x, (float)y, 0.0F)
+	private static void produceVertex(VertexConsumer vertexConsumer, MatrixStack.Entry matrix, float x, int y, float u, float v, int light) {
+		vertexConsumer.vertex(matrix, x, (float)y, 0.0F)
 			.color(255, 255, 255, 255)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(light)
-			.normal(normalTransform, 0.0F, 1.0F, 0.0F)
+			.normal(matrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 }

@@ -32,6 +32,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagKey;
@@ -252,7 +253,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					return;
 				}
 
-				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && ItemStack.canCombine(itemStack, itemStack2)) {
+				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && ItemStack.areItemsAndNbtEqual(itemStack, itemStack2)) {
 					if (button == 0) {
 						if (bl) {
 							itemStack.setCount(itemStack.getMaxCount());
@@ -501,7 +502,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			for (int i = 0; i < 9; i++) {
 				HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(i);
-				if (hotbarStorageEntry.isEmpty()) {
+				if (hotbarStorageEntry.method_56835()) {
 					for (int j = 0; j < 9; j++) {
 						if (j == i) {
 							ItemStack itemStack = new ItemStack(Items.PAPER);
@@ -515,7 +516,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 						}
 					}
 				} else {
-					this.handler.itemList.addAll(hotbarStorageEntry);
+					this.handler.itemList.addAll(hotbarStorageEntry.method_56839(this.client.world.getRegistryManager()));
 				}
 			}
 		} else if (selectedTab.getType() == ItemGroup.Type.CATEGORY) {
@@ -786,22 +787,21 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	public static void onHotbarKeyPress(MinecraftClient client, int index, boolean restore, boolean save) {
 		ClientPlayerEntity clientPlayerEntity = client.player;
+		DynamicRegistryManager dynamicRegistryManager = clientPlayerEntity.getWorld().getRegistryManager();
 		HotbarStorage hotbarStorage = client.getCreativeHotbarStorage();
 		HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(index);
 		if (restore) {
+			List<ItemStack> list = hotbarStorageEntry.method_56839(dynamicRegistryManager);
+
 			for (int i = 0; i < PlayerInventory.getHotbarSize(); i++) {
-				ItemStack itemStack = hotbarStorageEntry.get(i);
-				ItemStack itemStack2 = itemStack.isItemEnabled(clientPlayerEntity.getWorld().getEnabledFeatures()) ? itemStack.copy() : ItemStack.EMPTY;
-				clientPlayerEntity.getInventory().setStack(i, itemStack2);
-				client.interactionManager.clickCreativeStack(itemStack2, 36 + i);
+				ItemStack itemStack = (ItemStack)list.get(i);
+				clientPlayerEntity.getInventory().setStack(i, itemStack);
+				client.interactionManager.clickCreativeStack(itemStack, 36 + i);
 			}
 
 			clientPlayerEntity.playerScreenHandler.sendContentUpdates();
 		} else if (save) {
-			for (int i = 0; i < PlayerInventory.getHotbarSize(); i++) {
-				hotbarStorageEntry.set(i, clientPlayerEntity.getInventory().getStack(i).copy());
-			}
-
+			hotbarStorageEntry.method_56836(clientPlayerEntity.getInventory(), dynamicRegistryManager);
 			Text text = client.options.hotbarKeys[index].getBoundKeyLocalizedText();
 			Text text2 = client.options.loadToolbarActivatorKey.getBoundKeyLocalizedText();
 			Text text3 = Text.translatable("inventory.hotbarSaved", text2, text);

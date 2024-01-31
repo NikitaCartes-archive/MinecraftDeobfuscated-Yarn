@@ -351,10 +351,8 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+		entityData = super.initialize(world, difficulty, spawnReason, entityData);
 		boolean bl = world.getMoonSize() > 0.9F;
 		TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
 		Registries.CAT_VARIANT.getRandomEntry(tagKey, world.getRandom()).ifPresent(variant -> this.setVariant((CatVariant)variant.value()));

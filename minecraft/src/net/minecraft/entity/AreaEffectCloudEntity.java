@@ -24,7 +24,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
@@ -353,7 +352,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 
 		if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
 			try {
-				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), Registries.PARTICLE_TYPE.getReadOnlyWrapper()));
+				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), this.getRegistryManager()));
 			} catch (CommandSyntaxException var5) {
 				LOGGER.warn("Couldn't load custom particle {}", nbt.getString("Particle"), var5);
 			}
@@ -390,7 +389,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		nbt.putFloat("RadiusOnUse", this.radiusOnUse);
 		nbt.putFloat("RadiusPerTick", this.radiusGrowth);
 		nbt.putFloat("Radius", this.getRadius());
-		nbt.putString("Particle", this.getParticleType().asString());
+		nbt.putString("Particle", this.getParticleType().asString(this.getRegistryManager()));
 		if (this.ownerUuid != null) {
 			nbt.putUuid("Owner", this.ownerUuid);
 		}
@@ -408,7 +407,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 			NbtList nbtList = new NbtList();
 
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
+				nbtList.add(statusEffectInstance.writeNbt());
 			}
 
 			nbt.put("effects", nbtList);

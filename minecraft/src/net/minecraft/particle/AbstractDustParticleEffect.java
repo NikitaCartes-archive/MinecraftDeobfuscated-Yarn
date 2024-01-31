@@ -4,6 +4,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Locale;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector3f;
 
@@ -29,7 +30,7 @@ public abstract class AbstractDustParticleEffect implements ParticleEffect {
 	}
 
 	@Override
-	public String asString() {
+	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
 		return String.format(
 			Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registries.PARTICLE_TYPE.getId(this.getType()), this.color.x(), this.color.y(), this.color.z(), this.scale
 		);

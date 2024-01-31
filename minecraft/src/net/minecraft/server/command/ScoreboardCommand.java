@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.OperationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
@@ -62,7 +63,7 @@ public class ScoreboardCommand {
 		(objective, target) -> Text.stringifiedTranslatable("commands.scoreboard.players.get.null", objective, target)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("scoreboard")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -84,7 +85,7 @@ public class ScoreboardCommand {
 														)
 												)
 												.then(
-													CommandManager.argument("displayName", TextArgumentType.text())
+													CommandManager.argument("displayName", TextArgumentType.text(registryAccess))
 														.executes(
 															context -> executeAddObjective(
 																	context.getSource(),
@@ -104,7 +105,7 @@ public class ScoreboardCommand {
 										.then(
 											CommandManager.literal("displayname")
 												.then(
-													CommandManager.argument("displayName", TextArgumentType.text())
+													CommandManager.argument("displayName", TextArgumentType.text(registryAccess))
 														.executes(
 															context -> executeModifyObjective(
 																	context.getSource(),
@@ -130,6 +131,7 @@ public class ScoreboardCommand {
 										)
 										.then(
 											makeNumberFormatArguments(
+												registryAccess,
 												CommandManager.literal("numberformat"),
 												(commandContext, numberFormat) -> executeModifyObjectiveFormat(
 														commandContext.getSource(), ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"), numberFormat
@@ -302,7 +304,7 @@ public class ScoreboardCommand {
 												.then(
 													CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
 														.then(
-															CommandManager.argument("name", TextArgumentType.text())
+															CommandManager.argument("name", TextArgumentType.text(registryAccess))
 																.executes(
 																	commandContext -> executeSetDisplayName(
 																			commandContext.getSource(),
@@ -330,6 +332,7 @@ public class ScoreboardCommand {
 												.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 												.then(
 													makeNumberFormatArguments(
+														registryAccess,
 														CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 														(commandContext, numberFormat) -> executeSetNumberFormat(
 																commandContext.getSource(),
@@ -377,18 +380,18 @@ public class ScoreboardCommand {
 	}
 
 	private static ArgumentBuilder<ServerCommandSource, ?> makeNumberFormatArguments(
-		ArgumentBuilder<ServerCommandSource, ?> argumentBuilder, ScoreboardCommand.NumberFormatCommandExecutor executor
+		CommandRegistryAccess registryAccess, ArgumentBuilder<ServerCommandSource, ?> argumentBuilder, ScoreboardCommand.NumberFormatCommandExecutor executor
 	) {
-		return argumentBuilder.then(CommandManager.literal("blank").executes(commandContext -> executor.run(commandContext, BlankNumberFormat.INSTANCE)))
-			.then(CommandManager.literal("fixed").then(CommandManager.argument("contents", TextArgumentType.text()).executes(commandContext -> {
-				Text text = TextArgumentType.getTextArgument(commandContext, "contents");
-				return executor.run(commandContext, new FixedNumberFormat(text));
+		return argumentBuilder.then(CommandManager.literal("blank").executes(context -> executor.run(context, BlankNumberFormat.INSTANCE)))
+			.then(CommandManager.literal("fixed").then(CommandManager.argument("contents", TextArgumentType.text(registryAccess)).executes(context -> {
+				Text text = TextArgumentType.getTextArgument(context, "contents");
+				return executor.run(context, new FixedNumberFormat(text));
 			})))
-			.then(CommandManager.literal("styled").then(CommandManager.argument("style", StyleArgumentType.style()).executes(commandContext -> {
-				Style style = StyleArgumentType.getStyle(commandContext, "style");
-				return executor.run(commandContext, new StyledNumberFormat(style));
+			.then(CommandManager.literal("styled").then(CommandManager.argument("style", StyleArgumentType.style(registryAccess)).executes(context -> {
+				Style style = StyleArgumentType.getStyle(context, "style");
+				return executor.run(context, new StyledNumberFormat(style));
 			})))
-			.executes(commandContext -> executor.run(commandContext, null));
+			.executes(context -> executor.run(context, null));
 	}
 
 	private static LiteralArgumentBuilder<ServerCommandSource> makeRenderTypeArguments() {

@@ -242,6 +242,14 @@ public class TextureMap {
 			.put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
 	}
 
+	public static TextureMap vault(Block block, String front, String side, String top, String bottom) {
+		return new TextureMap()
+			.put(TextureKey.FRONT, getSubId(block, front))
+			.put(TextureKey.SIDE, getSubId(block, side))
+			.put(TextureKey.TOP, getSubId(block, top))
+			.put(TextureKey.BOTTOM, getSubId(block, bottom));
+	}
+
 	public static TextureMap particle(Item item) {
 		return new TextureMap().put(TextureKey.PARTICLE, getId(item));
 	}

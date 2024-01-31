@@ -309,7 +309,7 @@ public class ZombieEntity extends HostileEntity {
 							&& this.getWorld().isSpaceEmpty(zombieEntity)
 							&& !this.getWorld().containsFluid(zombieEntity.getBoundingBox())) {
 							zombieEntity.setTarget(livingEntity);
-							zombieEntity.initialize(serverWorld, this.getWorld().getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null, null);
+							zombieEntity.initialize(serverWorld, this.getWorld().getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null);
 							serverWorld.spawnEntityAndPassengers(zombieEntity);
 							this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
 								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement caller charge", -0.05F, EntityAttributeModifier.Operation.ADDITION));
@@ -406,11 +406,11 @@ public class ZombieEntity extends HostileEntity {
 			ZombieVillagerEntity zombieVillagerEntity = villagerEntity.convertTo(EntityType.ZOMBIE_VILLAGER, false);
 			if (zombieVillagerEntity != null) {
 				zombieVillagerEntity.initialize(
-					world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
+					world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true)
 				);
 				zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
 				zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE));
-				zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
+				zombieVillagerEntity.setOfferData(villagerEntity.getOffers().copy());
 				zombieVillagerEntity.setXp(villagerEntity.getExperience());
 				if (!this.isSilent()) {
 					world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
@@ -440,11 +440,9 @@ public class ZombieEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		entityData = super.initialize(world, difficulty, spawnReason, entityData);
 		float f = difficulty.getClampedLocalDifficulty();
 		this.setCanPickUpLoot(random.nextFloat() < 0.55F * f);
 		if (entityData == null) {
@@ -466,7 +464,7 @@ public class ZombieEntity extends HostileEntity {
 						ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.getWorld());
 						if (chickenEntity2 != null) {
 							chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
-							chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
+							chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null);
 							chickenEntity2.setHasJockey(true);
 							this.startRiding(chickenEntity2);
 							world.spawnEntity(chickenEntity2);

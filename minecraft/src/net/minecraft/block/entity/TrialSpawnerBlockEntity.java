@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -23,27 +24,28 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 
 	public TrialSpawnerBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.TRIAL_SPAWNER, pos, state);
-		EntityDetector entityDetector = EntityDetector.SURVIVAL_PLAYER;
-		this.spawner = new TrialSpawnerLogic(this, entityDetector);
+		EntityDetector entityDetector = EntityDetector.SURVIVAL_PLAYERS;
+		EntityDetector.Selector selector = EntityDetector.Selector.IN_WORLD;
+		this.spawner = new TrialSpawnerLogic(this, entityDetector, selector);
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
-		this.spawner.codec().parse(NbtOps.INSTANCE, nbt).resultOrPartial(LOGGER::error).ifPresent(trialSpawnerLogic -> this.spawner = trialSpawnerLogic);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
+		this.spawner.codec().parse(NbtOps.INSTANCE, nbt).resultOrPartial(LOGGER::error).ifPresent(spawner -> this.spawner = spawner);
 		if (this.world != null) {
 			this.updateListeners();
 		}
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		this.spawner
 			.codec()
 			.encodeStart(NbtOps.INSTANCE, this.spawner)
 			.get()
-			.ifLeft(nbtElement -> nbt.copyFrom((NbtCompound)nbtElement))
+			.ifLeft(nbtx -> nbt.copyFrom((NbtCompound)nbtx))
 			.ifRight(partialResult -> LOGGER.warn("Failed to encode TrialSpawner {}", partialResult.message()));
 	}
 
@@ -52,7 +54,7 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
 		return this.spawner.getData().getSpawnDataNbt(this.getCachedState().get(TrialSpawnerBlock.TRIAL_SPAWNER_STATE));
 	}
 

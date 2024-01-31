@@ -42,7 +42,7 @@ public record BlockNbtDataSource(String rawPos, @Nullable PosArgument pos) imple
 			if (serverWorld.canSetBlock(blockPos)) {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					return Stream.of(blockEntity.createNbtWithIdentifyingData());
+					return Stream.of(blockEntity.createNbtWithIdentifyingData(source.getRegistryManager()));
 				}
 			}
 		}

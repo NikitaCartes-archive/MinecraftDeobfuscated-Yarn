@@ -1,12 +1,8 @@
 package net.minecraft.entity.mob;
 
-import com.google.common.collect.Maps;
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -121,10 +117,8 @@ public class VindicatorEntity extends IllagerEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
-		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		Random random = world.getRandom();
 		this.initEquipment(random, difficulty);
@@ -173,9 +167,7 @@ public class VindicatorEntity extends IllagerEntity {
 
 		boolean bl = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl) {
-			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-			map.put(Enchantments.SHARPNESS, i);
-			EnchantmentHelper.set(map, itemStack);
+			itemStack.addEnchantment(Enchantments.SHARPNESS, i);
 		}
 
 		this.equipStack(EquipmentSlot.MAINHAND, itemStack);

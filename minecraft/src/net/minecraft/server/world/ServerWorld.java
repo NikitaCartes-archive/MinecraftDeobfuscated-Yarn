@@ -60,6 +60,7 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
@@ -1435,17 +1436,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Nullable
 	@Override
-	public MapState getMapState(String id) {
-		return this.getServer().getOverworld().getPersistentStateManager().get(MapState.getPersistentStateType(), id);
+	public MapState getMapState(MapId id) {
+		return this.getServer().getOverworld().getPersistentStateManager().get(MapState.getPersistentStateType(), id.asString());
 	}
 
 	@Override
-	public void putMapState(String id, MapState state) {
-		this.getServer().getOverworld().getPersistentStateManager().set(id, state);
+	public void putMapState(MapId id, MapState state) {
+		this.getServer().getOverworld().getPersistentStateManager().set(id.asString(), state);
 	}
 
 	@Override
-	public int getNextMapId() {
+	public MapId getNextMapId() {
 		return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState.getPersistentStateType(), "idcounts").getNextMapId();
 	}
 

@@ -14,6 +14,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
@@ -42,6 +43,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -749,6 +751,10 @@ public final class ItemStack {
 	/**
 	 * {@return a copy of this item stack, including the item count, NBT, and
 	 * {@linkplain #getBobbingAnimationTime bobbing animation time}}
+	 * 
+	 * @see #copyWithCount
+	 * @see #copyNbtToNewStack
+	 * @see #copyNbtToNewStackIgnoreEmpty
 	 */
 	public ItemStack copy() {
 		if (this.isEmpty()) {
@@ -764,6 +770,16 @@ public final class ItemStack {
 		}
 	}
 
+	/**
+	 * {@return a copy of this item stack, including the NBT, and {@linkplain #getBobbingAnimationTime bobbing animation time}},
+	 * with the item count set to {@code count}
+	 * 
+	 * @see #copy
+	 * @see #copyNbtToNewStack
+	 * @see #copyNbtToNewStackIgnoreEmpty
+	 * 
+	 * @param count the item count of the resultant stack
+	 */
 	public ItemStack copyWithCount(int count) {
 		if (this.isEmpty()) {
 			return EMPTY;
@@ -775,19 +791,58 @@ public final class ItemStack {
 	}
 
 	/**
+	 * {@return a new item stack with the NBT copied from this item stack}
+	 * 
+	 * @see #copy
+	 * @see #copyWithCount
+	 * @see #copyNbtToNewStackIgnoreEmpty
+	 * 
+	 * @param item the item of the resultant stack
+	 * @param count the item count of the resultant stack
+	 */
+	public ItemStack copyNbtToNewStack(ItemConvertible item, int count) {
+		return this.isEmpty() ? EMPTY : this.copyNbtToNewStackIgnoreEmpty(item, count);
+	}
+
+	/**
+	 * {@return a new item stack with the NBT copied from this item stack, even if this stack is empty}
+	 * 
+	 * @see #copy
+	 * @see #copyWithCount
+	 * @see #copyNbtToNewStack
+	 * 
+	 * @param count the item count of the resultant stack
+	 * @param item the item of the resultant stack
+	 */
+	public ItemStack copyNbtToNewStackIgnoreEmpty(ItemConvertible item, int count) {
+		ItemStack itemStack = new ItemStack(item, count);
+		if (this.nbt != null) {
+			itemStack.setNbt(this.nbt.copy());
+		}
+
+		return itemStack;
+	}
+
+	/**
 	 * {@return whether the given item stacks are equal, including the item count and NBT}
 	 * 
 	 * @see #areItemsEqual
-	 * @see #canCombine
+	 * @see #areItemsAndNbtEqual
 	 */
 	public static boolean areEqual(ItemStack left, ItemStack right) {
 		if (left == right) {
 			return true;
 		} else {
-			return left.getCount() != right.getCount() ? false : canCombine(left, right);
+			return left.getCount() != right.getCount() ? false : areItemsAndNbtEqual(left, right);
 		}
 	}
 
+	/**
+	 * {@return whether the given item stacks contain the same item, regardless of item count or NBT}
+	 * 
+	 * @see #areEqual
+	 * @see #areItemsAndNbtEqual
+	 */
 	public static boolean areItemsEqual(ItemStack left, ItemStack right) {
 		return left.isOf(right.getItem());
 	}
@@ -802,12 +857,16 @@ public final class ItemStack {
 	 * @see #areEqual
 	 * @see #areItemsEqual
 	 */
-	public static boolean canCombine(ItemStack stack, ItemStack otherStack) {
+	public static boolean areItemsAndNbtEqual(ItemStack stack, ItemStack otherStack) {
 		if (!stack.isOf(otherStack.getItem())) {
 			return false;
 		} else {
 			return stack.isEmpty() && otherStack.isEmpty() ? true : Objects.equals(stack.nbt, otherStack.nbt);
 		}
+	}
+
+	public static MapCodec<ItemStack> createOptionalCodec(String fieldName) {
+		return CODEC.optionalFieldOf(fieldName).xmap(optional -> (ItemStack)optional.orElse(EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
 	}
 
 	public String getTranslationKey() {
@@ -1049,8 +1108,8 @@ public final class ItemStack {
 
 		list.add(mutableText);
 		if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP)) {
-			Integer integer = FilledMapItem.getMapId(this);
-			if (integer != null) {
+			MapId mapId = FilledMapItem.getMapId(this);
+			if (mapId != null) {
 				list.add(FilledMapItem.getIdText(this));
 			}
 		}
@@ -1058,41 +1117,40 @@ public final class ItemStack {
 		int i = this.getHideFlags();
 		if (isSectionVisible(i, ItemStack.TooltipSection.ADDITIONAL)) {
 			this.getItem().appendTooltip(this, player == null ? null : player.getWorld(), list, context);
+			appendEnchantments(list, EnchantedBookItem.getEnchantmentNbt(this));
 		}
 
-		if (this.hasNbt()) {
-			if (isSectionVisible(i, ItemStack.TooltipSection.UPGRADES) && player != null) {
-				ArmorTrim.appendTooltip(this, player.getWorld().getRegistryManager(), list);
-			}
+		if (isSectionVisible(i, ItemStack.TooltipSection.UPGRADES) && player != null) {
+			ArmorTrim.appendTooltip(this, player.getWorld().getRegistryManager(), list);
+		}
 
-			if (isSectionVisible(i, ItemStack.TooltipSection.ENCHANTMENTS)) {
-				appendEnchantments(list, this.getEnchantments());
-			}
+		if (isSectionVisible(i, ItemStack.TooltipSection.ENCHANTMENTS)) {
+			appendEnchantments(list, this.getEnchantments());
+		}
 
-			if (this.nbt.contains("display", NbtElement.COMPOUND_TYPE)) {
-				NbtCompound nbtCompound = this.nbt.getCompound("display");
-				if (isSectionVisible(i, ItemStack.TooltipSection.DYE) && nbtCompound.contains("color", NbtElement.NUMBER_TYPE)) {
-					if (context.isAdvanced()) {
-						list.add(Text.translatable("item.color", String.format(Locale.ROOT, "#%06X", nbtCompound.getInt("color"))).formatted(Formatting.GRAY));
-					} else {
-						list.add(Text.translatable("item.dyed").formatted(Formatting.GRAY, Formatting.ITALIC));
-					}
+		if (this.nbt != null && this.nbt.contains("display", NbtElement.COMPOUND_TYPE)) {
+			NbtCompound nbtCompound = this.nbt.getCompound("display");
+			if (isSectionVisible(i, ItemStack.TooltipSection.DYE) && nbtCompound.contains("color", NbtElement.NUMBER_TYPE)) {
+				if (context.isAdvanced()) {
+					list.add(Text.translatable("item.color", String.format(Locale.ROOT, "#%06X", nbtCompound.getInt("color"))).formatted(Formatting.GRAY));
+				} else {
+					list.add(Text.translatable("item.dyed").formatted(Formatting.GRAY, Formatting.ITALIC));
 				}
+			}
 
-				if (nbtCompound.getType("Lore") == NbtElement.LIST_TYPE) {
-					NbtList nbtList = nbtCompound.getList("Lore", NbtElement.STRING_TYPE);
+			if (nbtCompound.getType("Lore") == NbtElement.LIST_TYPE) {
+				NbtList nbtList = nbtCompound.getList("Lore", NbtElement.STRING_TYPE);
 
-					for (int j = 0; j < nbtList.size(); j++) {
-						String string = nbtList.getString(j);
+				for (int j = 0; j < nbtList.size(); j++) {
+					String string = nbtList.getString(j);
 
-						try {
-							MutableText mutableText2 = Text.Serialization.fromJson(string);
-							if (mutableText2 != null) {
-								list.add(Texts.setStyleIfAbsent(mutableText2, LORE_STYLE));
-							}
-						} catch (Exception var19) {
-							nbtCompound.remove("Lore");
+					try {
+						MutableText mutableText2 = Text.Serialization.fromJson(string);
+						if (mutableText2 != null) {
+							list.add(Texts.setStyleIfAbsent(mutableText2, LORE_STYLE));
 						}
+					} catch (Exception var19) {
+						nbtCompound.remove("Lore");
 					}
 				}
 			}
@@ -1167,32 +1225,30 @@ public final class ItemStack {
 			}
 		}
 
-		if (this.hasNbt()) {
-			if (isSectionVisible(i, ItemStack.TooltipSection.UNBREAKABLE) && this.nbt.getBoolean("Unbreakable")) {
-				list.add(Text.translatable("item.unbreakable").formatted(Formatting.BLUE));
-			}
+		if (isSectionVisible(i, ItemStack.TooltipSection.UNBREAKABLE) && this.nbt != null && this.nbt.getBoolean("Unbreakable")) {
+			list.add(Text.translatable("item.unbreakable").formatted(Formatting.BLUE));
+		}
 
-			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.nbt.contains("CanDestroy", NbtElement.LIST_TYPE)) {
-				NbtList nbtList2 = this.nbt.getList("CanDestroy", NbtElement.STRING_TYPE);
-				if (!nbtList2.isEmpty()) {
-					list.add(ScreenTexts.EMPTY);
-					list.add(Text.translatable("item.canBreak").formatted(Formatting.GRAY));
+		if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.nbt != null && this.nbt.contains("CanDestroy", NbtElement.LIST_TYPE)) {
+			NbtList nbtList2 = this.nbt.getList("CanDestroy", NbtElement.STRING_TYPE);
+			if (!nbtList2.isEmpty()) {
+				list.add(ScreenTexts.EMPTY);
+				list.add(Text.translatable("item.canBreak").formatted(Formatting.GRAY));
 
-					for (int k = 0; k < nbtList2.size(); k++) {
-						list.addAll(parseBlockTag(nbtList2.getString(k)));
-					}
+				for (int k = 0; k < nbtList2.size(); k++) {
+					list.addAll(parseBlockTag(nbtList2.getString(k)));
 				}
 			}
+		}
 
-			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.nbt.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
-				NbtList nbtList2 = this.nbt.getList("CanPlaceOn", NbtElement.STRING_TYPE);
-				if (!nbtList2.isEmpty()) {
-					list.add(ScreenTexts.EMPTY);
-					list.add(Text.translatable("item.canPlace").formatted(Formatting.GRAY));
+		if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.nbt != null && this.nbt.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
+			NbtList nbtList2 = this.nbt.getList("CanPlaceOn", NbtElement.STRING_TYPE);
+			if (!nbtList2.isEmpty()) {
+				list.add(ScreenTexts.EMPTY);
+				list.add(Text.translatable("item.canPlace").formatted(Formatting.GRAY));
 
-					for (int k = 0; k < nbtList2.size(); k++) {
-						list.addAll(parseBlockTag(nbtList2.getString(k)));
-					}
+				for (int k = 0; k < nbtList2.size(); k++) {
+					list.addAll(parseBlockTag(nbtList2.getString(k)));
 				}
 			}
 		}
@@ -1281,13 +1337,12 @@ public final class ItemStack {
 	 * @see net.minecraft.enchantment.EnchantmentHelper
 	 */
 	public void addEnchantment(Enchantment enchantment, int level) {
-		this.getOrCreateNbt();
-		if (!this.nbt.contains("Enchantments", NbtElement.LIST_TYPE)) {
-			this.nbt.put("Enchantments", new NbtList());
+		Map<Enchantment, Integer> map = EnchantmentHelper.get(this);
+		if (level != 0) {
+			map.merge(enchantment, level, Integer::max);
 		}
 
-		NbtList nbtList = this.nbt.getList("Enchantments", NbtElement.COMPOUND_TYPE);
-		nbtList.add(EnchantmentHelper.createNbt(EnchantmentHelper.getEnchantmentId(enchantment), (byte)level));
+		EnchantmentHelper.set(map, this);
 	}
 
 	/**

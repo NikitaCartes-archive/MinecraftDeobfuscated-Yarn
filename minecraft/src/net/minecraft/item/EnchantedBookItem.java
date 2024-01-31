@@ -1,16 +1,11 @@
 package net.minecraft.item;
 
-import java.util.List;
-import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 
 public class EnchantedBookItem extends Item {
 	public static final String STORED_ENCHANTMENTS_KEY = "StoredEnchantments";
@@ -32,12 +27,6 @@ public class EnchantedBookItem extends Item {
 	public static NbtList getEnchantmentNbt(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getNbt();
 		return nbtCompound != null ? nbtCompound.getList("StoredEnchantments", NbtElement.COMPOUND_TYPE) : new NbtList();
-	}
-
-	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		super.appendTooltip(stack, world, tooltip, context);
-		ItemStack.appendEnchantments(tooltip, getEnchantmentNbt(stack));
 	}
 
 	public static void addEnchantment(ItemStack stack, EnchantmentLevelEntry entry) {
@@ -67,7 +56,7 @@ public class EnchantedBookItem extends Item {
 
 	public static ItemStack forEnchantment(EnchantmentLevelEntry info) {
 		ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
-		addEnchantment(itemStack, info);
+		itemStack.addEnchantment(info.enchantment, info.level);
 		return itemStack;
 	}
 }

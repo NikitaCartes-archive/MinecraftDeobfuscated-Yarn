@@ -109,6 +109,7 @@ public final class ItemTags {
 	public static final TagKey<Item> TOOLS = of("tools");
 	public static final TagKey<Item> BREAKS_DECORATED_POTS = of("breaks_decorated_pots");
 	public static final TagKey<Item> VILLAGER_PLANTABLE_SEEDS = of("villager_plantable_seeds");
+	public static final TagKey<Item> DYEABLE = of("dyeable");
 	public static final TagKey<Item> FOOT_ARMOR_ENCHANTABLE = of("enchantable/foot_armor");
 	public static final TagKey<Item> LEG_ARMOR_ENCHANTABLE = of("enchantable/leg_armor");
 	public static final TagKey<Item> CHEST_ARMOR_ENCHANTABLE = of("enchantable/chest_armor");

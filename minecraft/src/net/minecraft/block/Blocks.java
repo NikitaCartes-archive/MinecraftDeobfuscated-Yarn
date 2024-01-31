@@ -9,6 +9,7 @@ import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.enums.SculkSensorPhase;
 import net.minecraft.block.enums.TrialSpawnerState;
+import net.minecraft.block.enums.VaultState;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
@@ -6328,6 +6329,21 @@ public class Blocks {
 				.sounds(BlockSoundGroup.TRIAL_SPAWNER)
 				.blockVision(Blocks::never)
 				.nonOpaque()
+				.requires(FeatureFlags.UPDATE_1_21)
+		)
+	);
+	public static final Block VAULT = register(
+		"vault",
+		new VaultBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.STONE_GRAY)
+				.instrument(Instrument.BASEDRUM)
+				.nonOpaque()
+				.requiresTool()
+				.sounds(BlockSoundGroup.VAULT)
+				.luminance(state -> ((VaultState)state.get(VaultBlock.VAULT_STATE)).getLuminance())
+				.strength(50.0F)
+				.blockVision(Blocks::never)
 				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);

@@ -42,10 +42,8 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<Long> LONG = TrackedDataHandler.create(PacketCodecs.VAR_LONG);
 	public static final TrackedDataHandler<Float> FLOAT = TrackedDataHandler.create(PacketCodecs.FLOAT);
 	public static final TrackedDataHandler<String> STRING = TrackedDataHandler.create(PacketCodecs.STRING);
-	public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.PACKET_CODEC);
-	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = TrackedDataHandler.create(
-		TextCodecs.PACKET_CODEC.collect(PacketCodecs::optional)
-	);
+	public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.REGISTRY_PACKET_CODEC);
+	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.OPTIONAL_PACKET_CODEC);
 	public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>() {
 		@Override
 		public PacketCodec<? super RegistryByteBuf, ItemStack> codec() {

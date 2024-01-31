@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
@@ -17,17 +17,20 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.registry.RegistryWrapper;
 import org.slf4j.Logger;
 
 public class PersistentStateManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Map<String, PersistentState> loadedStates = Maps.<String, PersistentState>newHashMap();
 	private final DataFixer dataFixer;
+	private final RegistryWrapper.WrapperLookup registryLookup;
 	private final File directory;
 
-	public PersistentStateManager(File directory, DataFixer dataFixer) {
+	public PersistentStateManager(File directory, DataFixer dataFixer, RegistryWrapper.WrapperLookup registryLookup) {
 		this.dataFixer = dataFixer;
 		this.directory = directory;
+		this.registryLookup = registryLookup;
 	}
 
 	private File getFile(String id) {
@@ -57,12 +60,14 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	private <T extends PersistentState> T readFromFile(Function<NbtCompound, T> readFunction, DataFixTypes dataFixTypes, String id) {
+	private <T extends PersistentState> T readFromFile(
+		BiFunction<NbtCompound, RegistryWrapper.WrapperLookup, T> readFunction, DataFixTypes dataFixTypes, String id
+	) {
 		try {
 			File file = this.getFile(id);
 			if (file.exists()) {
 				NbtCompound nbtCompound = this.readNbt(id, dataFixTypes, SharedConstants.getGameVersion().getSaveVersion().getId());
-				return (T)readFunction.apply(nbtCompound.getCompound("data"));
+				return (T)readFunction.apply(nbtCompound.getCompound("data"), this.registryLookup);
 			}
 		} catch (Exception var6) {
 			LOGGER.error("Error loading saved data: {}", id, var6);
@@ -153,7 +158,7 @@ public class PersistentStateManager {
 	public void save() {
 		this.loadedStates.forEach((id, state) -> {
 			if (state != null) {
-				state.save(this.getFile(id));
+				state.save(this.getFile(id), this.registryLookup);
 			}
 		});
 	}

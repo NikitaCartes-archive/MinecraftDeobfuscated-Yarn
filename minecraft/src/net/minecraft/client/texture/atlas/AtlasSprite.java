@@ -11,13 +11,13 @@ import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class Sprite {
+public class AtlasSprite {
 	private final Identifier id;
 	private final Resource resource;
 	private final AtomicReference<NativeImage> image = new AtomicReference();
 	private final AtomicInteger regionCount;
 
-	public Sprite(Identifier id, Resource resource, int regionCount) {
+	public AtlasSprite(Identifier id, Resource resource, int regionCount) {
 		this.id = id;
 		this.resource = resource;
 		this.regionCount = new AtomicInteger(regionCount);

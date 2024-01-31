@@ -5,10 +5,11 @@ import java.util.Deque;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixUtil;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 /**
  * A stack of transformation matrices used to specify how 3D objects are
@@ -55,19 +56,14 @@ public class MatrixStack {
 	public void scale(float x, float y, float z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
 		entry.positionMatrix.scale(x, y, z);
-		if (x == y && y == z) {
-			if (x > 0.0F) {
-				return;
+		if (Math.abs(x) == Math.abs(y) && Math.abs(y) == Math.abs(z)) {
+			if (x < 0.0F || y < 0.0F || z < 0.0F) {
+				entry.normalMatrix.scale(Math.signum(x), Math.signum(y), Math.signum(z));
 			}
-
-			entry.normalMatrix.scale(-1.0F);
+		} else {
+			entry.normalMatrix.scale(1.0F / x, 1.0F / y, 1.0F / z);
+			entry.field_48930 = false;
 		}
-
-		float f = 1.0F / x;
-		float g = 1.0F / y;
-		float h = 1.0F / z;
-		float i = MathHelper.fastInverseCbrt(f * g * h);
-		entry.normalMatrix.scale(i * f, i * g, i * h);
 	}
 
 	/**
@@ -89,8 +85,7 @@ public class MatrixStack {
 	 * Pushes a copy of the top entry onto this stack.
 	 */
 	public void push() {
-		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		this.stack.addLast(new MatrixStack.Entry(new Matrix4f(entry.positionMatrix), new Matrix3f(entry.normalMatrix)));
+		this.stack.addLast(new MatrixStack.Entry((MatrixStack.Entry)this.stack.getLast()));
 	}
 
 	/**
@@ -121,6 +116,7 @@ public class MatrixStack {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
 		entry.positionMatrix.identity();
 		entry.normalMatrix.identity();
+		entry.field_48930 = true;
 	}
 
 	/**
@@ -130,17 +126,37 @@ public class MatrixStack {
 	 * methods.
 	 */
 	public void multiplyPositionMatrix(Matrix4f matrix) {
-		((MatrixStack.Entry)this.stack.getLast()).positionMatrix.mul(matrix);
+		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
+		entry.positionMatrix.mul(matrix);
+		if (!MatrixUtil.method_56826(matrix)) {
+			if (MatrixUtil.method_56827(matrix)) {
+				entry.normalMatrix.mul(new Matrix3f(matrix));
+			} else {
+				entry.method_56823();
+			}
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static final class Entry {
 		final Matrix4f positionMatrix;
 		final Matrix3f normalMatrix;
+		boolean field_48930 = true;
 
 		Entry(Matrix4f positionMatrix, Matrix3f normalMatrix) {
 			this.positionMatrix = positionMatrix;
 			this.normalMatrix = normalMatrix;
+		}
+
+		Entry(MatrixStack.Entry matrix) {
+			this.positionMatrix = new Matrix4f(matrix.positionMatrix);
+			this.normalMatrix = new Matrix3f(matrix.normalMatrix);
+			this.field_48930 = matrix.field_48930;
+		}
+
+		void method_56823() {
+			this.normalMatrix.set(this.positionMatrix).invert().transpose();
+			this.field_48930 = false;
 		}
 
 		/**
@@ -155,6 +171,19 @@ public class MatrixStack {
 		 */
 		public Matrix3f getNormalMatrix() {
 			return this.normalMatrix;
+		}
+
+		public Vector3f method_56821(Vector3f vector3f, Vector3f vector3f2) {
+			return this.method_56820(vector3f.x, vector3f.y, vector3f.z, vector3f2);
+		}
+
+		public Vector3f method_56820(float f, float g, float h, Vector3f vector3f) {
+			Vector3f vector3f2 = this.normalMatrix.transform(f, g, h, vector3f);
+			return this.field_48930 ? vector3f2 : vector3f2.normalize();
+		}
+
+		public MatrixStack.Entry copy() {
+			return new MatrixStack.Entry(this);
 		}
 	}
 }

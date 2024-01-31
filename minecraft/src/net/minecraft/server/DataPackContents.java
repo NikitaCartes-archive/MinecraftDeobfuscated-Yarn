@@ -4,9 +4,11 @@ import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.command.CommandRegistryAccess;
@@ -15,6 +17,7 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.registry.tag.TagManagerLoader;
@@ -38,12 +41,12 @@ import org.slf4j.Logger;
 public class DataPackContents {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final CompletableFuture<Unit> COMPLETED_UNIT = CompletableFuture.completedFuture(Unit.INSTANCE);
-	private final CommandRegistryAccess.EntryListCreationPolicySettable commandRegistryAccess;
+	private final DataPackContents.ConfigurableWrapperLookup field_48785;
 	private final CommandManager commandManager;
-	private final RecipeManager recipeManager = new RecipeManager();
+	private final RecipeManager recipeManager;
 	private final TagManagerLoader registryTagManager;
-	private final LootManager lootManager = new LootManager();
-	private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootManager);
+	private final LootManager lootManager;
+	private final ServerAdvancementLoader serverAdvancementLoader;
 	private final FunctionLoader functionLoader;
 
 	public DataPackContents(
@@ -52,10 +55,13 @@ public class DataPackContents {
 		CommandManager.RegistrationEnvironment environment,
 		int functionPermissionLevel
 	) {
+		this.field_48785 = new DataPackContents.ConfigurableWrapperLookup(dynamicRegistryManager);
+		this.field_48785.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.CREATE_NEW);
+		this.recipeManager = new RecipeManager(this.field_48785);
 		this.registryTagManager = new TagManagerLoader(dynamicRegistryManager);
-		this.commandRegistryAccess = CommandRegistryAccess.of((DynamicRegistryManager)dynamicRegistryManager, enabledFeatures);
-		this.commandManager = new CommandManager(environment, this.commandRegistryAccess);
-		this.commandRegistryAccess.setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy.CREATE_NEW);
+		this.commandManager = new CommandManager(environment, CommandRegistryAccess.of(this.field_48785, enabledFeatures));
+		this.lootManager = new LootManager(this.field_48785);
+		this.serverAdvancementLoader = new ServerAdvancementLoader(this.field_48785, this.lootManager);
 		this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());
 	}
 
@@ -118,7 +124,7 @@ public class DataPackContents {
 		DataPackContents dataPackContents = new DataPackContents(dynamicRegistryManager, enabledFeatures, environment, functionPermissionLevel);
 		return SimpleResourceReload.start(manager, dataPackContents.getContents(), prepareExecutor, applyExecutor, COMPLETED_UNIT, LOGGER.isDebugEnabled())
 			.whenComplete()
-			.whenComplete((void_, throwable) -> dataPackContents.commandRegistryAccess.setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy.FAIL))
+			.whenComplete((void_, throwable) -> dataPackContents.field_48785.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.FAIL))
 			.thenApply(void_ -> dataPackContents);
 	}
 
@@ -135,5 +141,58 @@ public class DataPackContents {
 			.stream()
 			.collect(Collectors.toUnmodifiableMap(entry -> TagKey.of(registryKey, (Identifier)entry.getKey()), entry -> List.copyOf((Collection)entry.getValue())));
 		dynamicRegistryManager.get(registryKey).populateTags(map);
+	}
+
+	static class ConfigurableWrapperLookup implements RegistryWrapper.WrapperLookup {
+		private final DynamicRegistryManager dynamicRegistryManager;
+		DataPackContents.EntryListCreationPolicy entryListCreationPolicy = DataPackContents.EntryListCreationPolicy.FAIL;
+
+		ConfigurableWrapperLookup(DynamicRegistryManager dynamicRegistryManager) {
+			this.dynamicRegistryManager = dynamicRegistryManager;
+		}
+
+		public void setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy entryListCreationPolicy) {
+			this.entryListCreationPolicy = entryListCreationPolicy;
+		}
+
+		@Override
+		public Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
+			return this.dynamicRegistryManager.streamAllRegistryKeys();
+		}
+
+		@Override
+		public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
+			return this.dynamicRegistryManager
+				.getOptional(registryRef)
+				.map(registry -> this.getWrapper(registry.getReadOnlyWrapper(), registry.getTagCreatingWrapper()));
+		}
+
+		private <T> RegistryWrapper.Impl<T> getWrapper(RegistryWrapper.Impl<T> readOnlyWrapper, RegistryWrapper.Impl<T> tagCreatingWrapper) {
+			return new RegistryWrapper.Impl.Delegating<T>() {
+				@Override
+				protected RegistryWrapper.Impl<T> getBase() {
+					return switch (ConfigurableWrapperLookup.this.entryListCreationPolicy) {
+						case FAIL -> readOnlyWrapper;
+						case CREATE_NEW -> tagCreatingWrapper;
+					};
+				}
+			};
+		}
+	}
+
+	/**
+	 * A policy on how to handle a {@link net.minecraft.registry.tag.TagKey} that does not resolve
+	 * to an existing tag (unrecognized tag) in {@link
+	 * net.minecraft.registry.RegistryWrapper#getOptional(net.minecraft.registry.tag.TagKey)}.
+	 */
+	static enum EntryListCreationPolicy {
+		/**
+		 * Creates a new {@link net.minecraft.registry.entry.RegistryEntryList}, stores it and returns it.
+		 */
+		CREATE_NEW,
+		/**
+		 * Throws an exception.
+		 */
+		FAIL;
 	}
 }

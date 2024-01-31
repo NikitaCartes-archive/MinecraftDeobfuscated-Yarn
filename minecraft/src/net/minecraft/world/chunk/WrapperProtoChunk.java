@@ -13,6 +13,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Util;
@@ -212,8 +213,8 @@ public class WrapperProtoChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
-		return this.wrapped.getPackedBlockEntityNbt(pos);
+	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registryLookup) {
+		return this.wrapped.getPackedBlockEntityNbt(pos, registryLookup);
 	}
 
 	@Override

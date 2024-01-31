@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandExecutionContext;
@@ -81,7 +82,7 @@ public class CommandManager {
 		AdvancementCommand.register(this.dispatcher);
 		AttributeCommand.register(this.dispatcher, commandRegistryAccess);
 		ExecuteCommand.register(this.dispatcher, commandRegistryAccess);
-		BossBarCommand.register(this.dispatcher);
+		BossBarCommand.register(this.dispatcher, commandRegistryAccess);
 		ClearCommand.register(this.dispatcher, commandRegistryAccess);
 		CloneCommand.register(this.dispatcher, commandRegistryAccess);
 		DamageCommand.register(this.dispatcher, commandRegistryAccess);
@@ -119,7 +120,7 @@ public class CommandManager {
 		RideCommand.register(this.dispatcher);
 		SayCommand.register(this.dispatcher);
 		ScheduleCommand.register(this.dispatcher);
-		ScoreboardCommand.register(this.dispatcher);
+		ScoreboardCommand.register(this.dispatcher, commandRegistryAccess);
 		SeedCommand.register(this.dispatcher, environment != CommandManager.RegistrationEnvironment.INTEGRATED);
 		SetBlockCommand.register(this.dispatcher, commandRegistryAccess);
 		SpawnPointCommand.register(this.dispatcher);
@@ -129,13 +130,13 @@ public class CommandManager {
 		StopSoundCommand.register(this.dispatcher);
 		SummonCommand.register(this.dispatcher, commandRegistryAccess);
 		TagCommand.register(this.dispatcher);
-		TeamCommand.register(this.dispatcher);
+		TeamCommand.register(this.dispatcher, commandRegistryAccess);
 		TeamMsgCommand.register(this.dispatcher);
 		TeleportCommand.register(this.dispatcher);
-		TellRawCommand.register(this.dispatcher);
+		TellRawCommand.register(this.dispatcher, commandRegistryAccess);
 		TickCommand.register(this.dispatcher);
 		TimeCommand.register(this.dispatcher);
-		TitleCommand.register(this.dispatcher);
+		TitleCommand.register(this.dispatcher, commandRegistryAccess);
 		TriggerCommand.register(this.dispatcher);
 		WeatherCommand.register(this.dispatcher);
 		WorldBorderCommand.register(this.dispatcher);
@@ -146,7 +147,7 @@ public class CommandManager {
 		if (SharedConstants.isDevelopment) {
 			TestCommand.register(this.dispatcher);
 			ResetChunksCommand.register(this.dispatcher);
-			RaidCommand.register(this.dispatcher);
+			RaidCommand.register(this.dispatcher, commandRegistryAccess);
 			DebugPathCommand.register(this.dispatcher);
 			DebugMobSpawningCommand.register(this.dispatcher);
 			WardenSpawnTrackerCommand.register(this.dispatcher);
@@ -385,9 +386,22 @@ public class CommandManager {
 	public static CommandRegistryAccess createRegistryAccess(RegistryWrapper.WrapperLookup registryLookup) {
 		return new CommandRegistryAccess() {
 			@Override
-			public <T> RegistryWrapper<T> createWrapper(RegistryKey<? extends Registry<T>> registryRef) {
-				final RegistryWrapper.Impl<T> impl = registryLookup.getWrapperOrThrow(registryRef);
-				return new RegistryWrapper.Delegating<T>(impl) {
+			public Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
+				return registryLookup.streamAllRegistryKeys();
+			}
+
+			@Override
+			public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
+				return registryLookup.getOptionalWrapper(registryRef).map(this::method_56811);
+			}
+
+			private <T> RegistryWrapper.Impl.Delegating<T> method_56811(RegistryWrapper.Impl<T> impl) {
+				return new RegistryWrapper.Impl.Delegating<T>() {
+					@Override
+					protected RegistryWrapper.Impl<T> getBase() {
+						return impl;
+					}
+
 					@Override
 					public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
 						return Optional.of(this.getOrThrow(tag));
@@ -395,8 +409,8 @@ public class CommandManager {
 
 					@Override
 					public RegistryEntryList.Named<T> getOrThrow(TagKey<T> tag) {
-						Optional<RegistryEntryList.Named<T>> optional = impl.getOptional(tag);
-						return (RegistryEntryList.Named<T>)optional.orElseGet(() -> RegistryEntryList.of(impl, tag));
+						Optional<RegistryEntryList.Named<T>> optional = this.getBase().getOptional(tag);
+						return (RegistryEntryList.Named<T>)optional.orElseGet(() -> RegistryEntryList.of(this.getBase(), tag));
 					}
 				};
 			}

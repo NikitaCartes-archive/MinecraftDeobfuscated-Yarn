@@ -27,6 +27,7 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -77,14 +78,20 @@ public class WorldUpdater {
 	final PersistentStateManager persistentStateManager;
 
 	public WorldUpdater(
-		LevelStorage.Session session, DataFixer dataFixer, Registry<DimensionOptions> dimensionOptionsRegistry, boolean eraseCache, boolean recreateRegionFiles
+		LevelStorage.Session session, DataFixer dataFixer, DynamicRegistryManager dynamicRegistryManager, boolean eraseCache, boolean recreateRegionFiles
 	) {
-		this.dimensionOptionsRegistry = dimensionOptionsRegistry;
-		this.worldKeys = (Set<RegistryKey<World>>)dimensionOptionsRegistry.getKeys().stream().map(RegistryKeys::toWorldKey).collect(Collectors.toUnmodifiableSet());
+		this.dimensionOptionsRegistry = dynamicRegistryManager.get(RegistryKeys.DIMENSION);
+		this.worldKeys = (Set<RegistryKey<World>>)this.dimensionOptionsRegistry
+			.getKeys()
+			.stream()
+			.map(RegistryKeys::toWorldKey)
+			.collect(Collectors.toUnmodifiableSet());
 		this.eraseCache = eraseCache;
 		this.dataFixer = dataFixer;
 		this.session = session;
-		this.persistentStateManager = new PersistentStateManager(this.session.getWorldDirectory(World.OVERWORLD).resolve("data").toFile(), dataFixer);
+		this.persistentStateManager = new PersistentStateManager(
+			this.session.getWorldDirectory(World.OVERWORLD).resolve("data").toFile(), dataFixer, dynamicRegistryManager
+		);
 		this.recreateRegionFiles = recreateRegionFiles;
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {

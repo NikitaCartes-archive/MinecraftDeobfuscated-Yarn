@@ -75,7 +75,7 @@ public class RecipeCache {
 				return false;
 			} else {
 				for (int i = 0; i < this.key.size(); i++) {
-					if (!ItemStack.canCombine(this.key.get(i), (ItemStack)inputs.get(i))) {
+					if (!ItemStack.areItemsAndNbtEqual(this.key.get(i), (ItemStack)inputs.get(i))) {
 						return false;
 					}
 				}

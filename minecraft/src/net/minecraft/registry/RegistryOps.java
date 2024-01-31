@@ -1,6 +1,7 @@
 package net.minecraft.registry;
 
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -37,6 +38,10 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 
 	public static <T> RegistryOps<T> of(DynamicOps<T> delegate, RegistryOps.RegistryInfoGetter registryInfoGetter) {
 		return new RegistryOps<>(delegate, registryInfoGetter);
+	}
+
+	public static <T> Dynamic<T> method_56622(Dynamic<T> dynamic, RegistryWrapper.WrapperLookup wrapperLookup) {
+		return new Dynamic<>(of(dynamic.getOps(), wrapperLookup), dynamic.getValue());
 	}
 
 	private RegistryOps(DynamicOps<T> delegate, RegistryOps.RegistryInfoGetter registryInfoGetter) {

@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 
 public class ForcedChunkState extends PersistentState {
 	public static final String CHUNKS_KEY = "chunks";
@@ -22,12 +23,12 @@ public class ForcedChunkState extends PersistentState {
 		this(new LongOpenHashSet());
 	}
 
-	public static ForcedChunkState fromNbt(NbtCompound nbt) {
+	public static ForcedChunkState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		return new ForcedChunkState(new LongOpenHashSet(nbt.getLongArray("Forced")));
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		nbt.putLongArray("Forced", this.chunks.toLongArray());
 		return nbt;
 	}

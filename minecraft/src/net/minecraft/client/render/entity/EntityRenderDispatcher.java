@@ -49,8 +49,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -238,15 +236,14 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		}
 
 		Vec3d vec3d2 = entity.getRotationVec(tickDelta);
-		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-		Matrix3f matrix3f = matrices.peek().getNormalMatrix();
-		vertices.vertex(matrix4f, 0.0F, entity.getStandingEyeHeight(), 0.0F)
+		MatrixStack.Entry entry = matrices.peek();
+		vertices.vertex(entry, 0.0F, entity.getStandingEyeHeight(), 0.0F)
 			.color(0, 0, 255, 255)
-			.normal(matrix3f, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z)
+			.normal(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z)
 			.next();
-		vertices.vertex(matrix4f, (float)(vec3d2.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d2.y * 2.0), (float)(vec3d2.z * 2.0))
+		vertices.vertex(entry, (float)(vec3d2.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d2.y * 2.0), (float)(vec3d2.z * 2.0))
 			.color(0, 0, 255, 255)
-			.normal(matrix3f, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z)
+			.normal(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z)
 			.next();
 	}
 
@@ -292,12 +289,12 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	}
 
 	private static void drawFireVertex(MatrixStack.Entry entry, VertexConsumer vertices, float x, float y, float z, float u, float v) {
-		vertices.vertex(entry.getPositionMatrix(), x, y, z)
+		vertices.vertex(entry, x, y, z)
 			.color(255, 255, 255, 255)
 			.texture(u, v)
 			.overlay(0, 10)
 			.light(LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE)
-			.normal(entry.getNormalMatrix(), 0.0F, 1.0F, 0.0F)
+			.normal(entry, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 

@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import java.util.Collections;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.command.argument.TeamArgumentType;
@@ -51,7 +52,7 @@ public class TeamCommand {
 		Text.translatable("commands.team.option.collisionRule.unchanged")
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("team")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -69,7 +70,7 @@ public class TeamCommand {
 							CommandManager.argument("team", StringArgumentType.word())
 								.executes(context -> executeAdd(context.getSource(), StringArgumentType.getString(context, "team")))
 								.then(
-									CommandManager.argument("displayName", TextArgumentType.text())
+									CommandManager.argument("displayName", TextArgumentType.text(registryAccess))
 										.executes(
 											context -> executeAdd(context.getSource(), StringArgumentType.getString(context, "team"), TextArgumentType.getTextArgument(context, "displayName"))
 										)
@@ -123,7 +124,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("displayName")
 										.then(
-											CommandManager.argument("displayName", TextArgumentType.text())
+											CommandManager.argument("displayName", TextArgumentType.text(registryAccess))
 												.executes(
 													context -> executeModifyDisplayName(
 															context.getSource(), TeamArgumentType.getTeam(context, "team"), TextArgumentType.getTextArgument(context, "displayName")
@@ -248,7 +249,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("prefix")
 										.then(
-											CommandManager.argument("prefix", TextArgumentType.text())
+											CommandManager.argument("prefix", TextArgumentType.text(registryAccess))
 												.executes(
 													context -> executeModifyPrefix(context.getSource(), TeamArgumentType.getTeam(context, "team"), TextArgumentType.getTextArgument(context, "prefix"))
 												)
@@ -257,7 +258,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("suffix")
 										.then(
-											CommandManager.argument("suffix", TextArgumentType.text())
+											CommandManager.argument("suffix", TextArgumentType.text(registryAccess))
 												.executes(
 													context -> executeModifySuffix(context.getSource(), TeamArgumentType.getTeam(context, "team"), TextArgumentType.getTextArgument(context, "suffix"))
 												)

@@ -55,8 +55,8 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		map.put("armor.chest", EquipmentSlot.CHEST.getOffsetEntitySlotId(100));
 		map.put("armor.legs", EquipmentSlot.LEGS.getOffsetEntitySlotId(100));
 		map.put("armor.feet", EquipmentSlot.FEET.getOffsetEntitySlotId(100));
+		map.put("armor.body", EquipmentSlot.BODY.getOffsetEntitySlotId(105));
 		map.put("horse.saddle", 400);
-		map.put("horse.armor", 401);
 		map.put("horse.chest", 499);
 	});
 

@@ -62,7 +62,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 
 	@Override
 	protected int getInventorySize() {
-		return this.hasChest() ? 17 : super.getInventorySize();
+		return this.hasChest() ? 16 : super.getInventorySize();
 	}
 
 	@Override
@@ -89,11 +89,11 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 		if (this.hasChest()) {
 			NbtList nbtList = new NbtList();
 
-			for (int i = 2; i < this.items.size(); i++) {
+			for (int i = 1; i < this.items.size(); i++) {
 				ItemStack itemStack = this.items.getStack(i);
 				if (!itemStack.isEmpty()) {
 					NbtCompound nbtCompound = new NbtCompound();
-					nbtCompound.putByte("Slot", (byte)i);
+					nbtCompound.putByte("Slot", (byte)(i - 1));
 					itemStack.writeNbt(nbtCompound);
 					nbtList.add(nbtCompound);
 				}
@@ -114,13 +114,13 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
 				int j = nbtCompound.getByte("Slot") & 255;
-				if (j >= 2 && j < this.items.size()) {
-					this.items.setStack(j, ItemStack.fromNbt(nbtCompound));
+				if (j < this.items.size() - 1) {
+					this.items.setStack(j + 1, ItemStack.fromNbt(nbtCompound));
 				}
 			}
 		}
 
-		this.updateSaddle();
+		this.updateSaddledFlag();
 	}
 
 	@Override

@@ -11,11 +11,15 @@ import net.minecraft.screen.slot.Slot;
 
 public class HorseScreenHandler extends ScreenHandler {
 	private final Inventory inventory;
+	private final Inventory field_48834;
 	private final AbstractHorseEntity entity;
+	private static final int field_48835 = 1;
+	private static final int field_48836 = 2;
 
 	public HorseScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, AbstractHorseEntity entity) {
 		super(null, syncId);
 		this.inventory = inventory;
+		this.field_48834 = entity.getInventory();
 		this.entity = entity;
 		int i = 3;
 		inventory.onOpen(playerInventory.player);
@@ -31,7 +35,7 @@ public class HorseScreenHandler extends ScreenHandler {
 				return entity.canBeSaddled();
 			}
 		});
-		this.addSlot(new Slot(inventory, 1, 8, 36) {
+		this.addSlot(new Slot(this.field_48834, 0, 8, 36) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return entity.isHorseArmor(stack);
@@ -50,7 +54,7 @@ public class HorseScreenHandler extends ScreenHandler {
 		if (this.hasChest(entity)) {
 			for (int k = 0; k < 3; k++) {
 				for (int l = 0; l < ((AbstractDonkeyEntity)entity).getInventoryColumns(); l++) {
-					this.addSlot(new Slot(inventory, 2 + l + k * ((AbstractDonkeyEntity)entity).getInventoryColumns(), 80 + l * 18, 18 + k * 18));
+					this.addSlot(new Slot(inventory, 1 + l + k * ((AbstractDonkeyEntity)entity).getInventoryColumns(), 80 + l * 18, 18 + k * 18));
 				}
 			}
 		}
@@ -70,12 +74,17 @@ public class HorseScreenHandler extends ScreenHandler {
 	public boolean canUse(PlayerEntity player) {
 		return !this.entity.areInventoriesDifferent(this.inventory)
 			&& this.inventory.canPlayerUse(player)
+			&& this.field_48834.canPlayerUse(player)
 			&& this.entity.isAlive()
 			&& player.canInteractWithEntity(this.entity, 4.0);
 	}
 
 	private boolean hasChest(AbstractHorseEntity horse) {
-		return horse instanceof AbstractDonkeyEntity && ((AbstractDonkeyEntity)horse).hasChest();
+		if (horse instanceof AbstractDonkeyEntity abstractDonkeyEntity && abstractDonkeyEntity.hasChest()) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -85,7 +94,7 @@ public class HorseScreenHandler extends ScreenHandler {
 		if (slot2 != null && slot2.hasStack()) {
 			ItemStack itemStack2 = slot2.getStack();
 			itemStack = itemStack2.copy();
-			int i = this.inventory.size();
+			int i = this.inventory.size() + 1;
 			if (slot < i) {
 				if (!this.insertItem(itemStack2, i, this.slots.size(), true)) {
 					return ItemStack.EMPTY;
@@ -98,7 +107,7 @@ public class HorseScreenHandler extends ScreenHandler {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (i <= 2 || !this.insertItem(itemStack2, 2, i, false)) {
+			} else if (i <= 1 || !this.insertItem(itemStack2, 2, i, false)) {
 				int k = i + 27;
 				int m = k + 9;
 				if (slot >= k && slot < m) {

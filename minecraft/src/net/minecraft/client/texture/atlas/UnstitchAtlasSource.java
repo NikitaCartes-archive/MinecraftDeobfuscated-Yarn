@@ -49,10 +49,10 @@ public class UnstitchAtlasSource implements AtlasSource {
 		Identifier identifier = RESOURCE_FINDER.toResourcePath(this.resource);
 		Optional<Resource> optional = resourceManager.getResource(identifier);
 		if (optional.isPresent()) {
-			Sprite sprite = new Sprite(identifier, (Resource)optional.get(), this.regions.size());
+			AtlasSprite atlasSprite = new AtlasSprite(identifier, (Resource)optional.get(), this.regions.size());
 
 			for (UnstitchAtlasSource.Region region : this.regions) {
-				regions.add(region.sprite, new UnstitchAtlasSource.SpriteRegion(sprite, region, this.divisorX, this.divisorY));
+				regions.add(region.sprite, new UnstitchAtlasSource.SpriteRegion(atlasSprite, region, this.divisorX, this.divisorY));
 			}
 		} else {
 			LOGGER.warn("Missing sprite: {}", identifier);
@@ -80,12 +80,12 @@ public class UnstitchAtlasSource implements AtlasSource {
 
 	@Environment(EnvType.CLIENT)
 	static class SpriteRegion implements AtlasSource.SpriteRegion {
-		private final Sprite sprite;
+		private final AtlasSprite sprite;
 		private final UnstitchAtlasSource.Region region;
 		private final double divisorX;
 		private final double divisorY;
 
-		SpriteRegion(Sprite sprite, UnstitchAtlasSource.Region region, double divisorX, double divisorY) {
+		SpriteRegion(AtlasSprite sprite, UnstitchAtlasSource.Region region, double divisorX, double divisorY) {
 			this.sprite = sprite;
 			this.region = region;
 			this.divisorX = divisorX;

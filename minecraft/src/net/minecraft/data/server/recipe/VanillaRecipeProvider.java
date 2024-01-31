@@ -36,6 +36,7 @@ import net.minecraft.recipe.SmokingRecipe;
 import net.minecraft.recipe.SuspiciousStewRecipe;
 import net.minecraft.recipe.TippedArrowRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -53,16 +54,17 @@ public class VanillaRecipeProvider extends RecipeProvider {
 	private static final ImmutableList<ItemConvertible> REDSTONE_ORES = ImmutableList.of(Items.REDSTONE_ORE, Items.DEEPSLATE_REDSTONE_ORE);
 	private static final ImmutableList<ItemConvertible> EMERALD_ORES = ImmutableList.of(Items.EMERALD_ORE, Items.DEEPSLATE_EMERALD_ORE);
 
-	public VanillaRecipeProvider(DataOutput dataOutput) {
-		super(dataOutput);
+	public VanillaRecipeProvider(DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
+		super(dataOutput, completableFuture);
 	}
 
 	@Override
-	public CompletableFuture<?> run(DataWriter writer) {
+	public CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup) {
 		return CompletableFuture.allOf(
-			super.run(writer),
+			super.run(writer, registryLookup),
 			this.saveRecipeAdvancement(
 				writer,
+				registryLookup,
 				Advancement.Builder.createUntelemetered()
 					.criterion("impossible", Criteria.IMPOSSIBLE.create(new ImpossibleCriterion.Conditions()))
 					.build(CraftingRecipeJsonBuilder.ROOT)

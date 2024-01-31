@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.BlockPositionSource;
@@ -30,7 +31,9 @@ public class VibrationParticleEffect implements ParticleEffect {
 		VibrationParticleEffect::new
 	);
 	public static final ParticleEffect.Factory<VibrationParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<VibrationParticleEffect>() {
-		public VibrationParticleEffect read(ParticleType<VibrationParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public VibrationParticleEffect read(
+			ParticleType<VibrationParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup
+		) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			float f = (float)stringReader.readDouble();
 			stringReader.expect(' ');
@@ -52,7 +55,7 @@ public class VibrationParticleEffect implements ParticleEffect {
 	}
 
 	@Override
-	public String asString() {
+	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
 		Vec3d vec3d = (Vec3d)this.destination.getPos(null).get();
 		double d = vec3d.getX();
 		double e = vec3d.getY();

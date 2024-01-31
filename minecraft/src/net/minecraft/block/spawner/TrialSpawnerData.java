@@ -122,8 +122,8 @@ public class TrialSpawnerData {
 		return Math.max(0, this.players.size() - 1);
 	}
 
-	public void updatePlayers(ServerWorld world, BlockPos pos, EntityDetector entityDetector, int range) {
-		List<UUID> list = entityDetector.detect(world, pos, range);
+	public void updatePlayers(ServerWorld world, BlockPos pos, EntityDetector entityDetector, EntityDetector.Selector entitySelector, int range) {
+		List<UUID> list = entityDetector.detect(world, entitySelector, pos, (double)range);
 		boolean bl = this.players.addAll(list);
 		if (bl) {
 			this.nextMobSpawnsAt = Math.max(world.getTime() + 40L, this.nextMobSpawnsAt);

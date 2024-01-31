@@ -1497,7 +1497,7 @@ public class OceanMonumentGenerator {
 				if (elderGuardianEntity != null) {
 					elderGuardianEntity.heal(elderGuardianEntity.getMaxHealth());
 					elderGuardianEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
-					elderGuardianEntity.initialize(world, world.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+					elderGuardianEntity.initialize(world, world.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnReason.STRUCTURE, null);
 					world.spawnEntityAndPassengers(elderGuardianEntity);
 				}
 			}

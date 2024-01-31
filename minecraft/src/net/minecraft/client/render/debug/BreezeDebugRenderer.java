@@ -71,12 +71,8 @@ public class BreezeDebugRenderer {
 		MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ, Vec3d entityPos, Vec3d targetPos, int color
 	) {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugLineStrip(2.0));
-		vertexConsumer.vertex(matrices.peek().getPositionMatrix(), (float)(entityPos.x - cameraX), (float)(entityPos.y - cameraY), (float)(entityPos.z - cameraZ))
-			.color(color)
-			.next();
-		vertexConsumer.vertex(matrices.peek().getPositionMatrix(), (float)(targetPos.x - cameraX), (float)(targetPos.y - cameraY), (float)(targetPos.z - cameraZ))
-			.color(color)
-			.next();
+		vertexConsumer.vertex(matrices.peek(), (float)(entityPos.x - cameraX), (float)(entityPos.y - cameraY), (float)(entityPos.z - cameraZ)).color(color).next();
+		vertexConsumer.vertex(matrices.peek(), (float)(targetPos.x - cameraX), (float)(targetPos.y - cameraY), (float)(targetPos.z - cameraZ)).color(color).next();
 	}
 
 	private static void drawCurve(

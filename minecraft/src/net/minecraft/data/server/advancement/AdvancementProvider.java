@@ -38,7 +38,7 @@ public class AdvancementProvider implements DataProvider {
 					throw new IllegalStateException("Duplicate advancement " + advancement.id());
 				} else {
 					Path path = this.pathResolver.resolveJson(advancement.id());
-					list.add(DataProvider.writeCodecToPath(writer, Advancement.CODEC, advancement.value(), path));
+					list.add(DataProvider.writeCodecToPath(writer, lookup, Advancement.CODEC, advancement.value(), path));
 				}
 			};
 

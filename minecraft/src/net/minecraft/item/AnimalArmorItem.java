@@ -1,27 +1,23 @@
 package net.minecraft.item;
 
 import java.util.function.Function;
-import javax.annotation.Nullable;
+import java.util.function.UnaryOperator;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
-public class AnimalArmorItem extends Item {
-	private final int bonus;
+public class AnimalArmorItem extends ArmorItem {
 	private final Identifier entityTexture;
 	private final AnimalArmorItem.Type type;
 
-	public AnimalArmorItem(int bonus, AnimalArmorItem.Type type, @Nullable String name, Item.Settings settings) {
-		super(settings);
-		this.bonus = bonus;
+	public AnimalArmorItem(RegistryEntry<ArmorMaterial> material, AnimalArmorItem.Type type, Item.Settings settings) {
+		super(material, ArmorItem.Type.BODY, settings);
 		this.type = type;
-		this.entityTexture = (Identifier)type.textureIdFunction.apply(name);
+		this.entityTexture = (Identifier)type.textureIdFunction.apply(((RegistryKey)material.getKey().orElseThrow()).getValue());
 	}
 
 	public Identifier getEntityTexture() {
 		return this.entityTexture;
-	}
-
-	public int getBonus() {
-		return this.bonus;
 	}
 
 	public AnimalArmorItem.Type getType() {
@@ -29,12 +25,12 @@ public class AnimalArmorItem extends Item {
 	}
 
 	public static enum Type {
-		EQUESTRIAN(name -> new Identifier("textures/entity/horse/armor/horse_armor_" + name + ".png")),
-		CANINE(name -> new Identifier("textures/entity/wolf/wolf_armor.png"));
+		EQUESTRIAN(id -> id.withPath((UnaryOperator<String>)(path -> "textures/entity/horse/armor/horse_armor_" + path + ".png"))),
+		CANINE(id -> id.withPath("textures/entity/wolf/wolf_armor.png"));
 
-		final Function<String, Identifier> textureIdFunction;
+		final Function<Identifier, Identifier> textureIdFunction;
 
-		private Type(Function<String, Identifier> textureIdFunction) {
+		private Type(Function<Identifier, Identifier> textureIdFunction) {
 			this.textureIdFunction = textureIdFunction;
 		}
 	}

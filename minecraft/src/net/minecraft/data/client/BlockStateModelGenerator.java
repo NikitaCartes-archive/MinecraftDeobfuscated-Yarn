@@ -31,6 +31,7 @@ import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.PitcherCropBlock;
 import net.minecraft.block.PropaguleBlock;
 import net.minecraft.block.SnifferEggBlock;
+import net.minecraft.block.VaultBlock;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.block.enums.BlockFace;
@@ -3161,6 +3162,32 @@ public class BlockStateModelGenerator {
 			})));
 	}
 
+	private void registerVault() {
+		Block block = Blocks.VAULT;
+		TextureMap textureMap = TextureMap.vault(block, "_front_off", "_side_off", "_top_off", "_bottom");
+		TextureMap textureMap2 = TextureMap.vault(block, "_front_on", "_side_on", "_top_on", "_bottom");
+		TextureMap textureMap3 = TextureMap.vault(block, "_front_ejecting", "_side_on", "_top_on", "_bottom");
+		TextureMap textureMap4 = TextureMap.vault(block, "_front_ejecting", "_side_on", "_top_ejecting", "_bottom");
+		Identifier identifier = Models.TEMPLATE_VAULT.upload(block, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_VAULT.upload(block, "_active", textureMap2, this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_VAULT.upload(block, "_unlocking", textureMap3, this.modelCollector);
+		Identifier identifier4 = Models.TEMPLATE_VAULT.upload(block, "_ejecting_reward", textureMap4, this.modelCollector);
+		this.registerParentedItemModel(block, identifier);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(block)
+					.coordinate(createNorthDefaultHorizontalRotationStates())
+					.coordinate(BlockStateVariantMap.create(VaultBlock.VAULT_STATE).register(vaultState -> {
+						return switch (vaultState) {
+							case INACTIVE -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
+							case ACTIVE -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier2);
+							case UNLOCKING -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier3);
+							case EJECTING -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier4);
+						};
+					}))
+			);
+	}
+
 	private void registerSculkSensor() {
 		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_inactive");
 		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_active");
@@ -4163,6 +4190,7 @@ public class BlockStateModelGenerator {
 		this.registerMangrovePropagule();
 		this.registerMuddyMangroveRoots();
 		this.registerTrialSpawner();
+		this.registerVault();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);

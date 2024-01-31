@@ -229,9 +229,7 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
 		GoatBrain.resetLongJumpCooldown(this, random);
 		this.setScreaming(random.nextDouble() < 0.02);
@@ -241,7 +239,7 @@ public class GoatEntity extends AnimalEntity {
 			this.dataTracker.set(trackedData, false);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Override

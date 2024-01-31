@@ -1,5 +1,6 @@
 package net.minecraft.client.render.entity;
 
+import com.google.common.annotations.VisibleForTesting;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
@@ -16,14 +17,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 	private static final float field_32924 = 0.15F;
-	private static final int MAX_COUNT_FOR_4_ITEMS_RENDERED = 48;
-	private static final int MAX_COUNT_FOR_3_ITEMS_RENDERED = 32;
-	private static final int MAX_COUNT_FOR_2_ITEMS_RENDERED = 16;
-	private static final int MAX_COUNT_FOR_1_ITEM_RENDERED = 1;
 	private static final float field_32929 = 0.0F;
 	private static final float field_32930 = 0.0F;
 	private static final float field_32931 = 0.09375F;
@@ -37,73 +35,92 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		this.shadowOpacity = 0.75F;
 	}
 
-	private int getRenderedAmount(ItemStack stack) {
-		int i = 1;
-		if (stack.getCount() > 48) {
-			i = 5;
-		} else if (stack.getCount() > 32) {
-			i = 4;
-		} else if (stack.getCount() > 16) {
-			i = 3;
-		} else if (stack.getCount() > 1) {
-			i = 2;
-		}
-
-		return i;
+	public Identifier getTexture(ItemEntity itemEntity) {
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	public void render(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		ItemStack itemStack = itemEntity.getStack();
-		int j = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
-		this.random.setSeed((long)j);
+		this.random.setSeed((long)getSeed(itemStack));
 		BakedModel bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.getWorld(), null, itemEntity.getId());
 		boolean bl = bakedModel.hasDepth();
-		int k = this.getRenderedAmount(itemStack);
 		float h = 0.25F;
-		float l = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0F + itemEntity.uniqueOffset) * 0.1F + 0.1F;
-		float m = bakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND).scale.y();
-		matrixStack.translate(0.0F, l + 0.25F * m, 0.0F);
-		float n = itemEntity.getRotation(g);
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(n));
-		float o = bakedModel.getTransformation().ground.scale.x();
-		float p = bakedModel.getTransformation().ground.scale.y();
-		float q = bakedModel.getTransformation().ground.scale.z();
-		if (!bl) {
-			float r = -0.0F * (float)(k - 1) * 0.5F * o;
-			float s = -0.0F * (float)(k - 1) * 0.5F * p;
-			float t = -0.09375F * (float)(k - 1) * 0.5F * q;
-			matrixStack.translate(r, s, t);
-		}
-
-		for (int u = 0; u < k; u++) {
-			matrixStack.push();
-			if (u > 0) {
-				if (bl) {
-					float s = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
-					float t = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
-					float v = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
-					matrixStack.translate(s, t, v);
-				} else {
-					float s = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
-					float t = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
-					matrixStack.translate(s, t, 0.0F);
-				}
-			}
-
-			this.itemRenderer
-				.renderItem(itemStack, ModelTransformationMode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
-			matrixStack.pop();
-			if (!bl) {
-				matrixStack.translate(0.0F * o, 0.0F * p, 0.09375F * q);
-			}
-		}
-
+		float j = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0F + itemEntity.uniqueOffset) * 0.1F + 0.1F;
+		float k = bakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND).scale.y();
+		matrixStack.translate(0.0F, j + 0.25F * k, 0.0F);
+		float l = itemEntity.getRotation(g);
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(l));
+		renderStack(this.itemRenderer, matrixStack, vertexConsumerProvider, i, itemStack, bakedModel, bl, this.random);
 		matrixStack.pop();
 		super.render(itemEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(ItemEntity itemEntity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+	public static int getSeed(ItemStack stack) {
+		return stack.isEmpty() ? 187 : Item.getRawId(stack.getItem()) + stack.getDamage();
+	}
+
+	@VisibleForTesting
+	static int getRenderedAmount(int stackSize) {
+		if (stackSize <= 1) {
+			return 1;
+		} else if (stackSize <= 16) {
+			return 2;
+		} else if (stackSize <= 32) {
+			return 3;
+		} else {
+			return stackSize <= 48 ? 4 : 5;
+		}
+	}
+
+	public static void renderStack(
+		ItemRenderer itemRenderer, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ItemStack stack, Random random, World world
+	) {
+		BakedModel bakedModel = itemRenderer.getModel(stack, world, null, 0);
+		renderStack(itemRenderer, matrices, vertexConsumers, light, stack, bakedModel, bakedModel.hasDepth(), random);
+	}
+
+	public static void renderStack(
+		ItemRenderer itemRenderer,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		ItemStack stack,
+		BakedModel model,
+		boolean depth,
+		Random random
+	) {
+		int i = getRenderedAmount(stack.getCount());
+		float f = model.getTransformation().ground.scale.x();
+		float g = model.getTransformation().ground.scale.y();
+		float h = model.getTransformation().ground.scale.z();
+		if (!depth) {
+			float j = -0.0F * (float)(i - 1) * 0.5F * f;
+			float k = -0.0F * (float)(i - 1) * 0.5F * g;
+			float l = -0.09375F * (float)(i - 1) * 0.5F * h;
+			matrices.translate(j, k, l);
+		}
+
+		for (int m = 0; m < i; m++) {
+			matrices.push();
+			if (m > 0) {
+				if (depth) {
+					float k = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
+					float l = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
+					float n = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
+					matrices.translate(k, l, n);
+				} else {
+					float k = (random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
+					float l = (random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
+					matrices.translate(k, l, 0.0F);
+				}
+			}
+
+			itemRenderer.renderItem(stack, ModelTransformationMode.GROUND, false, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV, model);
+			matrices.pop();
+			if (!depth) {
+				matrices.translate(0.0F * f, 0.0F * g, 0.09375F * h);
+			}
+		}
 	}
 }

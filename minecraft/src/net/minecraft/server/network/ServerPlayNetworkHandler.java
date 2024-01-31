@@ -95,6 +95,7 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.DebugSampleSubscriptionC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
@@ -727,12 +728,12 @@ public class ServerPlayNetworkHandler
 
 	@Override
 	public void onBookUpdate(BookUpdateC2SPacket packet) {
-		int i = packet.getSlot();
+		int i = packet.slot();
 		if (PlayerInventory.isValidHotbarIndex(i) || i == 40) {
 			List<String> list = Lists.<String>newArrayList();
-			Optional<String> optional = packet.getTitle();
+			Optional<String> optional = packet.title();
 			optional.ifPresent(list::add);
-			packet.getPages().stream().limit(100L).forEach(list::add);
+			packet.pages().stream().limit(100L).forEach(list::add);
 			Consumer<List<FilteredMessage>> consumer = optional.isPresent()
 				? texts -> this.addBook((FilteredMessage)texts.get(0), texts.subList(1, texts.size()), i)
 				: texts -> this.updateBookContent(texts, i);
@@ -750,12 +751,7 @@ public class ServerPlayNetworkHandler
 	private void addBook(FilteredMessage title, List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-			ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
-			NbtCompound nbtCompound = itemStack.getNbt();
-			if (nbtCompound != null) {
-				itemStack2.setNbt(nbtCompound.copy());
-			}
-
+			ItemStack itemStack2 = itemStack.copyNbtToNewStack(Items.WRITTEN_BOOK, 1);
 			itemStack2.setSubNbt("author", NbtString.of(this.player.getName().getString()));
 			if (this.player.shouldFilterText()) {
 				itemStack2.setSubNbt("title", NbtString.of(title.getString()));
@@ -822,7 +818,7 @@ public class ServerPlayNetworkHandler
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.hasPermissionLevel(2)) {
 			BlockEntity blockEntity = this.player.getWorld().getBlockEntity(packet.getPos());
-			NbtCompound nbtCompound = blockEntity != null ? blockEntity.createNbt() : null;
+			NbtCompound nbtCompound = blockEntity != null ? blockEntity.createNbt(this.player.getRegistryManager()) : null;
 			this.player.networkHandler.sendPacket(new NbtQueryResponseS2CPacket(packet.getTransactionId(), nbtCompound));
 		}
 	}
@@ -1618,7 +1614,7 @@ public class ServerPlayNetworkHandler
 				if (this.player.getWorld().canSetBlock(blockPos)) {
 					BlockEntity blockEntity = this.player.getWorld().getBlockEntity(blockPos);
 					if (blockEntity != null) {
-						blockEntity.setStackNbt(itemStack);
+						blockEntity.setStackNbt(itemStack, this.player.getWorld().getRegistryManager());
 					}
 				}
 			}
@@ -1724,6 +1720,12 @@ public class ServerPlayNetworkHandler
 	public void onAcknowledgeChunks(AcknowledgeChunksC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.chunkDataSender.onAcknowledgeChunks(packet.desiredChunksPerTick());
+	}
+
+	@Override
+	public void onDebugSampleSubcription(DebugSampleSubscriptionC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		this.server.method_56625(this.player, packet.sampleType());
 	}
 
 	private void setSession(PublicPlayerSession session) {

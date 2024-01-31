@@ -302,9 +302,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(registryEntry);
 		boolean bl = false;
@@ -327,7 +325,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		this.initEquipment(world.getRandom(), difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	private void addTypeSpecificGoals() {

@@ -1,7 +1,15 @@
 package net.minecraft.item;
 
+import com.mojang.serialization.Codec;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 
 /**
  * Defines the material stats of an {@link ArmorItem} item.
@@ -9,20 +17,16 @@ import net.minecraft.sound.SoundEvent;
  * <p>
  * To view available vanilla armor materials, visit {@link ArmorMaterials}.
  */
-public interface ArmorMaterial {
-	/**
-	 * Returns the total amount of durability points an {@link ArmorItem} using this {@link ArmorMaterial} has.
-	 * 
-	 * <p>
-	 * The value returned here will set the {@link Item.Settings} max durability option when passed
-	 * into {@link ArmorItem#ArmorItem(net.minecraft.item.ArmorMaterial, ArmorItem.Type, Item.Settings)}
-	 * if the value was not already specified.
-	 * 
-	 * @return the total durability an {@link ArmorItem} with this {@link ArmorMaterial} has
-	 * 
-	 * @param type the {@link ArmorItem.Type} of the {@link Item} with this {@link ArmorMaterial}
-	 */
-	int getDurability(ArmorItem.Type type);
+public record ArmorMaterial(
+	Map<ArmorItem.Type, Integer> defense,
+	int getEnchantability,
+	RegistryEntry<SoundEvent> getEquipSound,
+	Supplier<Ingredient> getRepairIngredient,
+	List<ArmorMaterial.Layer> layers,
+	float getToughness,
+	float getKnockbackResistance
+) {
+	public static final Codec<RegistryEntry<ArmorMaterial>> CODEC = Registries.ARMOR_MATERIAL.createEntryCodec();
 
 	/**
 	 * Returns the amount of armor protection points offered by an {@link ArmorItem}
@@ -36,73 +40,40 @@ public interface ArmorMaterial {
 	 * 
 	 * @param type the {@link ArmorItem.Type} of the {@link Item} with this {@link ArmorMaterial}
 	 */
-	int getProtection(ArmorItem.Type type);
+	public int getProtection(ArmorItem.Type type) {
+		return (Integer)this.defense.getOrDefault(type, 0);
+	}
 
-	/**
-	 * Returns the base enchantment value used by {@link ArmorItem} with this material.
-	 * 
-	 * <p>
-	 * By default, {@link ArmorItem} will override {@link Item#getEnchantability()}
-	 * and delegate the call back to this method.
-	 * 
-	 * <p>
-	 * A higher return value will result in better enchantment results when using an {@code Enchanting Table}.
-	 * The highest enchantability value in vanilla is Netherite, at {@code 37}.
-	 * 
-	 * @return the enchantment value sent back to {@link Item#getEnchantability()} for armor using this material
-	 */
-	int getEnchantability();
+	public static final class Layer {
+		private final Identifier id;
+		private final String suffix;
+		private final boolean dyeable;
+		private final Identifier layer2Texture;
+		private final Identifier layer1Texture;
 
-	/**
-	 * @return the {@link SoundEvent} played when a {@link net.minecraft.entity.LivingEntity} equips an {@link ArmorItem} using this {@link ArmorMaterial}
-	 */
-	SoundEvent getEquipSound();
+		public Layer(Identifier id, String suffix, boolean dyeable) {
+			this.id = id;
+			this.suffix = suffix;
+			this.dyeable = dyeable;
+			this.layer2Texture = this.getTextureId(true);
+			this.layer1Texture = this.getTextureId(false);
+		}
 
-	/**
-	 * Returns the {@link Ingredient} used to repair items using this {@link ArmorMaterial}.
-	 * 
-	 * <p>
-	 * By default, {@link ArmorItem} will delegate {@link Item#canRepair(ItemStack, ItemStack)}
-	 * back to this method.
-	 * 
-	 * @return the {@link Ingredient} required to repair items with this {@link ArmorMaterial}
-	 */
-	Ingredient getRepairIngredient();
+		public Layer(Identifier id) {
+			this(id, "", false);
+		}
 
-	/**
-	 * Returns the {@code name} of this {@link ArmorMaterial}, which is used for locating armor texture files.
-	 * 
-	 * <p>
-	 * The return value of this method should be in {@code snake_case}.
-	 * {@link net.minecraft.client.render.entity.feature.ArmorFeatureRenderer} will expect to find an armor
-	 * texture file matching {@code minecraft:textures/models/armor/{material_name}_layer_[1/2].png}
-	 * based off the return result of this method.
-	 * 
-	 * <p>
-	 * Example: given a return value of {@code cool_material}, {@code ArmorFeatureRenderer} will require a file
-	 * at {@code minecraft:textures/models/armor/cool_material_layer_1.png} and {@code minecraft:textures/models/armor/cool_material_layer_2.png}.
-	 * 
-	 * @return the {@code name} of this armor material in snake_case, used for finding armor textures
-	 */
-	String getName();
+		private Identifier getTextureId(boolean secondLayer) {
+			return this.id
+				.withPath((UnaryOperator<String>)(path -> "textures/models/armor/" + this.id.getPath() + "_layer_" + (secondLayer ? 2 : 1) + this.suffix + ".png"));
+		}
 
-	/**
-	 * Returns the toughness value of an {@link ArmorItem} piece using this {@link ArmorMaterial}.
-	 * 
-	 * <p>
-	 * {@link ArmorItem} will cover the value returned here into the {@link net.minecraft.entity.attribute.EntityAttributes#GENERIC_ARMOR_TOUGHNESS}
-	 * statistic with the {@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADDITION} modifier type.
-	 * 
-	 * @return the toughness value of any {@link ArmorItem} using this {@link ArmorMaterial}
-	 */
-	float getToughness();
+		public Identifier getTexture(boolean secondLayer) {
+			return secondLayer ? this.layer2Texture : this.layer1Texture;
+		}
 
-	/**
-	 * {@return the knockback resistance value of an {@link ArmorItem} piece using this {@link ArmorMaterial}}
-	 * 
-	 * <p>
-	 * {@link ArmorItem} will cover the value returned here into the {@link net.minecraft.entity.attribute.EntityAttributes#GENERIC_KNOCKBACK_RESISTANCE}
-	 * statistic with the {@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADDITION} modifier type.
-	 */
-	float getKnockbackResistance();
+		public boolean isDyeable() {
+			return this.dyeable;
+		}
+	}
 }

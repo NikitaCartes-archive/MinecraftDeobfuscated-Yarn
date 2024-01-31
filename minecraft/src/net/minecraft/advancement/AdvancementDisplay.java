@@ -105,8 +105,8 @@ public class AdvancementDisplay {
 	}
 
 	private void toPacket(RegistryByteBuf buf) {
-		buf.writeText(this.title);
-		buf.writeText(this.description);
+		TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.title);
+		TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.description);
 		ItemStack.PACKET_CODEC.encode(buf, this.icon);
 		buf.writeEnumConstant(this.frame);
 		int i = 0;
@@ -129,8 +129,8 @@ public class AdvancementDisplay {
 	}
 
 	private static AdvancementDisplay fromPacket(RegistryByteBuf buf) {
-		Text text = buf.readUnlimitedText();
-		Text text2 = buf.readUnlimitedText();
+		Text text = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
+		Text text2 = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
 		ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
 		AdvancementFrame advancementFrame = buf.readEnumConstant(AdvancementFrame.class);
 		int i = buf.readInt();

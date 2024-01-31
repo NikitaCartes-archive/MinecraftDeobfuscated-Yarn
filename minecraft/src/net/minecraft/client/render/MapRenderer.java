@@ -11,6 +11,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.map.MapIcon;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -32,16 +33,16 @@ public class MapRenderer implements AutoCloseable {
 		this.textureManager = textureManager;
 	}
 
-	public void updateTexture(int id, MapState state) {
+	public void updateTexture(MapId id, MapState state) {
 		this.getMapTexture(id, state).setNeedsUpdate();
 	}
 
-	public void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int id, MapState state, boolean hidePlayerIcons, int light) {
+	public void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, MapId id, MapState state, boolean hidePlayerIcons, int light) {
 		this.getMapTexture(id, state).draw(matrices, vertexConsumers, hidePlayerIcons, light);
 	}
 
-	private MapRenderer.MapTexture getMapTexture(int id, MapState state) {
-		return this.mapTextures.compute(id, (id2, texture) -> {
+	private MapRenderer.MapTexture getMapTexture(MapId id, MapState state) {
+		return this.mapTextures.compute(id.id(), (id2, texture) -> {
 			if (texture == null) {
 				return new MapRenderer.MapTexture(id2, state);
 			} else {
@@ -135,9 +136,9 @@ public class MapRenderer implements AutoCloseable {
 					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(l, m).light(light).next();
 					vertexConsumer2.vertex(matrix4f2, -1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(g, m).light(light).next();
 					matrices.pop();
-					if (mapIcon.text() != null) {
+					if (mapIcon.text().isPresent()) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-						Text text = mapIcon.text();
+						Text text = (Text)mapIcon.text().get();
 						float o = (float)textRenderer.getWidth(text);
 						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / 9.0F);
 						matrices.push();

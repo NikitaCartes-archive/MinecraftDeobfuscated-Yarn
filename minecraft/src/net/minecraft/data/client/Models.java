@@ -176,6 +176,7 @@ public class Models {
 	public static final Model TEMPLATE_SCULK_SHRIEKER = block(
 		"template_sculk_shrieker", TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP, TextureKey.PARTICLE, TextureKey.INNER_TOP
 	);
+	public static final Model TEMPLATE_VAULT = block("template_vault", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.FRONT);
 
 	private static Model make(TextureKey... requiredTextureKeys) {
 		return new Model(Optional.empty(), Optional.empty(), requiredTextureKeys);

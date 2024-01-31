@@ -17,7 +17,6 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -138,7 +137,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	) {
 		context.getMatrices().push();
 		context.getMatrices().translate((double)x, (double)y, 50.0);
-		context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling(size, size, -size));
+		context.getMatrices().scale(size, size, -size);
 		context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
 		context.getMatrices().multiply(quaternionf);
 		DiffuseLighting.method_34742();

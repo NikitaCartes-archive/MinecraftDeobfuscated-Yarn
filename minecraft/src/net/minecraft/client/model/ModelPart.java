@@ -11,11 +11,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public final class ModelPart {
@@ -300,20 +298,20 @@ public final class ModelPart {
 
 		public void renderCuboid(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
 			Matrix4f matrix4f = entry.getPositionMatrix();
-			Matrix3f matrix3f = entry.getNormalMatrix();
+			Vector3f vector3f = new Vector3f();
 
 			for (ModelPart.Quad quad : this.sides) {
-				Vector3f vector3f = matrix3f.transform(new Vector3f(quad.direction));
-				float f = vector3f.x();
-				float g = vector3f.y();
-				float h = vector3f.z();
+				Vector3f vector3f2 = entry.method_56821(quad.direction, vector3f);
+				float f = vector3f2.x();
+				float g = vector3f2.y();
+				float h = vector3f2.z();
 
 				for (ModelPart.Vertex vertex : quad.vertices) {
 					float i = vertex.pos.x() / 16.0F;
 					float j = vertex.pos.y() / 16.0F;
 					float k = vertex.pos.z() / 16.0F;
-					Vector4f vector4f = matrix4f.transform(new Vector4f(i, j, k, 1.0F));
-					vertexConsumer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, f, g, h);
+					Vector3f vector3f3 = matrix4f.transformPosition(i, j, k, vector3f);
+					vertexConsumer.vertex(vector3f3.x(), vector3f3.y(), vector3f3.z(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, f, g, h);
 				}
 			}
 		}

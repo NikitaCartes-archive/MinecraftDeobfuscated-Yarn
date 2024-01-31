@@ -153,7 +153,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		boolean bl = false;
 
 		for (ItemStack itemStack : this.heldStacks) {
-			if (itemStack.isEmpty() || ItemStack.canCombine(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
+			if (itemStack.isEmpty() || ItemStack.areItemsAndNbtEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
 				bl = true;
 				break;
 			}
@@ -243,7 +243,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	private void addToExistingSlot(ItemStack stack) {
 		for (int i = 0; i < this.size; i++) {
 			ItemStack itemStack = this.getStack(i);
-			if (ItemStack.canCombine(itemStack, stack)) {
+			if (ItemStack.areItemsAndNbtEqual(itemStack, stack)) {
 				this.transfer(stack, itemStack);
 				if (stack.isEmpty()) {
 					return;

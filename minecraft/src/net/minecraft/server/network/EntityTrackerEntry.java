@@ -22,6 +22,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -100,12 +101,12 @@ public class EntityTrackerEntry {
 		if (this.entity instanceof ItemFrameEntity itemFrameEntity && this.trackingTick % 10 == 0) {
 			ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 			if (itemStack.getItem() instanceof FilledMapItem) {
-				Integer integer = FilledMapItem.getMapId(itemStack);
-				MapState mapState = FilledMapItem.getMapState(integer, this.world);
+				MapId mapId = FilledMapItem.getMapId(itemStack);
+				MapState mapState = FilledMapItem.getMapState(mapId, this.world);
 				if (mapState != null) {
 					for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
 						mapState.update(serverPlayerEntity, itemStack);
-						Packet<?> packet = mapState.getPlayerMarkerPacket(integer, serverPlayerEntity);
+						Packet<?> packet = mapState.getPlayerMarkerPacket(mapId, serverPlayerEntity);
 						if (packet != null) {
 							serverPlayerEntity.networkHandler.sendPacket(packet);
 						}

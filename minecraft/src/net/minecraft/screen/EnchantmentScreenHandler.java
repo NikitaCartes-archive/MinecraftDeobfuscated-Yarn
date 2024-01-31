@@ -11,10 +11,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -155,23 +153,13 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, id, this.enchantmentPower[id]);
 					if (!list.isEmpty()) {
 						player.applyEnchantmentCosts(itemStack, i);
-						boolean bl = itemStack.isOf(Items.BOOK);
-						if (bl) {
-							itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
-							NbtCompound nbtCompound = itemStack.getNbt();
-							if (nbtCompound != null) {
-								itemStack3.setNbt(nbtCompound.copy());
-							}
-
+						if (itemStack.isOf(Items.BOOK)) {
+							itemStack3 = itemStack.copyNbtToNewStack(Items.ENCHANTED_BOOK, 1);
 							this.inventory.setStack(0, itemStack3);
 						}
 
 						for (EnchantmentLevelEntry enchantmentLevelEntry : list) {
-							if (bl) {
-								EnchantedBookItem.addEnchantment(itemStack3, enchantmentLevelEntry);
-							} else {
-								itemStack3.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
-							}
+							itemStack3.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
 						}
 
 						if (!player.getAbilities().creativeMode) {

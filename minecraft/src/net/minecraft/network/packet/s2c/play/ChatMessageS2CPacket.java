@@ -14,6 +14,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
 /**
  * A packet used to send a chat message to the clients.
@@ -54,7 +55,7 @@ public record ChatMessageS2CPacket(
 			buf.readVarInt(),
 			buf.readNullable(MessageSignatureData::fromBuf),
 			new MessageBody.Serialized(buf),
-			buf.readNullable(PacketByteBuf::readUnlimitedText),
+			PacketByteBuf.readNullable(buf, TextCodecs.REGISTRY_PACKET_CODEC),
 			FilterMask.readMask(buf),
 			MessageType.Parameters.CODEC.decode(buf)
 		);
@@ -65,7 +66,7 @@ public record ChatMessageS2CPacket(
 		buf.writeVarInt(this.index);
 		buf.writeNullable(this.signature, MessageSignatureData::write);
 		this.body.write(buf);
-		buf.writeNullable(this.unsignedContent, PacketByteBuf::writeText);
+		PacketByteBuf.writeNullable(buf, this.unsignedContent, TextCodecs.REGISTRY_PACKET_CODEC);
 		FilterMask.writeMask(buf, this.filterMask);
 		MessageType.Parameters.CODEC.encode(buf, this.serializedParameters);
 	}

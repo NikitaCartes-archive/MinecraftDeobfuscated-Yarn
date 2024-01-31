@@ -1,7 +1,6 @@
 package net.minecraft.entity;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
@@ -9,7 +8,6 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +57,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
@@ -222,7 +221,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 * {@link #setId(int)} calls.
 	 */
 	private static final AtomicInteger CURRENT_ID = new AtomicInteger();
-	private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
 	/**
 	 * @see Entity#removePassenger
 	 */
@@ -2929,44 +2927,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	}
 
 	/**
-	 * {@return an iterable of item stacks held in the hands}
-	 * 
-	 * @see #getArmorItems
-	 * @see #getItemsEquipped
-	 */
-	public Iterable<ItemStack> getHandItems() {
-		return EMPTY_STACK_LIST;
-	}
-
-	/**
-	 * {@return an iterable of item stacks equipped as armor}
-	 * 
-	 * @see #getHandItems
-	 * @see #getItemsEquipped
-	 */
-	public Iterable<ItemStack> getArmorItems() {
-		return EMPTY_STACK_LIST;
-	}
-
-	/**
-	 * {@return an iterable of item stacks held in the hands or equipped as armor}
-	 * 
-	 * @see #getHandItems
-	 * @see #getArmorItems
-	 */
-	public Iterable<ItemStack> getItemsEquipped() {
-		return Iterables.concat(this.getHandItems(), this.getArmorItems());
-	}
-
-	/**
-	 * Equips {@code stack} at {@code slot}.This is also used to set an entity's
-	 * mainhand or offhand stack. This overwrites any stacks present in that slot
-	 * without dropping them.
-	 */
-	public void equipStack(EquipmentSlot slot, ItemStack stack) {
-	}
-
-	/**
 	 * {@return whether the entity is on fire and is not fire immune}
 	 * 
 	 * @see #isFireImmune
@@ -5360,6 +5320,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 
 	public DamageSources getDamageSources() {
 		return this.getWorld().getDamageSources();
+	}
+
+	public DynamicRegistryManager getRegistryManager() {
+		return this.getWorld().getRegistryManager();
 	}
 
 	public void lerpPosAndRotation(int step, double x, double y, double z, double yaw, double pitch) {

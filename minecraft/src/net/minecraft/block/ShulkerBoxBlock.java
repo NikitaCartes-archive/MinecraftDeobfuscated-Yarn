@@ -26,6 +26,7 @@ import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -145,7 +146,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
 			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
-				blockEntity.setStackNbt(itemStack);
+				blockEntity.setStackNbt(itemStack, world.getRegistryManager());
 				if (shulkerBoxBlockEntity.hasCustomName()) {
 					itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
 				}
@@ -198,8 +199,10 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-		super.appendTooltip(stack, world, tooltip, options);
+	public void appendTooltip(
+		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
+	) {
+		super.appendTooltip(stack, world, tooltip, options, registryManager);
 		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		if (nbtCompound != null) {
 			if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
@@ -257,7 +260,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Override
 	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
 		ItemStack itemStack = super.getPickStack(world, pos, state);
-		world.getBlockEntity(pos, BlockEntityType.SHULKER_BOX).ifPresent(blockEntity -> blockEntity.setStackNbt(itemStack));
+		world.getBlockEntity(pos, BlockEntityType.SHULKER_BOX).ifPresent(blockEntity -> blockEntity.setStackNbt(itemStack, world.getRegistryManager()));
 		return itemStack;
 	}
 

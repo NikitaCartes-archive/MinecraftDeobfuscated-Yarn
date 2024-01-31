@@ -68,5 +68,6 @@ public class OneTwentyOneBlockLootTableGenerator extends BlockLootTableGenerator
 		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_BULB);
 		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_BULB);
 		this.addDrop(Blocks.TRIAL_SPAWNER, dropsNothing());
+		this.addDrop(Blocks.VAULT, dropsNothing());
 	}
 }

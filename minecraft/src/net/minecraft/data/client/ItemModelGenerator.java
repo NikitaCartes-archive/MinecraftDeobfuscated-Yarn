@@ -14,6 +14,7 @@ import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public class ItemModelGenerator {
@@ -74,7 +75,7 @@ public class ItemModelGenerator {
 		return id.withSuffixedPath("_" + trimMaterialName + "_trim");
 	}
 
-	private JsonObject createArmorJson(Identifier id, Map<TextureKey, Identifier> textures, ArmorMaterial armorMaterial) {
+	private JsonObject createArmorJson(Identifier id, Map<TextureKey, Identifier> textures, RegistryEntry<ArmorMaterial> armorMaterial) {
 		JsonObject jsonObject = Models.GENERATED_TWO_LAYERS.createJson(id, textures);
 		JsonArray jsonArray = new JsonArray();
 
@@ -92,25 +93,27 @@ public class ItemModelGenerator {
 	}
 
 	private void registerArmor(ArmorItem armor) {
-		Identifier identifier = ModelIds.getItemModelId(armor);
-		Identifier identifier2 = TextureMap.getId(armor);
-		Identifier identifier3 = TextureMap.getSubId(armor, "_overlay");
-		if (armor.getMaterial() == ArmorMaterials.LEATHER) {
-			Models.GENERATED_TWO_LAYERS
-				.upload(identifier, TextureMap.layered(identifier2, identifier3), this.writer, (id, textures) -> this.createArmorJson(id, textures, armor.getMaterial()));
-		} else {
-			Models.GENERATED.upload(identifier, TextureMap.layer0(identifier2), this.writer, (id, textures) -> this.createArmorJson(id, textures, armor.getMaterial()));
-		}
-
-		for (ItemModelGenerator.TrimMaterial trimMaterial : TRIM_MATERIALS) {
-			String string = trimMaterial.getAppliedName(armor.getMaterial());
-			Identifier identifier4 = this.suffixTrim(identifier, string);
-			String string2 = armor.getType().getName() + "_trim_" + string;
-			Identifier identifier5 = new Identifier(string2).withPrefixedPath("trims/items/");
-			if (armor.getMaterial() == ArmorMaterials.LEATHER) {
-				this.uploadArmor(identifier4, identifier2, identifier3, identifier5);
+		if (armor.getType().isTrimmable()) {
+			Identifier identifier = ModelIds.getItemModelId(armor);
+			Identifier identifier2 = TextureMap.getId(armor);
+			Identifier identifier3 = TextureMap.getSubId(armor, "_overlay");
+			if (armor.getMaterial().matches(ArmorMaterials.LEATHER)) {
+				Models.GENERATED_TWO_LAYERS
+					.upload(identifier, TextureMap.layered(identifier2, identifier3), this.writer, (id, textures) -> this.createArmorJson(id, textures, armor.getMaterial()));
 			} else {
-				this.uploadArmor(identifier4, identifier2, identifier5);
+				Models.GENERATED.upload(identifier, TextureMap.layer0(identifier2), this.writer, (id, textures) -> this.createArmorJson(id, textures, armor.getMaterial()));
+			}
+
+			for (ItemModelGenerator.TrimMaterial trimMaterial : TRIM_MATERIALS) {
+				String string = trimMaterial.getAppliedName(armor.getMaterial());
+				Identifier identifier4 = this.suffixTrim(identifier, string);
+				String string2 = armor.getType().getName() + "_trim_" + string;
+				Identifier identifier5 = new Identifier(string2).withPrefixedPath("trims/items/");
+				if (armor.getMaterial().matches(ArmorMaterials.LEATHER)) {
+					this.uploadArmor(identifier4, identifier2, identifier3, identifier5);
+				} else {
+					this.uploadArmor(identifier4, identifier2, identifier5);
+				}
 			}
 		}
 	}
@@ -397,8 +400,8 @@ public class ItemModelGenerator {
 		this.register(Items.TRIAL_KEY, Models.GENERATED);
 	}
 
-	static record TrimMaterial(String name, float itemModelIndex, Map<ArmorMaterial, String> overrideArmorMaterials) {
-		public String getAppliedName(ArmorMaterial armorMaterial) {
+	static record TrimMaterial(String name, float itemModelIndex, Map<RegistryEntry<ArmorMaterial>, String> overrideArmorMaterials) {
+		public String getAppliedName(RegistryEntry<ArmorMaterial> armorMaterial) {
 			return (String)this.overrideArmorMaterials.getOrDefault(armorMaterial, this.name);
 		}
 	}

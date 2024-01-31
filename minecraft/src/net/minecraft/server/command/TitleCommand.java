@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 import java.util.function.Function;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.command.argument.TimeArgumentType;
@@ -19,7 +20,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 public class TitleCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("title")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -30,7 +31,7 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("title")
 								.then(
-									CommandManager.argument("title", TextArgumentType.text())
+									CommandManager.argument("title", TextArgumentType.text(registryAccess))
 										.executes(
 											context -> executeTitle(
 													context.getSource(),
@@ -45,7 +46,7 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("subtitle")
 								.then(
-									CommandManager.argument("title", TextArgumentType.text())
+									CommandManager.argument("title", TextArgumentType.text(registryAccess))
 										.executes(
 											context -> executeTitle(
 													context.getSource(),
@@ -60,7 +61,7 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("actionbar")
 								.then(
-									CommandManager.argument("title", TextArgumentType.text())
+									CommandManager.argument("title", TextArgumentType.text(registryAccess))
 										.executes(
 											context -> executeTitle(
 													context.getSource(),

@@ -49,27 +49,38 @@ public final class TrialSpawnerLogic {
 	private final TrialSpawnerData data;
 	private final TrialSpawnerLogic.TrialSpawner trialSpawner;
 	private EntityDetector entityDetector;
+	private final EntityDetector.Selector entitySelector;
 	private boolean forceActivate;
 
 	public Codec<TrialSpawnerLogic> codec() {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(TrialSpawnerConfig.codec.forGetter(TrialSpawnerLogic::getConfig), TrialSpawnerData.codec.forGetter(TrialSpawnerLogic::getData))
 					.apply(
-						instance, (trialSpawnerConfig, trialSpawnerData) -> new TrialSpawnerLogic(trialSpawnerConfig, trialSpawnerData, this.trialSpawner, this.entityDetector)
+						instance,
+						(trialSpawnerConfig, trialSpawnerData) -> new TrialSpawnerLogic(
+								trialSpawnerConfig, trialSpawnerData, this.trialSpawner, this.entityDetector, this.entitySelector
+							)
 					)
 		);
 	}
 
-	public TrialSpawnerLogic(TrialSpawnerLogic.TrialSpawner trialSpawner, EntityDetector entityDetector) {
-		this(TrialSpawnerConfig.defaultInstance, new TrialSpawnerData(), trialSpawner, entityDetector);
+	public TrialSpawnerLogic(TrialSpawnerLogic.TrialSpawner trialSpawner, EntityDetector entityDetector, EntityDetector.Selector entitySelector) {
+		this(TrialSpawnerConfig.defaultInstance, new TrialSpawnerData(), trialSpawner, entityDetector, entitySelector);
 	}
 
-	public TrialSpawnerLogic(TrialSpawnerConfig config, TrialSpawnerData data, TrialSpawnerLogic.TrialSpawner trialSpawner, EntityDetector entityDetector) {
+	public TrialSpawnerLogic(
+		TrialSpawnerConfig config,
+		TrialSpawnerData data,
+		TrialSpawnerLogic.TrialSpawner trialSpawner,
+		EntityDetector entityDetector,
+		EntityDetector.Selector entitySelector
+	) {
 		this.config = config;
 		this.data = data;
 		this.data.populateSpawnDataPool(config);
 		this.trialSpawner = trialSpawner;
 		this.entityDetector = entityDetector;
+		this.entitySelector = entitySelector;
 	}
 
 	public TrialSpawnerConfig getConfig() {
@@ -94,6 +105,10 @@ public final class TrialSpawnerLogic {
 
 	public EntityDetector getEntityDetector() {
 		return this.entityDetector;
+	}
+
+	public EntityDetector.Selector getEntitySelector() {
+		return this.entitySelector;
 	}
 
 	public boolean canActivate(World world) {
@@ -149,7 +164,7 @@ public final class TrialSpawnerLogic {
 
 								boolean bl = mobSpawnerEntry.getNbt().getSize() == 1 && mobSpawnerEntry.getNbt().contains("id", NbtElement.STRING_TYPE);
 								if (bl) {
-									mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.TRIAL_SPAWNER, null, null);
+									mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.TRIAL_SPAWNER, null);
 								}
 
 								mobEntity.setPersistent();

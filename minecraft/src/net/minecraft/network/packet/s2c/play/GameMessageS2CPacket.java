@@ -1,24 +1,19 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
 public record GameMessageS2CPacket(Text content, boolean overlay) implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, GameMessageS2CPacket> CODEC = Packet.createCodec(GameMessageS2CPacket::write, GameMessageS2CPacket::new);
-
-	private GameMessageS2CPacket(PacketByteBuf buf) {
-		this(buf.readUnlimitedText(), buf.readBoolean());
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeText(this.content);
-		buf.writeBoolean(this.overlay);
-	}
+	public static final PacketCodec<RegistryByteBuf, GameMessageS2CPacket> CODEC = PacketCodec.tuple(
+		TextCodecs.REGISTRY_PACKET_CODEC, GameMessageS2CPacket::content, PacketCodecs.BOOL, GameMessageS2CPacket::overlay, GameMessageS2CPacket::new
+	);
 
 	@Override
 	public PacketType<GameMessageS2CPacket> getPacketId() {

@@ -363,6 +363,44 @@ public class Util {
 		} : supplier;
 	}
 
+	public static <T> Predicate<T> allOf(List<? extends Predicate<T>> predicates) {
+		List<Predicate<T>> list = List.copyOf(predicates);
+
+		return switch (list.size()) {
+			case 0 -> object -> true;
+			case 1 -> (Predicate)list.get(0);
+			case 2 -> ((Predicate)list.get(0)).and((Predicate)list.get(1));
+			default -> object -> {
+			for (Predicate<T> predicate : list) {
+				if (!predicate.test(object)) {
+					return false;
+				}
+			}
+
+			return true;
+		};
+		};
+	}
+
+	public static <T> Predicate<T> anyOf(List<? extends Predicate<T>> predicates) {
+		List<Predicate<T>> list = List.copyOf(predicates);
+
+		return switch (list.size()) {
+			case 0 -> object -> false;
+			case 1 -> (Predicate)list.get(0);
+			case 2 -> ((Predicate)list.get(0)).or((Predicate)list.get(1));
+			default -> object -> {
+			for (Predicate<T> predicate : list) {
+				if (predicate.test(object)) {
+					return true;
+				}
+			}
+
+			return false;
+		};
+		};
+	}
+
 	/**
 	 * {@return the operating system instance for the current platform}
 	 * 

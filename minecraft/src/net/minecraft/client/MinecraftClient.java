@@ -174,7 +174,6 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
@@ -193,6 +192,7 @@ import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
@@ -263,6 +263,7 @@ import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.tick.TickManager;
 import org.apache.commons.io.FileUtils;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 import org.slf4j.Logger;
 
@@ -1655,10 +1656,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		Matrix4f matrix4f = new Matrix4f()
 			.setOrtho(0.0F, (float)this.window.getFramebufferWidth(), (float)this.window.getFramebufferHeight(), 0.0F, 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.loadIdentity();
-		matrixStack.translate(0.0F, 0.0F, -2000.0F);
+		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+		matrix4fStack.pushMatrix();
+		matrix4fStack.translation(0.0F, 0.0F, -2000.0F);
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.lineWidth(1.0F);
 		Tessellator tessellator = Tessellator.getInstance();
@@ -1745,7 +1745,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			context.drawTextWithShadow(this.textRenderer, string3, j + 160 - this.textRenderer.getWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
 		}
 
-		matrixStack.pop();
+		matrix4fStack.popMatrix();
 		RenderSystem.applyModelViewMatrix();
 	}
 
@@ -2499,7 +2499,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			} else {
 				PlayerInventory playerInventory = this.player.getInventory();
 				if (blockEntity != null) {
-					this.addBlockEntityNbt(itemStack, blockEntity);
+					this.addBlockEntityNbt(itemStack, blockEntity, this.world.getRegistryManager());
 				}
 
 				int i = playerInventory.getSlotWithStack(itemStack);
@@ -2517,8 +2517,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-		NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
+	private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity, DynamicRegistryManager registryManager) {
+		NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData(registryManager);
 		BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), nbtCompound);
 		if (stack.getItem() instanceof PlayerHeadItem && nbtCompound.contains("SkullOwner")) {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
@@ -2943,7 +2943,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.player.prevYaw = this.player.getYaw();
 				this.player.prevPitch = this.player.getPitch();
 				framebuffer.beginWrite(true);
-				this.gameRenderer.renderWorld(1.0F, 0L, new MatrixStack());
+				this.gameRenderer.renderWorld(1.0F, 0L);
 
 				try {
 					Thread.sleep(10L);

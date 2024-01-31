@@ -48,7 +48,8 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 				return true;
 			} else {
 				BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-				return blockEntity != null && NbtHelper.matches(this.data, blockEntity.createNbtWithIdentifyingData(), true);
+				return blockEntity != null
+					&& NbtHelper.matches(this.data, blockEntity.createNbtWithIdentifyingData(cachedBlockPosition.getWorld().getRegistryManager()), true);
 			}
 		}
 	}
@@ -69,7 +70,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 			if (this.data != null) {
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity != null) {
-					blockEntity.readNbt(this.data);
+					blockEntity.readNbt(this.data, world.getRegistryManager());
 				}
 			}
 

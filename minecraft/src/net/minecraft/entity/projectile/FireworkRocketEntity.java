@@ -45,9 +45,9 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		super(EntityType.FIREWORK_ROCKET, world);
 		this.life = 0;
 		this.setPosition(x, y, z);
+		this.dataTracker.set(ITEM, stack.copy());
 		int i = 1;
 		if (!stack.isEmpty() && stack.hasNbt()) {
-			this.dataTracker.set(ITEM, stack.copy());
 			i += stack.getOrCreateSubNbt("Fireworks").getByte("Flight");
 		}
 
@@ -78,7 +78,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	@Override
 	protected void initDataTracker() {
-		this.dataTracker.startTracking(ITEM, ItemStack.EMPTY);
+		this.dataTracker.startTracking(ITEM, new ItemStack(Items.FIREWORK_ROCKET));
 		this.dataTracker.startTracking(SHOOTER_ENTITY_ID, OptionalInt.empty());
 		this.dataTracker.startTracking(SHOT_AT_ANGLE, false);
 	}
@@ -273,11 +273,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("Life", this.life);
 		nbt.putInt("LifeTime", this.lifeTime);
-		ItemStack itemStack = this.dataTracker.get(ITEM);
-		if (!itemStack.isEmpty()) {
-			nbt.put("FireworksItem", itemStack.writeNbt(new NbtCompound()));
-		}
-
+		nbt.put("FireworksItem", this.getStack().writeNbt(new NbtCompound()));
 		nbt.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
 	}
 
@@ -286,9 +282,11 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		super.readCustomDataFromNbt(nbt);
 		this.life = nbt.getInt("Life");
 		this.lifeTime = nbt.getInt("LifeTime");
-		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("FireworksItem"));
-		if (!itemStack.isEmpty()) {
-			this.dataTracker.set(ITEM, itemStack);
+		if (nbt.contains("FireworksItem", NbtElement.COMPOUND_TYPE)) {
+			ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("FireworksItem"));
+			if (!itemStack.isEmpty()) {
+				this.dataTracker.set(ITEM, itemStack);
+			}
 		}
 
 		if (nbt.contains("ShotAtAngle")) {
@@ -298,8 +296,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	@Override
 	public ItemStack getStack() {
-		ItemStack itemStack = this.dataTracker.get(ITEM);
-		return itemStack.isEmpty() ? new ItemStack(Items.FIREWORK_ROCKET) : itemStack;
+		return this.dataTracker.get(ITEM);
 	}
 
 	@Override

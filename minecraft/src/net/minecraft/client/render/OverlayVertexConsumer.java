@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -24,10 +25,10 @@ public class OverlayVertexConsumer extends FixedColorVertexConsumer {
 	private float normalY;
 	private float normalZ;
 
-	public OverlayVertexConsumer(VertexConsumer delegate, Matrix4f textureMatrix, Matrix3f normalMatrix, float textureScale) {
+	public OverlayVertexConsumer(VertexConsumer delegate, MatrixStack.Entry matrix, float textureScale) {
 		this.delegate = delegate;
-		this.inverseTextureMatrix = new Matrix4f(textureMatrix).invert();
-		this.inverseNormalMatrix = new Matrix3f(normalMatrix).invert();
+		this.inverseTextureMatrix = new Matrix4f(matrix.getPositionMatrix()).invert();
+		this.inverseNormalMatrix = new Matrix3f(matrix.getNormalMatrix()).invert();
 		this.textureScale = textureScale;
 		this.init();
 	}

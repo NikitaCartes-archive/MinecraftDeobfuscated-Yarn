@@ -149,7 +149,7 @@ public class ChunkData {
 		}
 
 		static ChunkData.BlockEntityData of(BlockEntity blockEntity) {
-			NbtCompound nbtCompound = blockEntity.toInitialChunkDataNbt();
+			NbtCompound nbtCompound = blockEntity.toInitialChunkDataNbt(blockEntity.getWorld().getRegistryManager());
 			BlockPos blockPos = blockEntity.getPos();
 			int i = ChunkSectionPos.getLocalCoord(blockPos.getX()) << 4 | ChunkSectionPos.getLocalCoord(blockPos.getZ());
 			return new ChunkData.BlockEntityData(i, blockPos.getY(), blockEntity.getType(), nbtCompound.isEmpty() ? null : nbtCompound);

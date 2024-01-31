@@ -15,12 +15,13 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class DecoratedPotBlockEntity extends BlockEntity implements LootableInventory, SingleStackInventory {
+public class DecoratedPotBlockEntity extends BlockEntity implements LootableInventory, SingleStackInventory.SingleStackBlockEntityInventory {
 	public static final String SHERDS_NBT_KEY = "sherds";
 	public static final String ITEM_NBT_KEY = "item";
 	public static final int field_46660 = 1;
@@ -39,8 +40,8 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		this.sherds.toNbt(nbt);
 		if (!this.writeLootTable(nbt) && !this.stack.isEmpty()) {
 			nbt.put("item", this.stack.writeNbt(new NbtCompound()));
@@ -48,8 +49,8 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		this.sherds = DecoratedPotBlockEntity.Sherds.fromNbt(nbt);
 		if (!this.readLootTable(nbt)) {
 			if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
@@ -65,8 +66,8 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		return this.createNbt();
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		return this.createNbt(registryLookup);
 	}
 
 	public Direction getHorizontalFacing() {

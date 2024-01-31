@@ -29,9 +29,7 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	}
 
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(true);
 		}
@@ -42,7 +40,7 @@ public abstract class PassiveEntity extends PathAwareEntity {
 		}
 
 		passiveData.countSpawned();
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Nullable

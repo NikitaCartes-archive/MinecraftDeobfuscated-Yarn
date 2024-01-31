@@ -144,9 +144,9 @@ public record MessageType(Decoration chat, Decoration narration) {
 		public static final PacketCodec<RegistryByteBuf, MessageType.Parameters> CODEC = PacketCodec.tuple(
 			PacketCodecs.registryEntry(RegistryKeys.MESSAGE_TYPE),
 			MessageType.Parameters::type,
-			TextCodecs.PACKET_CODEC,
+			TextCodecs.REGISTRY_PACKET_CODEC,
 			MessageType.Parameters::name,
-			TextCodecs.PACKET_CODEC.collect(PacketCodecs::optional),
+			TextCodecs.OPTIONAL_PACKET_CODEC,
 			MessageType.Parameters::targetName,
 			MessageType.Parameters::new
 		);

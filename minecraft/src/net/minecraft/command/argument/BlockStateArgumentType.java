@@ -20,7 +20,7 @@ public class BlockStateArgumentType implements ArgumentType<BlockStateArgument> 
 	private final RegistryWrapper<Block> registryWrapper;
 
 	public BlockStateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		this.registryWrapper = commandRegistryAccess.createWrapper(RegistryKeys.BLOCK);
+		this.registryWrapper = commandRegistryAccess.getWrapperOrThrow(RegistryKeys.BLOCK);
 	}
 
 	public static BlockStateArgumentType blockState(CommandRegistryAccess commandRegistryAccess) {

@@ -11,8 +11,6 @@ import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballEntity> {
@@ -33,26 +31,22 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		matrixStack.multiply(this.dispatcher.getRotation());
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 		MatrixStack.Entry entry = matrixStack.peek();
-		Matrix4f matrix4f = entry.getPositionMatrix();
-		Matrix3f matrix3f = entry.getNormalMatrix();
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
-		produceVertex(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 0, 0, 1);
-		produceVertex(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 0, 1, 1);
-		produceVertex(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
-		produceVertex(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 1, 0, 0);
+		produceVertex(vertexConsumer, entry, i, 0.0F, 0, 0, 1);
+		produceVertex(vertexConsumer, entry, i, 1.0F, 0, 1, 1);
+		produceVertex(vertexConsumer, entry, i, 1.0F, 1, 1, 0);
+		produceVertex(vertexConsumer, entry, i, 0.0F, 1, 0, 0);
 		matrixStack.pop();
 		super.render(dragonFireballEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	private static void produceVertex(
-		VertexConsumer vertexConsumer, Matrix4f positionMatrix, Matrix3f normalMatrix, int light, float x, int y, int textureU, int textureV
-	) {
-		vertexConsumer.vertex(positionMatrix, x - 0.5F, (float)y - 0.25F, 0.0F)
+	private static void produceVertex(VertexConsumer vertexConsumer, MatrixStack.Entry matrix, int light, float x, int z, int textureU, int textureV) {
+		vertexConsumer.vertex(matrix, x - 0.5F, (float)z - 0.25F, 0.0F)
 			.color(255, 255, 255, 255)
 			.texture((float)textureU, (float)textureV)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(light)
-			.normal(normalMatrix, 0.0F, 1.0F, 0.0F)
+			.normal(matrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 

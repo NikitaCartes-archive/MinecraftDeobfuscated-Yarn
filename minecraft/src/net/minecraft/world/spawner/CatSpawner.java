@@ -106,7 +106,7 @@ public class CatSpawner implements SpecialSpawner {
 		if (catEntity == null) {
 			return 0;
 		} else {
-			catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
+			catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.NATURAL, null);
 			catEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
 			world.spawnEntityAndPassengers(catEntity);
 			return 1;

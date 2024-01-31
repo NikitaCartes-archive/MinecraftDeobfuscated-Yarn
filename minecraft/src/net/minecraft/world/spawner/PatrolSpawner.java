@@ -110,7 +110,7 @@ public class PatrolSpawner implements SpecialSpawner {
 				}
 
 				patrolEntity.setPosition((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
-				patrolEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.PATROL, null, null);
+				patrolEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.PATROL, null);
 				world.spawnEntityAndPassengers(patrolEntity);
 				return true;
 			} else {

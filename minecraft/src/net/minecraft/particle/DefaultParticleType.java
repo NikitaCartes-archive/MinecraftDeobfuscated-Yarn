@@ -5,10 +5,11 @@ import com.mojang.serialization.Codec;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 
 public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleEffect {
 	private static final ParticleEffect.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleEffect.Factory<DefaultParticleType>() {
-		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader) {
+		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup) {
 			return (DefaultParticleType)particleType;
 		}
 	};
@@ -34,7 +35,7 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 	}
 
 	@Override
-	public String asString() {
+	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
 		return Registries.PARTICLE_TYPE.getId(this).toString();
 	}
 }

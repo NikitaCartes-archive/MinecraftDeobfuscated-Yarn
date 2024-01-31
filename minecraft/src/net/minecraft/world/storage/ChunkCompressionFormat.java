@@ -33,12 +33,17 @@ public class ChunkCompressionFormat {
 			2, "deflate", stream -> new FixedBufferInputStream(new InflaterInputStream(stream)), stream -> new BufferedOutputStream(new DeflaterOutputStream(stream))
 		)
 	);
-	public static final ChunkCompressionFormat UNCOMPRESSED = add(new ChunkCompressionFormat(3, null, stream -> stream, stream -> stream));
+	public static final ChunkCompressionFormat UNCOMPRESSED = add(new ChunkCompressionFormat(3, "none", FixedBufferInputStream::new, BufferedOutputStream::new));
 	public static final ChunkCompressionFormat LZ4 = add(
 		new ChunkCompressionFormat(
 			4, "lz4", stream -> new FixedBufferInputStream(new LZ4BlockInputStream(stream)), stream -> new BufferedOutputStream(new LZ4BlockOutputStream(stream))
 		)
 	);
+	public static final ChunkCompressionFormat field_48916 = add(new ChunkCompressionFormat(127, null, stream -> {
+		throw new UnsupportedOperationException();
+	}, stream -> {
+		throw new UnsupportedOperationException();
+	}));
 	public static final ChunkCompressionFormat DEFAULT_FORMAT = DEFLATE;
 	private static volatile ChunkCompressionFormat currentFormat = DEFAULT_FORMAT;
 	private final int id;

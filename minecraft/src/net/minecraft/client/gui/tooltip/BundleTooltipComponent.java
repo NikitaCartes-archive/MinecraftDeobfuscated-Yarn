@@ -62,10 +62,10 @@ public class BundleTooltipComponent implements TooltipComponent {
 
 	private void drawSlot(int x, int y, int index, boolean shouldBlock, DrawContext context, TextRenderer textRenderer) {
 		if (index >= this.inventory.size()) {
-			this.draw(context, x, y, shouldBlock ? BundleTooltipComponent.Sprite.BLOCKED_SLOT : BundleTooltipComponent.Sprite.SLOT);
+			this.draw(context, x, y, shouldBlock ? BundleTooltipComponent.SlotSprite.BLOCKED_SLOT : BundleTooltipComponent.SlotSprite.SLOT);
 		} else {
 			ItemStack itemStack = this.inventory.get(index);
-			this.draw(context, x, y, BundleTooltipComponent.Sprite.SLOT);
+			this.draw(context, x, y, BundleTooltipComponent.SlotSprite.SLOT);
 			context.drawItem(itemStack, x + 1, y + 1, index);
 			context.drawItemInSlot(textRenderer, itemStack, x + 1, y + 1);
 			if (index == 0) {
@@ -74,7 +74,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 		}
 	}
 
-	private void draw(DrawContext context, int x, int y, BundleTooltipComponent.Sprite sprite) {
+	private void draw(DrawContext context, int x, int y, BundleTooltipComponent.SlotSprite sprite) {
 		context.drawGuiTexture(sprite.texture, x, y, 0, sprite.width, sprite.height);
 	}
 
@@ -87,7 +87,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum Sprite {
+	static enum SlotSprite {
 		BLOCKED_SLOT(new Identifier("container/bundle/blocked_slot"), 18, 20),
 		SLOT(new Identifier("container/bundle/slot"), 18, 20);
 
@@ -95,7 +95,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 		public final int width;
 		public final int height;
 
-		private Sprite(Identifier texture, int width, int height) {
+		private SlotSprite(Identifier texture, int width, int height) {
 			this.texture = texture;
 			this.width = width;
 			this.height = height;

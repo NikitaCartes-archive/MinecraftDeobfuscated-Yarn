@@ -98,14 +98,12 @@ public class CompassItem extends Item {
 			if (bl) {
 				this.writeNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateNbt());
 			} else {
-				ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
-				NbtCompound nbtCompound = itemStack.hasNbt() ? itemStack.getNbt().copy() : new NbtCompound();
-				itemStack2.setNbt(nbtCompound);
+				ItemStack itemStack2 = itemStack.copyNbtToNewStack(Items.COMPASS, 1);
 				if (!playerEntity.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 
-				this.writeNbt(world.getRegistryKey(), blockPos, nbtCompound);
+				this.writeNbt(world.getRegistryKey(), blockPos, itemStack2.getOrCreateNbt());
 				if (!playerEntity.getInventory().insertStack(itemStack2)) {
 					playerEntity.dropItem(itemStack2, false);
 				}

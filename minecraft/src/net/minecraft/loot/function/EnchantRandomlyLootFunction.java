@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootCondition;
@@ -73,11 +71,9 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
 		if (stack.isOf(Items.BOOK)) {
 			stack = new ItemStack(Items.ENCHANTED_BOOK);
-			EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment, i));
-		} else {
-			stack.addEnchantment(enchantment, i);
 		}
 
+		stack.addEnchantment(enchantment, i);
 		return stack;
 	}
 

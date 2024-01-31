@@ -2,6 +2,7 @@ package net.minecraft.item.trim;
 
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -58,7 +59,7 @@ public class ArmorTrimMaterials {
 		Item ingredient,
 		Style style,
 		float itemModelIndex,
-		Map<ArmorMaterials, String> overrideArmorMaterials
+		Map<RegistryEntry<ArmorMaterial>, String> overrideArmorMaterials
 	) {
 		ArmorTrimMaterial armorTrimMaterial = ArmorTrimMaterial.of(
 			key.getValue().getPath(),

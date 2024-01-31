@@ -22,7 +22,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
@@ -149,40 +148,38 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		float l = 0.75F;
 		float m = 0.0F;
 		MatrixStack.Entry entry = matrices.peek();
-		Matrix4f matrix4f = entry.getPositionMatrix();
-		Matrix3f matrix3f = entry.getNormalMatrix();
 
 		for (int n = 1; n <= 8; n++) {
 			float o = MathHelper.sin((float)n * (float) (Math.PI * 2) / 8.0F) * 0.75F;
 			float p = MathHelper.cos((float)n * (float) (Math.PI * 2) / 8.0F) * 0.75F;
 			float q = (float)n / 8.0F;
-			vertexConsumer.vertex(matrix4f, k * 0.2F, l * 0.2F, 0.0F)
+			vertexConsumer.vertex(entry, k * 0.2F, l * 0.2F, 0.0F)
 				.color(0, 0, 0, 255)
 				.texture(m, h)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(light)
-				.normal(matrix3f, 0.0F, -1.0F, 0.0F)
+				.normal(entry, 0.0F, -1.0F, 0.0F)
 				.next();
-			vertexConsumer.vertex(matrix4f, k, l, g)
+			vertexConsumer.vertex(entry, k, l, g)
 				.color(255, 255, 255, 255)
 				.texture(m, i)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(light)
-				.normal(matrix3f, 0.0F, -1.0F, 0.0F)
+				.normal(entry, 0.0F, -1.0F, 0.0F)
 				.next();
-			vertexConsumer.vertex(matrix4f, o, p, g)
+			vertexConsumer.vertex(entry, o, p, g)
 				.color(255, 255, 255, 255)
 				.texture(q, i)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(light)
-				.normal(matrix3f, 0.0F, -1.0F, 0.0F)
+				.normal(entry, 0.0F, -1.0F, 0.0F)
 				.next();
-			vertexConsumer.vertex(matrix4f, o * 0.2F, p * 0.2F, 0.0F)
+			vertexConsumer.vertex(entry, o * 0.2F, p * 0.2F, 0.0F)
 				.color(0, 0, 0, 255)
 				.texture(q, h)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(light)
-				.normal(matrix3f, 0.0F, -1.0F, 0.0F)
+				.normal(entry, 0.0F, -1.0F, 0.0F)
 				.next();
 			k = o;
 			l = p;

@@ -10,16 +10,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.item.Item;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
 
 public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "stick{foo=bar}");
-	private final RegistryWrapper<Item> registryWrapper;
+	private final ItemStringReader field_48954;
 
 	public ItemStackArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		this.registryWrapper = commandRegistryAccess.createWrapper(RegistryKeys.ITEM);
+		this.field_48954 = new ItemStringReader(commandRegistryAccess);
 	}
 
 	public static ItemStackArgumentType itemStack(CommandRegistryAccess commandRegistryAccess) {
@@ -27,7 +24,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 	}
 
 	public ItemStackArgument parse(StringReader stringReader) throws CommandSyntaxException {
-		ItemStringReader.ItemResult itemResult = ItemStringReader.item(this.registryWrapper, stringReader);
+		ItemStringReader.ItemResult itemResult = this.field_48954.consume(stringReader);
 		return new ItemStackArgument(itemResult.item(), itemResult.nbt());
 	}
 
@@ -37,7 +34,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return ItemStringReader.getSuggestions(this.registryWrapper, builder, false);
+		return this.field_48954.getSuggestions(builder);
 	}
 
 	@Override

@@ -24,7 +24,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.Window;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
@@ -60,11 +59,11 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
+import org.joml.Matrix4fStack;
 
 /**
  * Responsible for rendering the HUD elements while the player is in game.
@@ -373,16 +372,16 @@ public class InGameHud {
 				RenderSystem.enableBlend();
 				if (this.debugHud.shouldShowDebugHud() && !this.client.player.hasReducedDebugInfo() && !gameOptions.getReducedDebugInfo().getValue()) {
 					Camera camera = this.client.gameRenderer.getCamera();
-					MatrixStack matrixStack = RenderSystem.getModelViewStack();
-					matrixStack.push();
-					matrixStack.multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
-					matrixStack.translate((float)(context.getScaledWindowWidth() / 2), (float)(context.getScaledWindowHeight() / 2), 0.0F);
-					matrixStack.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
-					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));
-					matrixStack.scale(-1.0F, -1.0F, -1.0F);
+					Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+					matrix4fStack.pushMatrix();
+					matrix4fStack.mul(context.getMatrices().peek().getPositionMatrix());
+					matrix4fStack.translate((float)(context.getScaledWindowWidth() / 2), (float)(context.getScaledWindowHeight() / 2), 0.0F);
+					matrix4fStack.rotateX(-camera.getPitch() * (float) (Math.PI / 180.0));
+					matrix4fStack.rotateY(camera.getYaw() * (float) (Math.PI / 180.0));
+					matrix4fStack.scale(-1.0F, -1.0F, -1.0F);
 					RenderSystem.applyModelViewMatrix();
 					RenderSystem.renderCrosshair(10);
-					matrixStack.pop();
+					matrix4fStack.popMatrix();
 					RenderSystem.applyModelViewMatrix();
 				} else {
 					RenderSystem.blendFuncSeparate(

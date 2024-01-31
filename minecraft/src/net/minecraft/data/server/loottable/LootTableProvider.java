@@ -22,6 +22,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -34,15 +35,26 @@ public class LootTableProvider implements DataProvider {
 	private final DataOutput.PathResolver pathResolver;
 	private final Set<Identifier> lootTableIds;
 	private final List<LootTableProvider.LootTypeGenerator> lootTypeGenerators;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
 
-	public LootTableProvider(DataOutput output, Set<Identifier> lootTableIds, List<LootTableProvider.LootTypeGenerator> lootTypeGenerators) {
+	public LootTableProvider(
+		DataOutput output,
+		Set<Identifier> lootTableIds,
+		List<LootTableProvider.LootTypeGenerator> lootTypeGenerators,
+		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture
+	) {
 		this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "loot_tables");
 		this.lootTypeGenerators = lootTypeGenerators;
 		this.lootTableIds = lootTableIds;
+		this.registryLookupFuture = registryLookupFuture;
 	}
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
+		return this.registryLookupFuture.thenCompose(registryLookup -> this.run(writer, registryLookup));
+	}
+
+	private CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup) {
 		final Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
 		Map<RandomSeed.XoroshiroSeed, Identifier> map2 = new Object2ObjectOpenHashMap<>();
 		this.lootTypeGenerators.forEach(generator -> ((LootTableGenerator)generator.provider().get()).accept((id, builder) -> {
@@ -81,7 +93,7 @@ public class LootTableProvider implements DataProvider {
 				Identifier identifierx = (Identifier)entry.getKey();
 				LootTable lootTable = (LootTable)entry.getValue();
 				Path path = this.pathResolver.resolveJson(identifierx);
-				return DataProvider.writeCodecToPath(writer, LootTable.CODEC, lootTable, path);
+				return DataProvider.writeCodecToPath(writer, registryLookup, LootTable.CODEC, lootTable, path);
 			}).toArray(CompletableFuture[]::new));
 		}
 	}

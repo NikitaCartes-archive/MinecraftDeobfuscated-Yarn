@@ -84,7 +84,7 @@ public class SummonCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				if (initialize && entity instanceof MobEntity) {
-					((MobEntity)entity).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity.getBlockPos()), SpawnReason.COMMAND, null, null);
+					((MobEntity)entity).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity.getBlockPos()), SpawnReason.COMMAND, null);
 				}
 
 				if (!serverWorld.spawnNewEntityAndPassengers(entity)) {

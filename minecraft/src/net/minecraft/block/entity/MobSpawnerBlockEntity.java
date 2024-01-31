@@ -9,6 +9,7 @@ import net.minecraft.block.spawner.MobSpawnerLogic;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -36,14 +37,14 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Spawner {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		this.logic.readNbt(this.world, this.pos, nbt);
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		this.logic.writeNbt(nbt);
 	}
 
@@ -60,8 +61,8 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Spawner {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		NbtCompound nbtCompound = this.createNbt();
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		NbtCompound nbtCompound = this.createNbt(registryLookup);
 		nbtCompound.remove("SpawnPotentials");
 		return nbtCompound;
 	}

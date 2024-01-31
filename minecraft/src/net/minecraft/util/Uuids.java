@@ -23,6 +23,7 @@ public final class Uuids {
 	public static final Codec<UUID> INT_STREAM_CODEC = Codec.INT_STREAM
 		.comapFlatMap(uuidStream -> Util.decodeFixedLengthArray(uuidStream, 4).map(Uuids::toUuid), uuid -> Arrays.stream(toIntArray(uuid)));
 	public static final Codec<Set<UUID>> SET_CODEC = Codec.list(INT_STREAM_CODEC).xmap(Sets::newHashSet, Lists::newArrayList);
+	public static final Codec<Set<UUID>> LINKED_SET_CODEC = Codec.list(INT_STREAM_CODEC).xmap(Sets::newLinkedHashSet, Lists::newArrayList);
 	public static final Codec<UUID> STRING_CODEC = Codec.STRING.comapFlatMap(string -> {
 		try {
 			return DataResult.success(UUID.fromString(string), Lifecycle.stable());

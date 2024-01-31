@@ -21,6 +21,7 @@ import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.enums.Tilt;
 import net.minecraft.block.enums.TrialSpawnerState;
+import net.minecraft.block.enums.VaultState;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.util.math.Direction;
@@ -523,4 +524,8 @@ public class Properties {
 	 * A property that specifies the state of a trial spawner.
 	 */
 	public static final EnumProperty<TrialSpawnerState> TRIAL_SPAWNER_STATE = EnumProperty.of("trial_spawner_state", TrialSpawnerState.class);
+	/**
+	 * A property that specifies the state of a vault.
+	 */
+	public static final EnumProperty<VaultState> VAULT_STATE = EnumProperty.of("vault_state", VaultState.class);
 }

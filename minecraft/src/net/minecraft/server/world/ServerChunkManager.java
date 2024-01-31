@@ -85,7 +85,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.serverThread = Thread.currentThread();
 		File file = session.getWorldDirectory(world.getRegistryKey()).resolve("data").toFile();
 		file.mkdirs();
-		this.persistentStateManager = new PersistentStateManager(file, dataFixer);
+		this.persistentStateManager = new PersistentStateManager(file, dataFixer, world.getRegistryManager());
 		this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(
 			world,
 			session,

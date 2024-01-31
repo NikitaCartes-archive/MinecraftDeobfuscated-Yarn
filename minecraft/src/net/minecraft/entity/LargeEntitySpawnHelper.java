@@ -31,7 +31,7 @@ public class LargeEntitySpawnHelper {
 			int k = MathHelper.nextBetween(world.random, -horizontalRange, horizontalRange);
 			mutable.set(pos, j, verticalRange, k);
 			if (world.getWorldBorder().contains(mutable) && findSpawnPos(world, verticalRange, mutable, requirements)) {
-				T mobEntity = (T)entityType.create(world, null, null, mutable, reason, false, false);
+				T mobEntity = (T)entityType.create(world, null, mutable, reason, false, false);
 				if (mobEntity != null) {
 					if (mobEntity.canSpawn(world, reason) && mobEntity.canSpawn(world)) {
 						world.spawnEntityAndPassengers(mobEntity);

@@ -1,10 +1,9 @@
 package net.minecraft.loot;
 
-import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.DynamicOps;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.loot.condition.LootCondition;
@@ -38,8 +37,8 @@ public class LootDataType<T> {
 		this.validator.run(reporter, key, value);
 	}
 
-	public Optional<T> parse(Identifier id, JsonElement json) {
-		DataResult<T> dataResult = this.codec.parse(JsonOps.INSTANCE, json);
+	public <V> Optional<T> parse(Identifier id, DynamicOps<V> ops, V json) {
+		DataResult<T> dataResult = this.codec.parse(ops, json);
 		dataResult.error().ifPresent(result -> LOGGER.error("Couldn't parse element {}:{} - {}", this.id, id, result.message()));
 		return dataResult.result();
 	}

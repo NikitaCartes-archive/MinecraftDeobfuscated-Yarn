@@ -15,6 +15,7 @@ import net.minecraft.item.MusicDiscItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Clearable;
@@ -24,7 +25,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
-public class JukeboxBlockEntity extends BlockEntity implements Clearable, SingleStackInventory {
+public class JukeboxBlockEntity extends BlockEntity implements Clearable, SingleStackInventory.SingleStackBlockEntityInventory {
 	private static final int SECOND_PER_TICK = 20;
 	private ItemStack recordStack = ItemStack.EMPTY;
 	private int ticksThisSecond;
@@ -37,8 +38,8 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("RecordItem", NbtElement.COMPOUND_TYPE)) {
 			this.recordStack = ItemStack.fromNbt(nbt.getCompound("RecordItem"));
 		}
@@ -49,8 +50,8 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		if (!this.getStack().isEmpty()) {
 			nbt.put("RecordItem", this.getStack().writeNbt(new NbtCompound()));
 		}

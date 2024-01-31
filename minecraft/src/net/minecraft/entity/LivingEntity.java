@@ -3,6 +3,7 @@ package net.minecraft.entity;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
@@ -140,6 +141,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public static final int field_30070 = 4;
 	public static final int EQUIPMENT_SLOT_ID = 98;
 	public static final int field_30072 = 100;
+	public static final int field_48827 = 105;
 	public static final int GLOWING_FLAG = 6;
 	public static final int field_30074 = 100;
 	private static final int field_30078 = 40;
@@ -172,6 +174,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.<RegistryEntry<StatusEffect>, StatusEffectInstance>newHashMap();
 	private final DefaultedList<ItemStack> syncedHandStacks = DefaultedList.ofSize(2, ItemStack.EMPTY);
 	private final DefaultedList<ItemStack> syncedArmorStacks = DefaultedList.ofSize(4, ItemStack.EMPTY);
+	private ItemStack field_48826 = ItemStack.EMPTY;
 	public boolean handSwinging;
 	private boolean noDrag = false;
 	public Hand preferredHand;
@@ -712,11 +715,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
 		boolean bl = newStack.isEmpty() && oldStack.isEmpty();
-		if (!bl && !ItemStack.canCombine(oldStack, newStack) && !this.firstUpdate) {
+		if (!bl && !ItemStack.areItemsAndNbtEqual(oldStack, newStack) && !this.firstUpdate) {
 			Equipment equipment = Equipment.fromStack(newStack);
 			if (!this.getWorld().isClient() && !this.isSpectator()) {
 				if (!this.isSilent() && equipment != null && equipment.getSlotType() == slot) {
-					this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), equipment.getEquipSound(), this.getSoundCategory(), 1.0F, 1.0F);
+					this.getWorld()
+						.playSound(null, this.getX(), this.getY(), this.getZ(), equipment.getEquipSound(), this.getSoundCategory(), 1.0F, 1.0F, this.random.nextLong());
 				}
 
 				if (this.isArmorSlot(slot)) {
@@ -744,7 +748,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			NbtList nbtList = new NbtList();
 
 			for (StatusEffectInstance statusEffectInstance : this.activeStatusEffects.values()) {
-				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
+				nbtList.add(statusEffectInstance.writeNbt());
 			}
 
 			nbt.put("active_effects", nbtList);
@@ -1756,7 +1760,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			} else if (source.isIn(DamageTypeTags.BYPASSES_ENCHANTMENTS)) {
 				return amount;
 			} else {
-				int i = EnchantmentHelper.getProtectionAmount(this.getArmorItems(), source);
+				int i = EnchantmentHelper.getProtectionAmount(this.getAllArmorItems(), source);
 				if (i > 0) {
 					amount = DamageUtil.getInflictedDamage(amount, (float)i);
 				}
@@ -2040,13 +2044,23 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return !this.getEquippedStack(slot).isEmpty();
 	}
 
-	@Override
 	public abstract Iterable<ItemStack> getArmorItems();
 
 	public abstract ItemStack getEquippedStack(EquipmentSlot slot);
 
-	@Override
 	public abstract void equipStack(EquipmentSlot slot, ItemStack stack);
+
+	public Iterable<ItemStack> getHandItems() {
+		return List.of();
+	}
+
+	public Iterable<ItemStack> getAllArmorItems() {
+		return this.getArmorItems();
+	}
+
+	public Iterable<ItemStack> getEquippedItems() {
+		return Iterables.concat(this.getHandItems(), this.getAllArmorItems());
+	}
 
 	protected void processEquippedStack(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getNbt();
@@ -2547,18 +2561,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		Map<EquipmentSlot, ItemStack> map = null;
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-			ItemStack itemStack;
-			switch (equipmentSlot.getType()) {
-				case HAND:
-					itemStack = this.getSyncedHandStack(equipmentSlot);
-					break;
-				case ARMOR:
-					itemStack = this.getSyncedArmorStack(equipmentSlot);
-					break;
-				default:
-					continue;
-			}
-
+			ItemStack itemStack = switch (equipmentSlot.getType()) {
+				case HAND -> this.getSyncedHandStack(equipmentSlot);
+				case ARMOR -> this.getSyncedArmorStack(equipmentSlot);
+				case BODY -> this.field_48826;
+			};
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			if (this.areItemsDifferent(itemStack, itemStack2)) {
 				if (map == null) {
@@ -2617,6 +2624,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					break;
 				case ARMOR:
 					this.setSyncedArmorStack(slot, itemStack);
+					break;
+				case BODY:
+					this.field_48826 = itemStack;
 			}
 		});
 		((ServerWorld)this.getWorld()).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getId(), list));
@@ -3538,8 +3548,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			return EquipmentSlot.FEET;
 		} else if (slotId == 98) {
 			return EquipmentSlot.MAINHAND;
+		} else if (slotId == 99) {
+			return EquipmentSlot.OFFHAND;
 		} else {
-			return slotId == 99 ? EquipmentSlot.OFFHAND : null;
+			return slotId == 105 ? EquipmentSlot.BODY : null;
 		}
 	}
 

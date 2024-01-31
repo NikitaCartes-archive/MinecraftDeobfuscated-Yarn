@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import javax.annotation.Nullable;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import org.slf4j.Logger;
@@ -164,7 +165,17 @@ public class RegionFile implements AutoCloseable {
 	@Nullable
 	private DataInputStream decompress(ChunkPos pos, byte flags, InputStream stream) throws IOException {
 		ChunkCompressionFormat chunkCompressionFormat = ChunkCompressionFormat.get(flags);
-		if (chunkCompressionFormat == null) {
+		if (chunkCompressionFormat == ChunkCompressionFormat.field_48916) {
+			String string = new DataInputStream(stream).readUTF();
+			Identifier identifier = Identifier.tryParse(string);
+			if (identifier != null) {
+				LOGGER.error("Unrecognized custom compression {}", identifier);
+				return null;
+			} else {
+				LOGGER.error("Invalid custom compression id {}", string);
+				return null;
+			}
+		} else if (chunkCompressionFormat == null) {
 			LOGGER.error("Chunk {} has invalid chunk stream version {}", pos, flags);
 			return null;
 		} else {

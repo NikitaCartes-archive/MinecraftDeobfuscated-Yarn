@@ -57,6 +57,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 
@@ -206,7 +207,7 @@ public class TestContext {
 	}
 
 	public void useBlock(BlockPos pos) {
-		this.useBlock(pos, this.createMockCreativePlayer());
+		this.useBlock(pos, this.createMockPlayer(GameMode.CREATIVE));
 	}
 
 	public void useBlock(BlockPos pos, PlayerEntity player) {
@@ -233,35 +234,21 @@ public class TestContext {
 		return entity;
 	}
 
-	public PlayerEntity createMockSurvivalPlayer() {
-		return new PlayerEntity(this.getWorld(), BlockPos.ORIGIN, 0.0F, new GameProfile(UUID.randomUUID(), "test-mock-player")) {
-			@Override
-			public boolean isSpectator() {
-				return false;
-			}
-
-			@Override
-			public boolean isCreative() {
-				return false;
-			}
-		};
-	}
-
 	public LivingEntity setHealthLow(LivingEntity entity) {
 		entity.setHealth(0.25F);
 		return entity;
 	}
 
-	public PlayerEntity createMockCreativePlayer() {
+	public PlayerEntity createMockPlayer(GameMode gameMode) {
 		return new PlayerEntity(this.getWorld(), BlockPos.ORIGIN, 0.0F, new GameProfile(UUID.randomUUID(), "test-mock-player")) {
 			@Override
 			public boolean isSpectator() {
-				return false;
+				return gameMode == GameMode.SPECTATOR;
 			}
 
 			@Override
 			public boolean isCreative() {
-				return true;
+				return gameMode.isCreative();
 			}
 
 			@Override
@@ -847,7 +834,7 @@ public class TestContext {
 		}
 	}
 
-	public <N extends Number> void assertEquals(N value, N expected, String name) {
+	public <N> void assertEquals(N value, N expected, String name) {
 		if (!value.equals(expected)) {
 			throw new GameTestException("Expected " + name + " to be " + expected + ", but was " + value);
 		}

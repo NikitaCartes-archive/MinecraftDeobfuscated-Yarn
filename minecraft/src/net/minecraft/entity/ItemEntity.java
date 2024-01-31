@@ -230,13 +230,7 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	public static boolean canMerge(ItemStack stack1, ItemStack stack2) {
-		if (!stack2.isOf(stack1.getItem())) {
-			return false;
-		} else if (stack2.getCount() + stack1.getCount() > stack2.getMaxCount()) {
-			return false;
-		} else {
-			return stack2.hasNbt() ^ stack1.hasNbt() ? false : !stack2.hasNbt() || stack2.getNbt().equals(stack1.getNbt());
-		}
+		return stack2.getCount() + stack1.getCount() > stack2.getMaxCount() ? false : ItemStack.areItemsAndNbtEqual(stack1, stack2);
 	}
 
 	public static ItemStack merge(ItemStack stack1, ItemStack stack2, int maxCount) {

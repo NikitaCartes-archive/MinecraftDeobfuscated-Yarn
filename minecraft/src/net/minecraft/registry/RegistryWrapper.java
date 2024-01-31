@@ -37,57 +37,34 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 		return this.streamTags().map(RegistryEntryList.Named::getTag);
 	}
 
-	default RegistryWrapper<T> filter(Predicate<T> filter) {
-		return new RegistryWrapper.Delegating<T>(this) {
-			@Override
-			public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
-				return this.baseWrapper.getOptional(key).filter(entry -> filter.test(entry.value()));
-			}
-
-			@Override
-			public Stream<RegistryEntry.Reference<T>> streamEntries() {
-				return this.baseWrapper.streamEntries().filter(entry -> filter.test(entry.value()));
-			}
-		};
-	}
-
-	public static class Delegating<T> implements RegistryWrapper<T> {
-		protected final RegistryWrapper<T> baseWrapper;
-
-		public Delegating(RegistryWrapper<T> baseWrapper) {
-			this.baseWrapper = baseWrapper;
-		}
-
-		@Override
-		public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
-			return this.baseWrapper.getOptional(key);
-		}
-
-		@Override
-		public Stream<RegistryEntry.Reference<T>> streamEntries() {
-			return this.baseWrapper.streamEntries();
-		}
-
-		@Override
-		public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
-			return this.baseWrapper.getOptional(tag);
-		}
-
-		@Override
-		public Stream<RegistryEntryList.Named<T>> streamTags() {
-			return this.baseWrapper.streamTags();
-		}
-	}
-
 	public interface Impl<T> extends RegistryWrapper<T>, RegistryEntryOwner<T> {
 		RegistryKey<? extends Registry<? extends T>> getRegistryKey();
 
 		Lifecycle getLifecycle();
 
-		default RegistryWrapper<T> withFeatureFilter(FeatureSet enabledFeatures) {
-			return (RegistryWrapper<T>)(ToggleableFeature.FEATURE_ENABLED_REGISTRY_KEYS.contains(this.getRegistryKey())
-				? this.filter(feature -> ((ToggleableFeature)feature).isEnabled(enabledFeatures))
-				: this);
+		default RegistryWrapper.Impl<T> withFeatureFilter(FeatureSet enabledFeatures) {
+			return ToggleableFeature.FEATURE_ENABLED_REGISTRY_KEYS.contains(this.getRegistryKey())
+				? this.withPredicateFilter(feature -> ((ToggleableFeature)feature).isEnabled(enabledFeatures))
+				: this;
+		}
+
+		default RegistryWrapper.Impl<T> withPredicateFilter(Predicate<T> predicate) {
+			return new RegistryWrapper.Impl.Delegating<T>() {
+				@Override
+				protected RegistryWrapper.Impl<T> getBase() {
+					return Impl.this;
+				}
+
+				@Override
+				public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
+					return this.getBase().getOptional(key).filter(entry -> predicate.test(entry.value()));
+				}
+
+				@Override
+				public Stream<RegistryEntry.Reference<T>> streamEntries() {
+					return this.getBase().streamEntries().filter(entry -> predicate.test(entry.value()));
+				}
+			};
 		}
 
 		public abstract static class Delegating<T> implements RegistryWrapper.Impl<T> {

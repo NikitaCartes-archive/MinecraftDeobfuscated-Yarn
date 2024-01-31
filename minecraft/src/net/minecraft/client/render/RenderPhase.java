@@ -12,11 +12,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderPhase {
@@ -153,6 +153,7 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.ShaderProgram TRIPWIRE_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeTripwireProgram);
 	protected static final RenderPhase.ShaderProgram END_PORTAL_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeEndPortalProgram);
 	protected static final RenderPhase.ShaderProgram END_GATEWAY_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeEndGatewayProgram);
+	protected static final RenderPhase.ShaderProgram CLOUDS_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeCloudsProgram);
 	protected static final RenderPhase.ShaderProgram LINES_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeLinesProgram);
 	protected static final RenderPhase.ShaderProgram GUI_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeGuiProgram);
 	protected static final RenderPhase.ShaderProgram GUI_OVERLAY_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeGuiOverlayProgram);
@@ -197,13 +198,13 @@ public abstract class RenderPhase {
 		RenderSystem.disablePolygonOffset();
 	});
 	protected static final RenderPhase.Layering VIEW_OFFSET_Z_LAYERING = new RenderPhase.Layering("view_offset_z_layering", () -> {
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.scale(0.99975586F, 0.99975586F, 0.99975586F);
+		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+		matrix4fStack.pushMatrix();
+		matrix4fStack.scale(0.99975586F, 0.99975586F, 0.99975586F);
 		RenderSystem.applyModelViewMatrix();
 	}, () -> {
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.pop();
+		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+		matrix4fStack.popMatrix();
 		RenderSystem.applyModelViewMatrix();
 	});
 	protected static final RenderPhase.Target MAIN_TARGET = new RenderPhase.Target("main_target", () -> {

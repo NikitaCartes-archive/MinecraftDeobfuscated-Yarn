@@ -14,6 +14,7 @@ import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.CrafterScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
@@ -100,7 +101,7 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 		for (int i = slot + 1; i < 9; i++) {
 			if (!this.isSlotDisabled(i)) {
 				ItemStack itemStack = this.getStack(i);
-				if (itemStack.isEmpty() || itemStack.getCount() < count && ItemStack.canCombine(itemStack, stack)) {
+				if (itemStack.isEmpty() || itemStack.getCount() < count && ItemStack.areItemsAndNbtEqual(itemStack, stack)) {
 					return true;
 				}
 			}
@@ -110,8 +111,8 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		this.craftingTicksRemaining = nbt.getInt("crafting_ticks_remaining");
 		this.inputStacks = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.readLootTable(nbt)) {
@@ -134,8 +135,8 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		nbt.putInt("crafting_ticks_remaining", this.craftingTicksRemaining);
 		if (!this.writeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inputStacks);

@@ -151,7 +151,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 			NbtList nbtList = new NbtList();
 
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
+				nbtList.add(statusEffectInstance.writeNbt());
 			}
 
 			nbt.put("custom_potion_effects", nbtList);

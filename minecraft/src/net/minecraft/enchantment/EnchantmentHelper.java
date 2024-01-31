@@ -177,7 +177,7 @@ public class EnchantmentHelper {
 	public static void onUserDamaged(LivingEntity user, Entity attacker) {
 		EnchantmentHelper.Consumer consumer = (enchantment, level) -> enchantment.onUserDamaged(user, attacker, level);
 		if (user != null) {
-			forEachEnchantment(consumer, user.getItemsEquipped());
+			forEachEnchantment(consumer, user.getEquippedItems());
 		}
 
 		if (attacker instanceof PlayerEntity) {
@@ -188,7 +188,7 @@ public class EnchantmentHelper {
 	public static void onTargetDamaged(LivingEntity user, Entity target) {
 		EnchantmentHelper.Consumer consumer = (enchantment, level) -> enchantment.onTargetDamaged(user, target, level);
 		if (user != null) {
-			forEachEnchantment(consumer, user.getItemsEquipped());
+			forEachEnchantment(consumer, user.getEquippedItems());
 		}
 
 		if (user instanceof PlayerEntity) {
@@ -382,11 +382,7 @@ public class EnchantmentHelper {
 		}
 
 		for (EnchantmentLevelEntry enchantmentLevelEntry : list) {
-			if (bl) {
-				EnchantedBookItem.addEnchantment(target, enchantmentLevelEntry);
-			} else {
-				target.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
-			}
+			target.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
 		}
 
 		return target;

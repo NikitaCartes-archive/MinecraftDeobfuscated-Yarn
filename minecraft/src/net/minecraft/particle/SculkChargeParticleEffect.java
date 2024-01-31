@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 
 public record SculkChargeParticleEffect(float roll) implements ParticleEffect {
 	public static final Codec<SculkChargeParticleEffect> CODEC = RecordCodecBuilder.create(
@@ -18,7 +19,9 @@ public record SculkChargeParticleEffect(float roll) implements ParticleEffect {
 		PacketCodecs.FLOAT, effect -> effect.roll, SculkChargeParticleEffect::new
 	);
 	public static final ParticleEffect.Factory<SculkChargeParticleEffect> FACTORY = new ParticleEffect.Factory<SculkChargeParticleEffect>() {
-		public SculkChargeParticleEffect read(ParticleType<SculkChargeParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public SculkChargeParticleEffect read(
+			ParticleType<SculkChargeParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup
+		) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			float f = stringReader.readFloat();
 			return new SculkChargeParticleEffect(f);
@@ -31,7 +34,7 @@ public record SculkChargeParticleEffect(float roll) implements ParticleEffect {
 	}
 
 	@Override
-	public String asString() {
+	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
 		return String.format(Locale.ROOT, "%s %.2f", Registries.PARTICLE_TYPE.getId(this.getType()), this.roll);
 	}
 }

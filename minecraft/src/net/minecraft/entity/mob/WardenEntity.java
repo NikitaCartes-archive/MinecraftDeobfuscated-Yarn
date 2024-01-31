@@ -494,9 +494,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		this.getBrain().remember(MemoryModuleType.DIG_COOLDOWN, Unit.INSTANCE, 1200L);
 		if (spawnReason == SpawnReason.TRIGGERED) {
 			this.setPose(EntityPose.EMERGING);
@@ -504,7 +502,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 			this.playSound(SoundEvents.ENTITY_WARDEN_AGITATED, 5.0F, 1.0F);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Override

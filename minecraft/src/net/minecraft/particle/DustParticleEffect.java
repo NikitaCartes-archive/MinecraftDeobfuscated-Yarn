@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
@@ -24,7 +25,7 @@ public class DustParticleEffect extends AbstractDustParticleEffect {
 		PacketCodecs.VECTOR3F, effect -> effect.color, PacketCodecs.FLOAT, effect -> effect.scale, DustParticleEffect::new
 	);
 	public static final ParticleEffect.Factory<DustParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<DustParticleEffect>() {
-		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup) throws CommandSyntaxException {
 			Vector3f vector3f = AbstractDustParticleEffect.readColor(stringReader);
 			stringReader.expect(' ');
 			float f = stringReader.readFloat();

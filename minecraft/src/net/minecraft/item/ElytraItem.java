@@ -3,6 +3,7 @@ package net.minecraft.item;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -30,7 +31,7 @@ public class ElytraItem extends Item implements Equipment {
 	}
 
 	@Override
-	public SoundEvent getEquipSound() {
+	public RegistryEntry<SoundEvent> getEquipSound() {
 		return SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA;
 	}
 

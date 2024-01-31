@@ -144,7 +144,7 @@ public class PotionUtil {
 			NbtList nbtList = nbtCompound.getList("custom_potion_effects", NbtElement.LIST_TYPE);
 
 			for (StatusEffectInstance statusEffectInstance : effects) {
-				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
+				nbtList.add(statusEffectInstance.writeNbt());
 			}
 
 			nbtCompound.put("custom_potion_effects", nbtList);

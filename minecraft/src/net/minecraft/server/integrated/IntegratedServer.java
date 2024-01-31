@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9191;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.LanServerPinger;
@@ -26,7 +27,6 @@ import net.minecraft.util.ApiServices;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -120,10 +120,13 @@ public class IntegratedServer extends MinecraftServer {
 		}
 	}
 
-	@Nullable
-	@Override
-	public PerformanceLog getPerformanceLog() {
+	protected class_9191 getPerformanceLog() {
 		return this.client.getDebugHud().getTickNanosLog();
+	}
+
+	@Override
+	public boolean method_56626() {
+		return true;
 	}
 
 	private void incrementTotalWorldTimeStat() {

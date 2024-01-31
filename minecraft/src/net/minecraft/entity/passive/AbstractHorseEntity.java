@@ -16,7 +16,6 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.RideableInventory;
@@ -46,6 +45,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -106,8 +106,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	private static final int ANGRY_FLAG = 32;
 	private static final int EATING_FLAG = 64;
 	public static final int field_30416 = 0;
-	public static final int field_30417 = 1;
-	public static final int field_30418 = 2;
+	public static final int field_30418 = 1;
 	private int eatingGrassTicks;
 	private int eatingTicks;
 	private int angryTicks;
@@ -128,6 +127,26 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	protected int soundTicks;
 	@Nullable
 	private UUID ownerUuid;
+	private final Inventory inventory = new SingleStackInventory() {
+		@Override
+		public ItemStack getStack() {
+			return AbstractHorseEntity.this.getBodyArmor();
+		}
+
+		@Override
+		public void setStack(ItemStack stack) {
+			AbstractHorseEntity.this.equipBodyArmor(stack);
+		}
+
+		@Override
+		public void markDirty() {
+		}
+
+		@Override
+		public boolean canPlayerUse(PlayerEntity player) {
+			return player.getVehicle() == AbstractHorseEntity.this || player.canInteractWithEntity(AbstractHorseEntity.this, 4.0);
+		}
+	};
 
 	protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> entityType, World world) {
 		super(entityType, world);
@@ -235,7 +254,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	public void equipHorseArmor(PlayerEntity player, ItemStack stack) {
 		if (this.isHorseArmor(stack)) {
-			this.items.setStack(1, stack.copyWithCount(1));
+			this.equipBodyArmor(stack.copyWithCount(1));
 			if (!player.getAbilities().creativeMode) {
 				stack.decrement(1);
 			}
@@ -307,7 +326,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	protected int getInventorySize() {
-		return 2;
+		return 1;
 	}
 
 	protected void onChestedStatusChanged() {
@@ -326,10 +345,10 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 
 		this.items.addListener(this);
-		this.updateSaddle();
+		this.updateSaddledFlag();
 	}
 
-	protected void updateSaddle() {
+	protected void updateSaddledFlag() {
 		if (!this.getWorld().isClient) {
 			this.setHorseFlag(SADDLED_FLAG, !this.items.getStack(0).isEmpty());
 		}
@@ -338,7 +357,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	@Override
 	public void onInventoryChanged(Inventory sender) {
 		boolean bl = this.isSaddled();
-		this.updateSaddle();
+		this.updateSaddledFlag();
 		if (this.age > 20 && !bl && this.isSaddled()) {
 			this.playSound(this.getSaddleSound(), 0.5F, 1.0F);
 		}
@@ -683,7 +702,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 					return actionResult;
 				}
 
-				if (this.hasArmorSlot() && this.isHorseArmor(itemStack) && !this.hasArmorInSlot()) {
+				if (this.hasArmorSlot() && this.isHorseArmor(itemStack) && !this.isWearingBodyArmor()) {
 					this.equipHorseArmor(player, itemStack);
 					return ActionResult.success(this.getWorld().isClient);
 				}
@@ -849,7 +868,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			}
 		}
 
-		this.updateSaddle();
+		this.updateSaddledFlag();
 	}
 
 	@Override
@@ -994,78 +1013,31 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		return false;
 	}
 
-	/**
-	 * Whether this horse has a slot for custom equipment besides a saddle.
-	 * 
-	 * <p>In the item slot argument type, the slot is referred to as <code>
-	 * horse.armor</code>. In this horse's screen, it appears in the middle of
-	 * the left side, and right below the saddle slot if this horse has a saddle
-	 * slot.
-	 * 
-	 * <p>This is used by horse armors and llama carpets, but can be
-	 * refitted to any purpose.
-	 */
-	public boolean hasArmorSlot() {
-		return false;
-	}
-
-	/**
-	 * Whether this horse already has an item stack in its horse armor slot.
-	 * 
-	 * @see #hasArmorSlot()
-	 */
-	public boolean hasArmorInSlot() {
-		return !this.getEquippedStack(EquipmentSlot.CHEST).isEmpty();
-	}
-
-	/**
-	 * Whether the given item stack is valid for this horse's armor slot.
-	 * 
-	 * @see #hasArmorSlot()
-	 */
-	public boolean isHorseArmor(ItemStack item) {
-		return false;
-	}
-
-	private StackReference createInventoryStackReference(int slot, Predicate<ItemStack> predicate) {
-		return new StackReference() {
-			@Override
-			public ItemStack get() {
-				return AbstractHorseEntity.this.items.getStack(slot);
-			}
-
-			@Override
-			public boolean set(ItemStack stack) {
-				if (!predicate.test(stack)) {
-					return false;
-				} else {
-					AbstractHorseEntity.this.items.setStack(slot, stack);
-					AbstractHorseEntity.this.updateSaddle();
-					return true;
-				}
-			}
-		};
-	}
-
 	@Override
 	public StackReference getStackReference(int mappedIndex) {
 		int i = mappedIndex - 400;
-		if (i >= 0 && i < 2 && i < this.items.size()) {
-			if (i == 0) {
-				return this.createInventoryStackReference(i, stack -> stack.isEmpty() || stack.isOf(Items.SADDLE));
-			}
-
-			if (i == 1) {
-				if (!this.hasArmorSlot()) {
-					return StackReference.EMPTY;
+		if (i == 0) {
+			return new StackReference() {
+				@Override
+				public ItemStack get() {
+					return AbstractHorseEntity.this.items.getStack(0);
 				}
 
-				return this.createInventoryStackReference(i, stack -> stack.isEmpty() || this.isHorseArmor(stack));
-			}
+				@Override
+				public boolean set(ItemStack stack) {
+					if (!stack.isEmpty() && !stack.isOf(Items.SADDLE)) {
+						return false;
+					} else {
+						AbstractHorseEntity.this.items.setStack(0, stack);
+						AbstractHorseEntity.this.updateSaddledFlag();
+						return true;
+					}
+				}
+			};
+		} else {
+			int j = mappedIndex - 500 + 1;
+			return j >= 1 && j < this.items.size() ? StackReference.of(this.items, j) : super.getStackReference(mappedIndex);
 		}
-
-		int j = mappedIndex - 500 + 2;
-		return j >= 2 && j < this.items.size() ? StackReference.of(this.items, j) : super.getStackReference(mappedIndex);
 	}
 
 	@Nullable
@@ -1136,15 +1108,13 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
 		this.initAttributes(world.getRandom());
-		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	public boolean areInventoriesDifferent(Inventory inventory) {
@@ -1162,5 +1132,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				new Vec3d(0.0, 0.15 * (double)this.lastAngryAnimationProgress * (double)scaleFactor, -0.7 * (double)this.lastAngryAnimationProgress * (double)scaleFactor)
 					.rotateY(-this.getYaw() * (float) (Math.PI / 180.0))
 			);
+	}
+
+	public final Inventory getInventory() {
+		return this.inventory;
 	}
 }

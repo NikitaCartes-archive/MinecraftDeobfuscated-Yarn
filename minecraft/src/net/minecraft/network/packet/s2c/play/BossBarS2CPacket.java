@@ -1,18 +1,19 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
-import java.util.function.Function;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketDecoder;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
 public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, BossBarS2CPacket> CODEC = Packet.createCodec(BossBarS2CPacket::write, BossBarS2CPacket::new);
+	public static final PacketCodec<RegistryByteBuf, BossBarS2CPacket> CODEC = Packet.createCodec(BossBarS2CPacket::write, BossBarS2CPacket::new);
 	private static final int DARKEN_SKY_MASK = 1;
 	private static final int DRAGON_MUSIC_MASK = 2;
 	private static final int THICKEN_FOG_MASK = 4;
@@ -30,7 +31,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		@Override
-		public void toPacket(PacketByteBuf buf) {
+		public void toPacket(RegistryByteBuf buf) {
 		}
 	};
 
@@ -39,10 +40,10 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.action = action;
 	}
 
-	private BossBarS2CPacket(PacketByteBuf buf) {
+	private BossBarS2CPacket(RegistryByteBuf buf) {
 		this.uuid = buf.readUuid();
 		BossBarS2CPacket.Type type = buf.readEnumConstant(BossBarS2CPacket.Type.class);
-		this.action = (BossBarS2CPacket.Action)type.parser.apply(buf);
+		this.action = type.parser.decode(buf);
 	}
 
 	public static BossBarS2CPacket add(BossBar bar) {
@@ -69,7 +70,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		return new BossBarS2CPacket(bar.getUuid(), new BossBarS2CPacket.UpdatePropertiesAction(bar.shouldDarkenSky(), bar.hasDragonMusic(), bar.shouldThickenFog()));
 	}
 
-	private void write(PacketByteBuf buf) {
+	private void write(RegistryByteBuf buf) {
 		buf.writeUuid(this.uuid);
 		buf.writeEnumConstant(this.action.getType());
 		this.action.toPacket(buf);
@@ -110,7 +111,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		void accept(UUID uuid, BossBarS2CPacket.Consumer consumer);
 
-		void toPacket(PacketByteBuf buf);
+		void toPacket(RegistryByteBuf buf);
 	}
 
 	static class AddAction implements BossBarS2CPacket.Action {
@@ -132,8 +133,8 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.thickenFog = bar.shouldThickenFog();
 		}
 
-		private AddAction(PacketByteBuf buf) {
-			this.name = buf.readUnlimitedText();
+		private AddAction(RegistryByteBuf buf) {
+			this.name = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
 			this.percent = buf.readFloat();
 			this.color = buf.readEnumConstant(BossBar.Color.class);
 			this.style = buf.readEnumConstant(BossBar.Style.class);
@@ -154,8 +155,8 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		@Override
-		public void toPacket(PacketByteBuf buf) {
-			buf.writeText(this.name);
+		public void toPacket(RegistryByteBuf buf) {
+			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.name);
 			buf.writeFloat(this.percent);
 			buf.writeEnumConstant(this.color);
 			buf.writeEnumConstant(this.style);
@@ -191,22 +192,16 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		UPDATE_STYLE(BossBarS2CPacket.UpdateStyleAction::new),
 		UPDATE_PROPERTIES(BossBarS2CPacket.UpdatePropertiesAction::new);
 
-		final Function<PacketByteBuf, BossBarS2CPacket.Action> parser;
+		final PacketDecoder<RegistryByteBuf, BossBarS2CPacket.Action> parser;
 
-		private Type(Function<PacketByteBuf, BossBarS2CPacket.Action> parser) {
+		private Type(PacketDecoder<RegistryByteBuf, BossBarS2CPacket.Action> parser) {
 			this.parser = parser;
 		}
 	}
 
-	static class UpdateNameAction implements BossBarS2CPacket.Action {
-		private final Text name;
-
-		UpdateNameAction(Text name) {
-			this.name = name;
-		}
-
-		private UpdateNameAction(PacketByteBuf buf) {
-			this.name = buf.readUnlimitedText();
+	static record UpdateNameAction(Text name) implements BossBarS2CPacket.Action {
+		private UpdateNameAction(RegistryByteBuf buf) {
+			this(TextCodecs.REGISTRY_PACKET_CODEC.decode(buf));
 		}
 
 		@Override
@@ -220,20 +215,14 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		@Override
-		public void toPacket(PacketByteBuf buf) {
-			buf.writeText(this.name);
+		public void toPacket(RegistryByteBuf buf) {
+			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.name);
 		}
 	}
 
-	static class UpdateProgressAction implements BossBarS2CPacket.Action {
-		private final float percent;
-
-		UpdateProgressAction(float percent) {
-			this.percent = percent;
-		}
-
-		private UpdateProgressAction(PacketByteBuf buf) {
-			this.percent = buf.readFloat();
+	static record UpdateProgressAction(float progress) implements BossBarS2CPacket.Action {
+		private UpdateProgressAction(RegistryByteBuf buf) {
+			this(buf.readFloat());
 		}
 
 		@Override
@@ -243,12 +232,12 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		@Override
 		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
-			consumer.updateProgress(uuid, this.percent);
+			consumer.updateProgress(uuid, this.progress);
 		}
 
 		@Override
-		public void toPacket(PacketByteBuf buf) {
-			buf.writeFloat(this.percent);
+		public void toPacket(RegistryByteBuf buf) {
+			buf.writeFloat(this.progress);
 		}
 	}
 
@@ -263,7 +252,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.thickenFog = thickenFog;
 		}
 
-		private UpdatePropertiesAction(PacketByteBuf buf) {
+		private UpdatePropertiesAction(RegistryByteBuf buf) {
 			int i = buf.readUnsignedByte();
 			this.darkenSky = (i & 1) > 0;
 			this.dragonMusic = (i & 2) > 0;
@@ -281,7 +270,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		@Override
-		public void toPacket(PacketByteBuf buf) {
+		public void toPacket(RegistryByteBuf buf) {
 			buf.writeByte(BossBarS2CPacket.maskProperties(this.darkenSky, this.dragonMusic, this.thickenFog));
 		}
 	}
@@ -295,7 +284,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.style = style;
 		}
 
-		private UpdateStyleAction(PacketByteBuf buf) {
+		private UpdateStyleAction(RegistryByteBuf buf) {
 			this.color = buf.readEnumConstant(BossBar.Color.class);
 			this.style = buf.readEnumConstant(BossBar.Style.class);
 		}
@@ -311,7 +300,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		@Override
-		public void toPacket(PacketByteBuf buf) {
+		public void toPacket(RegistryByteBuf buf) {
 			buf.writeEnumConstant(this.color);
 			buf.writeEnumConstant(this.style);
 		}

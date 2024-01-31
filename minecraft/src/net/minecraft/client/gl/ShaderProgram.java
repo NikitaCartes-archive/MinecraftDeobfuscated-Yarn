@@ -65,8 +65,6 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	private final String name;
 	private boolean dirty;
 	private final GlBlendState blendState;
-	private final List<Integer> loadedAttributeIds;
-	private final List<String> attributeNames;
 	private final ShaderStage vertexShader;
 	private final ShaderStage fragmentShader;
 	private final VertexFormat format;
@@ -74,8 +72,6 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	public final GlUniform modelViewMat;
 	@Nullable
 	public final GlUniform projectionMat;
-	@Nullable
-	public final GlUniform viewRotationMat;
 	@Nullable
 	public final GlUniform textureMat;
 	@Nullable
@@ -122,8 +118,8 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 					for (JsonElement jsonElement : jsonArray) {
 						try {
 							this.readSampler(jsonElement);
-						} catch (Exception var20) {
-							InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var20);
+						} catch (Exception var18) {
+							InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var18);
 							invalidHierarchicalFileException.addInvalidKey("samplers[" + i + "]");
 							throw invalidHierarchicalFileException;
 						}
@@ -132,42 +128,20 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 					}
 				}
 
-				JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "attributes", null);
+				JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "uniforms", null);
 				if (jsonArray2 != null) {
 					int j = 0;
-					this.loadedAttributeIds = Lists.<Integer>newArrayListWithCapacity(jsonArray2.size());
-					this.attributeNames = Lists.<String>newArrayListWithCapacity(jsonArray2.size());
 
 					for (JsonElement jsonElement2 : jsonArray2) {
 						try {
-							this.attributeNames.add(JsonHelper.asString(jsonElement2, "attribute"));
-						} catch (Exception var19) {
-							InvalidHierarchicalFileException invalidHierarchicalFileException2 = InvalidHierarchicalFileException.wrap(var19);
-							invalidHierarchicalFileException2.addInvalidKey("attributes[" + j + "]");
+							this.addUniform(jsonElement2);
+						} catch (Exception var17) {
+							InvalidHierarchicalFileException invalidHierarchicalFileException2 = InvalidHierarchicalFileException.wrap(var17);
+							invalidHierarchicalFileException2.addInvalidKey("uniforms[" + j + "]");
 							throw invalidHierarchicalFileException2;
 						}
 
 						j++;
-					}
-				} else {
-					this.loadedAttributeIds = null;
-					this.attributeNames = null;
-				}
-
-				JsonArray jsonArray3 = JsonHelper.getArray(jsonObject, "uniforms", null);
-				if (jsonArray3 != null) {
-					int k = 0;
-
-					for (JsonElement jsonElement3 : jsonArray3) {
-						try {
-							this.addUniform(jsonElement3);
-						} catch (Exception var18) {
-							InvalidHierarchicalFileException invalidHierarchicalFileException3 = InvalidHierarchicalFileException.wrap(var18);
-							invalidHierarchicalFileException3.addInvalidKey("uniforms[" + k + "]");
-							throw invalidHierarchicalFileException3;
-						}
-
-						k++;
 					}
 				}
 
@@ -175,43 +149,39 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 				this.vertexShader = loadShader(factory, ShaderStage.Type.VERTEX, string);
 				this.fragmentShader = loadShader(factory, ShaderStage.Type.FRAGMENT, string2);
 				this.glRef = GlProgramManager.createProgram();
-				if (this.attributeNames != null) {
-					int k = 0;
+				int j = 0;
 
-					for (String string3 : format.getAttributeNames()) {
-						GlUniform.bindAttribLocation(this.glRef, k, string3);
-						this.loadedAttributeIds.add(k);
-						k++;
-					}
+				for (String string3 : format.getAttributeNames()) {
+					GlUniform.bindAttribLocation(this.glRef, j, string3);
+					j++;
 				}
 
 				GlProgramManager.linkProgram(this);
 				this.loadReferences();
-			} catch (Throwable var21) {
+			} catch (Throwable var19) {
 				if (reader != null) {
 					try {
 						reader.close();
-					} catch (Throwable var17) {
-						var21.addSuppressed(var17);
+					} catch (Throwable var16) {
+						var19.addSuppressed(var16);
 					}
 				}
 
-				throw var21;
+				throw var19;
 			}
 
 			if (reader != null) {
 				reader.close();
 			}
-		} catch (Exception var22) {
-			InvalidHierarchicalFileException invalidHierarchicalFileException4 = InvalidHierarchicalFileException.wrap(var22);
-			invalidHierarchicalFileException4.addInvalidFile(identifier.getPath());
-			throw invalidHierarchicalFileException4;
+		} catch (Exception var20) {
+			InvalidHierarchicalFileException invalidHierarchicalFileException3 = InvalidHierarchicalFileException.wrap(var20);
+			invalidHierarchicalFileException3.addInvalidFile(identifier.getPath());
+			throw invalidHierarchicalFileException3;
 		}
 
 		this.markUniformsDirty();
 		this.modelViewMat = this.getUniform("ModelViewMat");
 		this.projectionMat = this.getUniform("ProjMat");
-		this.viewRotationMat = this.getUniform("IViewRotMat");
 		this.textureMat = this.getUniform("TextureMat");
 		this.screenSize = this.getUniform("ScreenSize");
 		this.colorModulator = this.getUniform("ColorModulator");

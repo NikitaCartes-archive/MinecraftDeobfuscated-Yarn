@@ -20,6 +20,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
@@ -193,8 +194,8 @@ public class BrushableBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		NbtCompound nbtCompound = super.toInitialChunkDataNbt();
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		NbtCompound nbtCompound = super.toInitialChunkDataNbt(registryLookup);
 		if (this.hitDirection != null) {
 			nbtCompound.putInt("hit_direction", this.hitDirection.ordinal());
 		}
@@ -208,7 +209,7 @@ public class BrushableBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		if (!this.readLootTableFromNbt(nbt) && nbt.contains("item")) {
 			this.item = ItemStack.fromNbt(nbt.getCompound("item"));
 		}
@@ -219,7 +220,7 @@ public class BrushableBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		if (!this.writeLootTableToNbt(nbt)) {
 			nbt.put("item", this.item.writeNbt(new NbtCompound()));
 		}

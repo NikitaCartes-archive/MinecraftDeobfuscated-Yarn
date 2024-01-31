@@ -4,8 +4,10 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.item.map.MapId;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper;
 
 public class IdCountsState extends PersistentState {
 	public static final String IDCOUNTS_KEY = "idcounts";
@@ -19,7 +21,7 @@ public class IdCountsState extends PersistentState {
 		this.idCounts.defaultReturnValue(-1);
 	}
 
-	public static IdCountsState fromNbt(NbtCompound nbt) {
+	public static IdCountsState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		IdCountsState idCountsState = new IdCountsState();
 
 		for (String string : nbt.getKeys()) {
@@ -32,7 +34,7 @@ public class IdCountsState extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		for (Entry<String> entry : this.idCounts.object2IntEntrySet()) {
 			nbt.putInt((String)entry.getKey(), entry.getIntValue());
 		}
@@ -40,10 +42,10 @@ public class IdCountsState extends PersistentState {
 		return nbt;
 	}
 
-	public int getNextMapId() {
+	public MapId getNextMapId() {
 		int i = this.idCounts.getInt("map") + 1;
 		this.idCounts.put("map", i);
 		this.markDirty();
-		return i;
+		return new MapId(i);
 	}
 }

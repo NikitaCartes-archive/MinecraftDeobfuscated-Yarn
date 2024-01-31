@@ -1,15 +1,17 @@
 package net.minecraft.data.server.recipe;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 
 public class OneTwentyOneRecipeProvider extends RecipeProvider {
-	public OneTwentyOneRecipeProvider(DataOutput dataOutput) {
-		super(dataOutput);
+	public OneTwentyOneRecipeProvider(DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
+		super(dataOutput, completableFuture);
 	}
 
 	@Override

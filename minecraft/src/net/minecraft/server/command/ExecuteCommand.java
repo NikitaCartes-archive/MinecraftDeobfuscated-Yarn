@@ -85,6 +85,7 @@ import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.ReadableScoreboardScore;
@@ -797,6 +798,7 @@ public class ExecuteCommand {
 		if (i > 32768) {
 			throw BLOCKS_TOOBIG_EXCEPTION.create(32768, i);
 		} else {
+			DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
 			int j = 0;
 
 			for (int k = blockBox.getMinZ(); k <= blockBox.getMaxZ(); k++) {
@@ -821,8 +823,8 @@ public class ExecuteCommand {
 									return OptionalInt.empty();
 								}
 
-								NbtCompound nbtCompound = blockEntity.createNbt();
-								NbtCompound nbtCompound2 = blockEntity2.createNbt();
+								NbtCompound nbtCompound = blockEntity.createNbt(dynamicRegistryManager);
+								NbtCompound nbtCompound2 = blockEntity2.createNbt(dynamicRegistryManager);
 								if (!nbtCompound.equals(nbtCompound2)) {
 									return OptionalInt.empty();
 								}

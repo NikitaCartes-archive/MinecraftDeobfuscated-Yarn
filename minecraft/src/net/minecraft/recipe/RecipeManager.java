@@ -1,5 +1,6 @@
 package net.minecraft.recipe;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -23,6 +24,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -41,6 +44,7 @@ import org.slf4j.Logger;
 public class RecipeManager extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private final RegistryWrapper.WrapperLookup registryLookup;
 	private Map<RecipeType<?>, Map<Identifier, RecipeEntry<?>>> recipes = ImmutableMap.of();
 	private Map<Identifier, RecipeEntry<?>> recipesById = ImmutableMap.of();
 	/**
@@ -49,24 +53,28 @@ public class RecipeManager extends JsonDataLoader {
 	 */
 	private boolean errored;
 
-	public RecipeManager() {
+	public RecipeManager(RegistryWrapper.WrapperLookup registryLookup) {
 		super(GSON, "recipes");
+		this.registryLookup = registryLookup;
 	}
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		this.errored = false;
 		Map<RecipeType<?>, Builder<Identifier, RecipeEntry<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, RecipeEntry<?>>>newHashMap();
 		Builder<Identifier, RecipeEntry<?>> builder = ImmutableMap.builder();
+		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, this.registryLookup);
 
 		for (Entry<Identifier, JsonElement> entry : map.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
 
 			try {
-				RecipeEntry<?> recipeEntry = deserialize(identifier, JsonHelper.asObject((JsonElement)entry.getValue(), "top element"));
-				((Builder)map2.computeIfAbsent(recipeEntry.value().getType(), recipeType -> ImmutableMap.builder())).put(identifier, recipeEntry);
+				JsonObject jsonObject = JsonHelper.asObject((JsonElement)entry.getValue(), "top element");
+				Recipe<?> recipe = Util.getResult(Recipe.CODEC.parse(registryOps, jsonObject), JsonParseException::new);
+				RecipeEntry<?> recipeEntry = new RecipeEntry<>(identifier, recipe);
+				((Builder)map2.computeIfAbsent(recipe.getType(), recipeType -> ImmutableMap.builder())).put(identifier, recipeEntry);
 				builder.put(identifier, recipeEntry);
-			} catch (IllegalArgumentException | JsonParseException var10) {
-				LOGGER.error("Parsing error loading recipe {}", identifier, var10);
+			} catch (IllegalArgumentException | JsonParseException var13) {
+				LOGGER.error("Parsing error loading recipe {}", identifier, var13);
 			}
 		}
 
@@ -234,11 +242,11 @@ public class RecipeManager extends JsonDataLoader {
 	 * @throws com.google.gson.JsonParseException if the recipe JSON is invalid
 	 * @return the read recipe
 	 * 
-	 * @param json the recipe JSON
 	 * @param id the recipe's ID
 	 */
-	protected static RecipeEntry<?> deserialize(Identifier id, JsonObject json) {
-		Recipe<?> recipe = Util.getResult(Recipe.CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new);
+	@VisibleForTesting
+	protected static RecipeEntry<?> deserialize(Identifier id, JsonObject json, RegistryWrapper.WrapperLookup registryLookup) {
+		Recipe<?> recipe = Util.getResult(Recipe.CODEC.parse(RegistryOps.of(JsonOps.INSTANCE, registryLookup), json), JsonParseException::new);
 		return new RecipeEntry<>(id, recipe);
 	}
 

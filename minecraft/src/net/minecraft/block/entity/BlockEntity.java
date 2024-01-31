@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -119,7 +120,7 @@ public abstract class BlockEntity {
 	 * 
 	 * @see #writeNbt
 	 */
-	public void readNbt(NbtCompound nbt) {
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 	}
 
 	/**
@@ -132,7 +133,7 @@ public abstract class BlockEntity {
 	 * 
 	 * @see #readNbt
 	 */
-	protected void writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 	}
 
 	/**
@@ -145,8 +146,8 @@ public abstract class BlockEntity {
 	 * @see #createNbt
 	 * @see #createNbtWithId
 	 */
-	public final NbtCompound createNbtWithIdentifyingData() {
-		NbtCompound nbtCompound = this.createNbt();
+	public final NbtCompound createNbtWithIdentifyingData(RegistryWrapper.WrapperLookup registryLookup) {
+		NbtCompound nbtCompound = this.createNbt(registryLookup);
 		this.writeIdentifyingData(nbtCompound);
 		return nbtCompound;
 	}
@@ -160,8 +161,8 @@ public abstract class BlockEntity {
 	 * @see #createNbt
 	 * @see #createNbtWithIdentifyingData
 	 */
-	public final NbtCompound createNbtWithId() {
-		NbtCompound nbtCompound = this.createNbt();
+	public final NbtCompound createNbtWithId(RegistryWrapper.WrapperLookup registryLookup) {
+		NbtCompound nbtCompound = this.createNbt(registryLookup);
 		this.writeIdToNbt(nbtCompound);
 		return nbtCompound;
 	}
@@ -176,9 +177,9 @@ public abstract class BlockEntity {
 	 * @see #createNbtWithIdentifyingData
 	 * @see #createNbtWithId
 	 */
-	public final NbtCompound createNbt() {
+	public final NbtCompound createNbt(RegistryWrapper.WrapperLookup registryLookup) {
 		NbtCompound nbtCompound = new NbtCompound();
-		this.writeNbt(nbtCompound);
+		this.writeNbt(nbtCompound, registryLookup);
 		return nbtCompound;
 	}
 
@@ -208,8 +209,8 @@ public abstract class BlockEntity {
 	 * Sets {@code stack}'s {@code net.minecraft.item.BlockItem#BLOCK_ENTITY_TAG_KEY}
 	 * NBT value to {@linkplain #createNbt the block entity's NBT data}.
 	 */
-	public void setStackNbt(ItemStack stack) {
-		BlockItem.setBlockEntityNbt(stack, this.getType(), this.createNbt());
+	public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registryLookup) {
+		BlockItem.setBlockEntityNbt(stack, this.getType(), this.createNbt(registryLookup));
 	}
 
 	/**
@@ -234,7 +235,7 @@ public abstract class BlockEntity {
 	 * this logs an error and returns {@code null}.
 	 */
 	@Nullable
-	public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound nbt) {
+	public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		String string = nbt.getString("id");
 		Identifier identifier = Identifier.tryParse(string);
 		if (identifier == null) {
@@ -244,16 +245,16 @@ public abstract class BlockEntity {
 			return (BlockEntity)Registries.BLOCK_ENTITY_TYPE.getOrEmpty(identifier).map(type -> {
 				try {
 					return type.instantiate(pos, state);
-				} catch (Throwable var5) {
-					LOGGER.error("Failed to create block entity {}", string, var5);
+				} catch (Throwable var5x) {
+					LOGGER.error("Failed to create block entity {}", string, var5x);
 					return null;
 				}
 			}).map(blockEntity -> {
 				try {
-					blockEntity.readNbt(nbt);
+					blockEntity.readNbt(nbt, registryLookup);
 					return blockEntity;
-				} catch (Throwable var4x) {
-					LOGGER.error("Failed to load data for block entity {}", string, var4x);
+				} catch (Throwable var5x) {
+					LOGGER.error("Failed to load data for block entity {}", string, var5x);
 					return null;
 				}
 			}).orElseGet(() -> {
@@ -339,7 +340,7 @@ public abstract class BlockEntity {
 	 * 
 	 * @see #toUpdatePacket
 	 */
-	public NbtCompound toInitialChunkDataNbt() {
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
 		return new NbtCompound();
 	}
 

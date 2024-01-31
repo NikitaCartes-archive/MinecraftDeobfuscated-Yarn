@@ -4,11 +4,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.screen.CartographyTableScreenHandler;
 import net.minecraft.text.Text;
@@ -45,11 +45,11 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		boolean bl3 = itemStack.isOf(Items.GLASS_PANE);
 		ItemStack itemStack2 = this.handler.getSlot(0).getStack();
 		boolean bl4 = false;
-		Integer integer;
+		MapId mapId;
 		MapState mapState;
 		if (itemStack2.isOf(Items.FILLED_MAP)) {
-			integer = FilledMapItem.getMapId(itemStack2);
-			mapState = FilledMapItem.getMapState(integer, this.client.world);
+			mapId = FilledMapItem.getMapId(itemStack2);
+			mapState = FilledMapItem.getMapState(mapId, this.client.world);
 			if (mapState != null) {
 				if (mapState.locked) {
 					bl4 = true;
@@ -64,15 +64,15 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 				}
 			}
 		} else {
-			integer = null;
+			mapId = null;
 			mapState = null;
 		}
 
-		this.drawMap(context, integer, mapState, bl, bl2, bl3, bl4);
+		this.drawMap(context, mapId, mapState, bl, bl2, bl3, bl4);
 	}
 
 	private void drawMap(
-		DrawContext context, @Nullable Integer mapId, @Nullable MapState mapState, boolean cloneMode, boolean expandMode, boolean lockMode, boolean cannotExpand
+		DrawContext context, @Nullable MapId mapId, @Nullable MapState mapState, boolean cloneMode, boolean expandMode, boolean lockMode, boolean cannotExpand
 	) {
 		int i = this.x;
 		int j = this.y;
@@ -100,15 +100,12 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		}
 	}
 
-	private void drawMap(DrawContext context, @Nullable Integer mapId, @Nullable MapState mapState, int x, int y, float scale) {
+	private void drawMap(DrawContext context, @Nullable MapId mapId, @Nullable MapState mapState, int x, int y, float scale) {
 		if (mapId != null && mapState != null) {
 			context.getMatrices().push();
 			context.getMatrices().translate((float)x, (float)y, 1.0F);
 			context.getMatrices().scale(scale, scale, 1.0F);
-			this.client
-				.gameRenderer
-				.getMapRenderer()
-				.draw(context.getMatrices(), context.getVertexConsumers(), mapId, mapState, true, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+			this.client.gameRenderer.getMapRenderer().draw(context.getMatrices(), context.getVertexConsumers(), mapId, mapState, true, 15728880);
 			context.draw();
 			context.getMatrices().pop();
 		}

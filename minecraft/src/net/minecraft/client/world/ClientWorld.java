@@ -35,6 +35,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
@@ -106,7 +107,7 @@ public class ClientWorld extends World {
 	private final TickManager tickManager;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
-	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
+	private final Map<MapId, MapState> mapStates = Maps.<MapId, MapState>newHashMap();
 	private static final long field_32640 = 16777215L;
 	private int lightningTicksLeft;
 	private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap<>(3), map -> {
@@ -541,21 +542,21 @@ public class ClientWorld extends World {
 
 	@Nullable
 	@Override
-	public MapState getMapState(String id) {
+	public MapState getMapState(MapId id) {
 		return (MapState)this.mapStates.get(id);
 	}
 
-	public void putClientsideMapState(String id, MapState state) {
+	public void putClientsideMapState(MapId id, MapState state) {
 		this.mapStates.put(id, state);
 	}
 
 	@Override
-	public void putMapState(String id, MapState state) {
+	public void putMapState(MapId id, MapState state) {
 	}
 
 	@Override
-	public int getNextMapId() {
-		return 0;
+	public MapId getNextMapId() {
+		return new MapId(0);
 	}
 
 	@Override
@@ -804,11 +805,11 @@ public class ClientWorld extends World {
 	public void emitGameEvent(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter) {
 	}
 
-	public Map<String, MapState> getMapStates() {
+	public Map<MapId, MapState> getMapStates() {
 		return ImmutableMap.copyOf(this.mapStates);
 	}
 
-	public void putMapStates(Map<String, MapState> mapStates) {
+	public void putMapStates(Map<MapId, MapState> mapStates) {
 		this.mapStates.putAll(mapStates);
 	}
 

@@ -561,8 +561,7 @@ public class DrawContext {
 			this.matrices.translate((float)(x + 8), (float)(y + 8), (float)(150 + (bakedModel.hasDepth() ? z : 0)));
 
 			try {
-				this.matrices.multiplyPositionMatrix(new Matrix4f().scaling(1.0F, -1.0F, 1.0F));
-				this.matrices.scale(16.0F, 16.0F, 16.0F);
+				this.matrices.scale(16.0F, -16.0F, 16.0F);
 				boolean bl = !bakedModel.isSideLit();
 				if (bl) {
 					DiffuseLighting.disableGuiDepthLighting();

@@ -14,6 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.PointOfInterestTypeTags;
 import net.minecraft.server.network.DebugInfoSender;
@@ -37,7 +38,7 @@ public class RaidManager extends PersistentState {
 	private int currentTime;
 
 	public static PersistentState.Type<RaidManager> getPersistentStateType(ServerWorld world) {
-		return new PersistentState.Type<>(() -> new RaidManager(world), nbt -> fromNbt(world, nbt), DataFixTypes.SAVED_DATA_RAIDS);
+		return new PersistentState.Type<>(() -> new RaidManager(world), (nbt, registryLookup) -> fromNbt(world, nbt), DataFixTypes.SAVED_DATA_RAIDS);
 	}
 
 	public RaidManager(ServerWorld world) {
@@ -165,7 +166,7 @@ public class RaidManager extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		nbt.putInt("NextAvailableID", this.nextAvailableId);
 		nbt.putInt("Tick", this.currentTime);
 		NbtList nbtList = new NbtList();

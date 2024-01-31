@@ -152,7 +152,7 @@ public class BundleItem extends Item {
 			: items.stream()
 				.filter(NbtCompound.class::isInstance)
 				.map(NbtCompound.class::cast)
-				.filter(item -> ItemStack.canCombine(ItemStack.fromNbt(item), stack))
+				.filter(item -> ItemStack.areItemsAndNbtEqual(ItemStack.fromNbt(item), stack))
 				.findFirst();
 	}
 

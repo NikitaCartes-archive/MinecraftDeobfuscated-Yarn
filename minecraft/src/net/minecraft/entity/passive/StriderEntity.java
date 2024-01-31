@@ -460,11 +460,9 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
-	) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		if (this.isBaby()) {
-			return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+			return super.initialize(world, difficulty, spawnReason, entityData);
 		} else {
 			Random random = world.getRandom();
 			if (random.nextInt(30) == 0) {
@@ -484,13 +482,13 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 				entityData = new PassiveEntity.PassiveData(0.5F);
 			}
 
-			return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+			return super.initialize(world, difficulty, spawnReason, entityData);
 		}
 	}
 
 	private EntityData initializeRider(ServerWorldAccess world, LocalDifficulty difficulty, MobEntity rider, @Nullable EntityData entityData) {
 		rider.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
-		rider.initialize(world, difficulty, SpawnReason.JOCKEY, entityData, null);
+		rider.initialize(world, difficulty, SpawnReason.JOCKEY, entityData);
 		rider.startRiding(this, true);
 		return new PassiveEntity.PassiveData(0.0F);
 	}

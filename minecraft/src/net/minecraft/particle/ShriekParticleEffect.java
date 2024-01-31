@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 
 public class ShriekParticleEffect implements ParticleEffect {
 	public static final Codec<ShriekParticleEffect> CODEC = RecordCodecBuilder.create(
@@ -18,7 +19,7 @@ public class ShriekParticleEffect implements ParticleEffect {
 		PacketCodecs.VAR_INT, effect -> effect.delay, ShriekParticleEffect::new
 	);
 	public static final ParticleEffect.Factory<ShriekParticleEffect> FACTORY = new ParticleEffect.Factory<ShriekParticleEffect>() {
-		public ShriekParticleEffect read(ParticleType<ShriekParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public ShriekParticleEffect read(ParticleType<ShriekParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			int i = stringReader.readInt();
 			return new ShriekParticleEffect(i);
@@ -31,7 +32,7 @@ public class ShriekParticleEffect implements ParticleEffect {
 	}
 
 	@Override
-	public String asString() {
+	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
 		return String.format(Locale.ROOT, "%s %d", Registries.PARTICLE_TYPE.getId(this.getType()), this.delay);
 	}
 

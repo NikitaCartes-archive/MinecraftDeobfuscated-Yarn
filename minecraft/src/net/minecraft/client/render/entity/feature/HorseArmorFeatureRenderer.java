@@ -12,8 +12,9 @@ import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.AnimalArmorItem;
-import net.minecraft.item.DyeableAnimalArmorItem;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.ItemTags;
 
 @Environment(EnvType.CLIENT)
 public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
@@ -27,7 +28,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l
 	) {
-		ItemStack itemStack = horseEntity.getArmorType();
+		ItemStack itemStack = horseEntity.getBodyArmor();
 		if (itemStack.getItem() instanceof AnimalArmorItem animalArmorItem && animalArmorItem.getType() == AnimalArmorItem.Type.EQUESTRIAN) {
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(horseEntity, f, g, h);
@@ -35,8 +36,8 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 			float o;
 			float p;
 			float n;
-			if (animalArmorItem instanceof DyeableAnimalArmorItem) {
-				int m = ((DyeableAnimalArmorItem)animalArmorItem).getColor(itemStack);
+			if (itemStack.isIn(ItemTags.DYEABLE)) {
+				int m = DyeableItem.getColor(itemStack);
 				n = (float)(m >> 16 & 0xFF) / 255.0F;
 				o = (float)(m >> 8 & 0xFF) / 255.0F;
 				p = (float)(m & 0xFF) / 255.0F;

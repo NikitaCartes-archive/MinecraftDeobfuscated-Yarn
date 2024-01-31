@@ -1,11 +1,13 @@
 package net.minecraft.item.map;
 
-import java.util.Objects;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerBlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -15,111 +17,47 @@ import net.minecraft.world.BlockView;
  * <p>
  * Used to track banners in a map state.
  */
-public class MapBannerMarker {
-	private final BlockPos pos;
-	private final DyeColor color;
-	@Nullable
-	private final Text name;
-
-	public MapBannerMarker(BlockPos pos, DyeColor dyeColor, @Nullable Text name) {
-		this.pos = pos;
-		this.color = dyeColor;
-		this.name = name;
-	}
-
-	public static MapBannerMarker fromNbt(NbtCompound nbt) {
-		BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("Pos"));
-		DyeColor dyeColor = DyeColor.byName(nbt.getString("Color"), DyeColor.WHITE);
-		Text text = nbt.contains("Name") ? Text.Serialization.fromJson(nbt.getString("Name")) : null;
-		return new MapBannerMarker(blockPos, dyeColor, text);
-	}
+public record MapBannerMarker(BlockPos pos, DyeColor color, Optional<Text> name) {
+	public static final Codec<MapBannerMarker> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					BlockPos.CODEC.fieldOf("Pos").forGetter(MapBannerMarker::pos),
+					DyeColor.CODEC.optionalFieldOf("Color", DyeColor.WHITE).forGetter(MapBannerMarker::color),
+					TextCodecs.STRINGIFIED_CODEC.optionalFieldOf("Name").forGetter(MapBannerMarker::name)
+				)
+				.apply(instance, MapBannerMarker::new)
+	);
+	public static final Codec<List<MapBannerMarker>> LIST_CODEC = CODEC.listOf();
 
 	@Nullable
 	public static MapBannerMarker fromWorldBlock(BlockView blockView, BlockPos blockPos) {
 		if (blockView.getBlockEntity(blockPos) instanceof BannerBlockEntity bannerBlockEntity) {
 			DyeColor dyeColor = bannerBlockEntity.getColorForState();
-			Text text = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.getCustomName() : null;
-			return new MapBannerMarker(blockPos, dyeColor, text);
+			Optional<Text> optional = Optional.ofNullable(bannerBlockEntity.getCustomName());
+			return new MapBannerMarker(blockPos, dyeColor, optional);
 		} else {
 			return null;
 		}
 	}
 
-	public BlockPos getPos() {
-		return this.pos;
-	}
-
-	public DyeColor getColor() {
-		return this.color;
-	}
-
 	public MapIcon.Type getIconType() {
-		switch (this.color) {
-			case WHITE:
-				return MapIcon.Type.BANNER_WHITE;
-			case ORANGE:
-				return MapIcon.Type.BANNER_ORANGE;
-			case MAGENTA:
-				return MapIcon.Type.BANNER_MAGENTA;
-			case LIGHT_BLUE:
-				return MapIcon.Type.BANNER_LIGHT_BLUE;
-			case YELLOW:
-				return MapIcon.Type.BANNER_YELLOW;
-			case LIME:
-				return MapIcon.Type.BANNER_LIME;
-			case PINK:
-				return MapIcon.Type.BANNER_PINK;
-			case GRAY:
-				return MapIcon.Type.BANNER_GRAY;
-			case LIGHT_GRAY:
-				return MapIcon.Type.BANNER_LIGHT_GRAY;
-			case CYAN:
-				return MapIcon.Type.BANNER_CYAN;
-			case PURPLE:
-				return MapIcon.Type.BANNER_PURPLE;
-			case BLUE:
-				return MapIcon.Type.BANNER_BLUE;
-			case BROWN:
-				return MapIcon.Type.BANNER_BROWN;
-			case GREEN:
-				return MapIcon.Type.BANNER_GREEN;
-			case RED:
-				return MapIcon.Type.BANNER_RED;
-			case BLACK:
-			default:
-				return MapIcon.Type.BANNER_BLACK;
-		}
-	}
-
-	@Nullable
-	public Text getName() {
-		return this.name;
-	}
-
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			MapBannerMarker mapBannerMarker = (MapBannerMarker)o;
-			return Objects.equals(this.pos, mapBannerMarker.pos) && this.color == mapBannerMarker.color && Objects.equals(this.name, mapBannerMarker.name);
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		return Objects.hash(new Object[]{this.pos, this.color, this.name});
-	}
-
-	public NbtCompound getNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.put("Pos", NbtHelper.fromBlockPos(this.pos));
-		nbtCompound.putString("Color", this.color.getName());
-		if (this.name != null) {
-			nbtCompound.putString("Name", Text.Serialization.toJsonString(this.name));
-		}
-
-		return nbtCompound;
+		return switch (this.color) {
+			case WHITE -> MapIcon.Type.BANNER_WHITE;
+			case ORANGE -> MapIcon.Type.BANNER_ORANGE;
+			case MAGENTA -> MapIcon.Type.BANNER_MAGENTA;
+			case LIGHT_BLUE -> MapIcon.Type.BANNER_LIGHT_BLUE;
+			case YELLOW -> MapIcon.Type.BANNER_YELLOW;
+			case LIME -> MapIcon.Type.BANNER_LIME;
+			case PINK -> MapIcon.Type.BANNER_PINK;
+			case GRAY -> MapIcon.Type.BANNER_GRAY;
+			case LIGHT_GRAY -> MapIcon.Type.BANNER_LIGHT_GRAY;
+			case CYAN -> MapIcon.Type.BANNER_CYAN;
+			case PURPLE -> MapIcon.Type.BANNER_PURPLE;
+			case BLUE -> MapIcon.Type.BANNER_BLUE;
+			case BROWN -> MapIcon.Type.BANNER_BROWN;
+			case GREEN -> MapIcon.Type.BANNER_GREEN;
+			case RED -> MapIcon.Type.BANNER_RED;
+			default -> MapIcon.Type.BANNER_BLACK;
+		};
 	}
 
 	public String getKey() {

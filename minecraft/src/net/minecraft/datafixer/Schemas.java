@@ -100,6 +100,8 @@ import net.minecraft.datafixer.fix.GoatHornIdFix;
 import net.minecraft.datafixer.fix.GoatMissingStateFix;
 import net.minecraft.datafixer.fix.HangingEntityFix;
 import net.minecraft.datafixer.fix.HeightmapRenamingFix;
+import net.minecraft.datafixer.fix.HorseArmorFix;
+import net.minecraft.datafixer.fix.HorseChestIndexingFix;
 import net.minecraft.datafixer.fix.IglooMetadataRemovalFix;
 import net.minecraft.datafixer.fix.ItemBannerColorFix;
 import net.minecraft.datafixer.fix.ItemCustomNameToComponentFix;
@@ -265,6 +267,9 @@ import net.minecraft.datafixer.schema.Schema3683;
 import net.minecraft.datafixer.schema.Schema3685;
 import net.minecraft.datafixer.schema.Schema3689;
 import net.minecraft.datafixer.schema.Schema3799;
+import net.minecraft.datafixer.schema.Schema3807;
+import net.minecraft.datafixer.schema.Schema3808;
+import net.minecraft.datafixer.schema.Schema3808_1;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1181,6 +1186,14 @@ public class Schemas {
 		builder.addFixer(ItemNameFix.create(schema200, "Rename scute item to turtle_scute", unaryOperator3));
 		Schema schema201 = builder.addSchema(3803, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new RenameEnchantmentFix(schema201, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge")));
+		Schema schema202 = builder.addSchema(3807, Schema3807::new);
+		builder.addFixer(new ChoiceTypesFix(schema202, "Added Vault", TypeReferences.BLOCK_ENTITY));
+		Schema schema203 = builder.addSchema(3808, Schema3808::new);
+		builder.addFixer(new HorseArmorFix(schema203, "minecraft:horse", "ArmorItem"));
+		Schema schema204 = builder.addSchema(3808, 1, Schema3808_1::new);
+		builder.addFixer(new HorseArmorFix(schema204, "minecraft:llama", "DecorItem"));
+		Schema schema205 = builder.addSchema(3809, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new HorseChestIndexingFix(schema205));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

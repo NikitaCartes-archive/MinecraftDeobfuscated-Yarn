@@ -26,6 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.crash.CrashCallable;
@@ -309,7 +310,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 	}
 
 	@Nullable
-	public abstract NbtCompound getPackedBlockEntityNbt(BlockPos pos);
+	public abstract NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registryLookup);
 
 	@Override
 	public final void forEachLightSource(BiConsumer<BlockPos, BlockState> callback) {

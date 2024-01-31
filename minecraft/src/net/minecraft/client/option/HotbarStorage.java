@@ -2,6 +2,7 @@ package net.minecraft.client.option;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DataResult;
 import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,6 +11,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -41,7 +44,10 @@ public class HotbarStorage {
 			nbtCompound = DataFixTypes.HOTBAR.update(this.dataFixer, nbtCompound, i);
 
 			for (int j = 0; j < 9; j++) {
-				this.entries[j].readNbtList(nbtCompound.getList(String.valueOf(j), NbtElement.COMPOUND_TYPE));
+				this.entries[j] = (HotbarStorageEntry)HotbarStorageEntry.CODEC
+					.parse(NbtOps.INSTANCE, nbtCompound.get(String.valueOf(j)))
+					.resultOrPartial(string -> LOGGER.warn("Failed to parse hotbar: {}", string))
+					.orElseGet(HotbarStorageEntry::new);
 			}
 		} catch (Exception var4) {
 			LOGGER.error("Failed to load creative mode options", (Throwable)var4);
@@ -53,12 +59,14 @@ public class HotbarStorage {
 			NbtCompound nbtCompound = NbtHelper.putDataVersion(new NbtCompound());
 
 			for (int i = 0; i < 9; i++) {
-				nbtCompound.put(String.valueOf(i), this.getSavedHotbar(i).toNbtList());
+				HotbarStorageEntry hotbarStorageEntry = this.getSavedHotbar(i);
+				DataResult<NbtElement> dataResult = HotbarStorageEntry.CODEC.encodeStart(NbtOps.INSTANCE, hotbarStorageEntry);
+				nbtCompound.put(String.valueOf(i), Util.getResult(dataResult, IllegalStateException::new));
 			}
 
 			NbtIo.write(nbtCompound, this.file);
-		} catch (Exception var3) {
-			LOGGER.error("Failed to save creative mode options", (Throwable)var3);
+		} catch (Exception var5) {
+			LOGGER.error("Failed to save creative mode options", (Throwable)var5);
 		}
 	}
 

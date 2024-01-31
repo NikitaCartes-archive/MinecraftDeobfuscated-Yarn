@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import javax.annotation.Nullable;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -22,7 +23,7 @@ import net.minecraft.village.raid.Raid;
 import net.minecraft.village.raid.RaidManager;
 
 public class RaidCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("raid")
 				.requires(source -> source.hasPermissionLevel(3))
@@ -38,7 +39,7 @@ public class RaidCommand {
 				.then(
 					CommandManager.literal("sound")
 						.then(
-							CommandManager.argument("type", TextArgumentType.text())
+							CommandManager.argument("type", TextArgumentType.text(registryAccess))
 								.executes(context -> executeSound(context.getSource(), TextArgumentType.getTextArgument(context, "type")))
 						)
 				)
@@ -93,7 +94,7 @@ public class RaidCommand {
 			raiderEntity.setPatrolLeader(true);
 			raiderEntity.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
 			raiderEntity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
-			raiderEntity.initialize(source.getWorld(), source.getWorld().getLocalDifficulty(BlockPos.ofFloored(source.getPosition())), SpawnReason.COMMAND, null, null);
+			raiderEntity.initialize(source.getWorld(), source.getWorld().getLocalDifficulty(BlockPos.ofFloored(source.getPosition())), SpawnReason.COMMAND, null);
 			source.getWorld().spawnEntityAndPassengers(raiderEntity);
 			return 1;
 		}

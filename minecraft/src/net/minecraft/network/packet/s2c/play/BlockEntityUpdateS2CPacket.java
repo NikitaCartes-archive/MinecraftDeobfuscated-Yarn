@@ -1,6 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
@@ -11,6 +11,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
 
@@ -28,8 +29,9 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	private final BlockEntityType<?> blockEntityType;
 	private final NbtCompound nbt;
 
-	public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity, Function<BlockEntity, NbtCompound> nbtGetter) {
-		return new BlockEntityUpdateS2CPacket(blockEntity.getPos(), blockEntity.getType(), (NbtCompound)nbtGetter.apply(blockEntity));
+	public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity, BiFunction<BlockEntity, DynamicRegistryManager, NbtCompound> nbtGetter) {
+		DynamicRegistryManager dynamicRegistryManager = blockEntity.getWorld().getRegistryManager();
+		return new BlockEntityUpdateS2CPacket(blockEntity.getPos(), blockEntity.getType(), (NbtCompound)nbtGetter.apply(blockEntity, dynamicRegistryManager));
 	}
 
 	public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity) {

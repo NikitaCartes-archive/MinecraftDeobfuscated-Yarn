@@ -234,7 +234,7 @@ public class Main {
 			DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
 			boolean bl2 = optionSet.has(optionSpec7);
 			if (optionSet.has(optionSpec5) || bl2) {
-				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, immutable.get(RegistryKeys.DIMENSION), bl2);
+				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, immutable, bl2);
 			}
 
 			SaveProperties saveProperties = saveLoader.saveProperties();
@@ -299,11 +299,11 @@ public class Main {
 		DataFixer dataFixer,
 		boolean eraseCache,
 		BooleanSupplier continueCheck,
-		Registry<DimensionOptions> dimensionOptionsRegistry,
+		DynamicRegistryManager dynamicRegistryManager,
 		boolean recreateRegionFiles
 	) {
 		LOGGER.info("Forcing world upgrade!");
-		WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, dimensionOptionsRegistry, eraseCache, recreateRegionFiles);
+		WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, dynamicRegistryManager, eraseCache, recreateRegionFiles);
 		Text text = null;
 
 		while (!worldUpdater.isDone()) {
