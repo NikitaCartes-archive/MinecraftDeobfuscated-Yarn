@@ -27,54 +27,54 @@ public class HotbarStorageEntry {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int HOTBAR_SIZE = PlayerInventory.getHotbarSize();
 	public static final Codec<HotbarStorageEntry> CODEC = Codecs.<List<Dynamic<?>>>validate(
-			Codec.PASSTHROUGH.listOf(), list -> Util.decodeFixedLengthList(list, HOTBAR_SIZE)
+			Codec.PASSTHROUGH.listOf(), stacks -> Util.decodeFixedLengthList(stacks, HOTBAR_SIZE)
 		)
-		.xmap(HotbarStorageEntry::new, hotbarStorageEntry -> hotbarStorageEntry.field_48947);
-	private static final DynamicOps<NbtElement> field_48945 = NbtOps.INSTANCE;
-	private static final Dynamic<?> field_48946 = new Dynamic<>(
-		field_48945, Util.getResult(ItemStack.CODEC.encodeStart(field_48945, ItemStack.EMPTY), IllegalStateException::new)
+		.xmap(HotbarStorageEntry::new, entry -> entry.stacks);
+	private static final DynamicOps<NbtElement> NBT_OPS = NbtOps.INSTANCE;
+	private static final Dynamic<?> EMPTY_STACK = new Dynamic<>(
+		NBT_OPS, Util.getResult(ItemStack.CODEC.encodeStart(NBT_OPS, ItemStack.EMPTY), IllegalStateException::new)
 	);
-	private List<Dynamic<?>> field_48947;
+	private List<Dynamic<?>> stacks;
 
-	private HotbarStorageEntry(List<Dynamic<?>> list) {
-		this.field_48947 = list;
+	private HotbarStorageEntry(List<Dynamic<?>> stacks) {
+		this.stacks = stacks;
 	}
 
 	public HotbarStorageEntry() {
-		this(Collections.nCopies(HOTBAR_SIZE, field_48946));
+		this(Collections.nCopies(HOTBAR_SIZE, EMPTY_STACK));
 	}
 
-	public List<ItemStack> method_56839(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.field_48947
+	public List<ItemStack> deserialize(RegistryWrapper.WrapperLookup registryLookup) {
+		return this.stacks
 			.stream()
 			.map(
-				dynamic -> (ItemStack)ItemStack.CODEC
-						.parse(RegistryOps.method_56622(dynamic, registryLookup))
-						.resultOrPartial(string -> LOGGER.warn("Could not parse hotbar item: {}", string))
+				stack -> (ItemStack)ItemStack.CODEC
+						.parse(RegistryOps.withRegistry(stack, registryLookup))
+						.resultOrPartial(error -> LOGGER.warn("Could not parse hotbar item: {}", error))
 						.orElse(ItemStack.EMPTY)
 			)
 			.toList();
 	}
 
-	public void method_56836(PlayerInventory playerInventory, DynamicRegistryManager registryManager) {
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(field_48945, registryManager);
+	public void serialize(PlayerInventory playerInventory, DynamicRegistryManager registryManager) {
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NBT_OPS, registryManager);
 		Builder<Dynamic<?>> builder = ImmutableList.builderWithExpectedSize(HOTBAR_SIZE);
 
 		for (int i = 0; i < HOTBAR_SIZE; i++) {
 			ItemStack itemStack = playerInventory.getStack(i);
 			Optional<Dynamic<?>> optional = ItemStack.CODEC
 				.encodeStart(registryOps, itemStack)
-				.resultOrPartial(string -> LOGGER.warn("Could not encode hotbar item: {}", string))
-				.map(nbtElement -> new Dynamic<>(field_48945, nbtElement));
-			builder.add((Dynamic<?>)optional.orElse(field_48946));
+				.resultOrPartial(error -> LOGGER.warn("Could not encode hotbar item: {}", error))
+				.map(nbt -> new Dynamic<>(NBT_OPS, nbt));
+			builder.add((Dynamic<?>)optional.orElse(EMPTY_STACK));
 		}
 
-		this.field_48947 = builder.build();
+		this.stacks = builder.build();
 	}
 
-	public boolean method_56835() {
-		for (Dynamic<?> dynamic : this.field_48947) {
-			if (!method_56837(dynamic)) {
+	public boolean isEmpty() {
+		for (Dynamic<?> dynamic : this.stacks) {
+			if (!isEmpty(dynamic)) {
 				return false;
 			}
 		}
@@ -82,7 +82,7 @@ public class HotbarStorageEntry {
 		return true;
 	}
 
-	private static boolean method_56837(Dynamic<?> dynamic) {
-		return field_48946.equals(dynamic);
+	private static boolean isEmpty(Dynamic<?> stack) {
+		return EMPTY_STACK.equals(stack);
 	}
 }

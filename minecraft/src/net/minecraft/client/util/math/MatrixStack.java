@@ -62,7 +62,7 @@ public class MatrixStack {
 			}
 		} else {
 			entry.normalMatrix.scale(1.0F / x, 1.0F / y, 1.0F / z);
-			entry.field_48930 = false;
+			entry.canSkipNormalization = false;
 		}
 	}
 
@@ -116,7 +116,7 @@ public class MatrixStack {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
 		entry.positionMatrix.identity();
 		entry.normalMatrix.identity();
-		entry.field_48930 = true;
+		entry.canSkipNormalization = true;
 	}
 
 	/**
@@ -128,11 +128,11 @@ public class MatrixStack {
 	public void multiplyPositionMatrix(Matrix4f matrix) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
 		entry.positionMatrix.mul(matrix);
-		if (!MatrixUtil.method_56826(matrix)) {
-			if (MatrixUtil.method_56827(matrix)) {
+		if (!MatrixUtil.isTranslation(matrix)) {
+			if (MatrixUtil.isOrthonormal(matrix)) {
 				entry.normalMatrix.mul(new Matrix3f(matrix));
 			} else {
-				entry.method_56823();
+				entry.computeNormal();
 			}
 		}
 	}
@@ -141,7 +141,7 @@ public class MatrixStack {
 	public static final class Entry {
 		final Matrix4f positionMatrix;
 		final Matrix3f normalMatrix;
-		boolean field_48930 = true;
+		boolean canSkipNormalization = true;
 
 		Entry(Matrix4f positionMatrix, Matrix3f normalMatrix) {
 			this.positionMatrix = positionMatrix;
@@ -151,12 +151,12 @@ public class MatrixStack {
 		Entry(MatrixStack.Entry matrix) {
 			this.positionMatrix = new Matrix4f(matrix.positionMatrix);
 			this.normalMatrix = new Matrix3f(matrix.normalMatrix);
-			this.field_48930 = matrix.field_48930;
+			this.canSkipNormalization = matrix.canSkipNormalization;
 		}
 
-		void method_56823() {
+		void computeNormal() {
 			this.normalMatrix.set(this.positionMatrix).invert().transpose();
-			this.field_48930 = false;
+			this.canSkipNormalization = false;
 		}
 
 		/**
@@ -173,13 +173,13 @@ public class MatrixStack {
 			return this.normalMatrix;
 		}
 
-		public Vector3f method_56821(Vector3f vector3f, Vector3f vector3f2) {
-			return this.method_56820(vector3f.x, vector3f.y, vector3f.z, vector3f2);
+		public Vector3f transformNormal(Vector3f vec, Vector3f dest) {
+			return this.transformNormal(vec.x, vec.y, vec.z, dest);
 		}
 
-		public Vector3f method_56820(float f, float g, float h, Vector3f vector3f) {
-			Vector3f vector3f2 = this.normalMatrix.transform(f, g, h, vector3f);
-			return this.field_48930 ? vector3f2 : vector3f2.normalize();
+		public Vector3f transformNormal(float x, float y, float z, Vector3f dest) {
+			Vector3f vector3f = this.normalMatrix.transform(x, y, z, dest);
+			return this.canSkipNormalization ? vector3f : vector3f.normalize();
 		}
 
 		public MatrixStack.Entry copy() {

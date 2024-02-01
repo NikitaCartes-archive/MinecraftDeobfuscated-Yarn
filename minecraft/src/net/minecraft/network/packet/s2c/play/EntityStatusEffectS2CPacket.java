@@ -22,14 +22,14 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	private static final int KEEP_FADING_MASK = 8;
 	private final int entityId;
 	private final RegistryEntry<StatusEffect> effectId;
-	private final byte amplifier;
+	private final int amplifier;
 	private final int duration;
 	private final byte flags;
 
 	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect, boolean keepFading) {
 		this.entityId = entityId;
 		this.effectId = effect.getEffectType();
-		this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
+		this.amplifier = effect.getAmplifier();
 		this.duration = effect.getDuration();
 		byte b = 0;
 		if (effect.isAmbient()) {
@@ -54,7 +54,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	private EntityStatusEffectS2CPacket(RegistryByteBuf buf) {
 		this.entityId = buf.readVarInt();
 		this.effectId = PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).decode(buf);
-		this.amplifier = buf.readByte();
+		this.amplifier = buf.readVarInt();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
 	}
@@ -62,7 +62,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	private void write(RegistryByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).encode(buf, this.effectId);
-		buf.writeByte(this.amplifier);
+		buf.writeVarInt(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);
 	}
@@ -84,7 +84,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		return this.effectId;
 	}
 
-	public byte getAmplifier() {
+	public int getAmplifier() {
 		return this.amplifier;
 	}
 

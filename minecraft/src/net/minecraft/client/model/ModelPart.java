@@ -301,7 +301,7 @@ public final class ModelPart {
 			Vector3f vector3f = new Vector3f();
 
 			for (ModelPart.Quad quad : this.sides) {
-				Vector3f vector3f2 = entry.method_56821(quad.direction, vector3f);
+				Vector3f vector3f2 = entry.transformNormal(quad.direction, vector3f);
 				float f = vector3f2.x();
 				float g = vector3f2.y();
 				float h = vector3f2.z();

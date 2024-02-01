@@ -512,19 +512,19 @@ public class WorldEvents {
 	/**
 	 * A vault is activated.
 	 * <br>Plays the activate sound and spawns smoke and small flame particles.
-	 * <p>Called by {@link net.minecraft.block.vault.VaultState#ACTIVE}.
+	 * <p>Called by {@link net.minecraft.block.enums.VaultState#ACTIVE}.
 	 */
 	public static final int VAULT_ACTIVATES = 3015;
 	/**
 	 * A vault is deactivated.
 	 * <br>Plays the deactivate sound and spawns small flame particles.
-	 * <p>Called by {@link net.minecraft.block.vault.VaultState#INACTIVE}.
+	 * <p>Called by {@link net.minecraft.block.enums.VaultState#INACTIVE}.
 	 */
 	public static final int VAULT_DEACTIVATES = 3016;
 	/**
 	 * A vault ejects loot.
 	 * <br>Spawns ejection particles.
-	 * <p>Called by {@link net.minecraft.block.vault.VaultState#ejectItem}.
+	 * <p>Called by {@link net.minecraft.block.enums.VaultState#ejectItem}.
 	 */
 	public static final int VAULT_EJECTS_ITEM = 3017;
 }

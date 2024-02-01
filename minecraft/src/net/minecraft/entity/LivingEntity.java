@@ -174,7 +174,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.<RegistryEntry<StatusEffect>, StatusEffectInstance>newHashMap();
 	private final DefaultedList<ItemStack> syncedHandStacks = DefaultedList.ofSize(2, ItemStack.EMPTY);
 	private final DefaultedList<ItemStack> syncedArmorStacks = DefaultedList.ofSize(4, ItemStack.EMPTY);
-	private ItemStack field_48826 = ItemStack.EMPTY;
+	private ItemStack syncedBodyArmorStack = ItemStack.EMPTY;
 	public boolean handSwinging;
 	private boolean noDrag = false;
 	public Hand preferredHand;
@@ -2564,7 +2564,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			ItemStack itemStack = switch (equipmentSlot.getType()) {
 				case HAND -> this.getSyncedHandStack(equipmentSlot);
 				case ARMOR -> this.getSyncedArmorStack(equipmentSlot);
-				case BODY -> this.field_48826;
+				case BODY -> this.syncedBodyArmorStack;
 			};
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			if (this.areItemsDifferent(itemStack, itemStack2)) {
@@ -2626,7 +2626,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					this.setSyncedArmorStack(slot, itemStack);
 					break;
 				case BODY:
-					this.field_48826 = itemStack;
+					this.syncedBodyArmorStack = itemStack;
 			}
 		});
 		((ServerWorld)this.getWorld()).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getId(), list));

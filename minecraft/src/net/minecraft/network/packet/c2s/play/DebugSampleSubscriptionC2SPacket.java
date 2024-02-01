@@ -6,7 +6,7 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.util.DebugSampleType;
+import net.minecraft.util.profiler.log.DebugSampleType;
 
 public record DebugSampleSubscriptionC2SPacket(DebugSampleType sampleType) implements Packet<ServerPlayPacketListener> {
 	public static final PacketCodec<PacketByteBuf, DebugSampleSubscriptionC2SPacket> CODEC = Packet.createCodec(

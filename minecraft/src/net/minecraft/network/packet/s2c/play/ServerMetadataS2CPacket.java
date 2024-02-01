@@ -15,7 +15,7 @@ public record ServerMetadataS2CPacket(Text description, Optional<byte[]> favicon
 	public static final PacketCodec<ByteBuf, ServerMetadataS2CPacket> CODEC = PacketCodec.tuple(
 		TextCodecs.PACKET_CODEC,
 		ServerMetadataS2CPacket::description,
-		PacketCodecs.field_48987.collect(PacketCodecs::optional),
+		PacketCodecs.BYTE_ARRAY.collect(PacketCodecs::optional),
 		ServerMetadataS2CPacket::favicon,
 		ServerMetadataS2CPacket::new
 	);

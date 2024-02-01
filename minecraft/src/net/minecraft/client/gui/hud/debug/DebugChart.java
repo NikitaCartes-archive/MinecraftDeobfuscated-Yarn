@@ -2,13 +2,13 @@ package net.minecraft.client.gui.hud.debug;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9194;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.log.MultiValueDebugSampleLog;
 
 @Environment(EnvType.CLIENT)
 public abstract class DebugChart {
@@ -16,15 +16,15 @@ public abstract class DebugChart {
 	protected static final int field_45916 = 60;
 	protected static final int field_45917 = 1;
 	protected final TextRenderer textRenderer;
-	protected final class_9194 log;
+	protected final MultiValueDebugSampleLog log;
 
-	protected DebugChart(TextRenderer textRenderer, class_9194 log) {
+	protected DebugChart(TextRenderer textRenderer, MultiValueDebugSampleLog log) {
 		this.textRenderer = textRenderer;
 		this.log = log;
 	}
 
 	public int getWidth(int centerX) {
-		return Math.min(this.log.method_56662() + 2, centerX);
+		return Math.min(this.log.getDimension() + 2, centerX);
 	}
 
 	public void render(DrawContext context, int x, int width) {
@@ -33,8 +33,8 @@ public abstract class DebugChart {
 		long l = 0L;
 		long m = 2147483647L;
 		long n = -2147483648L;
-		int j = Math.max(0, this.log.method_56662() - (width - 2));
-		int k = this.log.method_56663() - j;
+		int j = Math.max(0, this.log.getDimension() - (width - 2));
+		int k = this.log.getLength() - j;
 
 		for (int o = 0; o < k; o++) {
 			int p = x + o + 1;
@@ -68,7 +68,7 @@ public abstract class DebugChart {
 	}
 
 	protected void drawTotalBar(DrawContext context, int y, int x, int index) {
-		long l = this.log.method_56659(index);
+		long l = this.log.get(index);
 		int i = this.getHeight((double)l);
 		int j = this.getColor(l);
 		context.fill(RenderLayer.getGuiOverlay(), x, y - i, x + 1, y, j);
@@ -78,7 +78,7 @@ public abstract class DebugChart {
 	}
 
 	protected long get(int index) {
-		return this.log.method_56659(index);
+		return this.log.get(index);
 	}
 
 	protected void renderThresholds(DrawContext context, int x, int width, int height) {

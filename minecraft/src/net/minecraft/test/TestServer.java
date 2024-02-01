@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_9191;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.Registry;
@@ -36,7 +35,8 @@ import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.profiler.PerformanceLog;
+import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
+import net.minecraft.util.profiler.log.DebugSampleLog;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -54,7 +54,7 @@ public class TestServer extends MinecraftServer {
 	private static final int RESULT_STRING_LOG_INTERVAL = 20;
 	private static final int TEST_POS_XZ_RANGE = 14999992;
 	private static final ApiServices NONE_API_SERVICES = new ApiServices(null, ServicesKeySet.EMPTY, null, null);
-	private final class_9191 field_48984 = new class_9191(4);
+	private final MultiValueDebugSampleLogImpl debugSampleLog = new MultiValueDebugSampleLogImpl(4);
 	private List<GameTestBatch> batches = new ArrayList();
 	private final List<TestFunction> testFunctions;
 	private final BlockPos pos;
@@ -178,12 +178,12 @@ public class TestServer extends MinecraftServer {
 	}
 
 	@Override
-	public PerformanceLog getPerformanceLog() {
-		return this.field_48984;
+	public DebugSampleLog getDebugSampleLog() {
+		return this.debugSampleLog;
 	}
 
 	@Override
-	public boolean method_56626() {
+	public boolean shouldPushTickTimeLog() {
 		return false;
 	}
 

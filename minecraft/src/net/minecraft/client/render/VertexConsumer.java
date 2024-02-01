@@ -231,7 +231,7 @@ public interface VertexConsumer {
 		int[] js = quad.getVertexData();
 		Vec3i vec3i = quad.getFace().getVector();
 		Matrix4f matrix4f = matrixEntry.getPositionMatrix();
-		Vector3f vector3f = matrixEntry.method_56820((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), new Vector3f());
+		Vector3f vector3f = matrixEntry.transformNormal((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), new Vector3f());
 		int i = 8;
 		int j = js.length / 8;
 
@@ -302,7 +302,7 @@ public interface VertexConsumer {
 	 * @return this consumer, for chaining
 	 */
 	default VertexConsumer normal(MatrixStack.Entry matrix, float x, float y, float z) {
-		Vector3f vector3f = matrix.method_56820(x, y, z, new Vector3f());
+		Vector3f vector3f = matrix.transformNormal(x, y, z, new Vector3f());
 		return this.normal(vector3f.x(), vector3f.y(), vector3f.z());
 	}
 }

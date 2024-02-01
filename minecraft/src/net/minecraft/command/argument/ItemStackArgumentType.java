@@ -13,10 +13,10 @@ import net.minecraft.command.CommandRegistryAccess;
 
 public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "stick{foo=bar}");
-	private final ItemStringReader field_48954;
+	private final ItemStringReader reader;
 
 	public ItemStackArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		this.field_48954 = new ItemStringReader(commandRegistryAccess);
+		this.reader = new ItemStringReader(commandRegistryAccess);
 	}
 
 	public static ItemStackArgumentType itemStack(CommandRegistryAccess commandRegistryAccess) {
@@ -24,7 +24,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 	}
 
 	public ItemStackArgument parse(StringReader stringReader) throws CommandSyntaxException {
-		ItemStringReader.ItemResult itemResult = this.field_48954.consume(stringReader);
+		ItemStringReader.ItemResult itemResult = this.reader.consume(stringReader);
 		return new ItemStackArgument(itemResult.item(), itemResult.nbt());
 	}
 
@@ -34,7 +34,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return this.field_48954.getSuggestions(builder);
+		return this.reader.getSuggestions(builder);
 	}
 
 	@Override

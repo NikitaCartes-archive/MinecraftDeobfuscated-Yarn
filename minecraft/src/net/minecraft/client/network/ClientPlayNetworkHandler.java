@@ -23,7 +23,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9211;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -341,7 +340,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
 	private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
 	private final PingMeasurer pingMeasurer;
-	private final class_9211 field_48933;
+	private final DebugSampleSubscriber debugSampleSubscriber;
 	@Nullable
 	private WorldLoadingState worldLoadingState;
 	private boolean secureChatEnforced;
@@ -358,7 +357,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.commandSource = new ClientCommandSource(this, client);
 		this.pingMeasurer = new PingMeasurer(this, client.getDebugHud().getPingLog());
 		this.recipeManager = new RecipeManager(this.combinedDynamicRegistries);
-		this.field_48933 = new class_9211(this, client.getDebugHud());
+		this.debugSampleSubscriber = new DebugSampleSubscriber(this, client.getDebugHud());
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -2233,7 +2232,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	@Override
 	public void onDebugSample(DebugSampleS2CPacket packet) {
-		this.client.getDebugHud().method_56828(packet.sample(), packet.debugSampleType());
+		this.client.getDebugHud().set(packet.sample(), packet.debugSampleType());
 	}
 
 	@Override
@@ -2387,7 +2386,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			this.pingMeasurer.ping();
 		}
 
-		this.field_48933.method_56830();
+		this.debugSampleSubscriber.tick();
 		this.worldSession.tick();
 		if (this.worldLoadingState != null) {
 			this.worldLoadingState.tick();

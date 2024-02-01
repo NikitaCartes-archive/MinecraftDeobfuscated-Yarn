@@ -136,9 +136,9 @@ public class MapRenderer implements AutoCloseable {
 					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(l, m).light(light).next();
 					vertexConsumer2.vertex(matrix4f2, -1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(g, m).light(light).next();
 					matrices.pop();
-					if (mapIcon.text().isPresent()) {
+					if (mapIcon.name().isPresent()) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-						Text text = (Text)mapIcon.text().get();
+						Text text = (Text)mapIcon.name().get();
 						float o = (float)textRenderer.getWidth(text);
 						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / 9.0F);
 						matrices.push();

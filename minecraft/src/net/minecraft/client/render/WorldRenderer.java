@@ -2483,23 +2483,15 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	public void addParticle(
-		ParticleEffect particleEffect,
-		boolean shouldAlwaysSpawn,
-		boolean important,
-		double x,
-		double y,
-		double z,
-		double velocityX,
-		double velocityY,
-		double velocityZ
+		ParticleEffect parameters, boolean shouldAlwaysSpawn, boolean important, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		try {
-			this.spawnParticle(particleEffect, shouldAlwaysSpawn, important, x, y, z, velocityX, velocityY, velocityZ);
+			this.spawnParticle(parameters, shouldAlwaysSpawn, important, x, y, z, velocityX, velocityY, velocityZ);
 		} catch (Throwable var19) {
 			CrashReport crashReport = CrashReport.create(var19, "Exception while adding particle");
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");
-			crashReportSection.add("ID", Registries.PARTICLE_TYPE.getId(particleEffect.getType()));
-			crashReportSection.add("Parameters", (CrashCallable<String>)(() -> particleEffect.asString(this.world.getRegistryManager())));
+			crashReportSection.add("ID", Registries.PARTICLE_TYPE.getId(parameters.getType()));
+			crashReportSection.add("Parameters", (CrashCallable<String>)(() -> parameters.asString(this.world.getRegistryManager())));
 			crashReportSection.add("Position", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.world, x, y, z)));
 			throw new CrashException(crashReport);
 		}

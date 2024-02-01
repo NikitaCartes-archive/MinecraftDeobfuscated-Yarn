@@ -26,7 +26,7 @@ public class DataCommandStorage {
 
 	private net.minecraft.world.PersistentState.Type<DataCommandStorage.PersistentState> getPersistentStateType(String namespace) {
 		return new net.minecraft.world.PersistentState.Type<>(
-			() -> this.createStorage(namespace), (nbt, wrapperLookup) -> this.createStorage(namespace).readNbt(nbt), DataFixTypes.SAVED_DATA_COMMAND_STORAGE
+			() -> this.createStorage(namespace), (nbt, registryLookup) -> this.createStorage(namespace).readNbt(nbt), DataFixTypes.SAVED_DATA_COMMAND_STORAGE
 		);
 	}
 

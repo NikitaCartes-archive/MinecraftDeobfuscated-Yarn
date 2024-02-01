@@ -14,7 +14,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.MathHelper;
 
-public record MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, Optional<Text> text) {
+public record MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, Optional<Text> name) {
 	public static final PacketCodec<RegistryByteBuf, MapIcon> CODEC = PacketCodec.tuple(
 		MapIcon.Type.PACKET_CODEC,
 		MapIcon::type,
@@ -25,17 +25,17 @@ public record MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, Optional
 		PacketCodecs.BYTE,
 		MapIcon::rotation,
 		TextCodecs.OPTIONAL_PACKET_CODEC,
-		MapIcon::text,
+		MapIcon::name,
 		MapIcon::new
 	);
 
-	public MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, Optional<Text> text) {
+	public MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, Optional<Text> name) {
 		rotation = (byte)(rotation & 15);
 		this.type = type;
 		this.x = x;
 		this.z = z;
 		this.rotation = rotation;
-		this.text = text;
+		this.name = name;
 	}
 
 	public byte getTypeId() {

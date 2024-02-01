@@ -5,6 +5,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.primitives.UnsignedBytes;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -132,6 +133,11 @@ public class Codecs {
 
 		return floatList;
 	});
+	public static final Codec<Integer> UNSIGNED_BYTE = Codec.BYTE
+		.flatComapMap(
+			UnsignedBytes::toInt,
+			value -> value > 255 ? DataResult.error(() -> "Unsigned byte was too large: " + value + " > 255") : DataResult.success(value.byteValue())
+		);
 	public static final Codec<Integer> NONNEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);
@@ -424,8 +430,8 @@ public class Codecs {
 		return new Codecs.Recursive<>(name, codecFunction);
 	}
 
-	public static <T> MapCodec<T> createRecursiveMap(Function<Codec<T>, MapCodec<T>> codecFunction) {
-		return new Codecs.RecursiveMap<>(codecFunction);
+	public static <T> MapCodec<T> createRecursiveMap(String string, Function<Codec<T>, MapCodec<T>> function) {
+		return new Codecs.RecursiveMap<>(string, function);
 	}
 
 	public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
@@ -654,15 +660,17 @@ public class Codecs {
 	}
 
 	static class RecursiveMap<T> extends MapCodec<T> {
+		private final String name;
 		private final Supplier<MapCodec<T>> supplier;
 
-		RecursiveMap(Function<Codec<T>, MapCodec<T>> codecFunction) {
+		RecursiveMap(String name, Function<Codec<T>, MapCodec<T>> codecFunction) {
+			this.name = name;
 			this.supplier = Suppliers.memoize(() -> (MapCodec<T>)codecFunction.apply(this.codec()));
 		}
 
 		@Override
-		public <S> RecordBuilder<S> encode(T input, DynamicOps<S> ops, RecordBuilder<S> recordBuilder) {
-			return ((MapCodec)this.supplier.get()).encode(input, ops, recordBuilder);
+		public <S> RecordBuilder<S> encode(T input, DynamicOps<S> ops, RecordBuilder<S> builder) {
+			return ((MapCodec)this.supplier.get()).encode(input, ops, builder);
 		}
 
 		@Override
@@ -676,7 +684,7 @@ public class Codecs {
 		}
 
 		public String toString() {
-			return "RecursiveMapCodec[" + this.supplier + "]";
+			return "RecursiveMapCodec[" + this.name + "]";
 		}
 	}
 

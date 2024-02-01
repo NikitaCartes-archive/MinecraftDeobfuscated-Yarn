@@ -502,7 +502,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			for (int i = 0; i < 9; i++) {
 				HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(i);
-				if (hotbarStorageEntry.method_56835()) {
+				if (hotbarStorageEntry.isEmpty()) {
 					for (int j = 0; j < 9; j++) {
 						if (j == i) {
 							ItemStack itemStack = new ItemStack(Items.PAPER);
@@ -516,7 +516,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 						}
 					}
 				} else {
-					this.handler.itemList.addAll(hotbarStorageEntry.method_56839(this.client.world.getRegistryManager()));
+					this.handler.itemList.addAll(hotbarStorageEntry.deserialize(this.client.world.getRegistryManager()));
 				}
 			}
 		} else if (selectedTab.getType() == ItemGroup.Type.CATEGORY) {
@@ -791,7 +791,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		HotbarStorage hotbarStorage = client.getCreativeHotbarStorage();
 		HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(index);
 		if (restore) {
-			List<ItemStack> list = hotbarStorageEntry.method_56839(dynamicRegistryManager);
+			List<ItemStack> list = hotbarStorageEntry.deserialize(dynamicRegistryManager);
 
 			for (int i = 0; i < PlayerInventory.getHotbarSize(); i++) {
 				ItemStack itemStack = (ItemStack)list.get(i);
@@ -801,7 +801,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			clientPlayerEntity.playerScreenHandler.sendContentUpdates();
 		} else if (save) {
-			hotbarStorageEntry.method_56836(clientPlayerEntity.getInventory(), dynamicRegistryManager);
+			hotbarStorageEntry.serialize(clientPlayerEntity.getInventory(), dynamicRegistryManager);
 			Text text = client.options.hotbarKeys[index].getBoundKeyLocalizedText();
 			Text text2 = client.options.loadToolbarActivatorKey.getBoundKeyLocalizedText();
 			Text text3 = Text.translatable("inventory.hotbarSaved", text2, text);

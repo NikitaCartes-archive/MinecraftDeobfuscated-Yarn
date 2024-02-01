@@ -439,16 +439,12 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	/**
 	 * {@return a registry wrapper that does not mutate the backing registry under
 	 * any circumstances}
-	 * 
-	 * @see net.minecraft.command.CommandRegistryAccess.EntryListCreationPolicy#FAIL
 	 */
 	RegistryWrapper.Impl<T> getReadOnlyWrapper();
 
 	/**
 	 * {@return a registry wrapper that creates and stores a new registry entry list
 	 * when handling an unknown tag key}
-	 * 
-	 * @see net.minecraft.command.CommandRegistryAccess.EntryListCreationPolicy#CREATE_NEW
 	 */
 	default RegistryWrapper.Impl<T> getTagCreatingWrapper() {
 		return new RegistryWrapper.Impl.Delegating<T>() {

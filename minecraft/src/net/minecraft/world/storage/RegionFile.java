@@ -165,7 +165,7 @@ public class RegionFile implements AutoCloseable {
 	@Nullable
 	private DataInputStream decompress(ChunkPos pos, byte flags, InputStream stream) throws IOException {
 		ChunkCompressionFormat chunkCompressionFormat = ChunkCompressionFormat.get(flags);
-		if (chunkCompressionFormat == ChunkCompressionFormat.field_48916) {
+		if (chunkCompressionFormat == ChunkCompressionFormat.CUSTOM) {
 			String string = new DataInputStream(stream).readUTF();
 			Identifier identifier = Identifier.tryParse(string);
 			if (identifier != null) {

@@ -115,7 +115,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			TradeOfferList.CODEC
 				.parse(NbtOps.INSTANCE, nbt.get("Offers"))
 				.resultOrPartial(Util.addPrefix("Failed to load offers: ", LOGGER::warn))
-				.ifPresent(tradeOfferList -> this.offerData = tradeOfferList);
+				.ifPresent(offerData -> this.offerData = offerData);
 		}
 
 		if (nbt.contains("Gossips", NbtElement.LIST_TYPE)) {

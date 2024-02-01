@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 public class DataPackContents {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final CompletableFuture<Unit> COMPLETED_UNIT = CompletableFuture.completedFuture(Unit.INSTANCE);
-	private final DataPackContents.ConfigurableWrapperLookup field_48785;
+	private final DataPackContents.ConfigurableWrapperLookup registryLookup;
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager;
 	private final TagManagerLoader registryTagManager;
@@ -55,13 +55,13 @@ public class DataPackContents {
 		CommandManager.RegistrationEnvironment environment,
 		int functionPermissionLevel
 	) {
-		this.field_48785 = new DataPackContents.ConfigurableWrapperLookup(dynamicRegistryManager);
-		this.field_48785.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.CREATE_NEW);
-		this.recipeManager = new RecipeManager(this.field_48785);
+		this.registryLookup = new DataPackContents.ConfigurableWrapperLookup(dynamicRegistryManager);
+		this.registryLookup.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.CREATE_NEW);
+		this.recipeManager = new RecipeManager(this.registryLookup);
 		this.registryTagManager = new TagManagerLoader(dynamicRegistryManager);
-		this.commandManager = new CommandManager(environment, CommandRegistryAccess.of(this.field_48785, enabledFeatures));
-		this.lootManager = new LootManager(this.field_48785);
-		this.serverAdvancementLoader = new ServerAdvancementLoader(this.field_48785, this.lootManager);
+		this.commandManager = new CommandManager(environment, CommandRegistryAccess.of(this.registryLookup, enabledFeatures));
+		this.lootManager = new LootManager(this.registryLookup);
+		this.serverAdvancementLoader = new ServerAdvancementLoader(this.registryLookup, this.lootManager);
 		this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());
 	}
 
@@ -124,7 +124,7 @@ public class DataPackContents {
 		DataPackContents dataPackContents = new DataPackContents(dynamicRegistryManager, enabledFeatures, environment, functionPermissionLevel);
 		return SimpleResourceReload.start(manager, dataPackContents.getContents(), prepareExecutor, applyExecutor, COMPLETED_UNIT, LOGGER.isDebugEnabled())
 			.whenComplete()
-			.whenComplete((void_, throwable) -> dataPackContents.field_48785.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.FAIL))
+			.whenComplete((void_, throwable) -> dataPackContents.registryLookup.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.FAIL))
 			.thenApply(void_ -> dataPackContents);
 	}
 

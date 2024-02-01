@@ -3,12 +3,12 @@ package net.minecraft.client.gui.hud.debug;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9194;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Colors;
+import net.minecraft.util.profiler.log.MultiValueDebugSampleLog;
 
 @Environment(EnvType.CLIENT)
 public class RenderingChart extends DebugChart {
@@ -18,8 +18,8 @@ public class RenderingChart extends DebugChart {
 	private static final int field_45929 = 30;
 	private static final double field_45930 = 33.333333333333336;
 
-	public RenderingChart(TextRenderer textRenderer, class_9194 arg) {
-		super(textRenderer, arg);
+	public RenderingChart(TextRenderer textRenderer, MultiValueDebugSampleLog multiValueDebugSampleLog) {
+		super(textRenderer, multiValueDebugSampleLog);
 	}
 
 	@Override

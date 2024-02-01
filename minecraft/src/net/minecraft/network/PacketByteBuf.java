@@ -137,9 +137,6 @@ import org.joml.Vector3f;
  *  <td>{@link Quaternionf}</td><td>{@link #readQuaternionf()}</td><td>{@link #writeQuaternionf(Quaternionf)}</td>
  * </tr>
  * <tr>
- *  <td>{@link Text}</td><td>{@link #readText()}</td><td>{@link #writeText(Text)}</td>
- * </tr>
- * <tr>
  *  <td>{@link Enum}</td><td>{@link #readEnumConstant(Class)}</td><td>{@link #writeEnumConstant(Enum)}</td>
  * </tr>
  * <tr>

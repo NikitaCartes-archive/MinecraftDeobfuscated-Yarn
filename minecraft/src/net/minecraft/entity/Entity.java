@@ -3793,7 +3793,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 * Removes this entity from the current dimension.
 	 * 
 	 * <p>This calls {@link #setRemoved} by default. Subclasses can add other logics,
-	 * such as setting the stack count of {@linkplain #getItemsEquipped equipped stacks}
+	 * such as setting the stack count of {@linkplain LivingEntity#getEquippedItems equipped stacks}
 	 * to zero.
 	 * 
 	 * @see #moveToWorld

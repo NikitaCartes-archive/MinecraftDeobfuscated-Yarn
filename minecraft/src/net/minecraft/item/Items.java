@@ -1616,7 +1616,7 @@ public class Items {
 	public static final Item WAXED_OXIDIZED_COPPER_BULB = register(Blocks.WAXED_OXIDIZED_COPPER_BULB);
 	public static final Item TRIAL_SPAWNER = register(Blocks.TRIAL_SPAWNER);
 	public static final Item TRIAL_KEY = register("trial_key", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
-	public static final Item field_48847 = register(Blocks.VAULT);
+	public static final Item VAULT = register(Blocks.VAULT);
 
 	public static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

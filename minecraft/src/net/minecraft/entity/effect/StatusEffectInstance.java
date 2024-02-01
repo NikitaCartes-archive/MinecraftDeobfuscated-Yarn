@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int INFINITE = -1;
+	public static final int MIN_AMPLIFIER = 0;
+	public static final int MAX_AMPLIFIER = 127;
 	public static final Codec<StatusEffectInstance> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Registries.STATUS_EFFECT.createEntryCodec().fieldOf("id").forGetter(StatusEffectInstance::getEffectType),
@@ -77,7 +79,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	) {
 		this.type = effect;
 		this.duration = duration;
-		this.amplifier = amplifier;
+		this.amplifier = MathHelper.clamp(amplifier, 0, 127);
 		this.ambient = ambient;
 		this.showParticles = showParticles;
 		this.showIcon = showIcon;
@@ -401,11 +403,11 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	static record Parameters(
 		int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<StatusEffectInstance.Parameters> hiddenEffect
 	) {
-		private static final Codec<Integer> AMPLIFIER_CODEC = Codecs.validate(Codec.BYTE.xmap(Byte::intValue, Integer::byteValue), Codec.checkRange(0, 127));
 		public static final MapCodec<StatusEffectInstance.Parameters> CODEC = Codecs.createRecursiveMap(
+			"MobEffectInstance.Details",
 			codec -> RecordCodecBuilder.mapCodec(
 					instance -> instance.group(
-								Codecs.createStrictOptionalFieldCodec(AMPLIFIER_CODEC, "amplifier", 0).forGetter(StatusEffectInstance.Parameters::amplifier),
+								Codecs.createStrictOptionalFieldCodec(Codecs.UNSIGNED_BYTE, "amplifier", 0).forGetter(StatusEffectInstance.Parameters::amplifier),
 								Codecs.createStrictOptionalFieldCodec(Codec.INT, "duration", 0).forGetter(StatusEffectInstance.Parameters::duration),
 								Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "ambient", false).forGetter(StatusEffectInstance.Parameters::ambient),
 								Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_particles", true).forGetter(StatusEffectInstance.Parameters::showParticles),

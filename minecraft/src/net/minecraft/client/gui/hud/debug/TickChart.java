@@ -4,12 +4,12 @@ import java.util.Locale;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9194;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.profiler.ServerTickType;
+import net.minecraft.util.profiler.log.MultiValueDebugSampleLog;
 
 @Environment(EnvType.CLIENT)
 public class TickChart extends DebugChart {
@@ -21,7 +21,7 @@ public class TickChart extends DebugChart {
 	private static final int field_48765 = -10547572;
 	private final Supplier<Float> millisPerTickSupplier;
 
-	public TickChart(TextRenderer textRenderer, class_9194 log, Supplier<Float> millisPerTickSupplier) {
+	public TickChart(TextRenderer textRenderer, MultiValueDebugSampleLog log, Supplier<Float> millisPerTickSupplier) {
 		super(textRenderer, log);
 		this.millisPerTickSupplier = millisPerTickSupplier;
 	}
@@ -34,20 +34,20 @@ public class TickChart extends DebugChart {
 
 	@Override
 	protected void drawOverlayBar(DrawContext context, int y, int x, int index) {
-		long l = this.log.method_56660(index, ServerTickType.TICK_SERVER_METHOD.ordinal());
+		long l = this.log.get(index, ServerTickType.TICK_SERVER_METHOD.ordinal());
 		int i = this.getHeight((double)l);
 		context.fill(RenderLayer.getGuiOverlay(), x, y - i, x + 1, y, -6745839);
-		long m = this.log.method_56660(index, ServerTickType.SCHEDULED_TASKS.ordinal());
+		long m = this.log.get(index, ServerTickType.SCHEDULED_TASKS.ordinal());
 		int j = this.getHeight((double)m);
 		context.fill(RenderLayer.getGuiOverlay(), x, y - i - j, x + 1, y - i, -4548257);
-		long n = this.log.method_56659(index) - this.log.method_56660(index, ServerTickType.IDLE.ordinal()) - l - m;
+		long n = this.log.get(index) - this.log.get(index, ServerTickType.IDLE.ordinal()) - l - m;
 		int k = this.getHeight((double)n);
 		context.fill(RenderLayer.getGuiOverlay(), x, y - k - j - i, x + 1, y - j - i, -10547572);
 	}
 
 	@Override
 	protected long get(int index) {
-		return this.log.method_56659(index) - this.log.method_56660(index, ServerTickType.IDLE.ordinal());
+		return this.log.get(index) - this.log.get(index, ServerTickType.IDLE.ordinal());
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class HotbarStorage {
 			for (int j = 0; j < 9; j++) {
 				this.entries[j] = (HotbarStorageEntry)HotbarStorageEntry.CODEC
 					.parse(NbtOps.INSTANCE, nbtCompound.get(String.valueOf(j)))
-					.resultOrPartial(string -> LOGGER.warn("Failed to parse hotbar: {}", string))
+					.resultOrPartial(error -> LOGGER.warn("Failed to parse hotbar: {}", error))
 					.orElseGet(HotbarStorageEntry::new);
 			}
 		} catch (Exception var4) {

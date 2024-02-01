@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Queue;
 import net.minecraft.network.packet.s2c.play.DebugSampleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.DebugSampleType;
 import net.minecraft.util.Util;
+import net.minecraft.util.profiler.log.DebugSampleType;
 
 public class SampleSubscriptionTracker {
 	public static final int STOP_TRACK_TICK = 200;
@@ -17,8 +17,8 @@ public class SampleSubscriptionTracker {
 	private final EnumMap<DebugSampleType, Map<ServerPlayerEntity, SampleSubscriptionTracker.MeasureTimeTick>> subscriptionMap;
 	private final Queue<SampleSubscriptionTracker.PlayerSubscriptionData> pendingQueue = new LinkedList();
 
-	public SampleSubscriptionTracker(PlayerManager playermanager) {
-		this.playerManager = playermanager;
+	public SampleSubscriptionTracker(PlayerManager playerManager) {
+		this.playerManager = playerManager;
 		this.subscriptionMap = new EnumMap(DebugSampleType.class);
 
 		for (DebugSampleType debugSampleType : DebugSampleType.values()) {

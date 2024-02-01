@@ -16,12 +16,12 @@ public record CookieResponseC2SPacket(Identifier key, @Nullable byte[] payload) 
 	);
 
 	private CookieResponseC2SPacket(PacketByteBuf buf) {
-		this(buf.readIdentifier(), buf.readNullable(StoreCookieS2CPacket.field_49011));
+		this(buf.readIdentifier(), buf.readNullable(StoreCookieS2CPacket.COOKIE_PACKET_CODEC));
 	}
 
 	private void write(PacketByteBuf buf) {
 		buf.writeIdentifier(this.key);
-		buf.writeNullable(this.payload, StoreCookieS2CPacket.field_49011);
+		buf.writeNullable(this.payload, StoreCookieS2CPacket.COOKIE_PACKET_CODEC);
 	}
 
 	@Override
