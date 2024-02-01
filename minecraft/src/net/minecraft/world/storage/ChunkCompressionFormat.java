@@ -39,7 +39,7 @@ public class ChunkCompressionFormat {
 			4, "lz4", stream -> new FixedBufferInputStream(new LZ4BlockInputStream(stream)), stream -> new BufferedOutputStream(new LZ4BlockOutputStream(stream))
 		)
 	);
-	public static final ChunkCompressionFormat field_48916 = add(new ChunkCompressionFormat(127, null, stream -> {
+	public static final ChunkCompressionFormat CUSTOM = add(new ChunkCompressionFormat(127, null, stream -> {
 		throw new UnsupportedOperationException();
 	}, stream -> {
 		throw new UnsupportedOperationException();

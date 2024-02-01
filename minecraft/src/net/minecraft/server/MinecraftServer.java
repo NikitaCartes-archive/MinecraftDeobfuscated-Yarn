@@ -100,7 +100,6 @@ import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
-import net.minecraft.util.DebugSampleType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
@@ -122,7 +121,6 @@ import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.EmptyProfileResult;
-import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
@@ -130,6 +128,8 @@ import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
 import net.minecraft.util.profiler.ServerTickType;
+import net.minecraft.util.profiler.log.DebugSampleLog;
+import net.minecraft.util.profiler.log.DebugSampleType;
 import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
@@ -780,25 +780,25 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	private void pushFullTickLog() {
 		long l = Util.getMeasuringTimeNano();
-		if (this.method_56626()) {
-			this.getPerformanceLog().push(l - this.prevFullTickLogTime);
+		if (this.shouldPushTickTimeLog()) {
+			this.getDebugSampleLog().push(l - this.prevFullTickLogTime);
 		}
 
 		this.prevFullTickLogTime = l;
 	}
 
 	private void startTaskPerformanceLog() {
-		if (this.method_56626()) {
+		if (this.shouldPushTickTimeLog()) {
 			this.tasksStartTime = Util.getMeasuringTimeNano();
 			this.waitTime = 0L;
 		}
 	}
 
 	private void pushPerformanceLogs() {
-		if (this.method_56626()) {
-			PerformanceLog performanceLog = this.getPerformanceLog();
-			performanceLog.push(Util.getMeasuringTimeNano() - this.tasksStartTime - this.waitTime, ServerTickType.SCHEDULED_TASKS.ordinal());
-			performanceLog.push(this.waitTime, ServerTickType.IDLE.ordinal());
+		if (this.shouldPushTickTimeLog()) {
+			DebugSampleLog debugSampleLog = this.getDebugSampleLog();
+			debugSampleLog.push(Util.getMeasuringTimeNano() - this.tasksStartTime - this.waitTime, ServerTickType.SCHEDULED_TASKS.ordinal());
+			debugSampleLog.push(this.waitTime, ServerTickType.IDLE.ordinal());
 		}
 	}
 
@@ -835,7 +835,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	@Override
 	public void waitForTasks() {
-		boolean bl = this.method_56626();
+		boolean bl = this.shouldPushTickTimeLog();
 		long l = bl ? Util.getMeasuringTimeNano() : 0L;
 		super.waitForTasks();
 		if (bl) {
@@ -948,8 +948,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void pushTickLog(long tickStartTime) {
-		if (this.method_56626()) {
-			this.getPerformanceLog().push(Util.getMeasuringTimeNano() - tickStartTime, ServerTickType.TICK_SERVER_METHOD.ordinal());
+		if (this.shouldPushTickTimeLog()) {
+			this.getDebugSampleLog().push(Util.getMeasuringTimeNano() - tickStartTime, ServerTickType.TICK_SERVER_METHOD.ordinal());
 		}
 	}
 
@@ -973,9 +973,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	protected abstract PerformanceLog getPerformanceLog();
+	protected abstract DebugSampleLog getDebugSampleLog();
 
-	public abstract boolean method_56626();
+	public abstract boolean shouldPushTickTimeLog();
 
 	private ServerMetadata createMetadata() {
 		ServerMetadata.Players players = this.createMetadataPlayers();
@@ -2099,7 +2099,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return true;
 	}
 
-	public void method_56625(ServerPlayerEntity serverPlayerEntity, DebugSampleType debugSampleType) {
+	public void subscribeToDebugSample(ServerPlayerEntity player, DebugSampleType type) {
 	}
 
 	public boolean acceptsTransfers() {

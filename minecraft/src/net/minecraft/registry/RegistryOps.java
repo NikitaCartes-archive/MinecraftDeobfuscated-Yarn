@@ -40,8 +40,8 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		return new RegistryOps<>(delegate, registryInfoGetter);
 	}
 
-	public static <T> Dynamic<T> method_56622(Dynamic<T> dynamic, RegistryWrapper.WrapperLookup wrapperLookup) {
-		return new Dynamic<>(of(dynamic.getOps(), wrapperLookup), dynamic.getValue());
+	public static <T> Dynamic<T> withRegistry(Dynamic<T> dynamic, RegistryWrapper.WrapperLookup registryLookup) {
+		return new Dynamic<>(of(dynamic.getOps(), registryLookup), dynamic.getValue());
 	}
 
 	private RegistryOps(DynamicOps<T> delegate, RegistryOps.RegistryInfoGetter registryInfoGetter) {

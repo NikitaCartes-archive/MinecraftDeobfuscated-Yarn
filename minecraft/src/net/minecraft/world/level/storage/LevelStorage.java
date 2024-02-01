@@ -155,7 +155,7 @@ public class LevelStorage {
 	public static ParsedSaveProperties parseSaveProperties(
 		Dynamic<?> dynamic, DataConfiguration dataConfiguration, Registry<DimensionOptions> dimensionsRegistry, DynamicRegistryManager.Immutable registryManager
 	) {
-		Dynamic<?> dynamic2 = RegistryOps.method_56622(dynamic, registryManager);
+		Dynamic<?> dynamic2 = RegistryOps.withRegistry(dynamic, registryManager);
 		Dynamic<?> dynamic3 = dynamic2.get("WorldGenSettings").orElseEmptyMap();
 		WorldGenSettings worldGenSettings = (WorldGenSettings)WorldGenSettings.CODEC
 			.parse(dynamic3)

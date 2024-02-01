@@ -21,7 +21,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9193;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourcePackManager;
@@ -40,7 +39,6 @@ import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ApiServices;
-import net.minecraft.util.DebugSampleType;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -48,8 +46,10 @@ import net.minecraft.util.logging.UncaughtExceptionHandler;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.ServerTickType;
+import net.minecraft.util.profiler.log.DebugSampleLog;
+import net.minecraft.util.profiler.log.DebugSampleType;
+import net.minecraft.util.profiler.log.SubscribableDebugSampleLog;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -72,9 +72,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Nullable
 	private final TextFilterer filterer;
 	@Nullable
-	private class_9193 field_48788;
+	private SubscribableDebugSampleLog debugSampleLog;
 	@Nullable
-	private SampleSubscriptionTracker field_48789;
+	private SampleSubscriptionTracker subscriptionTracker;
 
 	public MinecraftDedicatedServer(
 		Thread serverThread,
@@ -171,8 +171,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			return false;
 		} else {
 			this.setPlayerManager(new DedicatedPlayerManager(this, this.getCombinedDynamicRegistries(), this.saveHandler));
-			this.field_48789 = new SampleSubscriptionTracker(this.getPlayerManager());
-			this.field_48788 = new class_9193(ServerTickType.values().length, this.field_48789, DebugSampleType.TICK_TIME);
+			this.subscriptionTracker = new SampleSubscriptionTracker(this.getPlayerManager());
+			this.debugSampleLog = new SubscribableDebugSampleLog(ServerTickType.values().length, this.subscriptionTracker, DebugSampleType.TICK_TIME);
 			long l = Util.getMeasuringTimeNano();
 			SkullBlockEntity.setServices(this.apiServices, this);
 			UserCache.setUseRemote(this.isOnlineMode());
@@ -598,22 +598,22 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public void endTickMetrics() {
 		super.endTickMetrics();
-		this.field_48789.tick(this.getTicks());
+		this.subscriptionTracker.tick(this.getTicks());
 	}
 
 	@Override
-	public PerformanceLog getPerformanceLog() {
-		return this.field_48788;
+	public DebugSampleLog getDebugSampleLog() {
+		return this.debugSampleLog;
 	}
 
 	@Override
-	public boolean method_56626() {
-		return this.field_48789.shouldPush(DebugSampleType.TICK_TIME);
+	public boolean shouldPushTickTimeLog() {
+		return this.subscriptionTracker.shouldPush(DebugSampleType.TICK_TIME);
 	}
 
 	@Override
-	public void method_56625(ServerPlayerEntity serverPlayerEntity, DebugSampleType debugSampleType) {
-		this.field_48789.addPlayer(serverPlayerEntity, debugSampleType);
+	public void subscribeToDebugSample(ServerPlayerEntity player, DebugSampleType type) {
+		this.subscriptionTracker.addPlayer(player, type);
 	}
 
 	@Override

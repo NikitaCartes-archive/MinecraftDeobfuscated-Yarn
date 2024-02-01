@@ -41,7 +41,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9191;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.handler.DecoderHandler;
@@ -74,6 +73,7 @@ import net.minecraft.network.state.QueryStates;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -463,7 +463,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.side.getOpposite();
 	}
 
-	public static ClientConnection connect(InetSocketAddress address, boolean useEpoll, @Nullable class_9191 packetSizeLog) {
+	public static ClientConnection connect(InetSocketAddress address, boolean useEpoll, @Nullable MultiValueDebugSampleLogImpl packetSizeLog) {
 		ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		if (packetSizeLog != null) {
 			clientConnection.resetPacketSizeLog(packetSizeLog);
@@ -642,7 +642,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.averagePacketsSent;
 	}
 
-	public void resetPacketSizeLog(class_9191 log) {
+	public void resetPacketSizeLog(MultiValueDebugSampleLogImpl log) {
 		this.packetSizeLogger = new PacketSizeLogger(log);
 	}
 }

@@ -25,7 +25,7 @@ public interface CommandRegistryAccess extends RegistryWrapper.WrapperLookup {
 
 			@Override
 			public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
-				return wrapperLookup.getOptionalWrapper(registryRef).map(impl -> impl.withFeatureFilter(enabledFeatures));
+				return wrapperLookup.getOptionalWrapper(registryRef).map(wrapper -> wrapper.withFeatureFilter(enabledFeatures));
 			}
 		};
 	}

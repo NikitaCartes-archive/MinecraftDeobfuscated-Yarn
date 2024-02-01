@@ -11,7 +11,7 @@ import net.minecraft.screen.slot.Slot;
 
 public class HorseScreenHandler extends ScreenHandler {
 	private final Inventory inventory;
-	private final Inventory field_48834;
+	private final Inventory horseArmorInventory;
 	private final AbstractHorseEntity entity;
 	private static final int field_48835 = 1;
 	private static final int field_48836 = 2;
@@ -19,7 +19,7 @@ public class HorseScreenHandler extends ScreenHandler {
 	public HorseScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, AbstractHorseEntity entity) {
 		super(null, syncId);
 		this.inventory = inventory;
-		this.field_48834 = entity.getInventory();
+		this.horseArmorInventory = entity.getInventory();
 		this.entity = entity;
 		int i = 3;
 		inventory.onOpen(playerInventory.player);
@@ -35,7 +35,7 @@ public class HorseScreenHandler extends ScreenHandler {
 				return entity.canBeSaddled();
 			}
 		});
-		this.addSlot(new Slot(this.field_48834, 0, 8, 36) {
+		this.addSlot(new Slot(this.horseArmorInventory, 0, 8, 36) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return entity.isHorseArmor(stack);
@@ -74,7 +74,7 @@ public class HorseScreenHandler extends ScreenHandler {
 	public boolean canUse(PlayerEntity player) {
 		return !this.entity.areInventoriesDifferent(this.inventory)
 			&& this.inventory.canPlayerUse(player)
-			&& this.field_48834.canPlayerUse(player)
+			&& this.horseArmorInventory.canPlayerUse(player)
 			&& this.entity.isAlive()
 			&& player.canInteractWithEntity(this.entity, 4.0);
 	}

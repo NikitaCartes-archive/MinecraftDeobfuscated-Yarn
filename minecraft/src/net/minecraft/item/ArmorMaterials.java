@@ -29,7 +29,7 @@ public class ArmorMaterials {
 		() -> Ingredient.ofItems(Items.LEATHER),
 		List.of(new ArmorMaterial.Layer(new Identifier("leather"), "", true), new ArmorMaterial.Layer(new Identifier("leather"), "_overlay", false))
 	);
-	public static final RegistryEntry<ArmorMaterial> CHAIN = register("chain", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
+	public static final RegistryEntry<ArmorMaterial> CHAIN = register("chainmail", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 1);
 		map.put(ArmorItem.Type.LEGGINGS, 4);
 		map.put(ArmorItem.Type.CHESTPLATE, 5);

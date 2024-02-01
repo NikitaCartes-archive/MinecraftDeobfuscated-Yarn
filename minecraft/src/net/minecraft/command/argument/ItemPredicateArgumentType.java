@@ -10,17 +10,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import net.minecraft.class_9215;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemStackPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo:'bar'}");
-	private final class_9215 field_48959;
+	private final ItemPredicateStringReader reader;
 
 	public ItemPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		this.field_48959 = new class_9215(commandRegistryAccess);
+		this.reader = new ItemPredicateStringReader(commandRegistryAccess);
 	}
 
 	public static ItemPredicateArgumentType itemPredicate(CommandRegistryAccess commandRegistryAccess) {
@@ -28,7 +27,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	}
 
 	public ItemPredicateArgumentType.ItemStackPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
-		Predicate<ItemStack> predicate = this.field_48959.method_56859(stringReader);
+		Predicate<ItemStack> predicate = this.reader.read(stringReader);
 		return predicate::test;
 	}
 
@@ -38,7 +37,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return this.field_48959.method_56860(builder);
+		return this.reader.getSuggestions(builder);
 	}
 
 	@Override

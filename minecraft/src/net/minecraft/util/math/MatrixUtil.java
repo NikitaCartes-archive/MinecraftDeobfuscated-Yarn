@@ -169,11 +169,11 @@ public class MatrixUtil {
 		return Triple.of(quaternionf2, vector3f, quaternionf.conjugate());
 	}
 
-	public static boolean method_56826(Matrix4f matrix4f) {
-		return (matrix4f.properties() & 8) != 0;
+	public static boolean isTranslation(Matrix4f matrix) {
+		return (matrix.properties() & 8) != 0;
 	}
 
-	public static boolean method_56827(Matrix4f matrix4f) {
-		return (matrix4f.properties() & 16) != 0;
+	public static boolean isOrthonormal(Matrix4f matrix) {
+		return (matrix.properties() & 16) != 0;
 	}
 }

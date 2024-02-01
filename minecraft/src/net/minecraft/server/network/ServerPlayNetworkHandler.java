@@ -1748,7 +1748,7 @@ public class ServerPlayNetworkHandler
 	@Override
 	public void onDebugSampleSubcription(DebugSampleSubscriptionC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		this.server.method_56625(this.player, packet.sampleType());
+		this.server.subscribeToDebugSample(this.player, packet.sampleType());
 	}
 
 	private void setSession(PublicPlayerSession session) {

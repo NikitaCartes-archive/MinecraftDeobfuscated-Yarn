@@ -14,24 +14,24 @@ import net.minecraft.registry.entry.RegistryEntry;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 public class ItemStringReader {
-	private final TagKeyArgumentType field_48955;
+	private final ItemPredicateReader predicateReader;
 
-	public ItemStringReader(RegistryWrapper.WrapperLookup wrapperLookup) {
-		this.field_48955 = new TagKeyArgumentType(wrapperLookup, false);
+	public ItemStringReader(RegistryWrapper.WrapperLookup registryLookup) {
+		this.predicateReader = new ItemPredicateReader(registryLookup, false);
 	}
 
-	public ItemStringReader.ItemResult consume(StringReader stringReader) throws CommandSyntaxException {
+	public ItemStringReader.ItemResult consume(StringReader reader) throws CommandSyntaxException {
 		final MutableObject<RegistryEntry<Item>> mutableObject = new MutableObject<>();
 		final MutableObject<NbtCompound> mutableObject2 = new MutableObject<>();
-		this.field_48955.method_56865(stringReader, new TagKeyArgumentType.class_9219() {
+		this.predicateReader.read(reader, new ItemPredicateReader.Callbacks() {
 			@Override
-			public void method_56853(RegistryEntry<Item> registryEntry) {
-				mutableObject.setValue(registryEntry);
+			public void onItem(RegistryEntry<Item> item) {
+				mutableObject.setValue(item);
 			}
 
 			@Override
-			public void method_56854(NbtCompound nbtCompound) {
-				mutableObject2.setValue(nbtCompound);
+			public void setNbt(NbtCompound nbt) {
+				mutableObject2.setValue(nbt);
 			}
 		});
 		return new ItemStringReader.ItemResult(
@@ -39,8 +39,8 @@ public class ItemStringReader {
 		);
 	}
 
-	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder suggestionsBuilder) {
-		return this.field_48955.method_56866(suggestionsBuilder);
+	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder) {
+		return this.predicateReader.getSuggestions(builder);
 	}
 
 	public static record ItemResult(RegistryEntry<Item> item, @Nullable NbtCompound nbt) {

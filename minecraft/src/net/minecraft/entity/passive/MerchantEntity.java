@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 
 public abstract class MerchantEntity extends PassiveEntity implements InventoryOwner, Npc, Merchant {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Logger field_48833 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int field_30599 = 300;
 	private static final int INVENTORY_SIZE = 8;
 	@Nullable
@@ -172,8 +172,8 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		if (nbt.contains("Offers")) {
 			TradeOfferList.CODEC
 				.parse(NbtOps.INSTANCE, nbt.get("Offers"))
-				.resultOrPartial(Util.addPrefix("Failed to load offers: ", field_48833::warn))
-				.ifPresent(tradeOfferList -> this.offers = tradeOfferList);
+				.resultOrPartial(Util.addPrefix("Failed to load offers: ", LOGGER::warn))
+				.ifPresent(offers -> this.offers = offers);
 		}
 
 		this.readInventory(nbt);
