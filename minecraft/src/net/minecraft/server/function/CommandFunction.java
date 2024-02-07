@@ -50,6 +50,7 @@ public interface CommandFunction<T> {
 					stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 					String string2 = ((String)lines.get(i)).trim();
 					stringBuilder.append(string2);
+					validateCommandLength(stringBuilder);
 				} while (continuesToNextLine(stringBuilder));
 
 				string3 = stringBuilder.toString();
@@ -57,6 +58,7 @@ public interface CommandFunction<T> {
 				string3 = string;
 			}
 
+			validateCommandLength(string3);
 			StringReader stringReader = new StringReader(string3);
 			if (stringReader.canRead() && stringReader.peek() != '#') {
 				if (stringReader.peek() == '/') {
@@ -84,6 +86,13 @@ public interface CommandFunction<T> {
 		}
 
 		return functionBuilder.toCommandFunction(id);
+	}
+
+	static void validateCommandLength(CharSequence command) {
+		if (command.length() > 2000000) {
+			CharSequence charSequence = command.subSequence(0, Math.min(512, 2000000));
+			throw new IllegalStateException("Command too long: " + command.length() + " characters, contents: " + charSequence + "...");
+		}
 	}
 
 	static <T extends AbstractServerCommandSource<T>> SourcedCommandAction<T> parse(CommandDispatcher<T> dispatcher, T source, StringReader reader) throws CommandSyntaxException {

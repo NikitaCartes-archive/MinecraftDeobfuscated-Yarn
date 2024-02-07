@@ -79,9 +79,9 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(HEAD_ROLLING_TIME_LEFT, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(HEAD_ROLLING_TIME_LEFT, 0);
 	}
 
 	@Override

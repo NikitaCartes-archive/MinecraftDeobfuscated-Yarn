@@ -110,7 +110,7 @@ public class PostEffectProcessor implements AutoCloseable {
 			}
 		} catch (Exception var16) {
 			InvalidHierarchicalFileException invalidHierarchicalFileException2 = InvalidHierarchicalFileException.wrap(var16);
-			invalidHierarchicalFileException2.addInvalidFile(id.getPath() + " (" + resource.getResourcePackName() + ")");
+			invalidHierarchicalFileException2.addInvalidFile(id.getPath() + " (" + resource.getPackId() + ")");
 			throw invalidHierarchicalFileException2;
 		}
 	}

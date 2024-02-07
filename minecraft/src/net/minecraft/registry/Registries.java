@@ -62,6 +62,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.scoreboard.number.NumberFormatType;
 import net.minecraft.scoreboard.number.NumberFormatTypes;
 import net.minecraft.screen.ScreenHandlerType;
@@ -194,12 +195,8 @@ public class Registries {
 	public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = create(
 		RegistryKeys.FEATURE_SIZE_TYPE, registry -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE
 	);
-	public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = create(
-		RegistryKeys.BIOME_SOURCE, Lifecycle.stable(), BiomeSources::registerAndGetDefault
-	);
-	public static final Registry<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = create(
-		RegistryKeys.CHUNK_GENERATOR, Lifecycle.stable(), ChunkGenerators::registerAndGetDefault
-	);
+	public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = create(RegistryKeys.BIOME_SOURCE, BiomeSources::registerAndGetDefault);
+	public static final Registry<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = create(RegistryKeys.CHUNK_GENERATOR, ChunkGenerators::registerAndGetDefault);
 	public static final Registry<Codec<? extends MaterialRules.MaterialCondition>> MATERIAL_CONDITION = create(
 		RegistryKeys.MATERIAL_CONDITION, MaterialRules.MaterialCondition::registerAndGetDefault
 	);
@@ -231,44 +228,26 @@ public class Registries {
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {
-		return create(key, Lifecycle.stable(), initializer);
+		return create(key, new SimpleRegistry<>(key, Lifecycle.stable(), false), initializer);
 	}
 
 	private static <T> Registry<T> createIntrusive(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {
-		return create(key, new SimpleRegistry<>(key, Lifecycle.stable(), true), initializer, Lifecycle.stable());
+		return create(key, new SimpleRegistry<>(key, Lifecycle.stable(), true), initializer);
 	}
 
 	private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Registries.Initializer<T> initializer) {
-		return create(key, defaultId, Lifecycle.stable(), initializer);
+		return create(key, new SimpleDefaultedRegistry<>(defaultId, key, Lifecycle.stable(), false), initializer);
 	}
 
 	private static <T> DefaultedRegistry<T> createIntrusive(RegistryKey<? extends Registry<T>> key, String defaultId, Registries.Initializer<T> initializer) {
-		return createIntrusive(key, defaultId, Lifecycle.stable(), initializer);
+		return create(key, new SimpleDefaultedRegistry<>(defaultId, key, Lifecycle.stable(), true), initializer);
 	}
 
-	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Registries.Initializer<T> initializer) {
-		return create(key, new SimpleRegistry<>(key, lifecycle, false), initializer, lifecycle);
-	}
-
-	private static <T> DefaultedRegistry<T> create(
-		RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, Registries.Initializer<T> initializer
-	) {
-		return create(key, new SimpleDefaultedRegistry<>(defaultId, key, lifecycle, false), initializer, lifecycle);
-	}
-
-	private static <T> DefaultedRegistry<T> createIntrusive(
-		RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, Registries.Initializer<T> initializer
-	) {
-		return create(key, new SimpleDefaultedRegistry<>(defaultId, key, lifecycle, true), initializer, lifecycle);
-	}
-
-	private static <T, R extends MutableRegistry<T>> R create(
-		RegistryKey<? extends Registry<T>> key, R registry, Registries.Initializer<T> initializer, Lifecycle lifecycle
-	) {
+	private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> key, R registry, Registries.Initializer<T> initializer) {
 		Bootstrap.ensureBootstrapped(() -> "registry " + key);
 		Identifier identifier = key.getValue();
 		DEFAULT_ENTRIES.put(identifier, (Supplier)() -> initializer.run(registry));
-		ROOT.add((RegistryKey<MutableRegistry<?>>)key, registry, lifecycle);
+		ROOT.add((RegistryKey<MutableRegistry<?>>)key, registry, RegistryEntryInfo.DEFAULT);
 		return registry;
 	}
 

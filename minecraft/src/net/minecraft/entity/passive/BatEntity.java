@@ -56,9 +56,9 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BAT_FLAGS, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(BAT_FLAGS, (byte)0);
 	}
 
 	@Override

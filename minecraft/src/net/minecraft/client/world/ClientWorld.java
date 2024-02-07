@@ -720,11 +720,11 @@ public class ClientWorld extends World {
 		return new Vec3d((double)h, (double)i, (double)j);
 	}
 
-	public float method_23787(float f) {
-		float g = this.getSkyAngle(f);
-		float h = 1.0F - (MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.25F);
-		h = MathHelper.clamp(h, 0.0F, 1.0F);
-		return h * h * 0.5F;
+	public float getStarBrightness(float tickDelta) {
+		float f = this.getSkyAngle(tickDelta);
+		float g = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.25F);
+		g = MathHelper.clamp(g, 0.0F, 1.0F);
+		return g * g * 0.5F;
 	}
 
 	public int getLightningTicksLeft() {

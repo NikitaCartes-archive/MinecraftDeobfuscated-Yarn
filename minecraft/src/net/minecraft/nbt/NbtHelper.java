@@ -257,21 +257,18 @@ public final class NbtHelper {
 	 * 
 	 * @see #fromBlockPos(BlockPos)
 	 */
-	public static BlockPos toBlockPos(NbtCompound nbt) {
-		return new BlockPos(nbt.getInt("X"), nbt.getInt("Y"), nbt.getInt("Z"));
+	public static Optional<BlockPos> toBlockPos(NbtCompound nbt, String key) {
+		int[] is = nbt.getIntArray(key);
+		return is.length == 3 ? Optional.of(new BlockPos(is[0], is[1], is[2])) : Optional.empty();
 	}
 
 	/**
 	 * {@return the serialized block position}
 	 * 
-	 * @see #toBlockPos(NbtCompound)
+	 * @see #toBlockPos(NbtCompound, String)
 	 */
-	public static NbtCompound fromBlockPos(BlockPos pos) {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putInt("X", pos.getX());
-		nbtCompound.putInt("Y", pos.getY());
-		nbtCompound.putInt("Z", pos.getZ());
-		return nbtCompound;
+	public static NbtElement fromBlockPos(BlockPos pos) {
+		return new NbtIntArray(new int[]{pos.getX(), pos.getY(), pos.getZ()});
 	}
 
 	/**
@@ -330,11 +327,11 @@ public final class NbtHelper {
 	public static NbtCompound fromBlockState(BlockState state) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("Name", Registries.BLOCK.getId(state.getBlock()).toString());
-		ImmutableMap<Property<?>, Comparable<?>> immutableMap = state.getEntries();
-		if (!immutableMap.isEmpty()) {
+		Map<Property<?>, Comparable<?>> map = state.getEntries();
+		if (!map.isEmpty()) {
 			NbtCompound nbtCompound2 = new NbtCompound();
 
-			for (Entry<Property<?>, Comparable<?>> entry : immutableMap.entrySet()) {
+			for (Entry<Property<?>, Comparable<?>> entry : map.entrySet()) {
 				Property<?> property = (Property<?>)entry.getKey();
 				nbtCompound2.putString(property.getName(), nameValue(property, (Comparable<?>)entry.getValue()));
 			}
@@ -351,11 +348,11 @@ public final class NbtHelper {
 	public static NbtCompound fromFluidState(FluidState state) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("Name", Registries.FLUID.getId(state.getFluid()).toString());
-		ImmutableMap<Property<?>, Comparable<?>> immutableMap = state.getEntries();
-		if (!immutableMap.isEmpty()) {
+		Map<Property<?>, Comparable<?>> map = state.getEntries();
+		if (!map.isEmpty()) {
 			NbtCompound nbtCompound2 = new NbtCompound();
 
-			for (Entry<Property<?>, Comparable<?>> entry : immutableMap.entrySet()) {
+			for (Entry<Property<?>, Comparable<?>> entry : map.entrySet()) {
 				Property<?> property = (Property<?>)entry.getKey();
 				nbtCompound2.putString(property.getName(), nameValue(property, (Comparable<?>)entry.getValue()));
 			}

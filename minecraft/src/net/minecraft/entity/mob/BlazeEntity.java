@@ -63,9 +63,9 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BLAZE_FLAGS, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(BLAZE_FLAGS, (byte)0);
 	}
 
 	@Override

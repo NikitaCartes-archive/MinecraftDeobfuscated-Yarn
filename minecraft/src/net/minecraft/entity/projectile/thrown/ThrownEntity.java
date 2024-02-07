@@ -85,15 +85,12 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		}
 
 		this.setVelocity(vec3d.multiply((double)h));
-		if (!this.hasNoGravity()) {
-			Vec3d vec3d2 = this.getVelocity();
-			this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
-		}
-
+		this.applyGravity();
 		this.setPosition(d, e, f);
 	}
 
-	protected float getGravity() {
-		return 0.03F;
+	@Override
+	protected double getGravity() {
+		return 0.03;
 	}
 }

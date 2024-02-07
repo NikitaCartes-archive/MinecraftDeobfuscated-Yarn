@@ -74,9 +74,9 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(TYPE, MooshroomEntity.Type.RED.name);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(TYPE, MooshroomEntity.Type.RED.name);
 	}
 
 	@Override
@@ -133,9 +133,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 					return ActionResult.PASS;
 				}
 
-				if (!player.getAbilities().creativeMode) {
-					itemStack.decrement(1);
-				}
+				itemStack.decrementUnlessCreative(1, player);
 
 				for (int j = 0; j < 4; j++) {
 					this.getWorld()

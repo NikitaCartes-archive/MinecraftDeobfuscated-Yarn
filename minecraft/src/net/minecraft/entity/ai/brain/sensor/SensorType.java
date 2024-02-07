@@ -29,7 +29,7 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<GolemLastSeenSensor> GOLEM_DETECTED = register("golem_detected", GolemLastSeenSensor::new);
 	public static final SensorType<ArmadilloScareDetectedSensor<ArmadilloEntity>> ARMADILLO_SCARE_DETECTED = register(
 		"armadillo_scare_detected",
-		() -> new ArmadilloScareDetectedSensor(5, ArmadilloEntity::isEntityThreatening, ArmadilloEntity::canRollUp, MemoryModuleType.DANGER_DETECTED_RECENTLY, 60)
+		() -> new ArmadilloScareDetectedSensor(5, ArmadilloEntity::isEntityThreatening, ArmadilloEntity::canRollUp, MemoryModuleType.DANGER_DETECTED_RECENTLY, 80)
 	);
 	public static final SensorType<PiglinSpecificSensor> PIGLIN_SPECIFIC_SENSOR = register("piglin_specific_sensor", PiglinSpecificSensor::new);
 	public static final SensorType<PiglinBruteSpecificSensor> PIGLIN_BRUTE_SPECIFIC_SENSOR = register(

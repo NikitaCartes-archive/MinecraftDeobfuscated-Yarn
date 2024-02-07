@@ -154,9 +154,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
-		if (!player.getAbilities().creativeMode) {
-			stack.decrement(1);
-		}
+		stack.decrementUnlessCreative(1, player);
 	}
 
 	public boolean canEat() {

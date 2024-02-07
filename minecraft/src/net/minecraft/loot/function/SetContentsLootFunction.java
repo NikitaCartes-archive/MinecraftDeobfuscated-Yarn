@@ -24,7 +24,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 		instance -> addConditionsField(instance)
 				.<RegistryEntry<BlockEntityType<?>>, List<LootPoolEntry>>and(
 					instance.group(
-						Registries.BLOCK_ENTITY_TYPE.createEntryCodec().fieldOf("type").forGetter(function -> function.type),
+						Registries.BLOCK_ENTITY_TYPE.getEntryCodec().fieldOf("type").forGetter(function -> function.type),
 						LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(function -> function.entries)
 					)
 				)

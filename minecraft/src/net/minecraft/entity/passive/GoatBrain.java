@@ -44,7 +44,7 @@ public class GoatBrain {
 	private static final UniformIntProvider LONG_JUMP_COOLDOWN_RANGE = UniformIntProvider.create(600, 1200);
 	public static final int LONG_JUMP_VERTICAL_RANGE = 5;
 	public static final int LONG_JUMP_HORIZONTAL_RANGE = 5;
-	public static final float LONG_JUMP_MAX_RANGE = 1.5F;
+	public static final float field_49093 = 3.5714288F;
 	private static final UniformIntProvider RAM_COOLDOWN_RANGE = UniformIntProvider.create(600, 6000);
 	private static final UniformIntProvider SCREAMING_RAM_COOLDOWN_RANGE = UniformIntProvider.create(100, 300);
 	private static final TargetPredicate RAM_TARGET_PREDICATE = TargetPredicate.createAttackable()
@@ -76,7 +76,7 @@ public class GoatBrain {
 			0,
 			ImmutableList.of(
 				new StayAboveWaterTask(0.8F),
-				new FleeTask(2.0F),
+				new FleeTask<>(2.0F),
 				new LookAroundTask(45, 90),
 				new WanderAroundTask(),
 				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
@@ -115,7 +115,7 @@ public class GoatBrain {
 				Pair.of(
 					1,
 					new LongJumpTask<>(
-						LONG_JUMP_COOLDOWN_RANGE, 5, 5, 1.5F, goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_LONG_JUMP : SoundEvents.ENTITY_GOAT_LONG_JUMP
+						LONG_JUMP_COOLDOWN_RANGE, 5, 5, 3.5714288F, goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_LONG_JUMP : SoundEvents.ENTITY_GOAT_LONG_JUMP
 					)
 				)
 			),

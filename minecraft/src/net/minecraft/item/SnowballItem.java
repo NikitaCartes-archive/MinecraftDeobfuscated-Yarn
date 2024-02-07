@@ -35,10 +35,7 @@ public class SnowballItem extends Item {
 		}
 
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
-		if (!user.getAbilities().creativeMode) {
-			itemStack.decrement(1);
-		}
-
+		itemStack.decrementUnlessCreative(1, user);
 		return TypedActionResult.success(itemStack, world.isClient());
 	}
 }

@@ -1283,6 +1283,7 @@ public class Items {
 	);
 	public static final Item EXPERIENCE_BOTTLE = register("experience_bottle", new ExperienceBottleItem(new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item FIRE_CHARGE = register("fire_charge", new FireChargeItem(new Item.Settings()));
+	public static final Item WIND_CHARGE = register("wind_charge", new WindChargeItem(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
 	public static final Item WRITABLE_BOOK = register("writable_book", new WritableBookItem(new Item.Settings().maxCount(1)));
 	public static final Item WRITTEN_BOOK = register("written_book", new WrittenBookItem(new Item.Settings().maxCount(16)));
 	public static final Item ITEM_FRAME = register("item_frame", new ItemFrameItem(EntityType.ITEM_FRAME, new Item.Settings()));

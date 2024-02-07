@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 
 public record BlockPredicate(Optional<TagKey<Block>> tag, Optional<RegistryEntryList<Block>> blocks, Optional<StatePredicate> state, Optional<NbtPredicate> nbt) {
 	private static final Codec<RegistryEntryList<Block>> BLOCK_ENTRY_LIST_CODEC = Registries.BLOCK
-		.createEntryCodec()
+		.getEntryCodec()
 		.listOf()
 		.xmap(RegistryEntryList::of, blocks -> blocks.stream().toList());
 	public static final Codec<BlockPredicate> CODEC = RecordCodecBuilder.create(

@@ -109,13 +109,18 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(BLOCK_POS, BlockPos.ORIGIN);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(BLOCK_POS, BlockPos.ORIGIN);
 	}
 
 	@Override
 	public boolean canHit() {
 		return !this.isRemoved();
+	}
+
+	@Override
+	protected double getGravity() {
+		return 0.04;
 	}
 
 	@Override
@@ -125,10 +130,7 @@ public class FallingBlockEntity extends Entity {
 		} else {
 			Block block = this.block.getBlock();
 			this.timeFalling++;
-			if (!this.hasNoGravity()) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
-			}
-
+			this.applyGravity();
 			this.move(MovementType.SELF, this.getVelocity());
 			if (!this.getWorld().isClient) {
 				BlockPos blockPos = this.getBlockPos();

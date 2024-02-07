@@ -123,6 +123,7 @@ public class TestRunContext {
 
 	private void onFinish() {
 		if (!this.toBeRetried.isEmpty()) {
+			LOGGER.info("Starting re-run of tests: {}", this.toBeRetried.stream().map(state -> state.getTestFunction().templatePath()).collect(Collectors.joining(", ")));
 			this.batches = ImmutableList.copyOf(this.batcher.batch(this.toBeRetried));
 			this.toBeRetried.clear();
 			this.stopped = false;
@@ -138,7 +139,7 @@ public class TestRunContext {
 	}
 
 	private Collection<GameTestState> prepareStructures(Collection<GameTestState> oldStates) {
-		return (Collection<GameTestState>)oldStates.stream().map(this::prepareStructure).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+		return oldStates.stream().map(this::prepareStructure).flatMap(Optional::stream).toList();
 	}
 
 	private Optional<GameTestState> prepareStructure(GameTestState oldState) {

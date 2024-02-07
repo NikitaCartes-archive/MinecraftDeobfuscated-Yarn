@@ -119,11 +119,11 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(CUSTOM_BLOCK_ID, Block.getRawIdFromState(Blocks.AIR.getDefaultState()));
-		this.dataTracker.startTracking(CUSTOM_BLOCK_OFFSET, 6);
-		this.dataTracker.startTracking(CUSTOM_BLOCK_PRESENT, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CUSTOM_BLOCK_ID, Block.getRawIdFromState(Blocks.AIR.getDefaultState()));
+		builder.add(CUSTOM_BLOCK_OFFSET, 6);
+		builder.add(CUSTOM_BLOCK_PRESENT, false);
 	}
 
 	@Override
@@ -224,6 +224,11 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	}
 
 	@Override
+	protected double getGravity() {
+		return this.isTouchingWater() ? 0.005 : 0.04;
+	}
+
+	@Override
 	public void tick() {
 		if (this.getDamageWobbleTicks() > 0) {
 			this.setDamageWobbleTicks(this.getDamageWobbleTicks() - 1);
@@ -244,11 +249,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 				this.setRotation(this.getYaw(), this.getPitch());
 			}
 		} else {
-			if (!this.hasNoGravity()) {
-				double d = this.isTouchingWater() ? -0.005 : -0.04;
-				this.setVelocity(this.getVelocity().add(0.0, d, 0.0));
-			}
-
+			this.applyGravity();
 			int i = MathHelper.floor(this.getX());
 			int j = MathHelper.floor(this.getY());
 			int k = MathHelper.floor(this.getZ());
@@ -270,17 +271,17 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 
 			this.checkBlockCollision();
 			this.setPitch(0.0F);
-			double e = this.prevX - this.getX();
-			double f = this.prevZ - this.getZ();
-			if (e * e + f * f > 0.001) {
-				this.setYaw((float)(MathHelper.atan2(f, e) * 180.0 / Math.PI));
+			double d = this.prevX - this.getX();
+			double e = this.prevZ - this.getZ();
+			if (d * d + e * e > 0.001) {
+				this.setYaw((float)(MathHelper.atan2(e, d) * 180.0 / Math.PI));
 				if (this.yawFlipped) {
 					this.setYaw(this.getYaw() + 180.0F);
 				}
 			}
 
-			double g = (double)MathHelper.wrapDegrees(this.getYaw() - this.prevYaw);
-			if (g < -170.0 || g >= 170.0) {
+			double f = (double)MathHelper.wrapDegrees(this.getYaw() - this.prevYaw);
+			if (f < -170.0 || f >= 170.0) {
 				this.setYaw(this.getYaw() + 180.0F);
 				this.yawFlipped = !this.yawFlipped;
 			}

@@ -2,9 +2,13 @@ package net.minecraft.client.network;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
+import java.util.List;
+import java.util.function.Function;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.ClientDataPackManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.RegistryByteBuf;
@@ -12,12 +16,17 @@ import net.minecraft.network.listener.ClientConfigurationPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
+import net.minecraft.network.packet.c2s.config.SelectKnownPacksC2SPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
+import net.minecraft.network.packet.s2c.config.SelectKnownPacksS2CPacket;
 import net.minecraft.network.state.PlayStateFactories;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.VersionedIdentifier;
+import net.minecraft.resource.LifecycledResourceManager;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
@@ -30,6 +39,8 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	private FeatureSet enabledFeatures;
 	private final DynamicRegistryManager.Immutable registryManager;
 	private final ClientRegistries clientRegistries = new ClientRegistries();
+	@Nullable
+	private ClientDataPackManager dataPackManager;
 
 	public ClientConfigurationNetworkHandler(MinecraftClient minecraftClient, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
 		super(minecraftClient, clientConnection, clientConnectionState);
@@ -70,9 +81,35 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	}
 
 	@Override
+	public void onSelectKnownPacks(SelectKnownPacksS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		if (this.dataPackManager == null) {
+			this.dataPackManager = new ClientDataPackManager();
+		}
+
+		List<VersionedIdentifier> list = this.dataPackManager.getCommonKnownPacks(packet.knownPacks());
+		this.sendPacket(new SelectKnownPacksC2SPacket(list));
+	}
+
+	private <T> T openClientDataPack(Function<ResourceFactory, T> opener) {
+		if (this.dataPackManager == null) {
+			return (T)opener.apply(ResourceFactory.MISSING);
+		} else {
+			Object var3;
+			try (LifecycledResourceManager lifecycledResourceManager = this.dataPackManager.createResourceManager()) {
+				var3 = opener.apply(lifecycledResourceManager);
+			}
+
+			return (T)var3;
+		}
+	}
+
+	@Override
 	public void onReady(ReadyS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		DynamicRegistryManager.Immutable immutable = this.clientRegistries.createRegistryManager(this.registryManager, this.connection.isLocal());
+		DynamicRegistryManager.Immutable immutable = this.openClientDataPack(
+			factory -> this.clientRegistries.createRegistryManager(factory, this.registryManager, this.connection.isLocal())
+		);
 		this.connection
 			.transitionInbound(
 				PlayStateFactories.S2C.bind(RegistryByteBuf.makeFactory(immutable)),

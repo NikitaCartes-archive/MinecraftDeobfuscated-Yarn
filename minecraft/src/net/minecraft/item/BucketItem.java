@@ -89,7 +89,7 @@ public class BucketItem extends Item implements FluidModificationItem {
 	}
 
 	public static ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
-		return !player.getAbilities().creativeMode ? new ItemStack(Items.BUCKET) : stack;
+		return !player.isInCreativeMode() ? new ItemStack(Items.BUCKET) : stack;
 	}
 
 	@Override

@@ -28,8 +28,8 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 	private static final Joiner SEPARATOR_JOINER = Joiner.on("/");
 	private final Path root;
 
-	public DirectoryResourcePack(String name, Path root, boolean alwaysStable) {
-		super(name, alwaysStable);
+	public DirectoryResourcePack(ResourcePackInfo info, Path root) {
+		super(info);
 		this.root = root;
 	}
 
@@ -158,21 +158,19 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 
 	public static class DirectoryBackedFactory implements ResourcePackProfile.PackFactory {
 		private final Path path;
-		private final boolean alwaysStable;
 
-		public DirectoryBackedFactory(Path path, boolean alwaysStable) {
+		public DirectoryBackedFactory(Path path) {
 			this.path = path;
-			this.alwaysStable = alwaysStable;
 		}
 
 		@Override
-		public ResourcePack open(String name) {
-			return new DirectoryResourcePack(name, this.path, this.alwaysStable);
+		public ResourcePack open(ResourcePackInfo info) {
+			return new DirectoryResourcePack(info, this.path);
 		}
 
 		@Override
-		public ResourcePack openWithOverlays(String name, ResourcePackProfile.Metadata metadata) {
-			ResourcePack resourcePack = this.open(name);
+		public ResourcePack openWithOverlays(ResourcePackInfo info, ResourcePackProfile.Metadata metadata) {
+			ResourcePack resourcePack = this.open(info);
 			List<String> list = metadata.overlays();
 			if (list.isEmpty()) {
 				return resourcePack;
@@ -181,7 +179,7 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 
 				for (String string : list) {
 					Path path = this.path.resolve(string);
-					list2.add(new DirectoryResourcePack(name, path, this.alwaysStable));
+					list2.add(new DirectoryResourcePack(info, path));
 				}
 
 				return new OverlayResourcePack(resourcePack, list2);

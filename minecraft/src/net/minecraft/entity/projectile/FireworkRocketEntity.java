@@ -77,10 +77,10 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(ITEM, new ItemStack(Items.FIREWORK_ROCKET));
-		this.dataTracker.startTracking(SHOOTER_ENTITY_ID, OptionalInt.empty());
-		this.dataTracker.startTracking(SHOT_AT_ANGLE, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(ITEM, new ItemStack(Items.FIREWORK_ROCKET));
+		builder.add(SHOOTER_ENTITY_ID, OptionalInt.empty());
+		builder.add(SHOT_AT_ANGLE, false);
 	}
 
 	@Override

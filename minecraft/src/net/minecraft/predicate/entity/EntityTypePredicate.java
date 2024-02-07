@@ -11,7 +11,7 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 
 public record EntityTypePredicate(RegistryEntryList<EntityType<?>> types) {
-	public static final Codec<EntityTypePredicate> CODEC = Codec.either(TagKey.codec(RegistryKeys.ENTITY_TYPE), Registries.ENTITY_TYPE.createEntryCodec())
+	public static final Codec<EntityTypePredicate> CODEC = Codec.either(TagKey.codec(RegistryKeys.ENTITY_TYPE), Registries.ENTITY_TYPE.getEntryCodec())
 		.flatComapMap(
 			either -> either.map(
 					tag -> new EntityTypePredicate(Registries.ENTITY_TYPE.getOrCreateEntryList(tag)), type -> new EntityTypePredicate(RegistryEntryList.of(type))

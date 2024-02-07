@@ -111,12 +111,12 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BOAT_TYPE, BoatEntity.Type.OAK.ordinal());
-		this.dataTracker.startTracking(LEFT_PADDLE_MOVING, false);
-		this.dataTracker.startTracking(RIGHT_PADDLE_MOVING, false);
-		this.dataTracker.startTracking(BUBBLE_WOBBLE_TICKS, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(BOAT_TYPE, BoatEntity.Type.OAK.ordinal());
+		builder.add(LEFT_PADDLE_MOVING, false);
+		builder.add(RIGHT_PADDLE_MOVING, false);
+		builder.add(BUBBLE_WOBBLE_TICKS, 0);
 	}
 
 	@Override
@@ -576,10 +576,14 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 		return bl ? BoatEntity.Location.UNDER_WATER : null;
 	}
 
+	@Override
+	protected double getGravity() {
+		return 0.04;
+	}
+
 	private void updateVelocity() {
-		double d = -0.04F;
-		double e = this.hasNoGravity() ? 0.0 : -0.04F;
-		double f = 0.0;
+		double d = -this.getFinalGravity();
+		double e = 0.0;
 		this.velocityDecay = 0.05F;
 		if (this.lastLocation == BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.ON_LAND) {
 			this.waterLevel = this.getBodyY(1.0);
@@ -589,13 +593,13 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 			this.location = BoatEntity.Location.IN_WATER;
 		} else {
 			if (this.location == BoatEntity.Location.IN_WATER) {
-				f = (this.waterLevel - this.getY()) / (double)this.getHeight();
+				e = (this.waterLevel - this.getY()) / (double)this.getHeight();
 				this.velocityDecay = 0.9F;
 			} else if (this.location == BoatEntity.Location.UNDER_FLOWING_WATER) {
-				e = -7.0E-4;
+				d = -7.0E-4;
 				this.velocityDecay = 0.9F;
 			} else if (this.location == BoatEntity.Location.UNDER_WATER) {
-				f = 0.01F;
+				e = 0.01F;
 				this.velocityDecay = 0.45F;
 			} else if (this.location == BoatEntity.Location.IN_AIR) {
 				this.velocityDecay = 0.9F;
@@ -607,11 +611,11 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 			}
 
 			Vec3d vec3d = this.getVelocity();
-			this.setVelocity(vec3d.x * (double)this.velocityDecay, vec3d.y + e, vec3d.z * (double)this.velocityDecay);
+			this.setVelocity(vec3d.x * (double)this.velocityDecay, vec3d.y + d, vec3d.z * (double)this.velocityDecay);
 			this.yawVelocity = this.yawVelocity * this.velocityDecay;
-			if (f > 0.0) {
+			if (e > 0.0) {
 				Vec3d vec3d2 = this.getVelocity();
-				this.setVelocity(vec3d2.x, (vec3d2.y + f * 0.06153846016296973) * 0.75, vec3d2.z);
+				this.setVelocity(vec3d2.x, (vec3d2.y + e * (this.getGravity() / 0.65)) * 0.75, vec3d2.z);
 			}
 		}
 	}

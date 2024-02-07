@@ -19,10 +19,12 @@ import javax.annotation.Nullable;
 import jdk.jfr.consumer.RecordedEvent;
 import jdk.jfr.consumer.RecordingFile;
 import net.minecraft.util.profiling.jfr.sample.ChunkGenerationSample;
+import net.minecraft.util.profiling.jfr.sample.ChunkRegionSample;
 import net.minecraft.util.profiling.jfr.sample.CpuLoadSample;
 import net.minecraft.util.profiling.jfr.sample.FileIoSample;
 import net.minecraft.util.profiling.jfr.sample.GcHeapSummarySample;
 import net.minecraft.util.profiling.jfr.sample.NetworkIoStatistics;
+import net.minecraft.util.profiling.jfr.sample.PacketSample;
 import net.minecraft.util.profiling.jfr.sample.ServerTickTimeSample;
 import net.minecraft.util.profiling.jfr.sample.ThreadAllocationStatisticsSample;
 
@@ -31,8 +33,10 @@ public class JfrProfileRecorder {
 	private Instant endTime = Instant.EPOCH;
 	private final List<ChunkGenerationSample> chunkGenerationSamples = Lists.<ChunkGenerationSample>newArrayList();
 	private final List<CpuLoadSample> cpuLoadSamples = Lists.<CpuLoadSample>newArrayList();
-	private final Map<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter> receivedPacketsToCounter = Maps.<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter>newHashMap();
-	private final Map<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter> sentPacketsToCounter = Maps.<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter>newHashMap();
+	private final Map<PacketSample, JfrProfileRecorder.Counter> receivedPacketsToCounter = Maps.<PacketSample, JfrProfileRecorder.Counter>newHashMap();
+	private final Map<PacketSample, JfrProfileRecorder.Counter> sentPacketsToCounter = Maps.<PacketSample, JfrProfileRecorder.Counter>newHashMap();
+	private final Map<ChunkRegionSample, JfrProfileRecorder.Counter> chunkRegionReadCounter = Maps.<ChunkRegionSample, JfrProfileRecorder.Counter>newHashMap();
+	private final Map<ChunkRegionSample, JfrProfileRecorder.Counter> chunkRegionWriteCounter = Maps.<ChunkRegionSample, JfrProfileRecorder.Counter>newHashMap();
 	private final List<FileIoSample> fileWriteSamples = Lists.<FileIoSample>newArrayList();
 	private final List<FileIoSample> fileReadSamples = Lists.<FileIoSample>newArrayList();
 	private int gcCount;
@@ -102,6 +106,8 @@ public class JfrProfileRecorder {
 			ThreadAllocationStatisticsSample.toAllocationMap(this.threadAllocationStatisticsSamples),
 			createNetworkIoStatistics(duration, this.receivedPacketsToCounter),
 			createNetworkIoStatistics(duration, this.sentPacketsToCounter),
+			createNetworkIoStatistics(duration, this.chunkRegionWriteCounter),
+			createNetworkIoStatistics(duration, this.chunkRegionReadCounter),
 			FileIoSample.toStatistics(duration, this.fileWriteSamples),
 			FileIoSample.toStatistics(duration, this.fileReadSamples),
 			this.chunkGenerationSamples
@@ -135,6 +141,12 @@ public class JfrProfileRecorder {
 				case "minecraft.PacketSent":
 					this.addPacket(event, event.getInt("bytes"), this.sentPacketsToCounter);
 					break;
+				case "minecraft.ChunkRegionRead":
+					this.addChunkRegionEvent(event, event.getInt("bytes"), this.chunkRegionReadCounter);
+					break;
+				case "minecraft.ChunkRegionWrite":
+					this.addChunkRegionEvent(event, event.getInt("bytes"), this.chunkRegionWriteCounter);
+					break;
 				case "jdk.ThreadAllocationStatistics":
 					this.threadAllocationStatisticsSamples.add(ThreadAllocationStatisticsSample.fromEvent(event));
 					break;
@@ -157,28 +169,27 @@ public class JfrProfileRecorder {
 		});
 	}
 
-	private void addPacket(RecordedEvent event, int bytes, Map<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter> packetsToCounter) {
-		((JfrProfileRecorder.PacketCounter)packetsToCounter.computeIfAbsent(
-				NetworkIoStatistics.Packet.fromEvent(event), packet -> new JfrProfileRecorder.PacketCounter()
-			))
-			.add(bytes);
+	private void addPacket(RecordedEvent event, int bytes, Map<PacketSample, JfrProfileRecorder.Counter> packetsToCounter) {
+		((JfrProfileRecorder.Counter)packetsToCounter.computeIfAbsent(PacketSample.fromEvent(event), packet -> new JfrProfileRecorder.Counter())).add(bytes);
+	}
+
+	private void addChunkRegionEvent(RecordedEvent event, int bytes, Map<ChunkRegionSample, JfrProfileRecorder.Counter> chunksToCounter) {
+		((JfrProfileRecorder.Counter)chunksToCounter.computeIfAbsent(ChunkRegionSample.fromEvent(event), chunk -> new JfrProfileRecorder.Counter())).add(bytes);
 	}
 
 	private void addFileIoSample(RecordedEvent event, List<FileIoSample> samples, String bytesKey) {
 		samples.add(new FileIoSample(event.getDuration(), event.getString("path"), event.getLong(bytesKey)));
 	}
 
-	private static NetworkIoStatistics createNetworkIoStatistics(
-		Duration duration, Map<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter> packetsToCounter
-	) {
-		List<Pair<NetworkIoStatistics.Packet, NetworkIoStatistics.PacketStatistics>> list = packetsToCounter.entrySet()
+	private static <T> NetworkIoStatistics<T> createNetworkIoStatistics(Duration duration, Map<T, JfrProfileRecorder.Counter> packetsToCounter) {
+		List<Pair<T, NetworkIoStatistics.PacketStatistics>> list = packetsToCounter.entrySet()
 			.stream()
-			.map(entry -> Pair.of((NetworkIoStatistics.Packet)entry.getKey(), ((JfrProfileRecorder.PacketCounter)entry.getValue()).toStatistics()))
+			.map(entry -> Pair.of(entry.getKey(), ((JfrProfileRecorder.Counter)entry.getValue()).toStatistics()))
 			.toList();
-		return new NetworkIoStatistics(duration, list);
+		return new NetworkIoStatistics<>(duration, list);
 	}
 
-	public static final class PacketCounter {
+	public static final class Counter {
 		private long totalCount;
 		private long totalBytes;
 

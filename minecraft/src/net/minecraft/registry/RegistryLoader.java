@@ -8,6 +8,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -17,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.trim.ArmorTrimMaterial;
@@ -24,13 +26,16 @@ import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
@@ -48,6 +53,13 @@ import org.slf4j.Logger;
 
 public class RegistryLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final RegistryEntryInfo EXPERIMENTAL_ENTRY_INFO = new RegistryEntryInfo(Optional.empty(), Lifecycle.experimental());
+	private static final Function<Optional<VersionedIdentifier>, RegistryEntryInfo> RESOURCE_ENTRY_INFO_GETTER = Util.memoize(
+		(Function<Optional<VersionedIdentifier>, RegistryEntryInfo>)(knownPacks -> {
+			Lifecycle lifecycle = (Lifecycle)knownPacks.map(VersionedIdentifier::isVanilla).map(vanilla -> Lifecycle.stable()).orElse(Lifecycle.experimental());
+			return new RegistryEntryInfo(knownPacks, lifecycle);
+		})
+	);
 	public static final List<RegistryLoader.Entry<?>> DYNAMIC_REGISTRIES = List.of(
 		new RegistryLoader.Entry<>(RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.BIOME, Biome.CODEC),
@@ -87,10 +99,11 @@ public class RegistryLoader {
 
 	public static DynamicRegistryManager.Immutable loadFromNetwork(
 		Map<RegistryKey<? extends Registry<?>>, List<SerializableRegistries.SerializedRegistryEntry>> data,
+		ResourceFactory factory,
 		DynamicRegistryManager registryManager,
 		List<RegistryLoader.Entry<?>> entries
 	) {
-		return load((loader, infoGetter) -> loader.loadFromNetwork(data, infoGetter), registryManager, entries);
+		return load((loader, infoGetter) -> loader.loadFromNetwork(data, factory, infoGetter), registryManager, entries);
 	}
 
 	public static DynamicRegistryManager.Immutable load(
@@ -164,6 +177,34 @@ public class RegistryLoader {
 		return id.getPath();
 	}
 
+	private static <E> void parseAndAdd(
+		MutableRegistry<E> registry, Decoder<E> decoder, RegistryOps<JsonElement> ops, RegistryKey<E> key, Resource resource, RegistryEntryInfo entryInfo
+	) throws IOException {
+		Reader reader = resource.getReader();
+
+		try {
+			JsonElement jsonElement = JsonParser.parseReader(reader);
+			DataResult<E> dataResult = decoder.parse(ops, jsonElement);
+			E object = dataResult.getOrThrow(false, error -> {
+			});
+			registry.add(key, object, entryInfo);
+		} catch (Throwable var11) {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (Throwable var10) {
+					var11.addSuppressed(var10);
+				}
+			}
+
+			throw var11;
+		}
+
+		if (reader != null) {
+			reader.close();
+		}
+	}
+
 	static <E> void loadFromResource(
 		ResourceManager resourceManager,
 		RegistryOps.RegistryInfoGetter infoGetter,
@@ -179,62 +220,52 @@ public class RegistryLoader {
 			Identifier identifier = (Identifier)entry.getKey();
 			RegistryKey<E> registryKey = RegistryKey.of(registry.getKey(), resourceFinder.toResourceId(identifier));
 			Resource resource = (Resource)entry.getValue();
+			RegistryEntryInfo registryEntryInfo = (RegistryEntryInfo)RESOURCE_ENTRY_INFO_GETTER.apply(resource.getKnownPackInfo());
 
 			try {
-				Reader reader = resource.getReader();
-
-				try {
-					JsonElement jsonElement = JsonParser.parseReader(reader);
-					DataResult<E> dataResult = elementDecoder.parse(registryOps, jsonElement);
-					E object = dataResult.getOrThrow(false, error -> {
-					});
-					registry.add(registryKey, object, resource.isAlwaysStable() ? Lifecycle.stable() : dataResult.lifecycle());
-				} catch (Throwable var18) {
-					if (reader != null) {
-						try {
-							reader.close();
-						} catch (Throwable var17) {
-							var18.addSuppressed(var17);
-						}
-					}
-
-					throw var18;
-				}
-
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (Exception var19) {
-				errors.put(
-					registryKey, new IllegalStateException(String.format(Locale.ROOT, "Failed to parse %s from pack %s", identifier, resource.getResourcePackName()), var19)
-				);
+				parseAndAdd(registry, elementDecoder, registryOps, registryKey, resource, registryEntryInfo);
+			} catch (Exception var15) {
+				errors.put(registryKey, new IllegalStateException(String.format(Locale.ROOT, "Failed to parse %s from pack %s", identifier, resource.getPackId()), var15));
 			}
 		}
 	}
 
 	static <E> void loadFromNetwork(
 		Map<RegistryKey<? extends Registry<?>>, List<SerializableRegistries.SerializedRegistryEntry>> data,
+		ResourceFactory factory,
 		RegistryOps.RegistryInfoGetter infoGetter,
 		MutableRegistry<E> registry,
-		Decoder<E> elementDecoder,
-		Map<RegistryKey<?>, Exception> errors
+		Decoder<E> decoder,
+		Map<RegistryKey<?>, Exception> loadingErrors
 	) {
 		List<SerializableRegistries.SerializedRegistryEntry> list = (List<SerializableRegistries.SerializedRegistryEntry>)data.get(registry.getKey());
 		if (list != null) {
 			RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, infoGetter);
+			RegistryOps<JsonElement> registryOps2 = RegistryOps.of(JsonOps.INSTANCE, infoGetter);
+			String string = getPath(registry.getKey().getValue());
+			ResourceFinder resourceFinder = ResourceFinder.json(string);
 
 			for (SerializableRegistries.SerializedRegistryEntry serializedRegistryEntry : list) {
 				RegistryKey<E> registryKey = RegistryKey.of(registry.getKey(), serializedRegistryEntry.id());
+				Optional<NbtElement> optional = serializedRegistryEntry.data();
+				if (optional.isPresent()) {
+					try {
+						DataResult<E> dataResult = decoder.parse(registryOps, (NbtElement)optional.get());
+						E object = dataResult.getOrThrow(false, error -> {
+						});
+						registry.add(registryKey, object, EXPERIMENTAL_ENTRY_INFO);
+					} catch (Exception var17) {
+						loadingErrors.put(registryKey, new IllegalStateException(String.format(Locale.ROOT, "Failed to parse value %s from server", optional.get()), var17));
+					}
+				} else {
+					Identifier identifier = resourceFinder.toResourcePath(serializedRegistryEntry.id());
 
-				try {
-					DataResult<E> dataResult = elementDecoder.parse(registryOps, serializedRegistryEntry.data());
-					E object = dataResult.getOrThrow(false, error -> {
-					});
-					registry.add(registryKey, object, Lifecycle.experimental());
-				} catch (Exception var12) {
-					errors.put(
-						registryKey, new IllegalStateException(String.format(Locale.ROOT, "Failed to parse value %s from server", serializedRegistryEntry.data()), var12)
-					);
+					try {
+						Resource resource = factory.getResourceOrThrow(identifier);
+						parseAndAdd(registry, decoder, registryOps2, registryKey, resource, EXPERIMENTAL_ENTRY_INFO);
+					} catch (Exception var18) {
+						loadingErrors.put(registryKey, new IllegalStateException("Failed to parse local data", var18));
+					}
 				}
 			}
 		}
@@ -259,9 +290,11 @@ public class RegistryLoader {
 		}
 
 		public void loadFromNetwork(
-			Map<RegistryKey<? extends Registry<?>>, List<SerializableRegistries.SerializedRegistryEntry>> data, RegistryOps.RegistryInfoGetter infoGetter
+			Map<RegistryKey<? extends Registry<?>>, List<SerializableRegistries.SerializedRegistryEntry>> data,
+			ResourceFactory factory,
+			RegistryOps.RegistryInfoGetter infoGetter
 		) {
-			RegistryLoader.loadFromNetwork(data, infoGetter, this.registry, this.data.elementCodec, this.loadingErrors);
+			RegistryLoader.loadFromNetwork(data, factory, infoGetter, this.registry, this.data.elementCodec, this.loadingErrors);
 		}
 	}
 

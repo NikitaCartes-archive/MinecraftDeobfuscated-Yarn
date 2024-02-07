@@ -86,9 +86,9 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(IRON_GOLEM_FLAGS, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(IRON_GOLEM_FLAGS, (byte)0);
 	}
 
 	public static DefaultAttributeContainer.Builder createIronGolemAttributes() {
@@ -272,10 +272,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			} else {
 				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
 				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
-				if (!player.getAbilities().creativeMode) {
-					itemStack.decrement(1);
-				}
-
+				itemStack.decrementUnlessCreative(1, player);
 				return ActionResult.success(this.getWorld().isClient);
 			}
 		}

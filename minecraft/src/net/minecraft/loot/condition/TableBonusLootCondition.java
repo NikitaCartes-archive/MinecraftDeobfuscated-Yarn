@@ -18,7 +18,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 public record TableBonusLootCondition(RegistryEntry<Enchantment> enchantment, List<Float> chances) implements LootCondition {
 	public static final Codec<TableBonusLootCondition> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.ENCHANTMENT.createEntryCodec().fieldOf("enchantment").forGetter(TableBonusLootCondition::enchantment),
+					Registries.ENCHANTMENT.getEntryCodec().fieldOf("enchantment").forGetter(TableBonusLootCondition::enchantment),
 					Codec.FLOAT.listOf().fieldOf("chances").forGetter(TableBonusLootCondition::chances)
 				)
 				.apply(instance, TableBonusLootCondition::new)

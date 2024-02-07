@@ -6,11 +6,16 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.OptionalDynamic;
+import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public class LegacyDragonFightFix extends DataFix {
 	public LegacyDragonFightFix(Schema outputSchema) {
 		super(outputSchema, false);
+	}
+
+	private static <T> Dynamic<T> updateExitPortalLocation(Dynamic<T> dynamic) {
+		return dynamic.update("ExitPortalLocation", FixUtil::fixBlockPos);
 	}
 
 	@Override
@@ -22,7 +27,7 @@ public class LegacyDragonFightFix extends DataFix {
 						return levelData;
 					} else {
 						Dynamic<?> dynamic = levelData.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap();
-						return levelData.set("DragonFight", dynamic);
+						return levelData.set("DragonFight", updateExitPortalLocation(dynamic));
 					}
 				})
 		);

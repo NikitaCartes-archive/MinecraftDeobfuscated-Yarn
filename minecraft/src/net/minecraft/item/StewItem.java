@@ -12,6 +12,10 @@ public class StewItem extends Item {
 	@Override
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		ItemStack itemStack = super.finishUsing(stack, world, user);
-		return user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode ? itemStack : new ItemStack(Items.BOWL);
+		if (user instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
+			return itemStack;
+		}
+
+		return new ItemStack(Items.BOWL);
 	}
 }

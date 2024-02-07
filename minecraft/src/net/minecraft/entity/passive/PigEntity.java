@@ -90,10 +90,10 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(SADDLED, false);
-		this.dataTracker.startTracking(BOOST_TIME, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SADDLED, false);
+		builder.add(BOOST_TIME, 0);
 	}
 
 	@Override

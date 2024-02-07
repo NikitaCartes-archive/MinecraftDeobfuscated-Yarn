@@ -47,7 +47,8 @@ public class ParticleTypes {
 	public static final DefaultParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final DefaultParticleType EXPLOSION = register("explosion", true);
 	public static final DefaultParticleType GUST = register("gust", true);
-	public static final DefaultParticleType GUST_EMITTER = register("gust_emitter", true);
+	public static final DefaultParticleType GUST_EMITTER_LARGE = register("gust_emitter_large", true);
+	public static final DefaultParticleType GUST_EMITTER_SMALL = register("gust_emitter_small", true);
 	public static final DefaultParticleType SONIC_BOOM = register("sonic_boom", true);
 	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = register(
 		"falling_dust", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec

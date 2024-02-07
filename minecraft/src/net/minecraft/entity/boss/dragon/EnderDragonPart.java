@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -24,7 +25,7 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	protected void initDataTracker() {
+	protected void initDataTracker(DataTracker.Builder builder) {
 	}
 
 	@Override

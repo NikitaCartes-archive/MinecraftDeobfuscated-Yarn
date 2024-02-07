@@ -122,8 +122,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	public static final String TICKS_SINCE_POLLINATION_KEY = "TicksSincePollination";
 	public static final String HAS_STUNG_KEY = "HasStung";
 	public static final String HAS_NECTAR_KEY = "HasNectar";
-	public static final String FLOWER_POS_KEY = "FlowerPos";
-	public static final String HIVE_POS_KEY = "HivePos";
+	public static final String FLOWER_POS_KEY = "flower_pos";
+	public static final String HIVE_POS_KEY = "hive_pos";
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	@Nullable
 	private UUID angryAt;
@@ -158,10 +158,10 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BEE_FLAGS, (byte)0);
-		this.dataTracker.startTracking(ANGER, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(BEE_FLAGS, (byte)0);
+		builder.add(ANGER, 0);
 	}
 
 	@Override
@@ -195,11 +195,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		if (this.hasHive()) {
-			nbt.put("HivePos", NbtHelper.fromBlockPos(this.getHivePos()));
+			nbt.put("hive_pos", NbtHelper.fromBlockPos(this.getHivePos()));
 		}
 
 		if (this.hasFlower()) {
-			nbt.put("FlowerPos", NbtHelper.fromBlockPos(this.getFlowerPos()));
+			nbt.put("flower_pos", NbtHelper.fromBlockPos(this.getFlowerPos()));
 		}
 
 		nbt.putBoolean("HasNectar", this.hasNectar());
@@ -212,16 +212,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
-		this.hivePos = null;
-		if (nbt.contains("HivePos")) {
-			this.hivePos = NbtHelper.toBlockPos(nbt.getCompound("HivePos"));
-		}
-
-		this.flowerPos = null;
-		if (nbt.contains("FlowerPos")) {
-			this.flowerPos = NbtHelper.toBlockPos(nbt.getCompound("FlowerPos"));
-		}
-
+		this.hivePos = (BlockPos)NbtHelper.toBlockPos(nbt, "hive_pos").orElse(null);
+		this.flowerPos = (BlockPos)NbtHelper.toBlockPos(nbt, "flower_pos").orElse(null);
 		super.readCustomDataFromNbt(nbt);
 		this.setHasNectar(nbt.getBoolean("HasNectar"));
 		this.setHasStung(nbt.getBoolean("HasStung"));

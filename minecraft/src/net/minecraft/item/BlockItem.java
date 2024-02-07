@@ -96,10 +96,7 @@ public class BlockItem extends Item {
 						blockSoundGroup.getPitch() * 0.8F
 					);
 					world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(playerEntity, blockState2));
-					if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
-						itemStack.decrement(1);
-					}
-
+					itemStack.decrementUnlessCreative(1, playerEntity);
 					return ActionResult.success(world.isClient);
 				}
 			}

@@ -129,7 +129,8 @@ public class ArmadilloEntityModel extends SinglePartEntityModelWithChildTransfor
 		}
 
 		this.animateMovement(ArmadilloAnimations.IDLE, f, g, 16.5F, 2.5F);
-		this.updateAnimation(armadilloEntity.scaredAnimationState, ArmadilloAnimations.SCARED, h, 1.0F);
+		this.updateAnimation(armadilloEntity.unrollingAnimationState, ArmadilloAnimations.UNROLLING, h, 1.0F);
 		this.updateAnimation(armadilloEntity.rollingAnimationState, ArmadilloAnimations.ROLLING, h, 1.0F);
+		this.updateAnimation(armadilloEntity.scaredAnimationState, ArmadilloAnimations.SCARED, h, 1.0F);
 	}
 }

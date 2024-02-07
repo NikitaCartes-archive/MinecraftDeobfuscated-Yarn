@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
@@ -26,7 +27,8 @@ public class FontStorage implements AutoCloseable {
 	private final Identifier id;
 	private GlyphRenderer blankGlyphRenderer;
 	private GlyphRenderer whiteRectangleGlyphRenderer;
-	private final List<Font> fonts = Lists.<Font>newArrayList();
+	private List<Font.FontFilterPair> allFonts = List.of();
+	private List<Font> availableFonts = List.of();
 	private final GlyphContainer<GlyphRenderer> glyphRendererCache = new GlyphContainer<>(GlyphRenderer[]::new, GlyphRenderer[][]::new);
 	private final GlyphContainer<FontStorage.GlyphPair> glyphCache = new GlyphContainer<>(FontStorage.GlyphPair[]::new, FontStorage.GlyphPair[][]::new);
 	private final Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
@@ -37,30 +39,47 @@ public class FontStorage implements AutoCloseable {
 		this.id = id;
 	}
 
-	public void setFonts(List<Font> fonts) {
-		this.closeFonts();
+	public void setFonts(List<Font.FontFilterPair> allFonts, Set<FontFilterType> activeFilters) {
+		this.allFonts = allFonts;
+		this.setActiveFilters(activeFilters);
+	}
+
+	public void setActiveFilters(Set<FontFilterType> activeFilters) {
+		this.availableFonts = List.of();
+		this.clear();
+		this.availableFonts = this.applyFilters(this.allFonts, activeFilters);
+	}
+
+	private void clear() {
 		this.closeGlyphAtlases();
 		this.glyphRendererCache.clear();
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
 		this.blankGlyphRenderer = BuiltinEmptyGlyph.MISSING.bake(this::getGlyphRenderer);
 		this.whiteRectangleGlyphRenderer = BuiltinEmptyGlyph.WHITE.bake(this::getGlyphRenderer);
-		IntSet intSet = new IntOpenHashSet();
+	}
 
-		for (Font font : fonts) {
-			intSet.addAll(font.getProvidedGlyphs());
+	private List<Font> applyFilters(List<Font.FontFilterPair> allFonts, Set<FontFilterType> activeFilters) {
+		IntSet intSet = new IntOpenHashSet();
+		List<Font> list = new ArrayList();
+
+		for (Font.FontFilterPair fontFilterPair : allFonts) {
+			if (fontFilterPair.filter().isAllowed(activeFilters)) {
+				list.add(fontFilterPair.provider());
+				intSet.addAll(fontFilterPair.provider().getProvidedGlyphs());
+			}
 		}
 
 		Set<Font> set = Sets.<Font>newHashSet();
 		intSet.forEach(
 			codePoint -> {
-				for (Font fontx : fonts) {
-					Glyph glyph = fontx.getGlyph(codePoint);
+				for (Font font : list) {
+					Glyph glyph = font.getGlyph(codePoint);
 					if (glyph != null) {
-						set.add(fontx);
+						set.add(font);
 						if (glyph != BuiltinEmptyGlyph.MISSING) {
 							this.charactersByWidth
-								.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), (Int2ObjectFunction<? extends IntList>)(advance -> new IntArrayList()))
+								.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), (Int2ObjectFunction<? extends IntList>)(i -> new IntArrayList()))
 								.add(codePoint);
 						}
 						break;
@@ -68,20 +87,11 @@ public class FontStorage implements AutoCloseable {
 				}
 			}
 		);
-		fonts.stream().filter(set::contains).forEach(this.fonts::add);
+		return list.stream().filter(set::contains).toList();
 	}
 
 	public void close() {
-		this.closeFonts();
 		this.closeGlyphAtlases();
-	}
-
-	private void closeFonts() {
-		for (Font font : this.fonts) {
-			font.close();
-		}
-
-		this.fonts.clear();
 	}
 
 	private void closeGlyphAtlases() {
@@ -110,7 +120,7 @@ public class FontStorage implements AutoCloseable {
 	private FontStorage.GlyphPair findGlyph(int codePoint) {
 		Glyph glyph = null;
 
-		for (Font font : this.fonts) {
+		for (Font font : this.availableFonts) {
 			Glyph glyph2 = font.getGlyph(codePoint);
 			if (glyph2 != null) {
 				if (glyph == null) {
@@ -136,7 +146,7 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	private GlyphRenderer findGlyphRenderer(int codePoint) {
-		for (Font font : this.fonts) {
+		for (Font font : this.availableFonts) {
 			Glyph glyph = font.getGlyph(codePoint);
 			if (glyph != null) {
 				return glyph.bake(this::getGlyphRenderer);
@@ -171,6 +181,10 @@ public class FontStorage implements AutoCloseable {
 	public GlyphRenderer getObfuscatedGlyphRenderer(Glyph glyph) {
 		IntList intList = this.charactersByWidth.get(MathHelper.ceil(glyph.getAdvance(false)));
 		return intList != null && !intList.isEmpty() ? this.getGlyphRenderer(intList.getInt(RANDOM.nextInt(intList.size()))) : this.blankGlyphRenderer;
+	}
+
+	public Identifier getId() {
+		return this.id;
 	}
 
 	public GlyphRenderer getRectangleRenderer() {

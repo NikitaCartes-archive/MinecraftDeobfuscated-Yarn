@@ -26,7 +26,7 @@ public class ReloadCommand {
 		Collection<String> collection = Lists.<String>newArrayList(enabledDataPacks);
 		Collection<String> collection2 = saveProperties.getDataConfiguration().dataPacks().getDisabled();
 
-		for (String string : dataPackManager.getNames()) {
+		for (String string : dataPackManager.getIds()) {
 			if (!collection2.contains(string) && !collection.contains(string)) {
 				collection.add(string);
 			}
@@ -41,7 +41,7 @@ public class ReloadCommand {
 			MinecraftServer minecraftServer = serverCommandSource.getServer();
 			ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
 			SaveProperties saveProperties = minecraftServer.getSaveProperties();
-			Collection<String> collection = resourcePackManager.getEnabledNames();
+			Collection<String> collection = resourcePackManager.getEnabledIds();
 			Collection<String> collection2 = findNewDataPacks(resourcePackManager, saveProperties, collection);
 			serverCommandSource.sendFeedback(() -> Text.translatable("commands.reload.success"), true);
 			tryReloadDataPacks(collection2, serverCommandSource);

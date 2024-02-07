@@ -152,7 +152,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private static final int field_30080 = 10;
 	private static final int field_30081 = 2;
 	public static final int field_30063 = 4;
-	private static final float field_44874 = 0.42F;
+	public static final float field_44874 = 0.42F;
 	private static final double MAX_ENTITY_VIEWING_DISTANCE = 128.0;
 	protected static final int USING_ITEM_FLAG = 1;
 	protected static final int OFF_HAND_ACTIVE_FLAG = 2;
@@ -279,14 +279,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(LIVING_FLAGS, (byte)0);
-		this.dataTracker.startTracking(POTION_SWIRLS_COLOR, 0);
-		this.dataTracker.startTracking(POTION_SWIRLS_AMBIENT, false);
-		this.dataTracker.startTracking(STUCK_ARROW_COUNT, 0);
-		this.dataTracker.startTracking(STINGER_COUNT, 0);
-		this.dataTracker.startTracking(HEALTH, 1.0F);
-		this.dataTracker.startTracking(SLEEPING_POSITION, Optional.empty());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(LIVING_FLAGS, (byte)0);
+		builder.add(POTION_SWIRLS_COLOR, 0);
+		builder.add(POTION_SWIRLS_AMBIENT, false);
+		builder.add(STUCK_ARROW_COUNT, 0);
+		builder.add(STINGER_COUNT, 0);
+		builder.add(HEALTH, 1.0F);
+		builder.add(SLEEPING_POSITION, Optional.empty());
 	}
 
 	public static DefaultAttributeContainer.Builder createLivingAttributes() {
@@ -298,7 +298,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			.add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)
 			.add(EntityAttributes.GENERIC_MAX_ABSORPTION)
 			.add(EntityAttributes.GENERIC_STEP_HEIGHT)
-			.add(EntityAttributes.GENERIC_SCALE);
+			.add(EntityAttributes.GENERIC_SCALE)
+			.add(EntityAttributes.GENERIC_GRAVITY)
+			.add(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE)
+			.add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER)
+			.add(EntityAttributes.GENERIC_JUMP_STRENGTH);
 	}
 
 	@Override
@@ -310,25 +314,25 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (!this.getWorld().isClient && onGround && this.fallDistance > 0.0F) {
 			this.removeSoulSpeedBoost();
 			this.addSoulSpeedBoostIfNeeded();
-		}
+			double d = this.getAttributeValue(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE);
+			if ((double)this.fallDistance > d && !state.isAir()) {
+				double e = this.getX();
+				double f = this.getY();
+				double g = this.getZ();
+				BlockPos blockPos = this.getBlockPos();
+				if (landedPosition.getX() != blockPos.getX() || landedPosition.getZ() != blockPos.getZ()) {
+					double h = e - (double)landedPosition.getX() - 0.5;
+					double i = g - (double)landedPosition.getZ() - 0.5;
+					double j = Math.max(Math.abs(h), Math.abs(i));
+					e = (double)landedPosition.getX() + 0.5 + h / j * 0.5;
+					g = (double)landedPosition.getZ() + 0.5 + i / j * 0.5;
+				}
 
-		if (!this.getWorld().isClient && this.fallDistance > 3.0F && onGround && !state.isAir()) {
-			double d = this.getX();
-			double e = this.getY();
-			double f = this.getZ();
-			BlockPos blockPos = this.getBlockPos();
-			if (landedPosition.getX() != blockPos.getX() || landedPosition.getZ() != blockPos.getZ()) {
-				double g = d - (double)landedPosition.getX() - 0.5;
-				double h = f - (double)landedPosition.getZ() - 0.5;
-				double i = Math.max(Math.abs(g), Math.abs(h));
-				d = (double)landedPosition.getX() + 0.5 + g / i * 0.5;
-				f = (double)landedPosition.getZ() + 0.5 + h / i * 0.5;
+				float k = (float)MathHelper.ceil((double)this.fallDistance - d);
+				double l = Math.min((double)(0.2F + k / 15.0F), 2.5);
+				int m = (int)(150.0 * l);
+				((ServerWorld)this.getWorld()).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), e, f, g, m, 0.0, 0.0, 0.0, 0.15F);
 			}
-
-			float j = (float)MathHelper.ceil(this.fallDistance - 3.0F);
-			double k = Math.min((double)(0.2F + j / 15.0F), 2.5);
-			int l = (int)(150.0 * k);
-			((ServerWorld)this.getWorld()).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), d, e, f, l, 0.0, 0.0, 0.0, 0.15F);
 		}
 
 		super.fall(heightDifference, onGround, state, landedPosition);
@@ -1661,6 +1665,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
+	public int getSafeFallDistance() {
+		return this.getSafeFallDistance(0.0F);
+	}
+
+	protected final int getSafeFallDistance(float health) {
+		return MathHelper.floor(health + 3.0F);
+	}
+
+	@Override
 	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		boolean bl = super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 		int i = this.computeFallDamage(fallDistance, damageMultiplier);
@@ -1678,9 +1691,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (this.getType().isIn(EntityTypeTags.FALL_DAMAGE_IMMUNE)) {
 			return 0;
 		} else {
-			StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.JUMP_BOOST);
-			float f = statusEffectInstance == null ? 0.0F : (float)(statusEffectInstance.getAmplifier() + 1);
-			return MathHelper.ceil((fallDistance - 3.0F - f) * damageMultiplier);
+			float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE);
+			float g = fallDistance - f;
+			return MathHelper.ceil((double)(g * damageMultiplier) * this.getAttributeValue(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER));
 		}
 	}
 
@@ -2044,6 +2057,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return !this.getEquippedStack(slot).isEmpty();
 	}
 
+	public boolean canUseSlot(EquipmentSlot slot) {
+		return false;
+	}
+
 	public abstract Iterable<ItemStack> getArmorItems();
 
 	public abstract ItemStack getEquippedStack(EquipmentSlot slot);
@@ -2134,7 +2151,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected float getJumpVelocity() {
-		return 0.42F * this.getJumpVelocityMultiplier() + this.getJumpBoostVelocityModifier();
+		return this.getJumpVelocity(1.0F);
+	}
+
+	protected float getJumpVelocity(float strength) {
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_JUMP_STRENGTH) * strength * this.getJumpVelocityMultiplier()
+			+ this.getJumpBoostVelocityModifier();
 	}
 
 	public float getJumpBoostVelocityModifier() {
@@ -2168,6 +2190,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return false;
 	}
 
+	@Override
+	protected double getGravity() {
+		return this.getAttributeValue(EntityAttributes.GENERIC_GRAVITY);
+	}
+
 	/**
 	 * Allows you to do certain speed and velocity calculations. This is useful for custom vehicle behavior, or custom entity movement. This is not to be confused with AI.
 	 * 
@@ -2179,10 +2206,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 */
 	public void travel(Vec3d movementInput) {
 		if (this.isLogicalSideForUpdatingMovement()) {
-			double d = 0.08;
+			double d = this.getFinalGravity();
 			boolean bl = this.getVelocity().y <= 0.0;
 			if (bl && this.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
-				d = 0.01;
+				d = Math.min(d, 0.01);
 			}
 
 			FluidState fluidState = this.getWorld().getFluidState(this.getBlockPos());
@@ -2233,7 +2260,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					this.setVelocity(this.getVelocity().multiply(0.5));
 				}
 
-				if (!this.hasNoGravity()) {
+				if (d != 0.0) {
 					this.setVelocity(this.getVelocity().add(0.0, -d / 4.0, 0.0));
 				}
 
@@ -2289,14 +2316,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				double q = vec3d6.y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
-				} else if (this.getWorld().isClient && !this.getWorld().isChunkLoaded(blockPos)) {
-					if (this.getY() > (double)this.getWorld().getBottomY()) {
-						q = -0.1;
-					} else {
-						q = 0.0;
-					}
-				} else if (!this.hasNoGravity()) {
+				} else if (!this.getWorld().isClient || this.getWorld().isChunkLoaded(blockPos)) {
 					q -= d;
+				} else if (this.getY() > (double)this.getWorld().getBottomY()) {
+					q = -0.1;
+				} else {
+					q = 0.0;
 				}
 
 				if (this.hasNoDrag()) {
@@ -2358,7 +2383,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public Vec3d applyFluidMovingSpeed(double gravity, boolean falling, Vec3d motion) {
-		if (!this.hasNoGravity() && !this.isSprinting()) {
+		if (gravity != 0.0 && !this.isSprinting()) {
 			double d;
 			if (falling && Math.abs(motion.y - 0.005) >= 0.003 && Math.abs(motion.y - gravity / 16.0) < 0.003) {
 				d = -0.003;
@@ -3467,10 +3492,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F
 			);
 			this.applyFoodEffects(stack, world, this);
-			if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).getAbilities().creativeMode) {
-				stack.decrement(1);
-			}
-
+			stack.decrementUnlessCreative(1, this);
 			this.emitGameEvent(GameEvent.EAT);
 		}
 
@@ -3624,6 +3646,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	@Override
 	public void setOnFireForTicks(int ticks) {
 		super.setOnFireForTicks(ProtectionEnchantment.transformFireDuration(this, ticks));
+	}
+
+	public boolean isInCreativeMode() {
+		return false;
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

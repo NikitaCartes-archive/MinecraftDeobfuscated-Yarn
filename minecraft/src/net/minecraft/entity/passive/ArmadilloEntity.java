@@ -6,6 +6,7 @@ import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -45,16 +46,16 @@ import net.minecraft.world.event.GameEvent;
 public class ArmadilloEntity extends AnimalEntity {
 	public static final float field_47778 = 0.6F;
 	public static final float field_48332 = 32.5F;
-	private static final int field_47782 = 5;
-	private static final int field_47783 = 8;
-	public static final int field_47779 = 60;
+	public static final int field_47779 = 80;
 	private static final double field_48333 = 7.0;
 	private static final double field_48334 = 2.0;
 	private static final TrackedData<ArmadilloEntity.State> STATE = DataTracker.registerData(ArmadilloEntity.class, TrackedDataHandlerRegistry.ARMADILLO_STATE);
 	private long currentStateTicks = 0L;
-	public final AnimationState scaredAnimationState = new AnimationState();
+	public final AnimationState unrollingAnimationState = new AnimationState();
 	public final AnimationState rollingAnimationState = new AnimationState();
+	public final AnimationState scaredAnimationState = new AnimationState();
 	private int nextScuteShedCooldown;
+	private boolean peeking = false;
 
 	public ArmadilloEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 		super(entityType, world);
@@ -73,9 +74,9 @@ public class ArmadilloEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(STATE, ArmadilloEntity.State.IDLE);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(STATE, ArmadilloEntity.State.IDLE);
 	}
 
 	public boolean isNotIdle() {
@@ -83,15 +84,14 @@ public class ArmadilloEntity extends AnimalEntity {
 	}
 
 	public boolean isRolledUp() {
-		ArmadilloEntity.State state = this.getState();
-		return state == ArmadilloEntity.State.SCARED || state == ArmadilloEntity.State.ROLLING && this.currentStateTicks > 5L;
+		return this.getState().isRolledUp(this.currentStateTicks);
 	}
 
 	public boolean shouldSwitchToScaredState() {
-		return this.getState() == ArmadilloEntity.State.ROLLING && this.currentStateTicks > 8L;
+		return this.getState() == ArmadilloEntity.State.ROLLING && this.currentStateTicks > (long)ArmadilloEntity.State.ROLLING.getLengthInTicks();
 	}
 
-	private ArmadilloEntity.State getState() {
+	public ArmadilloEntity.State getState() {
 		return this.dataTracker.get(STATE);
 	}
 
@@ -103,10 +103,6 @@ public class ArmadilloEntity extends AnimalEntity {
 
 	public void setState(ArmadilloEntity.State state) {
 		this.dataTracker.set(STATE, state);
-	}
-
-	private void setRolling(boolean rolling) {
-		this.setState(rolling ? ArmadilloEntity.State.ROLLING : ArmadilloEntity.State.IDLE);
 	}
 
 	@Override
@@ -172,16 +168,44 @@ public class ArmadilloEntity extends AnimalEntity {
 	private void updateAnimationStates() {
 		switch (this.getState()) {
 			case IDLE:
+				this.unrollingAnimationState.stop();
+				this.rollingAnimationState.stop();
 				this.scaredAnimationState.stop();
-				this.rollingAnimationState.stop();
 				break;
-			case SCARED:
-				this.scaredAnimationState.startIfNotRunning(this.age);
+			case UNROLLING:
+				this.unrollingAnimationState.startIfNotRunning(this.age);
 				this.rollingAnimationState.stop();
+				this.scaredAnimationState.stop();
 				break;
 			case ROLLING:
-				this.scaredAnimationState.stop();
+				this.unrollingAnimationState.stop();
 				this.rollingAnimationState.startIfNotRunning(this.age);
+				this.scaredAnimationState.stop();
+				break;
+			case SCARED:
+				this.unrollingAnimationState.stop();
+				this.rollingAnimationState.stop();
+				if (this.peeking) {
+					this.scaredAnimationState.stop();
+					this.peeking = false;
+				}
+
+				if (this.currentStateTicks == 0L) {
+					this.scaredAnimationState.start(this.age);
+					this.scaredAnimationState.skip(ArmadilloEntity.State.SCARED.getLengthInTicks(), 1.0F);
+				} else {
+					this.scaredAnimationState.startIfNotRunning(this.age);
+				}
+		}
+	}
+
+	@Override
+	public void handleStatus(byte status) {
+		if (status == EntityStatuses.PEEKING && this.getWorld().isClient) {
+			this.peeking = true;
+			this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMADILLO_PEEK, this.getSoundCategory(), 1.0F, 1.0F, false);
+		} else {
+			super.handleStatus(status);
 		}
 	}
 
@@ -212,12 +236,16 @@ public class ArmadilloEntity extends AnimalEntity {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putString("state", this.getState().asString());
+		nbt.putInt("scute_time", this.nextScuteShedCooldown);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.setState(ArmadilloEntity.State.fromName(nbt.getString("state")));
+		if (nbt.contains("scute_time")) {
+			this.nextScuteShedCooldown = nbt.getInt("scute_time");
+		}
 	}
 
 	public void startRolling() {
@@ -226,15 +254,15 @@ public class ArmadilloEntity extends AnimalEntity {
 			this.resetLoveTicks();
 			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 			this.playSound(SoundEvents.ENTITY_ARMADILLO_ROLL);
-			this.setRolling(true);
+			this.setState(ArmadilloEntity.State.ROLLING);
 		}
 	}
 
 	public void unroll() {
 		if (this.isNotIdle()) {
 			this.emitGameEvent(GameEvent.ENTITY_ACTION);
-			this.playSound(SoundEvents.ENTITY_ARMADILLO_UNROLL);
-			this.setRolling(false);
+			this.playSound(SoundEvents.ENTITY_ARMADILLO_UNROLL_FINISH);
+			this.setState(ArmadilloEntity.State.IDLE);
 		}
 	}
 
@@ -250,29 +278,41 @@ public class ArmadilloEntity extends AnimalEntity {
 	@Override
 	protected void applyDamage(DamageSource source, float amount) {
 		super.applyDamage(source, amount);
-		if (source.getAttacker() instanceof LivingEntity) {
-			this.getBrain().remember(MemoryModuleType.DANGER_DETECTED_RECENTLY, true, 60L);
-			if (this.canRollUp()) {
-				this.startRolling();
+		if (!this.isAiDisabled()) {
+			if (source.getAttacker() instanceof LivingEntity) {
+				this.getBrain().remember(MemoryModuleType.DANGER_DETECTED_RECENTLY, true, 80L);
+				if (this.canRollUp()) {
+					this.startRolling();
+				}
+			} else if (this.shouldUnrollAndFlee()) {
+				this.unroll();
 			}
-		} else {
-			this.unroll();
 		}
+	}
+
+	public boolean shouldUnrollAndFlee() {
+		return this.isOnFire() || this.shouldEscapePowderSnow();
 	}
 
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.BRUSH)) {
-			if (!player.getAbilities().creativeMode) {
-				itemStack.damage(16, player, getSlotForHand(hand));
-			}
-
+			itemStack.damage(16, player, getSlotForHand(hand));
 			this.brushScute();
 			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}
+	}
+
+	@Override
+	public void growUp(int age, boolean overGrow) {
+		if (this.isBaby() && overGrow) {
+			this.playSound(SoundEvents.ENTITY_ARMADILLO_EAT);
+		}
+
+		super.growUp(age, overGrow);
 	}
 
 	public void brushScute() {
@@ -339,9 +379,30 @@ public class ArmadilloEntity extends AnimalEntity {
 	}
 
 	public static enum State implements StringIdentifiable {
-		IDLE("idle", 0),
-		ROLLING("rolling", 1),
-		SCARED("scared", 2);
+		IDLE("idle", false, 0, 0) {
+			@Override
+			public boolean isRolledUp(long currentStateTicks) {
+				return false;
+			}
+		},
+		ROLLING("rolling", true, 10, 1) {
+			@Override
+			public boolean isRolledUp(long currentStateTicks) {
+				return currentStateTicks > 5L;
+			}
+		},
+		SCARED("scared", true, 50, 2) {
+			@Override
+			public boolean isRolledUp(long currentStateTicks) {
+				return true;
+			}
+		},
+		UNROLLING("unrolling", true, 30, 3) {
+			@Override
+			public boolean isRolledUp(long currentStateTicks) {
+				return currentStateTicks < 26L;
+			}
+		};
 
 		private static final StringIdentifiable.EnumCodec<ArmadilloEntity.State> CODEC = StringIdentifiable.createCodec(ArmadilloEntity.State::values);
 		private static final IntFunction<ArmadilloEntity.State> INDEX_TO_VALUE = ValueLists.createIdToValueFunction(
@@ -349,10 +410,14 @@ public class ArmadilloEntity extends AnimalEntity {
 		);
 		public static final PacketCodec<ByteBuf, ArmadilloEntity.State> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, ArmadilloEntity.State::getIndex);
 		private final String name;
+		private final boolean runRollUpTask;
+		private final int lengthInTicks;
 		private final int index;
 
-		private State(String name, int index) {
+		State(String name, boolean runRollUpTask, int lengthInTicks, int index) {
 			this.name = name;
+			this.runRollUpTask = runRollUpTask;
+			this.lengthInTicks = lengthInTicks;
 			this.index = index;
 		}
 
@@ -367,6 +432,16 @@ public class ArmadilloEntity extends AnimalEntity {
 
 		private int getIndex() {
 			return this.index;
+		}
+
+		public abstract boolean isRolledUp(long currentStateTicks);
+
+		public boolean shouldRunRollUpTask() {
+			return this.runRollUpTask;
+		}
+
+		public int getLengthInTicks() {
+			return this.lengthInTicks;
 		}
 	}
 }

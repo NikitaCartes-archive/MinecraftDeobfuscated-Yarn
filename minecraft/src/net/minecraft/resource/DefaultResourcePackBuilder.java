@@ -169,7 +169,7 @@ public class DefaultResourcePackBuilder {
 		return this;
 	}
 
-	public DefaultResourcePack build() {
+	public DefaultResourcePack build(ResourcePackInfo info) {
 		Map<ResourceType, List<Path>> map = new EnumMap(ResourceType.class);
 
 		for (ResourceType resourceType : ResourceType.values()) {
@@ -177,7 +177,7 @@ public class DefaultResourcePackBuilder {
 			map.put(resourceType, list);
 		}
 
-		return new DefaultResourcePack(this.metadataMap, Set.copyOf(this.namespaces), reverse(this.rootPaths), map);
+		return new DefaultResourcePack(info, this.metadataMap, Set.copyOf(this.namespaces), reverse(this.rootPaths), map);
 	}
 
 	private static List<Path> reverse(Collection<Path> paths) {

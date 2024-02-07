@@ -37,7 +37,7 @@ public interface SuspiciousStewIngredient {
 	public static record StewEffect(RegistryEntry<StatusEffect> effect, int duration) {
 		public static final Codec<SuspiciousStewIngredient.StewEffect> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registries.STATUS_EFFECT.createEntryCodec().fieldOf("id").forGetter(SuspiciousStewIngredient.StewEffect::effect),
+						Registries.STATUS_EFFECT.getEntryCodec().fieldOf("id").forGetter(SuspiciousStewIngredient.StewEffect::effect),
 						Codec.INT.optionalFieldOf("duration", Integer.valueOf(160)).forGetter(SuspiciousStewIngredient.StewEffect::duration)
 					)
 					.apply(instance, SuspiciousStewIngredient.StewEffect::new)

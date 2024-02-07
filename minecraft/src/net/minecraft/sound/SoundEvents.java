@@ -71,7 +71,9 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ARMADILLO_ROLL = register("entity.armadillo.roll");
 	public static final SoundEvent ENTITY_ARMADILLO_LAND = register("entity.armadillo.land");
 	public static final SoundEvent ENTITY_ARMADILLO_SCUTE_DROP = register("entity.armadillo.scute_drop");
-	public static final SoundEvent ENTITY_ARMADILLO_UNROLL = register("entity.armadillo.unroll");
+	public static final SoundEvent ENTITY_ARMADILLO_UNROLL_FINISH = register("entity.armadillo.unroll_finish");
+	public static final SoundEvent ENTITY_ARMADILLO_PEEK = register("entity.armadillo.peek");
+	public static final SoundEvent ENTITY_ARMADILLO_UNROLL_START = register("entity.armadillo.unroll_start");
 	public static final SoundEvent ENTITY_ARMADILLO_BRUSH = register("entity.armadillo.brush");
 	public static final RegistryEntry<SoundEvent> ITEM_ARMOR_EQUIP_CHAIN = registerReference("item.armor.equip_chain");
 	public static final RegistryEntry<SoundEvent> ITEM_ARMOR_EQUIP_DIAMOND = registerReference("item.armor.equip_diamond");
@@ -199,6 +201,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_BREEZE_DEATH = register("entity.breeze.death");
 	public static final SoundEvent ENTITY_BREEZE_HURT = register("entity.breeze.hurt");
 	public static final SoundEvent ENTITY_BREEZE_WHIRL = register("entity.breeze.whirl");
+	public static final RegistryEntry.Reference<SoundEvent> ENTITY_BREEZE_WIND_BURST = registerReference("entity.breeze.wind_burst");
 	public static final SoundEvent BLOCK_BREWING_STAND_BREW = register("block.brewing_stand.brew");
 	public static final SoundEvent ITEM_BRUSH_BRUSHING_GENERIC = register("item.brush.brushing.generic");
 	public static final SoundEvent ITEM_BRUSH_BRUSHING_SAND = register("item.brush.brushing.sand");
@@ -1499,7 +1502,8 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_WET_SPONGE_HIT = register("block.wet_sponge.hit");
 	public static final SoundEvent BLOCK_WET_SPONGE_PLACE = register("block.wet_sponge.place");
 	public static final SoundEvent BLOCK_WET_SPONGE_STEP = register("block.wet_sponge.step");
-	public static final RegistryEntry.Reference<SoundEvent> ENTITY_GENERIC_WIND_BURST = registerReference("entity.generic.wind_burst");
+	public static final RegistryEntry.Reference<SoundEvent> ENTITY_WIND_CHARGE_WIND_BURST = registerReference("entity.wind_charge.wind_burst");
+	public static final SoundEvent ENTITY_WIND_CHARGE_THROW = register("entity.wind_charge.throw");
 	public static final SoundEvent ENTITY_WITCH_AMBIENT = register("entity.witch.ambient");
 	public static final SoundEvent ENTITY_WITCH_CELEBRATE = register("entity.witch.celebrate");
 	public static final SoundEvent ENTITY_WITCH_DEATH = register("entity.witch.death");

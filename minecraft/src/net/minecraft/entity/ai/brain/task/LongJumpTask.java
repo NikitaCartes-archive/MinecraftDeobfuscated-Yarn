@@ -16,6 +16,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -186,9 +187,10 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 	protected Vec3d getJumpingVelocity(MobEntity entity, Vec3d targetPos) {
 		List<Integer> list = Lists.<Integer>newArrayList(RAM_RANGES);
 		Collections.shuffle(list);
+		float f = (float)(entity.getAttributeValue(EntityAttributes.GENERIC_JUMP_STRENGTH) * (double)this.maxRange);
 
 		for (int i : list) {
-			Optional<Vec3d> optional = LongJumpUtil.getJumpingVelocity(entity, targetPos, this.maxRange, i, true);
+			Optional<Vec3d> optional = LongJumpUtil.getJumpingVelocity(entity, targetPos, f, i, true);
 			if (optional.isPresent()) {
 				return (Vec3d)optional.get();
 			}

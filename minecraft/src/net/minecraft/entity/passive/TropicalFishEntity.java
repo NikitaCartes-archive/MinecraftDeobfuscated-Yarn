@@ -88,9 +88,9 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(VARIANT, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(VARIANT, 0);
 	}
 
 	@Override

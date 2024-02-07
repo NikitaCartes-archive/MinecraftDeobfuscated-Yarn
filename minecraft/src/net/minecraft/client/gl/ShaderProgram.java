@@ -207,7 +207,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 
 			try {
 				final String string2 = PathUtil.getPosixFullPath(string);
-				shaderStage2 = ShaderStage.createFromResource(type, name, inputStream, resource.getResourcePackName(), new GlImportProcessor() {
+				shaderStage2 = ShaderStage.createFromResource(type, name, inputStream, resource.getPackId(), new GlImportProcessor() {
 					private final Set<String> visitedImports = Sets.<String>newHashSet();
 
 					@Override

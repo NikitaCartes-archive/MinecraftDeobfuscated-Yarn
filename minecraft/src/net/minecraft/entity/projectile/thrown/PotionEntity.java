@@ -56,8 +56,8 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 	}
 
 	@Override
-	protected float getGravity() {
-		return 0.05F;
+	protected double getGravity() {
+		return 0.05;
 	}
 
 	@Override

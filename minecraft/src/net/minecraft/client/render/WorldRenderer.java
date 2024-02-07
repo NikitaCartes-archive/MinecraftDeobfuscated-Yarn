@@ -521,8 +521,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			String string = var8 instanceof JsonSyntaxException ? "parse" : "load";
 			String string2 = "Failed to " + string + " shader: " + identifier;
 			WorldRenderer.ProgramInitException programInitException = new WorldRenderer.ProgramInitException(string2, var8);
-			if (this.client.getResourcePackManager().getEnabledNames().size() > 1) {
-				Text text = (Text)this.client.getResourceManager().streamResourcePacks().findFirst().map(resourcePack -> Text.literal(resourcePack.getName())).orElse(null);
+			if (this.client.getResourcePackManager().getEnabledIds().size() > 1) {
+				Text text = (Text)this.client.getResourceManager().streamResourcePacks().findFirst().map(resourcePack -> Text.literal(resourcePack.getId())).orElse(null);
 				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
 				this.client.onResourceReloadFailure(programInitException, text, null);
 			} else {
@@ -1677,7 +1677,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					bufferBuilder.vertex(matrix4f3, k, -100.0F, -k).texture(t, o).next();
 					bufferBuilder.vertex(matrix4f3, -k, -100.0F, -k).texture(p, o).next();
 					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-					float u = this.world.method_23787(tickDelta) * i;
+					float u = this.world.getStarBrightness(tickDelta) * i;
 					if (u > 0.0F) {
 						RenderSystem.setShaderColor(u, u, u, u);
 						BackgroundRenderer.clearFog();

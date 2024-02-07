@@ -50,7 +50,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	protected void init() {
 		super.init();
 		ClickableWidget clickableWidget = this.buttonList.getWidgetFor(this.gameOptions.getHighContrast());
-		if (clickableWidget != null && !this.client.getResourcePackManager().getNames().contains("high_contrast")) {
+		if (clickableWidget != null && !this.client.getResourcePackManager().getIds().contains("high_contrast")) {
 			clickableWidget.active = false;
 			clickableWidget.setTooltip(Tooltip.of(Text.translatable("options.accessibility.high_contrast.error.tooltip")));
 		}

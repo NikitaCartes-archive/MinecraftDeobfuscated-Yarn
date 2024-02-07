@@ -78,12 +78,12 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected DefaultedList<ItemStack> method_11282() {
+	protected DefaultedList<ItemStack> getHeldStacks() {
 		return this.inventory;
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> list) {
+	protected void setHeldStacks(DefaultedList<ItemStack> list) {
 		this.inventory = list;
 	}
 

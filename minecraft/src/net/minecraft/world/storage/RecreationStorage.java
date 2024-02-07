@@ -14,10 +14,12 @@ public class RecreationStorage extends ChunkPosKeyedStorage {
 	private final StorageIoWorker recreationWorker;
 	private final Path outputDirectory;
 
-	public RecreationStorage(Path directory, Path outputDirectory, DataFixer dataFixer, boolean dsync, String name, DataFixTypes dataFixTypes) {
-		super(directory, dataFixer, dsync, name, dataFixTypes);
+	public RecreationStorage(
+		StorageKey storageKey, Path directory, StorageKey outputStorageKey, Path outputDirectory, DataFixer dataFixer, boolean dsync, DataFixTypes dataFixTypes
+	) {
+		super(storageKey, directory, dataFixer, dsync, dataFixTypes);
 		this.outputDirectory = outputDirectory;
-		this.recreationWorker = new StorageIoWorker(outputDirectory, dsync, name + "-recreating");
+		this.recreationWorker = new StorageIoWorker(outputStorageKey, outputDirectory, dsync);
 	}
 
 	@Override

@@ -48,8 +48,8 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(VARIANT, getDefaultVariant());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(VARIANT, getDefaultVariant());
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	public void onBreak(@Nullable Entity entity) {
 		if (this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
-			if (entity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().creativeMode) {
+			if (entity instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
 				return;
 			}
 

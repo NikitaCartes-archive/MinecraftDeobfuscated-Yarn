@@ -45,6 +45,7 @@ import net.minecraft.world.storage.ChunkPosKeyedStorage;
 import net.minecraft.world.storage.RecreatedChunkStorage;
 import net.minecraft.world.storage.RecreationStorage;
 import net.minecraft.world.storage.RegionFile;
+import net.minecraft.world.storage.StorageKey;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.slf4j.Logger;
 
@@ -157,15 +158,27 @@ public class WorldUpdater {
 		return this.status;
 	}
 
+	static Path getNewDirectoryPath(Path current) {
+		return current.resolveSibling("new_" + current.getFileName().toString());
+	}
+
 	abstract class ChunkPosKeyedStorageUpdate extends WorldUpdater.Update<ChunkPosKeyedStorage> {
-		ChunkPosKeyedStorageUpdate(DataFixTypes dataFixTypes, String string, MutableText mutableText, MutableText mutableText2) {
-			super(dataFixTypes, string, mutableText, mutableText2);
+		ChunkPosKeyedStorageUpdate(DataFixTypes dataFixTypes, String targetName, MutableText upgradingText, MutableText finishedText) {
+			super(dataFixTypes, targetName, targetName, upgradingText, finishedText);
 		}
 
-		protected ChunkPosKeyedStorage openStorage(String string, Path path, Path path2) {
+		protected ChunkPosKeyedStorage openStorage(StorageKey storageKey, Path path) {
 			return (ChunkPosKeyedStorage)(WorldUpdater.this.recreateRegionFiles
-				? new RecreationStorage(path2, path.resolve("new_" + string), WorldUpdater.this.dataFixer, true, string, this.dataFixTypes)
-				: new ChunkPosKeyedStorage(path2, WorldUpdater.this.dataFixer, true, string, this.dataFixTypes));
+				? new RecreationStorage(
+					storageKey.withSuffix("source"),
+					path,
+					storageKey.withSuffix("target"),
+					WorldUpdater.getNewDirectoryPath(path),
+					WorldUpdater.this.dataFixer,
+					true,
+					this.dataFixTypes
+				)
+				: new ChunkPosKeyedStorage(storageKey, path, WorldUpdater.this.dataFixer, true, this.dataFixTypes));
 		}
 
 		protected boolean update(ChunkPosKeyedStorage chunkPosKeyedStorage, ChunkPos chunkPos, RegistryKey<World> registryKey) {
@@ -217,7 +230,7 @@ public class WorldUpdater {
 
 	class RegionUpdate extends WorldUpdater.Update<VersionedChunkStorage> {
 		RegionUpdate() {
-			super(DataFixTypes.CHUNK, "region", WorldUpdater.UPGRADING_CHUNKS_TEXT, WorldUpdater.FINISHED_CHUNKS_TEXT);
+			super(DataFixTypes.CHUNK, "chunk", "region", WorldUpdater.UPGRADING_CHUNKS_TEXT, WorldUpdater.FINISHED_CHUNKS_TEXT);
 		}
 
 		protected boolean update(VersionedChunkStorage versionedChunkStorage, ChunkPos chunkPos, RegistryKey<World> registryKey) {
@@ -263,23 +276,27 @@ public class WorldUpdater {
 			return false;
 		}
 
-		protected VersionedChunkStorage openStorage(String string, Path path, Path path2) {
+		protected VersionedChunkStorage openStorage(StorageKey storageKey, Path path) {
 			return (VersionedChunkStorage)(WorldUpdater.this.recreateRegionFiles
-				? new RecreatedChunkStorage(path2, path.resolve("new_" + string), WorldUpdater.this.dataFixer, true)
-				: new VersionedChunkStorage(path2, WorldUpdater.this.dataFixer, true));
+				? new RecreatedChunkStorage(
+					storageKey.withSuffix("source"), path, storageKey.withSuffix("target"), WorldUpdater.getNewDirectoryPath(path), WorldUpdater.this.dataFixer, true
+				)
+				: new VersionedChunkStorage(storageKey, path, WorldUpdater.this.dataFixer, true));
 		}
 	}
 
 	abstract class Update<T extends AutoCloseable> {
 		private final MutableText upgradingText;
 		private final MutableText finishedText;
+		private final String name;
 		private final String targetName;
 		@Nullable
 		protected CompletableFuture<Void> pendingUpdateFuture;
 		protected final DataFixTypes dataFixTypes;
 
-		Update(DataFixTypes dataFixTypes, String targetName, MutableText upgradingText, MutableText finishedText) {
+		Update(DataFixTypes dataFixTypes, String name, String targetName, MutableText upgradingText, MutableText finishedText) {
 			this.dataFixTypes = dataFixTypes;
+			this.name = name;
 			this.targetName = targetName;
 			this.upgradingText = upgradingText;
 			this.finishedText = finishedText;
@@ -290,7 +307,7 @@ public class WorldUpdater {
 			WorldUpdater.this.totalChunkCount = 0;
 			WorldUpdater.this.upgradedChunkCount = 0;
 			WorldUpdater.this.skippedChunkCount = 0;
-			List<WorldUpdater.WorldData<T>> list = this.listWoldData(this.targetName);
+			List<WorldUpdater.WorldData<T>> list = this.listWoldData();
 			if (WorldUpdater.this.totalChunkCount != 0) {
 				float f = (float)WorldUpdater.this.totalRegionCount;
 				WorldUpdater.this.status = this.upgradingText;
@@ -344,46 +361,44 @@ public class WorldUpdater {
 			}
 		}
 
-		private List<WorldUpdater.WorldData<T>> listWoldData(String targetName) {
+		private List<WorldUpdater.WorldData<T>> listWoldData() {
 			List<WorldUpdater.WorldData<T>> list = Lists.<WorldUpdater.WorldData<T>>newArrayList();
 
 			for (RegistryKey<World> registryKey : WorldUpdater.this.worldKeys) {
-				Path path = WorldUpdater.this.session.getWorldDirectory(registryKey);
-				Path path2 = path.resolve(targetName);
-				T autoCloseable = this.openStorage(targetName, path, path2);
-				ListIterator<WorldUpdater.Region> listIterator = this.enumerateRegions(targetName, registryKey);
+				StorageKey storageKey = new StorageKey(WorldUpdater.this.session.getDirectoryName(), registryKey, this.name);
+				Path path = WorldUpdater.this.session.getWorldDirectory(registryKey).resolve(this.targetName);
+				T autoCloseable = this.openStorage(storageKey, path);
+				ListIterator<WorldUpdater.Region> listIterator = this.enumerateRegions(storageKey, path);
 				list.add(new WorldUpdater.WorldData(registryKey, autoCloseable, listIterator));
 			}
 
 			return list;
 		}
 
-		protected abstract T openStorage(String targetName, Path worldDirectory, Path targetDirectory);
+		protected abstract T openStorage(StorageKey key, Path worldDirectory);
 
-		private ListIterator<WorldUpdater.Region> enumerateRegions(String targetName, RegistryKey<World> worldKey) {
-			List<WorldUpdater.Region> list = this.listRegions(worldKey, targetName);
+		private ListIterator<WorldUpdater.Region> enumerateRegions(StorageKey key, Path regionDirectory) {
+			List<WorldUpdater.Region> list = listRegions(key, regionDirectory);
 			WorldUpdater.this.totalRegionCount = WorldUpdater.this.totalRegionCount + list.size();
 			WorldUpdater.this.totalChunkCount = WorldUpdater.this.totalChunkCount + list.stream().mapToInt(region -> region.chunksToUpgrade.size()).sum();
 			return list.listIterator();
 		}
 
-		private List<WorldUpdater.Region> listRegions(RegistryKey<World> worldKey, String targetName) {
-			File file = WorldUpdater.this.session.getWorldDirectory(worldKey).toFile();
-			File file2 = new File(file, targetName);
-			File[] files = file2.listFiles((filex, name) -> name.endsWith(".mca"));
+		private static List<WorldUpdater.Region> listRegions(StorageKey key, Path regionDirectory) {
+			File[] files = regionDirectory.toFile().listFiles((filex, name) -> name.endsWith(".mca"));
 			if (files == null) {
 				return List.of();
 			} else {
 				List<WorldUpdater.Region> list = Lists.<WorldUpdater.Region>newArrayList();
 
-				for (File file3 : files) {
-					Matcher matcher = WorldUpdater.REGION_FILE_PATTERN.matcher(file3.getName());
+				for (File file : files) {
+					Matcher matcher = WorldUpdater.REGION_FILE_PATTERN.matcher(file.getName());
 					if (matcher.matches()) {
 						int i = Integer.parseInt(matcher.group(1)) << 5;
 						int j = Integer.parseInt(matcher.group(2)) << 5;
 						List<ChunkPos> list2 = Lists.<ChunkPos>newArrayList();
 
-						try (RegionFile regionFile = new RegionFile(file3.toPath(), file2.toPath(), true)) {
+						try (RegionFile regionFile = new RegionFile(key, file.toPath(), regionDirectory, true)) {
 							for (int k = 0; k < 32; k++) {
 								for (int l = 0; l < 32; l++) {
 									ChunkPos chunkPos = new ChunkPos(k + i, l + j);
@@ -396,8 +411,8 @@ public class WorldUpdater {
 							if (!list2.isEmpty()) {
 								list.add(new WorldUpdater.Region(regionFile, list2));
 							}
-						} catch (Throwable var21) {
-							WorldUpdater.LOGGER.error("Failed to read chunks from region file {}", file3.toPath(), var21);
+						} catch (Throwable var18) {
+							WorldUpdater.LOGGER.error("Failed to read chunks from region file {}", file.toPath(), var18);
 						}
 					}
 				}
@@ -439,7 +454,7 @@ public class WorldUpdater {
 
 				Path path = regionFile.getPath();
 				Path path2 = path.getParent();
-				Path path3 = path2.resolveSibling("new_" + path2.getFileName().toString()).resolve(path.getFileName().toString());
+				Path path3 = WorldUpdater.getNewDirectoryPath(path2).resolve(path.getFileName().toString());
 
 				try {
 					if (path3.toFile().exists()) {

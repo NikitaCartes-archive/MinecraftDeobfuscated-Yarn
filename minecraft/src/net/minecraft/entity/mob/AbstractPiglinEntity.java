@@ -48,9 +48,9 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(IMMUNE_TO_ZOMBIFICATION, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(IMMUNE_TO_ZOMBIFICATION, false);
 	}
 
 	@Override

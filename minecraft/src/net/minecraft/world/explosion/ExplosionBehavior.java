@@ -23,6 +23,10 @@ public class ExplosionBehavior {
 		return true;
 	}
 
+	public float getKnockbackModifier() {
+		return 1.0F;
+	}
+
 	public float calculateDamage(Explosion explosion, Entity entity) {
 		float f = explosion.getPower() * 2.0F;
 		Vec3d vec3d = explosion.getPosition();

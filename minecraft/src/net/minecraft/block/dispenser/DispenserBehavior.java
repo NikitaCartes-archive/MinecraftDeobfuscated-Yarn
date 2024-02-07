@@ -38,6 +38,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
@@ -343,6 +344,33 @@ public interface DispenserBehavior {
 				pointer.world().syncWorldEvent(WorldEvents.BLAZE_SHOOTS, pointer.pos(), 0);
 			}
 		});
+		DispenserBlock.registerBehavior(
+			Items.WIND_CHARGE,
+			new ItemDispenserBehavior() {
+				@Override
+				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+					Direction direction = pointer.state().get(DispenserBlock.FACING);
+					Position position = DispenserBlock.getOutputLocation(pointer);
+					World world = pointer.world();
+					Random random = world.random;
+					double d = random.nextTriangular((double)direction.getOffsetX(), 0.11485000000000001);
+					double e = random.nextTriangular((double)direction.getOffsetY(), 0.11485000000000001);
+					double f = random.nextTriangular((double)direction.getOffsetZ(), 0.11485000000000001);
+					WindChargeEntity windChargeEntity = new WindChargeEntity(
+						world,
+						position.getX() + (double)((float)direction.getOffsetX() * 0.3F),
+						position.getY() + (double)((float)direction.getOffsetY() * 0.3F),
+						position.getZ() + (double)((float)direction.getOffsetZ() * 0.3F),
+						d,
+						e,
+						f
+					);
+					world.spawnEntity(windChargeEntity);
+					stack.decrement(1);
+					return stack;
+				}
+			}
+		);
 		DispenserBlock.registerBehavior(Items.OAK_BOAT, new BoatDispenserBehavior(BoatEntity.Type.OAK));
 		DispenserBlock.registerBehavior(Items.SPRUCE_BOAT, new BoatDispenserBehavior(BoatEntity.Type.SPRUCE));
 		DispenserBlock.registerBehavior(Items.BIRCH_BOAT, new BoatDispenserBehavior(BoatEntity.Type.BIRCH));

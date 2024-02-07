@@ -120,15 +120,15 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(ARMOR_STAND_FLAGS, (byte)0);
-		this.dataTracker.startTracking(TRACKER_HEAD_ROTATION, DEFAULT_HEAD_ROTATION);
-		this.dataTracker.startTracking(TRACKER_BODY_ROTATION, DEFAULT_BODY_ROTATION);
-		this.dataTracker.startTracking(TRACKER_LEFT_ARM_ROTATION, DEFAULT_LEFT_ARM_ROTATION);
-		this.dataTracker.startTracking(TRACKER_RIGHT_ARM_ROTATION, DEFAULT_RIGHT_ARM_ROTATION);
-		this.dataTracker.startTracking(TRACKER_LEFT_LEG_ROTATION, DEFAULT_LEFT_LEG_ROTATION);
-		this.dataTracker.startTracking(TRACKER_RIGHT_LEG_ROTATION, DEFAULT_RIGHT_LEG_ROTATION);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(ARMOR_STAND_FLAGS, (byte)0);
+		builder.add(TRACKER_HEAD_ROTATION, DEFAULT_HEAD_ROTATION);
+		builder.add(TRACKER_BODY_ROTATION, DEFAULT_BODY_ROTATION);
+		builder.add(TRACKER_LEFT_ARM_ROTATION, DEFAULT_LEFT_ARM_ROTATION);
+		builder.add(TRACKER_RIGHT_ARM_ROTATION, DEFAULT_RIGHT_ARM_ROTATION);
+		builder.add(TRACKER_LEFT_LEG_ROTATION, DEFAULT_LEFT_LEG_ROTATION);
+		builder.add(TRACKER_RIGHT_LEG_ROTATION, DEFAULT_RIGHT_LEG_ROTATION);
 	}
 
 	@Override
@@ -151,6 +151,11 @@ public class ArmorStandEntity extends LivingEntity {
 			default:
 				return ItemStack.EMPTY;
 		}
+	}
+
+	@Override
+	public boolean canUseSlot(EquipmentSlot slot) {
+		return slot != EquipmentSlot.BODY;
 	}
 
 	@Override
@@ -367,7 +372,7 @@ public class ArmorStandEntity extends LivingEntity {
 			return false;
 		} else if (itemStack.isEmpty() && (this.disabledSlots & 1 << slot.getArmorStandSlotId() + 16) != 0) {
 			return false;
-		} else if (player.getAbilities().creativeMode && itemStack.isEmpty() && !stack.isEmpty()) {
+		} else if (player.isInCreativeMode() && itemStack.isEmpty() && !stack.isEmpty()) {
 			this.equipStack(slot, stack.copyWithCount(1));
 			return true;
 		} else if (stack.isEmpty() || stack.getCount() <= 1) {

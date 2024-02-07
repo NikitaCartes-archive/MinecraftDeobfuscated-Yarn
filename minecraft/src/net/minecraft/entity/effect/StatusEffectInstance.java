@@ -23,10 +23,10 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int INFINITE = -1;
 	public static final int MIN_AMPLIFIER = 0;
-	public static final int MAX_AMPLIFIER = 127;
+	public static final int MAX_AMPLIFIER = 255;
 	public static final Codec<StatusEffectInstance> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.STATUS_EFFECT.createEntryCodec().fieldOf("id").forGetter(StatusEffectInstance::getEffectType),
+					Registries.STATUS_EFFECT.getEntryCodec().fieldOf("id").forGetter(StatusEffectInstance::getEffectType),
 					StatusEffectInstance.Parameters.CODEC.forGetter(StatusEffectInstance::asParameters)
 				)
 				.apply(instance, StatusEffectInstance::new)
@@ -79,7 +79,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	) {
 		this.type = effect;
 		this.duration = duration;
-		this.amplifier = MathHelper.clamp(amplifier, 0, 127);
+		this.amplifier = MathHelper.clamp(amplifier, 0, 255);
 		this.ambient = ambient;
 		this.showParticles = showParticles;
 		this.showIcon = showIcon;

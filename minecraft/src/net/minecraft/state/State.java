@@ -2,11 +2,10 @@ package net.minecraft.state;
 
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -36,13 +35,13 @@ public abstract class State<O, S> {
 		}
 	};
 	protected final O owner;
-	private final ImmutableMap<Property<?>, Comparable<?>> entries;
+	private final Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyMap;
 	private Table<Property<?>, Comparable<?>, S> withTable;
 	protected final MapCodec<S> codec;
 
-	protected State(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> codec) {
+	protected State(O owner, Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyMap, MapCodec<S> codec) {
 		this.owner = owner;
-		this.entries = entries;
+		this.propertyMap = propertyMap;
 		this.codec = codec;
 	}
 
@@ -79,15 +78,15 @@ public abstract class State<O, S> {
 	}
 
 	public Collection<Property<?>> getProperties() {
-		return Collections.unmodifiableCollection(this.entries.keySet());
+		return Collections.unmodifiableCollection(this.propertyMap.keySet());
 	}
 
 	public <T extends Comparable<T>> boolean contains(Property<T> property) {
-		return this.entries.containsKey(property);
+		return this.propertyMap.containsKey(property);
 	}
 
 	public <T extends Comparable<T>> T get(Property<T> property) {
-		Comparable<?> comparable = this.entries.get(property);
+		Comparable<?> comparable = this.propertyMap.get(property);
 		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
 		} else {
@@ -96,12 +95,12 @@ public abstract class State<O, S> {
 	}
 
 	public <T extends Comparable<T>> Optional<T> getOrEmpty(Property<T> property) {
-		Comparable<?> comparable = this.entries.get(property);
+		Comparable<?> comparable = this.propertyMap.get(property);
 		return comparable == null ? Optional.empty() : Optional.of((Comparable)property.getType().cast(comparable));
 	}
 
 	public <T extends Comparable<T>, V extends T> S with(Property<T> property, V value) {
-		Comparable<?> comparable = this.entries.get(property);
+		Comparable<?> comparable = this.propertyMap.get(property);
 		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + this.owner);
 		} else if (comparable.equals(value)) {
@@ -117,7 +116,7 @@ public abstract class State<O, S> {
 	}
 
 	public <T extends Comparable<T>, V extends T> S withIfExists(Property<T> property, V value) {
-		Comparable<?> comparable = this.entries.get(property);
+		Comparable<?> comparable = this.propertyMap.get(property);
 		if (comparable != null && !comparable.equals(value)) {
 			S object = this.withTable.get(property, value);
 			if (object == null) {
@@ -136,7 +135,7 @@ public abstract class State<O, S> {
 		} else {
 			Table<Property<?>, Comparable<?>, S> table = HashBasedTable.create();
 
-			for (Entry<Property<?>, Comparable<?>> entry : this.entries.entrySet()) {
+			for (Entry<Property<?>, Comparable<?>> entry : this.propertyMap.entrySet()) {
 				Property<?> property = (Property<?>)entry.getKey();
 
 				for (Comparable<?> comparable : property.getValues()) {
@@ -151,21 +150,21 @@ public abstract class State<O, S> {
 	}
 
 	private Map<Property<?>, Comparable<?>> toMapWith(Property<?> property, Comparable<?> value) {
-		Map<Property<?>, Comparable<?>> map = Maps.<Property<?>, Comparable<?>>newHashMap(this.entries);
+		Map<Property<?>, Comparable<?>> map = new Reference2ObjectArrayMap<>(this.propertyMap);
 		map.put(property, value);
 		return map;
 	}
 
-	public ImmutableMap<Property<?>, Comparable<?>> getEntries() {
-		return this.entries;
+	public Map<Property<?>, Comparable<?>> getEntries() {
+		return this.propertyMap;
 	}
 
 	protected static <O, S extends State<O, S>> Codec<S> createCodec(Codec<O> codec, Function<O, S> ownerToStateFunction) {
 		return codec.dispatch(
 			"Name",
 			state -> state.owner,
-			object -> {
-				S state = (S)ownerToStateFunction.apply(object);
+			owner -> {
+				S state = (S)ownerToStateFunction.apply(owner);
 				return state.getEntries().isEmpty()
 					? Codec.unit(state)
 					: state.codec.codec().optionalFieldOf("Properties").xmap(optional -> (State)optional.orElse(state), Optional::of).codec();

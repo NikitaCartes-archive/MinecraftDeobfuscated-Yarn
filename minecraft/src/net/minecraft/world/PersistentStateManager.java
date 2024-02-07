@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -18,6 +19,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.FixedBufferInputStream;
 import org.slf4j.Logger;
 
 public class PersistentStateManager {
@@ -82,11 +84,11 @@ public class PersistentStateManager {
 
 	public NbtCompound readNbt(String id, DataFixTypes dataFixTypes, int currentSaveVersion) throws IOException {
 		File file = this.getFile(id);
-		FileInputStream fileInputStream = new FileInputStream(file);
+		InputStream inputStream = new FileInputStream(file);
 
 		NbtCompound var9;
 		try {
-			PushbackInputStream pushbackInputStream = new PushbackInputStream(fileInputStream, 2);
+			PushbackInputStream pushbackInputStream = new PushbackInputStream(new FixedBufferInputStream(inputStream), 2);
 
 			try {
 				NbtCompound nbtCompound;
@@ -125,7 +127,7 @@ public class PersistentStateManager {
 			pushbackInputStream.close();
 		} catch (Throwable var16) {
 			try {
-				fileInputStream.close();
+				inputStream.close();
 			} catch (Throwable var11) {
 				var16.addSuppressed(var11);
 			}
@@ -133,7 +135,7 @@ public class PersistentStateManager {
 			throw var16;
 		}
 
-		fileInputStream.close();
+		inputStream.close();
 		return var9;
 	}
 

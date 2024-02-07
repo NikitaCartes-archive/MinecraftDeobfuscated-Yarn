@@ -182,12 +182,12 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	@Override
-	public DefaultedList<ItemStack> method_11282() {
+	public DefaultedList<ItemStack> getHeldStacks() {
 		return this.inputStacks;
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> list) {
+	protected void setHeldStacks(DefaultedList<ItemStack> list) {
 		this.inputStacks = list;
 	}
 

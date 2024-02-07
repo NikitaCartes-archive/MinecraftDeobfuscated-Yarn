@@ -1285,6 +1285,7 @@ public class ItemGroups {
 						entries.add(Items.SPYGLASS);
 						entries.add(Items.MAP);
 						entries.add(Items.WRITABLE_BOOK);
+						entries.add(Items.WIND_CHARGE);
 						entries.add(Items.ENDER_PEARL);
 						entries.add(Items.ENDER_EYE);
 						entries.add(Items.ELYTRA);
@@ -1399,6 +1400,7 @@ public class ItemGroups {
 						entries.add(Items.END_CRYSTAL);
 						entries.add(Items.SNOWBALL);
 						entries.add(Items.EGG);
+						entries.add(Items.WIND_CHARGE);
 						entries.add(Items.BOW);
 						entries.add(Items.CROSSBOW);
 						addFireworkRockets(entries, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);

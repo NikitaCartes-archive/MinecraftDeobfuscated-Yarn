@@ -75,7 +75,7 @@ public class TestServer extends MinecraftServer {
 		} else {
 			resourcePackManager.scanPacks();
 			DataConfiguration dataConfiguration = new DataConfiguration(
-				new DataPackSettings(new ArrayList(resourcePackManager.getNames()), List.of()), FeatureFlags.FEATURE_MANAGER.getFeatureSet()
+				new DataPackSettings(new ArrayList(resourcePackManager.getIds()), List.of()), FeatureFlags.FEATURE_MANAGER.getFeatureSet()
 			);
 			LevelInfo levelInfo = new LevelInfo("Test Level", GameMode.CREATIVE, false, Difficulty.NORMAL, true, GAME_RULES, dataConfiguration);
 			SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataConfiguration, false, true);

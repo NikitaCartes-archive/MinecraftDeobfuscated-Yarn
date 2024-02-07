@@ -19,7 +19,7 @@ public record BlockStatePropertyLootCondition(RegistryEntry<Block> block, Option
 	public static final Codec<BlockStatePropertyLootCondition> CODEC = Codecs.validate(
 		RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registries.BLOCK.createEntryCodec().fieldOf("block").forGetter(BlockStatePropertyLootCondition::block),
+						Registries.BLOCK.getEntryCodec().fieldOf("block").forGetter(BlockStatePropertyLootCondition::block),
 						Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "properties").forGetter(BlockStatePropertyLootCondition::properties)
 					)
 					.apply(instance, BlockStatePropertyLootCondition::new)

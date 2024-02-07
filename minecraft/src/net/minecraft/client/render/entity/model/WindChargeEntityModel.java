@@ -10,10 +10,10 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.projectile.WindChargeEntity;
+import net.minecraft.entity.projectile.AbstractWindChargeEntity;
 
 @Environment(EnvType.CLIENT)
-public class WindChargeEntityModel extends SinglePartEntityModel<WindChargeEntity> {
+public class WindChargeEntityModel extends SinglePartEntityModel<AbstractWindChargeEntity> {
 	private static final int field_48704 = 16;
 	private final ModelPart bone;
 	private final ModelPart windCharge;
@@ -45,7 +45,7 @@ public class WindChargeEntityModel extends SinglePartEntityModel<WindChargeEntit
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	public void setAngles(WindChargeEntity windChargeEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(AbstractWindChargeEntity abstractWindChargeEntity, float f, float g, float h, float i, float j) {
 		this.windCharge.yaw = -h * 16.0F * (float) (Math.PI / 180.0);
 		this.wind.yaw = h * 16.0F * (float) (Math.PI / 180.0);
 	}

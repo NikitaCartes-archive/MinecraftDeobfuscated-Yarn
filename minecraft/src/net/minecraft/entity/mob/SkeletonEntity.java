@@ -25,9 +25,9 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.getDataTracker().startTracking(CONVERTING, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CONVERTING, false);
 	}
 
 	/**

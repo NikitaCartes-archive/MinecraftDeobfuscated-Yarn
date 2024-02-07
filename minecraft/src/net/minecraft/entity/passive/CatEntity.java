@@ -91,6 +91,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 
 	public CatEntity(EntityType<? extends CatEntity> entityType, World world) {
 		super(entityType, world);
+		this.onTamedChanged();
 	}
 
 	public Identifier getTexture() {
@@ -158,12 +159,12 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(CAT_VARIANT, Registries.CAT_VARIANT.getOrThrow(CatVariant.BLACK));
-		this.dataTracker.startTracking(IN_SLEEPING_POSE, false);
-		this.dataTracker.startTracking(HEAD_DOWN, false);
-		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CAT_VARIANT, Registries.CAT_VARIANT.getOrThrow(CatVariant.BLACK));
+		builder.add(IN_SLEEPING_POSE, false);
+		builder.add(HEAD_DOWN, false);
+		builder.add(COLLAR_COLOR, DyeColor.RED.getId());
 	}
 
 	@Override
@@ -328,7 +329,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 
 			if (this.isTamed()) {
 				catEntity.setOwnerUuid(this.getOwnerUuid());
-				catEntity.setTamed(true);
+				catEntity.setTamed(true, true);
 				if (this.random.nextBoolean()) {
 					catEntity.setCollarColor(this.getCollarColor());
 				} else {
@@ -396,10 +397,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 					DyeColor dyeColor = ((DyeItem)item).getColor();
 					if (dyeColor != this.getCollarColor()) {
 						this.setCollarColor(dyeColor);
-						if (!player.getAbilities().creativeMode) {
-							itemStack.decrement(1);
-						}
-
+						itemStack.decrementUnlessCreative(1, player);
 						this.setPersistent();
 						return ActionResult.CONSUME;
 					}
@@ -438,6 +436,11 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	}
 
 	@Override
+	public void setTamed(boolean tamed, boolean updateAttributes) {
+		super.setTamed(tamed, updateAttributes);
+		this.onTamedChanged();
+	}
+
 	protected void onTamedChanged() {
 		if (this.fleeGoal == null) {
 			this.fleeGoal = new CatEntity.CatFleeGoal<>(this, PlayerEntity.class, 16.0F, 0.8, 1.33);

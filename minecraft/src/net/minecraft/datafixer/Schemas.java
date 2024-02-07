@@ -43,6 +43,7 @@ import net.minecraft.datafixer.fix.BlockEntitySignTextStrictJsonFix;
 import net.minecraft.datafixer.fix.BlockEntityUuidFix;
 import net.minecraft.datafixer.fix.BlockNameFix;
 import net.minecraft.datafixer.fix.BlockNameFlatteningFix;
+import net.minecraft.datafixer.fix.BlockPosFormatFix;
 import net.minecraft.datafixer.fix.BlockStateStructureTemplateFix;
 import net.minecraft.datafixer.fix.CatTypeFix;
 import net.minecraft.datafixer.fix.CauldronRenameFix;
@@ -126,6 +127,7 @@ import net.minecraft.datafixer.fix.LegacyDragonFightFix;
 import net.minecraft.datafixer.fix.LevelDataGeneratorOptionsFix;
 import net.minecraft.datafixer.fix.LevelFlatGeneratorInfoFix;
 import net.minecraft.datafixer.fix.LevelLegacyWorldGenSettingsFix;
+import net.minecraft.datafixer.fix.MapBannerBlockPosFormatFix;
 import net.minecraft.datafixer.fix.MapIdFix;
 import net.minecraft.datafixer.fix.MemoryExpiryDataFix;
 import net.minecraft.datafixer.fix.MissingDimensionFix;
@@ -162,7 +164,7 @@ import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.RenameBlockEntityFix;
 import net.minecraft.datafixer.fix.RenameChunkStatusFix;
 import net.minecraft.datafixer.fix.RenameEnchantmentFix;
-import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
+import net.minecraft.datafixer.fix.RenameEntityAttributesFix;
 import net.minecraft.datafixer.fix.RenameScoreboardDisplaySlotFix;
 import net.minecraft.datafixer.fix.RenameVariantsFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
@@ -186,6 +188,7 @@ import net.minecraft.datafixer.fix.VillagerTradeFix;
 import net.minecraft.datafixer.fix.VillagerXpRebuildFix;
 import net.minecraft.datafixer.fix.WallPropertyFix;
 import net.minecraft.datafixer.fix.WeaponsmithChestLootTableFix;
+import net.minecraft.datafixer.fix.WolfHealthFix;
 import net.minecraft.datafixer.fix.WorldGenSettingsDisallowOldCustomWorldsFix;
 import net.minecraft.datafixer.fix.WorldGenSettingsHeightAndBiomeFix;
 import net.minecraft.datafixer.fix.WorldUuidFix;
@@ -738,7 +741,34 @@ public class Schemas {
 		Schema schema111 = builder.addSchema(2522, Schema2522::new);
 		builder.addFixer(new ChoiceTypesFix(schema111, "Added Zoglin", TypeReferences.ENTITY));
 		Schema schema112 = builder.addSchema(2523, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new RenameItemStackAttributesFix(schema112));
+		builder.addFixer(
+			new RenameEntityAttributesFix(
+				schema112,
+				"Attribute renames",
+				replacing(
+					ImmutableMap.<String, String>builder()
+						.put("generic.maxHealth", "generic.max_health")
+						.put("Max Health", "generic.max_health")
+						.put("zombie.spawnReinforcements", "zombie.spawn_reinforcements")
+						.put("Spawn Reinforcements Chance", "zombie.spawn_reinforcements")
+						.put("horse.jumpStrength", "horse.jump_strength")
+						.put("Jump Strength", "horse.jump_strength")
+						.put("generic.followRange", "generic.follow_range")
+						.put("Follow Range", "generic.follow_range")
+						.put("generic.knockbackResistance", "generic.knockback_resistance")
+						.put("Knockback Resistance", "generic.knockback_resistance")
+						.put("generic.movementSpeed", "generic.movement_speed")
+						.put("Movement Speed", "generic.movement_speed")
+						.put("generic.flyingSpeed", "generic.flying_speed")
+						.put("Flying Speed", "generic.flying_speed")
+						.put("generic.attackDamage", "generic.attack_damage")
+						.put("generic.attackKnockback", "generic.attack_knockback")
+						.put("generic.attackSpeed", "generic.attack_speed")
+						.put("generic.armorToughness", "generic.armor_toughness")
+						.build()
+				)
+			)
+		);
 		Schema schema113 = builder.addSchema(2527, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BitStorageAlignFix(schema113));
 		Schema schema114 = builder.addSchema(2528, EMPTY_IDENTIFIER_NORMALIZE);
@@ -1188,12 +1218,22 @@ public class Schemas {
 		builder.addFixer(new RenameEnchantmentFix(schema201, "Rename sweeping enchant to sweeping_edge", Map.of("minecraft:sweeping", "minecraft:sweeping_edge")));
 		Schema schema202 = builder.addSchema(3807, Schema3807::new);
 		builder.addFixer(new ChoiceTypesFix(schema202, "Added Vault", TypeReferences.BLOCK_ENTITY));
-		Schema schema203 = builder.addSchema(3808, Schema3808::new);
-		builder.addFixer(new HorseArmorFix(schema203, "minecraft:horse", "ArmorItem"));
-		Schema schema204 = builder.addSchema(3808, 1, Schema3808_1::new);
-		builder.addFixer(new HorseArmorFix(schema204, "minecraft:llama", "DecorItem"));
-		Schema schema205 = builder.addSchema(3809, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new HorseChestIndexingFix(schema205));
+		Schema schema203 = builder.addSchema(3807, 1, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new MapBannerBlockPosFormatFix(schema203));
+		Schema schema204 = builder.addSchema(3808, Schema3808::new);
+		builder.addFixer(new HorseArmorFix(schema204, "minecraft:horse", "ArmorItem"));
+		Schema schema205 = builder.addSchema(3808, 1, Schema3808_1::new);
+		builder.addFixer(new HorseArmorFix(schema205, "minecraft:llama", "DecorItem"));
+		Schema schema206 = builder.addSchema(3809, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new HorseChestIndexingFix(schema206));
+		Schema schema207 = builder.addSchema(3812, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new WolfHealthFix(schema207));
+		Schema schema208 = builder.addSchema(3813, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BlockPosFormatFix(schema208));
+		Schema schema209 = builder.addSchema(3814, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			new RenameEntityAttributesFix(schema209, "Rename jump strength attribute", replacing("minecraft:horse.jump_strength", "minecraft:generic.jump_strength"))
+		);
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -74,9 +74,9 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(SPIDER_FLAGS, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SPIDER_FLAGS, (byte)0);
 	}
 
 	@Override

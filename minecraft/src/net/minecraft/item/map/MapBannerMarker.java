@@ -20,9 +20,9 @@ import net.minecraft.world.BlockView;
 public record MapBannerMarker(BlockPos pos, DyeColor color, Optional<Text> name) {
 	public static final Codec<MapBannerMarker> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockPos.CODEC.fieldOf("Pos").forGetter(MapBannerMarker::pos),
-					DyeColor.CODEC.optionalFieldOf("Color", DyeColor.WHITE).forGetter(MapBannerMarker::color),
-					TextCodecs.STRINGIFIED_CODEC.optionalFieldOf("Name").forGetter(MapBannerMarker::name)
+					BlockPos.CODEC.fieldOf("pos").forGetter(MapBannerMarker::pos),
+					DyeColor.CODEC.optionalFieldOf("color", DyeColor.WHITE).forGetter(MapBannerMarker::color),
+					TextCodecs.STRINGIFIED_CODEC.optionalFieldOf("name").forGetter(MapBannerMarker::name)
 				)
 				.apply(instance, MapBannerMarker::new)
 	);

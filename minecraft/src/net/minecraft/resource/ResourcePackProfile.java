@@ -1,6 +1,5 @@
 package net.minecraft.resource;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.function.Function;
@@ -10,10 +9,7 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.resource.metadata.PackFeatureSetMetadata;
 import net.minecraft.resource.metadata.PackOverlaysMetadata;
 import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.dynamic.Range;
 import org.slf4j.Logger;
 
@@ -30,87 +26,41 @@ import org.slf4j.Logger;
  */
 public class ResourcePackProfile {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final String name;
+	private final ResourcePackInfo info;
 	private final ResourcePackProfile.PackFactory packFactory;
-	private final Text displayName;
-	private final ResourcePackProfile.Metadata metadata;
-	private final ResourcePackProfile.InsertionPosition position;
-	private final boolean alwaysEnabled;
-	private final boolean pinned;
-	private final ResourcePackSource source;
+	private final ResourcePackProfile.Metadata metaData;
+	private final ResourcePackPosition position;
 
 	@Nullable
-	public static ResourcePackProfile create(
-		String name,
-		Text displayName,
-		boolean alwaysEnabled,
-		ResourcePackProfile.PackFactory packFactory,
-		ResourceType type,
-		ResourcePackProfile.InsertionPosition position,
-		ResourcePackSource source
-	) {
+	public static ResourcePackProfile create(ResourcePackInfo info, ResourcePackProfile.PackFactory packFactory, ResourceType type, ResourcePackPosition position) {
 		int i = SharedConstants.getGameVersion().getResourceVersion(type);
-		ResourcePackProfile.Metadata metadata = loadMetadata(name, packFactory, i);
-		return metadata != null ? of(name, displayName, alwaysEnabled, packFactory, metadata, position, false, source) : null;
+		ResourcePackProfile.Metadata metadata = loadMetadata(info, packFactory, i);
+		return metadata != null ? new ResourcePackProfile(info, packFactory, metadata, position) : null;
 	}
 
-	/**
-	 * Creates a resource pack profile from the given parameters.
-	 * 
-	 * <p>Compared to calling the factory directly, this utility method obtains the
-	 * pack's metadata information from the pack created by the {@code packFactory}.
-	 * If the created pack doesn't have metadata information, this method returns
-	 * {@code null}.
-	 * 
-	 * @return the created profile, or {@code null} if missing metadata
-	 */
-	public static ResourcePackProfile of(
-		String name,
-		Text displayName,
-		boolean alwaysEnabled,
-		ResourcePackProfile.PackFactory packFactory,
-		ResourcePackProfile.Metadata metadata,
-		ResourcePackProfile.InsertionPosition position,
-		boolean pinned,
-		ResourcePackSource source
+	public ResourcePackProfile(
+		ResourcePackInfo info, ResourcePackProfile.PackFactory packFactory, ResourcePackProfile.Metadata metaData, ResourcePackPosition position
 	) {
-		return new ResourcePackProfile(name, alwaysEnabled, packFactory, displayName, metadata, position, pinned, source);
-	}
-
-	private ResourcePackProfile(
-		String name,
-		boolean alwaysEnabled,
-		ResourcePackProfile.PackFactory packFactory,
-		Text displayName,
-		ResourcePackProfile.Metadata metadata,
-		ResourcePackProfile.InsertionPosition position,
-		boolean pinned,
-		ResourcePackSource source
-	) {
-		this.name = name;
+		this.info = info;
 		this.packFactory = packFactory;
-		this.displayName = displayName;
-		this.metadata = metadata;
-		this.alwaysEnabled = alwaysEnabled;
+		this.metaData = metaData;
 		this.position = position;
-		this.pinned = pinned;
-		this.source = source;
 	}
 
 	@Nullable
-	public static ResourcePackProfile.Metadata loadMetadata(String name, ResourcePackProfile.PackFactory packFactory, int currentPackFormat) {
+	public static ResourcePackProfile.Metadata loadMetadata(ResourcePackInfo info, ResourcePackProfile.PackFactory packFactory, int currentPackFormat) {
 		try {
 			ResourcePackProfile.Metadata var11;
-			try (ResourcePack resourcePack = packFactory.open(name)) {
+			try (ResourcePack resourcePack = packFactory.open(info)) {
 				PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.SERIALIZER);
 				if (packResourceMetadata == null) {
-					LOGGER.warn("Missing metadata in pack {}", name);
+					LOGGER.warn("Missing metadata in pack {}", info.id());
 					return null;
 				}
 
 				PackFeatureSetMetadata packFeatureSetMetadata = resourcePack.parseMetadata(PackFeatureSetMetadata.SERIALIZER);
 				FeatureSet featureSet = packFeatureSetMetadata != null ? packFeatureSetMetadata.flags() : FeatureSet.empty();
-				Range<Integer> range = getSupportedFormats(name, packResourceMetadata);
+				Range<Integer> range = getSupportedFormats(info.id(), packResourceMetadata);
 				ResourcePackCompatibility resourcePackCompatibility = ResourcePackCompatibility.from(range, currentPackFormat);
 				PackOverlaysMetadata packOverlaysMetadata = resourcePack.parseMetadata(PackOverlaysMetadata.SERIALIZER);
 				List<String> list = packOverlaysMetadata != null ? packOverlaysMetadata.getAppliedOverlays(currentPackFormat) : List.of();
@@ -119,19 +69,19 @@ public class ResourcePackProfile {
 
 			return var11;
 		} catch (Exception var14) {
-			LOGGER.warn("Failed to read pack {} metadata", name, var14);
+			LOGGER.warn("Failed to read pack {} metadata", info.id(), var14);
 			return null;
 		}
 	}
 
-	private static Range<Integer> getSupportedFormats(String packName, PackResourceMetadata metadata) {
+	private static Range<Integer> getSupportedFormats(String packId, PackResourceMetadata metadata) {
 		int i = metadata.packFormat();
 		if (metadata.supportedFormats().isEmpty()) {
 			return new Range(i);
 		} else {
 			Range<Integer> range = (Range<Integer>)metadata.supportedFormats().get();
 			if (!range.contains(i)) {
-				LOGGER.warn("Pack {} declared support for versions {} but declared main format is {}, defaulting to {}", packName, range, i, i);
+				LOGGER.warn("Pack {} declared support for versions {} but declared main format is {}, defaulting to {}", packId, range, i, i);
 				return new Range(i);
 			} else {
 				return range;
@@ -139,78 +89,81 @@ public class ResourcePackProfile {
 		}
 	}
 
+	public ResourcePackInfo getInfo() {
+		return this.info;
+	}
+
 	public Text getDisplayName() {
-		return this.displayName;
+		return this.info.title();
 	}
 
 	public Text getDescription() {
-		return this.metadata.description();
+		return this.metaData.description();
 	}
 
 	public Text getInformationText(boolean enabled) {
-		return Texts.bracketed(this.source.decorate(Text.literal(this.name)))
-			.styled(
-				style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED)
-						.withInsertion(StringArgumentType.escapeIfRequired(this.name))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(this.displayName).append("\n").append(this.metadata.description)))
-			);
+		return this.info.getInformationText(enabled, this.metaData.description);
 	}
 
 	public ResourcePackCompatibility getCompatibility() {
-		return this.metadata.compatibility();
+		return this.metaData.compatibility();
 	}
 
 	public FeatureSet getRequestedFeatures() {
-		return this.metadata.requestedFeatures();
+		return this.metaData.requestedFeatures();
 	}
 
 	public ResourcePack createResourcePack() {
-		return this.packFactory.openWithOverlays(this.name, this.metadata);
+		return this.packFactory.openWithOverlays(this.info, this.metaData);
 	}
 
-	public String getName() {
-		return this.name;
+	public String getId() {
+		return this.info.id();
 	}
 
-	public boolean isAlwaysEnabled() {
-		return this.alwaysEnabled;
-	}
-
-	public boolean isPinned() {
-		return this.pinned;
-	}
-
-	public ResourcePackProfile.InsertionPosition getInitialPosition() {
+	public ResourcePackPosition getPosition() {
 		return this.position;
 	}
 
+	public boolean isRequired() {
+		return this.position.required();
+	}
+
+	public boolean isPinned() {
+		return this.position.fixedPosition();
+	}
+
+	public ResourcePackProfile.InsertionPosition getInitialPosition() {
+		return this.position.defaultPosition();
+	}
+
 	public ResourcePackSource getSource() {
-		return this.source;
+		return this.info.source();
 	}
 
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
 		} else {
-			return !(o instanceof ResourcePackProfile resourcePackProfile) ? false : this.name.equals(resourcePackProfile.name);
+			return !(o instanceof ResourcePackProfile resourcePackProfile) ? false : this.info.equals(resourcePackProfile.info);
 		}
 	}
 
 	public int hashCode() {
-		return this.name.hashCode();
+		return this.info.hashCode();
 	}
 
 	public static enum InsertionPosition {
 		TOP,
 		BOTTOM;
 
-		public <T> int insert(List<T> items, T item, Function<T, ResourcePackProfile> profileGetter, boolean listInverted) {
+		public <T> int insert(List<T> items, T item, Function<T, ResourcePackPosition> profileGetter, boolean listInverted) {
 			ResourcePackProfile.InsertionPosition insertionPosition = listInverted ? this.inverse() : this;
 			if (insertionPosition == BOTTOM) {
 				int i;
 				for (i = 0; i < items.size(); i++) {
-					ResourcePackProfile resourcePackProfile = (ResourcePackProfile)profileGetter.apply(items.get(i));
-					if (!resourcePackProfile.isPinned() || resourcePackProfile.getInitialPosition() != this) {
+					ResourcePackPosition resourcePackPosition = (ResourcePackPosition)profileGetter.apply(items.get(i));
+					if (!resourcePackPosition.fixedPosition() || resourcePackPosition.defaultPosition() != this) {
 						break;
 					}
 				}
@@ -220,8 +173,8 @@ public class ResourcePackProfile {
 			} else {
 				int i;
 				for (i = items.size() - 1; i >= 0; i--) {
-					ResourcePackProfile resourcePackProfile = (ResourcePackProfile)profileGetter.apply(items.get(i));
-					if (!resourcePackProfile.isPinned() || resourcePackProfile.getInitialPosition() != this) {
+					ResourcePackPosition resourcePackPosition = (ResourcePackPosition)profileGetter.apply(items.get(i));
+					if (!resourcePackPosition.fixedPosition() || resourcePackPosition.defaultPosition() != this) {
 						break;
 					}
 				}
@@ -240,8 +193,8 @@ public class ResourcePackProfile {
 	}
 
 	public interface PackFactory {
-		ResourcePack open(String name);
+		ResourcePack open(ResourcePackInfo info);
 
-		ResourcePack openWithOverlays(String name, ResourcePackProfile.Metadata metadata);
+		ResourcePack openWithOverlays(ResourcePackInfo info, ResourcePackProfile.Metadata metadata);
 	}
 }

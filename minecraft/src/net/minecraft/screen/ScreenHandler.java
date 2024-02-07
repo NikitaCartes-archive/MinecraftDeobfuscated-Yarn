@@ -730,7 +730,7 @@ public abstract class ScreenHandler {
 					}
 				}
 			}
-		} else if (actionType == SlotActionType.CLONE && player.getAbilities().creativeMode && this.getCursorStack().isEmpty() && slotIndex >= 0) {
+		} else if (actionType == SlotActionType.CLONE && player.isInCreativeMode() && this.getCursorStack().isEmpty() && slotIndex >= 0) {
 			Slot slot3 = this.slots.get(slotIndex);
 			if (slot3.hasStack()) {
 				ItemStack itemStack2 = slot3.getStack();
@@ -977,7 +977,7 @@ public abstract class ScreenHandler {
 		if (stage == 0) {
 			return true;
 		} else {
-			return stage == 1 ? true : stage == 2 && player.getAbilities().creativeMode;
+			return stage == 1 ? true : stage == 2 && player.isInCreativeMode();
 		}
 	}
 

@@ -10,7 +10,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -56,7 +55,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		super.writeNbt(nbt, registryLookup);
 		nbt.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
-			nbt.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
+			nbt.put("exit_portal", NbtHelper.fromBlockPos(this.exitPortalPos));
 		}
 
 		if (this.exactTeleport) {
@@ -68,13 +67,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.age = nbt.getLong("Age");
-		if (nbt.contains("ExitPortal", NbtElement.COMPOUND_TYPE)) {
-			BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("ExitPortal"));
-			if (World.isValid(blockPos)) {
-				this.exitPortalPos = blockPos;
-			}
-		}
-
+		NbtHelper.toBlockPos(nbt, "exit_portal").filter(World::isValid).ifPresent(exitPortalPos -> this.exitPortalPos = exitPortalPos);
 		this.exactTeleport = nbt.getBoolean("ExactTeleport");
 	}
 

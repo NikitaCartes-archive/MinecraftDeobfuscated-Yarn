@@ -9,11 +9,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.util.profiling.jfr.sample.ChunkGenerationSample;
+import net.minecraft.util.profiling.jfr.sample.ChunkRegionSample;
 import net.minecraft.util.profiling.jfr.sample.CpuLoadSample;
 import net.minecraft.util.profiling.jfr.sample.FileIoSample;
 import net.minecraft.util.profiling.jfr.sample.GcHeapSummarySample;
 import net.minecraft.util.profiling.jfr.sample.LongRunningSampleStatistics;
 import net.minecraft.util.profiling.jfr.sample.NetworkIoStatistics;
+import net.minecraft.util.profiling.jfr.sample.PacketSample;
 import net.minecraft.util.profiling.jfr.sample.ServerTickTimeSample;
 import net.minecraft.util.profiling.jfr.sample.ThreadAllocationStatisticsSample;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -27,8 +29,10 @@ public record JfrProfile(
 	List<CpuLoadSample> cpuLoadSamples,
 	GcHeapSummarySample.Statistics gcHeapSummaryStatistics,
 	ThreadAllocationStatisticsSample.AllocationMap threadAllocationMap,
-	NetworkIoStatistics packetReadStatistics,
-	NetworkIoStatistics packetSentStatistics,
+	NetworkIoStatistics<PacketSample> packetReadStatistics,
+	NetworkIoStatistics<PacketSample> packetSentStatistics,
+	NetworkIoStatistics<ChunkRegionSample> writtenChunks,
+	NetworkIoStatistics<ChunkRegionSample> readChunks,
 	FileIoSample.Statistics fileWriteStatistics,
 	FileIoSample.Statistics fileReadStatistics,
 	List<ChunkGenerationSample> chunkGenerationSamples

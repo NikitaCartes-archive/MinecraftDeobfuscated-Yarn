@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +34,8 @@ import net.minecraft.client.session.Session;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
+import net.minecraft.resource.ResourcePackInfo;
+import net.minecraft.resource.ResourcePackPosition;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
 import net.minecraft.resource.ResourcePackSource;
@@ -50,6 +53,7 @@ public class ServerResourcePackLoader implements AutoCloseable {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final ResourcePackProvider NOOP_PROVIDER = profileAdder -> {
 	};
+	private static final ResourcePackPosition POSITION = new ResourcePackPosition(true, ResourcePackProfile.InsertionPosition.TOP, true);
 	private static final PackStateChangeCallback DEBUG_PACK_STATE_CHANGE_CALLBACK = new PackStateChangeCallback() {
 		@Override
 		public void onStateChanged(UUID id, PackStateChangeCallback.State state) {
@@ -231,15 +235,16 @@ public class ServerResourcePackLoader implements AutoCloseable {
 		for (ReloadScheduler.PackInfo packInfo : Lists.reverse(packs)) {
 			String string = String.format(Locale.ROOT, "server/%08X/%s", this.packIndex++, packInfo.id());
 			Path path = packInfo.path();
-			ResourcePackProfile.PackFactory packFactory = new ZipResourcePack.ZipBackedFactory(path, false);
+			ResourcePackInfo resourcePackInfo = new ResourcePackInfo(string, SERVER_NAME_TEXT, this.packSource, Optional.empty());
+			ResourcePackProfile.PackFactory packFactory = new ZipResourcePack.ZipBackedFactory(path);
 			int i = SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES);
-			ResourcePackProfile.Metadata metadata = ResourcePackProfile.loadMetadata(string, packFactory, i);
+			ResourcePackProfile.Metadata metadata = ResourcePackProfile.loadMetadata(resourcePackInfo, packFactory, i);
 			if (metadata == null) {
 				LOGGER.warn("Invalid pack metadata in {}, ignoring all", path);
 				return null;
 			}
 
-			list.add(ResourcePackProfile.of(string, SERVER_NAME_TEXT, true, packFactory, metadata, ResourcePackProfile.InsertionPosition.TOP, true, this.packSource));
+			list.add(new ResourcePackProfile(resourcePackInfo, packFactory, metadata, POSITION));
 		}
 
 		return list;

@@ -63,10 +63,7 @@ public class FlowerPotBlock extends Block {
 			world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 			player.incrementStat(Stats.POT_FLOWER);
-			if (!player.getAbilities().creativeMode) {
-				stack.decrement(1);
-			}
-
+			stack.decrementUnlessCreative(1, player);
 			return ItemActionResult.success(world.isClient);
 		}
 	}

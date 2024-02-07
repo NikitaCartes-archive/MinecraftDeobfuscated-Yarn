@@ -35,6 +35,7 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.storage.ChunkPosKeyedStorage;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
+import net.minecraft.world.storage.StorageKey;
 
 public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointOfInterestSet> {
 	public static final int field_30265 = 6;
@@ -42,9 +43,11 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	private final PointOfInterestStorage.PointOfInterestDistanceTracker pointOfInterestDistanceTracker;
 	private final LongSet preloadedChunks = new LongOpenHashSet();
 
-	public PointOfInterestStorage(Path path, DataFixer dataFixer, boolean dsync, DynamicRegistryManager registryManager, HeightLimitView world) {
+	public PointOfInterestStorage(
+		StorageKey storageKey, Path directory, DataFixer dataFixer, boolean dsync, DynamicRegistryManager registryManager, HeightLimitView world
+	) {
 		super(
-			new ChunkPosKeyedStorage(path, dataFixer, dsync, "poi", DataFixTypes.POI_CHUNK),
+			new ChunkPosKeyedStorage(storageKey, directory, dataFixer, dsync, DataFixTypes.POI_CHUNK),
 			PointOfInterestSet::createCodec,
 			PointOfInterestSet::new,
 			registryManager,

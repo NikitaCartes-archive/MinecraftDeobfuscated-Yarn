@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 
 public class FileResourcePackProvider implements ResourcePackProvider {
 	static final Logger LOGGER = LogUtils.getLogger();
+	private static final ResourcePackPosition POSITION = new ResourcePackPosition(false, ResourcePackProfile.InsertionPosition.TOP, false);
 	private final Path packsDir;
 	private final ResourceType type;
 	private final ResourcePackSource source;
@@ -42,27 +44,25 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 	public void register(Consumer<ResourcePackProfile> profileAdder) {
 		try {
 			PathUtil.createDirectories(this.packsDir);
-			forEachProfile(
-				this.packsDir,
-				this.symlinkFinder,
-				false,
-				(path, packFactory) -> {
-					String string = getFileName(path);
-					ResourcePackProfile resourcePackProfile = ResourcePackProfile.create(
-						"file/" + string, Text.literal(string), false, packFactory, this.type, ResourcePackProfile.InsertionPosition.TOP, this.source
-					);
-					if (resourcePackProfile != null) {
-						profileAdder.accept(resourcePackProfile);
-					}
+			forEachProfile(this.packsDir, this.symlinkFinder, (path, packFactory) -> {
+				ResourcePackInfo resourcePackInfo = this.createPackInfo(path);
+				ResourcePackProfile resourcePackProfile = ResourcePackProfile.create(resourcePackInfo, packFactory, this.type, POSITION);
+				if (resourcePackProfile != null) {
+					profileAdder.accept(resourcePackProfile);
 				}
-			);
+			});
 		} catch (IOException var3) {
 			LOGGER.warn("Failed to list packs in {}", this.packsDir, var3);
 		}
 	}
 
-	public static void forEachProfile(Path path, SymlinkFinder symlinkFinder, boolean alwaysStable, BiConsumer<Path, ResourcePackProfile.PackFactory> consumer) throws IOException {
-		FileResourcePackProvider.PackOpenerImpl packOpenerImpl = new FileResourcePackProvider.PackOpenerImpl(symlinkFinder, alwaysStable);
+	private ResourcePackInfo createPackInfo(Path path) {
+		String string = getFileName(path);
+		return new ResourcePackInfo("file/" + string, Text.literal(string), this.source, Optional.empty());
+	}
+
+	public static void forEachProfile(Path path, SymlinkFinder symlinkFinder, BiConsumer<Path, ResourcePackProfile.PackFactory> callback) throws IOException {
+		FileResourcePackProvider.PackOpenerImpl packOpenerImpl = new FileResourcePackProvider.PackOpenerImpl(symlinkFinder);
 		DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path);
 
 		try {
@@ -73,24 +73,24 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 					if (!list.isEmpty()) {
 						LOGGER.warn("Ignoring potential pack entry: {}", SymlinkValidationException.getMessage(path2, list));
 					} else if (packFactory != null) {
-						consumer.accept(path2, packFactory);
+						callback.accept(path2, packFactory);
 					} else {
 						LOGGER.info("Found non-pack entry '{}', ignoring", path2);
 					}
-				} catch (IOException var11) {
-					LOGGER.warn("Failed to read properties of '{}', ignoring", path2, var11);
+				} catch (IOException var10) {
+					LOGGER.warn("Failed to read properties of '{}', ignoring", path2, var10);
 				}
 			}
-		} catch (Throwable var12) {
+		} catch (Throwable var11) {
 			if (directoryStream != null) {
 				try {
 					directoryStream.close();
-				} catch (Throwable var10) {
-					var12.addSuppressed(var10);
+				} catch (Throwable var9) {
+					var11.addSuppressed(var9);
 				}
 			}
 
-			throw var12;
+			throw var11;
 		}
 
 		if (directoryStream != null) {
@@ -99,11 +99,8 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 	}
 
 	static class PackOpenerImpl extends ResourcePackOpener<ResourcePackProfile.PackFactory> {
-		private final boolean alwaysStable;
-
-		protected PackOpenerImpl(SymlinkFinder symlinkFinder, boolean alwaysStable) {
+		protected PackOpenerImpl(SymlinkFinder symlinkFinder) {
 			super(symlinkFinder);
-			this.alwaysStable = alwaysStable;
 		}
 
 		@Nullable
@@ -113,12 +110,12 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 				FileResourcePackProvider.LOGGER.info("Can't open pack archive at {}", path);
 				return null;
 			} else {
-				return new ZipResourcePack.ZipBackedFactory(path, this.alwaysStable);
+				return new ZipResourcePack.ZipBackedFactory(path);
 			}
 		}
 
 		protected ResourcePackProfile.PackFactory openDirectory(Path path) {
-			return new DirectoryResourcePack.DirectoryBackedFactory(path, this.alwaysStable);
+			return new DirectoryResourcePack.DirectoryBackedFactory(path);
 		}
 	}
 }

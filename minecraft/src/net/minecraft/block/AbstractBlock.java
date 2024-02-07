@@ -1,9 +1,9 @@
 package net.minecraft.block;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -1115,7 +1115,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private FluidState fluidState = Fluids.EMPTY.getDefaultState();
 		private boolean ticksRandomly;
 
-		protected AbstractBlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertyMap, MapCodec<BlockState> codec) {
+		protected AbstractBlockState(Block block, Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyMap, MapCodec<BlockState> codec) {
 			super(block, propertyMap, codec);
 			AbstractBlock.Settings settings = block.settings;
 			this.luminance = settings.luminance.applyAsInt(this.asBlockState());

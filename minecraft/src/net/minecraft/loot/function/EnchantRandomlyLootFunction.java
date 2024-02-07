@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Codec<RegistryEntryList<Enchantment>> ENCHANTMENT_LIST_CODEC = Registries.ENCHANTMENT
-		.createEntryCodec()
+		.getEntryCodec()
 		.listOf()
 		.xmap(RegistryEntryList::of, enchantments -> enchantments.stream().toList());
 	public static final Codec<EnchantRandomlyLootFunction> CODEC = RecordCodecBuilder.create(

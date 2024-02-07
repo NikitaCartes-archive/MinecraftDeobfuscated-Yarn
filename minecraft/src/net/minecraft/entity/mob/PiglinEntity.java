@@ -170,11 +170,11 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BABY, false);
-		this.dataTracker.startTracking(CHARGING, false);
-		this.dataTracker.startTracking(DANCING, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(BABY, false);
+		builder.add(CHARGING, false);
+		builder.add(DANCING, false);
 	}
 
 	@Override

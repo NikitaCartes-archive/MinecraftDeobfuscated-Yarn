@@ -40,9 +40,9 @@ public class TntEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(FUSE, 80);
-		this.dataTracker.startTracking(BLOCK_STATE, Blocks.TNT.getDefaultState());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(FUSE, 80);
+		builder.add(BLOCK_STATE, Blocks.TNT.getDefaultState());
 	}
 
 	@Override
@@ -56,11 +56,13 @@ public class TntEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	public void tick() {
-		if (!this.hasNoGravity()) {
-			this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
-		}
+	protected double getGravity() {
+		return 0.04;
+	}
 
+	@Override
+	public void tick() {
+		this.applyGravity();
 		this.move(MovementType.SELF, this.getVelocity());
 		this.setVelocity(this.getVelocity().multiply(0.98));
 		if (this.isOnGround()) {

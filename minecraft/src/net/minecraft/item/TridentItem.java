@@ -28,9 +28,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TridentItem extends Item {
-	public static final int field_30926 = 10;
+	public static final int MIN_DRAW_DURATION = 10;
 	public static final float ATTACK_DAMAGE = 8.0F;
-	public static final float field_30928 = 2.5F;
+	public static final float THROW_SPEED = 2.5F;
 	private final Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifiers;
 
 	public TridentItem(Item.Settings settings) {
@@ -74,13 +74,13 @@ public class TridentItem extends Item {
 						if (j == 0) {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, stack);
 							tridentEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, 2.5F + (float)j * 0.5F, 1.0F);
-							if (playerEntity.getAbilities().creativeMode) {
+							if (playerEntity.isInCreativeMode()) {
 								tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 							}
 
 							world.spawnEntity(tridentEntity);
 							world.playSoundFromEntity(null, tridentEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
-							if (!playerEntity.getAbilities().creativeMode) {
+							if (!playerEntity.isInCreativeMode()) {
 								playerEntity.getInventory().removeOne(stack);
 							}
 						}

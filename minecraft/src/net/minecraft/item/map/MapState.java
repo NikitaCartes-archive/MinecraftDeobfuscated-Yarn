@@ -133,8 +133,7 @@ public class MapState extends PersistentState {
 			mapState.colors = bs;
 		}
 
-		for (MapBannerMarker mapBannerMarker : (List)MapBannerMarker.CODEC
-			.listOf()
+		for (MapBannerMarker mapBannerMarker : (List)MapBannerMarker.LIST_CODEC
 			.parse(NbtOps.INSTANCE, nbt.get("banners"))
 			.resultOrPartial(string -> LOGGER.warn("Failed to parse map banner: '{}'", string))
 			.orElse(List.of())) {
@@ -154,16 +153,18 @@ public class MapState extends PersistentState {
 
 		for (int k = 0; k < nbtList.size(); k++) {
 			MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(nbtList.getCompound(k));
-			mapState.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
-			mapState.addIcon(
-				MapIcon.Type.FRAME,
-				null,
-				"frame-" + mapFrameMarker.getEntityId(),
-				(double)mapFrameMarker.getPos().getX(),
-				(double)mapFrameMarker.getPos().getZ(),
-				(double)mapFrameMarker.getRotation(),
-				null
-			);
+			if (mapFrameMarker != null) {
+				mapState.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
+				mapState.addIcon(
+					MapIcon.Type.FRAME,
+					null,
+					"frame-" + mapFrameMarker.getEntityId(),
+					(double)mapFrameMarker.getPos().getX(),
+					(double)mapFrameMarker.getPos().getZ(),
+					(double)mapFrameMarker.getRotation(),
+					null
+				);
+			}
 		}
 
 		return mapState;

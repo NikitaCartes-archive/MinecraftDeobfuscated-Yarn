@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -100,7 +101,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
+	protected void initDataTracker(DataTracker.Builder builder) {
 	}
 
 	@Nullable
@@ -194,6 +195,11 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	}
 
 	@Override
+	protected double getGravity() {
+		return 0.04;
+	}
+
+	@Override
 	public void tick() {
 		super.tick();
 		if (!this.getWorld().isClient) {
@@ -205,9 +211,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 			}
 
 			if (this.target == null || !this.target.isAlive() || this.target instanceof PlayerEntity && this.target.isSpectator()) {
-				if (!this.hasNoGravity()) {
-					this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
-				}
+				this.applyGravity();
 			} else {
 				this.targetX = MathHelper.clamp(this.targetX * 1.025, -1.0, 1.0);
 				this.targetY = MathHelper.clamp(this.targetY * 1.025, -1.0, 1.0);

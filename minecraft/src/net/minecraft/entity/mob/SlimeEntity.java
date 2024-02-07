@@ -74,9 +74,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(SLIME_SIZE, 1);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SLIME_SIZE, 1);
 	}
 
 	@VisibleForTesting

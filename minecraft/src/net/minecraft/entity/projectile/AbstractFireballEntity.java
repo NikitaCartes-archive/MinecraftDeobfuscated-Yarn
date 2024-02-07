@@ -37,8 +37,8 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.getDataTracker().startTracking(ITEM, this.getItem());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(ITEM, this.getItem());
 	}
 
 	@Override

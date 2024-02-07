@@ -11,6 +11,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.registry.VersionedIdentifier;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.path.SymlinkFinder;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 public abstract class VanillaResourcePackProvider implements ResourcePackProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String VANILLA_KEY = "vanilla";
+	public static final VersionedIdentifier VANILLA_ID = VersionedIdentifier.createVanilla("core");
 	private final ResourceType type;
 	private final DefaultResourcePack resourcePack;
 	private final Identifier id;
@@ -45,7 +47,7 @@ public abstract class VanillaResourcePackProvider implements ResourcePackProvide
 	@Nullable
 	protected abstract ResourcePackProfile createDefault(ResourcePack pack);
 
-	protected abstract Text getProfileName(String id);
+	protected abstract Text getDisplayName(String id);
 
 	public DefaultResourcePack getResourcePack() {
 		return this.resourcePack;
@@ -54,8 +56,8 @@ public abstract class VanillaResourcePackProvider implements ResourcePackProvide
 	private void forEachProfile(Consumer<ResourcePackProfile> consumer) {
 		Map<String, Function<String, ResourcePackProfile>> map = new HashMap();
 		this.forEachProfile(map::put);
-		map.forEach((fileName, packFactory) -> {
-			ResourcePackProfile resourcePackProfile = (ResourcePackProfile)packFactory.apply(fileName);
+		map.forEach((id, packFactory) -> {
+			ResourcePackProfile resourcePackProfile = (ResourcePackProfile)packFactory.apply(id);
 			if (resourcePackProfile != null) {
 				consumer.accept(resourcePackProfile);
 			}
@@ -72,8 +74,7 @@ public abstract class VanillaResourcePackProvider implements ResourcePackProvide
 				FileResourcePackProvider.forEachProfile(
 					namespacedPath,
 					this.symlinkFinder,
-					true,
-					(profilePath, factory) -> consumer.accept(getFileName(profilePath), (Function)name -> this.create(name, factory, this.getProfileName(name)))
+					(profilePath, factory) -> consumer.accept(getFileName(profilePath), (Function)id -> this.create(id, factory, this.getDisplayName(id)))
 				);
 			} catch (IOException var4) {
 				LOGGER.warn("Failed to discover packs in {}", namespacedPath, var4);
@@ -86,17 +87,17 @@ public abstract class VanillaResourcePackProvider implements ResourcePackProvide
 	}
 
 	@Nullable
-	protected abstract ResourcePackProfile create(String name, ResourcePackProfile.PackFactory packFactory, Text displayName);
+	protected abstract ResourcePackProfile create(String fileName, ResourcePackProfile.PackFactory packFactory, Text displayName);
 
 	protected static ResourcePackProfile.PackFactory createPackFactory(ResourcePack pack) {
 		return new ResourcePackProfile.PackFactory() {
 			@Override
-			public ResourcePack open(String name) {
+			public ResourcePack open(ResourcePackInfo info) {
 				return pack;
 			}
 
 			@Override
-			public ResourcePack openWithOverlays(String name, ResourcePackProfile.Metadata metadata) {
+			public ResourcePack openWithOverlays(ResourcePackInfo info, ResourcePackProfile.Metadata metadata) {
 				return pack;
 			}
 		};

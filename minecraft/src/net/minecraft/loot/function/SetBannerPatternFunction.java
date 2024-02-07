@@ -21,7 +21,7 @@ import net.minecraft.util.DyeColor;
 
 public class SetBannerPatternFunction extends ConditionalLootFunction {
 	private static final Codec<Pair<RegistryEntry<BannerPattern>, DyeColor>> BANNER_PATTERN_AND_COLOR_CODEC = Codec.<RegistryEntry<BannerPattern>, DyeColor>mapPair(
-			Registries.BANNER_PATTERN.createEntryCodec().fieldOf("pattern"), DyeColor.CODEC.fieldOf("color")
+			Registries.BANNER_PATTERN.getEntryCodec().fieldOf("pattern"), DyeColor.CODEC.fieldOf("color")
 		)
 		.codec();
 	public static final Codec<SetBannerPatternFunction> CODEC = RecordCodecBuilder.create(

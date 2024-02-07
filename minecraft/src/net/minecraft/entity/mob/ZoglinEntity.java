@@ -139,9 +139,9 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BABY, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(BABY, false);
 	}
 
 	@Override

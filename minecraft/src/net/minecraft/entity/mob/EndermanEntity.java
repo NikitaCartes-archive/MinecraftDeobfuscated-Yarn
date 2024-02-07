@@ -136,11 +136,11 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(CARRIED_BLOCK, Optional.empty());
-		this.dataTracker.startTracking(ANGRY, false);
-		this.dataTracker.startTracking(PROVOKED, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CARRIED_BLOCK, Optional.empty());
+		builder.add(ANGRY, false);
+		builder.add(PROVOKED, false);
 	}
 
 	@Override

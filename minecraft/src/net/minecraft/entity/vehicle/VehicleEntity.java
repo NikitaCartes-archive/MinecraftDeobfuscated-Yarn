@@ -64,10 +64,10 @@ public abstract class VehicleEntity extends Entity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_TICKS, 0);
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_SIDE, 1);
-		this.dataTracker.startTracking(DAMAGE_WOBBLE_STRENGTH, 0.0F);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(DAMAGE_WOBBLE_TICKS, 0);
+		builder.add(DAMAGE_WOBBLE_SIDE, 1);
+		builder.add(DAMAGE_WOBBLE_STRENGTH, 0.0F);
 	}
 
 	public void setDamageWobbleTicks(int damageWobbleTicks) {

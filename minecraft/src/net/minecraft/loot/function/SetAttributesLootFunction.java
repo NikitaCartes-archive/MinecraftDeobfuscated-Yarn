@@ -93,7 +93,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		public static final Codec<SetAttributesLootFunction.Attribute> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.STRING.fieldOf("name").forGetter(SetAttributesLootFunction.Attribute::name),
-						Registries.ATTRIBUTE.createEntryCodec().fieldOf("attribute").forGetter(SetAttributesLootFunction.Attribute::attribute),
+						Registries.ATTRIBUTE.getEntryCodec().fieldOf("attribute").forGetter(SetAttributesLootFunction.Attribute::attribute),
 						EntityAttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(SetAttributesLootFunction.Attribute::operation),
 						LootNumberProviderTypes.CODEC.fieldOf("amount").forGetter(SetAttributesLootFunction.Attribute::amount),
 						EQUIPMENT_SLOT_LIST_CODEC.fieldOf("slot").forGetter(SetAttributesLootFunction.Attribute::slots),

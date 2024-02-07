@@ -31,8 +31,8 @@ public class ExperienceBottleEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected float getGravity() {
-		return 0.07F;
+	protected double getGravity() {
+		return 0.07;
 	}
 
 	@Override

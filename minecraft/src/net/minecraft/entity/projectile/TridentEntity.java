@@ -41,10 +41,10 @@ public class TridentEntity extends PersistentProjectileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(LOYALTY, (byte)0);
-		this.dataTracker.startTracking(ENCHANTED, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(LOYALTY, (byte)0);
+		builder.add(ENCHANTED, false);
 	}
 
 	@Override

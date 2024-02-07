@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Either;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +120,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	 * @see MobEntity#enchantMainHandItem
 	 */
 	public static final float BASE_ENCHANTED_MAIN_HAND_EQUIPMENT_CHANCE = 0.25F;
-	public static final String LEASH_KEY = "Leash";
+	public static final String LEASH_KEY = "leash";
 	public static final float DEFAULT_DROP_CHANCE = 0.085F;
 	public static final int field_38932 = 2;
 	public static final int field_35039 = 2;
@@ -161,7 +162,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	private Entity holdingEntity;
 	private int holdingEntityId;
 	@Nullable
-	private NbtCompound leashNbt;
+	private Either<UUID, BlockPos> leashNbt;
 	private BlockPos positionTarget = BlockPos.ORIGIN;
 	private float positionTargetRange = -1.0F;
 
@@ -285,9 +286,9 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(MOB_FLAGS, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(MOB_FLAGS, (byte)0);
 	}
 
 	public int getMinAmbientSoundDelay() {
@@ -448,21 +449,19 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			nbt.putFloat("body_armor_drop_chance", this.bodyArmorDropChance);
 		}
 
-		if (this.holdingEntity != null) {
-			NbtCompound nbtCompound3 = new NbtCompound();
-			if (this.holdingEntity instanceof LivingEntity) {
-				UUID uUID = this.holdingEntity.getUuid();
-				nbtCompound3.putUuid("UUID", uUID);
-			} else if (this.holdingEntity instanceof AbstractDecorationEntity) {
-				BlockPos blockPos = ((AbstractDecorationEntity)this.holdingEntity).getDecorationBlockPos();
-				nbtCompound3.putInt("X", blockPos.getX());
-				nbtCompound3.putInt("Y", blockPos.getY());
-				nbtCompound3.putInt("Z", blockPos.getZ());
-			}
+		Either<UUID, BlockPos> either = this.leashNbt;
+		if (this.holdingEntity instanceof LivingEntity) {
+			either = Either.left(this.holdingEntity.getUuid());
+		} else if (this.holdingEntity instanceof AbstractDecorationEntity abstractDecorationEntity) {
+			either = Either.right(abstractDecorationEntity.getDecorationBlockPos());
+		}
 
-			nbt.put("Leash", nbtCompound3);
-		} else if (this.leashNbt != null) {
-			nbt.put("Leash", this.leashNbt.copy());
+		if (either != null) {
+			nbt.put("leash", either.map(uuid -> {
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putUuid("UUID", uuid);
+				return nbtCompound;
+			}, NbtHelper::fromBlockPos));
 		}
 
 		nbt.putBoolean("LeftHanded", this.isLeftHanded());
@@ -523,8 +522,12 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			this.bodyArmorDropChance = nbt.getFloat("body_armor_drop_chance");
 		}
 
-		if (nbt.contains("Leash", NbtElement.COMPOUND_TYPE)) {
-			this.leashNbt = nbt.getCompound("Leash");
+		if (nbt.contains("leash", NbtElement.COMPOUND_TYPE)) {
+			this.leashNbt = Either.left(nbt.getCompound("leash").getUuid("UUID"));
+		} else if (nbt.contains("leash", NbtElement.INT_ARRAY_TYPE)) {
+			this.leashNbt = (Either<UUID, BlockPos>)NbtHelper.toBlockPos(nbt, "leash").map(Either::right).orElse(null);
+		} else {
+			this.leashNbt = null;
 		}
 
 		this.setLeftHanded(nbt.getBoolean("LeftHanded"));
@@ -931,7 +934,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	@Override
 	public int getSafeFallDistance() {
 		if (this.getTarget() == null) {
-			return 3;
+			return this.getSafeFallDistance(0.0F);
 		} else {
 			int i = (int)(this.getHealth() - this.getMaxHealth() * 0.33F);
 			i -= (3 - this.getWorld().getDifficulty().getId()) * 4;
@@ -939,7 +942,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				i = 0;
 			}
 
-			return i + 3;
+			return this.getSafeFallDistance((float)i);
 		}
 	}
 
@@ -959,6 +962,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 	public boolean hasArmorSlot() {
 		return false;
+	}
+
+	@Override
+	public boolean canUseSlot(EquipmentSlot slot) {
+		return true;
 	}
 
 	public boolean isWearingBodyArmor() {
@@ -1202,7 +1210,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		if (!this.isAlive()) {
 			return ActionResult.PASS;
 		} else if (this.getHoldingEntity() == player) {
-			this.detachLeash(true, !player.getAbilities().creativeMode);
+			this.detachLeash(true, !player.isInCreativeMode());
 			this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
 			return ActionResult.success(this.getWorld().isClient);
 		} else {
@@ -1416,19 +1424,17 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	private void readLeashNbt() {
-		if (this.leashNbt != null && this.getWorld() instanceof ServerWorld) {
-			if (this.leashNbt.containsUuid("UUID")) {
-				UUID uUID = this.leashNbt.getUuid("UUID");
-				Entity entity = ((ServerWorld)this.getWorld()).getEntity(uUID);
+		if (this.leashNbt != null && this.getWorld() instanceof ServerWorld serverWorld) {
+			Optional<UUID> optional = this.leashNbt.left();
+			Optional<BlockPos> optional2 = this.leashNbt.right();
+			if (optional.isPresent()) {
+				Entity entity = serverWorld.getEntity((UUID)optional.get());
 				if (entity != null) {
 					this.attachLeash(entity, true);
 					return;
 				}
-			} else if (this.leashNbt.contains("X", NbtElement.NUMBER_TYPE)
-				&& this.leashNbt.contains("Y", NbtElement.NUMBER_TYPE)
-				&& this.leashNbt.contains("Z", NbtElement.NUMBER_TYPE)) {
-				BlockPos blockPos = NbtHelper.toBlockPos(this.leashNbt);
-				this.attachLeash(LeashKnotEntity.getOrCreate(this.getWorld(), blockPos), true);
+			} else if (optional2.isPresent()) {
+				this.attachLeash(LeashKnotEntity.getOrCreate(this.getWorld(), (BlockPos)optional2.get()), true);
 				return;
 			}
 

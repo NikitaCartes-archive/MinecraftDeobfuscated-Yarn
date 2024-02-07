@@ -65,7 +65,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	protected boolean canTakeOutput(PlayerEntity player, boolean present) {
-		return (player.getAbilities().creativeMode || player.experienceLevel >= this.levelCost.get()) && this.levelCost.get() > 0;
+		return (player.isInCreativeMode() || player.experienceLevel >= this.levelCost.get()) && this.levelCost.get() > 0;
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		this.levelCost.set(0);
 		this.context.run((world, pos) -> {
 			BlockState blockState = world.getBlockState(pos);
-			if (!player.getAbilities().creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
+			if (!player.isInCreativeMode() && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
 				BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 				if (blockState2 == null) {
 					world.removeBlock(pos, false);

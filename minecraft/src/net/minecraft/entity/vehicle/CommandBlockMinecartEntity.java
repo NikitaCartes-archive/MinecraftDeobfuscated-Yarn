@@ -41,10 +41,10 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.getDataTracker().startTracking(COMMAND, "");
-		this.getDataTracker().startTracking(LAST_OUTPUT, ScreenTexts.EMPTY);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(COMMAND, "");
+		builder.add(LAST_OUTPUT, ScreenTexts.EMPTY);
 	}
 
 	@Override

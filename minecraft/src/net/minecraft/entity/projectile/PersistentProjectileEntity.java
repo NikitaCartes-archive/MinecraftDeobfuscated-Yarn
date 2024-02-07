@@ -103,9 +103,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(PROJECTILE_FLAGS, (byte)0);
-		this.dataTracker.startTracking(PIERCE_LEVEL, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(PROJECTILE_FLAGS, (byte)0);
+		builder.add(PIERCE_LEVEL, (byte)0);
 	}
 
 	@Override
@@ -236,10 +236,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.setPitch(updateRotation(this.prevPitch, this.getPitch()));
 			this.setYaw(updateRotation(this.prevYaw, this.getYaw()));
 			float m = 0.99F;
-			float n = 0.05F;
 			if (this.isTouchingWater()) {
-				for (int o = 0; o < 4; o++) {
-					float p = 0.25F;
+				for (int n = 0; n < 4; n++) {
+					float o = 0.25F;
 					this.getWorld().addParticle(ParticleTypes.BUBBLE, h - e * 0.25, j - f * 0.25, k - g * 0.25, e, f, g);
 				}
 
@@ -247,14 +246,18 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 
 			this.setVelocity(vec3d.multiply((double)m));
-			if (!this.hasNoGravity() && !bl) {
-				Vec3d vec3d4 = this.getVelocity();
-				this.setVelocity(vec3d4.x, vec3d4.y - 0.05F, vec3d4.z);
+			if (!bl) {
+				this.applyGravity();
 			}
 
 			this.setPosition(h, j, k);
 			this.checkBlockCollision();
 		}
+	}
+
+	@Override
+	protected double getGravity() {
+		return 0.05;
 	}
 
 	private boolean shouldFall() {
@@ -490,8 +493,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Override
 	public void setOwner(@Nullable Entity entity) {
 		super.setOwner(entity);
-		if (entity instanceof PlayerEntity) {
-			this.pickupType = ((PlayerEntity)entity).getAbilities().creativeMode
+		if (entity instanceof PlayerEntity playerEntity) {
+			this.pickupType = playerEntity.isInCreativeMode()
 				? PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY
 				: PersistentProjectileEntity.PickupPermission.ALLOWED;
 		}
@@ -512,7 +515,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			case ALLOWED:
 				return player.getInventory().insertStack(this.asItemStack());
 			case CREATIVE_ONLY:
-				return player.getAbilities().creativeMode;
+				return player.isInCreativeMode();
 			default:
 				return false;
 		}

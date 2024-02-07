@@ -25,7 +25,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 					instance.group(
 						Identifier.CODEC.fieldOf("name").forGetter(function -> function.id),
 						Codecs.createStrictOptionalFieldCodec(Codec.LONG, "seed", 0L).forGetter(function -> function.seed),
-						Registries.BLOCK_ENTITY_TYPE.createEntryCodec().fieldOf("type").forGetter(function -> function.type)
+						Registries.BLOCK_ENTITY_TYPE.getEntryCodec().fieldOf("type").forGetter(function -> function.type)
 					)
 				)
 				.apply(instance, SetLootTableLootFunction::new)

@@ -47,19 +47,19 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	public void addPack(ResourcePack pack) {
-		this.addPack(pack.getName(), pack, null);
+		this.addPack(pack.getId(), pack, null);
 	}
 
 	public void addPack(ResourcePack pack, Predicate<Identifier> filter) {
-		this.addPack(pack.getName(), pack, filter);
+		this.addPack(pack.getId(), pack, filter);
 	}
 
-	public void addPack(String name, Predicate<Identifier> filter) {
-		this.addPack(name, null, filter);
+	public void addPack(String id, Predicate<Identifier> filter) {
+		this.addPack(id, null, filter);
 	}
 
-	private void addPack(String name, @Nullable ResourcePack underlyingPack, @Nullable Predicate<Identifier> filter) {
-		this.packList.add(new NamespaceResourceManager.FilterablePack(name, underlyingPack, filter));
+	private void addPack(String id, @Nullable ResourcePack underlyingPack, @Nullable Predicate<Identifier> filter) {
+		this.packList.add(new NamespaceResourceManager.FilterablePack(id, underlyingPack, filter));
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	private static InputSupplier<InputStream> wrapForDebug(Identifier id, ResourcePack pack, InputSupplier<InputStream> supplier) {
-		return LOGGER.isDebugEnabled() ? () -> new NamespaceResourceManager.DebugInputStream(supplier.get(), id, pack.getName()) : supplier;
+		return LOGGER.isDebugEnabled() ? () -> new NamespaceResourceManager.DebugInputStream(supplier.get(), id, pack.getId()) : supplier;
 	}
 
 	@Override
@@ -334,13 +334,13 @@ public class NamespaceResourceManager implements ResourceManager {
 		private final Supplier<String> leakMessage;
 		private boolean closed;
 
-		public DebugInputStream(InputStream parent, Identifier id, String packName) {
+		public DebugInputStream(InputStream parent, Identifier id, String packId) {
 			super(parent);
 			Exception exception = new Exception("Stacktrace");
 			this.leakMessage = () -> {
 				StringWriter stringWriter = new StringWriter();
 				exception.printStackTrace(new PrintWriter(stringWriter));
-				return "Leaked resource: '" + id + "' loaded from pack: '" + packName + "'\n" + stringWriter;
+				return "Leaked resource: '" + id + "' loaded from pack: '" + packId + "'\n" + stringWriter;
 			};
 		}
 

@@ -45,7 +45,7 @@ public class MultiplayerServerListPinger {
 		final ServerAddress serverAddress = ServerAddress.parse(entry.address);
 		Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
 		if (optional.isEmpty()) {
-			this.showError(ConnectScreen.BLOCKED_HOST_TEXT, entry);
+			this.showError(ConnectScreen.UNKNOWN_HOST_TEXT, entry);
 		} else {
 			final InetSocketAddress inetSocketAddress = (InetSocketAddress)optional.get();
 			final ClientConnection clientConnection = ClientConnection.connect(inetSocketAddress, false, null);

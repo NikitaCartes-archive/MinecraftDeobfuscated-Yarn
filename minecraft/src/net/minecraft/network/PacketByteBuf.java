@@ -217,8 +217,7 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	public static final short DEFAULT_MAX_STRING_LENGTH = 32767;
 	/**
-	 * The maximum size, in terms of JSON string length, allowed of the text read by
-	 * {@link #readText()} or written by {@link #writeText(Text)}.
+	 * The maximum size, in terms of JSON string length, allowed for serialized texts.
 	 */
 	public static final int MAX_TEXT_LENGTH = 262144;
 	private static final int field_39381 = 256;

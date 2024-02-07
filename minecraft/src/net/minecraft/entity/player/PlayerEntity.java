@@ -184,6 +184,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Nullable
 	public FishingBobberEntity fishHook;
 	protected float damageTiltYaw;
+	@Nullable
+	public Double ignoreFallDamageAboveY;
 
 	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
 		super(EntityType.PLAYER, world);
@@ -215,18 +217,19 @@ public abstract class PlayerEntity extends LivingEntity {
 			.add(EntityAttributes.GENERIC_ATTACK_SPEED)
 			.add(EntityAttributes.GENERIC_LUCK)
 			.add(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE, 4.5)
-			.add(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, 3.0);
+			.add(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, 3.0)
+			.add(EntityAttributes.PLAYER_BLOCK_BREAK_SPEED);
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(ABSORPTION_AMOUNT, 0.0F);
-		this.dataTracker.startTracking(SCORE, 0);
-		this.dataTracker.startTracking(PLAYER_MODEL_PARTS, (byte)0);
-		this.dataTracker.startTracking(MAIN_ARM, (byte)DEFAULT_MAIN_ARM.getId());
-		this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new NbtCompound());
-		this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new NbtCompound());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(ABSORPTION_AMOUNT, 0.0F);
+		builder.add(SCORE, 0);
+		builder.add(PLAYER_MODEL_PARTS, (byte)0);
+		builder.add(MAIN_ARM, (byte)DEFAULT_MAIN_ARM.getId());
+		builder.add(LEFT_SHOULDER_ENTITY, new NbtCompound());
+		builder.add(RIGHT_SHOULDER_ENTITY, new NbtCompound());
 	}
 
 	@Override
@@ -762,6 +765,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			};
 		}
 
+		f *= (float)this.getAttributeValue(EntityAttributes.PLAYER_BLOCK_BREAK_SPEED);
 		if (this.isSubmergedIn(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(this)) {
 			f /= 5.0F;
 		}
@@ -820,6 +824,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (nbt.contains("LastDeathLocation", NbtElement.COMPOUND_TYPE)) {
 			this.setLastDeathPos(GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("LastDeathLocation")).resultOrPartial(LOGGER::error));
 		}
+
+		if (nbt.contains("ignore_fall_damage_above_y", NbtElement.DOUBLE_TYPE)) {
+			this.ignoreFallDamageAboveY = nbt.getDouble("ignore_fall_damage_above_y");
+		}
 	}
 
 	@Override
@@ -848,6 +856,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.getLastDeathPos()
 			.flatMap(pos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).resultOrPartial(LOGGER::error))
 			.ifPresent(pos -> nbt.put("LastDeathLocation", pos));
+		if (this.ignoreFallDamageAboveY != null) {
+			nbt.putDouble("ignore_fall_damage_above_y", this.ignoreFallDamageAboveY);
+		}
 	}
 
 	@Override
@@ -1367,6 +1378,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.abilities;
 	}
 
+	@Override
+	public boolean isInCreativeMode() {
+		return this.abilities.creativeMode;
+	}
+
 	/**
 	 * Called when a player performs a {@link net.minecraft.screen.slot.SlotActionType#PICKUP
 	 * pickup slot action} in a screen handler.
@@ -1583,7 +1599,13 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.increaseStat(Stats.FALL_ONE_CM, (int)Math.round((double)fallDistance * 100.0));
 			}
 
-			return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
+			if (this.ignoreFallDamageAboveY != null) {
+				float f = this.ignoreFallDamageAboveY.floatValue();
+				this.ignoreFallDamageAboveY = null;
+				return (double)f < this.getY() ? false : super.handleFallDamage(f - (float)this.getY(), damageMultiplier, damageSource);
+			} else {
+				return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
+			}
 		}
 	}
 
@@ -1592,6 +1614,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
 				this.startFallFlying();
+				this.ignoreFallDamageAboveY = null;
 				return true;
 			}
 		}
@@ -1829,6 +1852,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public Iterable<ItemStack> getArmorItems() {
 		return this.inventory.armor;
+	}
+
+	@Override
+	public boolean canUseSlot(EquipmentSlot slot) {
+		return slot != EquipmentSlot.BODY;
 	}
 
 	public boolean addShoulderEntity(NbtCompound entityNbt) {

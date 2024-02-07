@@ -44,7 +44,11 @@ public class StatusEffects {
 	public static final RegistryEntry<StatusEffect> INSTANT_DAMAGE = register(
 		"instant_damage", new InstantHealthOrDamageStatusEffect(StatusEffectCategory.HARMFUL, 11101546, true)
 	);
-	public static final RegistryEntry<StatusEffect> JUMP_BOOST = register("jump_boost", new StatusEffect(StatusEffectCategory.BENEFICIAL, 16646020));
+	public static final RegistryEntry<StatusEffect> JUMP_BOOST = register(
+		"jump_boost",
+		new StatusEffect(StatusEffectCategory.BENEFICIAL, 16646020)
+			.addAttributeModifier(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE, "C0105BF3-AEF8-46B0-9EBC-92943757CCBE", 1.0, EntityAttributeModifier.Operation.ADDITION)
+	);
 	public static final RegistryEntry<StatusEffect> NAUSEA = register("nausea", new StatusEffect(StatusEffectCategory.HARMFUL, 5578058));
 	public static final RegistryEntry<StatusEffect> REGENERATION = register(
 		"regeneration", new RegenerationStatusEffect(StatusEffectCategory.BENEFICIAL, 13458603)

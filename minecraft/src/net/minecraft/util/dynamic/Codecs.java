@@ -379,6 +379,10 @@ public class Codecs {
 		});
 	}
 
+	public static <E> Codec<E> withLifecycle(Codec<E> originalCodec, Function<E, Lifecycle> lifecycleGetter) {
+		return withLifecycle(originalCodec, lifecycleGetter, lifecycleGetter);
+	}
+
 	public static <F, S> Codecs.Either<F, S> either(Codec<F> first, Codec<S> second) {
 		return new Codecs.Either<>(first, second);
 	}

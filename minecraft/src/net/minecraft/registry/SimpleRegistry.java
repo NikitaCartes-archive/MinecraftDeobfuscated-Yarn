@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.entry.RegistryEntryOwner;
 import net.minecraft.registry.tag.TagKey;
@@ -47,7 +48,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	private final Map<Identifier, RegistryEntry.Reference<T>> idToEntry = new HashMap();
 	private final Map<RegistryKey<T>, RegistryEntry.Reference<T>> keyToEntry = new HashMap();
 	private final Map<T, RegistryEntry.Reference<T>> valueToEntry = new IdentityHashMap();
-	private final Map<T, Lifecycle> entryToLifecycle = new IdentityHashMap();
+	private final Map<RegistryKey<T>, RegistryEntryInfo> keyToEntryInfo = new IdentityHashMap();
 	private Lifecycle lifecycle;
 	private volatile Map<TagKey<T>, RegistryEntryList.Named<T>> tagToEntryList = new IdentityHashMap();
 	private boolean frozen;
@@ -119,7 +120,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	}
 
 	@Override
-	public RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, Lifecycle lifecycle) {
+	public RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, RegistryEntryInfo info) {
 		this.assertNotFrozen(key);
 		Objects.requireNonNull(key);
 		Objects.requireNonNull(value);
@@ -140,8 +141,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 
 			reference.setRegistryKey(key);
 		} else {
-			reference = (RegistryEntry.Reference<T>)this.keyToEntry
-				.computeIfAbsent(key, registryKey -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), registryKey));
+			reference = (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, k -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), k));
 		}
 
 		this.keyToEntry.put(key, reference);
@@ -150,8 +150,8 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 		int i = this.rawIdToEntry.size();
 		this.rawIdToEntry.add(reference);
 		this.entryToRawId.put(value, i);
-		this.entryToLifecycle.put(value, lifecycle);
-		this.lifecycle = this.lifecycle.add(lifecycle);
+		this.keyToEntryInfo.put(key, info);
+		this.lifecycle = this.lifecycle.add(info.lifecycle());
 		return reference;
 	}
 
@@ -222,8 +222,8 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	}
 
 	@Override
-	public Lifecycle getEntryLifecycle(T entry) {
-		return (Lifecycle)this.entryToLifecycle.get(entry);
+	public Optional<RegistryEntryInfo> getEntryInfo(RegistryKey<T> key) {
+		return Optional.ofNullable((RegistryEntryInfo)this.keyToEntryInfo.get(key));
 	}
 
 	@Override

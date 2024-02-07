@@ -27,6 +27,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -998,6 +999,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.updateSupportingBlockPos(onGround, new Vec3d(xDifference, yDifference, zDifference));
 			BlockPos blockPos = this.getLandingPos();
 			super.fall(yDifference, onGround, this.getWorld().getBlockState(blockPos), blockPos);
+		}
+	}
+
+	@Override
+	public void onExplodedBy(@Nullable Entity entity) {
+		super.onExplodedBy(entity);
+		if (entity != null && entity.getType() == EntityType.WIND_CHARGE) {
+			this.ignoreFallDamageAboveY = this.getY();
 		}
 	}
 

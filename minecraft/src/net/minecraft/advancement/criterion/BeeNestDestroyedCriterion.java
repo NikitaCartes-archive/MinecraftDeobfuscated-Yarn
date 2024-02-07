@@ -32,7 +32,7 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		public static final Codec<BeeNestDestroyedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(BeeNestDestroyedCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.createEntryCodec(), "block").forGetter(BeeNestDestroyedCriterion.Conditions::block),
+						Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.getEntryCodec(), "block").forGetter(BeeNestDestroyedCriterion.Conditions::block),
 						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(BeeNestDestroyedCriterion.Conditions::item),
 						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "num_bees_inside", NumberRange.IntRange.ANY)
 							.forGetter(BeeNestDestroyedCriterion.Conditions::beesInside)

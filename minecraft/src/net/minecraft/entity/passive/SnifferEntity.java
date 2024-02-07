@@ -84,12 +84,17 @@ public class SnifferEntity extends AnimalEntity {
 
 	public SnifferEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 		super(entityType, world);
-		this.dataTracker.startTracking(STATE, SnifferEntity.State.IDLING);
-		this.dataTracker.startTracking(FINISH_DIG_TIME, 0);
 		this.getNavigation().setCanSwim(true);
 		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_CAUTIOUS, -1.0F);
+	}
+
+	@Override
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(STATE, SnifferEntity.State.IDLING);
+		builder.add(FINISH_DIG_TIME, 0);
 	}
 
 	@Override
@@ -107,9 +112,7 @@ public class SnifferEntity extends AnimalEntity {
 
 	@Override
 	public EntityDimensions getBaseDimensions(EntityPose pose) {
-		return this.dataTracker.containsKey(STATE) && this.getState() == SnifferEntity.State.DIGGING
-			? DIMENSIONS.scaled(this.getScaleFactor())
-			: super.getBaseDimensions(pose);
+		return this.getState() == SnifferEntity.State.DIGGING ? DIMENSIONS.scaled(this.getScaleFactor()) : super.getBaseDimensions(pose);
 	}
 
 	public boolean isSearching() {

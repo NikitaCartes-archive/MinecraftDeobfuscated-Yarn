@@ -133,10 +133,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(STRENGTH, 0);
-		this.dataTracker.startTracking(VARIANT, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(STRENGTH, 0);
+		builder.add(VARIANT, 0);
 	}
 
 	public LlamaEntity.Variant getVariant() {

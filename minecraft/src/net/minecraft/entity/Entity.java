@@ -33,6 +33,7 @@ import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.data.DataTracked;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -211,7 +212,7 @@ import org.slf4j.Logger;
  * Entities can be discarded (despawned) by calling {@link #discard}. This does not drop loot.
  * To kill entities and drop loot, call {@link #kill} or {@link damage} (with large enough damage amount).
  */
-public abstract class Entity implements Nameable, EntityLike, CommandOutput, ScoreHolder {
+public abstract class Entity implements DataTracked, Nameable, EntityLike, CommandOutput, ScoreHolder {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String ID_KEY = "id";
 	public static final String PASSENGERS_KEY = "Passengers";
@@ -245,6 +246,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 * @see LivingEntity#tickMovement
 	 */
 	public static final int FREEZING_DAMAGE_INTERVAL = 40;
+	public static final int field_49073 = 3;
 	private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	private static final double SPEED_IN_WATER = 0.014;
 	private static final double SPEED_IN_LAVA_IN_NETHER = 0.007;
@@ -378,16 +380,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		this.pos = Vec3d.ZERO;
 		this.blockPos = BlockPos.ORIGIN;
 		this.chunkPos = ChunkPos.ORIGIN;
-		this.dataTracker = new DataTracker(this);
-		this.dataTracker.startTracking(FLAGS, (byte)0);
-		this.dataTracker.startTracking(AIR, this.getMaxAir());
-		this.dataTracker.startTracking(NAME_VISIBLE, false);
-		this.dataTracker.startTracking(CUSTOM_NAME, Optional.empty());
-		this.dataTracker.startTracking(SILENT, false);
-		this.dataTracker.startTracking(NO_GRAVITY, false);
-		this.dataTracker.startTracking(POSE, EntityPose.STANDING);
-		this.dataTracker.startTracking(FROZEN_TICKS, 0);
-		this.initDataTracker();
+		DataTracker.Builder builder = new DataTracker.Builder(this);
+		builder.add(FLAGS, (byte)0);
+		builder.add(AIR, this.getMaxAir());
+		builder.add(NAME_VISIBLE, false);
+		builder.add(CUSTOM_NAME, Optional.empty());
+		builder.add(SILENT, false);
+		builder.add(NO_GRAVITY, false);
+		builder.add(POSE, EntityPose.STANDING);
+		builder.add(FROZEN_TICKS, 0);
+		this.initDataTracker(builder);
+		this.dataTracker = builder.build();
 		this.setPosition(0.0, 0.0, 0.0);
 		this.standingEyeHeight = this.dimensions.eyeHeight();
 	}
@@ -519,10 +522,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	/**
 	 * Initializes data tracker.
 	 * 
-	 * @apiNote Subclasses should override this and call {@link DataTracker#startTracking}
-	 * for any data that needs to be tracked.
+	 * @apiNote Subclasses should override this and add to the builder any data
+	 * that needs to be tracked.
 	 */
-	protected abstract void initDataTracker();
+	protected abstract void initDataTracker(DataTracker.Builder builder);
 
 	public DataTracker getDataTracker() {
 		return this.dataTracker;
@@ -1498,6 +1501,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 	 */
 	public void setNoGravity(boolean noGravity) {
 		this.dataTracker.set(NO_GRAVITY, noGravity);
+	}
+
+	protected double getGravity() {
+		return 0.0;
+	}
+
+	public final double getFinalGravity() {
+		return this.hasNoGravity() ? 0.0 : this.getGravity();
+	}
+
+	protected void applyGravity() {
+		double d = this.getFinalGravity();
+		if (d != 0.0) {
+			this.setVelocity(this.getVelocity().add(0.0, -d, 0.0));
+		}
 	}
 
 	/**
@@ -4184,15 +4202,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 		return this.isCustomNameVisible();
 	}
 
-	public void onDataTrackerUpdate(List<DataTracker.SerializedEntry<?>> dataEntries) {
+	@Override
+	public void onDataTrackerUpdate(List<DataTracker.SerializedEntry<?>> entries) {
 	}
 
-	/**
-	 * Called on the client when the tracked data is set.
-	 * 
-	 * <p>This can be overridden to refresh other fields when the tracked data
-	 * is set or changed.
-	 */
+	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (POSE.equals(data)) {
 			this.calculateDimensions();
@@ -5232,6 +5246,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput, Sco
 
 	public float getStepHeight() {
 		return 0.0F;
+	}
+
+	public void onExplodedBy(@Nullable Entity entity) {
 	}
 
 	/**

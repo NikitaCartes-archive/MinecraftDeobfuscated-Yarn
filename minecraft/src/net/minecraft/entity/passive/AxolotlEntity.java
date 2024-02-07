@@ -151,11 +151,11 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(VARIANT, 0);
-		this.dataTracker.startTracking(PLAYING_DEAD, false);
-		this.dataTracker.startTracking(FROM_BUCKET, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(VARIANT, 0);
+		builder.add(PLAYING_DEAD, false);
+		builder.add(FROM_BUCKET, false);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package net.minecraft.resource;
 
-import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -31,7 +30,7 @@ public class ResourcePackManager {
 	}
 
 	public void scanPacks() {
-		List<String> list = (List<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList());
+		List<String> list = (List<String>)this.enabled.stream().map(ResourcePackProfile::getId).collect(ImmutableList.toImmutableList());
 		this.profiles = this.providePackProfiles();
 		this.enabled = this.buildEnabledProfiles(list);
 	}
@@ -40,7 +39,7 @@ public class ResourcePackManager {
 		Map<String, ResourcePackProfile> map = Maps.newTreeMap();
 
 		for (ResourcePackProvider resourcePackProvider : this.providers) {
-			resourcePackProvider.register(profile -> map.put(profile.getName(), profile));
+			resourcePackProvider.register(profile -> map.put(profile.getId(), profile));
 		}
 
 		return ImmutableMap.copyOf(map);
@@ -75,22 +74,22 @@ public class ResourcePackManager {
 	}
 
 	private List<ResourcePackProfile> buildEnabledProfiles(Collection<String> enabledNames) {
-		List<ResourcePackProfile> list = (List<ResourcePackProfile>)this.streamProfilesByName(enabledNames).collect(Collectors.toList());
+		List<ResourcePackProfile> list = (List<ResourcePackProfile>)this.streamProfilesById(enabledNames).collect(Collectors.toList());
 
 		for (ResourcePackProfile resourcePackProfile : this.profiles.values()) {
-			if (resourcePackProfile.isAlwaysEnabled() && !list.contains(resourcePackProfile)) {
-				resourcePackProfile.getInitialPosition().insert(list, resourcePackProfile, Functions.identity(), false);
+			if (resourcePackProfile.isRequired() && !list.contains(resourcePackProfile)) {
+				resourcePackProfile.getInitialPosition().insert(list, resourcePackProfile, ResourcePackProfile::getPosition, false);
 			}
 		}
 
 		return ImmutableList.copyOf(list);
 	}
 
-	private Stream<ResourcePackProfile> streamProfilesByName(Collection<String> names) {
-		return names.stream().map(this.profiles::get).filter(Objects::nonNull);
+	private Stream<ResourcePackProfile> streamProfilesById(Collection<String> ids) {
+		return ids.stream().map(this.profiles::get).filter(Objects::nonNull);
 	}
 
-	public Collection<String> getNames() {
+	public Collection<String> getIds() {
 		return this.profiles.keySet();
 	}
 
@@ -98,8 +97,8 @@ public class ResourcePackManager {
 		return this.profiles.values();
 	}
 
-	public Collection<String> getEnabledNames() {
-		return (Collection<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableSet.toImmutableSet());
+	public Collection<String> getEnabledIds() {
+		return (Collection<String>)this.enabled.stream().map(ResourcePackProfile::getId).collect(ImmutableSet.toImmutableSet());
 	}
 
 	public FeatureSet getRequestedFeatures() {
@@ -111,12 +110,12 @@ public class ResourcePackManager {
 	}
 
 	@Nullable
-	public ResourcePackProfile getProfile(String name) {
-		return (ResourcePackProfile)this.profiles.get(name);
+	public ResourcePackProfile getProfile(String id) {
+		return (ResourcePackProfile)this.profiles.get(id);
 	}
 
-	public boolean hasProfile(String name) {
-		return this.profiles.containsKey(name);
+	public boolean hasProfile(String id) {
+		return this.profiles.containsKey(id);
 	}
 
 	public List<ResourcePack> createResourcePacks() {

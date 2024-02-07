@@ -31,7 +31,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 			RecordCodecBuilder.create(
 				instance -> instance.group(
 							Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(SlideDownBlockCriterion.Conditions::player),
-							Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.createEntryCodec(), "block").forGetter(SlideDownBlockCriterion.Conditions::block),
+							Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.getEntryCodec(), "block").forGetter(SlideDownBlockCriterion.Conditions::block),
 							Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(SlideDownBlockCriterion.Conditions::state)
 						)
 						.apply(instance, SlideDownBlockCriterion.Conditions::new)

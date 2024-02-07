@@ -175,9 +175,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(HORSE_FLAGS, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(HORSE_FLAGS, (byte)0);
 	}
 
 	protected boolean getHorseFlag(int bitmask) {
@@ -255,9 +255,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	public void equipHorseArmor(PlayerEntity player, ItemStack stack) {
 		if (this.isHorseArmor(stack)) {
 			this.equipBodyArmor(stack.copyWithCount(1));
-			if (!player.getAbilities().creativeMode) {
-				stack.decrement(1);
-			}
+			stack.decrementUnlessCreative(1, player);
 		}
 	}
 
@@ -363,10 +361,6 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 	}
 
-	public double getJumpStrength() {
-		return this.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH);
-	}
-
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
@@ -429,7 +423,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	public static DefaultAttributeContainer.Builder createBaseHorseAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.HORSE_JUMP_STRENGTH)
+			.add(EntityAttributes.GENERIC_JUMP_STRENGTH, 0.7)
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 53.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.225F)
 			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
@@ -463,8 +457,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	public ActionResult interactHorse(PlayerEntity player, ItemStack stack) {
 		boolean bl = this.receiveFood(player, stack);
-		if (bl & !player.getAbilities().creativeMode) {
-			stack.decrement(1);
+		if (bl) {
+			stack.decrementUnlessCreative(1, player);
 		}
 
 		if (this.getWorld().isClient) {
@@ -809,10 +803,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	protected void jump(float strength, Vec3d movementInput) {
-		double d = this.getJumpStrength() * (double)strength * (double)this.getJumpVelocityMultiplier();
-		double e = d + (double)this.getJumpBoostVelocityModifier();
+		double d = (double)this.getJumpVelocity(strength);
 		Vec3d vec3d = this.getVelocity();
-		this.setVelocity(vec3d.x, e, vec3d.z);
+		this.setVelocity(vec3d.x, d, vec3d.z);
 		this.setInAir(true);
 		this.velocityDirty = true;
 		if (movementInput.z > 0.0) {
@@ -888,7 +881,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	protected void setChildAttributes(PassiveEntity other, AbstractHorseEntity child) {
 		this.setChildAttribute(other, child, EntityAttributes.GENERIC_MAX_HEALTH, (double)MIN_HEALTH_BONUS, (double)MAX_HEALTH_BONUS);
-		this.setChildAttribute(other, child, EntityAttributes.HORSE_JUMP_STRENGTH, (double)MIN_JUMP_STRENGTH_BONUS, (double)MAX_JUMP_STRENGTH_BONUS);
+		this.setChildAttribute(other, child, EntityAttributes.GENERIC_JUMP_STRENGTH, (double)MIN_JUMP_STRENGTH_BONUS, (double)MAX_JUMP_STRENGTH_BONUS);
 		this.setChildAttribute(other, child, EntityAttributes.GENERIC_MOVEMENT_SPEED, (double)MIN_MOVEMENT_SPEED_BONUS, (double)MAX_MOVEMENT_SPEED_BONUS);
 	}
 

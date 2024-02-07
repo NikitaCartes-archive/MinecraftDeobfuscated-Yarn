@@ -24,10 +24,7 @@ public class MilkBucketItem extends Item {
 			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
-		if (user instanceof PlayerEntity && !((PlayerEntity)user).getAbilities().creativeMode) {
-			stack.decrement(1);
-		}
-
+		stack.decrementUnlessCreative(1, user);
 		if (!world.isClient) {
 			user.clearStatusEffects();
 		}

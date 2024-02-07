@@ -35,7 +35,7 @@ public record ItemPredicate(
 	Optional<NbtPredicate> nbt
 ) {
 	private static final Codec<RegistryEntryList<Item>> ITEM_ENTRY_LIST_CODEC = Registries.ITEM
-		.createEntryCodec()
+		.getEntryCodec()
 		.listOf()
 		.xmap(RegistryEntryList::of, items -> items.stream().toList());
 	public static final Codec<ItemPredicate> CODEC = RecordCodecBuilder.create(
@@ -46,7 +46,7 @@ public record ItemPredicate(
 					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "durability", NumberRange.IntRange.ANY).forGetter(ItemPredicate::durability),
 					Codecs.createStrictOptionalFieldCodec(EnchantmentPredicate.CODEC.listOf(), "enchantments", List.of()).forGetter(ItemPredicate::enchantments),
 					Codecs.createStrictOptionalFieldCodec(EnchantmentPredicate.CODEC.listOf(), "stored_enchantments", List.of()).forGetter(ItemPredicate::storedEnchantments),
-					Codecs.createStrictOptionalFieldCodec(Registries.POTION.createEntryCodec(), "potion").forGetter(ItemPredicate::potion),
+					Codecs.createStrictOptionalFieldCodec(Registries.POTION.getEntryCodec(), "potion").forGetter(ItemPredicate::potion),
 					Codecs.createStrictOptionalFieldCodec(NbtPredicate.CODEC, "nbt").forGetter(ItemPredicate::nbt)
 				)
 				.apply(instance, ItemPredicate::new)

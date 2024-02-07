@@ -15,7 +15,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 
 public class ItemEntry extends LeafEntry {
 	public static final Codec<ItemEntry> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Registries.ITEM.createEntryCodec().fieldOf("name").forGetter(entry -> entry.item))
+		instance -> instance.group(Registries.ITEM.getEntryCodec().fieldOf("name").forGetter(entry -> entry.item))
 				.<int, int, List<LootCondition>, List<LootFunction>>and(addLeafFields(instance))
 				.apply(instance, ItemEntry::new)
 	);

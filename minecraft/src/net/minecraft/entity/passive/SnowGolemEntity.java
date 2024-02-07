@@ -60,9 +60,9 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(SNOW_GOLEM_FLAGS, (byte)16);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SNOW_GOLEM_FLAGS, (byte)16);
 	}
 
 	@Override

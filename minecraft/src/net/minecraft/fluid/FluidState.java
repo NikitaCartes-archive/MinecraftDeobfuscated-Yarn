@@ -1,8 +1,8 @@
 package net.minecraft.fluid;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -26,8 +26,8 @@ public final class FluidState extends State<Fluid, FluidState> {
 	public static final int field_31727 = 9;
 	public static final int field_31728 = 8;
 
-	public FluidState(Fluid fluid, ImmutableMap<Property<?>, Comparable<?>> propertiesMap, MapCodec<FluidState> codec) {
-		super(fluid, propertiesMap, codec);
+	public FluidState(Fluid fluid, Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyMap, MapCodec<FluidState> codec) {
+		super(fluid, propertyMap, codec);
 	}
 
 	public Fluid getFluid() {

@@ -70,11 +70,11 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.getDataTracker().startTracking(COLOR, 0);
-		this.getDataTracker().startTracking(RADIUS, 3.0F);
-		this.getDataTracker().startTracking(WAITING, false);
-		this.getDataTracker().startTracking(PARTICLE_ID, ParticleTypes.ENTITY_EFFECT);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(COLOR, 0);
+		builder.add(RADIUS, 3.0F);
+		builder.add(WAITING, false);
+		builder.add(PARTICLE_ID, ParticleTypes.ENTITY_EFFECT);
 	}
 
 	public void setRadius(float radius) {

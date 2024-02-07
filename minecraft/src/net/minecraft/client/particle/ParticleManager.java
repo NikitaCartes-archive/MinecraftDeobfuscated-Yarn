@@ -130,7 +130,8 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.SONIC_BOOM, SonicBoomParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FALLING_DUST, BlockFallingDustParticle.Factory::new);
 		this.registerFactory(ParticleTypes.GUST, GustParticle.Factory::new);
-		this.registerFactory(ParticleTypes.GUST_EMITTER, new GustEmitterParticle.Factory());
+		this.registerFactory(ParticleTypes.GUST_EMITTER_LARGE, new GustEmitterParticle.Factory(3.0, 7, 0));
+		this.registerFactory(ParticleTypes.GUST_EMITTER_SMALL, new GustEmitterParticle.Factory(1.0, 3, 2));
 		this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
 		this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);

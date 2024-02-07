@@ -73,9 +73,9 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.getDataTracker().startTracking(DRINKING, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(DRINKING, false);
 	}
 
 	@Override

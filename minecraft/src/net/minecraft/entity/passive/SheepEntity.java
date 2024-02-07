@@ -139,9 +139,9 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(COLOR, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(COLOR, (byte)0);
 	}
 
 	@Override

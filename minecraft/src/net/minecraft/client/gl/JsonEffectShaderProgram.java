@@ -148,7 +148,7 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 			}
 		} catch (Exception var22) {
 			InvalidHierarchicalFileException invalidHierarchicalFileException4 = InvalidHierarchicalFileException.wrap(var22);
-			invalidHierarchicalFileException4.addInvalidFile(identifier.getPath() + " (" + resource2.getResourcePackName() + ")");
+			invalidHierarchicalFileException4.addInvalidFile(identifier.getPath() + " (" + resource2.getPackId() + ")");
 			throw invalidHierarchicalFileException4;
 		}
 
@@ -167,7 +167,7 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 				InputStream inputStream = resource.getInputStream();
 
 				try {
-					effectShaderStage = EffectShaderStage.createFromResource(type, name, inputStream, resource.getResourcePackName());
+					effectShaderStage = EffectShaderStage.createFromResource(type, name, inputStream, resource.getPackId());
 				} catch (Throwable var11) {
 					if (inputStream != null) {
 						try {

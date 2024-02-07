@@ -31,7 +31,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 			RecordCodecBuilder.create(
 				instance -> instance.group(
 							Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(EnterBlockCriterion.Conditions::player),
-							Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.createEntryCodec(), "block").forGetter(EnterBlockCriterion.Conditions::block),
+							Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.getEntryCodec(), "block").forGetter(EnterBlockCriterion.Conditions::block),
 							Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(EnterBlockCriterion.Conditions::state)
 						)
 						.apply(instance, EnterBlockCriterion.Conditions::new)

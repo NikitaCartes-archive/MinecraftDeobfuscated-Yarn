@@ -18,10 +18,10 @@ public class ChunkPosKeyedStorage implements AutoCloseable {
 	private final DataFixer dataFixer;
 	private final DataFixTypes dataFixTypes;
 
-	public ChunkPosKeyedStorage(Path directory, DataFixer dataFixer, boolean dsync, String name, DataFixTypes dataFixTypes) {
+	public ChunkPosKeyedStorage(StorageKey storageKey, Path directory, DataFixer dataFixer, boolean dsync, DataFixTypes dataFixTypes) {
 		this.dataFixer = dataFixer;
 		this.dataFixTypes = dataFixTypes;
-		this.worker = new StorageIoWorker(directory, dsync, name);
+		this.worker = new StorageIoWorker(storageKey, directory, dsync);
 	}
 
 	public CompletableFuture<Optional<NbtCompound>> read(ChunkPos pos) {

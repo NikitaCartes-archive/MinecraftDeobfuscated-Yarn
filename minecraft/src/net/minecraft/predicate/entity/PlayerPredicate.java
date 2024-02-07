@@ -231,7 +231,7 @@ public record PlayerPredicate(
 		private static <T> Codec<PlayerPredicate.StatMatcher<T>> createCodec(StatType<T> type) {
 			return RecordCodecBuilder.create(
 				instance -> instance.group(
-							type.getRegistry().createEntryCodec().fieldOf("stat").forGetter(PlayerPredicate.StatMatcher::value),
+							type.getRegistry().getEntryCodec().fieldOf("stat").forGetter(PlayerPredicate.StatMatcher::value),
 							Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "value", NumberRange.IntRange.ANY).forGetter(PlayerPredicate.StatMatcher::range)
 						)
 						.apply(instance, (registryEntry, intRange) -> new PlayerPredicate.StatMatcher<>(type, registryEntry, intRange))

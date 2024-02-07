@@ -128,12 +128,12 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(OWNER, Optional.empty());
-		this.dataTracker.startTracking(OTHER_TRUSTED, Optional.empty());
-		this.dataTracker.startTracking(TYPE, 0);
-		this.dataTracker.startTracking(FOX_FLAGS, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(OWNER, Optional.empty());
+		builder.add(OTHER_TRUSTED, Optional.empty());
+		builder.add(TYPE, 0);
+		builder.add(FOX_FLAGS, (byte)0);
 	}
 
 	@Override

@@ -47,9 +47,9 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	public abstract PassiveEntity createChild(ServerWorld world, PassiveEntity entity);
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(CHILD, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CHILD, false);
 	}
 
 	public boolean isReadyToBreed() {

@@ -13,6 +13,8 @@ import net.minecraft.util.Identifier;
  */
 @FunctionalInterface
 public interface ResourceFactory {
+	ResourceFactory MISSING = id -> Optional.empty();
+
 	/**
 	 * Finds and returns the corresponding resource for a resource's identifier.
 	 * 

@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.profiling.jfr.FlightProfiler;
 import org.slf4j.Logger;
 
 public class RegionFile implements AutoCloseable {
@@ -34,6 +35,7 @@ public class RegionFile implements AutoCloseable {
 	private static final int field_31422 = 128;
 	private static final int field_31423 = 256;
 	private static final int field_31424 = 0;
+	final StorageKey storageKey;
 	private final Path path;
 	private final FileChannel channel;
 	private final Path directory;
@@ -44,11 +46,12 @@ public class RegionFile implements AutoCloseable {
 	@VisibleForTesting
 	protected final SectorMap sectors = new SectorMap();
 
-	public RegionFile(Path file, Path directory, boolean dsync) throws IOException {
-		this(file, directory, ChunkCompressionFormat.getCurrentFormat(), dsync);
+	public RegionFile(StorageKey storageKey, Path directory, Path path, boolean dsync) throws IOException {
+		this(storageKey, directory, path, ChunkCompressionFormat.getCurrentFormat(), dsync);
 	}
 
-	public RegionFile(Path path, Path directory, ChunkCompressionFormat compressionFormat, boolean dsync) throws IOException {
+	public RegionFile(StorageKey storageKey, Path path, Path directory, ChunkCompressionFormat compressionFormat, boolean dsync) throws IOException {
+		this.storageKey = storageKey;
 		this.path = path;
 		this.compressionFormat = compressionFormat;
 		if (!Files.isDirectory(directory, new LinkOption[0])) {
@@ -143,6 +146,7 @@ public class RegionFile implements AutoCloseable {
 						LOGGER.error("Declared size {} of chunk {} is negative", m, pos);
 						return null;
 					} else {
+						FlightProfiler.INSTANCE.onChunkRegionRead(this.storageKey, pos, this.compressionFormat, n);
 						return this.decompress(pos, b, getInputStream(byteBuffer, n));
 					}
 				}
@@ -402,7 +406,9 @@ public class RegionFile implements AutoCloseable {
 
 		public void close() throws IOException {
 			ByteBuffer byteBuffer = ByteBuffer.wrap(this.buf, 0, this.count);
-			byteBuffer.putInt(0, this.count - 5 + 1);
+			int i = this.count - 5 + 1;
+			FlightProfiler.INSTANCE.onChunkRegionWrite(RegionFile.this.storageKey, this.pos, RegionFile.this.compressionFormat, i);
+			byteBuffer.putInt(0, i);
 			RegionFile.this.writeChunk(this.pos, byteBuffer);
 		}
 	}

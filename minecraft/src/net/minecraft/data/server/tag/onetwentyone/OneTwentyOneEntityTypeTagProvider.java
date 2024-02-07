@@ -18,7 +18,7 @@ public class OneTwentyOneEntityTypeTagProvider extends ValueLookupTagProvider<En
 		this.getOrCreateTagBuilder(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(EntityType.BREEZE);
 		this.getOrCreateTagBuilder(EntityTypeTags.DEFLECTS_PROJECTILES).add(EntityType.BREEZE);
 		this.getOrCreateTagBuilder(EntityTypeTags.CAN_TURN_IN_BOATS).add(EntityType.BREEZE);
-		this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES).add(EntityType.WIND_CHARGE);
+		this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES).add(EntityType.WIND_CHARGE, EntityType.BREEZE_WIND_CHARGE);
 		this.getOrCreateTagBuilder(EntityTypeTags.NO_ANGER_FROM_WIND_CHARGE)
 			.add(
 				EntityType.BREEZE, EntityType.SKELETON, EntityType.STRAY, EntityType.ZOMBIE, EntityType.HUSK, EntityType.SPIDER, EntityType.CAVE_SPIDER, EntityType.SLIME

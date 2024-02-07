@@ -31,9 +31,9 @@ public class GlowSquidEntity extends SquidEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(DARK_TICKS_REMAINING, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(DARK_TICKS_REMAINING, 0);
 	}
 
 	@Override

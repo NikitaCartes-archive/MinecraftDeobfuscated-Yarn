@@ -17,7 +17,7 @@ public record FluidPredicate(Optional<TagKey<Fluid>> tag, Optional<RegistryEntry
 	public static final Codec<FluidPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.FLUID), "tag").forGetter(FluidPredicate::tag),
-					Codecs.createStrictOptionalFieldCodec(Registries.FLUID.createEntryCodec(), "fluid").forGetter(FluidPredicate::fluid),
+					Codecs.createStrictOptionalFieldCodec(Registries.FLUID.getEntryCodec(), "fluid").forGetter(FluidPredicate::fluid),
 					Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(FluidPredicate::state)
 				)
 				.apply(instance, FluidPredicate::new)

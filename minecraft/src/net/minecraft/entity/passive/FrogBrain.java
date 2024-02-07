@@ -54,7 +54,7 @@ public class FrogBrain {
 	private static final UniformIntProvider longJumpCooldownRange = UniformIntProvider.create(100, 140);
 	private static final int field_37475 = 2;
 	private static final int field_37476 = 4;
-	private static final float field_37477 = 1.5F;
+	private static final float field_49092 = 3.5714288F;
 	private static final float TEMPT_SPEED = 1.25F;
 
 	protected static void coolDownLongJump(FrogEntity frog, Random random) {
@@ -79,7 +79,7 @@ public class FrogBrain {
 			Activity.CORE,
 			0,
 			ImmutableList.of(
-				new FleeTask(2.0F),
+				new FleeTask<>(2.0F),
 				new LookAroundTask(45, 90),
 				new WanderAroundTask(),
 				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
@@ -186,7 +186,7 @@ public class FrogBrain {
 				Pair.of(
 					1,
 					new BiasedLongJumpTask<>(
-						longJumpCooldownRange, 2, 4, 1.5F, frog -> SoundEvents.ENTITY_FROG_LONG_JUMP, BlockTags.FROG_PREFER_JUMP_TO, 0.5F, FrogBrain::shouldJumpTo
+						longJumpCooldownRange, 2, 4, 3.5714288F, frog -> SoundEvents.ENTITY_FROG_LONG_JUMP, BlockTags.FROG_PREFER_JUMP_TO, 0.5F, FrogBrain::shouldJumpTo
 					)
 				)
 			),

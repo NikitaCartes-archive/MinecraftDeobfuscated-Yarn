@@ -151,9 +151,9 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.getDataTracker().startTracking(PHASE_TYPE, PhaseType.HOVER.getTypeId());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(PHASE_TYPE, PhaseType.HOVER.getTypeId());
 	}
 
 	public double[] getSegmentProperties(int segmentNumber, float tickDelta) {

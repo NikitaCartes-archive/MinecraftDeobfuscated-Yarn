@@ -51,10 +51,10 @@ public class InteractionEntity extends Entity implements Attackable, Targeter {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(WIDTH, 1.0F);
-		this.dataTracker.startTracking(HEIGHT, 1.0F);
-		this.dataTracker.startTracking(RESPONSE, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(WIDTH, 1.0F);
+		builder.add(HEIGHT, 1.0F);
+		builder.add(RESPONSE, false);
 	}
 
 	@Override

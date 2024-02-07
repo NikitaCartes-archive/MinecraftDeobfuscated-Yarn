@@ -72,7 +72,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 
 			try {
 				for (Resource resource : resourceManager.getAllResources(new Identifier(string, "sounds.json"))) {
-					profiler.push(resource.getResourcePackName());
+					profiler.push(resource.getPackId());
 
 					try {
 						Reader reader = resource.getReader();
@@ -103,7 +103,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 							reader.close();
 						}
 					} catch (RuntimeException var15) {
-						LOGGER.warn("Invalid {} in resourcepack: '{}'", "sounds.json", resource.getResourcePackName(), var15);
+						LOGGER.warn("Invalid {} in resourcepack: '{}'", "sounds.json", resource.getPackId(), var15);
 					}
 
 					profiler.pop();

@@ -17,6 +17,7 @@ public class Schema3689 extends IdentifierNormalizingSchema {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
 		schema.register(map, "minecraft:breeze", (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 		schema.registerSimple(map, "minecraft:wind_charge");
+		schema.registerSimple(map, "minecraft:breeze_wind_charge");
 		return map;
 	}
 

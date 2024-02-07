@@ -56,6 +56,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.ChunkFilter;
@@ -66,6 +67,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.CsvWriter;
 import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -96,6 +98,7 @@ import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.storage.StorageKey;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
@@ -156,7 +159,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		int viewDistance,
 		boolean dsync
 	) {
-		super(session.getWorldDirectory(world.getRegistryKey()).resolve("region"), dataFixer, dsync);
+		super(
+			new StorageKey(session.getDirectoryName(), world.getRegistryKey(), "chunk"),
+			session.getWorldDirectory(world.getRegistryKey()).resolve("region"),
+			dataFixer,
+			dsync
+		);
 		this.structureTemplateManager = structureTemplateManager;
 		Path path = session.getWorldDirectory(world.getRegistryKey());
 		this.saveDir = path.getFileName().toString();
@@ -189,7 +197,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(executor, mainThreadExecutor);
 		this.persistentStateManagerFactory = persistentStateManagerFactory;
-		this.pointOfInterestStorage = new PointOfInterestStorage(path.resolve("poi"), dataFixer, dsync, dynamicRegistryManager, world);
+		this.pointOfInterestStorage = new PointOfInterestStorage(
+			new StorageKey(session.getDirectoryName(), world.getRegistryKey(), "poi"), path.resolve("poi"), dataFixer, dsync, dynamicRegistryManager, world
+		);
 		this.setViewDistance(viewDistance);
 	}
 
@@ -658,6 +668,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 							var9.getStackTrace();
 							CrashReport crashReport = CrashReport.create(var9, "Exception generating new chunk");
 							CrashReportSection crashReportSection = crashReport.addElement("Chunk to be generated");
+							crashReportSection.add("Status being generated", (CrashCallable<String>)(() -> Registries.CHUNK_STATUS.getId(requiredStatus).toString()));
 							crashReportSection.add("Location", String.format(Locale.ROOT, "%d,%d", chunkPos.x, chunkPos.z));
 							crashReportSection.add("Position hash", ChunkPos.toLong(chunkPos.x, chunkPos.z));
 							crashReportSection.add("Generator", this.chunkGenerator);

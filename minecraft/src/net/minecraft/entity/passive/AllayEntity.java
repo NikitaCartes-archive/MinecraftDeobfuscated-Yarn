@@ -159,10 +159,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(DANCING, false);
-		this.dataTracker.startTracking(CAN_DUPLICATE, true);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(DANCING, false);
+		builder.add(CAN_DUPLICATE, true);
 	}
 
 	@Override
@@ -532,9 +532,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	private void decrementStackUnlessInCreative(PlayerEntity player, ItemStack stack) {
-		if (!player.getAbilities().creativeMode) {
-			stack.decrement(1);
-		}
+		stack.decrementUnlessCreative(1, player);
 	}
 
 	@Override

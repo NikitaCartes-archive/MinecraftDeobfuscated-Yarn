@@ -104,7 +104,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	static record StewEffect(RegistryEntry<StatusEffect> effect, LootNumberProvider duration) {
 		public static final Codec<SetStewEffectLootFunction.StewEffect> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registries.STATUS_EFFECT.createEntryCodec().fieldOf("type").forGetter(SetStewEffectLootFunction.StewEffect::effect),
+						Registries.STATUS_EFFECT.getEntryCodec().fieldOf("type").forGetter(SetStewEffectLootFunction.StewEffect::effect),
 						LootNumberProviderTypes.CODEC.fieldOf("duration").forGetter(SetStewEffectLootFunction.StewEffect::duration)
 					)
 					.apply(instance, SetStewEffectLootFunction.StewEffect::new)

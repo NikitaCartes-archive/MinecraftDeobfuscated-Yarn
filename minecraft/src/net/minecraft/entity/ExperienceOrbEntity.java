@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -50,7 +51,12 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	protected void initDataTracker() {
+	protected void initDataTracker(DataTracker.Builder builder) {
+	}
+
+	@Override
+	protected double getGravity() {
+		return 0.03;
 	}
 
 	@Override
@@ -61,8 +67,8 @@ public class ExperienceOrbEntity extends Entity {
 		this.prevZ = this.getZ();
 		if (this.isSubmergedIn(FluidTags.WATER)) {
 			this.applyWaterMovement();
-		} else if (!this.hasNoGravity()) {
-			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
+		} else {
+			this.applyGravity();
 		}
 
 		if (this.getWorld().getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA)) {

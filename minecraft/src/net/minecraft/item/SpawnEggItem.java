@@ -110,10 +110,7 @@ public class SpawnEggItem extends Item {
 				if (entity == null) {
 					return TypedActionResult.pass(itemStack);
 				} else {
-					if (!user.getAbilities().creativeMode) {
-						itemStack.decrement(1);
-					}
-
+					itemStack.decrementUnlessCreative(1, user);
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
 					world.emitGameEvent(user, GameEvent.ENTITY_PLACE, entity.getPos());
 					return TypedActionResult.consume(itemStack);
@@ -190,10 +187,7 @@ public class SpawnEggItem extends Item {
 						mobEntity.setCustomName(stack.getName());
 					}
 
-					if (!user.getAbilities().creativeMode) {
-						stack.decrement(1);
-					}
-
+					stack.decrementUnlessCreative(1, user);
 					return Optional.of(mobEntity);
 				}
 			}

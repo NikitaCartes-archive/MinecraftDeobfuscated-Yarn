@@ -141,7 +141,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			ItemStack itemStack = this.inventory.getStack(0);
 			ItemStack itemStack2 = this.inventory.getStack(1);
 			int i = id + 1;
-			if ((itemStack2.isEmpty() || itemStack2.getCount() < i) && !player.getAbilities().creativeMode) {
+			if ((itemStack2.isEmpty() || itemStack2.getCount() < i) && !player.isInCreativeMode()) {
 				return false;
 			} else if (this.enchantmentPower[id] <= 0
 				|| itemStack.isEmpty()
@@ -162,7 +162,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 							itemStack3.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
 						}
 
-						if (!player.getAbilities().creativeMode) {
+						if (!player.isInCreativeMode()) {
 							itemStack2.decrement(i);
 							if (itemStack2.isEmpty()) {
 								this.inventory.setStack(1, ItemStack.EMPTY);

@@ -109,6 +109,7 @@ import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.entity.projectile.BreezeWindChargeEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
@@ -227,6 +228,15 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.dimensions(0.6F, 1.77F)
 			.eyeHeight(1.3452F)
 			.maxTrackingRange(10)
+			.requires(FeatureFlags.UPDATE_1_21)
+	);
+	public static final EntityType<BreezeWindChargeEntity> BREEZE_WIND_CHARGE = register(
+		"breeze_wind_charge",
+		EntityType.Builder.<BreezeWindChargeEntity>create(BreezeWindChargeEntity::new, SpawnGroup.MISC)
+			.dimensions(0.3125F, 0.3125F)
+			.eyeHeight(0.0F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 			.requires(FeatureFlags.UPDATE_1_21)
 	);
 	public static final EntityType<CamelEntity> CAMEL = register(

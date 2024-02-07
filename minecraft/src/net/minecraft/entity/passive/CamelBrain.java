@@ -28,7 +28,6 @@ import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
-import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -132,18 +131,14 @@ public class CamelBrain {
 		return CamelEntity.BREEDING_INGREDIENT;
 	}
 
-	public static class CamelWalkTask extends FleeTask {
+	public static class CamelWalkTask extends FleeTask<CamelEntity> {
 		public CamelWalkTask(float f) {
 			super(f);
 		}
 
-		@Override
-		protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-			if (pathAwareEntity instanceof CamelEntity camelEntity) {
-				camelEntity.setStanding();
-			}
-
-			super.run(serverWorld, pathAwareEntity, l);
+		protected void run(ServerWorld serverWorld, CamelEntity camelEntity, long l) {
+			camelEntity.setStanding();
+			super.run(serverWorld, camelEntity, l);
 		}
 	}
 

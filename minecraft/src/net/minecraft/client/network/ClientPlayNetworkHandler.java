@@ -26,8 +26,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -91,7 +89,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapId;
@@ -263,10 +260,8 @@ import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreAccess;
@@ -382,7 +377,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onGameJoin(GameJoinS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.refreshTagBasedData();
 		this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
 		CommonPlayerSpawnInfo commonPlayerSpawnInfo = packet.commonPlayerSpawnInfo();
 		List<RegistryKey<World>> list = Lists.<RegistryKey<World>>newArrayList(packet.dimensionIds());
@@ -1544,22 +1538,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		packet.getGroups().forEach(this::handleSynchronizedTags);
-		this.refreshTagBasedData();
-	}
-
-	private <T> void handleSynchronizedTags(RegistryKey<? extends Registry<? extends T>> registryRef, TagPacketSerializer.Serialized tags) {
-		Registry<T> registry = this.combinedDynamicRegistries.get(registryRef);
-		tags.loadTo(registry);
-	}
-
-	private void refreshTagBasedData() {
-		if (!this.connection.isLocal()) {
-			AbstractFurnaceBlockEntity.clearFuelTimes();
-			Blocks.refreshShapeCache();
-		}
-
-		ItemGroups.getSearchGroup().reloadSearchProvider();
+		ClientTagLoader clientTagLoader = new ClientTagLoader();
+		packet.getGroups().forEach(clientTagLoader::put);
+		clientTagLoader.load(this.combinedDynamicRegistries, this.connection.isLocal());
 	}
 
 	@Override

@@ -59,14 +59,7 @@ public abstract class DisplayEntity extends Entity {
 	private static final TrackedData<Float> HEIGHT = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> GLOW_COLOR_OVERRIDE = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final IntSet RENDERING_DATA_IDS = IntSet.of(
-		TRANSLATION.getId(),
-		SCALE.getId(),
-		LEFT_ROTATION.getId(),
-		RIGHT_ROTATION.getId(),
-		BILLBOARD.getId(),
-		BRIGHTNESS.getId(),
-		SHADOW_RADIUS.getId(),
-		SHADOW_STRENGTH.getId()
+		TRANSLATION.id(), SCALE.id(), LEFT_ROTATION.id(), RIGHT_ROTATION.id(), BILLBOARD.id(), BRIGHTNESS.id(), SHADOW_RADIUS.id(), SHADOW_STRENGTH.id()
 	);
 	private static final float field_42376 = 0.0F;
 	private static final float field_42377 = 1.0F;
@@ -117,7 +110,7 @@ public abstract class DisplayEntity extends Entity {
 			this.interpolationDurationSet = true;
 		}
 
-		if (RENDERING_DATA_IDS.contains(data.getId())) {
+		if (RENDERING_DATA_IDS.contains(data.id())) {
 			this.renderingDataSet = true;
 		}
 	}
@@ -180,22 +173,22 @@ public abstract class DisplayEntity extends Entity {
 	protected abstract void refreshData(boolean shouldLerp, float lerpProgress);
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(TELEPORT_DURATION, 0);
-		this.dataTracker.startTracking(START_INTERPOLATION, 0);
-		this.dataTracker.startTracking(INTERPOLATION_DURATION, 0);
-		this.dataTracker.startTracking(TRANSLATION, new Vector3f());
-		this.dataTracker.startTracking(SCALE, new Vector3f(1.0F, 1.0F, 1.0F));
-		this.dataTracker.startTracking(RIGHT_ROTATION, new Quaternionf());
-		this.dataTracker.startTracking(LEFT_ROTATION, new Quaternionf());
-		this.dataTracker.startTracking(BILLBOARD, DisplayEntity.BillboardMode.FIXED.getIndex());
-		this.dataTracker.startTracking(BRIGHTNESS, -1);
-		this.dataTracker.startTracking(VIEW_RANGE, 1.0F);
-		this.dataTracker.startTracking(SHADOW_RADIUS, 0.0F);
-		this.dataTracker.startTracking(SHADOW_STRENGTH, 1.0F);
-		this.dataTracker.startTracking(WIDTH, 0.0F);
-		this.dataTracker.startTracking(HEIGHT, 0.0F);
-		this.dataTracker.startTracking(GLOW_COLOR_OVERRIDE, -1);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(TELEPORT_DURATION, 0);
+		builder.add(START_INTERPOLATION, 0);
+		builder.add(INTERPOLATION_DURATION, 0);
+		builder.add(TRANSLATION, new Vector3f());
+		builder.add(SCALE, new Vector3f(1.0F, 1.0F, 1.0F));
+		builder.add(RIGHT_ROTATION, new Quaternionf());
+		builder.add(LEFT_ROTATION, new Quaternionf());
+		builder.add(BILLBOARD, DisplayEntity.BillboardMode.FIXED.getIndex());
+		builder.add(BRIGHTNESS, -1);
+		builder.add(VIEW_RANGE, 1.0F);
+		builder.add(SHADOW_RADIUS, 0.0F);
+		builder.add(SHADOW_STRENGTH, 1.0F);
+		builder.add(WIDTH, 0.0F);
+		builder.add(HEIGHT, 0.0F);
+		builder.add(GLOW_COLOR_OVERRIDE, -1);
 	}
 
 	@Override
@@ -570,9 +563,9 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		@Override
-		protected void initDataTracker() {
-			super.initDataTracker();
-			this.dataTracker.startTracking(BLOCK_STATE, Blocks.AIR.getDefaultState());
+		protected void initDataTracker(DataTracker.Builder builder) {
+			super.initDataTracker(builder);
+			builder.add(BLOCK_STATE, Blocks.AIR.getDefaultState());
 		}
 
 		@Override
@@ -701,10 +694,10 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		@Override
-		protected void initDataTracker() {
-			super.initDataTracker();
-			this.dataTracker.startTracking(ITEM, ItemStack.EMPTY);
-			this.dataTracker.startTracking(ITEM_DISPLAY, ModelTransformationMode.NONE.getIndex());
+		protected void initDataTracker(DataTracker.Builder builder) {
+			super.initDataTracker(builder);
+			builder.add(ITEM, ItemStack.EMPTY);
+			builder.add(ITEM_DISPLAY, ModelTransformationMode.NONE.getIndex());
 		}
 
 		@Override
@@ -802,9 +795,7 @@ public abstract class DisplayEntity extends Entity {
 		private static final TrackedData<Integer> BACKGROUND = DataTracker.registerData(DisplayEntity.TextDisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		private static final TrackedData<Byte> TEXT_OPACITY = DataTracker.registerData(DisplayEntity.TextDisplayEntity.class, TrackedDataHandlerRegistry.BYTE);
 		private static final TrackedData<Byte> TEXT_DISPLAY_FLAGS = DataTracker.registerData(DisplayEntity.TextDisplayEntity.class, TrackedDataHandlerRegistry.BYTE);
-		private static final IntSet TEXT_RENDERING_DATA_IDS = IntSet.of(
-			TEXT.getId(), LINE_WIDTH.getId(), BACKGROUND.getId(), TEXT_OPACITY.getId(), TEXT_DISPLAY_FLAGS.getId()
-		);
+		private static final IntSet TEXT_RENDERING_DATA_IDS = IntSet.of(TEXT.id(), LINE_WIDTH.id(), BACKGROUND.id(), TEXT_OPACITY.id(), TEXT_DISPLAY_FLAGS.id());
 		@Nullable
 		private DisplayEntity.TextDisplayEntity.TextLines textLines;
 		@Nullable
@@ -815,19 +806,19 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		@Override
-		protected void initDataTracker() {
-			super.initDataTracker();
-			this.dataTracker.startTracking(TEXT, Text.empty());
-			this.dataTracker.startTracking(LINE_WIDTH, 200);
-			this.dataTracker.startTracking(BACKGROUND, 1073741824);
-			this.dataTracker.startTracking(TEXT_OPACITY, (byte)-1);
-			this.dataTracker.startTracking(TEXT_DISPLAY_FLAGS, (byte)0);
+		protected void initDataTracker(DataTracker.Builder builder) {
+			super.initDataTracker(builder);
+			builder.add(TEXT, Text.empty());
+			builder.add(LINE_WIDTH, 200);
+			builder.add(BACKGROUND, 1073741824);
+			builder.add(TEXT_OPACITY, (byte)-1);
+			builder.add(TEXT_DISPLAY_FLAGS, (byte)0);
 		}
 
 		@Override
 		public void onTrackedDataSet(TrackedData<?> data) {
 			super.onTrackedDataSet(data);
-			if (TEXT_RENDERING_DATA_IDS.contains(data.getId())) {
+			if (TEXT_RENDERING_DATA_IDS.contains(data.id())) {
 				this.renderingDataSet = true;
 			}
 		}

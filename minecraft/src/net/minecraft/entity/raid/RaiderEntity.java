@@ -70,9 +70,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(CELEBRATING, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CELEBRATING, false);
 	}
 
 	public abstract void addBonusForWave(int wave, boolean unused);

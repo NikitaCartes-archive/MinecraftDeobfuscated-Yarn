@@ -44,6 +44,7 @@ public class FileUpload {
 	private final String sessionId;
 	private final String username;
 	private final String clientVersion;
+	private final String worldVersion;
 	private final UploadStatus uploadStatus;
 	private final AtomicBoolean cancelled = new AtomicBoolean(false);
 	@Nullable
@@ -53,7 +54,9 @@ public class FileUpload {
 		.setConnectTimeout((int)TimeUnit.SECONDS.toMillis(15L))
 		.build();
 
-	public FileUpload(File file, long worldId, int slotId, UploadInfo uploadInfo, Session session, String clientVersion, UploadStatus uploadStatus) {
+	public FileUpload(
+		File file, long worldId, int slotId, UploadInfo uploadInfo, Session session, String clientVersion, String worldVersion, UploadStatus uploadStatus
+	) {
 		this.file = file;
 		this.worldId = worldId;
 		this.slotId = slotId;
@@ -61,6 +64,7 @@ public class FileUpload {
 		this.sessionId = session.getSessionId();
 		this.username = session.getUsername();
 		this.clientVersion = clientVersion;
+		this.worldVersion = worldVersion;
 		this.uploadStatus = uploadStatus;
 	}
 
@@ -125,7 +129,19 @@ public class FileUpload {
 	}
 
 	private void setupRequest(HttpPost request) throws FileNotFoundException {
-		request.setHeader("Cookie", "sid=" + this.sessionId + ";token=" + this.uploadInfo.getToken() + ";user=" + this.username + ";version=" + this.clientVersion);
+		request.setHeader(
+			"Cookie",
+			"sid="
+				+ this.sessionId
+				+ ";token="
+				+ this.uploadInfo.getToken()
+				+ ";user="
+				+ this.username
+				+ ";version="
+				+ this.clientVersion
+				+ ";worldVersion="
+				+ this.worldVersion
+		);
 		FileUpload.CustomInputStreamEntity customInputStreamEntity = new FileUpload.CustomInputStreamEntity(
 			new FileInputStream(this.file), this.file.length(), this.uploadStatus
 		);

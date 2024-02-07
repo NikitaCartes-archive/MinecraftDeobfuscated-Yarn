@@ -172,9 +172,9 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(WARNING, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(WARNING, false);
 	}
 
 	@Override

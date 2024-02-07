@@ -46,7 +46,7 @@ public class ZombieHorseEntity extends AbstractHorseEntity {
 
 	@Override
 	protected void initAttributes(Random random) {
-		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
+		this.getAttributeInstance(EntityAttributes.GENERIC_JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
 	}
 
 	@Override

@@ -2,12 +2,10 @@ package net.minecraft.server.network;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.DynamicOps;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.RegistryByteBuf;
@@ -18,24 +16,21 @@ import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
+import net.minecraft.network.packet.c2s.config.SelectKnownPacksC2SPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
-import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
-import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.state.PlayStateFactories;
 import net.minecraft.registry.CombinedDynamicRegistries;
-import net.minecraft.registry.RegistryOps;
-import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
-import net.minecraft.registry.tag.TagPacketSerializer;
+import net.minecraft.registry.VersionedIdentifier;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
-public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandler implements TickablePacketListener, ServerConfigurationPacketListener {
+public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandler implements ServerConfigurationPacketListener, TickablePacketListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text INVALID_PLAYER_DATA_TEXT = Text.translatable("multiplayer.disconnect.invalid_player_data");
 	private final GameProfile profile;
@@ -43,6 +38,8 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 	@Nullable
 	private ServerPlayerConfigurationTask currentTask;
 	private SyncedClientOptions syncedOptions;
+	@Nullable
+	private SynchronizeRegistriesTask synchronizedRegistriesTask;
 
 	public ServerConfigurationNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection, ConnectedClientData connectedClientData) {
 		super(minecraftServer, clientConnection, connectedClientData);
@@ -69,14 +66,10 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 	public void sendConfigurations() {
 		this.sendPacket(new CustomPayloadS2CPacket(new BrandCustomPayload(this.server.getServerModName())));
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = this.server.getCombinedDynamicRegistries();
+		List<VersionedIdentifier> list = this.server.getResourceManager().streamResourcePacks().flatMap(pack -> pack.getInfo().knownPackInfo().stream()).toList();
 		this.sendPacket(new FeaturesS2CPacket(FeatureFlags.FEATURE_MANAGER.toId(this.server.getSaveProperties().getEnabledFeatures())));
-		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, combinedDynamicRegistries.getCombinedRegistryManager());
-		SerializableRegistries.forEachSyncedRegistry(
-			dynamicOps,
-			combinedDynamicRegistries.getSucceedingRegistryManagers(ServerDynamicRegistryType.WORLDGEN),
-			(registryRef, entries) -> this.sendPacket(new DynamicRegistriesS2CPacket(registryRef, entries))
-		);
-		this.sendPacket(new SynchronizeTagsS2CPacket(TagPacketSerializer.serializeTags(combinedDynamicRegistries)));
+		this.synchronizedRegistriesTask = new SynchronizeRegistriesTask(list, combinedDynamicRegistries);
+		this.tasks.add(this.synchronizedRegistriesTask);
 		this.queueSendResourcePackTask();
 		this.tasks.add(new JoinWorldTask());
 		this.pollTask();
@@ -101,6 +94,17 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 		super.onResourcePackStatus(packet);
 		if (packet.status().hasFinished()) {
 			this.onTaskFinished(SendResourcePackTask.KEY);
+		}
+	}
+
+	@Override
+	public void onSelectKnownPacks(SelectKnownPacksC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.server);
+		if (this.synchronizedRegistriesTask == null) {
+			throw new IllegalStateException("Unexpected response from client: received pack selection, but no negotiation ongoing");
+		} else {
+			this.synchronizedRegistriesTask.onSelectKnownPacks(packet.knownPacks(), this::sendPacket);
+			this.onTaskFinished(SynchronizeRegistriesTask.KEY);
 		}
 	}
 

@@ -46,19 +46,26 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	@Override
 	public boolean isEmpty() {
 		this.generateLoot(null);
-		return this.method_11282().stream().allMatch(ItemStack::isEmpty);
+
+		for (ItemStack itemStack : this.getHeldStacks()) {
+			if (!itemStack.isEmpty()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@Override
 	public ItemStack getStack(int slot) {
 		this.generateLoot(null);
-		return this.method_11282().get(slot);
+		return this.getHeldStacks().get(slot);
 	}
 
 	@Override
 	public ItemStack removeStack(int slot, int amount) {
 		this.generateLoot(null);
-		ItemStack itemStack = Inventories.splitStack(this.method_11282(), slot, amount);
+		ItemStack itemStack = Inventories.splitStack(this.getHeldStacks(), slot, amount);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
@@ -69,13 +76,13 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	@Override
 	public ItemStack removeStack(int slot) {
 		this.generateLoot(null);
-		return Inventories.removeStack(this.method_11282(), slot);
+		return Inventories.removeStack(this.getHeldStacks(), slot);
 	}
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		this.generateLoot(null);
-		this.method_11282().set(slot, stack);
+		this.getHeldStacks().set(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());
 		}
@@ -90,12 +97,12 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 	@Override
 	public void clear() {
-		this.method_11282().clear();
+		this.getHeldStacks().clear();
 	}
 
-	protected abstract DefaultedList<ItemStack> method_11282();
+	protected abstract DefaultedList<ItemStack> getHeldStacks();
 
-	protected abstract void setInvStackList(DefaultedList<ItemStack> list);
+	protected abstract void setHeldStacks(DefaultedList<ItemStack> list);
 
 	@Override
 	public boolean checkUnlocked(PlayerEntity player) {

@@ -46,8 +46,10 @@ public class CompassItem extends Item {
 		if (bl && bl2) {
 			Optional<RegistryKey<World>> optional = getLodestoneDimension(nbt);
 			if (optional.isPresent()) {
-				BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("LodestonePos"));
-				return GlobalPos.create((RegistryKey<World>)optional.get(), blockPos);
+				Optional<BlockPos> optional2 = NbtHelper.toBlockPos(nbt, "LodestonePos");
+				if (optional2.isPresent()) {
+					return GlobalPos.create((RegistryKey<World>)optional.get(), (BlockPos)optional2.get());
+				}
 			}
 		}
 
@@ -75,8 +77,10 @@ public class CompassItem extends Item {
 
 				Optional<RegistryKey<World>> optional = getLodestoneDimension(nbtCompound);
 				if (optional.isPresent() && optional.get() == world.getRegistryKey() && nbtCompound.contains("LodestonePos")) {
-					BlockPos blockPos = NbtHelper.toBlockPos(nbtCompound.getCompound("LodestonePos"));
-					if (!world.isInBuildLimit(blockPos) || !((ServerWorld)world).getPointOfInterestStorage().hasTypeAt(PointOfInterestTypes.LODESTONE, blockPos)) {
+					Optional<BlockPos> optional2 = NbtHelper.toBlockPos(nbtCompound, "LodestonePos");
+					if (optional2.isEmpty()
+						|| !world.isInBuildLimit((BlockPos)optional2.get())
+						|| !((ServerWorld)world).getPointOfInterestStorage().hasTypeAt(PointOfInterestTypes.LODESTONE, (BlockPos)optional2.get())) {
 						nbtCompound.remove("LodestonePos");
 					}
 				}
@@ -94,15 +98,12 @@ public class CompassItem extends Item {
 			world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0F, 1.0F);
 			PlayerEntity playerEntity = context.getPlayer();
 			ItemStack itemStack = context.getStack();
-			boolean bl = !playerEntity.getAbilities().creativeMode && itemStack.getCount() == 1;
+			boolean bl = !playerEntity.isInCreativeMode() && itemStack.getCount() == 1;
 			if (bl) {
 				this.writeNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateNbt());
 			} else {
 				ItemStack itemStack2 = itemStack.copyNbtToNewStack(Items.COMPASS, 1);
-				if (!playerEntity.getAbilities().creativeMode) {
-					itemStack.decrement(1);
-				}
-
+				itemStack.decrementUnlessCreative(1, playerEntity);
 				this.writeNbt(world.getRegistryKey(), blockPos, itemStack2.getOrCreateNbt());
 				if (!playerEntity.getInventory().insertStack(itemStack2)) {
 					playerEntity.dropItem(itemStack2, false);

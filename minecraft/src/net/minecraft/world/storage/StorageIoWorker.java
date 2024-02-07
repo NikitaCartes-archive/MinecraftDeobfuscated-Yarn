@@ -38,9 +38,11 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	private final Long2ObjectLinkedOpenHashMap<CompletableFuture<BitSet>> blendingStatusCaches = new Long2ObjectLinkedOpenHashMap<>();
 	private static final int MAX_CACHE_SIZE = 1024;
 
-	protected StorageIoWorker(Path directory, boolean dsync, String name) {
-		this.storage = new RegionBasedStorage(directory, dsync);
-		this.executor = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
+	protected StorageIoWorker(StorageKey storageKey, Path directory, boolean dsync) {
+		this.storage = new RegionBasedStorage(storageKey, directory, dsync);
+		this.executor = new TaskExecutor<>(
+			new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + storageKey.type()
+		);
 	}
 
 	public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {

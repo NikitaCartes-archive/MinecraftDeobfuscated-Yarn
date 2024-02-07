@@ -16,10 +16,10 @@ import net.minecraft.util.Identifier;
 
 public record DynamicRegistriesS2CPacket(RegistryKey<? extends Registry<?>> registry, List<SerializableRegistries.SerializedRegistryEntry> entries)
 	implements Packet<ClientConfigurationPacketListener> {
-	private static final PacketCodec<ByteBuf, RegistryKey<? extends Registry<?>>> field_48777 = Identifier.PACKET_CODEC
+	private static final PacketCodec<ByteBuf, RegistryKey<? extends Registry<?>>> REGISTRY_KEY_CODEC = Identifier.PACKET_CODEC
 		.xmap(RegistryKey::ofRegistry, RegistryKey::getValue);
 	public static final PacketCodec<PacketByteBuf, DynamicRegistriesS2CPacket> CODEC = PacketCodec.tuple(
-		field_48777,
+		REGISTRY_KEY_CODEC,
 		DynamicRegistriesS2CPacket::registry,
 		SerializableRegistries.SerializedRegistryEntry.PACKET_CODEC.collect(PacketCodecs.toList()),
 		DynamicRegistriesS2CPacket::entries,

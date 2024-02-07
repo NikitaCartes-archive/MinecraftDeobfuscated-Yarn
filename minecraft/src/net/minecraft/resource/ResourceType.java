@@ -6,8 +6,8 @@ public enum ResourceType {
 
 	private final String directory;
 
-	private ResourceType(String name) {
-		this.directory = name;
+	private ResourceType(String directory) {
+		this.directory = directory;
 	}
 
 	public String getDirectory() {

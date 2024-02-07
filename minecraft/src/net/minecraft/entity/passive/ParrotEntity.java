@@ -246,10 +246,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
-			if (!player.getAbilities().creativeMode) {
-				itemStack.decrement(1);
-			}
-
+			itemStack.decrementUnlessCreative(1, player);
 			if (!this.isSilent()) {
 				this.getWorld()
 					.playSound(
@@ -274,25 +271,24 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 			}
 
 			return ActionResult.success(this.getWorld().isClient);
-		} else if (itemStack.isOf(COOKIE)) {
-			if (!player.getAbilities().creativeMode) {
-				itemStack.decrement(1);
-			}
+		} else if (!itemStack.isOf(COOKIE)) {
+			if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
+				if (!this.getWorld().isClient) {
+					this.setSitting(!this.isSitting());
+				}
 
+				return ActionResult.success(this.getWorld().isClient);
+			} else {
+				return super.interactMob(player, hand);
+			}
+		} else {
+			itemStack.decrementUnlessCreative(1, player);
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
 			if (player.isCreative() || !this.isInvulnerable()) {
 				this.damage(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
 			}
 
 			return ActionResult.success(this.getWorld().isClient);
-		} else if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
-			if (!this.getWorld().isClient) {
-				this.setSitting(!this.isSitting());
-			}
-
-			return ActionResult.success(this.getWorld().isClient);
-		} else {
-			return super.interactMob(player, hand);
 		}
 	}
 
@@ -418,9 +414,9 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(VARIANT, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(VARIANT, 0);
 	}
 
 	@Override

@@ -24,8 +24,8 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 	private final ZipResourcePack.ZipFileWrapper zipFile;
 	private final String overlay;
 
-	ZipResourcePack(String name, ZipResourcePack.ZipFileWrapper zipFile, boolean alwaysStable, String overlay) {
-		super(name, alwaysStable);
+	ZipResourcePack(ResourcePackInfo info, ZipResourcePack.ZipFileWrapper zipFile, String overlay) {
+		super(info);
 		this.zipFile = zipFile;
 		this.overlay = overlay;
 	}
@@ -131,27 +131,25 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 
 	public static class ZipBackedFactory implements ResourcePackProfile.PackFactory {
 		private final File file;
-		private final boolean alwaysStable;
 
-		public ZipBackedFactory(Path path, boolean alwaysStable) {
-			this(path.toFile(), alwaysStable);
+		public ZipBackedFactory(Path path) {
+			this(path.toFile());
 		}
 
-		public ZipBackedFactory(File file, boolean alwaysStable) {
-			this.alwaysStable = alwaysStable;
+		public ZipBackedFactory(File file) {
 			this.file = file;
 		}
 
 		@Override
-		public ResourcePack open(String name) {
+		public ResourcePack open(ResourcePackInfo info) {
 			ZipResourcePack.ZipFileWrapper zipFileWrapper = new ZipResourcePack.ZipFileWrapper(this.file);
-			return new ZipResourcePack(name, zipFileWrapper, this.alwaysStable, "");
+			return new ZipResourcePack(info, zipFileWrapper, "");
 		}
 
 		@Override
-		public ResourcePack openWithOverlays(String name, ResourcePackProfile.Metadata metadata) {
+		public ResourcePack openWithOverlays(ResourcePackInfo info, ResourcePackProfile.Metadata metadata) {
 			ZipResourcePack.ZipFileWrapper zipFileWrapper = new ZipResourcePack.ZipFileWrapper(this.file);
-			ResourcePack resourcePack = new ZipResourcePack(name, zipFileWrapper, this.alwaysStable, "");
+			ResourcePack resourcePack = new ZipResourcePack(info, zipFileWrapper, "");
 			List<String> list = metadata.overlays();
 			if (list.isEmpty()) {
 				return resourcePack;
@@ -159,7 +157,7 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 				List<ResourcePack> list2 = new ArrayList(list.size());
 
 				for (String string : list) {
-					list2.add(new ZipResourcePack(name, zipFileWrapper, this.alwaysStable, string));
+					list2.add(new ZipResourcePack(info, zipFileWrapper, string));
 				}
 
 				return new OverlayResourcePack(resourcePack, list2);

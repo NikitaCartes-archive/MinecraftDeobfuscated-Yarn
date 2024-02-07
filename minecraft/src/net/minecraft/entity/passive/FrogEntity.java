@@ -122,10 +122,10 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(VARIANT, FrogVariant.TEMPERATE);
-		this.dataTracker.startTracking(TARGET, OptionalInt.empty());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(VARIANT, FrogVariant.TEMPERATE);
+		builder.add(TARGET, OptionalInt.empty());
 	}
 
 	public void clearFrogTarget() {

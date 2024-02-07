@@ -15,7 +15,8 @@ public class OneTwentyOneLootTableProviders {
 			Set.of(),
 			List.of(
 				new LootTableProvider.LootTypeGenerator(OneTwentyOneBlockLootTableGenerator::new, LootContextTypes.BLOCK),
-				new LootTableProvider.LootTypeGenerator(OneTwentyOneChestLootTableGenerator::new, LootContextTypes.CHEST)
+				new LootTableProvider.LootTypeGenerator(OneTwentyOneChestLootTableGenerator::new, LootContextTypes.CHEST),
+				new LootTableProvider.LootTypeGenerator(OneTwentyOneEntityLootTableGenerator::new, LootContextTypes.ENTITY)
 			),
 			registryLookupFuture
 		);

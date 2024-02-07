@@ -29,7 +29,7 @@ public class KnowledgeBookItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		NbtCompound nbtCompound = itemStack.getNbt();
-		if (!user.getAbilities().creativeMode) {
+		if (!user.isInCreativeMode()) {
 			user.setStackInHand(hand, ItemStack.EMPTY);
 		}
 

@@ -115,11 +115,11 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BOOST_TIME, 0);
-		this.dataTracker.startTracking(COLD, false);
-		this.dataTracker.startTracking(SADDLED, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(BOOST_TIME, 0);
+		builder.add(COLD, false);
+		builder.add(SADDLED, false);
 	}
 
 	@Override

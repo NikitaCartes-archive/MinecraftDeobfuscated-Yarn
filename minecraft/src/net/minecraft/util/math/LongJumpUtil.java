@@ -16,14 +16,14 @@ public final class LongJumpUtil {
 		double e = vec3d4.subtract(0.0, vec3d4.y, 0.0).lengthSquared();
 		double g = Math.sqrt(e);
 		double h = vec3d4.y;
-		double i = 0.08;
+		double i = entity.getFinalGravity();
 		double j = Math.sin((double)(2.0F * f));
 		double k = Math.pow(Math.cos((double)f), 2.0);
 		double l = Math.sin((double)f);
 		double m = Math.cos((double)f);
 		double n = Math.sin(d);
 		double o = Math.cos(d);
-		double p = e * 0.08 / (g * j - 2.0 * h * k);
+		double p = e * i / (g * j - 2.0 * h * k);
 		if (p < 0.0) {
 			return Optional.empty();
 		} else {
@@ -41,7 +41,7 @@ public final class LongJumpUtil {
 
 					for (int v = 0; v < t - 1; v++) {
 						u += g / (double)t;
-						double w = l / m * u - Math.pow(u, 2.0) * 0.08 / (2.0 * p * Math.pow(m, 2.0));
+						double w = l / m * u - Math.pow(u, 2.0) * i / (2.0 * p * Math.pow(m, 2.0));
 						double x = u * o;
 						double y = u * n;
 						Vec3d vec3d6 = new Vec3d(vec3d.x + x, vec3d.y + w, vec3d.z + y);

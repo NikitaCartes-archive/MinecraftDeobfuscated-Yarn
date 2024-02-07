@@ -26,7 +26,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		public static final Codec<BrewedPotionCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(BrewedPotionCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(Registries.POTION.createEntryCodec(), "potion").forGetter(BrewedPotionCriterion.Conditions::potion)
+						Codecs.createStrictOptionalFieldCodec(Registries.POTION.getEntryCodec(), "potion").forGetter(BrewedPotionCriterion.Conditions::potion)
 					)
 					.apply(instance, BrewedPotionCriterion.Conditions::new)
 		);

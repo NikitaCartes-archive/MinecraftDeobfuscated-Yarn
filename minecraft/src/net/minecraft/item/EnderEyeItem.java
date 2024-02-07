@@ -94,10 +94,7 @@ public class EnderEyeItem extends Item {
 						0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 					);
 					world.syncWorldEvent(null, WorldEvents.EYE_OF_ENDER_LAUNCHES, user.getBlockPos(), 0);
-					if (!user.getAbilities().creativeMode) {
-						itemStack.decrement(1);
-					}
-
+					itemStack.decrementUnlessCreative(1, user);
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
 					user.swingHand(hand, true);
 					return TypedActionResult.success(itemStack);

@@ -46,13 +46,13 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 	protected void initAttributes(Random random) {
 		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)getChildHealthBonus(random::nextInt));
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(getChildMovementSpeedBonus(random::nextDouble));
-		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
+		this.getAttributeInstance(EntityAttributes.GENERIC_JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(VARIANT, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(VARIANT, 0);
 	}
 
 	@Override

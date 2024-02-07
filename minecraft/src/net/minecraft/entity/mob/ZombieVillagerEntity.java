@@ -74,10 +74,10 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(CONVERTING, false);
-		this.dataTracker.startTracking(VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.NONE, 1));
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CONVERTING, false);
+		builder.add(VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.NONE, 1));
 	}
 
 	@Override
@@ -149,10 +149,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.GOLDEN_APPLE)) {
 			if (this.hasStatusEffect(StatusEffects.WEAKNESS)) {
-				if (!player.getAbilities().creativeMode) {
-					itemStack.decrement(1);
-				}
-
+				itemStack.decrementUnlessCreative(1, player);
 				if (!this.getWorld().isClient) {
 					this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
 				}

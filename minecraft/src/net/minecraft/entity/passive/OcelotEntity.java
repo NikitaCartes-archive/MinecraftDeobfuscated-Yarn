@@ -87,9 +87,9 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(TRUSTING, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(TRUSTING, false);
 	}
 
 	@Override

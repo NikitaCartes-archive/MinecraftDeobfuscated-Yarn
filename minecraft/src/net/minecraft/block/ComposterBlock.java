@@ -239,9 +239,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 				BlockState blockState = addToComposter(player, state, world, pos, stack);
 				world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, state != blockState ? 1 : 0);
 				player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-				if (!player.getAbilities().creativeMode) {
-					stack.decrement(1);
-				}
+				stack.decrementUnlessCreative(1, player);
 			}
 
 			return ItemActionResult.success(world.isClient);

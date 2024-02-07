@@ -281,7 +281,7 @@ public class PlayerInventory implements Inventory, Nameable {
 						this.main.set(slot, stack.copyAndEmpty());
 						this.main.get(slot).setBobbingAnimationTime(5);
 						return true;
-					} else if (this.player.getAbilities().creativeMode) {
+					} else if (this.player.isInCreativeMode()) {
 						stack.setCount(0);
 						return true;
 					} else {
@@ -298,7 +298,7 @@ public class PlayerInventory implements Inventory, Nameable {
 						}
 					} while (!stack.isEmpty() && stack.getCount() < i);
 
-					if (stack.getCount() == i && this.player.getAbilities().creativeMode) {
+					if (stack.getCount() == i && this.player.isInCreativeMode()) {
 						stack.setCount(0);
 						return true;
 					} else {

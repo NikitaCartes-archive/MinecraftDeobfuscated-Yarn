@@ -205,14 +205,14 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(ASK_FOR_BAMBOO_TICKS, 0);
-		this.dataTracker.startTracking(SNEEZE_PROGRESS, 0);
-		this.dataTracker.startTracking(MAIN_GENE, (byte)0);
-		this.dataTracker.startTracking(HIDDEN_GENE, (byte)0);
-		this.dataTracker.startTracking(PANDA_FLAGS, (byte)0);
-		this.dataTracker.startTracking(EATING_TICKS, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(ASK_FOR_BAMBOO_TICKS, 0);
+		builder.add(SNEEZE_PROGRESS, 0);
+		builder.add(MAIN_GENE, (byte)0);
+		builder.add(HIDDEN_GENE, (byte)0);
+		builder.add(PANDA_FLAGS, (byte)0);
+		builder.add(EATING_TICKS, 0);
 	}
 
 	private boolean hasPandaFlag(int bitmask) {
@@ -638,7 +638,7 @@ public class PandaEntity extends AnimalEntity {
 				this.stop();
 				this.setEating(true);
 				ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
-				if (!itemStack2.isEmpty() && !player.getAbilities().creativeMode) {
+				if (!itemStack2.isEmpty() && !player.isInCreativeMode()) {
 					this.dropStack(itemStack2);
 				}
 

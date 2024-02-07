@@ -62,9 +62,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.getDataTracker().startTracking(ITEM_STACK, ItemStack.EMPTY);
-		this.getDataTracker().startTracking(ROTATION, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(ITEM_STACK, ItemStack.EMPTY);
+		builder.add(ROTATION, 0);
 	}
 
 	@Override
@@ -217,7 +217,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 					this.removeFromFrame(itemStack);
 				}
 			} else {
-				if (entity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().creativeMode) {
+				if (entity instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
 					this.removeFromFrame(itemStack);
 					return;
 				}
@@ -393,9 +393,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 					this.setHeldItemStack(itemStack);
 					this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
-					if (!player.getAbilities().creativeMode) {
-						itemStack.decrement(1);
-					}
+					itemStack.decrementUnlessCreative(1, player);
 				}
 			} else {
 				this.playSound(this.getRotateItemSound(), 1.0F, 1.0F);

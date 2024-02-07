@@ -98,9 +98,9 @@ public class VexEntity extends HostileEntity implements Ownable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(VEX_FLAGS, (byte)0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(VEX_FLAGS, (byte)0);
 	}
 
 	@Override

@@ -4,19 +4,17 @@ import com.mojang.datafixers.util.Pair;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
-import jdk.jfr.consumer.RecordedEvent;
 
-public final class NetworkIoStatistics {
+public final class NetworkIoStatistics<T> {
 	private final NetworkIoStatistics.PacketStatistics combinedStatistics;
-	private final List<Pair<NetworkIoStatistics.Packet, NetworkIoStatistics.PacketStatistics>> topContributors;
+	private final List<Pair<T, NetworkIoStatistics.PacketStatistics>> topContributors;
 	private final Duration duration;
 
-	public NetworkIoStatistics(Duration duration, List<Pair<NetworkIoStatistics.Packet, NetworkIoStatistics.PacketStatistics>> packetsToStatistics) {
+	public NetworkIoStatistics(Duration duration, List<Pair<T, NetworkIoStatistics.PacketStatistics>> packetsToStatistics) {
 		this.duration = duration;
 		this.combinedStatistics = (NetworkIoStatistics.PacketStatistics)packetsToStatistics.stream()
 			.map(Pair::getSecond)
-			.reduce(NetworkIoStatistics.PacketStatistics::add)
-			.orElseGet(() -> new NetworkIoStatistics.PacketStatistics(0L, 0L));
+			.reduce(new NetworkIoStatistics.PacketStatistics(0L, 0L), NetworkIoStatistics.PacketStatistics::add);
 		this.topContributors = packetsToStatistics.stream()
 			.sorted(Comparator.comparing(Pair::getSecond, NetworkIoStatistics.PacketStatistics.COMPARATOR))
 			.limit(10L)
@@ -39,14 +37,8 @@ public final class NetworkIoStatistics {
 		return this.combinedStatistics.totalSize;
 	}
 
-	public List<Pair<NetworkIoStatistics.Packet, NetworkIoStatistics.PacketStatistics>> getTopContributors() {
+	public List<Pair<T, NetworkIoStatistics.PacketStatistics>> getTopContributors() {
 		return this.topContributors;
-	}
-
-	public static record Packet(String side, String protocolId, String packetId) {
-		public static NetworkIoStatistics.Packet fromEvent(RecordedEvent event) {
-			return new NetworkIoStatistics.Packet(event.getString("packetDirection"), event.getString("protocolId"), event.getString("packetId"));
-		}
 	}
 
 	public static record PacketStatistics(long totalCount, long totalSize) {
@@ -56,6 +48,10 @@ public final class NetworkIoStatistics {
 
 		NetworkIoStatistics.PacketStatistics add(NetworkIoStatistics.PacketStatistics statistics) {
 			return new NetworkIoStatistics.PacketStatistics(this.totalCount + statistics.totalCount, this.totalSize + statistics.totalSize);
+		}
+
+		public float getAverageSize() {
+			return (float)this.totalSize / (float)this.totalCount;
 		}
 	}
 }

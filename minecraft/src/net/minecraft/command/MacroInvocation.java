@@ -3,6 +3,7 @@ package net.minecraft.command;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import java.util.List;
+import net.minecraft.server.function.CommandFunction;
 
 public record MacroInvocation(List<String> segments, List<String> variables) {
 	public static MacroInvocation parse(String command, int lineNumber) {
@@ -60,12 +61,14 @@ public record MacroInvocation(List<String> segments, List<String> variables) {
 
 		for (int i = 0; i < this.variables.size(); i++) {
 			stringBuilder.append((String)this.segments.get(i)).append((String)arguments.get(i));
+			CommandFunction.validateCommandLength(stringBuilder);
 		}
 
 		if (this.segments.size() > this.variables.size()) {
 			stringBuilder.append((String)this.segments.get(this.segments.size() - 1));
 		}
 
+		CommandFunction.validateCommandLength(stringBuilder);
 		return stringBuilder.toString();
 	}
 }

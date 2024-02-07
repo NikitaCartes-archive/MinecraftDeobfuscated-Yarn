@@ -40,7 +40,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		instance -> addConditionsField(instance)
 				.<RegistryEntry<Enchantment>, ApplyBonusLootFunction.Formula>and(
 					instance.group(
-						Registries.ENCHANTMENT.createEntryCodec().fieldOf("enchantment").forGetter(function -> function.enchantment),
+						Registries.ENCHANTMENT.getEntryCodec().fieldOf("enchantment").forGetter(function -> function.enchantment),
 						FORMULA_CODEC.forGetter(function -> function.formula)
 					)
 				)

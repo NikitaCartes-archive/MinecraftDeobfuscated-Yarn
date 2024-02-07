@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.entry.RegistryEntryOwner;
 import net.minecraft.registry.tag.TagKey;
@@ -170,18 +171,7 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 * @implNote This serializes a value using the ID or (if compressed) the raw ID.
 	 */
 	default Codec<T> getCodec() {
-		Codec<T> codec = Identifier.CODEC
-			.flatXmap(
-				id -> (DataResult)Optional.ofNullable(this.get(id))
-						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error(() -> "Unknown registry key in " + this.getKey() + ": " + id)),
-				value -> (DataResult)this.getKey((T)value)
-						.map(RegistryKey::getValue)
-						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error(() -> "Unknown registry element in " + this.getKey() + ":" + value))
-			);
-		Codec<T> codec2 = Codecs.rawIdChecked(value -> this.getKey((T)value).isPresent() ? this.getRawId((T)value) : -1, this::get, -1);
-		return Codecs.withLifecycle(Codecs.orCompressed(codec, codec2), this::getEntryLifecycle, this::getEntryLifecycle);
+		return this.getReferenceEntryCodec().flatComapMap(RegistryEntry.Reference::value, value -> this.validateReference(this.getEntry((T)value)));
 	}
 
 	/**
@@ -189,18 +179,27 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 * 
 	 * @implNote This serializes a registry entry using the ID.
 	 */
-	default Codec<RegistryEntry<T>> createEntryCodec() {
-		Codec<RegistryEntry<T>> codec = Identifier.CODEC
-			.flatXmap(
+	default Codec<RegistryEntry<T>> getEntryCodec() {
+		return this.getReferenceEntryCodec().flatComapMap(entry -> entry, this::validateReference);
+	}
+
+	private Codec<RegistryEntry.Reference<T>> getReferenceEntryCodec() {
+		Codec<RegistryEntry.Reference<T>> codec = Identifier.CODEC
+			.comapFlatMap(
 				id -> (DataResult)this.getEntry(id)
 						.map(DataResult::success)
 						.orElseGet(() -> DataResult.error(() -> "Unknown registry key in " + this.getKey() + ": " + id)),
-				entry -> (DataResult)entry.getKey()
-						.map(RegistryKey::getValue)
-						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error(() -> "Unknown registry element in " + this.getKey() + ":" + entry))
+				entry -> entry.registryKey().getValue()
 			);
-		return Codecs.withLifecycle(codec, entry -> this.getEntryLifecycle((T)entry.value()), entry -> this.getEntryLifecycle((T)entry.value()));
+		return Codecs.withLifecycle(
+			codec, entry -> (Lifecycle)this.getEntryInfo(entry.registryKey()).map(RegistryEntryInfo::lifecycle).orElse(Lifecycle.experimental())
+		);
+	}
+
+	private DataResult<RegistryEntry.Reference<T>> validateReference(RegistryEntry<T> entry) {
+		return entry instanceof RegistryEntry.Reference<T> reference
+			? DataResult.success(reference)
+			: DataResult.error(() -> "Unregistered holder in " + this.getKey() + ": " + entry);
 	}
 
 	@Override
@@ -234,10 +233,7 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	@Nullable
 	T get(@Nullable Identifier id);
 
-	/**
-	 * Gets the lifecycle of a registry entry.
-	 */
-	Lifecycle getEntryLifecycle(T entry);
+	Optional<RegistryEntryInfo> getEntryInfo(RegistryKey<T> key);
 
 	Lifecycle getLifecycle();
 
@@ -327,12 +323,12 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 * @return the passed {@code entry}
 	 */
 	static <V, T extends V> T register(Registry<V> registry, RegistryKey<V> key, T entry) {
-		((MutableRegistry)registry).add(key, (V)entry, Lifecycle.stable());
+		((MutableRegistry)registry).add(key, (V)entry, RegistryEntryInfo.DEFAULT);
 		return entry;
 	}
 
 	static <T> RegistryEntry.Reference<T> registerReference(Registry<T> registry, RegistryKey<T> key, T entry) {
-		return ((MutableRegistry)registry).add(key, entry, Lifecycle.stable());
+		return ((MutableRegistry)registry).add(key, entry, RegistryEntryInfo.DEFAULT);
 	}
 
 	static <T> RegistryEntry.Reference<T> registerReference(Registry<T> registry, Identifier id, T entry) {

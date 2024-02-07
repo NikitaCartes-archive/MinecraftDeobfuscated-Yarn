@@ -17,9 +17,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.dynamic.Codecs;
 
 public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> effects) {
-	public static final Codec<EntityEffectPredicate> CODEC = Codec.unboundedMap(
-			Registries.STATUS_EFFECT.createEntryCodec(), EntityEffectPredicate.EffectData.CODEC
-		)
+	public static final Codec<EntityEffectPredicate> CODEC = Codec.unboundedMap(Registries.STATUS_EFFECT.getEntryCodec(), EntityEffectPredicate.EffectData.CODEC)
 		.xmap(EntityEffectPredicate::new, EntityEffectPredicate::effects);
 
 	public boolean test(Entity entity) {

@@ -172,7 +172,7 @@ public class CrafterBlock extends BlockWithEntity {
 						}
 					}
 
-					crafterBlockEntity.method_11282().forEach(stack -> {
+					crafterBlockEntity.getHeldStacks().forEach(stack -> {
 						if (!stack.isEmpty()) {
 							stack.decrement(1);
 						}

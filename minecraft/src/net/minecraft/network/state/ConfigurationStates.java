@@ -15,6 +15,7 @@ import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
+import net.minecraft.network.packet.c2s.config.SelectKnownPacksC2SPacket;
 import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CookieRequestS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
@@ -28,6 +29,7 @@ import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
+import net.minecraft.network.packet.s2c.config.SelectKnownPacksS2CPacket;
 
 public class ConfigurationStates {
 	public static final NetworkState<ServerConfigurationPacketListener> C2S = NetworkStateBuilder.c2s(
@@ -39,6 +41,7 @@ public class ConfigurationStates {
 				.add(CommonPackets.KEEP_ALIVE_C2S, KeepAliveC2SPacket.CODEC)
 				.add(CommonPackets.PONG, CommonPongC2SPacket.CODEC)
 				.add(CommonPackets.RESOURCE_PACK, ResourcePackStatusC2SPacket.CODEC)
+				.add(ConfigPackets.SELECT_KNOWN_PACKS_C2S, SelectKnownPacksC2SPacket.CODEC)
 	);
 	public static final NetworkState<ClientConfigurationPacketListener> S2C = NetworkStateBuilder.s2c(
 		NetworkPhase.CONFIGURATION,
@@ -55,5 +58,6 @@ public class ConfigurationStates {
 				.add(CommonPackets.TRANSFER, ServerTransferS2CPacket.CODEC)
 				.add(ConfigPackets.UPDATE_ENABLED_FEATURES, FeaturesS2CPacket.CODEC)
 				.add(CommonPackets.UPDATE_TAGS, SynchronizeTagsS2CPacket.CODEC)
+				.add(ConfigPackets.SELECT_KNOWN_PACKS_S2C, SelectKnownPacksS2CPacket.CODEC)
 	);
 }

@@ -2,9 +2,11 @@ package net.minecraft.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
+import net.minecraft.registry.VersionedIdentifier;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 
@@ -33,14 +35,14 @@ public interface ResourcePack extends AutoCloseable {
 	@Nullable
 	<T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException;
 
-	String getName();
+	ResourcePackInfo getInfo();
 
-	/**
-	 * {@return whether the dynamic registry entries from this pack are always
-	 * "stable"/not experimental}
-	 */
-	default boolean isAlwaysStable() {
-		return false;
+	default String getId() {
+		return this.getInfo().id();
+	}
+
+	default Optional<VersionedIdentifier> getKnownPackInfo() {
+		return this.getInfo().knownPackInfo();
 	}
 
 	void close();

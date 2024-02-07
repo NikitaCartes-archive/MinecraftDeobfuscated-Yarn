@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -30,11 +31,11 @@ import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class ArmadilloBrain {
@@ -141,7 +142,9 @@ public class ArmadilloBrain {
 		brain.setTaskList(
 			Activity.PANIC,
 			ImmutableList.of(Pair.of(0, new ArmadilloBrain.RollUpTask())),
-			Set.of(Pair.of(MemoryModuleType.DANGER_DETECTED_RECENTLY, MemoryModuleState.VALUE_PRESENT))
+			Set.of(
+				Pair.of(MemoryModuleType.DANGER_DETECTED_RECENTLY, MemoryModuleState.VALUE_PRESENT), Pair.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT)
+			)
 		);
 	}
 
@@ -154,18 +157,54 @@ public class ArmadilloBrain {
 	}
 
 	public static class RollUpTask extends MultiTickTask<ArmadilloEntity> {
+		static final int RUN_TIME_IN_TICKS = 5 * TimeHelper.MINUTE_IN_SECONDS * 20;
+		static final int field_49088 = 5;
+		static final int field_49089 = 75;
+		int ticksUntilPeek = 0;
+		boolean considerPeeking;
+
 		public RollUpTask() {
-			super(Map.of());
+			super(Map.of(), RUN_TIME_IN_TICKS);
 		}
 
 		protected void keepRunning(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
 			super.keepRunning(serverWorld, armadilloEntity, l);
+			if (this.ticksUntilPeek > 0) {
+				this.ticksUntilPeek--;
+			}
+
 			if (armadilloEntity.shouldSwitchToScaredState()) {
 				armadilloEntity.setState(ArmadilloEntity.State.SCARED);
 				if (armadilloEntity.isOnGround()) {
 					armadilloEntity.playSoundIfNotSilent(SoundEvents.ENTITY_ARMADILLO_LAND);
 				}
+			} else {
+				ArmadilloEntity.State state = armadilloEntity.getState();
+				long m = armadilloEntity.getBrain().getMemoryExpiry(MemoryModuleType.DANGER_DETECTED_RECENTLY);
+				boolean bl = m > 75L;
+				if (bl != this.considerPeeking) {
+					this.ticksUntilPeek = this.calculateTicksUntilPeek(armadilloEntity);
+				}
+
+				this.considerPeeking = bl;
+				if (state == ArmadilloEntity.State.SCARED) {
+					if (this.ticksUntilPeek == 0 && armadilloEntity.isOnGround() && bl) {
+						serverWorld.sendEntityStatus(armadilloEntity, EntityStatuses.PEEKING);
+						this.ticksUntilPeek = this.calculateTicksUntilPeek(armadilloEntity);
+					}
+
+					if (m < (long)ArmadilloEntity.State.UNROLLING.getLengthInTicks()) {
+						armadilloEntity.playSoundIfNotSilent(SoundEvents.ENTITY_ARMADILLO_UNROLL_START);
+						armadilloEntity.setState(ArmadilloEntity.State.UNROLLING);
+					}
+				} else if (state == ArmadilloEntity.State.UNROLLING && m > (long)ArmadilloEntity.State.UNROLLING.getLengthInTicks()) {
+					armadilloEntity.setState(ArmadilloEntity.State.SCARED);
+				}
 			}
+		}
+
+		private int calculateTicksUntilPeek(ArmadilloEntity entity) {
+			return ArmadilloEntity.State.SCARED.getLengthInTicks() + entity.getRandom().nextBetween(100, 400);
 		}
 
 		protected boolean shouldRun(ServerWorld serverWorld, ArmadilloEntity armadilloEntity) {
@@ -173,7 +212,7 @@ public class ArmadilloBrain {
 		}
 
 		protected boolean shouldKeepRunning(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
-			return true;
+			return armadilloEntity.getState().shouldRunRollUpTask();
 		}
 
 		protected void run(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
@@ -187,18 +226,14 @@ public class ArmadilloBrain {
 		}
 	}
 
-	public static class UnrollAndFleeTask extends FleeTask {
+	public static class UnrollAndFleeTask extends FleeTask<ArmadilloEntity> {
 		public UnrollAndFleeTask(float f) {
-			super(f, entity -> entity.shouldEscapePowderSnow() || entity.isOnFire());
+			super(f, ArmadilloEntity::shouldUnrollAndFlee);
 		}
 
-		@Override
-		protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-			if (pathAwareEntity instanceof ArmadilloEntity armadilloEntity) {
-				armadilloEntity.unroll();
-			}
-
-			super.run(serverWorld, pathAwareEntity, l);
+		protected void run(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {
+			armadilloEntity.unroll();
+			super.run(serverWorld, armadilloEntity, l);
 		}
 	}
 }

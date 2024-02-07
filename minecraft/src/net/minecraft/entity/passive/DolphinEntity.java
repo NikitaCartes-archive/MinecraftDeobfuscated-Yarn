@@ -114,11 +114,11 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(TREASURE_POS, BlockPos.ORIGIN);
-		this.dataTracker.startTracking(HAS_FISH, false);
-		this.dataTracker.startTracking(MOISTNESS, 2400);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(TREASURE_POS, BlockPos.ORIGIN);
+		builder.add(HAS_FISH, false);
+		builder.add(MOISTNESS, 2400);
 	}
 
 	@Override
@@ -310,10 +310,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 			}
 
 			this.setHasFish(true);
-			if (!player.getAbilities().creativeMode) {
-				itemStack.decrement(1);
-			}
-
+			itemStack.decrementUnlessCreative(1, player);
 			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return super.interactMob(player, hand);

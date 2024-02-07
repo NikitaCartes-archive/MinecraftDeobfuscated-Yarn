@@ -54,7 +54,7 @@ public class ReloadableResourceManagerImpl implements ResourceManager, AutoClose
 	 * {@code packs} and start a {@linkplain SimpleResourceReload#start reload}.
 	 */
 	public ResourceReload reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs) {
-		LOGGER.info("Reloading ResourceManager: {}", LogUtils.defer(() -> packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", "))));
+		LOGGER.info("Reloading ResourceManager: {}", LogUtils.defer(() -> packs.stream().map(ResourcePack::getId).collect(Collectors.joining(", "))));
 		this.activeManager.close();
 		this.activeManager = new LifecycledResourceManagerImpl(this.type, packs);
 		return SimpleResourceReload.start(this.activeManager, this.reloaders, prepareExecutor, applyExecutor, initialStage, LOGGER.isDebugEnabled());

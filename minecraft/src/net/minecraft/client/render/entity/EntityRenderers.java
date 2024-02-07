@@ -82,6 +82,7 @@ public class EntityRenderers {
 		register(EntityType.BLOCK_DISPLAY, DisplayEntityRenderer.BlockDisplayEntityRenderer::new);
 		register(EntityType.BOAT, context -> new BoatEntityRenderer(context, false));
 		register(EntityType.BREEZE, BreezeEntityRenderer::new);
+		register(EntityType.BREEZE_WIND_CHARGE, WindChargeEntityRenderer::new);
 		register(EntityType.CAT, CatEntityRenderer::new);
 		register(EntityType.CAMEL, context -> new CamelEntityRenderer(context, EntityModelLayers.CAMEL));
 		register(EntityType.CAVE_SPIDER, CaveSpiderEntityRenderer::new);

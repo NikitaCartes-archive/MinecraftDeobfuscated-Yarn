@@ -14,7 +14,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 public class SetPotionLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetPotionLootFunction> CODEC = RecordCodecBuilder.create(
 		instance -> addConditionsField(instance)
-				.and(Registries.POTION.createEntryCodec().fieldOf("id").forGetter(function -> function.potion))
+				.and(Registries.POTION.getEntryCodec().fieldOf("id").forGetter(function -> function.potion))
 				.apply(instance, SetPotionLootFunction::new)
 	);
 	private final RegistryEntry<Potion> potion;

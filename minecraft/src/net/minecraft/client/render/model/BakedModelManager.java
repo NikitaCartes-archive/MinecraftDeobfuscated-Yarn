@@ -184,7 +184,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 
 									try {
 										JsonObject jsonObject = JsonHelper.deserialize(reader);
-										list2.add(new ModelLoader.SourceTrackedData(resource.getResourcePackName(), jsonObject));
+										list2.add(new ModelLoader.SourceTrackedData(resource.getPackId(), jsonObject));
 									} catch (Throwable var9) {
 										if (reader != null) {
 											try {
@@ -201,7 +201,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 										reader.close();
 									}
 								} catch (Exception var10) {
-									LOGGER.error("Failed to load blockstate {} from pack {}", entry.getKey(), resource.getResourcePackName(), var10);
+									LOGGER.error("Failed to load blockstate {} from pack {}", entry.getKey(), resource.getPackId(), var10);
 								}
 							}
 

@@ -12,6 +12,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LightningRodBlock;
 import net.minecraft.block.Oxidizable;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -243,7 +244,7 @@ public class LightningEntity extends Entity {
 	}
 
 	@Override
-	protected void initDataTracker() {
+	protected void initDataTracker(DataTracker.Builder builder) {
 	}
 
 	@Override

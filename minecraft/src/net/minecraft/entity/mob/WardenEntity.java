@@ -223,9 +223,9 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(ANGER, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(ANGER, 0);
 	}
 
 	public int getAnger() {

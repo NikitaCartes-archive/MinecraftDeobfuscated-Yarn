@@ -76,7 +76,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 	@Override
 	public int getSafeFallDistance() {
-		return this.getTarget() == null ? 3 : 3 + (int)(this.getHealth() - 1.0F);
+		return this.getTarget() == null ? this.getSafeFallDistance(0.0F) : this.getSafeFallDistance(this.getHealth() - 1.0F);
 	}
 
 	@Override
@@ -91,11 +91,11 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(FUSE_SPEED, -1);
-		this.dataTracker.startTracking(CHARGED, false);
-		this.dataTracker.startTracking(IGNITED, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(FUSE_SPEED, -1);
+		builder.add(CHARGED, false);
+		builder.add(IGNITED, false);
 	}
 
 	@Override

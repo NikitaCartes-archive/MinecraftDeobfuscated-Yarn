@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 
@@ -21,8 +22,8 @@ public class SimpleDefaultedRegistry<T> extends SimpleRegistry<T> implements Def
 	}
 
 	@Override
-	public RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, Lifecycle lifecycle) {
-		RegistryEntry.Reference<T> reference = super.add(key, value, lifecycle);
+	public RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, RegistryEntryInfo info) {
+		RegistryEntry.Reference<T> reference = super.add(key, value, info);
 		if (this.defaultId.equals(key.getValue())) {
 			this.defaultEntry = reference;
 		}

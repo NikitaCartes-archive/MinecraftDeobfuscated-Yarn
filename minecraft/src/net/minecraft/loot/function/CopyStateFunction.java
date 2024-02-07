@@ -25,7 +25,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 		instance -> addConditionsField(instance)
 				.<RegistryEntry<Block>, List<String>>and(
 					instance.group(
-						Registries.BLOCK.createEntryCodec().fieldOf("block").forGetter(function -> function.block),
+						Registries.BLOCK.getEntryCodec().fieldOf("block").forGetter(function -> function.block),
 						Codec.STRING.listOf().fieldOf("properties").forGetter(function -> function.properties.stream().map(Property::getName).toList())
 					)
 				)

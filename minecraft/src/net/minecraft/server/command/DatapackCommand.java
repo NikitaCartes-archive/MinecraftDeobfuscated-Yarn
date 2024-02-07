@@ -33,17 +33,17 @@ public class DatapackCommand {
 		(name, flags) -> Text.stringifiedTranslatable("commands.datapack.enable.failed.no_flags", name, flags)
 	);
 	private static final SuggestionProvider<ServerCommandSource> ENABLED_CONTAINERS_SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
-			context.getSource().getServer().getDataPackManager().getEnabledNames().stream().map(StringArgumentType::escapeIfRequired), builder
+			context.getSource().getServer().getDataPackManager().getEnabledIds().stream().map(StringArgumentType::escapeIfRequired), builder
 		);
 	private static final SuggestionProvider<ServerCommandSource> DISABLED_CONTAINERS_SUGGESTION_PROVIDER = (context, builder) -> {
 		ResourcePackManager resourcePackManager = context.getSource().getServer().getDataPackManager();
-		Collection<String> collection = resourcePackManager.getEnabledNames();
+		Collection<String> collection = resourcePackManager.getEnabledIds();
 		FeatureSet featureSet = context.getSource().getEnabledFeatures();
 		return CommandSource.suggestMatching(
 			resourcePackManager.getProfiles()
 				.stream()
 				.filter(profile -> profile.getRequestedFeatures().isSubsetOf(featureSet))
-				.map(ResourcePackProfile::getName)
+				.map(ResourcePackProfile::getId)
 				.filter(name -> !collection.contains(name))
 				.map(StringArgumentType::escapeIfRequired),
 			builder
@@ -63,7 +63,7 @@ public class DatapackCommand {
 									context -> executeEnable(
 											context.getSource(),
 											getPackContainer(context, "name", true),
-											(profiles, profile) -> profile.getInitialPosition().insert(profiles, profile, profilex -> profilex, false)
+											(profiles, profile) -> profile.getInitialPosition().insert(profiles, profile, ResourcePackProfile::getPosition, false)
 										)
 								)
 								.then(
@@ -123,7 +123,7 @@ public class DatapackCommand {
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		packAdder.apply(list, container);
 		source.sendFeedback(() -> Text.translatable("commands.datapack.modify.enable", container.getInformationText(true)), true);
-		ReloadCommand.tryReloadDataPacks((Collection<String>)list.stream().map(ResourcePackProfile::getName).collect(Collectors.toList()), source);
+		ReloadCommand.tryReloadDataPacks((Collection<String>)list.stream().map(ResourcePackProfile::getId).collect(Collectors.toList()), source);
 		return list.size();
 	}
 
@@ -132,7 +132,7 @@ public class DatapackCommand {
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		list.remove(container);
 		source.sendFeedback(() -> Text.translatable("commands.datapack.modify.disable", container.getInformationText(true)), true);
-		ReloadCommand.tryReloadDataPacks((Collection<String>)list.stream().map(ResourcePackProfile::getName).collect(Collectors.toList()), source);
+		ReloadCommand.tryReloadDataPacks((Collection<String>)list.stream().map(ResourcePackProfile::getId).collect(Collectors.toList()), source);
 		return list.size();
 	}
 

@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Ownable;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -39,7 +40,7 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	protected void initDataTracker() {
+	protected void initDataTracker(DataTracker.Builder builder) {
 	}
 
 	public void setOwner(@Nullable LivingEntity owner) {

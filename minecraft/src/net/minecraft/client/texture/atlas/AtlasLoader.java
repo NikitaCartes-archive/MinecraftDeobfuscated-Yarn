@@ -96,7 +96,7 @@ public class AtlasLoader {
 					bufferedReader.close();
 				}
 			} catch (Exception var11) {
-				LOGGER.warn("Failed to parse atlas definition {} in pack {}", identifier, resource.getResourcePackName(), var11);
+				LOGGER.warn("Failed to parse atlas definition {} in pack {}", identifier, resource.getPackId(), var11);
 			}
 		}
 

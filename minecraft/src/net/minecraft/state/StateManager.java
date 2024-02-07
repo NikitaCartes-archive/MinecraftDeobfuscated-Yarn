@@ -2,7 +2,6 @@ package net.minecraft.state;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -11,6 +10,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -54,15 +54,17 @@ public class StateManager<O, S extends State<O, S>> {
 				}));
 		}
 
-		stream.forEach(
-			list2 -> {
-				ImmutableMap<Property<?>, Comparable<?>> immutableMap = (ImmutableMap<Property<?>, Comparable<?>>)list2.stream()
-					.collect(ImmutableMap.toImmutableMap(Pair::getFirst, Pair::getSecond));
-				S statex = factory.create(owner, immutableMap, mapCodec2);
-				map.put(immutableMap, statex);
-				list.add(statex);
+		stream.forEach(list2 -> {
+			Reference2ObjectArrayMap<Property<?>, Comparable<?>> reference2ObjectArrayMap = new Reference2ObjectArrayMap<>(list2.size());
+
+			for (Pair<Property<?>, Comparable<?>> pair : list2) {
+				reference2ObjectArrayMap.put(pair.getFirst(), pair.getSecond());
 			}
-		);
+
+			S statex = factory.create(owner, reference2ObjectArrayMap, mapCodec2);
+			map.put(reference2ObjectArrayMap, statex);
+			list.add(statex);
+		});
 
 		for (S state : list) {
 			state.createWithTable(map);
@@ -155,6 +157,6 @@ public class StateManager<O, S extends State<O, S>> {
 	}
 
 	public interface Factory<O, S> {
-		S create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> codec);
+		S create(O owner, Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyMap, MapCodec<S> codec);
 	}
 }

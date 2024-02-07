@@ -21,12 +21,16 @@ import org.slf4j.Logger;
 
 public class DefaultResourcePack implements ResourcePack {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private final ResourcePackInfo info;
 	private final ResourceMetadataMap metadata;
 	private final Set<String> namespaces;
 	private final List<Path> rootPaths;
 	private final Map<ResourceType, List<Path>> namespacePaths;
 
-	DefaultResourcePack(ResourceMetadataMap metadata, Set<String> namespaces, List<Path> rootPaths, Map<ResourceType, List<Path>> namespacePaths) {
+	DefaultResourcePack(
+		ResourcePackInfo info, ResourceMetadataMap metadata, Set<String> namespaces, List<Path> rootPaths, Map<ResourceType, List<Path>> namespacePaths
+	) {
+		this.info = info;
 		this.metadata = metadata;
 		this.namespaces = namespaces;
 		this.rootPaths = rootPaths;
@@ -163,13 +167,8 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public String getName() {
-		return "vanilla";
-	}
-
-	@Override
-	public boolean isAlwaysStable() {
-		return true;
+	public ResourcePackInfo getInfo() {
+		return this.info;
 	}
 
 	@Override
@@ -177,6 +176,6 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	public ResourceFactory getFactory() {
-		return name -> Optional.ofNullable(this.open(ResourceType.CLIENT_RESOURCES, name)).map(stream -> new Resource(this, stream));
+		return id -> Optional.ofNullable(this.open(ResourceType.CLIENT_RESOURCES, id)).map(stream -> new Resource(this, stream));
 	}
 }

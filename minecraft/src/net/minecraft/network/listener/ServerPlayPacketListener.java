@@ -150,5 +150,5 @@ public interface ServerPlayPacketListener extends ServerQueryPingPacketListener,
 
 	void onAcknowledgeChunks(AcknowledgeChunksC2SPacket packet);
 
-	void onDebugSampleSubcription(DebugSampleSubscriptionC2SPacket packet);
+	void onDebugSampleSubscription(DebugSampleSubscriptionC2SPacket packet);
 }

@@ -101,8 +101,8 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.dataTracker.startTracking(CHARGED, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(CHARGED, false);
 	}
 
 	public boolean isCharged() {

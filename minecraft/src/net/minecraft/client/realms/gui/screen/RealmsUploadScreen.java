@@ -297,7 +297,14 @@ public class RealmsUploadScreen extends RealmsScreen {
 									} else if (this.verify(file)) {
 										this.status = Text.translatable("mco.upload.uploading", this.selectedLevel.getDisplayName());
 										FileUpload fileUpload = new FileUpload(
-											file, this.worldId, this.slotId, uploadInfo, this.client.getSession(), SharedConstants.getGameVersion().getName(), this.uploadStatus
+											file,
+											this.worldId,
+											this.slotId,
+											uploadInfo,
+											this.client.getSession(),
+											SharedConstants.getGameVersion().getName(),
+											this.selectedLevel.getVersionInfo().getVersionName(),
+											this.uploadStatus
 										);
 										fileUpload.upload(result -> {
 											if (result.statusCode >= 200 && result.statusCode < 300) {

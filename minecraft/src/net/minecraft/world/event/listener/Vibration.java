@@ -19,7 +19,7 @@ public record Vibration(
 ) {
 	public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.GAME_EVENT.createEntryCodec().fieldOf("game_event").forGetter(Vibration::gameEvent),
+					Registries.GAME_EVENT.getEntryCodec().fieldOf("game_event").forGetter(Vibration::gameEvent),
 					Codec.floatRange(0.0F, Float.MAX_VALUE).fieldOf("distance").forGetter(Vibration::distance),
 					Vec3d.CODEC.fieldOf("pos").forGetter(Vibration::pos),
 					Uuids.INT_STREAM_CODEC.optionalFieldOf("source").forGetter(vibration -> Optional.ofNullable(vibration.uuid())),

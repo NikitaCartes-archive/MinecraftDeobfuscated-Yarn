@@ -1450,7 +1450,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.ANIMALS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.ARMADILLO_SPAWNABLE_ON)
 			.addTag(BlockTags.ANIMALS_SPAWNABLE_ON)
-			.addTag(BlockTags.TERRACOTTA)
+			.addTag(BlockTags.BADLANDS_TERRACOTTA)
 			.add(Blocks.RED_SAND, Blocks.COARSE_DIRT);
 		this.getOrCreateTagBuilder(BlockTags.AXOLOTLS_SPAWNABLE_ON).add(Blocks.CLAY);
 		this.getOrCreateTagBuilder(BlockTags.GOATS_SPAWNABLE_ON)
@@ -1482,6 +1482,11 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.GREEN_TERRACOTTA,
 				Blocks.RED_TERRACOTTA,
 				Blocks.BLACK_TERRACOTTA
+			);
+		this.getOrCreateTagBuilder(BlockTags.BADLANDS_TERRACOTTA)
+			.add(Blocks.TERRACOTTA)
+			.add(
+				Blocks.WHITE_TERRACOTTA, Blocks.YELLOW_TERRACOTTA, Blocks.ORANGE_TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.BROWN_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA
 			);
 		this.getOrCreateTagBuilder(BlockTags.CONCRETE_POWDER)
 			.add(

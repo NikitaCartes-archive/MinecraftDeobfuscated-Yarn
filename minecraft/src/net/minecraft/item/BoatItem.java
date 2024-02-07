@@ -61,9 +61,7 @@ public class BoatItem extends Item {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
 						world.emitGameEvent(user, GameEvent.ENTITY_PLACE, hitResult.getPos());
-						if (!user.getAbilities().creativeMode) {
-							itemStack.decrement(1);
-						}
+						itemStack.decrementUnlessCreative(1, user);
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
