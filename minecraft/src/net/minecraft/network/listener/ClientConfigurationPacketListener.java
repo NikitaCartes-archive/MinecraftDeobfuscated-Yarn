@@ -4,6 +4,7 @@ import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
+import net.minecraft.network.packet.s2c.config.SelectKnownPacksS2CPacket;
 
 public interface ClientConfigurationPacketListener extends ClientCommonPacketListener {
 	@Override
@@ -16,4 +17,6 @@ public interface ClientConfigurationPacketListener extends ClientCommonPacketLis
 	void onDynamicRegistries(DynamicRegistriesS2CPacket packet);
 
 	void onFeatures(FeaturesS2CPacket packet);
+
+	void onSelectKnownPacks(SelectKnownPacksS2CPacket packet);
 }

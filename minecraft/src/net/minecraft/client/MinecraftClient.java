@@ -1,7 +1,6 @@
 package net.minecraft.client;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.mojang.authlib.GameProfile;
@@ -605,7 +604,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.textRenderer = this.fontManager.createTextRenderer();
 		this.advanceValidatingTextRenderer = this.fontManager.createAdvanceValidatingTextRenderer();
 		this.resourceManager.registerReloader(this.fontManager);
-		this.initFont(this.forcesUnicodeFont());
+		this.onFontOptionsChanged();
 		this.resourceManager.registerReloader(new GrassColormapResourceSupplier());
 		this.resourceManager.registerReloader(new FoliageColormapResourceSupplier());
 		this.window.setPhase("Startup");
@@ -840,7 +839,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void handleResourceReloadException(Throwable throwable, @Nullable MinecraftClient.LoadingContext loadingContext) {
-		if (this.resourcePackManager.getEnabledNames().size() > 1) {
+		if (this.resourcePackManager.getEnabledIds().size() > 1) {
 			this.onResourceReloadFailure(throwable, null, loadingContext);
 		} else {
 			Util.throwUnchecked(throwable);
@@ -917,8 +916,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	public void initFont(boolean forcesUnicode) {
-		this.fontManager.setIdOverrides(forcesUnicode ? ImmutableMap.of(DEFAULT_FONT_ID, UNICODE_FONT_ID) : ImmutableMap.of());
+	public void onFontOptionsChanged() {
+		this.fontManager.setActiveFilters(this.options);
 	}
 
 	private void initializeSearchProviders() {
@@ -938,7 +937,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.searchManager
 			.put(
 				SearchManager.RECIPE_OUTPUT,
-				list -> new TextSearchProvider(
+				stacks -> new TextSearchProvider(
 						recipeResultCollection -> recipeResultCollection.getAllRecipes()
 								.stream()
 								.flatMap(
@@ -949,7 +948,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 						recipeResultCollection -> recipeResultCollection.getAllRecipes()
 								.stream()
 								.map(recipeEntry -> Registries.ITEM.getId(recipeEntry.value().getResult(recipeResultCollection.getRegistryManager()).getItem())),
-						list
+						stacks
 					)
 			);
 		ItemGroups.getSearchGroup().setSearchProviderReloader(stacks -> {

@@ -158,6 +158,7 @@ import net.minecraft.world.spawner.SpecialSpawner;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.ChunkPosKeyedStorage;
 import net.minecraft.world.storage.EntityChunkDataAccess;
+import net.minecraft.world.storage.StorageKey;
 import net.minecraft.world.tick.TickManager;
 import net.minecraft.world.tick.WorldTickScheduler;
 import org.slf4j.Logger;
@@ -237,7 +238,15 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		boolean bl = server.syncChunkWrites();
 		DataFixer dataFixer = server.getDataFixer();
 		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(
-			new ChunkPosKeyedStorage(session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, "entities", DataFixTypes.ENTITY_CHUNK), this, server
+			new ChunkPosKeyedStorage(
+				new StorageKey(session.getDirectoryName(), worldKey, "entities"),
+				session.getWorldDirectory(worldKey).resolve("entities"),
+				dataFixer,
+				bl,
+				DataFixTypes.ENTITY_CHUNK
+			),
+			this,
+			server
 		);
 		this.entityManager = new ServerEntityManager<>(Entity.class, new ServerWorld.ServerEntityHandler(), chunkDataAccess);
 		this.chunkManager = new ServerChunkManager(

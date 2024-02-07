@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.registry.VersionedIdentifier;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.metadata.PackFeatureSetMetadata;
 import net.minecraft.resource.metadata.PackResourceMetadata;
@@ -23,37 +24,41 @@ public class VanillaDataPackProvider extends VanillaResourcePackProvider {
 	private static final ResourceMetadataMap METADATA_MAP = ResourceMetadataMap.of(
 		PackResourceMetadata.SERIALIZER, METADATA, PackFeatureSetMetadata.SERIALIZER, FEATURE_FLAGS
 	);
-	private static final Text NAME = Text.translatable("dataPack.vanilla.name");
+	private static final ResourcePackInfo INFO = new ResourcePackInfo(
+		"vanilla", Text.translatable("dataPack.vanilla.name"), ResourcePackSource.BUILTIN, Optional.of(VANILLA_ID)
+	);
+	private static final ResourcePackPosition BOTTOM_POSITION = new ResourcePackPosition(false, ResourcePackProfile.InsertionPosition.BOTTOM, false);
+	private static final ResourcePackPosition TOP_POSITION = new ResourcePackPosition(false, ResourcePackProfile.InsertionPosition.TOP, false);
 	private static final Identifier ID = new Identifier("minecraft", "datapacks");
 
 	public VanillaDataPackProvider(SymlinkFinder symlinkFinder) {
 		super(ResourceType.SERVER_DATA, createDefaultPack(), ID, symlinkFinder);
 	}
 
+	private static ResourcePackInfo createInfo(String id, Text title) {
+		return new ResourcePackInfo(id, title, ResourcePackSource.FEATURE, Optional.of(VersionedIdentifier.createVanilla(id)));
+	}
+
 	@VisibleForTesting
 	public static DefaultResourcePack createDefaultPack() {
-		return new DefaultResourcePackBuilder().withMetadataMap(METADATA_MAP).withNamespaces("minecraft").runCallback().withDefaultPaths().build();
+		return new DefaultResourcePackBuilder().withMetadataMap(METADATA_MAP).withNamespaces("minecraft").runCallback().withDefaultPaths().build(INFO);
 	}
 
 	@Override
-	protected Text getProfileName(String id) {
+	protected Text getDisplayName(String id) {
 		return Text.literal(id);
 	}
 
 	@Nullable
 	@Override
 	protected ResourcePackProfile createDefault(ResourcePack pack) {
-		return ResourcePackProfile.create(
-			"vanilla", NAME, false, createPackFactory(pack), ResourceType.SERVER_DATA, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.BUILTIN
-		);
+		return ResourcePackProfile.create(INFO, createPackFactory(pack), ResourceType.SERVER_DATA, BOTTOM_POSITION);
 	}
 
 	@Nullable
 	@Override
-	protected ResourcePackProfile create(String name, ResourcePackProfile.PackFactory packFactory, Text displayName) {
-		return ResourcePackProfile.create(
-			name, displayName, false, packFactory, ResourceType.SERVER_DATA, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.FEATURE
-		);
+	protected ResourcePackProfile create(String fileName, ResourcePackProfile.PackFactory packFactory, Text displayName) {
+		return ResourcePackProfile.create(createInfo(fileName, displayName), packFactory, ResourceType.SERVER_DATA, TOP_POSITION);
 	}
 
 	public static ResourcePackManager createManager(Path dataPacksPath, SymlinkFinder symlinkFinder) {
@@ -62,7 +67,7 @@ public class VanillaDataPackProvider extends VanillaResourcePackProvider {
 		);
 	}
 
-	public static ResourcePackManager createRealmsManager() {
+	public static ResourcePackManager createClientManager() {
 		return new ResourcePackManager(new VanillaDataPackProvider(new SymlinkFinder(path -> true)));
 	}
 

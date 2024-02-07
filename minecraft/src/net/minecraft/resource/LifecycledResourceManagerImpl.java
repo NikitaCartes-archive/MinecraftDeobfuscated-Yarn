@@ -53,7 +53,7 @@ public class LifecycledResourceManagerImpl implements LifecycledResourceManager 
 					} else if (bl) {
 						namespaceResourceManager.addPack(resourcePack);
 					} else {
-						namespaceResourceManager.addPack(resourcePack.getName(), predicate);
+						namespaceResourceManager.addPack(resourcePack.getId(), predicate);
 					}
 				}
 			}
@@ -67,7 +67,7 @@ public class LifecycledResourceManagerImpl implements LifecycledResourceManager 
 		try {
 			return pack.parseMetadata(ResourceFilter.SERIALIZER);
 		} catch (IOException var3) {
-			LOGGER.error("Failed to get filter section from pack {}", pack.getName());
+			LOGGER.error("Failed to get filter section from pack {}", pack.getId());
 			return null;
 		}
 	}

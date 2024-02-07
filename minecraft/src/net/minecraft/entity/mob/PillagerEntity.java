@@ -80,9 +80,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(CHARGING, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CHARGING, false);
 	}
 
 	@Override

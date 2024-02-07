@@ -31,7 +31,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class BeehiveBlockEntity extends BlockEntity {
-	public static final String FLOWER_POS_KEY = "FlowerPos";
+	public static final String FLOWER_POS_KEY = "flower_pos";
 	public static final String MIN_OCCUPATION_TICKS_KEY = "MinOccupationTicks";
 	public static final String ENTITY_DATA_KEY = "EntityData";
 	public static final String TICKS_IN_HIVE_KEY = "TicksInHive";
@@ -61,9 +61,9 @@ public class BeehiveBlockEntity extends BlockEntity {
 		"CannotEnterHiveTicks",
 		"TicksSincePollination",
 		"CropsGrownSincePollination",
-		"HivePos",
+		"hive_pos",
 		"Passengers",
-		"Leash",
+		"leash",
 		"UUID"
 	);
 	public static final int MAX_BEE_COUNT = 3;
@@ -195,7 +195,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		} else {
 			NbtCompound nbtCompound = bee.entityData.copy();
 			removeIrrelevantNbtKeys(nbtCompound);
-			nbtCompound.put("HivePos", NbtHelper.fromBlockPos(pos));
+			nbtCompound.put("hive_pos", NbtHelper.fromBlockPos(pos));
 			nbtCompound.putBoolean("NoGravity", true);
 			Direction direction = state.get(BeehiveBlock.FACING);
 			BlockPos blockPos = pos.offset(direction);
@@ -321,10 +321,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 			this.bees.add(bee);
 		}
 
-		this.flowerPos = null;
-		if (nbt.contains("FlowerPos")) {
-			this.flowerPos = NbtHelper.toBlockPos(nbt.getCompound("FlowerPos"));
-		}
+		this.flowerPos = (BlockPos)NbtHelper.toBlockPos(nbt, "flower_pos").orElse(null);
 	}
 
 	@Override
@@ -332,7 +329,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		super.writeNbt(nbt, registryLookup);
 		nbt.put("Bees", this.getBees());
 		if (this.hasFlowerPos()) {
-			nbt.put("FlowerPos", NbtHelper.fromBlockPos(this.flowerPos));
+			nbt.put("flower_pos", NbtHelper.fromBlockPos(this.flowerPos));
 		}
 	}
 

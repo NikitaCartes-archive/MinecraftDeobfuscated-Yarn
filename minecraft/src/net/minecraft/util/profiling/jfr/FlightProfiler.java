@@ -9,6 +9,8 @@ import net.minecraft.network.packet.PacketType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.ChunkCompressionFormat;
+import net.minecraft.world.storage.StorageKey;
 import org.slf4j.Logger;
 
 public interface FlightProfiler {
@@ -26,9 +28,13 @@ public interface FlightProfiler {
 
 	void onTick(float tickTime);
 
-	void onPacketReceived(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes);
+	void onPacketReceived(NetworkPhase state, PacketType<?> type, SocketAddress remoteAddress, int bytes);
 
-	void onPacketSent(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes);
+	void onPacketSent(NetworkPhase state, PacketType<?> type, SocketAddress remoteAddress, int bytes);
+
+	void onChunkRegionRead(StorageKey key, ChunkPos chunkPos, ChunkCompressionFormat format, int bytes);
+
+	void onChunkRegionWrite(StorageKey key, ChunkPos chunkPos, ChunkCompressionFormat format, int bytes);
 
 	@Nullable
 	Finishable startWorldLoadProfiling();
@@ -63,11 +69,19 @@ public interface FlightProfiler {
 		}
 
 		@Override
-		public void onPacketReceived(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes) {
+		public void onPacketReceived(NetworkPhase state, PacketType<?> type, SocketAddress remoteAddress, int bytes) {
 		}
 
 		@Override
-		public void onPacketSent(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes) {
+		public void onPacketSent(NetworkPhase state, PacketType<?> type, SocketAddress remoteAddress, int bytes) {
+		}
+
+		@Override
+		public void onChunkRegionRead(StorageKey key, ChunkPos chunkPos, ChunkCompressionFormat format, int bytes) {
+		}
+
+		@Override
+		public void onChunkRegionWrite(StorageKey key, ChunkPos chunkPos, ChunkCompressionFormat format, int bytes) {
 		}
 
 		@Override

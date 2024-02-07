@@ -201,9 +201,7 @@ public class TadpoleEntity extends FishEntity {
 	}
 
 	private void decrementItem(PlayerEntity player, ItemStack stack) {
-		if (!player.getAbilities().creativeMode) {
-			stack.decrement(1);
-		}
+		stack.decrementUnlessCreative(1, player);
 	}
 
 	private int getTadpoleAge() {

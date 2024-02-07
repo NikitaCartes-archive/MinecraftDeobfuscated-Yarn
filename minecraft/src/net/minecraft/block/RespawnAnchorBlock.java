@@ -74,10 +74,7 @@ public class RespawnAnchorBlock extends Block {
 	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (isChargeItem(stack) && canCharge(state)) {
 			charge(player, world, pos, state);
-			if (!player.getAbilities().creativeMode) {
-				stack.decrement(1);
-			}
-
+			stack.decrementUnlessCreative(1, player);
 			return ItemActionResult.success(world.isClient);
 		} else {
 			return hand == Hand.MAIN_HAND && isChargeItem(player.getStackInHand(Hand.OFF_HAND)) && canCharge(state)

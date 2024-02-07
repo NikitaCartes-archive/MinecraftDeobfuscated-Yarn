@@ -21,6 +21,7 @@ import net.minecraft.data.DataWriter;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.util.FixedBufferInputStream;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
@@ -99,31 +100,45 @@ public class NbtProvider implements DataProvider {
 		try {
 			InputStream inputStream = Files.newInputStream(inputPath);
 
-			Path var6;
+			Path var7;
 			try {
-				Path path = outputPath.resolve(filename + ".snbt");
-				writeTo(writer, path, NbtHelper.toNbtProviderString(NbtIo.readCompressed(inputStream, NbtSizeTracker.ofUnlimitedBytes())));
-				LOGGER.info("Converted {} from NBT to SNBT", filename);
-				var6 = path;
-			} catch (Throwable var8) {
+				InputStream inputStream2 = new FixedBufferInputStream(inputStream);
+
+				try {
+					Path path = outputPath.resolve(filename + ".snbt");
+					writeTo(writer, path, NbtHelper.toNbtProviderString(NbtIo.readCompressed(inputStream2, NbtSizeTracker.ofUnlimitedBytes())));
+					LOGGER.info("Converted {} from NBT to SNBT", filename);
+					var7 = path;
+				} catch (Throwable var10) {
+					try {
+						inputStream2.close();
+					} catch (Throwable var9) {
+						var10.addSuppressed(var9);
+					}
+
+					throw var10;
+				}
+
+				inputStream2.close();
+			} catch (Throwable var11) {
 				if (inputStream != null) {
 					try {
 						inputStream.close();
-					} catch (Throwable var7) {
-						var8.addSuppressed(var7);
+					} catch (Throwable var8) {
+						var11.addSuppressed(var8);
 					}
 				}
 
-				throw var8;
+				throw var11;
 			}
 
 			if (inputStream != null) {
 				inputStream.close();
 			}
 
-			return var6;
-		} catch (IOException var9) {
-			LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", filename, inputPath, var9);
+			return var7;
+		} catch (IOException var12) {
+			LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", filename, inputPath, var12);
 			return null;
 		}
 	}

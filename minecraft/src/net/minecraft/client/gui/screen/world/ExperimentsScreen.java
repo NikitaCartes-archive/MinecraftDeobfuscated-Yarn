@@ -74,7 +74,7 @@ public class ExperimentsScreen extends Screen {
 	}
 
 	private static Text getDataPackName(ResourcePackProfile packProfile) {
-		String string = "dataPack." + packProfile.getName() + ".name";
+		String string = "dataPack." + packProfile.getId() + ".name";
 		return (Text)(I18n.hasTranslation(string) ? Text.translatable(string) : packProfile.getDisplayName());
 	}
 
@@ -93,7 +93,7 @@ public class ExperimentsScreen extends Screen {
 			}
 		});
 		list.addAll(Lists.reverse(list2));
-		this.resourcePackManager.setEnabledProfiles(list.stream().map(ResourcePackProfile::getName).toList());
+		this.resourcePackManager.setEnabledProfiles(list.stream().map(ResourcePackProfile::getId).toList());
 		this.applier.accept(this.resourcePackManager);
 	}
 

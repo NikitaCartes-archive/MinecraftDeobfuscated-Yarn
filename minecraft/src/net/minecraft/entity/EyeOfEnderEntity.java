@@ -43,8 +43,8 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.getDataTracker().startTracking(ITEM, this.getItem());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(ITEM, this.getItem());
 	}
 
 	@Override

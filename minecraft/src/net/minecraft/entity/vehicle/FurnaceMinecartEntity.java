@@ -42,9 +42,9 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(LIT, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(LIT, false);
 	}
 
 	@Override
@@ -118,10 +118,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (ACCEPTABLE_FUEL.test(itemStack) && this.fuel + 3600 <= 32000) {
-			if (!player.getAbilities().creativeMode) {
-				itemStack.decrement(1);
-			}
-
+			itemStack.decrementUnlessCreative(1, player);
 			this.fuel += 3600;
 		}
 

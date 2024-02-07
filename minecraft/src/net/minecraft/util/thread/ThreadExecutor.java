@@ -10,6 +10,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import javax.annotation.CheckReturnValue;
 import net.minecraft.util.profiler.SampleType;
 import net.minecraft.util.profiler.Sampler;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		}, this);
 	}
 
+	@CheckReturnValue
 	public CompletableFuture<Void> submit(Runnable task) {
 		if (this.shouldExecuteAsync()) {
 			return this.submitAsync(task);

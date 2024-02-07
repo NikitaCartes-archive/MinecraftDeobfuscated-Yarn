@@ -30,8 +30,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	public static final Text TITLE = Text.translatable("mco.upload.select.world.title");
 	private static final Text LOADING_ERROR_TEXT = Text.translatable("selectWorld.unable_to_load");
 	static final Text WORLD_LANG = Text.translatable("selectWorld.world");
-	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").withColor(Colors.RED);
-	static final Text COMMANDS_TEXT = Text.translatable("selectWorld.commands");
+	private static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").withColor(Colors.RED);
+	private static final Text COMMANDS_TEXT = Text.translatable("selectWorld.commands");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	@Nullable
 	private final WorldCreationTask creationTask;
@@ -137,18 +137,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			this.summary = summary;
 			this.displayName = summary.getDisplayName();
 			this.nameAndLastPlayed = Text.translatable("mco.upload.entry.id", summary.getName(), RealmsSelectFileToUploadScreen.getLastPlayed(summary));
-			Text text;
-			if (summary.isHardcore()) {
-				text = RealmsSelectFileToUploadScreen.HARDCORE_TEXT;
-			} else {
-				text = RealmsSelectFileToUploadScreen.getGameModeName(summary);
-			}
-
-			if (summary.hasCheats()) {
-				text = Text.translatable("mco.upload.entry.commands", text.getString(), RealmsSelectFileToUploadScreen.COMMANDS_TEXT);
-			}
-
-			this.details = text;
+			this.details = summary.getDetails();
 		}
 
 		@Override

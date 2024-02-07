@@ -39,8 +39,8 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.getDataTracker().startTracking(ITEM, new ItemStack(this.getDefaultItem()));
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(ITEM, new ItemStack(this.getDefaultItem()));
 	}
 
 	@Override

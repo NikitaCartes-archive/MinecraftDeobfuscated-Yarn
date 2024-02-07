@@ -89,9 +89,9 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(COLOR, -1);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(COLOR, -1);
 	}
 
 	@Override

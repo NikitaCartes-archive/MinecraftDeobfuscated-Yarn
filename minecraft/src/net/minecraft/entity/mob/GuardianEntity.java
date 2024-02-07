@@ -98,10 +98,10 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(SPIKES_RETRACTED, false);
-		this.dataTracker.startTracking(BEAM_TARGET_ID, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SPIKES_RETRACTED, false);
+		builder.add(BEAM_TARGET_ID, 0);
 	}
 
 	public boolean areSpikesRetracted() {

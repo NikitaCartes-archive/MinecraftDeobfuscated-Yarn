@@ -81,7 +81,7 @@ public interface TypeSpecificPredicate {
 			MooshroomEntity.Type.CODEC, entity -> entity instanceof MooshroomEntity mooshroomEntity ? Optional.of(mooshroomEntity.getVariant()) : Optional.empty()
 		);
 		public static final VariantPredicates<RegistryEntry<PaintingVariant>> PAINTING = VariantPredicates.create(
-			Registries.PAINTING_VARIANT.createEntryCodec(),
+			Registries.PAINTING_VARIANT.getEntryCodec(),
 			entity -> entity instanceof PaintingEntity paintingEntity ? Optional.of(paintingEntity.getVariant()) : Optional.empty()
 		);
 		public static final VariantPredicates<RabbitEntity.RabbitType> RABBIT = VariantPredicates.create(

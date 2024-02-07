@@ -12,15 +12,15 @@ public interface ResourcePackSource {
 	ResourcePackSource WORLD = create(getSourceTextSupplier("pack.source.world"), true);
 	ResourcePackSource SERVER = create(getSourceTextSupplier("pack.source.server"), true);
 
-	Text decorate(Text packName);
+	Text decorate(Text packDisplayName);
 
 	boolean canBeEnabledLater();
 
 	static ResourcePackSource create(UnaryOperator<Text> sourceTextSupplier, boolean canBeEnabledLater) {
 		return new ResourcePackSource() {
 			@Override
-			public Text decorate(Text packName) {
-				return (Text)sourceTextSupplier.apply(packName);
+			public Text decorate(Text packDisplayName) {
+				return (Text)sourceTextSupplier.apply(packDisplayName);
 			}
 
 			@Override

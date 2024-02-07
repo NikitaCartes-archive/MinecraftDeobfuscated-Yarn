@@ -174,7 +174,7 @@ import org.slf4j.Logger;
 public final class ItemStack {
 	public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.ITEM.createEntryCodec().fieldOf("id").forGetter(ItemStack::getRegistryEntry),
+					Registries.ITEM.getEntryCodec().fieldOf("id").forGetter(ItemStack::getRegistryEntry),
 					Codec.INT.fieldOf("Count").forGetter(ItemStack::getCount),
 					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.getNbt()))
 				)
@@ -185,7 +185,7 @@ public final class ItemStack {
 	);
 	public static final Codec<ItemStack> ADVANCEMENT_DISPLAY_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.ITEM.createEntryCodec().fieldOf("item").forGetter(ItemStack::getRegistryEntry),
+					Registries.ITEM.getEntryCodec().fieldOf("item").forGetter(ItemStack::getRegistryEntry),
 					Codecs.createStrictOptionalFieldCodec(StringNbtReader.STRINGIFIED_CODEC, "nbt").forGetter(stack -> Optional.ofNullable(stack.getNbt()))
 				)
 				.apply(instance, (itemEntry, nbt) -> new ItemStack(itemEntry, 1, nbt))
@@ -682,7 +682,11 @@ public final class ItemStack {
 	 * @param slot the slot in which the stack is held
 	 */
 	public void damage(int amount, LivingEntity entity, EquipmentSlot slot) {
-		if (!entity.getWorld().isClient && (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).getAbilities().creativeMode)) {
+		if (!entity.getWorld().isClient) {
+			if (entity instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
+				return;
+			}
+
 			this.damage(amount, entity.getRandom(), entity instanceof ServerPlayerEntity serverPlayerEntity ? serverPlayerEntity : null, () -> {
 				entity.sendEquipmentBreakStatus(slot);
 				Item item = this.getItem();
@@ -1592,6 +1596,16 @@ public final class ItemStack {
 	 */
 	public void decrement(int amount) {
 		this.increment(-amount);
+	}
+
+	/**
+	 * Decrements the count of items in this item stack, unless {@code entity}
+	 * is a creative mode player.
+	 */
+	public void decrementUnlessCreative(int amount, @Nullable LivingEntity entity) {
+		if (entity == null || !entity.isInCreativeMode()) {
+			this.decrement(amount);
+		}
 	}
 
 	public void usageTick(World world, LivingEntity user, int remainingUseTicks) {

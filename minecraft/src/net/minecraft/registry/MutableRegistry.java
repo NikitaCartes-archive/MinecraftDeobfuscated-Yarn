@@ -1,7 +1,7 @@
 package net.minecraft.registry;
 
-import com.mojang.serialization.Lifecycle;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 
 /**
  * A registry that allows adding or modifying values.
@@ -10,7 +10,7 @@ import net.minecraft.registry.entry.RegistryEntry;
  * @see Registry
  */
 public interface MutableRegistry<T> extends Registry<T> {
-	RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, Lifecycle lifecycle);
+	RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, RegistryEntryInfo info);
 
 	/**
 	 * {@return whether the registry is empty}

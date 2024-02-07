@@ -1155,7 +1155,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			(Supplier<String>)(() -> (String)this.dataPackManager
 					.getEnabledProfiles()
 					.stream()
-					.map(profile -> profile.getName() + (profile.getCompatibility().isCompatible() ? "" : " (incompatible)"))
+					.map(profile -> profile.getId() + (profile.getCompatibility().isCompatible() ? "" : " (incompatible)"))
 					.collect(Collectors.joining(", ")))
 		);
 		details.addSection(
@@ -1599,7 +1599,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			for(ResourcePackProfile resourcePackProfile : resourcePackManager.getProfiles()) {
-				String string2 = resourcePackProfile.getName();
+				String string2 = resourcePackProfile.getId();
 				if (!dataPackSettings.getDisabled().contains(string2)) {
 					FeatureSet featureSet = resourcePackProfile.getRequestedFeatures();
 					boolean bl = set.contains(string2);
@@ -1636,9 +1636,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private static DataPackSettings createDataPackSettings(ResourcePackManager dataPackManager) {
-		Collection<String> collection = dataPackManager.getEnabledNames();
+		Collection<String> collection = dataPackManager.getEnabledIds();
 		List<String> list = ImmutableList.copyOf(collection);
-		List<String> list2 = (List)dataPackManager.getNames().stream().filter(name -> !collection.contains(name)).collect(ImmutableList.toImmutableList());
+		List<String> list2 = (List)dataPackManager.getIds().stream().filter(name -> !collection.contains(name)).collect(ImmutableList.toImmutableList());
 		return new DataPackSettings(list, list2);
 	}
 

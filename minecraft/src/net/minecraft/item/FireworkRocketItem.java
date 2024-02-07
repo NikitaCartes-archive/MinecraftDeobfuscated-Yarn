@@ -68,10 +68,7 @@ public class FireworkRocketItem extends Item {
 			if (!world.isClient) {
 				FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(world, itemStack, user);
 				world.spawnEntity(fireworkRocketEntity);
-				if (!user.getAbilities().creativeMode) {
-					itemStack.decrement(1);
-				}
-
+				itemStack.decrementUnlessCreative(1, user);
 				user.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 

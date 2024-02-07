@@ -103,15 +103,15 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		return createBaseHorseAttributes()
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 32.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.09F)
-			.add(EntityAttributes.HORSE_JUMP_STRENGTH, 0.42F)
+			.add(EntityAttributes.GENERIC_JUMP_STRENGTH, 0.42F)
 			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.5);
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(DASHING, false);
-		this.dataTracker.startTracking(LAST_POSE_TICK, 0L);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(DASHING, false);
+		builder.add(LAST_POSE_TICK, 0L);
 	}
 
 	@Override
@@ -274,8 +274,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 
 	@Override
 	protected void jump(float strength, Vec3d movementInput) {
-		double d = this.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH) * (double)this.getJumpVelocityMultiplier()
-			+ (double)this.getJumpBoostVelocityModifier();
+		double d = (double)this.getJumpVelocity();
 		this.addVelocity(
 			this.getRotationVector()
 				.multiply(1.0, 0.0, 1.0)

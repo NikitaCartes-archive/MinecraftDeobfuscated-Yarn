@@ -21,4 +21,11 @@ public interface Font extends AutoCloseable {
 	 * {@return the set of code points for which this font can provide glyphs}
 	 */
 	IntSet getProvidedGlyphs();
+
+	@Environment(EnvType.CLIENT)
+	public static record FontFilterPair(Font provider, FontFilterType.FilterMap filter) implements AutoCloseable {
+		public void close() {
+			this.provider.close();
+		}
+	}
 }

@@ -35,7 +35,7 @@ public class HoneyBottleItem extends Item {
 		if (stack.isEmpty()) {
 			return new ItemStack(Items.GLASS_BOTTLE);
 		} else {
-			if (user instanceof PlayerEntity playerEntity && !playerEntity.getAbilities().creativeMode) {
+			if (user instanceof PlayerEntity playerEntity && !playerEntity.isInCreativeMode()) {
 				ItemStack itemStack = new ItemStack(Items.GLASS_BOTTLE);
 				if (!playerEntity.getInventory().insertStack(itemStack)) {
 					playerEntity.dropItem(itemStack, false);

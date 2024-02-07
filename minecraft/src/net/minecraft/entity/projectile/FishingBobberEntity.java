@@ -105,9 +105,9 @@ public class FishingBobberEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.getDataTracker().startTracking(HOOK_ENTITY_ID, 0);
-		this.getDataTracker().startTracking(CAUGHT_FISH, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(HOOK_ENTITY_ID, 0);
+		builder.add(CAUGHT_FISH, false);
 	}
 
 	@Override

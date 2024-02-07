@@ -38,6 +38,7 @@ import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.test.StructureTestUtil;
+import net.minecraft.util.FixedBufferInputStream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.PathUtil;
@@ -224,30 +225,44 @@ public class StructureTemplateManager {
 		try {
 			InputStream inputStream = opener.open();
 
-			Optional var4;
+			Optional var5;
 			try {
-				var4 = Optional.of(this.readTemplate(inputStream));
-			} catch (Throwable var7) {
+				InputStream inputStream2 = new FixedBufferInputStream(inputStream);
+
+				try {
+					var5 = Optional.of(this.readTemplate(inputStream2));
+				} catch (Throwable var9) {
+					try {
+						inputStream2.close();
+					} catch (Throwable var8) {
+						var9.addSuppressed(var8);
+					}
+
+					throw var9;
+				}
+
+				inputStream2.close();
+			} catch (Throwable var10) {
 				if (inputStream != null) {
 					try {
 						inputStream.close();
-					} catch (Throwable var6) {
-						var7.addSuppressed(var6);
+					} catch (Throwable var7) {
+						var10.addSuppressed(var7);
 					}
 				}
 
-				throw var7;
+				throw var10;
 			}
 
 			if (inputStream != null) {
 				inputStream.close();
 			}
 
-			return var4;
-		} catch (FileNotFoundException var8) {
+			return var5;
+		} catch (FileNotFoundException var11) {
 			return Optional.empty();
-		} catch (Throwable var9) {
-			exceptionConsumer.accept(var9);
+		} catch (Throwable var12) {
+			exceptionConsumer.accept(var12);
 			return Optional.empty();
 		}
 	}

@@ -35,14 +35,13 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 
 	protected TameableEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
-		this.onTamedChanged();
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(TAMEABLE_FLAGS, (byte)0);
-		this.dataTracker.startTracking(OWNER_UUID, Optional.empty());
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(TAMEABLE_FLAGS, (byte)0);
+		builder.add(OWNER_UUID, Optional.empty());
 	}
 
 	@Override
@@ -69,9 +68,9 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 		if (uUID != null) {
 			try {
 				this.setOwnerUuid(uUID);
-				this.setTamed(true);
+				this.setTamed(true, false);
 			} catch (Throwable var4) {
-				this.setTamed(false);
+				this.setTamed(false, true);
 			}
 		}
 
@@ -113,7 +112,7 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 		return (this.dataTracker.get(TAMEABLE_FLAGS) & 4) != 0;
 	}
 
-	public void setTamed(boolean tamed) {
+	public void setTamed(boolean tamed, boolean updateAttributes) {
 		byte b = this.dataTracker.get(TAMEABLE_FLAGS);
 		if (tamed) {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 4));
@@ -121,10 +120,12 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -5));
 		}
 
-		this.onTamedChanged();
+		if (updateAttributes) {
+			this.updateAttributesForTamed();
+		}
 	}
 
-	protected void onTamedChanged() {
+	protected void updateAttributesForTamed() {
 	}
 
 	public boolean isInSittingPose() {
@@ -151,7 +152,7 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 	}
 
 	public void setOwner(PlayerEntity player) {
-		this.setTamed(true);
+		this.setTamed(true, true);
 		this.setOwnerUuid(player.getUuid());
 		if (player instanceof ServerPlayerEntity) {
 			Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);

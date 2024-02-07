@@ -4,6 +4,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -30,6 +31,11 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	}
 
 	@Override
+	protected double getGravity() {
+		return 0.06;
+	}
+
+	@Override
 	public void tick() {
 		super.tick();
 		Vec3d vec3d = this.getVelocity();
@@ -40,17 +46,13 @@ public class LlamaSpitEntity extends ProjectileEntity {
 		double f = this.getZ() + vec3d.z;
 		this.updateRotation();
 		float g = 0.99F;
-		float h = 0.06F;
 		if (this.getWorld().getStatesInBox(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
 			this.discard();
 		} else if (this.isInsideWaterOrBubbleColumn()) {
 			this.discard();
 		} else {
 			this.setVelocity(vec3d.multiply(0.99F));
-			if (!this.hasNoGravity()) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.06F, 0.0));
-			}
-
+			this.applyGravity();
 			this.setPosition(d, e, f);
 		}
 	}
@@ -73,7 +75,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
+	protected void initDataTracker(DataTracker.Builder builder) {
 	}
 
 	@Override

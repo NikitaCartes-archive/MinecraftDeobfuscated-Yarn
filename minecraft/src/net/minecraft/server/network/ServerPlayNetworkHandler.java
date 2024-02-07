@@ -193,6 +193,7 @@ public class ServerPlayNetworkHandler
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int DEFAULT_SEQUENCE = -1;
 	private static final int MAX_PENDING_ACKNOWLEDGMENTS = 4096;
+	private static final int field_49027 = 80;
 	private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
 	public ServerPlayerEntity player;
 	public final ChunkDataSender chunkDataSender;
@@ -232,9 +233,9 @@ public class ServerPlayNetworkHandler
 	private final MessageChainTaskQueue messageChainTaskQueue;
 	private boolean requestedReconfiguration;
 
-	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection clientConnection, ServerPlayerEntity player, ConnectedClientData clientData) {
-		super(server, clientConnection, clientData);
-		this.chunkDataSender = new ChunkDataSender(clientConnection.isLocal());
+	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData) {
+		super(server, connection, clientData);
+		this.chunkDataSender = new ChunkDataSender(connection.isLocal());
 		this.player = player;
 		player.networkHandler = this;
 		player.getTextStream().onConnect();
@@ -258,7 +259,7 @@ public class ServerPlayNetworkHandler
 		++this.ticks;
 		this.lastTickMovePacketsCount = this.movePacketsCount;
 		if (this.floating && !this.player.isSleeping() && !this.player.hasVehicle() && !this.player.isDead()) {
-			if (++this.floatingTicks > 80) {
+			if (++this.floatingTicks > this.getMaxAllowedFloatingTicks(this.player)) {
 				LOGGER.warn("{} was kicked for floating too long!", this.player.getName().getString());
 				this.disconnect(Text.translatable("multiplayer.disconnect.flying"));
 				return;
@@ -276,8 +277,8 @@ public class ServerPlayNetworkHandler
 			this.updatedRiddenX = this.topmostRiddenEntity.getX();
 			this.updatedRiddenY = this.topmostRiddenEntity.getY();
 			this.updatedRiddenZ = this.topmostRiddenEntity.getZ();
-			if (this.vehicleFloating && this.player.getRootVehicle().getControllingPassenger() == this.player) {
-				if (++this.vehicleFloatingTicks > 80) {
+			if (this.vehicleFloating && this.topmostRiddenEntity.getControllingPassenger() == this.player) {
+				if (++this.vehicleFloatingTicks > this.getMaxAllowedFloatingTicks(this.topmostRiddenEntity)) {
 					LOGGER.warn("{} was kicked for floating a vehicle too long!", this.player.getName().getString());
 					this.disconnect(Text.translatable("multiplayer.disconnect.flying"));
 					return;
@@ -306,6 +307,11 @@ public class ServerPlayNetworkHandler
 			&& Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)this.server.getPlayerIdleTimeout() * 1000L * 60L) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.idling"));
 		}
+	}
+
+	private int getMaxAllowedFloatingTicks(Entity vehicle) {
+		double d = 0.08 / vehicle.getFinalGravity();
+		return MathHelper.ceil(80.0 * Math.max(d, 1.0));
 	}
 
 	public void syncWithPlayerPosition() {
@@ -994,6 +1000,7 @@ public class ServerPlayNetworkHandler
 		}
 
 		this.teleportRequestTick = this.ticks;
+		this.player.ignoreFallDamageAboveY = null;
 		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
 		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId));
 	}
@@ -1185,7 +1192,7 @@ public class ServerPlayNetworkHandler
 		} else {
 			Optional<LastSeenMessageList> optional = this.validateMessage(packet.acknowledgment());
 			if (optional.isPresent()) {
-				this.server.submit(() -> {
+				this.server.execute(() -> {
 					SignedMessage signedMessage;
 					try {
 						signedMessage = this.getSignedMessage(packet, (LastSeenMessageList)optional.get());
@@ -1212,7 +1219,7 @@ public class ServerPlayNetworkHandler
 		} else {
 			Optional<LastSeenMessageList> optional = this.validateMessage(packet.acknowledgment());
 			if (optional.isPresent()) {
-				this.server.submit(() -> {
+				this.server.execute(() -> {
 					this.handleCommandExecution(packet, (LastSeenMessageList)optional.get());
 					this.checkForSpam();
 				});
@@ -1677,6 +1684,9 @@ public class ServerPlayNetworkHandler
 	public void onUpdatePlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().allowFlying;
+		if (this.player.getAbilities().flying) {
+			this.player.ignoreFallDamageAboveY = null;
+		}
 	}
 
 	@Override
@@ -1746,7 +1756,7 @@ public class ServerPlayNetworkHandler
 	}
 
 	@Override
-	public void onDebugSampleSubcription(DebugSampleSubscriptionC2SPacket packet) {
+	public void onDebugSampleSubscription(DebugSampleSubscriptionC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.server.subscribeToDebugSample(this.player, packet.sampleType());
 	}

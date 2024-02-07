@@ -58,7 +58,7 @@ public class TagGroupLoader<T> {
 							list.clear();
 						}
 
-						String string = resource.getResourcePackName();
+						String string = resource.getPackId();
 						tagFile.entries().forEach(entryx -> list.add(new TagGroupLoader.TrackedEntry(entryx, string)));
 					} catch (Throwable var16) {
 						if (reader != null) {
@@ -76,7 +76,7 @@ public class TagGroupLoader<T> {
 						reader.close();
 					}
 				} catch (Exception var17) {
-					LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resource.getResourcePackName(), var17);
+					LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resource.getPackId(), var17);
 				}
 			}
 		}

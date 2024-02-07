@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Optional;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registerable;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -47,7 +46,7 @@ public class WorldPresets {
 		return RegistryKey.of(RegistryKeys.WORLD_PRESET, new Identifier(id));
 	}
 
-	public static Optional<RegistryKey<WorldPreset>> getWorldPreset(Registry<DimensionOptions> registry) {
+	public static Optional<RegistryKey<WorldPreset>> getWorldPreset(DimensionOptionsRegistryHolder registry) {
 		return registry.getOrEmpty(DimensionOptions.OVERWORLD).flatMap(overworld -> {
 			ChunkGenerator chunkGenerator = overworld.chunkGenerator();
 			if (chunkGenerator instanceof FlatChunkGenerator) {

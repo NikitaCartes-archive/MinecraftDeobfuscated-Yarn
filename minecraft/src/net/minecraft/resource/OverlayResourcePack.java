@@ -73,13 +73,8 @@ public class OverlayResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public String getName() {
-		return this.base.getName();
-	}
-
-	@Override
-	public boolean isAlwaysStable() {
-		return this.base.isAlwaysStable();
+	public ResourcePackInfo getInfo() {
+		return this.base.getInfo();
 	}
 
 	@Override

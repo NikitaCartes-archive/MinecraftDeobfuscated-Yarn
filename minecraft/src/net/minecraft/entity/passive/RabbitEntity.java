@@ -125,7 +125,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 			f = 0.2F;
 		}
 
-		return f + this.getJumpBoostVelocityModifier();
+		return super.getJumpVelocity(f / 0.42F);
 	}
 
 	@Override
@@ -168,9 +168,9 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(RABBIT_TYPE, RabbitEntity.RabbitType.BROWN.id);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(RABBIT_TYPE, RabbitEntity.RabbitType.BROWN.id);
 	}
 
 	@Override

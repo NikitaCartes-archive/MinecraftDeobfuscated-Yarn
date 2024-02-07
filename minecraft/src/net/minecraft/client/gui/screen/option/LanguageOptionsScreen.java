@@ -31,7 +31,11 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	@Override
 	protected void init() {
 		this.languageSelectionList = this.addDrawableChild(new LanguageOptionsScreen.LanguageSelectionListWidget(this.client));
-		this.addDrawableChild(this.gameOptions.getForceUnicodeFont().createWidget(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
+		this.addDrawableChild(
+			ButtonWidget.builder(Text.translatable("options.font"), button -> this.client.setScreen(new FontOptionsScreen(this, this.gameOptions)))
+				.dimensions(this.width / 2 - 155, this.height - 38, 150, 20)
+				.build()
+		);
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.DONE, button -> this.onDone()).dimensions(this.width / 2 - 155 + 160, this.height - 38, 150, 20).build()
 		);

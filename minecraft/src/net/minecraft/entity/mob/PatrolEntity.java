@@ -42,7 +42,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		if (this.patrolTarget != null) {
-			nbt.put("PatrolTarget", NbtHelper.fromBlockPos(this.patrolTarget));
+			nbt.put("patrol_target", NbtHelper.fromBlockPos(this.patrolTarget));
 		}
 
 		nbt.putBoolean("PatrolLeader", this.patrolLeader);
@@ -52,10 +52,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("PatrolTarget")) {
-			this.patrolTarget = NbtHelper.toBlockPos(nbt.getCompound("PatrolTarget"));
-		}
-
+		NbtHelper.toBlockPos(nbt, "patrol_target").ifPresent(patrolTarget -> this.patrolTarget = patrolTarget);
 		this.patrolLeader = nbt.getBoolean("PatrolLeader");
 		this.patrolling = nbt.getBoolean("Patrolling");
 	}

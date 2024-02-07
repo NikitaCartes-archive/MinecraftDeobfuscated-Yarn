@@ -18,12 +18,14 @@ public final class RegionBasedStorage implements AutoCloseable {
 	public static final String MCA_EXTENSION = ".mca";
 	private static final int MAX_CACHE_SIZE = 256;
 	private final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap<>();
+	private final StorageKey storageKey;
 	private final Path directory;
 	private final boolean dsync;
 
-	RegionBasedStorage(Path directory, boolean dsync) {
+	RegionBasedStorage(StorageKey storageKey, Path directory, boolean dsync) {
 		this.directory = directory;
 		this.dsync = dsync;
+		this.storageKey = storageKey;
 	}
 
 	private RegionFile getRegionFile(ChunkPos pos) throws IOException {
@@ -38,7 +40,7 @@ public final class RegionBasedStorage implements AutoCloseable {
 
 			PathUtil.createDirectories(this.directory);
 			Path path = this.directory.resolve("r." + pos.getRegionX() + "." + pos.getRegionZ() + ".mca");
-			RegionFile regionFile2 = new RegionFile(path, this.directory, this.dsync);
+			RegionFile regionFile2 = new RegionFile(this.storageKey, path, this.directory, this.dsync);
 			this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);
 			return regionFile2;
 		}

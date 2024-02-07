@@ -73,7 +73,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	}
 
 	private void addExperimentsButton(DirectionalLayoutWidget layout) {
-		ResourcePackManager resourcePackManager = VanillaDataPackProvider.createRealmsManager();
+		ResourcePackManager resourcePackManager = VanillaDataPackProvider.createClientManager();
 		resourcePackManager.scanPacks();
 		layout.add(
 			ButtonWidget.builder(
@@ -82,7 +82,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 			
 							for(ResourcePackProfile resourcePackProfile : packManager.getEnabledProfiles()) {
 								if (resourcePackProfile.getSource() == ResourcePackSource.FEATURE) {
-									this.experiments.add(resourcePackProfile.getName());
+									this.experiments.add(resourcePackProfile.getId());
 								}
 							}
 			

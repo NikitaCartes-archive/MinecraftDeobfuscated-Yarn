@@ -60,12 +60,10 @@ public class PotionItem extends Item {
 
 		if (playerEntity != null) {
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-			if (!playerEntity.getAbilities().creativeMode) {
-				stack.decrement(1);
-			}
+			stack.decrementUnlessCreative(1, playerEntity);
 		}
 
-		if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
+		if (playerEntity == null || !playerEntity.isInCreativeMode()) {
 			if (stack.isEmpty()) {
 				return new ItemStack(Items.GLASS_BOTTLE);
 			}

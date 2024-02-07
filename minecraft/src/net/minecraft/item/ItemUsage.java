@@ -34,7 +34,7 @@ public class ItemUsage {
 	 * @see #exchangeStack(ItemStack, PlayerEntity, ItemStack)
 	 */
 	public static ItemStack exchangeStack(ItemStack inputStack, PlayerEntity player, ItemStack outputStack, boolean creativeOverride) {
-		boolean bl = player.getAbilities().creativeMode;
+		boolean bl = player.isInCreativeMode();
 		if (creativeOverride && bl) {
 			if (!player.getInventory().contains(outputStack)) {
 				player.getInventory().insertStack(outputStack);
@@ -42,10 +42,7 @@ public class ItemUsage {
 
 			return inputStack;
 		} else {
-			if (!bl) {
-				inputStack.decrement(1);
-			}
-
+			inputStack.decrementUnlessCreative(1, player);
 			if (inputStack.isEmpty()) {
 				return outputStack;
 			} else {

@@ -51,9 +51,9 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(PUFF_STATE, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(PUFF_STATE, 0);
 	}
 
 	public int getPuffState() {

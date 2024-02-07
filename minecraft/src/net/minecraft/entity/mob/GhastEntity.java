@@ -17,6 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -77,7 +78,8 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return !isFireballFromPlayer(damageSource) && super.isInvulnerableTo(damageSource);
+		return this.isInvulnerable() && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)
+			|| !isFireballFromPlayer(damageSource) && super.isInvulnerableTo(damageSource);
 	}
 
 	@Override
@@ -91,9 +93,9 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(SHOOTING, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SHOOTING, false);
 	}
 
 	public static DefaultAttributeContainer.Builder createGhastAttributes() {

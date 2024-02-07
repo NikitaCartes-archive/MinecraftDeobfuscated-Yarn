@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
@@ -30,6 +31,10 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -139,23 +144,20 @@ public class ChunkRegion implements StructureWorldAccess {
 			chunk = null;
 		}
 
-		if (!create) {
-			return null;
-		} else {
-			LOGGER.error("Requested chunk : {} {}", chunkX, chunkZ);
-			LOGGER.error("Region bounds : {} {} | {} {}", this.lowerCorner.x, this.lowerCorner.z, this.upperCorner.x, this.upperCorner.z);
-			if (chunk != null) {
-				throw (RuntimeException)Util.throwOrPause(
-					new RuntimeException(
-						String.format(Locale.ROOT, "Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, chunk.getStatus(), chunkX, chunkZ)
-					)
-				);
-			} else {
-				throw (RuntimeException)Util.throwOrPause(
-					new RuntimeException(String.format(Locale.ROOT, "We are asking a region for a chunk out of bound | %s %s", chunkX, chunkZ))
-				);
-			}
-		}
+		CrashReport crashReport = CrashReport.create(
+			new IllegalStateException("Requested chunk unavailable during world generation"), "Exception generating new chunk"
+		);
+		CrashReportSection crashReportSection = crashReport.addElement("Chunk request details");
+		crashReportSection.add("Requested chunk", String.format(Locale.ROOT, "%d, %d", chunkX, chunkZ));
+		crashReportSection.add("Requested status", (CrashCallable<String>)(() -> Registries.CHUNK_STATUS.getId(leastStatus).toString()));
+		crashReportSection.add(
+			"Actual status", (CrashCallable<String>)(() -> chunk == null ? "[out of region bounds]" : Registries.CHUNK_STATUS.getId(chunk.getStatus()).toString())
+		);
+		crashReportSection.add("loadOrGenerate", create);
+		crashReportSection.add("Generating chunk", (CrashCallable<String>)(() -> this.centerPos.getPos().toString()));
+		crashReportSection.add("Region start", this.lowerCorner);
+		crashReportSection.add("Region end", this.upperCorner);
+		throw new CrashException(crashReport);
 	}
 
 	@Override

@@ -111,8 +111,13 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.getDataTracker().startTracking(STACK, ItemStack.EMPTY);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(STACK, ItemStack.EMPTY);
+	}
+
+	@Override
+	protected double getGravity() {
+		return 0.04;
 	}
 
 	@Override
@@ -133,8 +138,8 @@ public class ItemEntity extends Entity implements Ownable {
 				this.applyWaterBuoyancy();
 			} else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
 				this.applyLavaBuoyancy();
-			} else if (!this.hasNoGravity()) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+			} else {
+				this.applyGravity();
 			}
 
 			if (this.getWorld().isClient) {

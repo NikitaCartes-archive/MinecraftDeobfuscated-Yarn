@@ -104,6 +104,11 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
+	protected double getGravity() {
+		return 0.08;
+	}
+
+	@Override
 	public void tickMovement() {
 		super.tickMovement();
 		this.prevTiltAngle = this.tiltAngle;
@@ -158,8 +163,8 @@ public class SquidEntity extends WaterCreatureEntity {
 				double e = this.getVelocity().y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					e = 0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1);
-				} else if (!this.hasNoGravity()) {
-					e -= 0.08;
+				} else {
+					e -= this.getFinalGravity();
 				}
 
 				this.setVelocity(0.0, e * 0.98F, 0.0);

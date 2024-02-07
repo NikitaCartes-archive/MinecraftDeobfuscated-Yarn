@@ -1,6 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
-public class FleeTask extends MultiTickTask<PathAwareEntity> {
+public class FleeTask<E extends PathAwareEntity> extends MultiTickTask<E> {
 	private static final int MIN_RUN_TIME = 100;
 	private static final int MAX_RUN_TIME = 120;
 	private static final int HORIZONTAL_RANGE = 5;
@@ -27,38 +27,38 @@ public class FleeTask extends MultiTickTask<PathAwareEntity> {
 			|| entity.shouldEscapePowderSnow()
 			|| entity.isOnFire();
 	private final float speed;
-	private final Predicate<PathAwareEntity> predicate;
+	private final Predicate<E> predicate;
 
 	public FleeTask(float speed) {
-		this(speed, PANIC_PREDICATE);
+		this(speed, PANIC_PREDICATE::test);
 	}
 
-	public FleeTask(float speed, Predicate<PathAwareEntity> predicate) {
-		super(ImmutableMap.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.REGISTERED), 100, 120);
+	public FleeTask(float speed, Predicate<E> predicate) {
+		super(Map.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.REGISTERED), 100, 120);
 		this.speed = speed;
 		this.predicate = predicate;
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, E pathAwareEntity) {
 		return this.predicate.test(pathAwareEntity)
 			&& (pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.HURT_BY) || pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING));
 	}
 
-	protected boolean shouldKeepRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {
 		return true;
 	}
 
-	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void run(ServerWorld serverWorld, E pathAwareEntity, long l) {
 		pathAwareEntity.getBrain().remember(MemoryModuleType.IS_PANICKING, true);
 		pathAwareEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
 	}
 
-	protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void finishRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {
 		Brain<?> brain = pathAwareEntity.getBrain();
 		brain.forget(MemoryModuleType.IS_PANICKING);
 	}
 
-	protected void keepRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {
 		if (pathAwareEntity.getNavigation().isIdle()) {
 			Vec3d vec3d = this.findTarget(pathAwareEntity, serverWorld);
 			if (vec3d != null) {
@@ -68,7 +68,7 @@ public class FleeTask extends MultiTickTask<PathAwareEntity> {
 	}
 
 	@Nullable
-	private Vec3d findTarget(PathAwareEntity entity, ServerWorld world) {
+	private Vec3d findTarget(E entity, ServerWorld world) {
 		if (entity.isOnFire()) {
 			Optional<Vec3d> optional = this.findClosestWater(world, entity).map(Vec3d::ofBottomCenter);
 			if (optional.isPresent()) {

@@ -14,13 +14,14 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryLoader;
 import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.tag.TagPacketSerializer;
+import net.minecraft.resource.ResourceFactory;
 
 @Environment(EnvType.CLIENT)
 public class ClientRegistries {
 	@Nullable
 	private ClientRegistries.DynamicRegistries dynamicRegistries;
 	@Nullable
-	private ClientRegistries.Tags tags;
+	private ClientTagLoader tagLoader;
 
 	public void putDynamicRegistry(RegistryKey<? extends Registry<?>> registryRef, List<SerializableRegistries.SerializedRegistryEntry> entries) {
 		if (this.dynamicRegistries == null) {
@@ -31,28 +32,26 @@ public class ClientRegistries {
 	}
 
 	public void putTags(Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> tags) {
-		if (this.tags == null) {
-			this.tags = new ClientRegistries.Tags();
+		if (this.tagLoader == null) {
+			this.tagLoader = new ClientTagLoader();
 		}
 
-		tags.forEach(this.tags::put);
+		tags.forEach(this.tagLoader::put);
 	}
 
-	public DynamicRegistryManager.Immutable createRegistryManager(DynamicRegistryManager precedingRegistryManager, boolean local) {
+	public DynamicRegistryManager.Immutable createRegistryManager(ResourceFactory factory, DynamicRegistryManager registryManager, boolean local) {
 		CombinedDynamicRegistries<ClientDynamicRegistryType> combinedDynamicRegistries = ClientDynamicRegistryType.createCombinedDynamicRegistries();
 		DynamicRegistryManager dynamicRegistryManager;
 		if (this.dynamicRegistries != null) {
-			DynamicRegistryManager.Immutable immutable = this.dynamicRegistries
-				.load(combinedDynamicRegistries.getPrecedingRegistryManagers(ClientDynamicRegistryType.REMOTE))
-				.toImmutable();
-			dynamicRegistryManager = combinedDynamicRegistries.with(ClientDynamicRegistryType.REMOTE, immutable).getCombinedRegistryManager();
+			DynamicRegistryManager.Immutable immutable = combinedDynamicRegistries.getPrecedingRegistryManagers(ClientDynamicRegistryType.REMOTE);
+			DynamicRegistryManager.Immutable immutable2 = this.dynamicRegistries.load(factory, immutable).toImmutable();
+			dynamicRegistryManager = combinedDynamicRegistries.with(ClientDynamicRegistryType.REMOTE, immutable2).getCombinedRegistryManager();
 		} else {
-			dynamicRegistryManager = precedingRegistryManager;
+			dynamicRegistryManager = registryManager;
 		}
 
-		if (this.tags != null && !local) {
-			combinedDynamicRegistries.get(ClientDynamicRegistryType.STATIC).streamAllRegistries().forEach(entry -> entry.value().clearTags());
-			this.tags.load(dynamicRegistryManager);
+		if (this.tagLoader != null) {
+			this.tagLoader.load(dynamicRegistryManager, local);
 		}
 
 		return dynamicRegistryManager.toImmutable();
@@ -66,21 +65,8 @@ public class ClientRegistries {
 			((List)this.dynamicRegistries.computeIfAbsent(registryRef, registries -> new ArrayList())).addAll(entries);
 		}
 
-		public DynamicRegistryManager load(DynamicRegistryManager precedingRegistryManager) {
-			return RegistryLoader.loadFromNetwork(this.dynamicRegistries, precedingRegistryManager, RegistryLoader.SYNCED_REGISTRIES);
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class Tags {
-		private final Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> tagsByRegistry = new HashMap();
-
-		public void put(RegistryKey<? extends Registry<?>> registryRef, TagPacketSerializer.Serialized serialized) {
-			this.tagsByRegistry.put(registryRef, serialized);
-		}
-
-		public void load(DynamicRegistryManager registryManager) {
-			this.tagsByRegistry.forEach((registryRef, serialized) -> serialized.loadTo(registryManager.get(registryRef)));
+		public DynamicRegistryManager load(ResourceFactory factory, DynamicRegistryManager registryManager) {
+			return RegistryLoader.loadFromNetwork(this.dynamicRegistries, factory, registryManager, RegistryLoader.SYNCED_REGISTRIES);
 		}
 	}
 }

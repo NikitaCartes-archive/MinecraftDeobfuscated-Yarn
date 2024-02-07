@@ -26,7 +26,7 @@ public record ArmorMaterial(
 	float getToughness,
 	float getKnockbackResistance
 ) {
-	public static final Codec<RegistryEntry<ArmorMaterial>> CODEC = Registries.ARMOR_MATERIAL.createEntryCodec();
+	public static final Codec<RegistryEntry<ArmorMaterial>> CODEC = Registries.ARMOR_MATERIAL.getEntryCodec();
 
 	/**
 	 * Returns the amount of armor protection points offered by an {@link ArmorItem}

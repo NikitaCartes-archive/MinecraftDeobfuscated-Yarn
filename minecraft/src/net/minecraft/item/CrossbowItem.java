@@ -107,7 +107,7 @@ public class CrossbowItem extends RangedWeaponItem {
 	private static boolean loadProjectiles(LivingEntity shooter, ItemStack crossbow) {
 		int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, crossbow);
 		int j = i == 0 ? 1 : 3;
-		boolean bl = shooter instanceof PlayerEntity && ((PlayerEntity)shooter).getAbilities().creativeMode;
+		boolean bl = shooter.isInCreativeMode();
 		ItemStack itemStack = shooter.getProjectileType(crossbow);
 		ItemStack itemStack2 = itemStack.copy();
 

@@ -27,6 +27,6 @@ public record DebugSampleSubscriptionC2SPacket(DebugSampleType sampleType) imple
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onDebugSampleSubcription(this);
+		serverPlayPacketListener.onDebugSampleSubscription(this);
 	}
 }

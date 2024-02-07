@@ -1,5 +1,7 @@
 package net.minecraft.item.map;
 
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
@@ -15,18 +17,23 @@ public class MapFrameMarker {
 		this.entityId = entityId;
 	}
 
+	@Nullable
 	public static MapFrameMarker fromNbt(NbtCompound nbt) {
-		BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("Pos"));
-		int i = nbt.getInt("Rotation");
-		int j = nbt.getInt("EntityId");
-		return new MapFrameMarker(blockPos, i, j);
+		Optional<BlockPos> optional = NbtHelper.toBlockPos(nbt, "pos");
+		if (optional.isEmpty()) {
+			return null;
+		} else {
+			int i = nbt.getInt("rotation");
+			int j = nbt.getInt("entity_id");
+			return new MapFrameMarker((BlockPos)optional.get(), i, j);
+		}
 	}
 
 	public NbtCompound toNbt() {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.put("Pos", NbtHelper.fromBlockPos(this.pos));
-		nbtCompound.putInt("Rotation", this.rotation);
-		nbtCompound.putInt("EntityId", this.entityId);
+		nbtCompound.put("pos", NbtHelper.fromBlockPos(this.pos));
+		nbtCompound.putInt("rotation", this.rotation);
+		nbtCompound.putInt("entity_id", this.entityId);
 		return nbtCompound;
 	}
 

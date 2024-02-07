@@ -99,12 +99,12 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(TRACKED_ENTITY_ID_1, 0);
-		this.dataTracker.startTracking(TRACKED_ENTITY_ID_2, 0);
-		this.dataTracker.startTracking(TRACKED_ENTITY_ID_3, 0);
-		this.dataTracker.startTracking(INVUL_TIMER, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(TRACKED_ENTITY_ID_1, 0);
+		builder.add(TRACKED_ENTITY_ID_2, 0);
+		builder.add(TRACKED_ENTITY_ID_3, 0);
+		builder.add(INVUL_TIMER, 0);
 	}
 
 	@Override

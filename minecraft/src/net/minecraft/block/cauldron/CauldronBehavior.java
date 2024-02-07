@@ -152,10 +152,7 @@ public interface CauldronBehavior {
 			if (!world.isClient) {
 				ItemStack itemStack = stack.copyWithCount(1);
 				BannerBlockEntity.loadFromItemStack(itemStack);
-				if (!player.getAbilities().creativeMode) {
-					stack.decrement(1);
-				}
-
+				stack.decrementUnlessCreative(1, player);
 				if (stack.isEmpty()) {
 					player.setStackInHand(hand, itemStack);
 				} else if (player.getInventory().insertStack(itemStack)) {

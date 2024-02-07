@@ -8,7 +8,6 @@ import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -64,6 +63,6 @@ public class SuspiciousStewItem extends Item {
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		ItemStack itemStack = super.finishUsing(stack, world, user);
 		forEachEffect(itemStack, effect -> user.addStatusEffect(effect.createStatusEffectInstance()));
-		return user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode ? itemStack : new ItemStack(Items.BOWL);
+		return user.isInCreativeMode() ? itemStack : new ItemStack(Items.BOWL);
 	}
 }

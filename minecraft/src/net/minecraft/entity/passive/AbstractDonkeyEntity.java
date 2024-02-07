@@ -43,13 +43,13 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(CHEST, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(CHEST, false);
 	}
 
 	public static DefaultAttributeContainer.Builder createAbstractDonkeyAttributes() {
-		return createBaseHorseAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175F).add(EntityAttributes.HORSE_JUMP_STRENGTH, 0.5);
+		return createBaseHorseAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175F).add(EntityAttributes.GENERIC_JUMP_STRENGTH, 0.5);
 	}
 
 	public boolean hasChest() {
@@ -184,10 +184,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	private void addChest(PlayerEntity player, ItemStack chest) {
 		this.setHasChest(true);
 		this.playAddChestSound();
-		if (!player.getAbilities().creativeMode) {
-			chest.decrement(1);
-		}
-
+		chest.decrementUnlessCreative(1, player);
 		this.onChestedStatusChanged();
 	}
 

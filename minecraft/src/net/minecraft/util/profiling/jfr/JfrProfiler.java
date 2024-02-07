@@ -34,12 +34,16 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.profiling.jfr.event.ChunkGenerationEvent;
+import net.minecraft.util.profiling.jfr.event.ChunkRegionReadEvent;
+import net.minecraft.util.profiling.jfr.event.ChunkRegionWriteEvent;
 import net.minecraft.util.profiling.jfr.event.NetworkSummaryEvent;
 import net.minecraft.util.profiling.jfr.event.PacketReceivedEvent;
 import net.minecraft.util.profiling.jfr.event.PacketSentEvent;
 import net.minecraft.util.profiling.jfr.event.ServerTickTimeEvent;
 import net.minecraft.util.profiling.jfr.event.WorldLoadFinishedEvent;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.ChunkCompressionFormat;
+import net.minecraft.world.storage.StorageKey;
 import org.slf4j.Logger;
 
 public class JfrProfiler implements FlightProfiler {
@@ -48,8 +52,11 @@ public class JfrProfiler implements FlightProfiler {
 	public static final String WORLD_GENERATION = "World Generation";
 	public static final String TICKING = "Ticking";
 	public static final String NETWORK = "Network";
+	public static final String STORAGE = "Storage";
 	private static final List<Class<? extends Event>> EVENTS = List.of(
 		ChunkGenerationEvent.class,
+		ChunkRegionReadEvent.class,
+		ChunkRegionWriteEvent.class,
 		PacketReceivedEvent.class,
 		PacketSentEvent.class,
 		NetworkSummaryEvent.class,
@@ -193,9 +200,9 @@ public class JfrProfiler implements FlightProfiler {
 	}
 
 	@Override
-	public void onPacketReceived(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes) {
+	public void onPacketReceived(NetworkPhase state, PacketType<?> type, SocketAddress remoteAddress, int bytes) {
 		if (PacketReceivedEvent.TYPE.isEnabled()) {
-			new PacketReceivedEvent(state.getId(), packetType.side().getName(), packetType.id().toString(), remoteAddress, bytes).commit();
+			new PacketReceivedEvent(state.getId(), type.side().getName(), type.id().toString(), remoteAddress, bytes).commit();
 		}
 
 		if (NetworkSummaryEvent.TYPE.isEnabled()) {
@@ -204,9 +211,9 @@ public class JfrProfiler implements FlightProfiler {
 	}
 
 	@Override
-	public void onPacketSent(NetworkPhase state, PacketType<?> packetType, SocketAddress remoteAddress, int bytes) {
+	public void onPacketSent(NetworkPhase state, PacketType<?> type, SocketAddress remoteAddress, int bytes) {
 		if (PacketSentEvent.TYPE.isEnabled()) {
-			new PacketSentEvent(state.getId(), packetType.side().getName(), packetType.id().toString(), remoteAddress, bytes).commit();
+			new PacketSentEvent(state.getId(), type.side().getName(), type.id().toString(), remoteAddress, bytes).commit();
 		}
 
 		if (NetworkSummaryEvent.TYPE.isEnabled()) {
@@ -216,6 +223,20 @@ public class JfrProfiler implements FlightProfiler {
 
 	private NetworkSummaryEvent.Recorder getOrCreateSummaryRecorder(SocketAddress address) {
 		return (NetworkSummaryEvent.Recorder)this.summaryRecorderByAddress.computeIfAbsent(address.toString(), NetworkSummaryEvent.Recorder::new);
+	}
+
+	@Override
+	public void onChunkRegionRead(StorageKey key, ChunkPos chunkPos, ChunkCompressionFormat format, int bytes) {
+		if (ChunkRegionReadEvent.TYPE.isEnabled()) {
+			new ChunkRegionReadEvent(key, chunkPos, format, bytes).commit();
+		}
+	}
+
+	@Override
+	public void onChunkRegionWrite(StorageKey key, ChunkPos chunkPos, ChunkCompressionFormat format, int bytes) {
+		if (ChunkRegionWriteEvent.TYPE.isEnabled()) {
+			new ChunkRegionWriteEvent(key, chunkPos, format, bytes).commit();
+		}
 	}
 
 	@Nullable

@@ -72,9 +72,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(SIZE, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SIZE, 0);
 	}
 
 	public void setPhantomSize(int size) {

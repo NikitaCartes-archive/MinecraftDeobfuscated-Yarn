@@ -343,6 +343,7 @@ public class ItemModelGenerator {
 		this.register(Items.WATER_BUCKET, Models.GENERATED);
 		this.register(Items.WHEAT, Models.GENERATED);
 		this.register(Items.WHITE_DYE, Models.GENERATED);
+		this.register(Items.WIND_CHARGE, Models.GENERATED);
 		this.register(Items.WOODEN_AXE, Models.HANDHELD);
 		this.register(Items.WOODEN_HOE, Models.HANDHELD);
 		this.register(Items.WOODEN_PICKAXE, Models.HANDHELD);

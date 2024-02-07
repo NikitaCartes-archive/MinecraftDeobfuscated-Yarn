@@ -131,11 +131,11 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(ATTACHED_FACE, Direction.DOWN);
-		this.dataTracker.startTracking(PEEK_AMOUNT, (byte)0);
-		this.dataTracker.startTracking(COLOR, (byte)16);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(ATTACHED_FACE, Direction.DOWN);
+		builder.add(PEEK_AMOUNT, (byte)0);
+		builder.add(COLOR, (byte)16);
 	}
 
 	public static DefaultAttributeContainer.Builder createShulkerAttributes() {

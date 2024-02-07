@@ -155,7 +155,7 @@ public class CreateWorldScreen extends Screen {
 			client,
 			parent,
 			generatorOptionsHolder,
-			WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()),
+			WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions()),
 			OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed())
 		);
 		createWorldScreen.recreated = true;
@@ -370,8 +370,8 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void applyDataPacks(ResourcePackManager dataPackManager, boolean fromPackScreen, Consumer<DataConfiguration> configurationSetter) {
-		List<String> list = ImmutableList.copyOf(dataPackManager.getEnabledNames());
-		List<String> list2 = (List)dataPackManager.getNames().stream().filter(name -> !list.contains(name)).collect(ImmutableList.toImmutableList());
+		List<String> list = ImmutableList.copyOf(dataPackManager.getEnabledIds());
+		List<String> list2 = (List)dataPackManager.getIds().stream().filter(name -> !list.contains(name)).collect(ImmutableList.toImmutableList());
 		DataConfiguration dataConfiguration = new DataConfiguration(
 			new DataPackSettings(list, list2), this.worldCreator.getGeneratorOptionsHolder().dataConfiguration().enabledFeatures()
 		);

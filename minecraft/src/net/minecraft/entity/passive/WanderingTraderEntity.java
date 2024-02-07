@@ -165,7 +165,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("DespawnDelay", this.despawnDelay);
 		if (this.wanderTarget != null) {
-			nbt.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
+			nbt.put("wander_target", NbtHelper.fromBlockPos(this.wanderTarget));
 		}
 	}
 
@@ -176,10 +176,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 			this.despawnDelay = nbt.getInt("DespawnDelay");
 		}
 
-		if (nbt.contains("WanderTarget")) {
-			this.wanderTarget = NbtHelper.toBlockPos(nbt.getCompound("WanderTarget"));
-		}
-
+		NbtHelper.toBlockPos(nbt, "wander_target").ifPresent(wanderTarget -> this.wanderTarget = wanderTarget);
 		this.setBreedingAge(Math.max(0, this.getBreedingAge()));
 	}
 

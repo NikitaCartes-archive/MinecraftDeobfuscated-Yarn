@@ -18,10 +18,7 @@ public class EmptyMapItem extends NetworkSyncedItem {
 		if (world.isClient) {
 			return TypedActionResult.success(itemStack);
 		} else {
-			if (!user.getAbilities().creativeMode) {
-				itemStack.decrement(1);
-			}
-
+			itemStack.decrementUnlessCreative(1, user);
 			user.incrementStat(Stats.USED.getOrCreateStat(this));
 			user.getWorld().playSoundFromEntity(null, user, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, user.getSoundCategory(), 1.0F, 1.0F);
 			ItemStack itemStack2 = FilledMapItem.createMap(world, user.getBlockX(), user.getBlockZ(), (byte)0, true, false);

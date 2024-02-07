@@ -90,11 +90,10 @@ public class SnifferBrain {
 	}
 
 	private static void addCoreActivities(Brain<SnifferEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new FleeTask(2.0F) {
-			@Override
-			protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-				SnifferBrain.stopDiggingOrSniffing((SnifferEntity)pathAwareEntity);
-				super.run(serverWorld, pathAwareEntity, l);
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new FleeTask<SnifferEntity>(2.0F) {
+			protected void run(ServerWorld serverWorld, SnifferEntity snifferEntity, long l) {
+				SnifferBrain.stopDiggingOrSniffing(snifferEntity);
+				super.run(serverWorld, snifferEntity, l);
 			}
 		}, new WanderAroundTask(500, 700), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)));
 	}

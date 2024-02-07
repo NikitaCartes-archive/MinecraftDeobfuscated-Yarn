@@ -40,7 +40,6 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -74,7 +73,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
 	};
 	private static final float WILD_MAX_HEALTH = 8.0F;
-	private static final float TAMED_MAX_HEALTH = 20.0F;
+	private static final float TAMED_MAX_HEALTH = 40.0F;
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
 	private boolean furWet;
@@ -87,7 +86,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 
 	public WolfEntity(EntityType<? extends WolfEntity> entityType, World world) {
 		super(entityType, world);
-		this.setTamed(false);
+		this.setTamed(false, false);
 		this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0F);
 	}
@@ -120,15 +119,15 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		return MobEntity.createMobAttributes()
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0);
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(BEGGING, false);
-		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
-		this.dataTracker.startTracking(ANGER_TIME, 0);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(BEGGING, false);
+		builder.add(COLLAR_COLOR, DyeColor.RED.getId());
+		builder.add(ANGER_TIME, 0);
 	}
 
 	@Override
@@ -158,7 +157,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		if (this.hasAngerTime()) {
 			return SoundEvents.ENTITY_WOLF_GROWL;
 		} else if (this.random.nextInt(3) == 0) {
-			return this.isTamed() && this.getHealth() < 10.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
+			return this.isTamed() && this.getHealth() < 20.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
 		} else {
 			return SoundEvents.ENTITY_WOLF_AMBIENT;
 		}
@@ -304,13 +303,8 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			Entity entity = source.getAttacker();
 			if (!this.getWorld().isClient) {
 				this.setSitting(false);
-			}
-
-			if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof PersistentProjectileEntity)) {
-				amount = (amount + 1.0F) / 2.0F;
 			}
 
 			return super.damage(source, amount);
@@ -328,16 +322,13 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	}
 
 	@Override
-	public void setTamed(boolean tamed) {
-		super.setTamed(tamed);
-		if (tamed) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(20.0);
-			this.setHealth(20.0F);
+	protected void updateAttributesForTamed() {
+		if (this.isTamed()) {
+			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(40.0);
+			this.setHealth(40.0F);
 		} else {
 			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(8.0);
 		}
-
-		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4.0);
 	}
 
 	@Override
@@ -349,21 +340,15 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			return bl ? ActionResult.CONSUME : ActionResult.PASS;
 		} else if (this.isTamed()) {
 			if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
-				if (!player.getAbilities().creativeMode) {
-					itemStack.decrement(1);
-				}
-
-				this.heal((float)item.getFoodComponent().getHunger());
+				itemStack.decrementUnlessCreative(1, player);
+				this.heal(2.0F * (float)item.getFoodComponent().getHunger());
 				return ActionResult.SUCCESS;
 			} else {
 				if (item instanceof DyeItem dyeItem && this.isOwner(player)) {
 					DyeColor dyeColor = dyeItem.getColor();
 					if (dyeColor != this.getCollarColor()) {
 						this.setCollarColor(dyeColor);
-						if (!player.getAbilities().creativeMode) {
-							itemStack.decrement(1);
-						}
-
+						itemStack.decrementUnlessCreative(1, player);
 						return ActionResult.SUCCESS;
 					}
 
@@ -372,16 +357,10 @@ public class WolfEntity extends TameableEntity implements Angerable {
 
 				if (itemStack.isOf(Items.WOLF_ARMOR) && this.isOwner(player) && !this.hasArmor() && !this.isBaby()) {
 					this.equipBodyArmor(itemStack.copyWithCount(1));
-					if (!player.getAbilities().creativeMode) {
-						itemStack.decrement(1);
-					}
-
+					itemStack.decrementUnlessCreative(1, player);
 					return ActionResult.SUCCESS;
 				} else if (itemStack.isOf(Items.SHEARS) && this.isOwner(player) && this.hasArmor()) {
-					if (!player.getAbilities().creativeMode) {
-						itemStack.damage(1, player, getSlotForHand(hand));
-					}
-
+					itemStack.damage(1, player, getSlotForHand(hand));
 					this.playSoundIfNotSilent(SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF);
 					ItemStack itemStack2 = this.getBodyArmor();
 					this.equipBodyArmor(ItemStack.EMPTY);
@@ -401,10 +380,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 				}
 			}
 		} else if (itemStack.isOf(Items.BONE) && !this.hasAngerTime()) {
-			if (!player.getAbilities().creativeMode) {
-				itemStack.decrement(1);
-			}
-
+			itemStack.decrementUnlessCreative(1, player);
 			if (this.random.nextInt(3) == 0) {
 				this.setOwner(player);
 				this.navigation.stop();
@@ -437,8 +413,12 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	public float getTailAngle() {
 		if (this.hasAngerTime()) {
 			return 1.5393804F;
+		} else if (this.isTamed()) {
+			float f = this.getMaxHealth();
+			float g = (f - this.getHealth()) / f;
+			return (0.55F - g * 0.4F) * (float) Math.PI;
 		} else {
-			return this.isTamed() ? (0.55F - (this.getMaxHealth() - this.getHealth()) * 0.02F) * (float) Math.PI : (float) (Math.PI / 5);
+			return (float) (Math.PI / 5);
 		}
 	}
 
@@ -498,7 +478,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			UUID uUID = this.getOwnerUuid();
 			if (uUID != null) {
 				wolfEntity.setOwnerUuid(uUID);
-				wolfEntity.setTamed(true);
+				wolfEntity.setTamed(true, true);
 			}
 		}
 

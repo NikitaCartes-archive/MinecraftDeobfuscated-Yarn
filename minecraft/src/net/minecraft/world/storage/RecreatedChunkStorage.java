@@ -12,10 +12,10 @@ public class RecreatedChunkStorage extends VersionedChunkStorage {
 	private final StorageIoWorker recreationWorker;
 	private final Path outputDirectory;
 
-	public RecreatedChunkStorage(Path directory, Path outputDirectory, DataFixer dataFixer, boolean dsync) {
-		super(directory, dataFixer, dsync);
+	public RecreatedChunkStorage(StorageKey storageKey, Path directory, StorageKey outputStorageKey, Path outputDirectory, DataFixer dataFixer, boolean dsync) {
+		super(storageKey, directory, dataFixer, dsync);
 		this.outputDirectory = outputDirectory;
-		this.recreationWorker = new StorageIoWorker(outputDirectory, dsync, "chunk-recreating");
+		this.recreationWorker = new StorageIoWorker(outputStorageKey, outputDirectory, dsync);
 	}
 
 	@Override

@@ -45,9 +45,9 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		this.getDataTracker().startTracking(BEAM_TARGET, Optional.empty());
-		this.getDataTracker().startTracking(SHOW_BOTTOM, true);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(BEAM_TARGET, Optional.empty());
+		builder.add(SHOW_BOTTOM, true);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class EndCrystalEntity extends Entity {
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		if (this.getBeamTarget() != null) {
-			nbt.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
+			nbt.put("beam_target", NbtHelper.fromBlockPos(this.getBeamTarget()));
 		}
 
 		nbt.putBoolean("ShowBottom", this.shouldShowBottom());
@@ -72,10 +72,7 @@ public class EndCrystalEntity extends Entity {
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		if (nbt.contains("BeamTarget", NbtElement.COMPOUND_TYPE)) {
-			this.setBeamTarget(NbtHelper.toBlockPos(nbt.getCompound("BeamTarget")));
-		}
-
+		NbtHelper.toBlockPos(nbt, "beam_target").ifPresent(this::setBeamTarget);
 		if (nbt.contains("ShowBottom", NbtElement.BYTE_TYPE)) {
 			this.setShowBottom(nbt.getBoolean("ShowBottom"));
 		}

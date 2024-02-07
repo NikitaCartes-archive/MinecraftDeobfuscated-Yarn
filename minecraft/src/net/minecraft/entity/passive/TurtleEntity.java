@@ -137,14 +137,14 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(HOME_POS, BlockPos.ORIGIN);
-		this.dataTracker.startTracking(HAS_EGG, false);
-		this.dataTracker.startTracking(TRAVEL_POS, BlockPos.ORIGIN);
-		this.dataTracker.startTracking(LAND_BOUND, false);
-		this.dataTracker.startTracking(ACTIVELY_TRAVELING, false);
-		this.dataTracker.startTracking(DIGGING_SAND, false);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(HOME_POS, BlockPos.ORIGIN);
+		builder.add(HAS_EGG, false);
+		builder.add(TRAVEL_POS, BlockPos.ORIGIN);
+		builder.add(LAND_BOUND, false);
+		builder.add(ACTIVELY_TRAVELING, false);
+		builder.add(DIGGING_SAND, false);
 	}
 
 	@Override

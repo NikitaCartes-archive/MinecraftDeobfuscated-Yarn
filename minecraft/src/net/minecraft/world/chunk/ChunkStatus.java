@@ -181,7 +181,7 @@ public class ChunkStatus {
 		(targetStatus, world, structureTemplateManager, lightingProvider, fullChunkConverter, chunk) -> getLightingFuture(lightingProvider, chunk)
 	);
 	public static final ChunkStatus SPAWN = register(
-		"spawn", LIGHT, 0, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
+		"spawn", LIGHT, 1, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
 			if (!chunk.hasBelowZeroRetrogen()) {
 				generator.populateEntities(new ChunkRegion(world, chunks, targetStatus, -1));
 			}

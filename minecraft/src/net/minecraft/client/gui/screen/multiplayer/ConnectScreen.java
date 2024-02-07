@@ -44,7 +44,7 @@ public class ConnectScreen extends Screen {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final long NARRATOR_INTERVAL = 2000L;
 	public static final Text ABORTED_TEXT = Text.translatable("connect.aborted");
-	public static final Text BLOCKED_HOST_TEXT = Text.translatable("disconnect.genericReason", Text.translatable("disconnect.unknownHost"));
+	public static final Text UNKNOWN_HOST_TEXT = Text.translatable("disconnect.genericReason", Text.translatable("disconnect.unknownHost"));
 	/**
 	 * The client connection to the remote server.
 	 * This is not used when connecting to the client's own integrated server.
@@ -114,7 +114,7 @@ public class ConnectScreen extends Screen {
 
 					if (optional.isEmpty()) {
 						client.execute(
-							() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.failureErrorMessage, ConnectScreen.BLOCKED_HOST_TEXT))
+							() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.failureErrorMessage, ConnectScreen.UNKNOWN_HOST_TEXT))
 						);
 						return;
 					}

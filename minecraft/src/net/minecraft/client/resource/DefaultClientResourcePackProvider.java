@@ -12,9 +12,12 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.registry.VersionedIdentifier;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.DefaultResourcePackBuilder;
 import net.minecraft.resource.ResourcePack;
+import net.minecraft.resource.ResourcePackInfo;
+import net.minecraft.resource.ResourcePackPosition;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
@@ -31,11 +34,15 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 		Text.translatable("resourcePack.vanilla.description"), SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES), Optional.empty()
 	);
 	private static final ResourceMetadataMap METADATA_MAP = ResourceMetadataMap.of(PackResourceMetadata.SERIALIZER, METADATA);
-	private static final Text VANILLA_NAME_TEXT = Text.translatable("resourcePack.vanilla.name");
-	public static final String HIGH_CONTRAST_NAME = "high_contrast";
+	public static final String HIGH_CONTRAST_ID = "high_contrast";
 	private static final Map<String, Text> PROFILE_NAME_TEXTS = Map.of(
 		"programmer_art", Text.translatable("resourcePack.programmer_art.name"), "high_contrast", Text.translatable("resourcePack.high_contrast.name")
 	);
+	private static final ResourcePackInfo INFO = new ResourcePackInfo(
+		"vanilla", Text.translatable("resourcePack.vanilla.name"), ResourcePackSource.BUILTIN, Optional.of(VANILLA_ID)
+	);
+	private static final ResourcePackPosition REQUIRED_POSITION = new ResourcePackPosition(true, ResourcePackProfile.InsertionPosition.BOTTOM, false);
+	private static final ResourcePackPosition OPTIONAL_POSITION = new ResourcePackPosition(false, ResourcePackProfile.InsertionPosition.TOP, false);
 	private static final Identifier ID = new Identifier("minecraft", "resourcepacks");
 	@Nullable
 	private final Path resourcePacksPath;
@@ -43,6 +50,10 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 	public DefaultClientResourcePackProvider(Path assetsPath, SymlinkFinder symlinkFinder) {
 		super(ResourceType.CLIENT_RESOURCES, createDefaultPack(assetsPath), ID, symlinkFinder);
 		this.resourcePacksPath = this.getResourcePacksPath(assetsPath);
+	}
+
+	private static ResourcePackInfo createInfo(String id, Text title) {
+		return new ResourcePackInfo(id, title, ResourcePackSource.BUILTIN, Optional.of(VersionedIdentifier.createVanilla(id)));
 	}
 
 	@Nullable
@@ -59,11 +70,11 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 
 	private static DefaultResourcePack createDefaultPack(Path assetsPath) {
 		DefaultResourcePackBuilder defaultResourcePackBuilder = new DefaultResourcePackBuilder().withMetadataMap(METADATA_MAP).withNamespaces("minecraft", "realms");
-		return defaultResourcePackBuilder.runCallback().withDefaultPaths().withPath(ResourceType.CLIENT_RESOURCES, assetsPath).build();
+		return defaultResourcePackBuilder.runCallback().withDefaultPaths().withPath(ResourceType.CLIENT_RESOURCES, assetsPath).build(INFO);
 	}
 
 	@Override
-	protected Text getProfileName(String id) {
+	protected Text getDisplayName(String id) {
 		Text text = (Text)PROFILE_NAME_TEXTS.get(id);
 		return (Text)(text != null ? text : Text.literal(id));
 	}
@@ -71,23 +82,13 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 	@Nullable
 	@Override
 	protected ResourcePackProfile createDefault(ResourcePack pack) {
-		return ResourcePackProfile.create(
-			"vanilla",
-			VANILLA_NAME_TEXT,
-			true,
-			createPackFactory(pack),
-			ResourceType.CLIENT_RESOURCES,
-			ResourcePackProfile.InsertionPosition.BOTTOM,
-			ResourcePackSource.BUILTIN
-		);
+		return ResourcePackProfile.create(INFO, createPackFactory(pack), ResourceType.CLIENT_RESOURCES, REQUIRED_POSITION);
 	}
 
 	@Nullable
 	@Override
-	protected ResourcePackProfile create(String name, ResourcePackProfile.PackFactory packFactory, Text displayName) {
-		return ResourcePackProfile.create(
-			name, displayName, false, packFactory, ResourceType.CLIENT_RESOURCES, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.BUILTIN
-		);
+	protected ResourcePackProfile create(String fileName, ResourcePackProfile.PackFactory packFactory, Text displayName) {
+		return ResourcePackProfile.create(createInfo(fileName, displayName), packFactory, ResourceType.CLIENT_RESOURCES, OPTIONAL_POSITION);
 	}
 
 	@Override

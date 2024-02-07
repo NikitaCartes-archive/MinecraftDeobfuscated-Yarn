@@ -45,6 +45,12 @@ public class AnimationState {
 		}
 	}
 
+	public void skip(int seconds, float speedMultiplier) {
+		if (this.isRunning()) {
+			this.timeRunning += (long)((float)(seconds * 1000) * speedMultiplier) / 20L;
+		}
+	}
+
 	public long getTimeRunning() {
 		return this.timeRunning;
 	}

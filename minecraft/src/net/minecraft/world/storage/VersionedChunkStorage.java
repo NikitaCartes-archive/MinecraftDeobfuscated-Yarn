@@ -26,9 +26,9 @@ public class VersionedChunkStorage implements AutoCloseable {
 	@Nullable
 	private volatile FeatureUpdater featureUpdater;
 
-	public VersionedChunkStorage(Path directory, DataFixer dataFixer, boolean dsync) {
+	public VersionedChunkStorage(StorageKey storageKey, Path directory, DataFixer dataFixer, boolean dsync) {
 		this.dataFixer = dataFixer;
-		this.worker = new StorageIoWorker(directory, dsync, "chunk");
+		this.worker = new StorageIoWorker(storageKey, directory, dsync);
 	}
 
 	public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {

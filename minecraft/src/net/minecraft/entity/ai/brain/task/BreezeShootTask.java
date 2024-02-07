@@ -4,13 +4,12 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.BreezeEntity;
-import net.minecraft.entity.projectile.WindChargeEntity;
+import net.minecraft.entity.projectile.BreezeWindChargeEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Unit;
@@ -96,10 +95,10 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 					double d = livingEntity.getX() - breezeEntity.getX();
 					double e = livingEntity.getBodyY(0.3) - breezeEntity.getBodyY(0.5);
 					double f = livingEntity.getZ() - breezeEntity.getZ();
-					WindChargeEntity windChargeEntity = new WindChargeEntity(EntityType.WIND_CHARGE, breezeEntity, serverWorld);
+					BreezeWindChargeEntity breezeWindChargeEntity = new BreezeWindChargeEntity(breezeEntity, serverWorld);
 					breezeEntity.playSound(SoundEvents.ENTITY_BREEZE_SHOOT, 1.5F, 1.0F);
-					windChargeEntity.setVelocity(d, e, f, 0.7F, (float)(5 - serverWorld.getDifficulty().getId() * 4));
-					serverWorld.spawnEntity(windChargeEntity);
+					breezeWindChargeEntity.setVelocity(d, e, f, 0.7F, (float)(5 - serverWorld.getDifficulty().getId() * 4));
+					serverWorld.spawnEntity(breezeWindChargeEntity);
 				}
 			}
 		}

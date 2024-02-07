@@ -15,22 +15,22 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3811;
+	public static final int WORLD_VERSION = 3815;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "24w05b";
+	public static final String VERSION_NAME = "24w06a";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 766;
 	@Deprecated
-	public static final int field_29736 = 175;
+	public static final int field_29736 = 176;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3798;
 	private static final int field_29708 = 30;
 	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 25;
+	public static final int RESOURCE_PACK_VERSION = 26;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 30;
+	public static final int DATA_PACK_VERSION = 31;
 	@Deprecated
 	public static final int field_39963 = 1;
 	public static final int field_39964 = 1;
@@ -119,6 +119,7 @@ public class SharedConstants {
 	public static final boolean field_41533 = false;
 	public static final boolean field_44780 = false;
 	public static final long field_22251 = Duration.ofMillis(300L).toNanos();
+	public static final float field_49016 = 3600000.0F;
 	public static final boolean field_44583 = false;
 	/**
 	 * Specifies whether Minecraft should use choice type registrations from the game's schema when entity types or block entity types are created.
@@ -129,6 +130,7 @@ public class SharedConstants {
 	public static final int CHUNK_WIDTH = 16;
 	public static final int DEFAULT_WORLD_HEIGHT = 256;
 	public static final int COMMAND_MAX_LENGTH = 32500;
+	public static final int EXPANDED_MACRO_COMMAND_MAX_LENGTH = 2000000;
 	public static final int field_38052 = 1000000;
 	public static final int field_39898 = 32;
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
@@ -217,7 +219,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741999;
+		return 1073742000;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {

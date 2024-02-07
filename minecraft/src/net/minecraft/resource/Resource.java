@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.registry.VersionedIdentifier;
 import net.minecraft.resource.metadata.ResourceMetadata;
 
 /**
@@ -41,18 +43,18 @@ public class Resource {
 	}
 
 	/**
-	 * Returns the user-friendly name of the pack this resource is from.
+	 * {@return the ID of the pack this resource is from}
 	 */
-	public String getResourcePackName() {
-		return this.pack.getName();
+	public String getPackId() {
+		return this.pack.getId();
 	}
 
-	public boolean isAlwaysStable() {
-		return this.pack.isAlwaysStable();
+	public Optional<VersionedIdentifier> getKnownPackInfo() {
+		return this.pack.getKnownPackInfo();
 	}
 
 	/**
-	 * Returns the input stream of this resource.
+	 * {@return the input stream of this resource}
 	 * 
 	 * <p>This input stream is closed when this resource is closed.
 	 */

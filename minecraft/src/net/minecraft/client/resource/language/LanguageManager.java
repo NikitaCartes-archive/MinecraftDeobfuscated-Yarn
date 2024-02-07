@@ -40,7 +40,7 @@ public class LanguageManager implements SynchronousResourceReloader {
 					languageResourceMetadata.definitions().forEach(map::putIfAbsent);
 				}
 			} catch (IOException | RuntimeException var3) {
-				LOGGER.warn("Unable to parse language metadata section of resourcepack: {}", pack.getName(), var3);
+				LOGGER.warn("Unable to parse language metadata section of resourcepack: {}", pack.getId(), var3);
 			}
 		});
 		return ImmutableMap.copyOf(map);

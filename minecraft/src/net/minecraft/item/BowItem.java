@@ -26,7 +26,7 @@ public class BowItem extends RangedWeaponItem {
 	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
 		if (user instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)user;
-			boolean bl = playerEntity.getAbilities().creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
+			boolean bl = playerEntity.isInCreativeMode() || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
 			ItemStack itemStack = playerEntity.getProjectileType(stack);
 			if (!itemStack.isEmpty() || bl) {
 				if (itemStack.isEmpty()) {
@@ -60,7 +60,7 @@ public class BowItem extends RangedWeaponItem {
 						}
 
 						stack.damage(1, playerEntity, LivingEntity.getSlotForHand(playerEntity.getActiveHand()));
-						if (bl2 || playerEntity.getAbilities().creativeMode && (itemStack.isOf(Items.SPECTRAL_ARROW) || itemStack.isOf(Items.TIPPED_ARROW))) {
+						if (bl2 || playerEntity.isInCreativeMode() && (itemStack.isOf(Items.SPECTRAL_ARROW) || itemStack.isOf(Items.TIPPED_ARROW))) {
 							persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 						}
 
@@ -77,7 +77,7 @@ public class BowItem extends RangedWeaponItem {
 						1.0F,
 						1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F
 					);
-					if (!bl2 && !playerEntity.getAbilities().creativeMode) {
+					if (!bl2 && !playerEntity.isInCreativeMode()) {
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
 							playerEntity.getInventory().removeOne(itemStack);
@@ -114,7 +114,7 @@ public class BowItem extends RangedWeaponItem {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		boolean bl = !user.getProjectileType(itemStack).isEmpty();
-		if (!user.getAbilities().creativeMode && !bl) {
+		if (!user.isInCreativeMode() && !bl) {
 			return TypedActionResult.fail(itemStack);
 		} else {
 			user.setCurrentHand(hand);

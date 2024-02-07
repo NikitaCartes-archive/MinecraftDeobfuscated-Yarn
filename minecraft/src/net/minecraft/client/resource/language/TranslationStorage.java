@@ -71,7 +71,7 @@ public class TranslationStorage extends Language {
 					inputStream.close();
 				}
 			} catch (IOException var10) {
-				LOGGER.warn("Failed to load translations for {} from pack {}", langCode, resource.getResourcePackName(), var10);
+				LOGGER.warn("Failed to load translations for {} from pack {}", langCode, resource.getPackId(), var10);
 			}
 		}
 	}

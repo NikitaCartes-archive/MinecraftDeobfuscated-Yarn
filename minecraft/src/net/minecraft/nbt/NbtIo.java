@@ -50,26 +50,40 @@ public class NbtIo {
 	public static NbtCompound readCompressed(Path path, NbtSizeTracker tagSizeTracker) throws IOException {
 		InputStream inputStream = Files.newInputStream(path);
 
-		NbtCompound var3;
+		NbtCompound var4;
 		try {
-			var3 = readCompressed(inputStream, tagSizeTracker);
-		} catch (Throwable var6) {
+			InputStream inputStream2 = new FixedBufferInputStream(inputStream);
+
+			try {
+				var4 = readCompressed(inputStream2, tagSizeTracker);
+			} catch (Throwable var8) {
+				try {
+					inputStream2.close();
+				} catch (Throwable var7) {
+					var8.addSuppressed(var7);
+				}
+
+				throw var8;
+			}
+
+			inputStream2.close();
+		} catch (Throwable var9) {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
-				} catch (Throwable var5) {
-					var6.addSuppressed(var5);
+				} catch (Throwable var6) {
+					var9.addSuppressed(var6);
 				}
 			}
 
-			throw var6;
+			throw var9;
 		}
 
 		if (inputStream != null) {
 			inputStream.close();
 		}
 
-		return var3;
+		return var4;
 	}
 
 	/**
@@ -135,17 +149,31 @@ public class NbtIo {
 		InputStream inputStream = Files.newInputStream(path);
 
 		try {
-			scanCompressed(inputStream, scanner, tracker);
-		} catch (Throwable var7) {
+			InputStream inputStream2 = new FixedBufferInputStream(inputStream);
+
+			try {
+				scanCompressed(inputStream2, scanner, tracker);
+			} catch (Throwable var9) {
+				try {
+					inputStream2.close();
+				} catch (Throwable var8) {
+					var9.addSuppressed(var8);
+				}
+
+				throw var9;
+			}
+
+			inputStream2.close();
+		} catch (Throwable var10) {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
-				} catch (Throwable var6) {
-					var7.addSuppressed(var6);
+				} catch (Throwable var7) {
+					var10.addSuppressed(var7);
 				}
 			}
 
-			throw var7;
+			throw var10;
 		}
 
 		if (inputStream != null) {

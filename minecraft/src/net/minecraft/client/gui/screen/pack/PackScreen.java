@@ -296,7 +296,7 @@ public class PackScreen extends Screen {
 					return UNKNOWN_PACK;
 				}
 
-				String string = resourcePackProfile.getName();
+				String string = resourcePackProfile.getId();
 				Identifier identifier = new Identifier(
 					"minecraft", "pack/" + Util.replaceInvalidChars(string, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
 				);
@@ -325,14 +325,14 @@ public class PackScreen extends Screen {
 
 			return var9;
 		} catch (Exception var14) {
-			LOGGER.warn("Failed to load icon from pack {}", resourcePackProfile.getName(), var14);
+			LOGGER.warn("Failed to load icon from pack {}", resourcePackProfile.getId(), var14);
 			return UNKNOWN_PACK;
 		}
 	}
 
 	private Identifier getPackIconTexture(ResourcePackProfile resourcePackProfile) {
 		return (Identifier)this.iconTextures
-			.computeIfAbsent(resourcePackProfile.getName(), profileName -> this.loadPackIcon(this.client.getTextureManager(), resourcePackProfile));
+			.computeIfAbsent(resourcePackProfile.getId(), profileName -> this.loadPackIcon(this.client.getTextureManager(), resourcePackProfile));
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -54,7 +54,7 @@ public class ResourcePackOrganizer {
 
 	void refreshEnabledProfiles() {
 		this.resourcePackManager
-			.setEnabledProfiles((Collection<String>)Lists.reverse(this.enabledPacks).stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList()));
+			.setEnabledProfiles((Collection<String>)Lists.reverse(this.enabledPacks).stream().map(ResourcePackProfile::getId).collect(ImmutableList.toImmutableList()));
 	}
 
 	public void apply() {
@@ -94,7 +94,7 @@ public class ResourcePackOrganizer {
 
 		@Override
 		public String getName() {
-			return this.profile.getName();
+			return this.profile.getId();
 		}
 
 		@Override
@@ -119,19 +119,19 @@ public class ResourcePackOrganizer {
 
 		@Override
 		public boolean isAlwaysEnabled() {
-			return this.profile.isAlwaysEnabled();
+			return this.profile.isRequired();
 		}
 
 		protected void toggle() {
 			this.getCurrentList().remove(this.profile);
-			this.profile.getInitialPosition().insert(this.getOppositeList(), this.profile, Function.identity(), true);
+			this.profile.getInitialPosition().insert(this.getOppositeList(), this.profile, ResourcePackProfile::getPosition, true);
 			ResourcePackOrganizer.this.updateCallback.run();
 			ResourcePackOrganizer.this.refreshEnabledProfiles();
 			this.toggleHighContrastOption();
 		}
 
 		private void toggleHighContrastOption() {
-			if (this.profile.getName().equals("high_contrast")) {
+			if (this.profile.getId().equals("high_contrast")) {
 				SimpleOption<Boolean> simpleOption = MinecraftClient.getInstance().options.getHighContrast();
 				simpleOption.setValue(!simpleOption.getValue());
 			}

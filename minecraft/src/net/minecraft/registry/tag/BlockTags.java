@@ -64,6 +64,7 @@ public final class BlockTags {
 	public static final TagKey<Block> CANDLES = of("candles");
 	public static final TagKey<Block> DIRT = of("dirt");
 	public static final TagKey<Block> TERRACOTTA = of("terracotta");
+	public static final TagKey<Block> BADLANDS_TERRACOTTA = of("badlands_terracotta");
 	public static final TagKey<Block> CONCRETE_POWDER = of("concrete_powder");
 	public static final TagKey<Block> COMPLETES_FIND_TREE_TUTORIAL = of("completes_find_tree_tutorial");
 	public static final TagKey<Block> FLOWER_POTS = of("flower_pots");
@@ -178,6 +179,7 @@ public final class BlockTags {
 	public static final TagKey<Block> ENCHANTMENT_POWER_PROVIDER = of("enchantment_power_provider");
 	public static final TagKey<Block> ENCHANTMENT_POWER_TRANSMITTER = of("enchantment_power_transmitter");
 	public static final TagKey<Block> MAINTAINS_FARMLAND = of("maintains_farmland");
+	public static final TagKey<Block> BLOCKS_WIND_CHARGE_EXPLOSIONS = of("blocks_wind_charge_explosions");
 
 	private BlockTags() {
 	}

@@ -293,11 +293,11 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(SCREAMING, false);
-		this.dataTracker.startTracking(LEFT_HORN, true);
-		this.dataTracker.startTracking(RIGHT_HORN, true);
+	protected void initDataTracker(DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SCREAMING, false);
+		builder.add(LEFT_HORN, true);
+		builder.add(RIGHT_HORN, true);
 	}
 
 	public boolean hasLeftHorn() {

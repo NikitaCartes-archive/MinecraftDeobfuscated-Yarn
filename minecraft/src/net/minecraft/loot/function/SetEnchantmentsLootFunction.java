@@ -28,9 +28,7 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 		instance -> addConditionsField(instance)
 				.and(
 					instance.group(
-						Codecs.createStrictOptionalFieldCodec(
-								Codec.unboundedMap(Registries.ENCHANTMENT.createEntryCodec(), LootNumberProviderTypes.CODEC), "enchantments", Map.of()
-							)
+						Codecs.createStrictOptionalFieldCodec(Codec.unboundedMap(Registries.ENCHANTMENT.getEntryCodec(), LootNumberProviderTypes.CODEC), "enchantments", Map.of())
 							.forGetter(function -> function.enchantments),
 						Codec.BOOL.fieldOf("add").orElse(false).forGetter(function -> function.add)
 					)
