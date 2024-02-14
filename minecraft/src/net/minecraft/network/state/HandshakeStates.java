@@ -9,6 +9,6 @@ import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 
 public class HandshakeStates {
 	public static final NetworkState<ServerHandshakePacketListener> C2S = NetworkStateBuilder.c2s(
-		NetworkPhase.HANDSHAKING, networkStateBuilder -> networkStateBuilder.add(HandshakePackets.INTENTION, HandshakeC2SPacket.CODEC)
+		NetworkPhase.HANDSHAKING, builder -> builder.add(HandshakePackets.INTENTION, HandshakeC2SPacket.CODEC)
 	);
 }

@@ -9,8 +9,8 @@ public interface ProjectileDeflector {
 	};
 	ProjectileDeflector SIMPLE = (projectile, hitEntity, random) -> {
 		float f = 180.0F + random.nextFloat() * 20.0F;
-		projectile.setVelocity(hitEntity.getVelocity().multiply(-0.25));
-		projectile.setYaw(hitEntity.getYaw() + f);
+		projectile.setVelocity(projectile.getVelocity().multiply(-0.25));
+		projectile.setYaw(projectile.getYaw() + f);
 		projectile.prevYaw += f;
 	};
 

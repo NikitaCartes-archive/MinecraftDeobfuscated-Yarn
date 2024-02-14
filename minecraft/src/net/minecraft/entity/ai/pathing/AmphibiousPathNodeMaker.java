@@ -49,14 +49,14 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public TargetPathNode getNode(double x, double y, double z) {
-		return this.asTargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y + 0.5), MathHelper.floor(z)));
+		return this.createNode(x, y + 0.5, z);
 	}
 
 	@Override
 	public int getSuccessors(PathNode[] successors, PathNode node) {
 		int i = super.getSuccessors(successors, node);
-		PathNodeType pathNodeType = this.getNodeType(this.entity, node.x, node.y + 1, node.z);
-		PathNodeType pathNodeType2 = this.getNodeType(this.entity, node.x, node.y, node.z);
+		PathNodeType pathNodeType = this.getNodeType(node.x, node.y + 1, node.z);
+		PathNodeType pathNodeType2 = this.getNodeType(node.x, node.y, node.z);
 		int j;
 		if (this.entity.getPathfindingPenalty(pathNodeType) >= 0.0F && pathNodeType2 != PathNodeType.STICKY_HONEY) {
 			j = MathHelper.floor(Math.max(1.0F, this.entity.getStepHeight()));

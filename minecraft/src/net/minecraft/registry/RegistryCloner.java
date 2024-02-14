@@ -16,8 +16,8 @@ public class RegistryCloner<T> {
 	}
 
 	public T clone(T value, RegistryWrapper.WrapperLookup subsetRegistry, RegistryWrapper.WrapperLookup fullRegistry) {
-		DynamicOps<Object> dynamicOps = RegistryOps.of(RuntimeOps.INSTANCE, subsetRegistry);
-		DynamicOps<Object> dynamicOps2 = RegistryOps.of(RuntimeOps.INSTANCE, fullRegistry);
+		DynamicOps<Object> dynamicOps = subsetRegistry.getOps(RuntimeOps.INSTANCE);
+		DynamicOps<Object> dynamicOps2 = fullRegistry.getOps(RuntimeOps.INSTANCE);
 		Object object = Util.getResult(this.elementCodec.encodeStart(dynamicOps, value), error -> new IllegalStateException("Failed to encode: " + error));
 		return Util.getResult(this.elementCodec.parse(dynamicOps2, object), error -> new IllegalStateException("Failed to decode: " + error));
 	}

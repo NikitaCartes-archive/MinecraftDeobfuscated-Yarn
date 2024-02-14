@@ -21,7 +21,16 @@ public class OneTwentyOneEntityTypeTagProvider extends ValueLookupTagProvider<En
 		this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES).add(EntityType.WIND_CHARGE, EntityType.BREEZE_WIND_CHARGE);
 		this.getOrCreateTagBuilder(EntityTypeTags.NO_ANGER_FROM_WIND_CHARGE)
 			.add(
-				EntityType.BREEZE, EntityType.SKELETON, EntityType.STRAY, EntityType.ZOMBIE, EntityType.HUSK, EntityType.SPIDER, EntityType.CAVE_SPIDER, EntityType.SLIME
+				EntityType.BREEZE,
+				EntityType.SKELETON,
+				EntityType.BOGGED,
+				EntityType.STRAY,
+				EntityType.ZOMBIE,
+				EntityType.HUSK,
+				EntityType.SPIDER,
+				EntityType.CAVE_SPIDER,
+				EntityType.SLIME
 			);
+		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS).add(EntityType.BOGGED);
 	}
 }

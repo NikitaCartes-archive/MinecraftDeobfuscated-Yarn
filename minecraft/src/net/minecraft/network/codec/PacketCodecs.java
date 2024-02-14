@@ -322,12 +322,12 @@ public interface PacketCodecs {
 		return new PacketCodec<RegistryByteBuf, T>() {
 			public T decode(RegistryByteBuf registryByteBuf) {
 				NbtElement nbtElement = PacketCodecs.NBT_ELEMENT.decode(registryByteBuf);
-				RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, registryByteBuf.getRegistryManager());
+				RegistryOps<NbtElement> registryOps = registryByteBuf.getRegistryManager().getOps(NbtOps.INSTANCE);
 				return Util.getResult(codec.parse(registryOps, nbtElement), error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
 			}
 
 			public void encode(RegistryByteBuf registryByteBuf, T object) {
-				RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, registryByteBuf.getRegistryManager());
+				RegistryOps<NbtElement> registryOps = registryByteBuf.getRegistryManager().getOps(NbtOps.INSTANCE);
 				NbtElement nbtElement = Util.getResult(codec.encodeStart(registryOps, object), error -> new EncoderException("Failed to encode: " + error + " " + object));
 				PacketCodecs.NBT_ELEMENT.encode(registryByteBuf, nbtElement);
 			}

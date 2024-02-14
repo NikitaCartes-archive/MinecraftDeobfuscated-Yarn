@@ -1,5 +1,6 @@
 package net.minecraft.registry;
 
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.Optional;
@@ -51,7 +52,7 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 		default RegistryWrapper.Impl<T> withPredicateFilter(Predicate<T> predicate) {
 			return new RegistryWrapper.Impl.Delegating<T>() {
 				@Override
-				protected RegistryWrapper.Impl<T> getBase() {
+				public RegistryWrapper.Impl<T> getBase() {
 					return Impl.this;
 				}
 
@@ -67,36 +68,36 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 			};
 		}
 
-		public abstract static class Delegating<T> implements RegistryWrapper.Impl<T> {
-			protected abstract RegistryWrapper.Impl<T> getBase();
+		public interface Delegating<T> extends RegistryWrapper.Impl<T> {
+			RegistryWrapper.Impl<T> getBase();
 
 			@Override
-			public RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
+			default RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
 				return this.getBase().getRegistryKey();
 			}
 
 			@Override
-			public Lifecycle getLifecycle() {
+			default Lifecycle getLifecycle() {
 				return this.getBase().getLifecycle();
 			}
 
 			@Override
-			public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
+			default Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
 				return this.getBase().getOptional(key);
 			}
 
 			@Override
-			public Stream<RegistryEntry.Reference<T>> streamEntries() {
+			default Stream<RegistryEntry.Reference<T>> streamEntries() {
 				return this.getBase().streamEntries();
 			}
 
 			@Override
-			public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+			default Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
 				return this.getBase().getOptional(tag);
 			}
 
 			@Override
-			public Stream<RegistryEntryList.Named<T>> streamTags() {
+			default Stream<RegistryEntryList.Named<T>> streamTags() {
 				return this.getBase().streamTags();
 			}
 		}
@@ -110,6 +111,10 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 		default <T> RegistryWrapper.Impl<T> getWrapperOrThrow(RegistryKey<? extends Registry<? extends T>> registryRef) {
 			return (RegistryWrapper.Impl<T>)this.getOptionalWrapper(registryRef)
 				.orElseThrow(() -> new IllegalStateException("Registry " + registryRef.getValue() + " not found"));
+		}
+
+		default <V> RegistryOps<V> getOps(DynamicOps<V> delegate) {
+			return RegistryOps.of(delegate, this);
 		}
 
 		default RegistryEntryLookup.RegistryLookup createRegistryLookup() {

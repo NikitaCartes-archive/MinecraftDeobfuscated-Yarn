@@ -31,7 +31,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		return of(delegate, caching(new RegistryOps.RegistryInfoGetter() {
 			@Override
 			public <E> Optional<RegistryOps.RegistryInfo<E>> getRegistryInfo(RegistryKey<? extends Registry<? extends E>> registryRef) {
-				return wrapperLookup.getOptionalWrapper(registryRef).map(wrapper -> new RegistryOps.RegistryInfo<>(wrapper, wrapper, wrapper.getLifecycle()));
+				return wrapperLookup.getOptionalWrapper(registryRef).map(RegistryOps.RegistryInfo::fromWrapper);
 			}
 		}));
 	}
@@ -41,7 +41,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	}
 
 	public static <T> Dynamic<T> withRegistry(Dynamic<T> dynamic, RegistryWrapper.WrapperLookup registryLookup) {
-		return new Dynamic<>(of(dynamic.getOps(), registryLookup), dynamic.getValue());
+		return new Dynamic<>(registryLookup.getOps(dynamic.getOps()), dynamic.getValue());
 	}
 
 	private RegistryOps(DynamicOps<T> delegate, RegistryOps.RegistryInfoGetter registryInfoGetter) {
@@ -84,6 +84,9 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	}
 
 	public static record RegistryInfo<T>(RegistryEntryOwner<T> owner, RegistryEntryLookup<T> entryLookup, Lifecycle elementsLifecycle) {
+		public static <T> RegistryOps.RegistryInfo<T> fromWrapper(RegistryWrapper.Impl<T> wrapper) {
+			return new RegistryOps.RegistryInfo<>(wrapper, wrapper, wrapper.getLifecycle());
+		}
 	}
 
 	public interface RegistryInfoGetter {

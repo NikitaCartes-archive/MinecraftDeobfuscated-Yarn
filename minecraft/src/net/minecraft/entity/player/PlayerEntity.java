@@ -2138,6 +2138,12 @@ public abstract class PlayerEntity extends LivingEntity {
 		return false;
 	}
 
+	@Override
+	public void onLanding() {
+		super.onLanding();
+		this.ignoreFallDamageAboveY = null;
+	}
+
 	public Optional<GlobalPos> getLastDeathPos() {
 		return this.lastDeathPos;
 	}

@@ -64,6 +64,11 @@ public class EnderEyeItem extends Item {
 	}
 
 	@Override
+	public int getMaxUseTime(ItemStack stack) {
+		return 0;
+	}
+
+	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);

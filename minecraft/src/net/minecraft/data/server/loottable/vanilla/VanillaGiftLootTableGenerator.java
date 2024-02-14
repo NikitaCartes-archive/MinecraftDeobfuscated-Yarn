@@ -6,6 +6,7 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
+import net.minecraft.loot.entry.EmptyEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetPotionLootFunction;
@@ -224,6 +225,16 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(ItemEntry.builder(Items.TORCHFLOWER_SEEDS))
 						.with(ItemEntry.builder(Items.PITCHER_POD))
+				)
+		);
+		exporter.accept(
+			LootTables.PANDA_SNEEZE_GAMEPLAY,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.SLIME_BALL).weight(1))
+						.with(EmptyEntry.builder().weight(699))
 				)
 		);
 	}

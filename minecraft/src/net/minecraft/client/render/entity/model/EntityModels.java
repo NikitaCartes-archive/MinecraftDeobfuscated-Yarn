@@ -64,6 +64,10 @@ public class EntityModels {
 		builder.put(EntityModelLayers.BEE, BeeEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.BELL, BellBlockEntityRenderer.getTexturedModelData());
 		builder.put(EntityModelLayers.BLAZE, BlazeEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.BOGGED, texturedModelData17);
+		builder.put(EntityModelLayers.BOGGED_INNER_ARMOR, texturedModelData4);
+		builder.put(EntityModelLayers.BOGGED_OUTER_ARMOR, texturedModelData2);
+		builder.put(EntityModelLayers.BOGGED_OUTER, TexturedModelData.of(BipedEntityModel.getModelData(new Dilation(0.2F), 0.0F), 64, 32));
 		builder.put(EntityModelLayers.BOOK, BookModel.getTexturedModelData());
 		builder.put(EntityModelLayers.BREEZE, BreezeEntityModel.getTexturedModelData(32, 32));
 		builder.put(EntityModelLayers.CAT, texturedModelData10);

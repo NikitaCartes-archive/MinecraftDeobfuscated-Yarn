@@ -1623,5 +1623,6 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.WHEAT
 			);
 		this.getOrCreateTagBuilder(BlockTags.CAMEL_SAND_STEP_SOUND_BLOCKS).addTag(BlockTags.SAND).addTag(BlockTags.CONCRETE_POWDER);
+		this.getOrCreateTagBuilder(BlockTags.DOES_NOT_BLOCK_HOPPERS).addTag(BlockTags.BEEHIVES);
 	}
 }

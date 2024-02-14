@@ -92,13 +92,17 @@ public class TestContext {
 		list.forEach(Entity::kill);
 	}
 
-	public ItemEntity spawnItem(Item item, float x, float y, float z) {
+	public ItemEntity spawnItem(Item item, Vec3d pos) {
 		ServerWorld serverWorld = this.getWorld();
-		Vec3d vec3d = this.getAbsolute(new Vec3d((double)x, (double)y, (double)z));
+		Vec3d vec3d = this.getAbsolute(pos);
 		ItemEntity itemEntity = new ItemEntity(serverWorld, vec3d.x, vec3d.y, vec3d.z, new ItemStack(item, 1));
 		itemEntity.setVelocity(0.0, 0.0, 0.0);
 		serverWorld.spawnEntity(itemEntity);
 		return itemEntity;
+	}
+
+	public ItemEntity spawnItem(Item item, float x, float y, float z) {
+		return this.spawnItem(item, new Vec3d((double)x, (double)y, (double)z));
 	}
 
 	public ItemEntity spawnItem(Item item, BlockPos pos) {
@@ -185,6 +189,11 @@ public class TestContext {
 
 	public <E extends MobEntity> E spawnMob(EntityType<E> type, float x, float y, float z) {
 		return this.spawnMob(type, new Vec3d((double)x, (double)y, (double)z));
+	}
+
+	public void setEntityPos(MobEntity entity, float x, float y, float z) {
+		Vec3d vec3d = this.getAbsolute(new Vec3d((double)x, (double)y, (double)z));
+		entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entity.getYaw(), entity.getPitch());
 	}
 
 	public TimedTaskRunner startMovingTowards(MobEntity entity, BlockPos pos, float speed) {

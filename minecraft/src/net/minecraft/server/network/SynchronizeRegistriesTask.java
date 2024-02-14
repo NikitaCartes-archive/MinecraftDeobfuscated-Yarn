@@ -12,7 +12,6 @@ import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.SelectKnownPacksS2CPacket;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.registry.VersionedIdentifier;
@@ -34,7 +33,7 @@ public class SynchronizeRegistriesTask implements ServerPlayerConfigurationTask 
 	}
 
 	private void syncRegistryAndTags(Consumer<Packet<?>> sender, Set<VersionedIdentifier> commonKnownPacks) {
-		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, this.registries.getCombinedRegistryManager());
+		DynamicOps<NbtElement> dynamicOps = this.registries.getCombinedRegistryManager().getOps(NbtOps.INSTANCE);
 		SerializableRegistries.forEachSyncedRegistry(
 			dynamicOps,
 			this.registries.getSucceedingRegistryManagers(ServerDynamicRegistryType.WORLDGEN),

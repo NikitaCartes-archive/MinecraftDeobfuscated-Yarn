@@ -221,7 +221,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 				});
 			DimensionOptionsRegistryHolder dimensionOptionsRegistryHolder = registryEntry.value().createDimensionsRegistryHolder();
 			if (registryEntry.matchesKey(WorldPresets.FLAT)) {
-				RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
+				RegistryOps<JsonElement> registryOps = dynamicRegistryManager.getOps(JsonOps.INSTANCE);
 				Optional<FlatChunkGeneratorConfig> optional = FlatChunkGeneratorConfig.CODEC
 					.parse(new Dynamic<>(registryOps, this.generatorSettings()))
 					.resultOrPartial(ServerPropertiesHandler.LOGGER::error);
