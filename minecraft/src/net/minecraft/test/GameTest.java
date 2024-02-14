@@ -17,6 +17,8 @@ public @interface GameTest {
 
 	String batchId() default "defaultBatch";
 
+	boolean skyAccess() default false;
+
 	int rotation() default 0;
 
 	boolean required() default true;

@@ -99,7 +99,7 @@ public class TeleportCommand {
 																	context.getSource().getWorld(),
 																	Vec3ArgumentType.getPosArgument(context, "location"),
 																	null,
-																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(context, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.FEET)
+																	new TeleportCommand.LookAtEntity(EntityArgumentType.getEntity(context, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.FEET)
 																)
 														)
 														.then(
@@ -111,7 +111,7 @@ public class TeleportCommand {
 																			context.getSource().getWorld(),
 																			Vec3ArgumentType.getPosArgument(context, "location"),
 																			null,
-																			new TeleportCommand.LookTarget(
+																			new TeleportCommand.LookAtEntity(
 																				EntityArgumentType.getEntity(context, "facingEntity"), EntityAnchorArgumentType.getEntityAnchor(context, "facingAnchor")
 																			)
 																		)
@@ -128,7 +128,7 @@ public class TeleportCommand {
 															context.getSource().getWorld(),
 															Vec3ArgumentType.getPosArgument(context, "location"),
 															null,
-															new TeleportCommand.LookTarget(Vec3ArgumentType.getVec3(context, "facingLocation"))
+															new TeleportCommand.LookAtPosition(Vec3ArgumentType.getVec3(context, "facingLocation"))
 														)
 												)
 										)
@@ -277,33 +277,26 @@ public class TeleportCommand {
 		}
 	}
 
-	static class LookTarget {
-		private final Vec3d targetPos;
-		private final Entity target;
-		private final EntityAnchorArgumentType.EntityAnchor targetAnchor;
-
-		public LookTarget(Entity target, EntityAnchorArgumentType.EntityAnchor targetAnchor) {
-			this.target = target;
-			this.targetAnchor = targetAnchor;
-			this.targetPos = targetAnchor.positionAt(target);
-		}
-
-		public LookTarget(Vec3d targetPos) {
-			this.target = null;
-			this.targetPos = targetPos;
-			this.targetAnchor = null;
-		}
-
+	static record LookAtEntity(Entity entity, EntityAnchorArgumentType.EntityAnchor anchor) implements TeleportCommand.LookTarget {
+		@Override
 		public void look(ServerCommandSource source, Entity entity) {
-			if (this.target != null) {
-				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).lookAtEntity(source.getEntityAnchor(), this.target, this.targetAnchor);
-				} else {
-					entity.lookAt(source.getEntityAnchor(), this.targetPos);
-				}
+			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+				serverPlayerEntity.lookAtEntity(source.getEntityAnchor(), this.entity, this.anchor);
 			} else {
-				entity.lookAt(source.getEntityAnchor(), this.targetPos);
+				entity.lookAt(source.getEntityAnchor(), this.anchor.positionAt(this.entity));
 			}
 		}
+	}
+
+	static record LookAtPosition(Vec3d position) implements TeleportCommand.LookTarget {
+		@Override
+		public void look(ServerCommandSource source, Entity entity) {
+			entity.lookAt(source.getEntityAnchor(), this.position);
+		}
+	}
+
+	@FunctionalInterface
+	interface LookTarget {
+		void look(ServerCommandSource source, Entity entity);
 	}
 }

@@ -61,7 +61,7 @@ public class LootManager implements ResourceReloader, LootDataLookup {
 		Executor executor,
 		Map<LootDataType<?>, Map<Identifier, ?>> map
 	) {
-		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, registryLookup);
+		RegistryOps<JsonElement> registryOps = registryLookup.getOps(JsonOps.INSTANCE);
 		Map<Identifier, T> map2 = new HashMap();
 		map.put(type, map2);
 		return CompletableFuture.runAsync(() -> {

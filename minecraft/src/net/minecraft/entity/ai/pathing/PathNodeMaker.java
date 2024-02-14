@@ -3,7 +3,11 @@ package net.minecraft.entity.ai.pathing;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -47,8 +51,8 @@ public abstract class PathNodeMaker {
 
 	public abstract TargetPathNode getNode(double x, double y, double z);
 
-	protected TargetPathNode asTargetPathNode(PathNode node) {
-		return new TargetPathNode(node);
+	protected TargetPathNode createNode(double x, double y, double z) {
+		return new TargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
 	}
 
 	public abstract int getSuccessors(PathNode[] successors, PathNode node);
@@ -93,5 +97,13 @@ public abstract class PathNodeMaker {
 
 	public boolean canWalkOverFences() {
 		return this.canWalkOverFences;
+	}
+
+	public static boolean isFireDamaging(BlockState state) {
+		return state.isIn(BlockTags.FIRE)
+			|| state.isOf(Blocks.LAVA)
+			|| state.isOf(Blocks.MAGMA_BLOCK)
+			|| CampfireBlock.isLitCampfire(state)
+			|| state.isOf(Blocks.LAVA_CAULDRON);
 	}
 }

@@ -16,7 +16,7 @@ import net.minecraft.world.WorldView;
 import org.slf4j.Logger;
 
 public class JigsawReplacementStructureProcessor extends StructureProcessor {
-	private static final Logger field_43332 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<JigsawReplacementStructureProcessor> CODEC = Codec.unit(
 		(Supplier<JigsawReplacementStructureProcessor>)(() -> JigsawReplacementStructureProcessor.INSTANCE)
 	);
@@ -38,7 +38,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 		BlockState blockState = currentBlockInfo.state();
 		if (blockState.isOf(Blocks.JIGSAW)) {
 			if (currentBlockInfo.nbt() == null) {
-				field_43332.warn("Jigsaw block at {} is missing nbt, will not replace", pos);
+				LOGGER.warn("Jigsaw block at {} is missing nbt, will not replace", pos);
 				return currentBlockInfo;
 			} else {
 				String string = currentBlockInfo.nbt().getString("final_state");

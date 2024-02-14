@@ -445,7 +445,7 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	default RegistryWrapper.Impl<T> getTagCreatingWrapper() {
 		return new RegistryWrapper.Impl.Delegating<T>() {
 			@Override
-			protected RegistryWrapper.Impl<T> getBase() {
+			public RegistryWrapper.Impl<T> getBase() {
 				return Registry.this.getReadOnlyWrapper();
 			}
 

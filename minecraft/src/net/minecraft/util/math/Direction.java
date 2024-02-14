@@ -540,5 +540,9 @@ public enum Direction implements StringIdentifiable {
 		public List<Direction> getShuffled(Random random) {
 			return Util.copyShuffled(this.facingArray, random);
 		}
+
+		public int getFacingCount() {
+			return this.facingArray.length;
+		}
 	}
 }

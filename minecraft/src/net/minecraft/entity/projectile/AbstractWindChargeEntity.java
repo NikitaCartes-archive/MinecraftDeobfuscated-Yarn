@@ -84,10 +84,21 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
+		World world = this.getWorld();
+		if (hitResult.getType() == HitResult.Type.BLOCK) {
+			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
+			BlockState blockState = world.getBlockState(blockPos);
+			if (!blockState.isFullCube(world, blockPos)) {
+				return;
+			}
+		}
+
 		super.onCollision(hitResult);
-		if (!this.getWorld().isClient) {
+		if (!this.getWorld().isClient && !this.deflected) {
 			this.discard();
 		}
+
+		this.deflected = false;
 	}
 
 	@Override

@@ -1652,6 +1652,7 @@ public class ItemGroups {
 					entries.add(Items.BAT_SPAWN_EGG);
 					entries.add(Items.BEE_SPAWN_EGG);
 					entries.add(Items.BLAZE_SPAWN_EGG);
+					entries.add(Items.BOGGED_SPAWN_EGG);
 					entries.add(Items.BREEZE_SPAWN_EGG);
 					entries.add(Items.CAMEL_SPAWN_EGG);
 					entries.add(Items.CAT_SPAWN_EGG);

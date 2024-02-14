@@ -78,6 +78,11 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
+	public boolean canBlockFromAbove() {
+		return false;
+	}
+
+	@Override
 	public void tick() {
 		super.tick();
 		if (!this.getWorld().isClient && this.isAlive() && this.isEnabled() && this.canOperate()) {

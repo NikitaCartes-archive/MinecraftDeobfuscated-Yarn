@@ -126,6 +126,7 @@ public class TestFunctions {
 			gameTest.required(),
 			gameTest.requiredSuccesses(),
 			gameTest.maxAttempts(),
+			gameTest.skyAccess(),
 			(Consumer<TestContext>)getInvoker(method)
 		);
 	}

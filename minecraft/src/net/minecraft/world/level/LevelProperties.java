@@ -21,7 +21,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
@@ -229,7 +228,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		nbtCompound.putString("Series", SharedConstants.getGameVersion().getSaveVersion().getSeries());
 		levelNbt.put("Version", nbtCompound);
 		NbtHelper.putDataVersion(levelNbt);
-		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, registryManager);
+		DynamicOps<NbtElement> dynamicOps = registryManager.getOps(NbtOps.INSTANCE);
 		WorldGenSettings.encode(dynamicOps, this.generatorOptions, registryManager)
 			.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error))
 			.ifPresent(nbtElement -> levelNbt.put("WorldGenSettings", nbtElement));

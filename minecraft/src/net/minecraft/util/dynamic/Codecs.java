@@ -434,8 +434,8 @@ public class Codecs {
 		return new Codecs.Recursive<>(name, codecFunction);
 	}
 
-	public static <T> MapCodec<T> createRecursiveMap(String string, Function<Codec<T>, MapCodec<T>> function) {
-		return new Codecs.RecursiveMap<>(string, function);
+	public static <T> MapCodec<T> createRecursiveMap(String name, Function<Codec<T>, MapCodec<T>> mapCodecFunction) {
+		return new Codecs.RecursiveMap<>(name, mapCodecFunction);
 	}
 
 	public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {

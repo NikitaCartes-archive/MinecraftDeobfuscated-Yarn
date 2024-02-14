@@ -76,9 +76,9 @@ public class Explosion {
 		Explosion.DestructionType destructionType,
 		ParticleEffect particle,
 		ParticleEffect emitterParticle,
-		RegistryEntry<SoundEvent> registryEntry
+		RegistryEntry<SoundEvent> soundEvent
 	) {
-		this(world, entity, createDamageSource(world, entity), null, x, y, z, power, false, destructionType, particle, emitterParticle, registryEntry);
+		this(world, entity, createDamageSource(world, entity), null, x, y, z, power, false, destructionType, particle, emitterParticle, soundEvent);
 		this.affectedBlocks.addAll(affectedBlocks);
 	}
 

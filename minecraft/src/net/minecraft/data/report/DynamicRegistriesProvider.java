@@ -14,7 +14,6 @@ import net.minecraft.data.DataWriter;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryLoader;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import org.slf4j.Logger;
 
@@ -33,7 +32,7 @@ public class DynamicRegistriesProvider implements DataProvider {
 		return this.registryLookupFuture
 			.thenCompose(
 				lookup -> {
-					DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, lookup);
+					DynamicOps<JsonElement> dynamicOps = lookup.getOps(JsonOps.INSTANCE);
 					return CompletableFuture.allOf(
 						(CompletableFuture[])RegistryLoader.DYNAMIC_REGISTRIES
 							.stream()

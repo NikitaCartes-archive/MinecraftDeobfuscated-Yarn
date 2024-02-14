@@ -332,7 +332,10 @@ public class ServerChunkManager extends ChunkManager {
 	@Override
 	public void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks) {
 		this.world.getProfiler().push("purge");
-		this.ticketManager.purge();
+		if (this.world.getTickManager().shouldTick() || !tickChunks) {
+			this.ticketManager.purge();
+		}
+
 		this.updateChunks();
 		this.world.getProfiler().swap("chunks");
 		if (tickChunks) {
@@ -365,7 +368,7 @@ public class ServerChunkManager extends ChunkManager {
 				}
 			}
 
-			if (this.world.getServer().getTickManager().shouldTick()) {
+			if (this.world.getTickManager().shouldTick()) {
 				profiler.swap("naturalSpawnCount");
 				int i = this.ticketManager.getTickedChunkCount();
 				SpawnHelper.Info info = SpawnHelper.setupSpawn(i, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.threadedAnvilChunkStorage));

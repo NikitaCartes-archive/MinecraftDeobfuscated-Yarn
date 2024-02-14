@@ -41,7 +41,11 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -505,26 +509,35 @@ public class PandaEntity extends AnimalEntity {
 
 	private void sneeze() {
 		Vec3d vec3d = this.getVelocity();
-		this.getWorld()
-			.addParticle(
-				ParticleTypes.SNEEZE,
-				this.getX() - (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0)),
-				this.getEyeY() - 0.1F,
-				this.getZ() + (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0)),
-				vec3d.x,
-				0.0,
-				vec3d.z
-			);
+		World world = this.getWorld();
+		world.addParticle(
+			ParticleTypes.SNEEZE,
+			this.getX() - (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0)),
+			this.getEyeY() - 0.1F,
+			this.getZ() + (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0)),
+			vec3d.x,
+			0.0,
+			vec3d.z
+		);
 		this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0F, 1.0F);
 
-		for (PandaEntity pandaEntity : this.getWorld().getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
+		for (PandaEntity pandaEntity : world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
 			if (!pandaEntity.isBaby() && pandaEntity.isOnGround() && !pandaEntity.isTouchingWater() && pandaEntity.isIdle()) {
 				pandaEntity.jump();
 			}
 		}
 
-		if (!this.getWorld().isClient() && this.random.nextInt(700) == 0 && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			this.dropItem(Items.SLIME_BALL);
+		if (!world.isClient() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+			ServerWorld serverWorld = (ServerWorld)world;
+			LootTable lootTable = serverWorld.getServer().getLootManager().getLootTable(LootTables.PANDA_SNEEZE_GAMEPLAY);
+			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+				.add(LootContextParameters.ORIGIN, this.getPos())
+				.add(LootContextParameters.THIS_ENTITY, this)
+				.build(LootContextTypes.GIFT);
+
+			for (ItemStack itemStack : lootTable.generateLoot(lootContextParameterSet)) {
+				this.dropStack(itemStack);
+			}
 		}
 	}
 

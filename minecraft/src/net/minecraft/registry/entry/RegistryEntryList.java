@@ -69,7 +69,12 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 	@Deprecated
 	@VisibleForTesting
 	static <T> RegistryEntryList.Named<T> of(RegistryEntryOwner<T> owner, TagKey<T> tagKey) {
-		return new RegistryEntryList.Named<>(owner, tagKey);
+		return new RegistryEntryList.Named<T>(owner, tagKey) {
+			@Override
+			protected List<RegistryEntry<T>> getEntries() {
+				throw new UnsupportedOperationException("Tag " + this.getTag() + " can't be dereferenced during construction");
+			}
+		};
 	}
 
 	/**

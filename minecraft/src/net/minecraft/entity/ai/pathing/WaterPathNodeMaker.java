@@ -47,7 +47,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 
 	@Override
 	public TargetPathNode getNode(double x, double y, double z) {
-		return this.asTargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
+		return this.createNode(x, y, z);
 	}
 
 	@Override
@@ -65,11 +65,13 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
 			Direction direction3 = direction2.rotateYClockwise();
-			PathNode pathNode2 = this.getPassableNode(
-				node.x + direction2.getOffsetX() + direction3.getOffsetX(), node.y, node.z + direction2.getOffsetZ() + direction3.getOffsetZ()
-			);
-			if (this.canPathThrough(pathNode2, (PathNode)map.get(direction2), (PathNode)map.get(direction3))) {
-				successors[i++] = pathNode2;
+			if (hasPenalty((PathNode)map.get(direction2)) && hasPenalty((PathNode)map.get(direction3))) {
+				PathNode pathNode2 = this.getPassableNode(
+					node.x + direction2.getOffsetX() + direction3.getOffsetX(), node.y, node.z + direction2.getOffsetZ() + direction3.getOffsetZ()
+				);
+				if (this.hasNotVisited(pathNode2)) {
+					successors[i++] = pathNode2;
+				}
 			}
 		}
 
@@ -80,8 +82,8 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		return node != null && !node.visited;
 	}
 
-	protected boolean canPathThrough(@Nullable PathNode diagonalNode, @Nullable PathNode node1, @Nullable PathNode node2) {
-		return this.hasNotVisited(diagonalNode) && node1 != null && node1.penalty >= 0.0F && node2 != null && node2.penalty >= 0.0F;
+	private static boolean hasPenalty(@Nullable PathNode node) {
+		return node != null && node.penalty >= 0.0F;
 	}
 
 	@Nullable

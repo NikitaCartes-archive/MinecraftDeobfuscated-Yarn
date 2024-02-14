@@ -3,14 +3,13 @@ package net.minecraft.datafixer.fix;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
-import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.util.Identifier;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class WolfHealthFix extends ChoiceFix {
 	private static final String WOLF_ENTITY_ID = "minecraft:wolf";
-	private static final Identifier MAX_HEALTH_ATTRIBUTE_ID = new Identifier("generic.max_health");
+	private static final String MAX_HEALTH_ATTRIBUTE_ID = "minecraft:generic.max_health";
 
 	public WolfHealthFix(Schema outputSchema) {
 		super(outputSchema, false, "FixWolfHealth", TypeReferences.ENTITY, "minecraft:wolf");
@@ -27,7 +26,7 @@ public class WolfHealthFix extends ChoiceFix {
 					dynamicx -> dynamicx.createList(
 							dynamicx.asStream()
 								.map(
-									dynamicxx -> Objects.equals(Identifier.tryParse(dynamicxx.get("Name").asString("")), MAX_HEALTH_ATTRIBUTE_ID)
+									dynamicxx -> "minecraft:generic.max_health".equals(IdentifierNormalizingSchema.normalize(dynamicxx.get("Name").asString("")))
 											? dynamicxx.update("Base", dynamicxxx -> {
 												if (dynamicxxx.asDouble(0.0) == 20.0) {
 													mutableBoolean.setTrue();

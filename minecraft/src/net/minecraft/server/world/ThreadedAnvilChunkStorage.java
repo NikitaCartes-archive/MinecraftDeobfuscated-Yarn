@@ -611,19 +611,17 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private Either<Chunk, ChunkHolder.Unloaded> recoverFromException(Throwable throwable, ChunkPos chunkPos) {
-		if (throwable instanceof CrashException crashException) {
-			Throwable throwable2 = crashException.getCause();
-			if (!(throwable2 instanceof IOException)) {
-				this.markAsProtoChunk(chunkPos);
-				throw crashException;
-			}
-
+		Throwable throwable2 = throwable instanceof CrashException crashException ? crashException.getCause() : throwable;
+		if (throwable2 instanceof IOException) {
 			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable2);
-		} else if (throwable instanceof IOException) {
-			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable);
+			return Either.left(this.getProtoChunk(chunkPos));
+		} else {
+			CrashReport crashReport = CrashReport.create(throwable, "Exception loading chunk");
+			CrashReportSection crashReportSection = crashReport.addElement("Chunk being loaded");
+			crashReportSection.add("pos", chunkPos);
+			this.markAsProtoChunk(chunkPos);
+			throw new CrashException(crashReport);
 		}
-
-		return Either.left(this.getProtoChunk(chunkPos));
 	}
 
 	private Chunk getProtoChunk(ChunkPos chunkPos) {

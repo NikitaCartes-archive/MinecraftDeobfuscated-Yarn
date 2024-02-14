@@ -62,7 +62,7 @@ public class RecipeManager extends JsonDataLoader {
 		this.errored = false;
 		Map<RecipeType<?>, Builder<Identifier, RecipeEntry<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, RecipeEntry<?>>>newHashMap();
 		Builder<Identifier, RecipeEntry<?>> builder = ImmutableMap.builder();
-		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, this.registryLookup);
+		RegistryOps<JsonElement> registryOps = this.registryLookup.getOps(JsonOps.INSTANCE);
 
 		for (Entry<Identifier, JsonElement> entry : map.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
@@ -246,7 +246,7 @@ public class RecipeManager extends JsonDataLoader {
 	 */
 	@VisibleForTesting
 	protected static RecipeEntry<?> deserialize(Identifier id, JsonObject json, RegistryWrapper.WrapperLookup registryLookup) {
-		Recipe<?> recipe = Util.getResult(Recipe.CODEC.parse(RegistryOps.of(JsonOps.INSTANCE, registryLookup), json), JsonParseException::new);
+		Recipe<?> recipe = Util.getResult(Recipe.CODEC.parse(registryLookup.getOps(JsonOps.INSTANCE), json), JsonParseException::new);
 		return new RecipeEntry<>(id, recipe);
 	}
 

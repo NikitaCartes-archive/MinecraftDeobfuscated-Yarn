@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
@@ -52,7 +51,7 @@ public class PoolStructurePiece extends StructurePiece {
 		this.structureTemplateManager = context.structureTemplateManager();
 		this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
 		this.groundLevelDelta = nbt.getInt("ground_level_delta");
-		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.registryManager());
+		DynamicOps<NbtElement> dynamicOps = context.registryManager().getOps(NbtOps.INSTANCE);
 		this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC
 			.parse(dynamicOps, nbt.getCompound("pool_element"))
 			.resultOrPartial(LOGGER::error)
@@ -70,7 +69,7 @@ public class PoolStructurePiece extends StructurePiece {
 		nbt.putInt("PosY", this.pos.getY());
 		nbt.putInt("PosZ", this.pos.getZ());
 		nbt.putInt("ground_level_delta", this.groundLevelDelta);
-		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.registryManager());
+		DynamicOps<NbtElement> dynamicOps = context.registryManager().getOps(NbtOps.INSTANCE);
 		StructurePoolElement.CODEC
 			.encodeStart(dynamicOps, this.poolElement)
 			.resultOrPartial(LOGGER::error)

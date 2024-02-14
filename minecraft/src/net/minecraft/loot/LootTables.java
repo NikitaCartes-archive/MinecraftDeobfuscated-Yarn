@@ -97,6 +97,7 @@ public class LootTables {
 	public static final Identifier HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/toolsmith_gift");
 	public static final Identifier HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/weaponsmith_gift");
 	public static final Identifier SNIFFER_DIGGING_GAMEPLAY = register("gameplay/sniffer_digging");
+	public static final Identifier PANDA_SNEEZE_GAMEPLAY = register("gameplay/panda_sneeze");
 	public static final Identifier PIGLIN_BARTERING_GAMEPLAY = register("gameplay/piglin_bartering");
 	public static final Identifier TRIAL_CHAMBER_KEY_SPAWNER = register("spawners/trial_chamber/key");
 	public static final Identifier TRIAL_CHAMBER_CONSUMABLES_SPAWNER = register("spawners/trial_chamber/consumables");

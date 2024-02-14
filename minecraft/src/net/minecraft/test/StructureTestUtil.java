@@ -126,6 +126,30 @@ public class StructureTestUtil {
 		return placeStructureTemplate(state, blockPos.down(), rotation, world);
 	}
 
+	public static void placeBarrierBox(Box box, ServerWorld world, boolean noSkyAccess) {
+		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ).add(-1, 1, -1);
+		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX, box.maxY, box.maxZ);
+		BlockPos.stream(blockPos, blockPos2).forEach(pos -> {
+			boolean bl2 = pos.getX() == blockPos.getX() || pos.getX() == blockPos2.getX() || pos.getZ() == blockPos.getZ() || pos.getZ() == blockPos2.getZ();
+			boolean bl3 = pos.getY() == blockPos2.getY();
+			if (bl2 || bl3 && noSkyAccess) {
+				world.setBlockState(pos, Blocks.BARRIER.getDefaultState());
+			}
+		});
+	}
+
+	public static void clearBarrierBox(Box box, ServerWorld world) {
+		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ).add(-1, 1, -1);
+		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX, box.maxY, box.maxZ);
+		BlockPos.stream(blockPos, blockPos2).forEach(pos -> {
+			boolean bl = pos.getX() == blockPos.getX() || pos.getX() == blockPos2.getX() || pos.getZ() == blockPos.getZ() || pos.getZ() == blockPos2.getZ();
+			boolean bl2 = pos.getY() == blockPos2.getY();
+			if (world.getBlockState(pos).isOf(Blocks.BARRIER) && (bl || bl2)) {
+				world.setBlockState(pos, Blocks.AIR.getDefaultState());
+			}
+		});
+	}
+
 	private static void forceLoadNearbyChunks(BlockBox box, ServerWorld world) {
 		box.streamChunkPos().forEach(chunkPos -> world.setChunkForced(chunkPos.x, chunkPos.z, true));
 	}

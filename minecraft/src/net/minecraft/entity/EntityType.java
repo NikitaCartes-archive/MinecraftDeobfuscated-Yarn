@@ -15,7 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -27,6 +27,7 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.mob.BlazeEntity;
+import net.minecraft.entity.mob.BoggedEntity;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -221,6 +222,14 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoatEntity> BOAT = register(
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).dimensions(1.375F, 0.5625F).eyeHeight(0.5625F).maxTrackingRange(10)
+	);
+	public static final EntityType<BoggedEntity> BOGGED = register(
+		"bogged",
+		EntityType.Builder.create(BoggedEntity::new, SpawnGroup.MONSTER)
+			.dimensions(0.6F, 1.99F)
+			.eyeHeight(1.74F)
+			.maxTrackingRange(8)
+			.requires(FeatureFlags.UPDATE_1_21)
 	);
 	public static final EntityType<BreezeEntity> BREEZE = register(
 		"breeze",
@@ -1206,7 +1215,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		if (this.canSpawnInside.contains(state.getBlock())) {
 			return false;
 		} else {
-			return !this.fireImmune && LandPathNodeMaker.inflictsFireDamage(state)
+			return !this.fireImmune && PathNodeMaker.isFireDamaging(state)
 				? true
 				: state.isOf(Blocks.WITHER_ROSE) || state.isOf(Blocks.SWEET_BERRY_BUSH) || state.isOf(Blocks.CACTUS) || state.isOf(Blocks.POWDER_SNOW);
 		}

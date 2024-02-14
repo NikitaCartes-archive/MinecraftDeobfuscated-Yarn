@@ -11,6 +11,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.BlazeEntity;
+import net.minecraft.entity.mob.BoggedEntity;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -92,6 +93,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.BAT, BatEntity.createBatAttributes().build())
 		.put(EntityType.BEE, BeeEntity.createBeeAttributes().build())
 		.put(EntityType.BLAZE, BlazeEntity.createBlazeAttributes().build())
+		.put(EntityType.BOGGED, BoggedEntity.createBoggedAttributes().build())
 		.put(EntityType.CAT, CatEntity.createCatAttributes().build())
 		.put(EntityType.CAMEL, CamelEntity.createCamelAttributes().build())
 		.put(EntityType.CAVE_SPIDER, CaveSpiderEntity.createCaveSpiderAttributes().build())

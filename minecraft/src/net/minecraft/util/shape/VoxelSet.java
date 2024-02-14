@@ -179,13 +179,13 @@ public abstract class VoxelSet {
 		BitSetVoxelSet.forEachBox(this, consumer, coalesce);
 	}
 
-	public void forEachDirection(VoxelSet.PositionConsumer positionConsumer) {
-		this.forEachDirection(positionConsumer, AxisCycleDirection.NONE);
-		this.forEachDirection(positionConsumer, AxisCycleDirection.FORWARD);
-		this.forEachDirection(positionConsumer, AxisCycleDirection.BACKWARD);
+	public void forEachDirection(VoxelSet.PositionConsumer consumer) {
+		this.forEachDirection(consumer, AxisCycleDirection.NONE);
+		this.forEachDirection(consumer, AxisCycleDirection.FORWARD);
+		this.forEachDirection(consumer, AxisCycleDirection.BACKWARD);
 	}
 
-	private void forEachDirection(VoxelSet.PositionConsumer positionConsumer, AxisCycleDirection direction) {
+	private void forEachDirection(VoxelSet.PositionConsumer consumer, AxisCycleDirection direction) {
 		AxisCycleDirection axisCycleDirection = direction.opposite();
 		Direction.Axis axis = axisCycleDirection.cycle(Direction.Axis.Z);
 		int i = this.getSize(axisCycleDirection.cycle(Direction.Axis.X));
@@ -201,7 +201,7 @@ public abstract class VoxelSet {
 				for (int n = 0; n <= k; n++) {
 					boolean bl2 = n != k && this.contains(axisCycleDirection, l, m, n);
 					if (!bl && bl2) {
-						positionConsumer.consume(
+						consumer.consume(
 							direction2,
 							axisCycleDirection.choose(l, m, n, Direction.Axis.X),
 							axisCycleDirection.choose(l, m, n, Direction.Axis.Y),
@@ -210,7 +210,7 @@ public abstract class VoxelSet {
 					}
 
 					if (bl && !bl2) {
-						positionConsumer.consume(
+						consumer.consume(
 							direction3,
 							axisCycleDirection.choose(l, m, n - 1, Direction.Axis.X),
 							axisCycleDirection.choose(l, m, n - 1, Direction.Axis.Y),

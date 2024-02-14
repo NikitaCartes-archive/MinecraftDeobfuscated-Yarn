@@ -170,7 +170,7 @@ public class DataPackContents {
 		private <T> RegistryWrapper.Impl<T> getWrapper(RegistryWrapper.Impl<T> readOnlyWrapper, RegistryWrapper.Impl<T> tagCreatingWrapper) {
 			return new RegistryWrapper.Impl.Delegating<T>() {
 				@Override
-				protected RegistryWrapper.Impl<T> getBase() {
+				public RegistryWrapper.Impl<T> getBase() {
 					return switch (ConfigurableWrapperLookup.this.entryListCreationPolicy) {
 						case FAIL -> readOnlyWrapper;
 						case CREATE_NEW -> tagCreatingWrapper;

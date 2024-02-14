@@ -14,7 +14,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenTexts;
@@ -88,7 +87,7 @@ public class ArmorTrim {
 
 	public static boolean apply(DynamicRegistryManager registryManager, ItemStack stack, ArmorTrim trim) {
 		if (stack.isIn(ItemTags.TRIMMABLE_ARMOR)) {
-			stack.getOrCreateNbt().put("Trim", (NbtElement)CODEC.encodeStart(RegistryOps.of(NbtOps.INSTANCE, registryManager), trim).result().orElseThrow());
+			stack.getOrCreateNbt().put("Trim", (NbtElement)CODEC.encodeStart(registryManager.getOps(NbtOps.INSTANCE), trim).result().orElseThrow());
 			return true;
 		} else {
 			return false;
@@ -98,7 +97,7 @@ public class ArmorTrim {
 	public static Optional<ArmorTrim> getTrim(DynamicRegistryManager registryManager, ItemStack stack, boolean suppressError) {
 		if (stack.isIn(ItemTags.TRIMMABLE_ARMOR) && stack.getNbt() != null && stack.getNbt().contains("Trim")) {
 			NbtCompound nbtCompound = stack.getSubNbt("Trim");
-			ArmorTrim armorTrim = (ArmorTrim)CODEC.parse(RegistryOps.of(NbtOps.INSTANCE, registryManager), nbtCompound).resultOrPartial(error -> {
+			ArmorTrim armorTrim = (ArmorTrim)CODEC.parse(registryManager.getOps(NbtOps.INSTANCE), nbtCompound).resultOrPartial(error -> {
 				if (!suppressError) {
 					LOGGER.warn(error);
 				}

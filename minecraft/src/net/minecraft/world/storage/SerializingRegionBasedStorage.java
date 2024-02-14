@@ -113,7 +113,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	private void loadDataAt(ChunkPos pos) {
 		Optional<NbtCompound> optional = (Optional<NbtCompound>)this.loadNbt(pos).join();
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, this.registryManager);
+		RegistryOps<NbtElement> registryOps = this.registryManager.getOps(NbtOps.INSTANCE);
 		this.update(pos, registryOps, (NbtCompound)optional.orElse(null));
 	}
 
@@ -158,7 +158,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	private void save(ChunkPos pos) {
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, this.registryManager);
+		RegistryOps<NbtElement> registryOps = this.registryManager.getOps(NbtOps.INSTANCE);
 		Dynamic<NbtElement> dynamic = this.serialize(pos, registryOps);
 		NbtElement nbtElement = dynamic.getValue();
 		if (nbtElement instanceof NbtCompound) {

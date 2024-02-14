@@ -50,7 +50,6 @@ import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
@@ -401,12 +400,12 @@ public class CreateWorldScreen extends Screen {
 						throw new IllegalStateException("Needs at least one biome continue");
 					} else {
 						GeneratorOptionsHolder generatorOptionsHolder = this.worldCreator.getGeneratorOptionsHolder();
-						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, generatorOptionsHolder.getCombinedRegistryManager());
+						DynamicOps<JsonElement> dynamicOps = generatorOptionsHolder.getCombinedRegistryManager().getOps(JsonOps.INSTANCE);
 						DataResult<JsonElement> dataResult = WorldGenSettings.encode(
 								dynamicOps, generatorOptionsHolder.generatorOptions(), generatorOptionsHolder.selectedDimensions()
 							)
 							.setLifecycle(Lifecycle.stable());
-						DynamicOps<JsonElement> dynamicOps2 = RegistryOps.of(JsonOps.INSTANCE, context.worldGenRegistryManager());
+						DynamicOps<JsonElement> dynamicOps2 = context.worldGenRegistryManager().getOps(JsonOps.INSTANCE);
 						WorldGenSettings worldGenSettings = dataResult.<WorldGenSettings>flatMap(json -> WorldGenSettings.CODEC.parse(dynamicOps2, json))
 							.getOrThrow(false, Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error));
 						return new SaveLoading.LoadContext<>(

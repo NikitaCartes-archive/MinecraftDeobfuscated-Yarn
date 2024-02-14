@@ -17,7 +17,6 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
@@ -44,7 +43,7 @@ public class BiomeParametersProvider implements DataProvider {
 		return this.registryLookupFuture
 			.thenCompose(
 				lookup -> {
-					DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, lookup);
+					DynamicOps<JsonElement> dynamicOps = lookup.getOps(JsonOps.INSTANCE);
 					List<CompletableFuture<?>> list = new ArrayList();
 					MultiNoiseBiomeSourceParameterList.getPresetToEntriesMap()
 						.forEach((preset, entries) -> list.add(write(this.resolvePath(preset.id()), writer, dynamicOps, BIOME_ENTRY_CODEC, entries)));

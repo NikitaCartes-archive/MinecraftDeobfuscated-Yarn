@@ -786,7 +786,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		profiler.push("sensing");
 		this.visibilityCache.clear();
 		profiler.pop();
-		int i = this.getWorld().getServer().getTicks() + this.getId();
+		int i = this.age + this.getId();
 		if (i % 2 != 0 && this.age > 1) {
 			profiler.push("targetSelector");
 			this.targetSelector.tickGoals(false);

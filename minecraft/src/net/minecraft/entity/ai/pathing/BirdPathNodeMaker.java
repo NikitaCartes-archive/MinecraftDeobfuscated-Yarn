@@ -3,7 +3,6 @@ package net.minecraft.entity.ai.pathing;
 import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -62,13 +61,13 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	protected boolean canPathThrough(BlockPos pos) {
-		PathNodeType pathNodeType = this.getNodeType(this.entity, pos);
+		PathNodeType pathNodeType = this.getNodeType(pos.getX(), pos.getY(), pos.getZ());
 		return this.entity.getPathfindingPenalty(pathNodeType) >= 0.0F;
 	}
 
 	@Override
 	public TargetPathNode getNode(double x, double y, double z) {
-		return this.asTargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
+		return this.createNode(x, y, z);
 	}
 
 	@Override
@@ -280,34 +279,10 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		return pathNode;
 	}
 
-	private PathNodeType getNodeType(int x, int y, int z) {
+	@Override
+	protected PathNodeType getNodeType(int x, int y, int z) {
 		return this.pathNodes
 			.computeIfAbsent(BlockPos.asLong(x, y, z), (Long2ObjectFunction<? extends PathNodeType>)(pos -> this.getNodeType(this.cachedWorld, x, y, z, this.entity)));
-	}
-
-	@Override
-	public PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob) {
-		EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
-		PathNodeType pathNodeType = PathNodeType.BLOCKED;
-		BlockPos blockPos = mob.getBlockPos();
-		pathNodeType = super.findNearbyNodeTypes(world, x, y, z, enumSet, pathNodeType, blockPos);
-		if (enumSet.contains(PathNodeType.FENCE)) {
-			return PathNodeType.FENCE;
-		} else {
-			PathNodeType pathNodeType2 = PathNodeType.BLOCKED;
-
-			for (PathNodeType pathNodeType3 : enumSet) {
-				if (mob.getPathfindingPenalty(pathNodeType3) < 0.0F) {
-					return pathNodeType3;
-				}
-
-				if (mob.getPathfindingPenalty(pathNodeType3) >= mob.getPathfindingPenalty(pathNodeType2)) {
-					pathNodeType2 = pathNodeType3;
-				}
-			}
-
-			return pathNodeType == PathNodeType.OPEN && mob.getPathfindingPenalty(pathNodeType2) == 0.0F ? PathNodeType.OPEN : pathNodeType2;
-		}
 	}
 
 	@Override

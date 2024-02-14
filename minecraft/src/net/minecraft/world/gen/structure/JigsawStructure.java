@@ -20,6 +20,7 @@ import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public final class JigsawStructure extends Structure {
 	public static final int MAX_SIZE = 128;
+	public static final int field_49155 = 0;
 	public static final int MAX_GENERATION_DEPTH = 20;
 	public static final Codec<JigsawStructure> CODEC = Codecs.validate(
 			RecordCodecBuilder.mapCodec(

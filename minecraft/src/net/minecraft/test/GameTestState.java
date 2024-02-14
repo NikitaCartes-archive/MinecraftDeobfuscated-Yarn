@@ -263,6 +263,7 @@ public class GameTestState {
 		this.structureBlockEntity = StructureTestUtil.initStructure(this, blockPos, this.getRotation(), this.world);
 		this.pos = this.structureBlockEntity.getPos();
 		StructureTestUtil.placeStartButton(this.pos, new BlockPos(1, 0, -1), this.getRotation(), this.world);
+		StructureTestUtil.placeBarrierBox(this.getBoundingBox(), this.world, !this.testFunction.skyAccess());
 		this.listeners.forEach(listener -> listener.onStarted(this));
 		return this;
 	}

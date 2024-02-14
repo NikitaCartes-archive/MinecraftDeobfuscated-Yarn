@@ -26,6 +26,10 @@ public class EntityModelLayers {
 	public static final EntityModelLayer BEE = registerMain("bee");
 	public static final EntityModelLayer BELL = registerMain("bell");
 	public static final EntityModelLayer BLAZE = registerMain("blaze");
+	public static final EntityModelLayer BOGGED = registerMain("bogged");
+	public static final EntityModelLayer BOGGED_INNER_ARMOR = createInnerArmor("bogged");
+	public static final EntityModelLayer BOGGED_OUTER_ARMOR = createOuterArmor("bogged");
+	public static final EntityModelLayer BOGGED_OUTER = register("bogged", "outer");
 	public static final EntityModelLayer BOOK = registerMain("book");
 	public static final EntityModelLayer BREEZE = registerMain("breeze");
 	public static final EntityModelLayer CAT = registerMain("cat");

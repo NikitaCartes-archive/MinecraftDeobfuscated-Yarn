@@ -83,7 +83,7 @@ public class PlaceCommand {
 								.then(
 									CommandManager.argument("target", IdentifierArgumentType.identifier())
 										.then(
-											CommandManager.argument("max_depth", IntegerArgumentType.integer(1, 7))
+											CommandManager.argument("max_depth", IntegerArgumentType.integer(1, 20))
 												.executes(
 													context -> executePlaceJigsaw(
 															context.getSource(),

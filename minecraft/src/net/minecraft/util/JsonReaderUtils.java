@@ -8,7 +8,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.lang.reflect.Field;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 
 public class JsonReaderUtils {
@@ -46,7 +45,7 @@ public class JsonReaderUtils {
 		Object var5;
 		try {
 			JsonElement jsonElement = Streams.parse(jsonReader);
-			var5 = Util.getResult(codec.parse(RegistryOps.of(JsonOps.INSTANCE, registryLookup), jsonElement), JsonParseException::new);
+			var5 = Util.getResult(codec.parse(registryLookup.getOps(JsonOps.INSTANCE), jsonElement), JsonParseException::new);
 		} catch (StackOverflowError var9) {
 			throw new JsonParseException(var9);
 		} finally {

@@ -25,7 +25,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class BrushItem extends Item {
-	public static final int field_43390 = 10;
+	public static final int ANIMATION_DURATION = 10;
 	private static final int MAX_BRUSH_TIME = 200;
 
 	public BrushItem(Item.Settings settings) {

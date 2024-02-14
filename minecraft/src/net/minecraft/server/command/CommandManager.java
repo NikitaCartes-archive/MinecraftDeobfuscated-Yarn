@@ -398,7 +398,7 @@ public class CommandManager {
 			private <T> RegistryWrapper.Impl.Delegating<T> createTagCreatingLookup(RegistryWrapper.Impl<T> original) {
 				return new RegistryWrapper.Impl.Delegating<T>() {
 					@Override
-					protected RegistryWrapper.Impl<T> getBase() {
+					public RegistryWrapper.Impl<T> getBase() {
 						return original;
 					}
 

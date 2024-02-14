@@ -17,7 +17,8 @@ public class OneTwentyOneAdventureTabAdvancementGenerator implements Advancement
 		VanillaAdventureTabAdvancementGenerator.createKillMobAdvancements(
 			advancementEntry,
 			exporter,
-			(List<EntityType<?>>)Stream.concat(VanillaAdventureTabAdvancementGenerator.MONSTERS.stream(), Stream.of(EntityType.BREEZE)).collect(Collectors.toList())
+			(List<EntityType<?>>)Stream.concat(VanillaAdventureTabAdvancementGenerator.MONSTERS.stream(), Stream.of(EntityType.BREEZE, EntityType.BOGGED))
+				.collect(Collectors.toList())
 		);
 	}
 }

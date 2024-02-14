@@ -9,9 +9,9 @@ import net.minecraft.client.realms.task.LongRunningTask;
 public class RealmsLongRunningTickableTaskScreen extends RealmsLongRunningMcoTaskScreen {
 	private final LongRunningTask tickableTask;
 
-	public RealmsLongRunningTickableTaskScreen(Screen screen, LongRunningTask longRunningTask) {
-		super(screen, longRunningTask);
-		this.tickableTask = longRunningTask;
+	public RealmsLongRunningTickableTaskScreen(Screen parent, LongRunningTask tickableTask) {
+		super(parent, tickableTask);
+		this.tickableTask = tickableTask;
 	}
 
 	@Override

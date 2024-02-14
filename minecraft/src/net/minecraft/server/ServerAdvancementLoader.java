@@ -44,7 +44,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	}
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
-		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, this.registryLookup);
+		RegistryOps<JsonElement> registryOps = this.registryLookup.getOps(JsonOps.INSTANCE);
 		Builder<Identifier, AdvancementEntry> builder = ImmutableMap.builder();
 		map.forEach((id, json) -> {
 			try {

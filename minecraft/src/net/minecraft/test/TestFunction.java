@@ -13,10 +13,11 @@ public record TestFunction(
 	boolean required,
 	int maxAttempts,
 	int requiredSuccesses,
+	boolean skyAccess,
 	Consumer<TestContext> starter
 ) {
 	public TestFunction(String batchId, String templatePath, String templateName, int tickLimit, long duration, boolean required, Consumer<TestContext> starter) {
-		this(batchId, templatePath, templateName, BlockRotation.NONE, tickLimit, duration, required, 1, 1, starter);
+		this(batchId, templatePath, templateName, BlockRotation.NONE, tickLimit, duration, required, 1, 1, false, starter);
 	}
 
 	public TestFunction(
@@ -29,7 +30,7 @@ public record TestFunction(
 		boolean required,
 		Consumer<TestContext> starter
 	) {
-		this(batchId, templatePath, templateName, rotation, tickLimit, setupTicks, required, 1, 1, starter);
+		this(batchId, templatePath, templateName, rotation, tickLimit, setupTicks, required, 1, 1, false, starter);
 	}
 
 	public void start(TestContext context) {

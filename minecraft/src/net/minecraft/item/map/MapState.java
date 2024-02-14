@@ -42,8 +42,8 @@ import org.slf4j.Logger;
 
 public class MapState extends PersistentState {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final int field_31832 = 128;
-	private static final int field_31833 = 64;
+	private static final int SIZE = 128;
+	private static final int SIZE_HALF = 64;
 	public static final int MAX_SCALE = 4;
 	public static final int MAX_ICONS = 256;
 	/**

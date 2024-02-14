@@ -43,6 +43,8 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public abstract class AbstractSkeletonEntity extends HostileEntity implements RangedAttackMob {
+	private static final int HARD_ATTACK_INTERVAL = 20;
+	private static final int REGULAR_ATTACK_INTERVAL = 40;
 	private final BowAttackGoal<AbstractSkeletonEntity> bowAttackGoal = new BowAttackGoal<>(this, 1.0, 20, 15.0F);
 	private final MeleeAttackGoal meleeAttackGoal = new MeleeAttackGoal(this, 1.2, false) {
 		@Override
@@ -155,9 +157,9 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 			this.goalSelector.remove(this.bowAttackGoal);
 			ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW));
 			if (itemStack.isOf(Items.BOW)) {
-				int i = 20;
+				int i = this.getHardAttackInterval();
 				if (this.getWorld().getDifficulty() != Difficulty.HARD) {
-					i = 40;
+					i = this.getRegularAttackInterval();
 				}
 
 				this.bowAttackGoal.setAttackInterval(i);
@@ -166,6 +168,14 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 				this.goalSelector.add(4, this.meleeAttackGoal);
 			}
 		}
+	}
+
+	protected int getHardAttackInterval() {
+		return 20;
+	}
+
+	protected int getRegularAttackInterval() {
+		return 40;
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
@@ -227,7 +228,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 			return false;
 		} else {
-			if (!blockState.isFullCube(world, blockPos)) {
+			boolean bl = hopper.canBlockFromAbove() && blockState.isFullCube(world, blockPos) && !blockState.isIn(BlockTags.DOES_NOT_BLOCK_HOPPERS);
+			if (!bl) {
 				for (ItemEntity itemEntity : getInputItemEntities(world, hopper)) {
 					if (extract(hopper, itemEntity)) {
 						return true;
@@ -420,6 +422,11 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	@Override
 	public double getHopperZ() {
 		return (double)this.pos.getZ() + 0.5;
+	}
+
+	@Override
+	public boolean canBlockFromAbove() {
+		return true;
 	}
 
 	private void setTransferCooldown(int transferCooldown) {

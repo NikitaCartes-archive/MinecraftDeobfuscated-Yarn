@@ -62,6 +62,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
+		this.register(EntityType.BOGGED, LootTable.builder());
 		this.register(
 			EntityType.CAT,
 			LootTable.builder()

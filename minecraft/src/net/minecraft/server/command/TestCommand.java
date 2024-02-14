@@ -15,20 +15,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.command.argument.TestClassArgumentType;
 import net.minecraft.command.argument.TestFunctionArgumentType;
 import net.minecraft.data.DataWriter;
 import net.minecraft.data.dev.NbtProvider;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.network.DebugInfoSender;
@@ -240,7 +238,9 @@ public class TestCommand {
 	}
 
 	private static int reset(GameTestState state) {
+		state.getWorld().getOtherEntities(null, state.getBoundingBox()).stream().forEach(entity -> entity.remove(Entity.RemovalReason.DISCARDED));
 		state.getStructureBlockBlockEntity().loadAndPlaceStructure(state.getWorld());
+		StructureTestUtil.clearBarrierBox(state.getBoundingBox(), state.getWorld());
 		sendMessage(state.getWorld(), "Reset succeded for: " + state.getTemplatePath(), Formatting.GREEN);
 		return 1;
 	}
@@ -280,16 +280,9 @@ public class TestCommand {
 			ServerWorld serverWorld = source.getWorld();
 			BlockPos blockPos = getStructurePos(source).down();
 			StructureTestUtil.createTestArea(testName.toLowerCase(), blockPos, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
-
-			for (int i = 0; i < x; i++) {
-				for (int j = 0; j < z; j++) {
-					BlockPos blockPos2 = new BlockPos(blockPos.getX() + i, blockPos.getY() + 1, blockPos.getZ() + j);
-					Block block = Blocks.POLISHED_ANDESITE;
-					BlockStateArgument blockStateArgument = new BlockStateArgument(block.getDefaultState(), Collections.emptySet(), null);
-					blockStateArgument.setBlockState(serverWorld, blockPos2, Block.NOTIFY_LISTENERS);
-				}
-			}
-
+			BlockPos blockPos2 = blockPos.up();
+			BlockPos blockPos3 = blockPos2.add(x - 1, 0, z - 1);
+			BlockPos.stream(blockPos2, blockPos3).forEach(pos -> serverWorld.setBlockState(pos, Blocks.BEDROCK.getDefaultState()));
 			StructureTestUtil.placeStartButton(blockPos, new BlockPos(1, 0, -1), BlockRotation.NONE, serverWorld);
 			return 0;
 		} else {

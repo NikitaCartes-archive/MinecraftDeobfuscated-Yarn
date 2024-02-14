@@ -302,16 +302,74 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	protected static final Direction[] DIRECTIONS = new Direction[]{
 		Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP
 	};
+	/**
+	 * Whether this block can be walked on or through.
+	 * 
+	 * @see #getCollisionShape
+	 */
 	protected final boolean collidable;
+	/**
+	 * The blast resistance of the block.
+	 * 
+	 * @see Block#getBlastResistance
+	 */
 	protected final float resistance;
+	/**
+	 * Whether this block should tick when randomly selected when ticking the world. An example of this ticking is crop growth.
+	 * 
+	 * @see Block#hasRandomTicks
+	 * @see net.minecraft.server.world.ServerWorld#tickChunk
+	 */
 	protected final boolean randomTicks;
+	/**
+	 * The collection of sounds played when breaking, stepping on, placing, hitting (with a projectile), or falling on this block.
+	 * 
+	 * @see #getSoundGroup
+	 */
 	protected final BlockSoundGroup soundGroup;
+	/**
+	 * A speed reduction applied to a {@link net.minecraft.entity.LivingEntity} that tries to move across this block.
+	 * 
+	 * @see Block#getSlipperiness
+	 * @see net.minecraft.entity.LivingEntity#travel
+	 */
 	protected final float slipperiness;
+	/**
+	 * The multiplier applied to the velocity of an {@link net.minecraft.entity.Entity} when it walks on this block.
+	 * 
+	 * @see Block#getVelocityMultiplier
+	 * @see net.minecraft.entity.Entity#getVelocityMultiplier
+	 */
 	protected final float velocityMultiplier;
+	/**
+	 * The multiplier applied to the velocity of a {@link net.minecraft.entity.LivingEntity} when it jumps off this block.
+	 * 
+	 * @see Block#getJumpVelocityMultiplier
+	 * @see net.minecraft.entity.Entity#getJumpVelocityMultiplier
+	 */
 	protected final float jumpVelocityMultiplier;
+	/**
+	 * Whether this block's collision shape can change.
+	 * 
+	 * @see #hasDynamicBounds
+	 */
 	protected final boolean dynamicBounds;
+	/**
+	 * The set of {@link net.minecraft.resource.featuretoggle.FeatureFlag FeatureFlags} that are required for this block to work correctly.
+	 * 
+	 * @see net.minecraft.resource.featuretoggle.FeatureFlags
+	 */
 	protected final FeatureSet requiredFeatures;
+	/**
+	 * The {@link AbstractBlock.Settings} to apply to this block.
+	 */
 	protected final AbstractBlock.Settings settings;
+	/**
+	 * The {@link net.minecraft.util.Identifier} of the loot table that determines what this block drops.
+	 * 
+	 * @see #getLootTableId
+	 * @see #getDroppedStacks
+	 */
 	@Nullable
 	protected Identifier lootTableId;
 

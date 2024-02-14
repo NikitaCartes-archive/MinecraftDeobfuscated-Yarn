@@ -62,7 +62,7 @@ public class SculkShriekerWarningManager {
 	}
 
 	public static OptionalInt warnNearbyPlayers(ServerWorld world, BlockPos pos, ServerPlayerEntity player) {
-		if (canIncreaseWarningLevel(world, pos)) {
+		if (isWardenNearby(world, pos)) {
 			return OptionalInt.empty();
 		} else {
 			List<ServerPlayerEntity> list = getPlayersInRange(world, pos);
@@ -93,7 +93,7 @@ public class SculkShriekerWarningManager {
 		return this.cooldownTicks > 0;
 	}
 
-	private static boolean canIncreaseWarningLevel(ServerWorld world, BlockPos pos) {
+	private static boolean isWardenNearby(ServerWorld world, BlockPos pos) {
 		Box box = Box.of(Vec3d.ofCenter(pos), 48.0, 48.0, 48.0);
 		return !world.getNonSpectatingEntities(WardenEntity.class, box).isEmpty();
 	}

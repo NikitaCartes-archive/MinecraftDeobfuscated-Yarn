@@ -273,6 +273,7 @@ import net.minecraft.datafixer.schema.Schema3799;
 import net.minecraft.datafixer.schema.Schema3807;
 import net.minecraft.datafixer.schema.Schema3808;
 import net.minecraft.datafixer.schema.Schema3808_1;
+import net.minecraft.datafixer.schema.Schema3816;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -672,7 +673,9 @@ public class Schemas {
 		Schema schema95 = builder.addSchema(2100, Schema2100::new);
 		builder.addFixer(new ChoiceTypesFix(schema95, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
 		builder.addFixer(new ChoiceTypesFix(schema95, "Add beehive", TypeReferences.BLOCK_ENTITY));
-		builder.addFixer(new GameEventRenamesFix(schema95, "Rename sugar recipe", TypeReferences.RECIPE, replacing("minecraft:sugar", "sugar_from_sugar_cane")));
+		builder.addFixer(
+			new GameEventRenamesFix(schema95, "Rename sugar recipe", TypeReferences.RECIPE, replacing("minecraft:sugar", "minecraft:sugar_from_sugar_cane"))
+		);
 		builder.addFixer(
 			new AdvancementRenameFix(
 				schema95, false, "Rename sugar recipe advancement", replacing("minecraft:recipes/misc/sugar", "minecraft:recipes/misc/sugar_from_sugar_cane")
@@ -745,26 +748,26 @@ public class Schemas {
 			new RenameEntityAttributesFix(
 				schema112,
 				"Attribute renames",
-				replacing(
+				replacingRaw(
 					ImmutableMap.<String, String>builder()
-						.put("generic.maxHealth", "generic.max_health")
-						.put("Max Health", "generic.max_health")
-						.put("zombie.spawnReinforcements", "zombie.spawn_reinforcements")
-						.put("Spawn Reinforcements Chance", "zombie.spawn_reinforcements")
-						.put("horse.jumpStrength", "horse.jump_strength")
-						.put("Jump Strength", "horse.jump_strength")
-						.put("generic.followRange", "generic.follow_range")
-						.put("Follow Range", "generic.follow_range")
-						.put("generic.knockbackResistance", "generic.knockback_resistance")
-						.put("Knockback Resistance", "generic.knockback_resistance")
-						.put("generic.movementSpeed", "generic.movement_speed")
-						.put("Movement Speed", "generic.movement_speed")
-						.put("generic.flyingSpeed", "generic.flying_speed")
-						.put("Flying Speed", "generic.flying_speed")
-						.put("generic.attackDamage", "generic.attack_damage")
-						.put("generic.attackKnockback", "generic.attack_knockback")
-						.put("generic.attackSpeed", "generic.attack_speed")
-						.put("generic.armorToughness", "generic.armor_toughness")
+						.put("generic.maxHealth", "minecraft:generic.max_health")
+						.put("Max Health", "minecraft:generic.max_health")
+						.put("zombie.spawnReinforcements", "minecraft:zombie.spawn_reinforcements")
+						.put("Spawn Reinforcements Chance", "minecraft:zombie.spawn_reinforcements")
+						.put("horse.jumpStrength", "minecraft:horse.jump_strength")
+						.put("Jump Strength", "minecraft:horse.jump_strength")
+						.put("generic.followRange", "minecraft:generic.follow_range")
+						.put("Follow Range", "minecraft:generic.follow_range")
+						.put("generic.knockbackResistance", "minecraft:generic.knockback_resistance")
+						.put("Knockback Resistance", "minecraft:generic.knockback_resistance")
+						.put("generic.movementSpeed", "minecraft:generic.movement_speed")
+						.put("Movement Speed", "minecraft:generic.movement_speed")
+						.put("generic.flyingSpeed", "minecraft:generic.flying_speed")
+						.put("Flying Speed", "minecraft:generic.flying_speed")
+						.put("generic.attackDamage", "minecraft:generic.attack_damage")
+						.put("generic.attackKnockback", "minecraft:generic.attack_knockback")
+						.put("generic.attackSpeed", "minecraft:generic.attack_speed")
+						.put("generic.armorToughness", "minecraft:generic.armor_toughness")
 						.build()
 				)
 			)
@@ -1234,13 +1237,19 @@ public class Schemas {
 		builder.addFixer(
 			new RenameEntityAttributesFix(schema209, "Rename jump strength attribute", replacing("minecraft:horse.jump_strength", "minecraft:generic.jump_strength"))
 		);
+		Schema schema210 = builder.addSchema(3816, Schema3816::new);
+		builder.addFixer(new ChoiceTypesFix(schema210, "Added Bogged", TypeReferences.ENTITY));
 	}
 
-	private static UnaryOperator<String> replacing(Map<String, String> replacements) {
+	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {
 		return string -> (String)replacements.getOrDefault(string, string);
 	}
 
+	private static UnaryOperator<String> replacing(Map<String, String> replacements) {
+		return string -> (String)replacements.getOrDefault(IdentifierNormalizingSchema.normalize(string), string);
+	}
+
 	private static UnaryOperator<String> replacing(String old, String current) {
-		return string -> Objects.equals(string, old) ? current : string;
+		return string -> Objects.equals(IdentifierNormalizingSchema.normalize(string), old) ? current : string;
 	}
 }

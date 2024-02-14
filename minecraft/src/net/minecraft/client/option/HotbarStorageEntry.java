@@ -57,7 +57,7 @@ public class HotbarStorageEntry {
 	}
 
 	public void serialize(PlayerInventory playerInventory, DynamicRegistryManager registryManager) {
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NBT_OPS, registryManager);
+		RegistryOps<NbtElement> registryOps = registryManager.getOps(NBT_OPS);
 		Builder<Dynamic<?>> builder = ImmutableList.builderWithExpectedSize(HOTBAR_SIZE);
 
 		for (int i = 0; i < HOTBAR_SIZE; i++) {
