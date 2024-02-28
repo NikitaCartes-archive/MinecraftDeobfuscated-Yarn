@@ -145,29 +145,25 @@ public class ArmorItem extends Item implements Equipment {
 	}
 
 	public static enum Type implements StringIdentifiable {
-		HELMET(EquipmentSlot.HEAD, "helmet"),
-		CHESTPLATE(EquipmentSlot.CHEST, "chestplate"),
-		LEGGINGS(EquipmentSlot.LEGS, "leggings"),
-		BOOTS(EquipmentSlot.FEET, "boots"),
-		BODY(EquipmentSlot.BODY, "body");
+		HELMET(EquipmentSlot.HEAD, 11, "helmet"),
+		CHESTPLATE(EquipmentSlot.CHEST, 16, "chestplate"),
+		LEGGINGS(EquipmentSlot.LEGS, 15, "leggings"),
+		BOOTS(EquipmentSlot.FEET, 13, "boots"),
+		BODY(EquipmentSlot.BODY, 16, "body");
 
 		public static final Codec<ArmorItem.Type> CODEC = StringIdentifiable.createBasicCodec(ArmorItem.Type::values);
 		private final EquipmentSlot equipmentSlot;
 		private final String name;
+		private final int baseMaxDamage;
 
-		private Type(EquipmentSlot equipmentSlot, String name) {
+		private Type(EquipmentSlot equipmentSlot, int baseMaxDamage, String name) {
 			this.equipmentSlot = equipmentSlot;
 			this.name = name;
+			this.baseMaxDamage = baseMaxDamage;
 		}
 
 		public int getMaxDamage(int multiplier) {
-			return switch (this) {
-				case HELMET -> 11;
-				case CHESTPLATE -> 16;
-				case LEGGINGS -> 15;
-				case BOOTS -> 13;
-				case BODY -> 20;
-			} * multiplier;
+			return this.baseMaxDamage * multiplier;
 		}
 
 		public EquipmentSlot getEquipmentSlot() {

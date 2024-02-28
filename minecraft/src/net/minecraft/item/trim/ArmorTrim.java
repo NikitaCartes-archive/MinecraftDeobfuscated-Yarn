@@ -1,58 +1,69 @@
 package net.minecraft.item.trim;
 
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.item.TooltipAppender;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.slf4j.Logger;
+import net.minecraft.util.dynamic.Codecs;
 
-public class ArmorTrim {
+public class ArmorTrim implements TooltipAppender {
 	public static final Codec<ArmorTrim> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					ArmorTrimMaterial.ENTRY_CODEC.fieldOf("material").forGetter(ArmorTrim::getMaterial),
-					ArmorTrimPattern.ENTRY_CODEC.fieldOf("pattern").forGetter(ArmorTrim::getPattern)
+					ArmorTrimPattern.ENTRY_CODEC.fieldOf("pattern").forGetter(ArmorTrim::getPattern),
+					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(trim -> trim.showInTooltip)
 				)
 				.apply(instance, ArmorTrim::new)
 	);
-	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final String NBT_KEY = "Trim";
+	public static final PacketCodec<RegistryByteBuf, ArmorTrim> PACKET_CODEC = PacketCodec.tuple(
+		ArmorTrimMaterial.ENTRY_PACKET_CODEC,
+		ArmorTrim::getMaterial,
+		ArmorTrimPattern.ENTRY_PACKET_CODEC,
+		ArmorTrim::getPattern,
+		PacketCodecs.BOOL,
+		trim -> trim.showInTooltip,
+		ArmorTrim::new
+	);
 	private static final Text UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("item", new Identifier("smithing_template.upgrade")))
 		.formatted(Formatting.GRAY);
 	private final RegistryEntry<ArmorTrimMaterial> material;
 	private final RegistryEntry<ArmorTrimPattern> pattern;
+	private final boolean showInTooltip;
 	private final Function<RegistryEntry<ArmorMaterial>, Identifier> leggingsModelIdGetter;
 	private final Function<RegistryEntry<ArmorMaterial>, Identifier> genericModelIdGetter;
 
-	public ArmorTrim(RegistryEntry<ArmorTrimMaterial> material, RegistryEntry<ArmorTrimPattern> pattern) {
+	public ArmorTrim(RegistryEntry<ArmorTrimMaterial> material, RegistryEntry<ArmorTrimPattern> pattern, boolean showInTooltip) {
 		this.material = material;
 		this.pattern = pattern;
-		this.leggingsModelIdGetter = Util.memoize((Function<RegistryEntry<ArmorMaterial>, Identifier>)(armorMaterial -> {
+		this.leggingsModelIdGetter = Util.memoize((Function<RegistryEntry<ArmorMaterial>, Identifier>)(materialEntry -> {
 			Identifier identifier = pattern.value().assetId();
-			String string = this.getMaterialAssetNameFor(armorMaterial);
-			return identifier.withPath((UnaryOperator<String>)(path -> "trims/models/armor/" + path + "_leggings_" + string));
+			String string = this.getMaterialAssetNameFor(materialEntry);
+			return identifier.withPath((UnaryOperator<String>)(materialName -> "trims/models/armor/" + materialName + "_leggings_" + string));
 		}));
-		this.genericModelIdGetter = Util.memoize((Function<RegistryEntry<ArmorMaterial>, Identifier>)(armorMaterial -> {
+		this.genericModelIdGetter = Util.memoize((Function<RegistryEntry<ArmorMaterial>, Identifier>)(materialEntry -> {
 			Identifier identifier = pattern.value().assetId();
-			String string = this.getMaterialAssetNameFor(armorMaterial);
-			return identifier.withPath((UnaryOperator<String>)(path -> "trims/models/armor/" + path + "_" + string));
+			String string = this.getMaterialAssetNameFor(materialEntry);
+			return identifier.withPath((UnaryOperator<String>)(materialName -> "trims/models/armor/" + materialName + "_" + string));
 		}));
+		this.showInTooltip = showInTooltip;
+	}
+
+	public ArmorTrim(RegistryEntry<ArmorTrimMaterial> material, RegistryEntry<ArmorTrimPattern> pattern) {
+		this(material, pattern, true);
 	}
 
 	private String getMaterialAssetNameFor(RegistryEntry<ArmorMaterial> armorMaterial) {
@@ -82,39 +93,23 @@ public class ArmorTrim {
 	}
 
 	public boolean equals(Object o) {
-		return !(o instanceof ArmorTrim armorTrim) ? false : this.pattern.equals(armorTrim.pattern) && this.material.equals(armorTrim.material);
+		return !(o instanceof ArmorTrim armorTrim)
+			? false
+			: this.showInTooltip == armorTrim.showInTooltip && this.pattern.equals(armorTrim.pattern) && this.material.equals(armorTrim.material);
 	}
 
-	public static boolean apply(DynamicRegistryManager registryManager, ItemStack stack, ArmorTrim trim) {
-		if (stack.isIn(ItemTags.TRIMMABLE_ARMOR)) {
-			stack.getOrCreateNbt().put("Trim", (NbtElement)CODEC.encodeStart(registryManager.getOps(NbtOps.INSTANCE), trim).result().orElseThrow());
-			return true;
-		} else {
-			return false;
-		}
+	public int hashCode() {
+		int i = this.material.hashCode();
+		i = 31 * i + this.pattern.hashCode();
+		return 31 * i + (this.showInTooltip ? 1 : 0);
 	}
 
-	public static Optional<ArmorTrim> getTrim(DynamicRegistryManager registryManager, ItemStack stack, boolean suppressError) {
-		if (stack.isIn(ItemTags.TRIMMABLE_ARMOR) && stack.getNbt() != null && stack.getNbt().contains("Trim")) {
-			NbtCompound nbtCompound = stack.getSubNbt("Trim");
-			ArmorTrim armorTrim = (ArmorTrim)CODEC.parse(registryManager.getOps(NbtOps.INSTANCE), nbtCompound).resultOrPartial(error -> {
-				if (!suppressError) {
-					LOGGER.warn(error);
-				}
-			}).orElse(null);
-			return Optional.ofNullable(armorTrim);
-		} else {
-			return Optional.empty();
-		}
-	}
-
-	public static void appendTooltip(ItemStack stack, DynamicRegistryManager registryManager, List<Text> tooltip) {
-		Optional<ArmorTrim> optional = getTrim(registryManager, stack, true);
-		if (optional.isPresent()) {
-			ArmorTrim armorTrim = (ArmorTrim)optional.get();
-			tooltip.add(UPGRADE_TEXT);
-			tooltip.add(ScreenTexts.space().append(armorTrim.getPattern().value().getDescription(armorTrim.getMaterial())));
-			tooltip.add(ScreenTexts.space().append(armorTrim.getMaterial().value().description()));
+	@Override
+	public void appendTooltip(Consumer<Text> textConsumer, TooltipContext context) {
+		if (this.showInTooltip) {
+			textConsumer.accept(UPGRADE_TEXT);
+			textConsumer.accept(ScreenTexts.space().append(this.pattern.value().getDescription(this.material)));
+			textConsumer.accept(ScreenTexts.space().append(this.material.value().description()));
 		}
 	}
 }

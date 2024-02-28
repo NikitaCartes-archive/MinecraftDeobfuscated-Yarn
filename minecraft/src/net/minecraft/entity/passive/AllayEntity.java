@@ -3,12 +3,15 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.ImmutableList;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -374,21 +377,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	private boolean areDifferentPotions(ItemStack stack, ItemStack stack2) {
-		NbtCompound nbtCompound = stack.getNbt();
-		boolean bl = nbtCompound != null && nbtCompound.contains("Potion");
-		if (!bl) {
-			return false;
-		} else {
-			NbtCompound nbtCompound2 = stack2.getNbt();
-			boolean bl2 = nbtCompound2 != null && nbtCompound2.contains("Potion");
-			if (!bl2) {
-				return true;
-			} else {
-				NbtElement nbtElement = nbtCompound.get("Potion");
-				NbtElement nbtElement2 = nbtCompound2.get("Potion");
-				return nbtElement != null && nbtElement2 != null && !nbtElement.equals(nbtElement2);
-			}
-		}
+		PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
+		PotionContentsComponent potionContentsComponent2 = stack2.get(DataComponentTypes.POTION_CONTENTS);
+		return !Objects.equals(potionContentsComponent, potionContentsComponent2);
 	}
 
 	@Override
@@ -468,7 +459,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		this.writeInventory(nbt);
+		this.writeInventory(nbt, this.getRegistryManager());
 		Vibrations.ListenerData.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.vibrationListenerData)
 			.resultOrPartial(LOGGER::error)
@@ -480,7 +471,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.readInventory(nbt);
+		this.readInventory(nbt, this.getRegistryManager());
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			Vibrations.ListenerData.CODEC
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))

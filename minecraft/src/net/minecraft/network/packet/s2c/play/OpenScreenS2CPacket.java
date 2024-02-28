@@ -18,7 +18,7 @@ public class OpenScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 		OpenScreenS2CPacket::getSyncId,
 		PacketCodecs.registryValue(RegistryKeys.SCREEN_HANDLER),
 		OpenScreenS2CPacket::getScreenHandlerType,
-		TextCodecs.REGISTRY_PACKET_CODEC,
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC,
 		OpenScreenS2CPacket::getName,
 		OpenScreenS2CPacket::new
 	);

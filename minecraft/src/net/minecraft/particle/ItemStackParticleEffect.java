@@ -18,7 +18,7 @@ public class ItemStackParticleEffect implements ParticleEffect {
 		) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			ItemStringReader.ItemResult itemResult = new ItemStringReader(wrapperLookup).consume(stringReader);
-			ItemStack itemStack = new ItemStackArgument(itemResult.item(), itemResult.nbt()).createStack(1, false);
+			ItemStack itemStack = new ItemStackArgument(itemResult.item(), itemResult.components()).createStack(1, false);
 			return new ItemStackParticleEffect(particleType, itemStack);
 		}
 	};
@@ -40,7 +40,8 @@ public class ItemStackParticleEffect implements ParticleEffect {
 
 	@Override
 	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
-		return Registries.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getRegistryEntry(), this.stack.getNbt()).asString();
+		ItemStackArgument itemStackArgument = new ItemStackArgument(this.stack.getRegistryEntry(), this.stack.getComponents());
+		return Registries.PARTICLE_TYPE.getId(this.getType()) + " " + itemStackArgument.asString(registryLookup);
 	}
 
 	@Override

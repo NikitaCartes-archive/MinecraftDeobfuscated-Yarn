@@ -51,7 +51,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 		return switch (this) {
 			case INACTIVE -> trialSpawnerData.setDisplayEntity(logic, world, WAITING_FOR_PLAYERS) == null ? this : WAITING_FOR_PLAYERS;
 			case WAITING_FOR_PLAYERS -> {
-				if (!trialSpawnerData.hasSpawnData()) {
+				if (!trialSpawnerData.hasSpawnData(logic, world.random)) {
 					yield INACTIVE;
 				} else {
 					trialSpawnerData.updatePlayers(world, pos, entityDetector, selector, trialSpawnerConfig.requiredPlayerRange());
@@ -59,7 +59,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 				}
 			}
 			case ACTIVE -> {
-				if (!trialSpawnerData.hasSpawnData()) {
+				if (!trialSpawnerData.hasSpawnData(logic, world.random)) {
 					yield INACTIVE;
 				} else {
 					int i = trialSpawnerData.getAdditionalPlayers(pos);

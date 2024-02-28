@@ -70,7 +70,7 @@ public class GameMenuScreen extends Screen {
 			this.client.setScreen(null);
 			this.client.mouse.lockCursor();
 		}).width(204).build(), 2, gridWidget.copyPositioner().marginTop(50));
-		adder.add(this.createButton(ADVANCEMENTS_TEXT, () -> new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler())));
+		adder.add(this.createButton(ADVANCEMENTS_TEXT, () -> new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler(), this)));
 		adder.add(this.createButton(STATS_TEXT, () -> new StatsScreen(this, this.client.player.getStatHandler())));
 		adder.add(
 			this.createUrlButton(
@@ -84,7 +84,7 @@ public class GameMenuScreen extends Screen {
 		if (this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote()) {
 			adder.add(this.createButton(SHARE_TO_LAN_TEXT, () -> new OpenToLanScreen(this)));
 		} else {
-			adder.add(this.createButton(PLAYER_REPORTING_TEXT, SocialInteractionsScreen::new));
+			adder.add(this.createButton(PLAYER_REPORTING_TEXT, () -> new SocialInteractionsScreen(this)));
 		}
 
 		Text text = this.client.isInSingleplayer() ? RETURN_TO_MENU_TEXT : ScreenTexts.DISCONNECT;

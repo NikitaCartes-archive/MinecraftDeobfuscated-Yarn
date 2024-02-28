@@ -101,7 +101,7 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 		for (int i = slot + 1; i < 9; i++) {
 			if (!this.isSlotDisabled(i)) {
 				ItemStack itemStack = this.getStack(i);
-				if (itemStack.isEmpty() || itemStack.getCount() < count && ItemStack.areItemsAndNbtEqual(itemStack, stack)) {
+				if (itemStack.isEmpty() || itemStack.getCount() < count && ItemStack.areItemsAndComponentsEqual(itemStack, stack)) {
 					return true;
 				}
 			}
@@ -116,7 +116,7 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 		this.craftingTicksRemaining = nbt.getInt("crafting_ticks_remaining");
 		this.inputStacks = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.readLootTable(nbt)) {
-			Inventories.readNbt(nbt, this.inputStacks);
+			Inventories.readNbt(nbt, this.inputStacks, registryLookup);
 		}
 
 		int[] is = nbt.getIntArray("disabled_slots");
@@ -139,7 +139,7 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 		super.writeNbt(nbt, registryLookup);
 		nbt.putInt("crafting_ticks_remaining", this.craftingTicksRemaining);
 		if (!this.writeLootTable(nbt)) {
-			Inventories.writeNbt(nbt, this.inputStacks);
+			Inventories.writeNbt(nbt, this.inputStacks, registryLookup);
 		}
 
 		this.putDisabledSlots(nbt);

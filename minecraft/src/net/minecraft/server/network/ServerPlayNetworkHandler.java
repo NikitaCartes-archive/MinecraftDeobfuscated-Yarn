@@ -22,11 +22,9 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.SharedConstants;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -41,6 +39,10 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.command.argument.SignedArgumentList;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.WritableBookContentComponent;
+import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -59,8 +61,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.encryption.PlayerPublicKey;
@@ -158,6 +158,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -750,50 +751,26 @@ public class ServerPlayNetworkHandler
 	private void updateBookContent(List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-			this.setTextToBook(pages, UnaryOperator.identity(), itemStack);
+			List<RawFilteredPair<String>> list = pages.stream().map(this::toRawFilteredPair).toList();
+			itemStack.set(DataComponentTypes.WRITABLE_BOOK_CONTENT, new WritableBookContentComponent(list));
 		}
 	}
 
 	private void addBook(FilteredMessage title, List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-			ItemStack itemStack2 = itemStack.copyNbtToNewStack(Items.WRITTEN_BOOK, 1);
-			itemStack2.setSubNbt("author", NbtString.of(this.player.getName().getString()));
-			if (this.player.shouldFilterText()) {
-				itemStack2.setSubNbt("title", NbtString.of(title.getString()));
-			} else {
-				itemStack2.setSubNbt("filtered_title", NbtString.of(title.getString()));
-				itemStack2.setSubNbt("title", NbtString.of(title.raw()));
-			}
-
-			this.setTextToBook(pages, text -> Text.Serialization.toJsonString(Text.literal(text)), itemStack2);
+			ItemStack itemStack2 = itemStack.copyComponentsToNewStack(Items.WRITTEN_BOOK, 1);
+			itemStack2.remove(DataComponentTypes.WRITABLE_BOOK_CONTENT);
+			List<RawFilteredPair<Text>> list = pages.stream().map(page -> this.toRawFilteredPair(page).map(Text::literal)).toList();
+			itemStack2.set(
+				DataComponentTypes.WRITTEN_BOOK_CONTENT, new WrittenBookContentComponent(this.toRawFilteredPair(title), this.player.getName().getString(), 0, list, true)
+			);
 			this.player.getInventory().setStack(slotId, itemStack2);
 		}
 	}
 
-	private void setTextToBook(List<FilteredMessage> messages, UnaryOperator<String> postProcessor, ItemStack book) {
-		NbtList nbtList = new NbtList();
-		if (this.player.shouldFilterText()) {
-			messages.stream().map(message -> NbtString.of((String)postProcessor.apply(message.getString()))).forEach(nbtList::add);
-		} else {
-			NbtCompound nbtCompound = new NbtCompound();
-			int i = 0;
-
-			for (int j = messages.size(); i < j; i++) {
-				FilteredMessage filteredMessage = (FilteredMessage)messages.get(i);
-				String string = filteredMessage.raw();
-				nbtList.add(NbtString.of((String)postProcessor.apply(string)));
-				if (filteredMessage.isFiltered()) {
-					nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(filteredMessage.getString()));
-				}
-			}
-
-			if (!nbtCompound.isEmpty()) {
-				book.setSubNbt("filtered_pages", nbtCompound);
-			}
-		}
-
-		book.setSubNbt("pages", nbtList);
+	private RawFilteredPair<String> toRawFilteredPair(FilteredMessage message) {
+		return this.player.shouldFilterText() ? RawFilteredPair.of(message.getString()) : RawFilteredPair.of(message);
 	}
 
 	@Override
@@ -870,6 +847,7 @@ public class ServerPlayNetworkHandler
 								this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), g, h);
 							}
 						} else {
+							boolean bl = this.player.isFallFlying();
 							if (serverWorld.getTickManager().shouldTick()) {
 								this.movePacketsCount++;
 								int q = this.movePacketsCount - this.lastTickMovePacketsCount;
@@ -878,9 +856,8 @@ public class ServerPlayNetworkHandler
 									q = 1;
 								}
 
-								if (!this.player.isInTeleportationState()
-									&& (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !this.player.isFallFlying())) {
-									float r = this.player.isFallFlying() ? 300.0F : 100.0F;
+								if (!this.player.isInTeleportationState() && (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !bl)) {
+									float r = bl ? 300.0F : 100.0F;
 									if (p - o > (double)(r * (float)q) && !this.isHost()) {
 										LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), l, m, n);
 										this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYaw(), this.player.getPitch());
@@ -893,12 +870,12 @@ public class ServerPlayNetworkHandler
 							l = d - this.updatedX;
 							m = e - this.updatedY;
 							n = f - this.updatedZ;
-							boolean bl = m > 0.0;
-							if (this.player.isOnGround() && !packet.isOnGround() && bl) {
+							boolean bl2 = m > 0.0;
+							if (this.player.isOnGround() && !packet.isOnGround() && bl2) {
 								this.player.jump();
 							}
 
-							boolean bl2 = this.player.groundCollision;
+							boolean bl3 = this.player.groundCollision;
 							this.player.move(MovementType.PLAYER, new Vec3d(l, m, n));
 							l = d - this.player.getX();
 							m = e - this.player.getY();
@@ -908,34 +885,39 @@ public class ServerPlayNetworkHandler
 
 							n = f - this.player.getZ();
 							p = l * l + m * m + n * n;
-							boolean bl3 = false;
+							boolean bl4 = false;
 							if (!this.player.isInTeleportationState()
 								&& p > 0.0625
 								&& !this.player.isSleeping()
 								&& !this.player.interactionManager.isCreative()
 								&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
-								bl3 = true;
+								bl4 = true;
 								LOGGER.warn("{} moved wrongly!", this.player.getName().getString());
 							}
 
 							if (this.player.noClip
 								|| this.player.isSleeping()
-								|| (!bl3 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box, d, e, f)) {
+								|| (!bl4 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box, d, e, f)) {
 								this.player.updatePositionAndAngles(d, e, f, g, h);
+								boolean bl5 = this.player.isUsingRiptide();
 								this.floating = m >= -0.03125
-									&& !bl2
+									&& !bl3
 									&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
 									&& !this.server.isFlightEnabled()
 									&& !this.player.getAbilities().allowFlying
 									&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
-									&& !this.player.isFallFlying()
-									&& !this.player.isUsingRiptide()
+									&& !bl
+									&& !bl5
 									&& this.isEntityOnAir(this.player);
 								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
 								this.player.setOnGround(packet.isOnGround(), new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k));
-								if (bl) {
+								if (bl2) {
 									this.player.onLanding();
+								}
+
+								if (packet.isOnGround() || this.player.isInFluid() || this.player.isClimbing() || this.player.isSpectator() || this.player.isCreative() || bl || bl5) {
+									this.player.ignoreFallDamageAboveY = null;
 								}
 
 								this.player.increaseTravelMotionStats(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
@@ -1294,11 +1276,11 @@ public class ServerPlayNetworkHandler
 	/**
 	 * {@return whether {@code message} contains an illegal character}
 	 * 
-	 * @see net.minecraft.SharedConstants#isValidChar(char)
+	 * @see net.minecraft.util.StringHelper#isValidChar(char)
 	 */
 	private static boolean hasIllegalCharacter(String message) {
 		for (int i = 0; i < message.length(); i++) {
-			if (!SharedConstants.isValidChar(message.charAt(i))) {
+			if (!StringHelper.isValidChar(message.charAt(i))) {
 				return true;
 			}
 		}
@@ -1615,9 +1597,9 @@ public class ServerPlayNetworkHandler
 				return;
 			}
 
-			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
-			if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z")) {
-				BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
+			NbtComponent nbtComponent = itemStack.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT);
+			if (nbtComponent.contains("x") && nbtComponent.contains("y") && nbtComponent.contains("z")) {
+				BlockPos blockPos = BlockEntity.posFromNbt(nbtComponent.getNbt());
 				if (this.player.getWorld().canSetBlock(blockPos)) {
 					BlockEntity blockEntity = this.player.getWorld().getBlockEntity(blockPos);
 					if (blockEntity != null) {
@@ -1661,9 +1643,6 @@ public class ServerPlayNetworkHandler
 	public void onUpdatePlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().allowFlying;
-		if (this.player.getAbilities().flying) {
-			this.player.ignoreFallDamageAboveY = null;
-		}
 	}
 
 	@Override

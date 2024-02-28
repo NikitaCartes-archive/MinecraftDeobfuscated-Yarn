@@ -4,7 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.BlockItem;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerLootComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataKey;
 import net.minecraft.loot.LootDataType;
@@ -12,7 +13,6 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
@@ -51,17 +51,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 		if (stack.isEmpty()) {
 			return stack;
 		} else {
-			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-			if (nbtCompound == null) {
-				nbtCompound = new NbtCompound();
-			}
-
-			nbtCompound.putString("LootTable", this.id.toString());
-			if (this.seed != 0L) {
-				nbtCompound.putLong("LootTableSeed", this.seed);
-			}
-
-			BlockItem.setBlockEntityNbt(stack, this.type.value(), nbtCompound);
+			stack.set(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.id, this.seed));
 			return stack;
 		}
 	}

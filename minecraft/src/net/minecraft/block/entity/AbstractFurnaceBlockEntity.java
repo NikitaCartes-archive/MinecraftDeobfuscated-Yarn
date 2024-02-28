@@ -230,7 +230,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		Inventories.readNbt(nbt, this.inventory);
+		Inventories.readNbt(nbt, this.inventory, registryLookup);
 		this.burnTime = nbt.getShort("BurnTime");
 		this.cookTime = nbt.getShort("CookTime");
 		this.cookTimeTotal = nbt.getShort("CookTimeTotal");
@@ -248,7 +248,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		nbt.putShort("BurnTime", (short)this.burnTime);
 		nbt.putShort("CookTime", (short)this.cookTime);
 		nbt.putShort("CookTimeTotal", (short)this.cookTimeTotal);
-		Inventories.writeNbt(nbt, this.inventory);
+		Inventories.writeNbt(nbt, this.inventory, registryLookup);
 		NbtCompound nbtCompound = new NbtCompound();
 		this.recipesUsed.forEach((identifier, count) -> nbtCompound.putInt(identifier.toString(), count));
 		nbt.put("RecipesUsed", nbtCompound);
@@ -432,7 +432,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		ItemStack itemStack = this.inventory.get(slot);
-		boolean bl = !stack.isEmpty() && ItemStack.areItemsAndNbtEqual(itemStack, stack);
+		boolean bl = !stack.isEmpty() && ItemStack.areItemsAndComponentsEqual(itemStack, stack);
 		this.inventory.set(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());

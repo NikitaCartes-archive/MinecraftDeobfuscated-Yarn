@@ -26,6 +26,7 @@ import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Identifier;
 
@@ -57,7 +58,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	public abstract void generate();
 
 	@Override
-	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
 		this.generate();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		Registries.ENTITY_TYPE
@@ -78,7 +79,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 									if (!set.add(lootTableId)) {
 										throw new IllegalStateException(String.format(Locale.ROOT, "Duplicate loottable '%s' for '%s'", lootTableId, entityType.registryKey().getValue()));
 									} else {
-										exporter.accept(lootTableId, lootTableBuilder);
+										consumer.accept(lootTableId, lootTableBuilder);
 									}
 								});
 							}

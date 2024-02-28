@@ -25,7 +25,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.inventory.StackReference;
@@ -49,7 +48,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final int field_30478 = 5;
 	private static final int field_30476 = 300;
-	private static final float CROSSBOW_SHOT_SPEED = 1.6F;
 	private final SimpleInventory inventory = new SimpleInventory(5);
 
 	public PillagerEntity(EntityType<? extends PillagerEntity> entityType, World world) {
@@ -107,7 +105,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		this.writeInventory(nbt);
+		this.writeInventory(nbt, this.getRegistryManager());
 	}
 
 	@Override
@@ -124,7 +122,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.readInventory(nbt);
+		this.readInventory(nbt, this.getRegistryManager());
 		this.setCanPickUpLoot(true);
 	}
 
@@ -182,11 +180,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	@Override
 	public void shootAt(LivingEntity target, float pullProgress) {
 		this.shoot(this, 1.6F);
-	}
-
-	@Override
-	public void shoot(LivingEntity target, ItemStack crossbow, ProjectileEntity projectile, float multiShotSpray) {
-		this.shoot(this, target, projectile, multiShotSpray, 1.6F);
 	}
 
 	@Override

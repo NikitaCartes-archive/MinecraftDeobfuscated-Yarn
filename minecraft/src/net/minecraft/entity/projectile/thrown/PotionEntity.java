@@ -6,6 +6,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.AbstractCandleBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -17,10 +19,7 @@ import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
@@ -65,13 +64,11 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		super.onBlockHit(blockHitResult);
 		if (!this.getWorld().isClient) {
 			ItemStack itemStack = this.getStack();
-			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
-			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = registryEntry.matches(Potions.WATER) && list.isEmpty();
 			Direction direction = blockHitResult.getSide();
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			BlockPos blockPos2 = blockPos.offset(direction);
-			if (bl) {
+			PotionContentsComponent potionContentsComponent = itemStack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
+			if (potionContentsComponent.matches(Potions.WATER)) {
 				this.extinguishFire(blockPos2);
 				this.extinguishFire(blockPos2.offset(direction.getOpposite()));
 
@@ -87,21 +84,23 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		super.onCollision(hitResult);
 		if (!this.getWorld().isClient) {
 			ItemStack itemStack = this.getStack();
-			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
-			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = registryEntry.matches(Potions.WATER) && list.isEmpty();
-			if (bl) {
+			PotionContentsComponent potionContentsComponent = itemStack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
+			if (potionContentsComponent.matches(Potions.WATER)) {
 				this.applyWater();
-			} else if (!list.isEmpty()) {
+			} else if (potionContentsComponent.hasEffects()) {
 				if (this.isLingering()) {
-					this.applyLingeringPotion(itemStack, registryEntry);
+					this.applyLingeringPotion(potionContentsComponent);
 				} else {
-					this.applySplashPotion(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
+					this.applySplashPotion(
+						potionContentsComponent.getEffects(), hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null
+					);
 				}
 			}
 
-			int i = registryEntry.value().hasInstantEffect() ? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED : WorldEvents.SPLASH_POTION_SPLASHED;
-			this.getWorld().syncWorldEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
+			int i = potionContentsComponent.potion().isPresent() && ((Potion)((RegistryEntry)potionContentsComponent.potion().get()).value()).hasInstantEffect()
+				? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED
+				: WorldEvents.SPLASH_POTION_SPLASHED;
+			this.getWorld().syncWorldEvent(i, this.getBlockPos(), potionContentsComponent.getColor());
 			this.discard();
 		}
 	}
@@ -127,7 +126,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void applySplashPotion(List<StatusEffectInstance> statusEffects, @Nullable Entity entity) {
+	private void applySplashPotion(Iterable<StatusEffectInstance> iterable, @Nullable Entity entity) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
 		List<LivingEntity> list = this.getWorld().getNonSpectatingEntities(LivingEntity.class, box);
 		if (!list.isEmpty()) {
@@ -144,7 +143,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 							e = 1.0 - Math.sqrt(d) / 4.0;
 						}
 
-						for (StatusEffectInstance statusEffectInstance : statusEffects) {
+						for (StatusEffectInstance statusEffectInstance : iterable) {
 							RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
 							if (registryEntry.value().isInstant()) {
 								registryEntry.value().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
@@ -164,7 +163,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void applyLingeringPotion(ItemStack stack, RegistryEntry<Potion> potion) {
+	private void applyLingeringPotion(PotionContentsComponent potionContentsComponent) {
 		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.getWorld(), this.getX(), this.getY(), this.getZ());
 		if (this.getOwner() instanceof LivingEntity livingEntity) {
 			areaEffectCloudEntity.setOwner(livingEntity);
@@ -174,17 +173,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 		areaEffectCloudEntity.setWaitTime(10);
 		areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
-		areaEffectCloudEntity.setPotion(potion);
-
-		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(stack)) {
-			areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
-		}
-
-		NbtCompound nbtCompound = stack.getNbt();
-		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE)) {
-			areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
-		}
-
+		areaEffectCloudEntity.setPotionContents(potionContentsComponent);
 		this.getWorld().spawnEntity(areaEffectCloudEntity);
 	}
 

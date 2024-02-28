@@ -1,11 +1,7 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,19 +11,16 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.WritableBookContentComponent;
+import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -36,17 +29,7 @@ public class BookScreen extends Screen {
 	public static final int field_32328 = 16;
 	public static final int field_32329 = 36;
 	public static final int field_32330 = 30;
-	public static final BookScreen.Contents EMPTY_PROVIDER = new BookScreen.Contents() {
-		@Override
-		public int getPageCount() {
-			return 0;
-		}
-
-		@Override
-		public StringVisitable getPageUnchecked(int index) {
-			return StringVisitable.EMPTY;
-		}
-	};
+	public static final BookScreen.Contents EMPTY_PROVIDER = new BookScreen.Contents(List.of());
 	public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
 	protected static final int MAX_TEXT_WIDTH = 114;
 	protected static final int MAX_TEXT_HEIGHT = 128;
@@ -188,7 +171,7 @@ public class BookScreen extends Screen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.renderBackground(context, mouseX, mouseY, delta);
+		this.renderInGameBackground(context);
 		context.drawTexture(BOOK_TEXTURE, (this.width - 192) / 2, 2, 0, 0, 192, 192);
 	}
 
@@ -258,106 +241,26 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	static List<String> readPages(NbtCompound nbt) {
-		Builder<String> builder = ImmutableList.builder();
-		filterPages(nbt, builder::add);
-		return builder.build();
-	}
-
-	public static void filterPages(NbtCompound nbt, Consumer<String> pageConsumer) {
-		NbtList nbtList = nbt.getList("pages", NbtElement.STRING_TYPE).copy();
-		IntFunction<String> intFunction;
-		if (MinecraftClient.getInstance().shouldFilterText() && nbt.contains("filtered_pages", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound = nbt.getCompound("filtered_pages");
-			intFunction = page -> {
-				String string = String.valueOf(page);
-				return nbtCompound.contains(string) ? nbtCompound.getString(string) : nbtList.getString(page);
-			};
-		} else {
-			intFunction = nbtList::getString;
-		}
-
-		for (int i = 0; i < nbtList.size(); i++) {
-			pageConsumer.accept((String)intFunction.apply(i));
-		}
-	}
-
 	@Environment(EnvType.CLIENT)
-	public interface Contents {
-		int getPageCount();
-
-		StringVisitable getPageUnchecked(int index);
-
-		default StringVisitable getPage(int index) {
-			return index >= 0 && index < this.getPageCount() ? this.getPageUnchecked(index) : StringVisitable.EMPTY;
+	public static record Contents(List<Text> pages) {
+		public int getPageCount() {
+			return this.pages.size();
 		}
 
-		static BookScreen.Contents create(ItemStack stack) {
-			if (stack.isOf(Items.WRITTEN_BOOK)) {
-				return new BookScreen.WrittenBookContents(stack);
+		public StringVisitable getPage(int index) {
+			return index >= 0 && index < this.getPageCount() ? (StringVisitable)this.pages.get(index) : StringVisitable.EMPTY;
+		}
+
+		@Nullable
+		public static BookScreen.Contents create(ItemStack stack) {
+			boolean bl = MinecraftClient.getInstance().shouldFilterText();
+			WrittenBookContentComponent writtenBookContentComponent = stack.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
+			if (writtenBookContentComponent != null) {
+				return new BookScreen.Contents(writtenBookContentComponent.getPages(bl));
 			} else {
-				return (BookScreen.Contents)(stack.isOf(Items.WRITABLE_BOOK) ? new BookScreen.WritableBookContents(stack) : BookScreen.EMPTY_PROVIDER);
+				WritableBookContentComponent writableBookContentComponent = stack.get(DataComponentTypes.WRITABLE_BOOK_CONTENT);
+				return writableBookContentComponent != null ? new BookScreen.Contents(writableBookContentComponent.stream(bl).map(Text::literal).toList()) : null;
 			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class WritableBookContents implements BookScreen.Contents {
-		private final List<String> pages;
-
-		public WritableBookContents(ItemStack stack) {
-			this.pages = getPages(stack);
-		}
-
-		private static List<String> getPages(ItemStack stack) {
-			NbtCompound nbtCompound = stack.getNbt();
-			return (List<String>)(nbtCompound != null ? BookScreen.readPages(nbtCompound) : ImmutableList.of());
-		}
-
-		@Override
-		public int getPageCount() {
-			return this.pages.size();
-		}
-
-		@Override
-		public StringVisitable getPageUnchecked(int index) {
-			return StringVisitable.plain((String)this.pages.get(index));
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class WrittenBookContents implements BookScreen.Contents {
-		private final List<String> pages;
-
-		public WrittenBookContents(ItemStack stack) {
-			this.pages = getPages(stack);
-		}
-
-		private static List<String> getPages(ItemStack stack) {
-			NbtCompound nbtCompound = stack.getNbt();
-			return (List<String>)(nbtCompound != null && WrittenBookItem.isValid(nbtCompound)
-				? BookScreen.readPages(nbtCompound)
-				: ImmutableList.of(Text.Serialization.toJsonString(Text.translatable("book.invalid.tag").formatted(Formatting.DARK_RED))));
-		}
-
-		@Override
-		public int getPageCount() {
-			return this.pages.size();
-		}
-
-		@Override
-		public StringVisitable getPageUnchecked(int index) {
-			String string = (String)this.pages.get(index);
-
-			try {
-				StringVisitable stringVisitable = Text.Serialization.fromJson(string);
-				if (stringVisitable != null) {
-					return stringVisitable;
-				}
-			} catch (Exception var4) {
-			}
-
-			return StringVisitable.plain(string);
 		}
 	}
 }

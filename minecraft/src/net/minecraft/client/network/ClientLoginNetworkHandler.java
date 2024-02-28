@@ -174,7 +174,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onSuccess(LoginSuccessS2CPacket packet) {
 		this.switchTo(ClientLoginNetworkHandler.State.JOINING);
-		GameProfile gameProfile = packet.getProfile();
+		GameProfile gameProfile = packet.profile();
 		this.connection
 			.transitionInbound(
 				ConfigurationStates.S2C,

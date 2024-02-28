@@ -73,7 +73,7 @@ public class CraftingResultSlot extends Slot {
 			if (!itemStack2.isEmpty()) {
 				if (itemStack.isEmpty()) {
 					this.input.setStack(i, itemStack2);
-				} else if (ItemStack.areItemsAndNbtEqual(itemStack, itemStack2)) {
+				} else if (ItemStack.areItemsAndComponentsEqual(itemStack, itemStack2)) {
 					itemStack2.increment(itemStack.getCount());
 					this.input.setStack(i, itemStack2);
 				} else if (!this.player.getInventory().insertStack(itemStack2)) {

@@ -4,9 +4,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -18,7 +18,6 @@ import net.minecraft.world.World;
 public class ShieldItem extends Item implements Equipment {
 	public static final int field_30918 = 5;
 	public static final float MIN_DAMAGE_AMOUNT_TO_BREAK = 3.0F;
-	public static final String BASE_KEY = "Base";
 
 	public ShieldItem(Item.Settings settings) {
 		super(settings);
@@ -27,7 +26,8 @@ public class ShieldItem extends Item implements Equipment {
 
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return BlockItem.getBlockEntityNbt(stack) != null ? this.getTranslationKey() + "." + getColor(stack).getName() : super.getTranslationKey(stack);
+		DyeColor dyeColor = stack.get(DataComponentTypes.BASE_COLOR);
+		return dyeColor != null ? this.getTranslationKey() + "." + dyeColor.getName() : super.getTranslationKey(stack);
 	}
 
 	@Override
@@ -55,11 +55,6 @@ public class ShieldItem extends Item implements Equipment {
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
 		return ingredient.isIn(ItemTags.PLANKS) || super.canRepair(stack, ingredient);
-	}
-
-	public static DyeColor getColor(ItemStack stack) {
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-		return nbtCompound != null ? DyeColor.byId(nbtCompound.getInt("Base")) : DyeColor.WHITE;
 	}
 
 	@Override

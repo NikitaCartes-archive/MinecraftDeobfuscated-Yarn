@@ -3,7 +3,6 @@ package net.minecraft.client.gui.widget;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.EditBox;
@@ -12,6 +11,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 
 /**
@@ -117,7 +117,7 @@ public class EditBoxWidget extends ScrollableWidget {
 
 	@Override
 	public boolean charTyped(char chr, int modifiers) {
-		if (this.visible && this.isFocused() && SharedConstants.isValidChar(chr)) {
+		if (this.visible && this.isFocused() && StringHelper.isValidChar(chr)) {
 			this.editBox.replaceSelection(Character.toString(chr));
 			return true;
 		} else {

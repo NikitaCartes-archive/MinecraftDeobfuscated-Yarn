@@ -2,12 +2,16 @@ package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerLootComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.LootableInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -16,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 public abstract class LootableContainerBlockEntity extends LockableContainerBlockEntity implements LootableInventory {
 	@Nullable
 	protected Identifier lootTableId;
-	protected long lootTableSeed;
+	protected long lootTableSeed = 0L;
 
 	protected LootableContainerBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
 		super(blockEntityType, blockPos, blockState);
@@ -118,5 +122,30 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		super.readComponents(components);
+		ContainerLootComponent containerLootComponent = components.get(DataComponentTypes.CONTAINER_LOOT);
+		if (containerLootComponent != null) {
+			this.lootTableId = containerLootComponent.lootTable();
+			this.lootTableSeed = containerLootComponent.seed();
+		}
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		super.addComponents(componentMapBuilder);
+		if (this.lootTableId != null) {
+			componentMapBuilder.add(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.lootTableId, this.lootTableSeed));
+		}
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		super.removeFromCopiedStackNbt(nbt);
+		nbt.remove("LootTable");
+		nbt.remove("LootTableSeed");
 	}
 }

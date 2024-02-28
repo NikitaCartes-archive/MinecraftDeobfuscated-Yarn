@@ -1,11 +1,11 @@
 package net.minecraft.client.render.entity.animation;
 
 import com.google.common.collect.Maps;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.apache.commons.compress.utils.Lists;
 
 @Environment(EnvType.CLIENT)
 public record Animation(float lengthInSeconds, boolean looping, Map<String, List<Transformation>> boneAnimations) {
@@ -29,7 +29,7 @@ public record Animation(float lengthInSeconds, boolean looping, Map<String, List
 		}
 
 		public Animation.Builder addBoneAnimation(String name, Transformation transformation) {
-			((List)this.transformations.computeIfAbsent(name, namex -> Lists.newArrayList())).add(transformation);
+			((List)this.transformations.computeIfAbsent(name, namex -> new ArrayList())).add(transformation);
 			return this;
 		}
 

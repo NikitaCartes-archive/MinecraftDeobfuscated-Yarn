@@ -55,7 +55,7 @@ public record ChatMessageS2CPacket(
 			buf.readVarInt(),
 			buf.readNullable(MessageSignatureData::fromBuf),
 			new MessageBody.Serialized(buf),
-			PacketByteBuf.readNullable(buf, TextCodecs.REGISTRY_PACKET_CODEC),
+			PacketByteBuf.readNullable(buf, TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC),
 			FilterMask.readMask(buf),
 			MessageType.Parameters.CODEC.decode(buf)
 		);
@@ -66,7 +66,7 @@ public record ChatMessageS2CPacket(
 		buf.writeVarInt(this.index);
 		buf.writeNullable(this.signature, MessageSignatureData::write);
 		this.body.write(buf);
-		PacketByteBuf.writeNullable(buf, this.unsignedContent, TextCodecs.REGISTRY_PACKET_CODEC);
+		PacketByteBuf.writeNullable(buf, this.unsignedContent, TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC);
 		FilterMask.writeMask(buf, this.filterMask);
 		MessageType.Parameters.CODEC.encode(buf, this.serializedParameters);
 	}

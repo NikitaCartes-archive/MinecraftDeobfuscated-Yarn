@@ -41,7 +41,7 @@ public class LeadItem extends Item {
 		int j = pos.getY();
 		int k = pos.getZ();
 		Box box = new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0);
-		List<MobEntity> list = world.getEntitiesByClass(MobEntity.class, box, mobEntityx -> mobEntityx.getHoldingEntity() == player);
+		List<MobEntity> list = world.getEntitiesByClass(MobEntity.class, box, entity -> entity.getHoldingEntity() == player);
 
 		for (MobEntity mobEntity : list) {
 			if (leashKnotEntity == null) {

@@ -49,6 +49,10 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		this.registryInfoGetter = registryInfoGetter;
 	}
 
+	public <U> RegistryOps<U> withDelegate(DynamicOps<U> delegate) {
+		return (RegistryOps<U>)(delegate == this.delegate ? this : new RegistryOps<>(delegate, this.registryInfoGetter));
+	}
+
 	public <E> Optional<RegistryEntryOwner<E>> getOwner(RegistryKey<? extends Registry<? extends E>> registryRef) {
 		return this.registryInfoGetter.getRegistryInfo(registryRef).map(RegistryOps.RegistryInfo::owner);
 	}

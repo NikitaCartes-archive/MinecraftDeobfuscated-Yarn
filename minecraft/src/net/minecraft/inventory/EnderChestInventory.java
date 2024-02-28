@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
 
 /**
  * Represents an inventory used for ender chests.
@@ -36,22 +37,22 @@ public class EnderChestInventory extends SimpleInventory {
 	}
 
 	@Override
-	public void readNbtList(NbtList nbtList) {
+	public void readNbtList(NbtList list, RegistryWrapper.WrapperLookup registries) {
 		for (int i = 0; i < this.size(); i++) {
 			this.setStack(i, ItemStack.EMPTY);
 		}
 
-		for (int i = 0; i < nbtList.size(); i++) {
-			NbtCompound nbtCompound = nbtList.getCompound(i);
+		for (int i = 0; i < list.size(); i++) {
+			NbtCompound nbtCompound = list.getCompound(i);
 			int j = nbtCompound.getByte("Slot") & 255;
 			if (j >= 0 && j < this.size()) {
-				this.setStack(j, ItemStack.fromNbt(nbtCompound));
+				this.setStack(j, (ItemStack)ItemStack.fromNbt(registries, nbtCompound).orElse(ItemStack.EMPTY));
 			}
 		}
 	}
 
 	@Override
-	public NbtList toNbtList() {
+	public NbtList toNbtList(RegistryWrapper.WrapperLookup registries) {
 		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < this.size(); i++) {
@@ -59,8 +60,7 @@ public class EnderChestInventory extends SimpleInventory {
 			if (!itemStack.isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)i);
-				itemStack.writeNbt(nbtCompound);
-				nbtList.add(nbtCompound);
+				nbtList.add(itemStack.encode(registries, nbtCompound));
 			}
 		}
 

@@ -44,7 +44,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 			this.type = ScoreboardCriterion.RenderType.INTEGER;
 			this.numberFormat = Optional.empty();
 		} else {
-			this.displayName = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
+			this.displayName = TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.decode(buf);
 			this.type = buf.readEnumConstant(ScoreboardCriterion.RenderType.class);
 			this.numberFormat = NumberFormatTypes.OPTIONAL_PACKET_CODEC.decode(buf);
 		}
@@ -54,7 +54,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		buf.writeString(this.name);
 		buf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.displayName);
+			TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.encode(buf, this.displayName);
 			buf.writeEnumConstant(this.type);
 			NumberFormatTypes.OPTIONAL_PACKET_CODEC.encode(buf, this.numberFormat);
 		}

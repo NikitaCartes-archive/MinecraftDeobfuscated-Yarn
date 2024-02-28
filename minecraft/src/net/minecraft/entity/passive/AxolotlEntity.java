@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
@@ -376,13 +378,14 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	@Override
 	public void copyDataToStack(ItemStack stack) {
 		Bucketable.copyDataToStack(this, stack);
-		NbtCompound nbtCompound = stack.getOrCreateNbt();
-		nbtCompound.putInt("Variant", this.getVariant().getId());
-		nbtCompound.putInt("Age", this.getBreedingAge());
-		Brain<?> brain = this.getBrain();
-		if (brain.hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN)) {
-			nbtCompound.putLong("HuntingCooldown", brain.getMemoryExpiry(MemoryModuleType.HAS_HUNTING_COOLDOWN));
-		}
+		NbtComponent.set(DataComponentTypes.BUCKET_ENTITY_DATA, stack, nbtCompound -> {
+			nbtCompound.putInt("Variant", this.getVariant().getId());
+			nbtCompound.putInt("Age", this.getBreedingAge());
+			Brain<?> brain = this.getBrain();
+			if (brain.hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN)) {
+				nbtCompound.putLong("HuntingCooldown", brain.getMemoryExpiry(MemoryModuleType.HAS_HUNTING_COOLDOWN));
+			}
+		});
 	}
 
 	@Override

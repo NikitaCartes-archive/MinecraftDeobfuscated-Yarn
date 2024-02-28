@@ -433,7 +433,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 				if (vec3d2 != null) {
 					BlockPos blockPos = BlockPos.ofFloored(vec3d2);
-					if (!world.getFluidState(blockPos).isIn(FluidTags.WATER) || !world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER)) {
+					if (!world.getFluidState(blockPos).isIn(FluidTags.WATER) || !world.getBlockState(blockPos).canPathfindThrough(NavigationType.WATER)) {
 						vec3d2 = NoPenaltyTargeting.findTo(this.dolphin, 8, 5, vec3d, (float) (Math.PI / 2));
 					}
 				}

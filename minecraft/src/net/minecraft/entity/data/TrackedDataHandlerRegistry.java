@@ -42,12 +42,12 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<Long> LONG = TrackedDataHandler.create(PacketCodecs.VAR_LONG);
 	public static final TrackedDataHandler<Float> FLOAT = TrackedDataHandler.create(PacketCodecs.FLOAT);
 	public static final TrackedDataHandler<String> STRING = TrackedDataHandler.create(PacketCodecs.STRING);
-	public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.REGISTRY_PACKET_CODEC);
-	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.OPTIONAL_PACKET_CODEC);
+	public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC);
+	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = TrackedDataHandler.create(TextCodecs.OPTIONAL_UNLIMITED_REGISTRY_PACKET_CODEC);
 	public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>() {
 		@Override
 		public PacketCodec<? super RegistryByteBuf, ItemStack> codec() {
-			return ItemStack.PACKET_CODEC;
+			return ItemStack.OPTIONAL_PACKET_CODEC;
 		}
 
 		public ItemStack copy(ItemStack itemStack) {
@@ -85,7 +85,7 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<NbtCompound> NBT_COMPOUND = new TrackedDataHandler<NbtCompound>() {
 		@Override
 		public PacketCodec<? super RegistryByteBuf, NbtCompound> codec() {
-			return PacketCodecs.NBT_COMPOUND;
+			return PacketCodecs.UNLIMITED_NBT_COMPOUND;
 		}
 
 		public NbtCompound copy(NbtCompound nbtCompound) {

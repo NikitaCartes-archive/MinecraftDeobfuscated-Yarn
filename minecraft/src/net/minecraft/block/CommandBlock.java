@@ -6,9 +6,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -139,12 +139,8 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
 		if (world.getBlockEntity(pos) instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
-			if (itemStack.hasCustomName()) {
-				commandBlockExecutor.setCustomName(itemStack.getName());
-			}
-
 			if (!world.isClient) {
-				if (BlockItem.getBlockEntityNbt(itemStack) == null) {
+				if (!itemStack.contains(DataComponentTypes.BLOCK_ENTITY_DATA)) {
 					commandBlockExecutor.setTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
 					commandBlockBlockEntity.setAuto(this.auto);
 				}

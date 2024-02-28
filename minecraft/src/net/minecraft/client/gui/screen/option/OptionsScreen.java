@@ -1,20 +1,22 @@
 package net.minecraft.client.gui.screen.option;
 
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.widget.AxisGridWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.EmptyWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
-import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.Positioner;
+import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
@@ -26,6 +28,7 @@ import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
 public class OptionsScreen extends Screen {
+	private static final Text TITLE_TEXT = Text.translatable("options.title");
 	private static final Text SKIN_CUSTOMIZATION_TEXT = Text.translatable("options.skinCustomisation");
 	private static final Text SOUNDS_TEXT = Text.translatable("options.sounds");
 	private static final Text VIDEO_TEXT = Text.translatable("options.video");
@@ -37,25 +40,30 @@ public class OptionsScreen extends Screen {
 	private static final Text TELEMETRY_TEXT = Text.translatable("options.telemetry");
 	private static final Text CREDITS_AND_ATTRIBUTION_TEXT = Text.translatable("options.credits_and_attribution");
 	private static final int COLUMNS = 2;
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this, 61, 33);
 	private final Screen parent;
 	private final GameOptions settings;
+	@Nullable
 	private CyclingButtonWidget<Difficulty> difficultyButton;
+	@Nullable
 	private LockButtonWidget lockDifficultyButton;
 
 	public OptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(Text.translatable("options.title"));
+		super(TITLE_TEXT);
 		this.parent = parent;
 		this.settings = gameOptions;
 	}
 
 	@Override
 	protected void init() {
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addHeader(DirectionalLayoutWidget.vertical().spacing(8));
+		directionalLayoutWidget.add(new TextWidget(TITLE_TEXT, this.textRenderer), Positioner::alignHorizontalCenter);
+		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.horizontal()).spacing(8);
+		directionalLayoutWidget2.add(this.settings.getFov().createWidget(this.client.options));
+		directionalLayoutWidget2.add(this.createTopRightButton());
 		GridWidget gridWidget = new GridWidget();
-		gridWidget.getMainPositioner().marginX(5).marginBottom(4).alignHorizontalCenter();
+		gridWidget.getMainPositioner().marginX(4).marginBottom(4).alignHorizontalCenter();
 		GridWidget.Adder adder = gridWidget.createAdder(2);
-		adder.add(this.settings.getFov().createWidget(this.client.options, 0, 0, 150));
-		adder.add(this.createTopRightButton());
-		adder.add(EmptyWidget.ofHeight(26), 2);
 		adder.add(this.createButton(SKIN_CUSTOMIZATION_TEXT, () -> new SkinOptionsScreen(this, this.settings)));
 		adder.add(this.createButton(SOUNDS_TEXT, () -> new SoundOptionsScreen(this, this.settings)));
 		adder.add(this.createButton(VIDEO_TEXT, () -> new VideoOptionsScreen(this, this.settings)));
@@ -73,10 +81,15 @@ public class OptionsScreen extends Screen {
 		adder.add(this.createButton(ACCESSIBILITY_TEXT, () -> new AccessibilityOptionsScreen(this, this.settings)));
 		adder.add(this.createButton(TELEMETRY_TEXT, () -> new TelemetryInfoScreen(this, this.settings)));
 		adder.add(this.createButton(CREDITS_AND_ATTRIBUTION_TEXT, () -> new CreditsAndAttributionScreen(this)));
-		adder.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).width(200).build(), 2, adder.copyPositioner().marginTop(6));
-		gridWidget.refreshPositions();
-		SimplePositioningWidget.setPos(gridWidget, 0, this.height / 6 - 12, this.width, this.height, 0.5F, 0.0F);
-		gridWidget.forEachChild(this::addDrawableChild);
+		this.layout.addBody(gridWidget);
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).width(200).build());
+		this.layout.forEachChild(this::addDrawableChild);
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
 	}
 
 	@Override
@@ -137,7 +150,7 @@ public class OptionsScreen extends Screen {
 
 	private void lockDifficulty(boolean difficultyLocked) {
 		this.client.setScreen(this);
-		if (difficultyLocked && this.client.world != null) {
+		if (difficultyLocked && this.client.world != null && this.lockDifficultyButton != null && this.difficultyButton != null) {
 			this.client.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));
 			this.lockDifficultyButton.setLocked(true);
 			this.lockDifficultyButton.active = false;
@@ -148,12 +161,6 @@ public class OptionsScreen extends Screen {
 	@Override
 	public void removed() {
 		this.settings.write();
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 15, 16777215);
 	}
 
 	private ButtonWidget createButton(Text message, Supplier<Screen> screenSupplier) {

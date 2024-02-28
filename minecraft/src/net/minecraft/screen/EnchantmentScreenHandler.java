@@ -154,7 +154,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					if (!list.isEmpty()) {
 						player.applyEnchantmentCosts(itemStack, i);
 						if (itemStack.isOf(Items.BOOK)) {
-							itemStack3 = itemStack.copyNbtToNewStack(Items.ENCHANTED_BOOK, 1);
+							itemStack3 = itemStack.copyComponentsToNewStack(Items.ENCHANTED_BOOK, 1);
 							this.inventory.setStack(0, itemStack3);
 						}
 

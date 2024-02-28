@@ -2,6 +2,8 @@ package net.minecraft.entity;
 
 import java.util.Optional;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -30,32 +32,30 @@ public interface Bucketable {
 
 	@Deprecated
 	static void copyDataToStack(MobEntity entity, ItemStack stack) {
-		NbtCompound nbtCompound = stack.getOrCreateNbt();
-		if (entity.hasCustomName()) {
-			stack.setCustomName(entity.getCustomName());
-		}
+		stack.set(DataComponentTypes.CUSTOM_NAME, entity.getCustomName());
+		NbtComponent.set(DataComponentTypes.BUCKET_ENTITY_DATA, stack, nbtCompound -> {
+			if (entity.isAiDisabled()) {
+				nbtCompound.putBoolean("NoAI", entity.isAiDisabled());
+			}
 
-		if (entity.isAiDisabled()) {
-			nbtCompound.putBoolean("NoAI", entity.isAiDisabled());
-		}
+			if (entity.isSilent()) {
+				nbtCompound.putBoolean("Silent", entity.isSilent());
+			}
 
-		if (entity.isSilent()) {
-			nbtCompound.putBoolean("Silent", entity.isSilent());
-		}
+			if (entity.hasNoGravity()) {
+				nbtCompound.putBoolean("NoGravity", entity.hasNoGravity());
+			}
 
-		if (entity.hasNoGravity()) {
-			nbtCompound.putBoolean("NoGravity", entity.hasNoGravity());
-		}
+			if (entity.isGlowingLocal()) {
+				nbtCompound.putBoolean("Glowing", entity.isGlowingLocal());
+			}
 
-		if (entity.isGlowingLocal()) {
-			nbtCompound.putBoolean("Glowing", entity.isGlowingLocal());
-		}
+			if (entity.isInvulnerable()) {
+				nbtCompound.putBoolean("Invulnerable", entity.isInvulnerable());
+			}
 
-		if (entity.isInvulnerable()) {
-			nbtCompound.putBoolean("Invulnerable", entity.isInvulnerable());
-		}
-
-		nbtCompound.putFloat("Health", entity.getHealth());
+			nbtCompound.putFloat("Health", entity.getHealth());
+		});
 	}
 
 	@Deprecated

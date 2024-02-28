@@ -20,7 +20,7 @@ import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.task.RealmsPrepareConnectionTask;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import net.minecraft.util.StringHelper;
 
 @Environment(EnvType.CLIENT)
 public class QuickPlay {
@@ -36,11 +36,11 @@ public class QuickPlay {
 		String string = quickPlay.singleplayer();
 		String string2 = quickPlay.multiplayer();
 		String string3 = quickPlay.realms();
-		if (!Util.isBlank(string)) {
+		if (!StringHelper.isBlank(string)) {
 			startSingleplayer(client, string);
-		} else if (!Util.isBlank(string2)) {
+		} else if (!StringHelper.isBlank(string2)) {
 			startMultiplayer(client, string2);
-		} else if (!Util.isBlank(string3)) {
+		} else if (!StringHelper.isBlank(string3)) {
 			startRealms(client, realmsClient, string3);
 		}
 	}

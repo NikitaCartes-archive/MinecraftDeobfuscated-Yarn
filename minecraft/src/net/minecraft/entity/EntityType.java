@@ -5,7 +5,6 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -14,6 +13,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.boss.WitherEntity;
@@ -168,7 +169,6 @@ import org.slf4j.Logger;
 
 public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilter<Entity, T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final String ENTITY_TAG_KEY = "EntityTag";
 	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registries.ENTITY_TYPE.createEntry(this);
 	private static final float field_30054 = 1.3964844F;
 	private static final int field_42459 = 10;
@@ -1038,12 +1038,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	}
 
 	public static <T extends Entity> Consumer<T> customNameCopier(Consumer<T> chained, ItemStack stack) {
-		return stack.hasCustomName() ? chained.andThen(entity -> entity.setCustomName(stack.getName())) : chained;
+		Text text = stack.get(DataComponentTypes.CUSTOM_NAME);
+		return text != null ? chained.andThen(entity -> entity.setCustomName(text)) : chained;
 	}
 
 	public static <T extends Entity> Consumer<T> nbtCopier(Consumer<T> chained, ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
-		NbtCompound nbtCompound = stack.getNbt();
-		return nbtCompound != null ? chained.andThen(entity -> loadFromEntityNbt(world, player, entity, nbtCompound)) : chained;
+		NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
+		return !nbtComponent.isEmpty() ? chained.andThen(entity -> loadFromEntityNbt(world, player, entity, nbtComponent)) : chained;
 	}
 
 	@Nullable
@@ -1103,17 +1104,11 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, iterable, invertY ? -2.0 : -1.0);
 	}
 
-	public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable NbtCompound itemNbt) {
-		if (itemNbt != null && itemNbt.contains("EntityTag", NbtElement.COMPOUND_TYPE)) {
-			MinecraftServer minecraftServer = world.getServer();
-			if (minecraftServer != null && entity != null) {
-				if (world.isClient || !entity.entityDataRequiresOperator() || player != null && minecraftServer.getPlayerManager().isOperator(player.getGameProfile())) {
-					NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
-					UUID uUID = entity.getUuid();
-					nbtCompound.copyFrom(itemNbt.getCompound("EntityTag"));
-					entity.setUuid(uUID);
-					entity.readNbt(nbtCompound);
-				}
+	public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, NbtComponent nbt) {
+		MinecraftServer minecraftServer = world.getServer();
+		if (minecraftServer != null && entity != null) {
+			if (world.isClient || !entity.entityDataRequiresOperator() || player != null && minecraftServer.getPlayerManager().isOperator(player.getGameProfile())) {
+				nbt.applyToEntity(entity);
 			}
 		}
 	}

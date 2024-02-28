@@ -48,6 +48,11 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 		}
 	}
 
+	@Override
+	protected void playJumpSound() {
+		this.playSound(SoundEvents.ENTITY_DONKEY_JUMP, 0.4F, 1.0F);
+	}
+
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {

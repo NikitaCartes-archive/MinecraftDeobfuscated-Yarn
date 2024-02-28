@@ -2,17 +2,19 @@ package net.minecraft.test;
 
 import com.google.common.base.MoreObjects;
 import java.util.Arrays;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplate;
+import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.Formatting;
@@ -156,8 +158,6 @@ class StructureTestListener implements TestListener {
 	}
 
 	private static ItemStack createBookWithText(String text, boolean required, String output) {
-		ItemStack itemStack = new ItemStack(Items.WRITABLE_BOOK);
-		NbtList nbtList = new NbtList();
 		StringBuffer stringBuffer = new StringBuffer();
 		Arrays.stream(text.split("\\.")).forEach(line -> stringBuffer.append(line).append('\n'));
 		if (!required) {
@@ -165,8 +165,8 @@ class StructureTestListener implements TestListener {
 		}
 
 		stringBuffer.append("-------------------\n");
-		nbtList.add(NbtString.of(stringBuffer + output));
-		itemStack.setSubNbt("pages", nbtList);
+		ItemStack itemStack = new ItemStack(Items.WRITABLE_BOOK);
+		itemStack.set(DataComponentTypes.WRITABLE_BOOK_CONTENT, new WritableBookContentComponent(List.of(RawFilteredPair.of(stringBuffer + output))));
 		return itemStack;
 	}
 

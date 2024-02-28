@@ -12,20 +12,17 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
@@ -39,7 +36,6 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -55,6 +51,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		instance -> instance.group(DyeColor.CODEC.optionalFieldOf("color").forGetter(block -> Optional.ofNullable(block.color)), createSettingsCodec())
 				.apply(instance, (color, settings) -> new ShulkerBoxBlock((DyeColor)color.orElse(null), settings))
 	);
+	private static final Text UNKNOWN_CONTENTS_TEXT = Text.translatable("container.shulkerBox.unknownContents");
 	private static final float field_41075 = 1.0F;
 	private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
 	private static final VoxelShape DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
@@ -146,11 +143,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
 			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
-				blockEntity.setStackNbt(itemStack, world.getRegistryManager());
-				if (shulkerBoxBlockEntity.hasCustomName()) {
-					itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
-				}
-
+				itemStack.applyComponentsFrom(blockEntity.createComponentMap());
 				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, itemStack);
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
@@ -177,16 +170,6 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof ShulkerBoxBlockEntity) {
-				((ShulkerBoxBlockEntity)blockEntity).setCustomName(itemStack.getName());
-			}
-		}
-	}
-
-	@Override
 	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -203,32 +186,23 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
 	) {
 		super.appendTooltip(stack, world, tooltip, options, registryManager);
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-		if (nbtCompound != null) {
-			if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
-				tooltip.add(Text.translatable("container.shulkerBox.unknownContents"));
+		if (stack.contains(DataComponentTypes.CONTAINER_LOOT)) {
+			tooltip.add(UNKNOWN_CONTENTS_TEXT);
+		}
+
+		int i = 0;
+		int j = 0;
+
+		for (ItemStack itemStack : stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)) {
+			j++;
+			if (i <= 4) {
+				i++;
+				tooltip.add(Text.translatable("container.shulkerBox.itemCount", itemStack.getName(), itemStack.getCount()));
 			}
+		}
 
-			if (nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
-				DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-				Inventories.readNbt(nbtCompound, defaultedList);
-				int i = 0;
-				int j = 0;
-
-				for (ItemStack itemStack : defaultedList) {
-					if (!itemStack.isEmpty()) {
-						j++;
-						if (i <= 4) {
-							i++;
-							tooltip.add(Text.translatable("container.shulkerBox.itemCount", itemStack.getName(), String.valueOf(itemStack.getCount())));
-						}
-					}
-				}
-
-				if (j - i > 0) {
-					tooltip.add(Text.translatable("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
-				}
-			}
+		if (j - i > 0) {
+			tooltip.add(Text.translatable("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
 		}
 	}
 
@@ -278,41 +252,24 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (dyeColor == null) {
 			return Blocks.SHULKER_BOX;
 		} else {
-			switch (dyeColor) {
-				case WHITE:
-					return Blocks.WHITE_SHULKER_BOX;
-				case ORANGE:
-					return Blocks.ORANGE_SHULKER_BOX;
-				case MAGENTA:
-					return Blocks.MAGENTA_SHULKER_BOX;
-				case LIGHT_BLUE:
-					return Blocks.LIGHT_BLUE_SHULKER_BOX;
-				case YELLOW:
-					return Blocks.YELLOW_SHULKER_BOX;
-				case LIME:
-					return Blocks.LIME_SHULKER_BOX;
-				case PINK:
-					return Blocks.PINK_SHULKER_BOX;
-				case GRAY:
-					return Blocks.GRAY_SHULKER_BOX;
-				case LIGHT_GRAY:
-					return Blocks.LIGHT_GRAY_SHULKER_BOX;
-				case CYAN:
-					return Blocks.CYAN_SHULKER_BOX;
-				case PURPLE:
-				default:
-					return Blocks.PURPLE_SHULKER_BOX;
-				case BLUE:
-					return Blocks.BLUE_SHULKER_BOX;
-				case BROWN:
-					return Blocks.BROWN_SHULKER_BOX;
-				case GREEN:
-					return Blocks.GREEN_SHULKER_BOX;
-				case RED:
-					return Blocks.RED_SHULKER_BOX;
-				case BLACK:
-					return Blocks.BLACK_SHULKER_BOX;
-			}
+			return switch (dyeColor) {
+				case WHITE -> Blocks.WHITE_SHULKER_BOX;
+				case ORANGE -> Blocks.ORANGE_SHULKER_BOX;
+				case MAGENTA -> Blocks.MAGENTA_SHULKER_BOX;
+				case LIGHT_BLUE -> Blocks.LIGHT_BLUE_SHULKER_BOX;
+				case YELLOW -> Blocks.YELLOW_SHULKER_BOX;
+				case LIME -> Blocks.LIME_SHULKER_BOX;
+				case PINK -> Blocks.PINK_SHULKER_BOX;
+				case GRAY -> Blocks.GRAY_SHULKER_BOX;
+				case LIGHT_GRAY -> Blocks.LIGHT_GRAY_SHULKER_BOX;
+				case CYAN -> Blocks.CYAN_SHULKER_BOX;
+				case BLUE -> Blocks.BLUE_SHULKER_BOX;
+				case BROWN -> Blocks.BROWN_SHULKER_BOX;
+				case GREEN -> Blocks.GREEN_SHULKER_BOX;
+				case RED -> Blocks.RED_SHULKER_BOX;
+				case BLACK -> Blocks.BLACK_SHULKER_BOX;
+				case PURPLE -> Blocks.PURPLE_SHULKER_BOX;
+			};
 		}
 	}
 

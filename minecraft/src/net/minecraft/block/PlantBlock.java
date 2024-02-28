@@ -42,7 +42,7 @@ public abstract class PlantBlock extends Block {
 	}
 
 	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-		return type == NavigationType.AIR && !this.collidable ? true : super.canPathfindThrough(state, world, pos, type);
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
+		return type == NavigationType.AIR && !this.collidable ? true : super.canPathfindThrough(state, type);
 	}
 }

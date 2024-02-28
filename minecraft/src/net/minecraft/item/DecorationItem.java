@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.GlowItemFrameEntity;
@@ -11,8 +13,6 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -60,9 +60,9 @@ public class DecorationItem extends Item {
 				abstractDecorationEntity = new GlowItemFrameEntity(world, blockPos2, direction);
 			}
 
-			NbtCompound nbtCompound = itemStack.getNbt();
-			if (nbtCompound != null) {
-				EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, nbtCompound);
+			NbtComponent nbtComponent = itemStack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
+			if (!nbtComponent.isEmpty()) {
+				EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, nbtComponent);
 			}
 
 			if (abstractDecorationEntity.canStayAttached()) {
@@ -88,10 +88,10 @@ public class DecorationItem extends Item {
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		super.appendTooltip(stack, world, tooltip, context);
 		if (this.entityType == EntityType.PAINTING) {
-			NbtCompound nbtCompound = stack.getNbt();
-			if (nbtCompound != null && nbtCompound.contains("EntityTag", NbtElement.COMPOUND_TYPE)) {
-				NbtCompound nbtCompound2 = nbtCompound.getCompound("EntityTag");
-				PaintingEntity.readVariantFromNbt(nbtCompound2)
+			NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
+			if (!nbtComponent.isEmpty()) {
+				nbtComponent.get(PaintingEntity.VARIANT_MAP_CODEC)
+					.result()
 					.ifPresentOrElse(
 						variant -> {
 							variant.getKey().ifPresent(key -> {

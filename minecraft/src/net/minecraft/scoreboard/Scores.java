@@ -17,7 +17,7 @@ class Scores {
 	}
 
 	public ScoreboardScore getOrCreate(ScoreboardObjective objective, Consumer<ScoreboardScore> scoreConsumer) {
-		return this.scores.computeIfAbsent(objective, object -> {
+		return this.scores.computeIfAbsent(objective, objective2 -> {
 			ScoreboardScore scoreboardScore = new ScoreboardScore();
 			scoreConsumer.accept(scoreboardScore);
 			return scoreboardScore;

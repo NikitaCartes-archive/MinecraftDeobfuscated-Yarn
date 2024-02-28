@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
 import java.util.Map;
@@ -7,6 +8,8 @@ import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.MapColor;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Contract;
 
@@ -36,6 +39,7 @@ public enum DyeColor implements StringIdentifiable {
 		(Map<? extends Integer, ? extends DyeColor>)Arrays.stream(values()).collect(Collectors.toMap(color -> color.fireworkColor, color -> color))
 	);
 	public static final StringIdentifiable.EnumCodec<DyeColor> CODEC = StringIdentifiable.createCodec(DyeColor::values);
+	public static final PacketCodec<ByteBuf, DyeColor> PACKET_CODEC = PacketCodecs.indexed(BY_ID, DyeColor::getId);
 	private final int id;
 	private final String name;
 	private final MapColor mapColor;

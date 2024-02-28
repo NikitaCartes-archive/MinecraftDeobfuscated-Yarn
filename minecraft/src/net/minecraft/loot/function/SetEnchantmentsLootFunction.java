@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
@@ -62,28 +63,18 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 		Object2IntMap<Enchantment> object2IntMap = new Object2IntOpenHashMap<>();
 		this.enchantments.forEach((enchantment, numberProvider) -> object2IntMap.put((Enchantment)enchantment.value(), numberProvider.nextInt(context)));
 		if (stack.isOf(Items.BOOK)) {
-			ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
-			object2IntMap.forEach(itemStack::addEnchantment);
-			return itemStack;
-		} else {
-			Map<Enchantment, Integer> map = EnchantmentHelper.get(stack);
+			stack = stack.copyComponentsToNewStack(Items.ENCHANTED_BOOK, stack.getCount());
+			stack.set(DataComponentTypes.STORED_ENCHANTMENTS, stack.remove(DataComponentTypes.ENCHANTMENTS));
+		}
+
+		EnchantmentHelper.apply(stack, builder -> {
 			if (this.add) {
-				object2IntMap.forEach((enchantment, level) -> addEnchantmentToMap(map, enchantment, Math.max((Integer)map.getOrDefault(enchantment, 0) + level, 0)));
+				object2IntMap.forEach((enchantment, level) -> builder.set(enchantment, builder.getLevel(enchantment) + level));
 			} else {
-				object2IntMap.forEach((enchantment, level) -> addEnchantmentToMap(map, enchantment, Math.max(level, 0)));
+				object2IntMap.forEach(builder::set);
 			}
-
-			EnchantmentHelper.set(map, stack);
-			return stack;
-		}
-	}
-
-	private static void addEnchantmentToMap(Map<Enchantment, Integer> map, Enchantment enchantment, int level) {
-		if (level == 0) {
-			map.remove(enchantment);
-		} else {
-			map.put(enchantment, level);
-		}
+		});
+		return stack;
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<SetEnchantmentsLootFunction.Builder> {

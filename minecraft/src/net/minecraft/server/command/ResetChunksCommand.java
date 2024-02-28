@@ -22,6 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkGenerationContext;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.WrapperProtoChunk;
@@ -84,6 +85,9 @@ public class ResetChunksCommand {
 		)) {
 			long q = System.currentTimeMillis();
 			CompletableFuture<Unit> completableFuture = CompletableFuture.supplyAsync(() -> Unit.INSTANCE, taskExecutor::send);
+			ChunkGenerationContext chunkGenerationContext = new ChunkGenerationContext(
+				serverWorld, serverChunkManager.getChunkGenerator(), serverWorld.getStructureTemplateManager(), serverChunkManager.getLightingProvider()
+			);
 
 			for (int r = chunkPos.z - radius; r <= chunkPos.z + radius; r++) {
 				for (int s = chunkPos.x - radius; s <= chunkPos.x + radius; s++) {
@@ -109,27 +113,15 @@ public class ResetChunksCommand {
 							}
 						}
 
-						completableFuture = completableFuture.thenComposeAsync(
-							unit -> chunkStatus.runGenerationTask(
-										taskExecutor::send,
-										serverWorld,
-										serverChunkManager.getChunkGenerator(),
-										serverWorld.getStructureTemplateManager(),
-										serverChunkManager.getLightingProvider(),
-										chunkx -> {
-											throw new UnsupportedOperationException("Not creating full chunks here");
-										},
-										list
-									)
-									.thenApply(either -> {
-										if (chunkStatus == ChunkStatus.NOISE) {
-											either.left().ifPresent(chunkx -> Heightmap.populateHeightmaps(chunkx, ChunkStatus.POST_CARVER_HEIGHTMAPS));
-										}
+						completableFuture = completableFuture.thenComposeAsync(unit -> chunkStatus.runGenerationTask(chunkGenerationContext, taskExecutor::send, chunkx -> {
+								throw new UnsupportedOperationException("Not creating full chunks here");
+							}, list).thenApply(chunkx -> {
+								if (chunkStatus == ChunkStatus.NOISE) {
+									Heightmap.populateHeightmaps(chunkx, ChunkStatus.POST_CARVER_HEIGHTMAPS);
+								}
 
-										return Unit.INSTANCE;
-									}),
-							taskExecutor::send
-						);
+								return Unit.INSTANCE;
+							}), taskExecutor::send);
 					}
 				}
 			}

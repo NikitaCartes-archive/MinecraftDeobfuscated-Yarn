@@ -29,6 +29,7 @@ import net.minecraft.block.LadderBlock;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.FrostWalkerEnchantment;
@@ -61,6 +62,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.Equipment;
@@ -86,7 +88,6 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
@@ -230,7 +231,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private float absorptionAmount;
 	protected ItemStack activeItemStack = ItemStack.EMPTY;
 	protected int itemUseTimeLeft;
-	protected int roll;
+	protected int fallFlyingTicks;
 	private BlockPos lastBlockPos;
 	private Optional<BlockPos> climbingPos = Optional.empty();
 	@Nullable
@@ -719,7 +720,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
 		boolean bl = newStack.isEmpty() && oldStack.isEmpty();
-		if (!bl && !ItemStack.areItemsAndNbtEqual(oldStack, newStack) && !this.firstUpdate) {
+		if (!bl && !ItemStack.areItemsAndComponentsEqual(oldStack, newStack) && !this.firstUpdate) {
 			Equipment equipment = Equipment.fromStack(newStack);
 			if (!this.getWorld().isClient() && !this.isSpectator()) {
 				if (!this.isSilent() && equipment != null && equipment.getSlotType() == slot) {
@@ -885,7 +886,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		} else {
 			Collection<StatusEffectInstance> collection = this.activeStatusEffects.values();
 			this.dataTracker.set(POTION_SWIRLS_AMBIENT, containsOnlyAmbientEffects(collection));
-			this.dataTracker.set(POTION_SWIRLS_COLOR, PotionUtil.getColor(collection));
+			this.dataTracker.set(POTION_SWIRLS_COLOR, PotionContentsComponent.getColor(collection));
 			this.setInvisible(this.hasStatusEffect(StatusEffects.INVISIBILITY));
 		}
 	}
@@ -1419,14 +1420,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			if (!this.isSilent()) {
 				this.getWorld()
 					.playSound(
-						this.getX(),
-						this.getY(),
-						this.getZ(),
-						SoundEvents.ENTITY_ITEM_BREAK,
-						this.getSoundCategory(),
-						0.8F,
-						0.8F + this.getWorld().random.nextFloat() * 0.4F,
-						false
+						this.getX(), this.getY(), this.getZ(), stack.getBreakSound(), this.getSoundCategory(), 0.8F, 0.8F + this.getWorld().random.nextFloat() * 0.4F, false
 					);
 			}
 
@@ -1729,6 +1723,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected void damageShield(float amount) {
 	}
 
+	protected void damageEquipment(DamageSource source, float amount, EquipmentSlot... slots) {
+		if (!(amount <= 0.0F)) {
+			int i = (int)Math.max(1.0F, amount / 4.0F);
+
+			for (EquipmentSlot equipmentSlot : slots) {
+				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+				if ((!source.isIn(DamageTypeTags.IS_FIRE) || !itemStack.getItem().isFireproof()) && itemStack.getItem() instanceof ArmorItem) {
+					itemStack.damage(i, this, equipmentSlot);
+				}
+			}
+		}
+	}
+
 	protected float applyArmorToDamage(DamageSource source, float amount) {
 		if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
 			this.damageArmor(source, amount);
@@ -1948,6 +1955,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			case 60:
 				this.addDeathParticles();
 				break;
+			case 65:
+				this.playEquipmentBreakEffects(this.getEquippedStack(EquipmentSlot.BODY));
+				break;
 			default:
 				super.handleStatus(status);
 		}
@@ -2080,10 +2090,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected void processEquippedStack(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getNbt();
-		if (nbtCompound != null) {
-			stack.getItem().postProcessNbt(nbtCompound);
-		}
+		stack.getItem().postProcessComponents(stack);
 	}
 
 	public float getArmorVisibility() {
@@ -2547,9 +2554,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.getWorld().getProfiler().pop();
 		this.lookDirection += h;
 		if (this.isFallFlying()) {
-			this.roll++;
+			this.fallFlyingTicks++;
 		} else {
-			this.roll = 0;
+			this.fallFlyingTicks = 0;
 		}
 
 		if (this.isSleeping()) {
@@ -2598,12 +2605,24 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 
 				map.put(equipmentSlot, itemStack2);
+				AttributeContainer attributeContainer = this.getAttributes();
 				if (!itemStack.isEmpty()) {
-					this.getAttributes().removeModifiers(itemStack.getAttributeModifiers(equipmentSlot));
+					itemStack.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
+						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
+						if (entityAttributeInstance != null) {
+							entityAttributeInstance.removeModifier(modifier);
+						}
+					});
 				}
 
 				if (!itemStack2.isEmpty()) {
-					this.getAttributes().addTemporaryModifiers(itemStack2.getAttributeModifiers(equipmentSlot));
+					itemStack2.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
+						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
+						if (entityAttributeInstance != null) {
+							entityAttributeInstance.removeModifier(modifier.getId());
+							entityAttributeInstance.addTemporaryModifier(modifier);
+						}
+					});
 				}
 			}
 		}
@@ -2836,7 +2855,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
 				bl = true;
-				int i = this.roll + 1;
+				int i = this.fallFlyingTicks + 1;
 				if (!this.getWorld().isClient && i % 10 == 0) {
 					int j = i / 10;
 					if (j % 2 == 0) {
@@ -3295,8 +3314,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return super.isInSwimmingPose() || !this.isFallFlying() && this.isInPose(EntityPose.FALL_FLYING);
 	}
 
-	public int getRoll() {
-		return this.roll;
+	public int getFallFlyingTicks() {
+		return this.fallFlyingTicks;
 	}
 
 	public boolean teleport(double x, double y, double z, boolean particleEffects) {
@@ -3511,22 +3530,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	private static byte getEquipmentBreakStatus(EquipmentSlot slot) {
-		switch (slot) {
-			case MAINHAND:
-				return 47;
-			case OFFHAND:
-				return 48;
-			case HEAD:
-				return 49;
-			case CHEST:
-				return 50;
-			case FEET:
-				return 52;
-			case LEGS:
-				return 51;
-			default:
-				return 47;
-		}
+		return switch (slot) {
+			case MAINHAND -> 47;
+			case OFFHAND -> 48;
+			case HEAD -> 49;
+			case CHEST -> 50;
+			case FEET -> 52;
+			case LEGS -> 51;
+			case BODY -> 65;
+		};
 	}
 
 	public void sendEquipmentBreakStatus(EquipmentSlot slot) {

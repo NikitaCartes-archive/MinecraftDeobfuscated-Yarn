@@ -1,7 +1,9 @@
 package net.minecraft.recipe;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
@@ -45,21 +47,21 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
-		List<Integer> list = Lists.<Integer>newArrayList();
+		IntList intList = new IntArrayList();
 		ItemStack itemStack = null;
 
 		for (int i = 0; i < recipeInputInventory.size(); i++) {
 			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			Item item = itemStack2.getItem();
 			if (item instanceof DyeItem) {
-				list.add(((DyeItem)item).getColor().getFireworkColor());
+				intList.add(((DyeItem)item).getColor().getFireworkColor());
 			} else if (INPUT_STAR.test(itemStack2)) {
 				itemStack = itemStack2.copyWithCount(1);
 			}
 		}
 
-		if (itemStack != null && !list.isEmpty()) {
-			itemStack.getOrCreateSubNbt("Explosion").putIntArray("FadeColors", list);
+		if (itemStack != null && !intList.isEmpty()) {
+			itemStack.apply(DataComponentTypes.FIREWORK_EXPLOSION, FireworkExplosionComponent.DEFAULT, intList, FireworkExplosionComponent::withFadeColors);
 			return itemStack;
 		} else {
 			return ItemStack.EMPTY;

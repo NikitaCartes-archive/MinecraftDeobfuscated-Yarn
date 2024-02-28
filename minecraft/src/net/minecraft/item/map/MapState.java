@@ -13,10 +13,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapColorComponent;
+import net.minecraft.component.type.MapDecorationsComponent;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -27,6 +30,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -133,8 +137,10 @@ public class MapState extends PersistentState {
 			mapState.colors = bs;
 		}
 
+		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+
 		for (MapBannerMarker mapBannerMarker : (List)MapBannerMarker.LIST_CODEC
-			.parse(NbtOps.INSTANCE, nbt.get("banners"))
+			.parse(registryOps, nbt.get("banners"))
 			.resultOrPartial(string -> LOGGER.warn("Failed to parse map banner: '{}'", string))
 			.orElse(List.of())) {
 			mapState.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
@@ -183,7 +189,8 @@ public class MapState extends PersistentState {
 		nbt.putBoolean("trackingPosition", this.showIcons);
 		nbt.putBoolean("unlimitedTracking", this.unlimitedTracking);
 		nbt.putBoolean("locked", this.locked);
-		nbt.put("banners", Util.getResult(MapBannerMarker.LIST_CODEC.encodeStart(NbtOps.INSTANCE, List.copyOf(this.banners.values())), IllegalStateException::new));
+		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		nbt.put("banners", Util.getResult(MapBannerMarker.LIST_CODEC.encodeStart(registryOps, List.copyOf(this.banners.values())), IllegalStateException::new));
 		NbtList nbtList = new NbtList();
 
 		for (MapFrameMarker mapFrameMarker : this.frames.values()) {
@@ -210,18 +217,14 @@ public class MapState extends PersistentState {
 	 * The scale of the new map state is {@code currentScale + zoomOutScale} and clamped between {@code 0} and {@code 4}.
 	 * <p>
 	 * The colors are not copied, neither are the icons.
-	 * 
-	 * @param zoomOutScale the amount to add to the scale of the map
 	 */
-	public MapState zoomOut(int zoomOutScale) {
-		return of(
-			(double)this.centerX, (double)this.centerZ, (byte)MathHelper.clamp(this.scale + zoomOutScale, 0, 4), this.showIcons, this.unlimitedTracking, this.dimension
-		);
+	public MapState zoomOut() {
+		return of((double)this.centerX, (double)this.centerZ, (byte)MathHelper.clamp(this.scale + 1, 0, 4), this.showIcons, this.unlimitedTracking, this.dimension);
 	}
 
 	private static Predicate<ItemStack> getEqualPredicate(ItemStack stack) {
-		MapId mapId = FilledMapItem.getMapId(stack);
-		return other -> other == stack ? true : other.isOf(stack.getItem()) && Objects.equals(mapId, FilledMapItem.getMapId(other));
+		MapIdComponent mapIdComponent = stack.get(DataComponentTypes.MAP_ID);
+		return other -> other == stack ? true : other.isOf(stack.getItem()) && Objects.equals(mapIdComponent, other.get(DataComponentTypes.MAP_ID));
 	}
 
 	public void update(PlayerEntity player, ItemStack stack) {
@@ -279,24 +282,13 @@ public class MapState extends PersistentState {
 			this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
 		}
 
-		NbtCompound nbtCompound = stack.getNbt();
-		if (nbtCompound != null && nbtCompound.contains("Decorations", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbtCompound.getList("Decorations", NbtElement.COMPOUND_TYPE);
-
-			for (int j = 0; j < nbtList.size(); j++) {
-				NbtCompound nbtCompound2 = nbtList.getCompound(j);
-				if (!this.icons.containsKey(nbtCompound2.getString("id"))) {
-					this.addIcon(
-						MapIcon.Type.byId(nbtCompound2.getByte("type")),
-						player.getWorld(),
-						nbtCompound2.getString("id"),
-						nbtCompound2.getDouble("x"),
-						nbtCompound2.getDouble("z"),
-						nbtCompound2.getDouble("rot"),
-						null
-					);
+		MapDecorationsComponent mapDecorationsComponent = stack.getOrDefault(DataComponentTypes.MAP_DECORATIONS, MapDecorationsComponent.DEFAULT);
+		if (!this.icons.keySet().containsAll(mapDecorationsComponent.decorations().keySet())) {
+			mapDecorationsComponent.decorations().forEach((id, decoration) -> {
+				if (!this.icons.containsKey(id)) {
+					this.addIcon(decoration.type(), player.getWorld(), id, decoration.x(), decoration.z(), (double)decoration.rotation(), null);
 				}
-			}
+			});
 		}
 	}
 
@@ -310,24 +302,10 @@ public class MapState extends PersistentState {
 	}
 
 	public static void addDecorationsNbt(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
-		NbtList nbtList;
-		if (stack.hasNbt() && stack.getNbt().contains("Decorations", NbtElement.LIST_TYPE)) {
-			nbtList = stack.getNbt().getList("Decorations", NbtElement.COMPOUND_TYPE);
-		} else {
-			nbtList = new NbtList();
-			stack.setSubNbt("Decorations", nbtList);
-		}
-
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putByte("type", type.getId());
-		nbtCompound.putString("id", id);
-		nbtCompound.putDouble("x", (double)pos.getX());
-		nbtCompound.putDouble("z", (double)pos.getZ());
-		nbtCompound.putDouble("rot", 180.0);
-		nbtList.add(nbtCompound);
+		MapDecorationsComponent.Decoration decoration = new MapDecorationsComponent.Decoration(type, (double)pos.getX(), (double)pos.getZ(), 180.0F);
+		stack.apply(DataComponentTypes.MAP_DECORATIONS, MapDecorationsComponent.DEFAULT, decorations -> decorations.with(id, decoration));
 		if (type.hasTintColor()) {
-			NbtCompound nbtCompound2 = stack.getOrCreateSubNbt("display");
-			nbtCompound2.putInt("MapColor", type.getTintColor());
+			stack.set(DataComponentTypes.MAP_COLOR, new MapColorComponent(type.getTintColor()));
 		}
 	}
 
@@ -398,7 +376,7 @@ public class MapState extends PersistentState {
 	}
 
 	@Nullable
-	public Packet<?> getPlayerMarkerPacket(MapId mapId, PlayerEntity player) {
+	public Packet<?> getPlayerMarkerPacket(MapIdComponent mapId, PlayerEntity player) {
 		MapState.PlayerUpdateTracker playerUpdateTracker = (MapState.PlayerUpdateTracker)this.updateTrackersByPlayer.get(player);
 		return playerUpdateTracker == null ? null : playerUpdateTracker.getPacket(mapId);
 	}
@@ -562,7 +540,7 @@ public class MapState extends PersistentState {
 		}
 
 		@Nullable
-		Packet<?> getPacket(MapId mapId) {
+		Packet<?> getPacket(MapIdComponent mapId) {
 			MapState.UpdateData updateData;
 			if (this.dirty) {
 				this.dirty = false;

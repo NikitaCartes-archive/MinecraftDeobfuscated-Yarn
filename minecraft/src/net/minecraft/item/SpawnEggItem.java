@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,14 +11,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.Spawner;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
@@ -35,6 +37,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class SpawnEggItem extends Item {
 	private static final Map<EntityType<? extends MobEntity>, SpawnEggItem> SPAWN_EGGS = Maps.<EntityType<? extends MobEntity>, SpawnEggItem>newIdentityHashMap();
+	private static final MapCodec<EntityType<?>> ENTITY_TYPE_MAP_CODEC = Registries.ENTITY_TYPE.getCodec().fieldOf("id");
 	private final int primaryColor;
 	private final int secondaryColor;
 	private final EntityType<?> type;
@@ -58,7 +61,7 @@ public class SpawnEggItem extends Item {
 			Direction direction = context.getSide();
 			BlockState blockState = world.getBlockState(blockPos);
 			if (world.getBlockEntity(blockPos) instanceof Spawner spawner) {
-				EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
+				EntityType<?> entityType = this.getEntityType(itemStack);
 				spawner.setEntityType(entityType, world.getRandom());
 				world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 				world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
@@ -72,7 +75,7 @@ public class SpawnEggItem extends Item {
 					blockPos2 = blockPos.offset(direction);
 				}
 
-				EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
+				EntityType<?> entityType = this.getEntityType(itemStack);
 				if (entityType.spawnFromItemStack(
 						(ServerWorld)world,
 						itemStack,
@@ -105,7 +108,7 @@ public class SpawnEggItem extends Item {
 			if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 				return TypedActionResult.pass(itemStack);
 			} else if (world.canPlayerModifyAt(user, blockPos) && user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
-				EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
+				EntityType<?> entityType = this.getEntityType(itemStack);
 				Entity entity = entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false);
 				if (entity == null) {
 					return TypedActionResult.pass(itemStack);
@@ -121,8 +124,8 @@ public class SpawnEggItem extends Item {
 		}
 	}
 
-	public boolean isOfSameEntityType(@Nullable NbtCompound nbt, EntityType<?> type) {
-		return Objects.equals(this.getEntityType(nbt), type);
+	public boolean isOfSameEntityType(ItemStack stack, EntityType<?> type) {
+		return Objects.equals(this.getEntityType(stack), type);
 	}
 
 	/**
@@ -145,15 +148,9 @@ public class SpawnEggItem extends Item {
 		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
-	public EntityType<?> getEntityType(@Nullable NbtCompound nbt) {
-		if (nbt != null && nbt.contains("EntityTag", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound = nbt.getCompound("EntityTag");
-			if (nbtCompound.contains("id", NbtElement.STRING_TYPE)) {
-				return (EntityType<?>)EntityType.get(nbtCompound.getString("id")).orElse(this.type);
-			}
-		}
-
-		return this.type;
+	public EntityType<?> getEntityType(ItemStack stack) {
+		NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
+		return !nbtComponent.isEmpty() ? (EntityType)nbtComponent.get(ENTITY_TYPE_MAP_CODEC).result().orElse(this.type) : this.type;
 	}
 
 	@Override
@@ -164,7 +161,7 @@ public class SpawnEggItem extends Item {
 	public Optional<MobEntity> spawnBaby(
 		PlayerEntity user, MobEntity entity, EntityType<? extends MobEntity> entityType, ServerWorld world, Vec3d pos, ItemStack stack
 	) {
-		if (!this.isOfSameEntityType(stack.getNbt(), entityType)) {
+		if (!this.isOfSameEntityType(stack, entityType)) {
 			return Optional.empty();
 		} else {
 			MobEntity mobEntity;
@@ -183,10 +180,7 @@ public class SpawnEggItem extends Item {
 				} else {
 					mobEntity.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
 					world.spawnEntityAndPassengers(mobEntity);
-					if (stack.hasCustomName()) {
-						mobEntity.setCustomName(stack.getName());
-					}
-
+					mobEntity.setCustomName(stack.get(DataComponentTypes.CUSTOM_NAME));
 					stack.decrementUnlessCreative(1, user);
 					return Optional.of(mobEntity);
 				}

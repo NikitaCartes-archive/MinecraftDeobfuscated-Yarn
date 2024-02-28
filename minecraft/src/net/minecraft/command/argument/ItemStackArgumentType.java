@@ -25,7 +25,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 
 	public ItemStackArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader.ItemResult itemResult = this.reader.consume(stringReader);
-		return new ItemStackArgument(itemResult.item(), itemResult.nbt());
+		return new ItemStackArgument(itemResult.item(), itemResult.components());
 	}
 
 	public static <S> ItemStackArgument getItemStackArgument(CommandContext<S> context, String name) {

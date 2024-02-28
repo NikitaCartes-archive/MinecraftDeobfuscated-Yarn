@@ -1,42 +1,40 @@
 package net.minecraft.block.entity;
 
-import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
-import java.util.List;
+import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import org.slf4j.Logger;
 
 public class BannerBlockEntity extends BlockEntity implements Nameable {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int MAX_PATTERN_COUNT = 6;
-	public static final String PATTERNS_KEY = "Patterns";
-	public static final String PATTERN_KEY = "Pattern";
-	public static final String COLOR_KEY = "Color";
+	private static final String PATTERNS_KEY = "patterns";
 	@Nullable
 	private Text customName;
 	private DyeColor baseColor;
-	@Nullable
-	private NbtList patternListNbt;
-	@Nullable
-	private List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns;
+	private BannerPatternsComponent patternsComponent = BannerPatternsComponent.DEFAULT;
+	private BannerPatternsComponent patternsComponentWithBase = BannerPatternsComponent.DEFAULT;
 
 	public BannerBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.BANNER, pos, state);
 		this.baseColor = ((AbstractBannerBlock)state.getBlock()).getColor();
+		this.setPatterns(BannerPatternsComponent.DEFAULT);
 	}
 
 	public BannerBlockEntity(BlockPos pos, BlockState state, DyeColor baseColor) {
@@ -44,26 +42,9 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		this.baseColor = baseColor;
 	}
 
-	@Nullable
-	public static NbtList getPatternListNbt(ItemStack stack) {
-		NbtList nbtList = null;
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-		if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
-			nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).copy();
-		}
-
-		return nbtList;
-	}
-
 	public void readFrom(ItemStack stack, DyeColor baseColor) {
 		this.baseColor = baseColor;
-		this.readFrom(stack);
-	}
-
-	public void readFrom(ItemStack stack) {
-		this.patternListNbt = getPatternListNbt(stack);
-		this.patterns = null;
-		this.customName = stack.hasCustomName() ? stack.getName() : null;
+		this.readComponents(stack.getComponents());
 	}
 
 	@Override
@@ -77,19 +58,15 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		return this.customName;
 	}
 
-	public void setCustomName(Text customName) {
-		this.customName = customName;
-	}
-
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
-		if (this.patternListNbt != null) {
-			nbt.put("Patterns", this.patternListNbt);
+		if (!this.patternsComponent.equals(BannerPatternsComponent.DEFAULT)) {
+			nbt.put("patterns", Util.getResult(BannerPatternsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.patternsComponent), IllegalStateException::new));
 		}
 
 		if (this.customName != null) {
-			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registryLookup));
 		}
 	}
 
@@ -97,11 +74,15 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"));
+			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
 		}
 
-		this.patternListNbt = nbt.getList("Patterns", NbtElement.COMPOUND_TYPE);
-		this.patterns = null;
+		if (nbt.contains("patterns")) {
+			BannerPatternsComponent.CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("patterns"))
+				.resultOrPartial(string -> LOGGER.error("Failed to parse banner patterns: '{}'", string))
+				.ifPresent(this::setPatterns);
+		}
 	}
 
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
@@ -113,68 +94,40 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		return this.createNbt(registryLookup);
 	}
 
-	public static int getPatternCount(ItemStack stack) {
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-		return nbtCompound != null && nbtCompound.contains("Patterns") ? nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() : 0;
-	}
-
-	public List<Pair<RegistryEntry<BannerPattern>, DyeColor>> getPatterns() {
-		if (this.patterns == null) {
-			this.patterns = getPatternsFromNbt(this.baseColor, this.patternListNbt);
-		}
-
-		return this.patterns;
-	}
-
-	public static List<Pair<RegistryEntry<BannerPattern>, DyeColor>> getPatternsFromNbt(DyeColor baseColor, @Nullable NbtList patternListNbt) {
-		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = Lists.<Pair<RegistryEntry<BannerPattern>, DyeColor>>newArrayList();
-		list.add(Pair.of(Registries.BANNER_PATTERN.entryOf(BannerPatterns.BASE), baseColor));
-		if (patternListNbt != null) {
-			for (int i = 0; i < patternListNbt.size(); i++) {
-				NbtCompound nbtCompound = patternListNbt.getCompound(i);
-				RegistryEntry<BannerPattern> registryEntry = BannerPattern.byId(nbtCompound.getString("Pattern"));
-				if (registryEntry != null) {
-					int j = nbtCompound.getInt("Color");
-					list.add(Pair.of(registryEntry, DyeColor.byId(j)));
-				}
-			}
-		}
-
-		return list;
-	}
-
-	public static void loadFromItemStack(ItemStack stack) {
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-		if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
-			if (!nbtList.isEmpty()) {
-				nbtList.remove(nbtList.size() - 1);
-				if (nbtList.isEmpty()) {
-					nbtCompound.remove("Patterns");
-				}
-			}
-
-			nbtCompound.remove("id");
-			BlockItem.setBlockEntityNbt(stack, BlockEntityType.BANNER, nbtCompound);
-		}
+	public BannerPatternsComponent getPatterns() {
+		return this.patternsComponentWithBase;
 	}
 
 	public ItemStack getPickStack() {
 		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.baseColor));
-		if (this.patternListNbt != null && !this.patternListNbt.isEmpty()) {
-			NbtCompound nbtCompound = new NbtCompound();
-			nbtCompound.put("Patterns", this.patternListNbt.copy());
-			BlockItem.setBlockEntityNbt(itemStack, this.getType(), nbtCompound);
-		}
-
-		if (this.customName != null) {
-			itemStack.setCustomName(this.customName);
-		}
-
+		itemStack.applyComponentsFrom(this.createComponentMap());
 		return itemStack;
 	}
 
 	public DyeColor getColorForState() {
 		return this.baseColor;
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		this.setPatterns(components.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT));
+		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		componentMapBuilder.add(DataComponentTypes.BANNER_PATTERNS, this.patternsComponent);
+		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		nbt.remove("patterns");
+		nbt.remove("CustomName");
+	}
+
+	private void setPatterns(BannerPatternsComponent patternsComponent) {
+		this.patternsComponent = patternsComponent;
+		this.patternsComponentWithBase = this.patternsComponent.withBase(this.baseColor);
 	}
 }

@@ -8,14 +8,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.ResourcePackManager;
@@ -27,6 +24,7 @@ import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class ExperimentsScreen extends Screen {
+	private static final Text TITLE = Text.translatable("selectWorld.experiments");
 	private static final int INFO_WIDTH = 310;
 	private final ThreePartsLayoutWidget experimentToggleList = new ThreePartsLayoutWidget(this);
 	private final Screen parent;
@@ -35,7 +33,7 @@ public class ExperimentsScreen extends Screen {
 	private final Object2BooleanMap<ResourcePackProfile> experiments = new Object2BooleanLinkedOpenHashMap<>();
 
 	public ExperimentsScreen(Screen parent, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> applier) {
-		super(Text.translatable("experiments_screen.title"));
+		super(TITLE);
 		this.parent = parent;
 		this.resourcePackManager = resourcePackManager;
 		this.applier = applier;
@@ -49,7 +47,7 @@ public class ExperimentsScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.experimentToggleList.addHeader(new TextWidget(Text.translatable("selectWorld.experiments"), this.textRenderer));
+		this.experimentToggleList.addHeader(TITLE, this.textRenderer);
 		DirectionalLayoutWidget directionalLayoutWidget = this.experimentToggleList.addBody(DirectionalLayoutWidget.vertical());
 		directionalLayoutWidget.add(
 			new MultilineTextWidget(Text.translatable("selectWorld.experiments.info").formatted(Formatting.RED), this.textRenderer).setMaxWidth(310),
@@ -64,9 +62,9 @@ public class ExperimentsScreen extends Screen {
 						.tooltip(pack.getDescription())
 			);
 		builder.build(directionalLayoutWidget::add);
-		GridWidget.Adder adder = this.experimentToggleList.addFooter(new GridWidget().setColumnSpacing(10)).createAdder(2);
-		adder.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.applyAndClose()).build());
-		adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
+		DirectionalLayoutWidget directionalLayoutWidget2 = this.experimentToggleList.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.applyAndClose()).build());
+		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
 		this.experimentToggleList.forEachChild(widget -> {
 			ClickableWidget var10000 = this.addDrawableChild(widget);
 		});
@@ -100,24 +98,5 @@ public class ExperimentsScreen extends Screen {
 	@Override
 	protected void initTabNavigation() {
 		this.experimentToggleList.refreshPositions();
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.renderBackground(context, mouseX, mouseY, delta);
-		context.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
-		int i = 32;
-		context.drawTexture(
-			OPTIONS_BACKGROUND_TEXTURE,
-			0,
-			this.experimentToggleList.getHeaderHeight(),
-			0.0F,
-			0.0F,
-			this.width,
-			this.height - this.experimentToggleList.getHeaderHeight() - this.experimentToggleList.getFooterHeight(),
-			32,
-			32
-		);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

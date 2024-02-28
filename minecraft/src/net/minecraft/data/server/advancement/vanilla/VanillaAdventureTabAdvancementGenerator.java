@@ -34,6 +34,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.block.entity.Sherds;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.entity.EntityType;
@@ -60,8 +61,11 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -165,7 +169,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed())
 			.build(exporter, "adventure/sleep_in_bed");
-		buildAdventuringTime(exporter, advancementEntry2, MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD);
+		buildAdventuringTime(lookup, exporter, advancementEntry2, MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD);
 		AdvancementEntry advancementEntry3 = Advancement.Builder.create()
 			.parent(advancementEntry)
 			.display(
@@ -521,7 +525,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"play_jukebox_in_meadows",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
-					LocationPredicate.Builder.create().biome(BiomeKeys.MEADOW).block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX)),
+					LocationPredicate.Builder.create()
+						.biome(RegistryEntryList.of(lookup.getWrapperOrThrow(RegistryKeys.BIOME).getOrThrow(BiomeKeys.MEADOW)))
+						.block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX)),
 					ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS)
 				)
 			)
@@ -605,7 +611,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		Advancement.Builder.create()
 			.parent(advancementEntry11)
 			.display(
-				DecoratedPotBlockEntity.getStackWith(new DecoratedPotBlockEntity.Sherds(Items.BRICK, Items.HEART_POTTERY_SHERD, Items.BRICK, Items.EXPLORER_POTTERY_SHERD)),
+				DecoratedPotBlockEntity.getStackWith(
+					new Sherds(Optional.empty(), Optional.of(Items.HEART_POTTERY_SHERD), Optional.empty(), Optional.of(Items.EXPLORER_POTTERY_SHERD))
+				),
 				Text.translatable("advancements.adventure.craft_decorated_pot_using_only_sherds.title"),
 				Text.translatable("advancements.adventure.craft_decorated_pot_using_only_sherds.description"),
 				null,
@@ -773,8 +781,13 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	protected static void buildAdventuringTime(Consumer<AdvancementEntry> exporter, AdvancementEntry parent, MultiNoiseBiomeSourceParameterList.Preset preset) {
-		requireListedBiomesVisited(Advancement.Builder.create(), preset.biomeStream().toList())
+	protected static void buildAdventuringTime(
+		RegistryWrapper.WrapperLookup registryLookup,
+		Consumer<AdvancementEntry> exporter,
+		AdvancementEntry parent,
+		MultiNoiseBiomeSourceParameterList.Preset biomeSourceListPreset
+	) {
+		requireListedBiomesVisited(Advancement.Builder.create(), registryLookup, biomeSourceListPreset.biomeStream().toList())
 			.parent(parent)
 			.display(
 				Items.DIAMOND_BOOTS,
@@ -799,9 +812,16 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder builder, List<RegistryKey<Biome>> biomes) {
+	protected static Advancement.Builder requireListedBiomesVisited(
+		Advancement.Builder builder, RegistryWrapper.WrapperLookup registryLookup, List<RegistryKey<Biome>> biomes
+	) {
+		RegistryEntryLookup<Biome> registryEntryLookup = registryLookup.getWrapperOrThrow(RegistryKeys.BIOME);
+
 		for (RegistryKey<Biome> registryKey : biomes) {
-			builder.criterion(registryKey.getValue().toString(), TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createBiome(registryKey)));
+			builder.criterion(
+				registryKey.getValue().toString(),
+				TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createBiome(registryEntryLookup.getOrThrow(registryKey)))
+			);
 		}
 
 		return builder;

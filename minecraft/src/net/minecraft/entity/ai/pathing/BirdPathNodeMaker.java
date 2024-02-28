@@ -11,7 +11,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class BirdPathNodeMaker extends LandPathNodeMaker {
@@ -40,7 +39,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			i = this.entity.getBlockY();
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
 
-			for (BlockState blockState = this.cachedWorld.getBlockState(mutable); blockState.isOf(Blocks.WATER); blockState = this.cachedWorld.getBlockState(mutable)) {
+			for (BlockState blockState = this.context.getBlockState(mutable); blockState.isOf(Blocks.WATER); blockState = this.context.getBlockState(mutable)) {
 				mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ());
 			}
 		} else {
@@ -282,15 +281,15 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	@Override
 	protected PathNodeType getNodeType(int x, int y, int z) {
 		return this.pathNodes
-			.computeIfAbsent(BlockPos.asLong(x, y, z), (Long2ObjectFunction<? extends PathNodeType>)(pos -> this.getNodeType(this.cachedWorld, x, y, z, this.entity)));
+			.computeIfAbsent(BlockPos.asLong(x, y, z), (Long2ObjectFunction<? extends PathNodeType>)(pos -> this.getNodeType(this.context, x, y, z, this.entity)));
 	}
 
 	@Override
-	public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		PathNodeType pathNodeType = getCommonNodeType(world, mutable.set(x, y, z));
-		if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomY() + 1) {
-			PathNodeType pathNodeType2 = getCommonNodeType(world, mutable.set(x, y - 1, z));
+	public PathNodeType getDefaultNodeType(PathContext context, int x, int y, int z) {
+		PathNodeType pathNodeType = context.getNodeType(x, y, z);
+		if (pathNodeType == PathNodeType.OPEN && y >= context.getWorld().getBottomY() + 1) {
+			BlockPos blockPos = new BlockPos(x, y - 1, z);
+			PathNodeType pathNodeType2 = context.getNodeType(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 			if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || pathNodeType2 == PathNodeType.LAVA) {
 				pathNodeType = PathNodeType.DAMAGE_FIRE;
 			} else if (pathNodeType2 == PathNodeType.DAMAGE_OTHER) {
@@ -298,7 +297,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			} else if (pathNodeType2 == PathNodeType.COCOA) {
 				pathNodeType = PathNodeType.COCOA;
 			} else if (pathNodeType2 == PathNodeType.FENCE) {
-				if (!mutable.equals(this.entity.getBlockPos())) {
+				if (!blockPos.equals(context.getEntityPos())) {
 					pathNodeType = PathNodeType.FENCE;
 				}
 			} else {
@@ -309,7 +308,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		}
 
 		if (pathNodeType == PathNodeType.WALKABLE || pathNodeType == PathNodeType.OPEN) {
-			pathNodeType = getNodeTypeFromNeighbors(world, mutable.set(x, y, z), pathNodeType);
+			pathNodeType = getNodeTypeFromNeighbors(context, x, y, z, pathNodeType);
 		}
 
 		return pathNodeType;

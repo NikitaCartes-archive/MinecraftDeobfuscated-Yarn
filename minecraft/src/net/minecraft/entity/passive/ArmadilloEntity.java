@@ -297,9 +297,8 @@ public class ArmadilloEntity extends AnimalEntity {
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.isOf(Items.BRUSH)) {
+		if (itemStack.isOf(Items.BRUSH) && this.brushScute()) {
 			itemStack.damage(16, player, getSlotForHand(hand));
-			this.brushScute();
 			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return super.interactMob(player, hand);
@@ -315,10 +314,15 @@ public class ArmadilloEntity extends AnimalEntity {
 		super.growUp(age, overGrow);
 	}
 
-	public void brushScute() {
-		this.dropStack(new ItemStack(Items.ARMADILLO_SCUTE));
-		this.emitGameEvent(GameEvent.ENTITY_INTERACT);
-		this.playSoundIfNotSilent(SoundEvents.ENTITY_ARMADILLO_BRUSH);
+	public boolean brushScute() {
+		if (this.isBaby()) {
+			return false;
+		} else {
+			this.dropStack(new ItemStack(Items.ARMADILLO_SCUTE));
+			this.emitGameEvent(GameEvent.ENTITY_INTERACT);
+			this.playSoundIfNotSilent(SoundEvents.ENTITY_ARMADILLO_BRUSH);
+			return true;
+		}
 	}
 
 	public boolean canRollUp() {

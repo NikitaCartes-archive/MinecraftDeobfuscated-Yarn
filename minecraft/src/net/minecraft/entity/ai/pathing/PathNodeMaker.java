@@ -10,11 +10,10 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
 
 public abstract class PathNodeMaker {
-	protected ChunkCache cachedWorld;
+	protected PathContext context;
 	protected MobEntity entity;
 	protected final Int2ObjectMap<PathNode> pathNodeCache = new Int2ObjectOpenHashMap<>();
 	protected int entityBlockXSize;
@@ -26,7 +25,7 @@ public abstract class PathNodeMaker {
 	protected boolean canWalkOverFences;
 
 	public void init(ChunkCache cachedWorld, MobEntity entity) {
-		this.cachedWorld = cachedWorld;
+		this.context = new PathContext(cachedWorld, entity);
 		this.entity = entity;
 		this.pathNodeCache.clear();
 		this.entityBlockXSize = MathHelper.floor(entity.getWidth() + 1.0F);
@@ -35,7 +34,7 @@ public abstract class PathNodeMaker {
 	}
 
 	public void clear() {
-		this.cachedWorld = null;
+		this.context = null;
 		this.entity = null;
 	}
 
@@ -60,12 +59,16 @@ public abstract class PathNodeMaker {
 	/**
 	 * Gets the path node type at the given position without adjusting the node type according to whether the entity can enter or open doors
 	 */
-	public abstract PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob);
+	public abstract PathNodeType getNodeType(PathContext context, int x, int y, int z, MobEntity mob);
 
 	/**
 	 * Gets the path node type at the given position without adjusting the node type according to whether the entity can enter or open doors
 	 */
-	public abstract PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z);
+	public abstract PathNodeType getDefaultNodeType(PathContext context, int x, int y, int z);
+
+	public PathNodeType getDefaultNodeType(MobEntity entity, BlockPos pos) {
+		return this.getDefaultNodeType(new PathContext(entity.getWorld(), entity), pos.getX(), pos.getY(), pos.getZ());
+	}
 
 	public void setCanEnterOpenDoors(boolean canEnterOpenDoors) {
 		this.canEnterOpenDoors = canEnterOpenDoors;

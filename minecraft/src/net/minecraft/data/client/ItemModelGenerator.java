@@ -49,6 +49,10 @@ public class ItemModelGenerator {
 		model.upload(ModelIds.getItemModelId(item), TextureMap.layer0(texture), this.writer);
 	}
 
+	private void registerWolfArmor(Item armor) {
+		this.uploadArmor(ModelIds.getItemModelId(armor), TextureMap.getId(armor), TextureMap.getSubId(armor, "_overlay"));
+	}
+
 	private void registerCompass(Item compass) {
 		for (int i = 0; i < 32; i++) {
 			if (i != 16) {
@@ -125,6 +129,7 @@ public class ItemModelGenerator {
 		this.register(Items.CHERRY_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.AMETHYST_SHARD, Models.GENERATED);
 		this.register(Items.APPLE, Models.GENERATED);
+		this.register(Items.ARMADILLO_SCUTE, Models.GENERATED);
 		this.register(Items.ARMOR_STAND, Models.GENERATED);
 		this.register(Items.ARROW, Models.GENERATED);
 		this.register(Items.BAKED_POTATO, Models.GENERATED);
@@ -312,8 +317,6 @@ public class ItemModelGenerator {
 		this.register(Items.SALMON, Models.GENERATED);
 		this.register(Items.SALMON_BUCKET, Models.GENERATED);
 		this.register(Items.TURTLE_SCUTE, Models.GENERATED);
-		this.register(Items.ARMADILLO_SCUTE, Models.GENERATED);
-		this.register(Items.WOLF_ARMOR, Models.GENERATED);
 		this.register(Items.SHEARS, Models.GENERATED);
 		this.register(Items.SHULKER_SHELL, Models.GENERATED);
 		this.register(Items.SKULL_BANNER_PATTERN, Models.GENERATED);
@@ -344,6 +347,7 @@ public class ItemModelGenerator {
 		this.register(Items.WHEAT, Models.GENERATED);
 		this.register(Items.WHITE_DYE, Models.GENERATED);
 		this.register(Items.WIND_CHARGE, Models.GENERATED);
+		this.registerWolfArmor(Items.WOLF_ARMOR);
 		this.register(Items.WOODEN_AXE, Models.HANDHELD);
 		this.register(Items.WOODEN_HOE, Models.HANDHELD);
 		this.register(Items.WOODEN_PICKAXE, Models.HANDHELD);

@@ -59,4 +59,5 @@ public class EntityStatuses {
 	public static final byte SONIC_BOOM = 62;
 	public static final byte START_DIGGING = 63;
 	public static final byte PEEKING = 64;
+	public static final byte BREAK_BODY = 65;
 }

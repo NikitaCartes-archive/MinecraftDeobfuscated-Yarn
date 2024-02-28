@@ -96,4 +96,51 @@ public class StringHelper {
 	public static String truncateChat(String text) {
 		return truncate(text, 256, false);
 	}
+
+	/**
+	 * {@return whether {@code c} is a valid character}
+	 * 
+	 * <p>Characters are valid if they are not an ASCII control code or {@code §}.
+	 */
+	public static boolean isValidChar(char c) {
+		return c != 167 && c >= ' ' && c != 127;
+	}
+
+	public static boolean isValidPlayerName(String name) {
+		return name.length() > 16 ? false : name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
+	}
+
+	/**
+	 * {@return {@code string} with all {@linkplain #isValidChar invalid characters},
+	 * including linebreak ({@code \n}), removed}
+	 */
+	public static String stripInvalidChars(String string) {
+		return stripInvalidChars(string, false);
+	}
+
+	/**
+	 * {@return {@code string} with all {@linkplain #isValidChar invalid characters}
+	 * removed}
+	 */
+	public static String stripInvalidChars(String string, boolean allowLinebreak) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (char c : string.toCharArray()) {
+			if (isValidChar(c)) {
+				stringBuilder.append(c);
+			} else if (allowLinebreak && c == '\n') {
+				stringBuilder.append(c);
+			}
+		}
+
+		return stringBuilder.toString();
+	}
+
+	public static boolean isWhitespace(int c) {
+		return Character.isWhitespace(c) || Character.isSpaceChar(c);
+	}
+
+	public static boolean isBlank(@Nullable String string) {
+		return string != null && string.length() != 0 ? string.chars().allMatch(StringHelper::isWhitespace) : true;
+	}
 }

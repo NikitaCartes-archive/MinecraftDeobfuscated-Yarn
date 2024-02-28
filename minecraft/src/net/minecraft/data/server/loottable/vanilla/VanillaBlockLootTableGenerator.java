@@ -1,7 +1,6 @@
 package net.minecraft.data.server.loottable.vanilla;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,6 +24,7 @@ import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.TntBlock;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.data.server.loottable.BlockLootTableGenerator;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
@@ -45,11 +45,10 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
-import net.minecraft.loot.function.CopyNbtLootFunction;
+import net.minecraft.loot.function.CopyComponentsLootFunction;
 import net.minecraft.loot.function.LimitCountLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
-import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.StatePredicate;
@@ -976,9 +975,9 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 								.with(
 									ItemEntry.builder(block)
 										.apply(
-											CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY)
-												.withOperation("SkullOwner", "SkullOwner")
-												.withOperation("note_block_sound", String.format(Locale.ROOT, "%s.%s", "BlockEntityTag", "note_block_sound"))
+											CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY)
+												.add(DataComponentTypes.PROFILE)
+												.add(DataComponentTypes.NOTE_BLOCK_SOUND)
 										)
 								)
 						)
@@ -1420,7 +1419,8 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 						DynamicEntry.builder(DecoratedPotBlock.SHERDS_DYNAMIC_DROP_ID)
 							.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(DecoratedPotBlock.CRACKED, true)))
 							.alternatively(
-								ItemEntry.builder(block).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("sherds", "BlockEntityTag.sherds"))
+								ItemEntry.builder(block)
+									.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.POT_DECORATIONS))
 							)
 					)
 			);

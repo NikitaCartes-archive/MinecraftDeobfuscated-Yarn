@@ -155,6 +155,17 @@ public class TestCommand {
 							)
 						)
 				)
+				.then(
+					CommandManager.literal("runmultiple")
+						.then(
+							CommandManager.argument("testName", TestFunctionArgumentType.testFunction())
+								.executes(context -> RUNNERS.named(context, "testName").runOnce())
+								.then(
+									CommandManager.argument("amount", IntegerArgumentType.integer())
+										.executes(context -> RUNNERS.repeat(IntegerArgumentType.getInteger(context, "amount")).named(context, "testName").runOnce())
+								)
+						)
+				)
 				.then(testAttemptAndPlacementConfig(CommandManager.literal("runall").then(argumentBuilder2), RUNNERS::allTestFunctions))
 				.then(testAttemptConfig(CommandManager.literal("runthese"), RUNNERS::allStructures))
 				.then(testAttemptConfig(CommandManager.literal("runclosest"), RUNNERS::nearest))

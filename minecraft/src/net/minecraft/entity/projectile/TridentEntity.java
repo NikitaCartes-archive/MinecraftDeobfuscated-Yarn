@@ -26,12 +26,11 @@ import net.minecraft.world.World;
 public class TridentEntity extends PersistentProjectileEntity {
 	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final ItemStack DEFAULT_STACK = new ItemStack(Items.TRIDENT);
 	private boolean dealtDamage;
 	public int returnTimer;
 
 	public TridentEntity(EntityType<? extends TridentEntity> entityType, World world) {
-		super(entityType, world, DEFAULT_STACK);
+		super(entityType, world);
 	}
 
 	public TridentEntity(World world, LivingEntity owner, ItemStack stack) {
@@ -151,6 +150,11 @@ public class TridentEntity extends PersistentProjectileEntity {
 	@Override
 	protected boolean tryPickup(PlayerEntity player) {
 		return super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && player.getInventory().insertStack(this.asItemStack());
+	}
+
+	@Override
+	protected ItemStack getDefaultItemStack() {
+		return new ItemStack(Items.TRIDENT);
 	}
 
 	@Override

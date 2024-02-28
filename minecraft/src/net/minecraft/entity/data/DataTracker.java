@@ -160,9 +160,9 @@ public class DataTracker {
 		}
 
 		public DataTracker build() {
-			for (DataTracker.Entry<?> entry : this.entries) {
-				if (entry == null) {
-					throw new IllegalStateException("Entity " + this.entity + " did not have all synched data values defined");
+			for (int i = 0; i < this.entries.length; i++) {
+				if (this.entries[i] == null) {
+					throw new IllegalStateException("Entity " + this.entity.getClass() + " has not defined synched data value " + i);
 				}
 			}
 

@@ -24,6 +24,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.Window;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
@@ -636,7 +637,7 @@ public class InGameHud {
 		this.client.getProfiler().push("selectedItemName");
 		if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
 			MutableText mutableText = Text.empty().append(this.currentStack.getName()).formatted(this.currentStack.getRarity().formatting);
-			if (this.currentStack.hasCustomName()) {
+			if (this.currentStack.contains(DataComponentTypes.CUSTOM_NAME)) {
 				mutableText.formatted(Formatting.ITALIC);
 			}
 

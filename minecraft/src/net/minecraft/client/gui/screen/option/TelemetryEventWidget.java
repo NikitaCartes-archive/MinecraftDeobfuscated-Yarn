@@ -46,6 +46,11 @@ public class TelemetryEventWidget extends ScrollableWidget {
 		this.setScrollY(this.getScrollY());
 	}
 
+	public void initContents() {
+		this.contents = this.collectContents(MinecraftClient.getInstance().isOptionalTelemetryEnabled());
+		this.setScrollY(this.getScrollY());
+	}
+
 	private TelemetryEventWidget.Contents collectContents(boolean optionalTelemetryEnabled) {
 		TelemetryEventWidget.ContentsBuilder contentsBuilder = new TelemetryEventWidget.ContentsBuilder(this.getGridWidth());
 		List<TelemetryEventType> list = new ArrayList(TelemetryEventType.getTypes());

@@ -4,11 +4,9 @@ import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
@@ -80,16 +78,6 @@ public class BarrelBlock extends BlockWithEntity {
 	@Override
 	protected BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
-	}
-
-	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof BarrelBlockEntity) {
-				((BarrelBlockEntity)blockEntity).setCustomName(itemStack.getName());
-			}
-		}
 	}
 
 	@Override

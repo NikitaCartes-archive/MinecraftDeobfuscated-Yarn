@@ -11,9 +11,9 @@ import net.minecraft.text.TextCodecs;
 
 public record PlayerListHeaderS2CPacket(Text header, Text footer) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, PlayerListHeaderS2CPacket> CODEC = PacketCodec.tuple(
-		TextCodecs.REGISTRY_PACKET_CODEC,
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC,
 		PlayerListHeaderS2CPacket::header,
-		TextCodecs.REGISTRY_PACKET_CODEC,
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC,
 		PlayerListHeaderS2CPacket::footer,
 		PlayerListHeaderS2CPacket::new
 	);

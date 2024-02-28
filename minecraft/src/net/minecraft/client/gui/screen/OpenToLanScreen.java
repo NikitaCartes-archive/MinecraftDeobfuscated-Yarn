@@ -83,9 +83,12 @@ public class OpenToLanScreen extends Screen {
 		this.portField.setPlaceholder(Text.literal(this.port + "").formatted(Formatting.DARK_GRAY));
 		this.addDrawableChild(this.portField);
 		this.addDrawableChild(buttonWidget);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 28, 150, 20).build()
-		);
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).dimensions(this.width / 2 + 5, this.height - 28, 150, 20).build());
+	}
+
+	@Override
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	@Nullable

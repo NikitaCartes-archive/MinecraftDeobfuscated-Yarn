@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -73,7 +74,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 		Slot slot = this.handler.getSlot(0);
 		if (slot.hasStack()) {
 			String string = name;
-			if (!slot.getStack().hasCustomName() && name.equals(slot.getStack().getName().getString())) {
+			if (!slot.getStack().contains(DataComponentTypes.CUSTOM_NAME) && name.equals(slot.getStack().getName().getString())) {
 				string = "";
 			}
 

@@ -53,15 +53,8 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			this.entries
 				.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(context.getWorld(), defaultedList::add), context)));
 			NbtCompound nbtCompound = new NbtCompound();
-			Inventories.writeNbt(nbtCompound, defaultedList);
-			NbtCompound nbtCompound2 = BlockItem.getBlockEntityNbt(stack);
-			if (nbtCompound2 == null) {
-				nbtCompound2 = nbtCompound;
-			} else {
-				nbtCompound2.copyFrom(nbtCompound);
-			}
-
-			BlockItem.setBlockEntityNbt(stack, this.type.value(), nbtCompound2);
+			Inventories.writeNbt(nbtCompound, defaultedList, context.getWorld().getRegistryManager());
+			BlockItem.setBlockEntityData(stack, this.type.value(), nbt -> nbt.copyFrom(nbtCompound));
 			return stack;
 		}
 	}

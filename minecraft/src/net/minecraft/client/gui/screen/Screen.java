@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.net.URI;
@@ -19,13 +20,14 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
+import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.GuiNavigation;
@@ -48,6 +50,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -61,7 +64,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	private static final Text SCREEN_USAGE_TEXT = Text.translatable("narrator.screen.usage");
-	public static final Identifier OPTIONS_BACKGROUND_TEXTURE = new Identifier("textures/gui/options_background.png");
+	protected static final CubeMapRenderer PANORAMA_RENDERER = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
+	protected static final RotatingCubeMapRenderer ROTATING_PANORAMA_RENDERER = new RotatingCubeMapRenderer(PANORAMA_RENDERER);
+	protected static final Identifier PANORAMA_OVERLAY_TEXTURE = new Identifier("textures/gui/title/background/panorama_overlay.png");
+	public static final Identifier MENU_BACKGROUND_TEXTURE = new Identifier("textures/gui/menu_background.png");
 	protected final Text title;
 	private final List<Element> children = Lists.<Element>newArrayList();
 	private final List<Selectable> selectables = Lists.<Selectable>newArrayList();
@@ -290,9 +296,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					URI uRIx = new File(clickEvent.getValue()).toURI();
 					this.openLink(uRIx);
 				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
-					this.insertText(SharedConstants.stripInvalidChars(clickEvent.getValue()), true);
+					this.insertText(StringHelper.stripInvalidChars(clickEvent.getValue()), true);
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-					String string2 = SharedConstants.stripInvalidChars(clickEvent.getValue());
+					String string2 = StringHelper.stripInvalidChars(clickEvent.getValue());
 					if (string2.startsWith("/")) {
 						if (!this.client.player.networkHandler.sendCommand(string2.substring(1))) {
 							LOGGER.error("Not allowed to run command with signed argument from click event: '{}'", string2);
@@ -373,11 +379,36 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	 * Otherwise {@linkplain #renderBackgroundTexture renders the background texture}.
 	 */
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		if (this.client.world != null) {
-			this.renderInGameBackground(context);
-		} else {
-			this.renderBackgroundTexture(context);
+		if (this.client.world == null) {
+			this.renderPanoramaBackground(context, delta);
 		}
+
+		this.applyBlur(delta);
+		this.renderDarkening(context);
+	}
+
+	protected void applyBlur(float delta) {
+		this.client.gameRenderer.renderBlur(delta);
+		this.client.getFramebuffer().beginWrite(false);
+	}
+
+	protected void renderPanoramaBackground(DrawContext context, float delta) {
+		ROTATING_PANORAMA_RENDERER.render(delta);
+	}
+
+	protected void renderDarkening(DrawContext context) {
+		this.renderDarkening(context, 0, 0, this.width, this.height);
+	}
+
+	protected void renderDarkening(DrawContext context, int x, int y, int width, int height) {
+		renderBackgroundTexture(context, x, y, width, height);
+	}
+
+	public static void renderBackgroundTexture(DrawContext context, int x, int y, int width, int height) {
+		int i = 32;
+		RenderSystem.enableBlend();
+		context.drawTexture(MENU_BACKGROUND_TEXTURE, x, y, 0, 0.0F, 0.0F, width, height, 32, 32);
+		RenderSystem.disableBlend();
 	}
 
 	/**
@@ -385,16 +416,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	 */
 	public void renderInGameBackground(DrawContext context) {
 		context.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
-	}
-
-	/**
-	 * Renders the fullscreen {@linkplain #OPTIONS_BACKGROUND_TEXTURE background texture} of this screen.
-	 */
-	public void renderBackgroundTexture(DrawContext context) {
-		context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-		int i = 32;
-		context.drawTexture(OPTIONS_BACKGROUND_TEXTURE, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public boolean shouldPause() {

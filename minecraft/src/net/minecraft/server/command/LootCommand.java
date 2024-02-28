@@ -332,7 +332,7 @@ public class LootCommand {
 	}
 
 	private static boolean itemsMatch(ItemStack first, ItemStack second) {
-		return first.getCount() <= first.getMaxCount() && ItemStack.areItemsAndNbtEqual(first, second);
+		return first.getCount() <= first.getMaxCount() && ItemStack.areItemsAndComponentsEqual(first, second);
 	}
 
 	private static int executeGive(Collection<ServerPlayerEntity> players, List<ItemStack> stacks, LootCommand.FeedbackMessage messageSender) throws CommandSyntaxException {

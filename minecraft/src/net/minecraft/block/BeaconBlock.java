@@ -6,9 +6,7 @@ import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
@@ -49,9 +47,8 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof BeaconBlockEntity) {
-				player.openHandledScreen((BeaconBlockEntity)blockEntity);
+			if (world.getBlockEntity(pos) instanceof BeaconBlockEntity beaconBlockEntity) {
+				player.openHandledScreen(beaconBlockEntity);
 				player.incrementStat(Stats.INTERACT_WITH_BEACON);
 			}
 
@@ -62,15 +59,5 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 	@Override
 	protected BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
-	}
-
-	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof BeaconBlockEntity) {
-				((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getName());
-			}
-		}
 	}
 }

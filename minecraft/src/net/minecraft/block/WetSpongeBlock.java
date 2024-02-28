@@ -27,7 +27,7 @@ public class WetSpongeBlock extends Block {
 		if (world.getDimension().ultrawarm()) {
 			world.setBlockState(pos, Blocks.SPONGE.getDefaultState(), Block.NOTIFY_ALL);
 			world.syncWorldEvent(WorldEvents.WET_SPONGE_DRIES_OUT, pos, 0);
-			world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1.0F, (1.0F + world.getRandom().nextFloat() * 0.2F) * 0.7F);
+			world.playSound(null, pos, SoundEvents.BLOCK_WET_SPONGE_DRIES, SoundCategory.BLOCKS, 1.0F, (1.0F + world.getRandom().nextFloat() * 0.2F) * 0.7F);
 		}
 	}
 

@@ -14,7 +14,7 @@ import net.minecraft.util.dynamic.Codecs;
 public class AdvancementDisplay {
 	public static final Codec<AdvancementDisplay> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ItemStack.ADVANCEMENT_DISPLAY_CODEC.fieldOf("icon").forGetter(AdvancementDisplay::getIcon),
+					ItemStack.CODEC.fieldOf("icon").forGetter(AdvancementDisplay::getIcon),
 					TextCodecs.CODEC.fieldOf("title").forGetter(AdvancementDisplay::getTitle),
 					TextCodecs.CODEC.fieldOf("description").forGetter(AdvancementDisplay::getDescription),
 					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "background").forGetter(AdvancementDisplay::getBackground),
@@ -105,8 +105,8 @@ public class AdvancementDisplay {
 	}
 
 	private void toPacket(RegistryByteBuf buf) {
-		TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.title);
-		TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.description);
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.encode(buf, this.title);
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.encode(buf, this.description);
 		ItemStack.PACKET_CODEC.encode(buf, this.icon);
 		buf.writeEnumConstant(this.frame);
 		int i = 0;
@@ -129,8 +129,8 @@ public class AdvancementDisplay {
 	}
 
 	private static AdvancementDisplay fromPacket(RegistryByteBuf buf) {
-		Text text = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
-		Text text2 = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
+		Text text = TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.decode(buf);
+		Text text2 = TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.decode(buf);
 		ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
 		AdvancementFrame advancementFrame = buf.readEnumConstant(AdvancementFrame.class);
 		int i = buf.readInt();

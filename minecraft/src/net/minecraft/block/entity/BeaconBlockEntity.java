@@ -14,6 +14,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Stainable;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -300,7 +302,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		this.primary = readStatusEffect(nbt, "primary_effect");
 		this.secondary = readStatusEffect(nbt, "secondary_effect");
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"));
+			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
 		}
 
 		this.lock = ContainerLock.fromNbt(nbt);
@@ -313,7 +315,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		writeStatusEffect(nbt, "secondary_effect", this.secondary);
 		nbt.putInt("Levels", this.level);
 		if (this.customName != null) {
-			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registryLookup));
 		}
 
 		this.lock.writeNbt(nbt);
@@ -345,6 +347,24 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	public Text getName() {
 		return this.customName != null ? this.customName : CONTAINER_NAME_TEXT;
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
+		this.lock = components.getOrDefault(DataComponentTypes.LOCK, ContainerLock.EMPTY);
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+		componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		nbt.remove("CustomName");
+		nbt.remove("Lock");
 	}
 
 	@Override

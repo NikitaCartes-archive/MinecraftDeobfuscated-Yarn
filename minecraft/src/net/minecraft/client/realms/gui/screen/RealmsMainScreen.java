@@ -211,7 +211,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Override
 	protected void initTabNavigation() {
 		if (this.layout != null) {
-			this.realmSelectionList.setDimensions(this.width, this.height - this.layout.getFooterHeight() - this.layout.getHeaderHeight());
+			this.realmSelectionList.position(this.width, this.layout);
 			this.layout.refreshPositions();
 		}
 	}
@@ -296,10 +296,10 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	private DirectionalLayoutWidget makeNoRealmsLayout() {
-		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.vertical().spacing(10);
+		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.vertical().spacing(8);
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
 		directionalLayoutWidget.add(IconWidget.create(130, 64, NO_REALMS_TEXTURE, 130, 64));
-		NarratedMultilineTextWidget narratedMultilineTextWidget = new NarratedMultilineTextWidget(308, NO_REALMS_TEXT, this.textRenderer, false);
+		NarratedMultilineTextWidget narratedMultilineTextWidget = new NarratedMultilineTextWidget(308, NO_REALMS_TEXT, this.textRenderer, false, 4);
 		directionalLayoutWidget.add(narratedMultilineTextWidget);
 		return directionalLayoutWidget;
 	}
@@ -840,7 +840,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		private int notificationCount;
 
 		public NotificationButtonWidget(Text message, Identifier texture, ButtonWidget.PressAction onPress) {
-			super(20, 20, message, 14, 14, texture, onPress);
+			super(20, 20, message, 14, 14, texture, onPress, null);
 		}
 
 		int getNotificationCount() {
@@ -1116,7 +1116,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			this.button.mouseClicked(mouseX, mouseY, button);
-			return true;
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 
 		@Override
@@ -1226,7 +1226,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				this.dismissButton.mouseClicked(mouseX, mouseY, button);
 			}
 
-			return true;
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 
 		@Override

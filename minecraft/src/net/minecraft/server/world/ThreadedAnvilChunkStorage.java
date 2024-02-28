@@ -8,7 +8,6 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -84,9 +83,11 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SimulationDistanceLevelPropagator;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkGenerationContext;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ChunkStatusChangeListener;
+import net.minecraft.world.chunk.ChunkType;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
@@ -135,7 +136,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final ChunkStatusChangeListener chunkStatusChangeListener;
 	private final ThreadedAnvilChunkStorage.TicketManager ticketManager;
 	private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
-	private final StructureTemplateManager structureTemplateManager;
 	private final String saveDir;
 	private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
 	private final Int2ObjectMap<ThreadedAnvilChunkStorage.EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<>();
@@ -143,6 +143,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final Long2LongMap chunkToNextSaveTimeMs = new Long2LongOpenHashMap();
 	private final Queue<Runnable> unloadTaskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	private int watchDistance;
+	private ChunkGenerationContext field_49171;
 
 	public ThreadedAnvilChunkStorage(
 		ServerWorld world,
@@ -165,7 +166,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			dataFixer,
 			dsync
 		);
-		this.structureTemplateManager = structureTemplateManager;
 		Path path = session.getWorldDirectory(world.getRegistryKey());
 		this.saveDir = path.getFileName().toString();
 		this.world = world;
@@ -201,6 +201,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			new StorageKey(session.getDirectoryName(), world.getRegistryKey(), "poi"), path.resolve("poi"), dataFixer, dsync, dynamicRegistryManager, world
 		);
 		this.setViewDistance(viewDistance);
+		this.field_49171 = new ChunkGenerationContext(world, chunkGenerator, structureTemplateManager, this.lightingProvider);
 	}
 
 	protected ChunkGenerator getChunkGenerator() {
@@ -218,7 +219,15 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	public void verifyChunkGenerator() {
 		DataResult<JsonElement> dataResult = ChunkGenerator.CODEC.encodeStart(JsonOps.INSTANCE, this.chunkGenerator);
 		DataResult<ChunkGenerator> dataResult2 = dataResult.flatMap(json -> ChunkGenerator.CODEC.parse(JsonOps.INSTANCE, json));
-		dataResult2.result().ifPresent(chunkGenerator -> this.chunkGenerator = chunkGenerator);
+		dataResult2.result()
+			.ifPresent(
+				chunkGenerator -> {
+					this.chunkGenerator = chunkGenerator;
+					this.field_49171 = new ChunkGenerationContext(
+						this.field_49171.world(), chunkGenerator, this.field_49171.structureManager(), this.field_49171.lightingProvider()
+					);
+				}
+			);
 	}
 
 	private static double getSquaredDistance(ChunkPos pos, Entity entity) {
@@ -292,12 +301,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> getRegion(ChunkHolder centerChunk, int margin, IntFunction<ChunkStatus> distanceToStatus) {
+	private CompletableFuture<OptionalChunk<List<Chunk>>> getRegion(ChunkHolder centerChunk, int margin, IntFunction<ChunkStatus> distanceToStatus) {
 		if (margin == 0) {
 			ChunkStatus chunkStatus = (ChunkStatus)distanceToStatus.apply(0);
-			return centerChunk.getChunkAt(chunkStatus, this).thenApply(chunk -> chunk.mapLeft(List::of));
+			return centerChunk.getChunkAt(chunkStatus, this).thenApply(optionalChunk -> optionalChunk.map(List::of));
 		} else {
-			List<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> list = new ArrayList();
+			List<CompletableFuture<OptionalChunk<Chunk>>> list = new ArrayList();
 			List<ChunkHolder> list2 = new ArrayList();
 			ChunkPos chunkPos = centerChunk.getPos();
 			int i = chunkPos.x;
@@ -306,50 +315,46 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			for (int k = -margin; k <= margin; k++) {
 				for (int l = -margin; l <= margin; l++) {
 					int m = Math.max(Math.abs(l), Math.abs(k));
-					final ChunkPos chunkPos2 = new ChunkPos(i + l, j + k);
+					ChunkPos chunkPos2 = new ChunkPos(i + l, j + k);
 					long n = chunkPos2.toLong();
 					ChunkHolder chunkHolder = this.getCurrentChunkHolder(n);
 					if (chunkHolder == null) {
-						return CompletableFuture.completedFuture(Either.right(new ChunkHolder.Unloaded() {
-							public String toString() {
-								return "Unloaded " + chunkPos2;
-							}
-						}));
+						return CompletableFuture.completedFuture(OptionalChunk.of((Supplier<String>)(() -> "Unloaded " + chunkPos2)));
 					}
 
 					ChunkStatus chunkStatus2 = (ChunkStatus)distanceToStatus.apply(m);
-					CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getChunkAt(chunkStatus2, this);
+					CompletableFuture<OptionalChunk<Chunk>> completableFuture = chunkHolder.getChunkAt(chunkStatus2, this);
 					list2.add(chunkHolder);
 					list.add(completableFuture);
 				}
 			}
 
-			CompletableFuture<List<Either<Chunk, ChunkHolder.Unloaded>>> completableFuture2 = Util.combineSafe(list);
-			CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture3 = completableFuture2.thenApply(chunks -> {
-				List<Chunk> listx = Lists.<Chunk>newArrayList();
-				int l = 0;
+			CompletableFuture<List<OptionalChunk<Chunk>>> completableFuture2 = Util.combineSafe(list);
+			CompletableFuture<OptionalChunk<List<Chunk>>> completableFuture3 = completableFuture2.thenApply(
+				chunks -> {
+					List<Chunk> listx = Lists.<Chunk>newArrayList();
+					int l = 0;
 
-				for (final Either<Chunk, ChunkHolder.Unloaded> either : chunks) {
-					if (either == null) {
-						throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
+					for (OptionalChunk<Chunk> optionalChunk : chunks) {
+						if (optionalChunk == null) {
+							throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
+						}
+
+						Chunk chunk = optionalChunk.orElse(null);
+						if (chunk == null) {
+							int mx = l;
+							return OptionalChunk.of(
+								(Supplier<String>)(() -> "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + optionalChunk.getError())
+							);
+						}
+
+						listx.add(chunk);
+						l++;
 					}
 
-					Optional<Chunk> optional = either.left();
-					if (optional.isEmpty()) {
-						final int mx = l;
-						return Either.right(new ChunkHolder.Unloaded() {
-							public String toString() {
-								return "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + either.right().get();
-							}
-						});
-					}
-
-					listx.add((Chunk)optional.get());
-					l++;
+					return OptionalChunk.of(listx);
 				}
-
-				return Either.left(listx);
-			});
+			);
 
 			for (ChunkHolder chunkHolder2 : list2) {
 				chunkHolder2.combineSavingFuture("getChunkRangeFuture " + chunkPos + " " + margin, completableFuture3);
@@ -365,7 +370,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				.forEach(
 					pair -> {
 						ChunkStatus chunkStatus = (ChunkStatus)pair.getFirst();
-						CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)pair.getSecond();
+						CompletableFuture<OptionalChunk<Chunk>> completableFuture = (CompletableFuture<OptionalChunk<Chunk>>)pair.getSecond();
 						if (completableFuture != null && completableFuture.isDone() && completableFuture.join() == null) {
 							stringBuilder.append(chunkHolder.getPos())
 								.append(" - status: ")
@@ -387,9 +392,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return new CrashException(crashReport);
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkHolder chunk) {
+	public CompletableFuture<OptionalChunk<WorldChunk>> makeChunkEntitiesTickable(ChunkHolder chunk) {
 		return this.getRegion(chunk, 2, distance -> ChunkStatus.FULL)
-			.thenApplyAsync(either -> either.mapLeft(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)), this.mainThreadExecutor);
+			.thenApplyAsync(optionalChunk -> optionalChunk.map(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)), this.mainThreadExecutor);
 	}
 
 	/**
@@ -562,23 +567,21 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
+	public CompletableFuture<OptionalChunk<Chunk>> getChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
 		ChunkPos chunkPos = holder.getPos();
 		if (requiredStatus == ChunkStatus.EMPTY) {
-			return this.loadChunk(chunkPos);
+			return this.loadChunk(chunkPos).thenApply(OptionalChunk::of);
 		} else {
 			if (requiredStatus == ChunkStatus.LIGHT) {
 				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, ChunkLevels.getLevelFromStatus(ChunkStatus.LIGHT), chunkPos);
 			}
 
 			if (!requiredStatus.shouldAlwaysUpgrade()) {
-				Optional<Chunk> optional = ((Either)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
-				if (optional.isPresent() && ((Chunk)optional.get()).getStatus().isAtLeast(requiredStatus)) {
-					CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(
-						this.world, this.structureTemplateManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (Chunk)optional.get()
-					);
+				Chunk chunk = (Chunk)((OptionalChunk)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).orElse(null);
+				if (chunk != null && chunk.getStatus().isAtLeast(requiredStatus)) {
+					CompletableFuture<Chunk> completableFuture = requiredStatus.runLoadTask(this.field_49171, chunkx -> this.convertToFullChunk(holder, chunkx), chunk);
 					this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
-					return completableFuture;
+					return completableFuture.thenApply(OptionalChunk::of);
 				}
 			}
 
@@ -586,7 +589,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadChunk(ChunkPos pos) {
+	private CompletableFuture<Chunk> loadChunk(ChunkPos pos) {
 		return this.getUpdatedChunkNbt(pos).thenApply(nbt -> nbt.filter(nbt2 -> {
 				boolean bl = containsStatus(nbt2);
 				if (!bl) {
@@ -599,9 +602,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			if (nbt.isPresent()) {
 				Chunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, (NbtCompound)nbt.get());
 				this.mark(pos, chunk.getStatus().getChunkType());
-				return Either.left(chunk);
+				return chunk;
 			} else {
-				return Either.left(this.getProtoChunk(pos));
+				return this.getProtoChunk(pos);
 			}
 		}, this.mainThreadExecutor).exceptionallyAsync(throwable -> this.recoverFromException(throwable, pos), this.mainThreadExecutor);
 	}
@@ -610,17 +613,19 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return nbt.contains("Status", NbtElement.STRING_TYPE);
 	}
 
-	private Either<Chunk, ChunkHolder.Unloaded> recoverFromException(Throwable throwable, ChunkPos chunkPos) {
-		Throwable throwable2 = throwable instanceof CrashException crashException ? crashException.getCause() : throwable;
-		if (throwable2 instanceof IOException) {
-			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable2);
-			return Either.left(this.getProtoChunk(chunkPos));
-		} else {
+	private Chunk recoverFromException(Throwable throwable, ChunkPos chunkPos) {
+		Throwable throwable2 = throwable instanceof CompletionException completionException ? completionException.getCause() : throwable;
+		Throwable throwable3 = throwable2 instanceof CrashException crashException ? crashException.getCause() : throwable2;
+		if (!(throwable3 instanceof IOException) && !(throwable3 instanceof ChunkSerializer.ChunkLoadingException)) {
 			CrashReport crashReport = CrashReport.create(throwable, "Exception loading chunk");
 			CrashReportSection crashReportSection = crashReport.addElement("Chunk being loaded");
 			crashReportSection.add("pos", chunkPos);
 			this.markAsProtoChunk(chunkPos);
 			throw new CrashException(crashReport);
+		} else {
+			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable3);
+			this.world.getServer().onChunkLoadFailure(chunkPos);
+			return this.getProtoChunk(chunkPos);
 		}
 	}
 
@@ -633,56 +638,49 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.chunkToType.put(pos.toLong(), (byte)-1);
 	}
 
-	private byte mark(ChunkPos pos, ChunkStatus.ChunkType type) {
-		return this.chunkToType.put(pos.toLong(), (byte)(type == ChunkStatus.ChunkType.PROTOCHUNK ? -1 : 1));
+	private byte mark(ChunkPos pos, ChunkType type) {
+		return this.chunkToType.put(pos.toLong(), (byte)(type == ChunkType.PROTOCHUNK ? -1 : 1));
 	}
 
-	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> upgradeChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
+	private CompletableFuture<OptionalChunk<Chunk>> upgradeChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
 		ChunkPos chunkPos = holder.getPos();
-		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(
+		CompletableFuture<OptionalChunk<List<Chunk>>> completableFuture = this.getRegion(
 			holder, requiredStatus.getTaskMargin(), distance -> this.getRequiredStatusForGeneration(requiredStatus, distance)
 		);
 		this.world.getProfiler().visit((Supplier<String>)(() -> "chunkGenerate " + requiredStatus));
 		Executor executor = task -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task));
-		return completableFuture.thenComposeAsync(
-			either -> either.map(
-					chunks -> {
-						try {
-							Chunk chunk = (Chunk)chunks.get(chunks.size() / 2);
-							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex;
-							if (chunk.getStatus().isAtLeast(requiredStatus)) {
-								completableFuturex = requiredStatus.runLoadTask(
-									this.world, this.structureTemplateManager, this.lightingProvider, chunkx -> this.convertToFullChunk(holder), chunk
-								);
-							} else {
-								completableFuturex = requiredStatus.runGenerationTask(
-									executor, this.world, this.chunkGenerator, this.structureTemplateManager, this.lightingProvider, chunkx -> this.convertToFullChunk(holder), chunks
-								);
-							}
-
-							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
-							return completableFuturex;
-						} catch (Exception var9) {
-							var9.getStackTrace();
-							CrashReport crashReport = CrashReport.create(var9, "Exception generating new chunk");
-							CrashReportSection crashReportSection = crashReport.addElement("Chunk to be generated");
-							crashReportSection.add("Status being generated", (CrashCallable<String>)(() -> Registries.CHUNK_STATUS.getId(requiredStatus).toString()));
-							crashReportSection.add("Location", String.format(Locale.ROOT, "%d,%d", chunkPos.x, chunkPos.z));
-							crashReportSection.add("Position hash", ChunkPos.toLong(chunkPos.x, chunkPos.z));
-							crashReportSection.add("Generator", this.chunkGenerator);
-							this.mainThreadExecutor.execute(() -> {
-								throw new CrashException(crashReport);
-							});
-							throw new CrashException(crashReport);
-						}
-					},
-					unloaded -> {
-						this.releaseLightTicket(chunkPos);
-						return CompletableFuture.completedFuture(Either.right(unloaded));
+		return completableFuture.thenComposeAsync(optionalChunk -> {
+			List<Chunk> list = (List<Chunk>)optionalChunk.orElse(null);
+			if (list == null) {
+				this.releaseLightTicket(chunkPos);
+				return CompletableFuture.completedFuture(OptionalChunk.of(optionalChunk::getError));
+			} else {
+				try {
+					Chunk chunk = (Chunk)list.get(list.size() / 2);
+					CompletableFuture<Chunk> completableFuturex;
+					if (chunk.getStatus().isAtLeast(requiredStatus)) {
+						completableFuturex = requiredStatus.runLoadTask(this.field_49171, chunkx -> this.convertToFullChunk(holder, chunkx), chunk);
+					} else {
+						completableFuturex = requiredStatus.runGenerationTask(this.field_49171, executor, chunkx -> this.convertToFullChunk(holder, chunkx), list);
 					}
-				),
-			executor
-		);
+
+					this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
+					return completableFuturex.thenApply(OptionalChunk::of);
+				} catch (Exception var10) {
+					var10.getStackTrace();
+					CrashReport crashReport = CrashReport.create(var10, "Exception generating new chunk");
+					CrashReportSection crashReportSection = crashReport.addElement("Chunk to be generated");
+					crashReportSection.add("Status being generated", (CrashCallable<String>)(() -> Registries.CHUNK_STATUS.getId(requiredStatus).toString()));
+					crashReportSection.add("Location", String.format(Locale.ROOT, "%d,%d", chunkPos.x, chunkPos.z));
+					crashReportSection.add("Position hash", ChunkPos.toLong(chunkPos.x, chunkPos.z));
+					crashReportSection.add("Generator", this.chunkGenerator);
+					this.mainThreadExecutor.execute(() -> {
+						throw new CrashException(crashReport);
+					});
+					throw new CrashException(crashReport);
+				}
+			}
+		}, executor);
 	}
 
 	protected void releaseLightTicket(ChunkPos pos) {
@@ -712,40 +710,37 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> convertToFullChunk(ChunkHolder chunkHolder) {
-		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getFutureFor(ChunkStatus.FULL.getPrevious());
-		return completableFuture.thenApplyAsync(either -> {
-			ChunkStatus chunkStatus = ChunkLevels.getStatus(chunkHolder.getLevel());
-			return !chunkStatus.isAtLeast(ChunkStatus.FULL) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(protoChunk -> {
-				ChunkPos chunkPos = chunkHolder.getPos();
-				ProtoChunk protoChunk2 = (ProtoChunk)protoChunk;
-				WorldChunk worldChunk;
-				if (protoChunk2 instanceof WrapperProtoChunk) {
-					worldChunk = ((WrapperProtoChunk)protoChunk2).getWrappedChunk();
-				} else {
-					worldChunk = new WorldChunk(this.world, protoChunk2, chunk -> addEntitiesFromNbt(this.world, protoChunk2.getEntities()));
-					chunkHolder.setCompletedChunk(new WrapperProtoChunk(worldChunk, false));
-				}
+	private CompletableFuture<Chunk> convertToFullChunk(ChunkHolder chunkHolder, Chunk chunk) {
+		return CompletableFuture.supplyAsync(() -> {
+			ChunkPos chunkPos = chunkHolder.getPos();
+			ProtoChunk protoChunk2 = (ProtoChunk)chunk;
+			WorldChunk worldChunk;
+			if (protoChunk2 instanceof WrapperProtoChunk) {
+				worldChunk = ((WrapperProtoChunk)protoChunk2).getWrappedChunk();
+			} else {
+				worldChunk = new WorldChunk(this.world, protoChunk2, chunkx -> addEntitiesFromNbt(this.world, protoChunk2.getEntities()));
+				chunkHolder.setCompletedChunk(new WrapperProtoChunk(worldChunk, false));
+			}
 
-				worldChunk.setLevelTypeProvider(() -> ChunkLevels.getType(chunkHolder.getLevel()));
-				worldChunk.loadEntities();
-				if (this.loadedChunks.add(chunkPos.toLong())) {
-					worldChunk.setLoadedToWorld(true);
-					worldChunk.updateAllBlockEntities();
-					worldChunk.addChunkTickSchedulers(this.world);
-				}
+			worldChunk.setLevelTypeProvider(() -> ChunkLevels.getType(chunkHolder.getLevel()));
+			worldChunk.loadEntities();
+			if (this.loadedChunks.add(chunkPos.toLong())) {
+				worldChunk.setLoadedToWorld(true);
+				worldChunk.updateAllBlockEntities();
+				worldChunk.addChunkTickSchedulers(this.world);
+			}
 
-				return worldChunk;
-			});
+			return worldChunk;
 		}, task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(task, chunkHolder.getPos().toLong(), chunkHolder::getLevel)));
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder holder) {
-		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(holder, 1, distance -> ChunkStatus.FULL);
-		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(
-				chunks -> chunks.mapLeft(cs -> (WorldChunk)cs.get(cs.size() / 2)), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task))
+	public CompletableFuture<OptionalChunk<WorldChunk>> makeChunkTickable(ChunkHolder holder) {
+		CompletableFuture<OptionalChunk<List<Chunk>>> completableFuture = this.getRegion(holder, 1, distance -> ChunkStatus.FULL);
+		CompletableFuture<OptionalChunk<WorldChunk>> completableFuture2 = completableFuture.thenApplyAsync(
+				optionalChunk -> optionalChunk.map(cs -> (WorldChunk)cs.get(cs.size() / 2)),
+				task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task))
 			)
-			.thenApplyAsync(either -> either.ifLeft(chunk -> {
+			.thenApplyAsync(optionalChunk -> optionalChunk.ifPresent(chunk -> {
 					chunk.runPostProcessing();
 					this.world.disableTickSchedulers(chunk);
 					CompletableFuture<?> completableFuturex = holder.getPostProcessingFuture();
@@ -755,7 +750,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 						completableFuturex.thenAcceptAsync(v -> this.sendToPlayers(chunk), this.mainThreadExecutor);
 					}
 				}), this.mainThreadExecutor);
-		completableFuture2.handle((chunk, throwable) -> {
+		completableFuture2.handle((optionalChunk, throwable) -> {
 			this.totalChunksLoadedCount.getAndIncrement();
 			return null;
 		});
@@ -772,10 +767,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkAccessible(ChunkHolder holder) {
+	public CompletableFuture<OptionalChunk<WorldChunk>> makeChunkAccessible(ChunkHolder holder) {
 		return this.getRegion(holder, 1, ChunkStatus::byDistanceFromFull)
 			.thenApplyAsync(
-				either -> either.mapLeft(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)),
+				optionalChunk -> optionalChunk.map(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)),
 				task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task))
 			);
 	}
@@ -820,7 +815,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 			try {
 				ChunkStatus chunkStatus = chunk.getStatus();
-				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
+				if (chunkStatus.getChunkType() != ChunkType.LEVELCHUNK) {
 					if (this.isLevelChunk(chunkPos)) {
 						return false;
 					}
@@ -832,11 +827,15 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 				this.world.getProfiler().visit("chunkSave");
 				NbtCompound nbtCompound = ChunkSerializer.serialize(this.world, chunk);
-				this.setNbt(chunkPos, nbtCompound);
+				this.setNbt(chunkPos, nbtCompound).exceptionallyAsync(throwable -> {
+					this.world.getServer().onChunkSaveFailure(chunkPos);
+					return null;
+				}, this.mainThreadExecutor);
 				this.mark(chunkPos, chunkStatus.getChunkType());
 				return true;
 			} catch (Exception var5) {
 				LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, var5);
+				this.world.getServer().onChunkSaveFailure(chunkPos);
 				return false;
 			}
 		}
@@ -860,7 +859,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				return false;
 			}
 
-			ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(nbtCompound);
+			ChunkType chunkType = ChunkSerializer.getChunkType(nbtCompound);
 			return this.mark(pos, chunkType) == 1;
 		}
 	}
@@ -962,10 +961,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private static String getFutureStatus(CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> future) {
+	private static String getFutureStatus(CompletableFuture<OptionalChunk<WorldChunk>> future) {
 		try {
-			Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)future.getNow(null);
-			return either != null ? either.map(chunk -> "done", unloaded -> "unloaded") : "not completed";
+			OptionalChunk<WorldChunk> optionalChunk = (OptionalChunk<WorldChunk>)future.getNow(null);
+			if (optionalChunk != null) {
+				return optionalChunk.isPresent() ? "done" : "unloaded";
+			} else {
+				return "not completed";
+			}
 		} catch (CompletionException var2) {
 			return "failed " + var2.getCause().getMessage();
 		} catch (CancellationException var3) {

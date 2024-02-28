@@ -727,7 +727,12 @@ public abstract class DisplayEntity extends Entity {
 		@Override
 		protected void readCustomDataFromNbt(NbtCompound nbt) {
 			super.readCustomDataFromNbt(nbt);
-			this.setItemStack(ItemStack.fromNbt(nbt.getCompound("item")));
+			if (nbt.contains("item")) {
+				this.setItemStack((ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("item")).orElse(ItemStack.EMPTY));
+			} else {
+				this.setItemStack(ItemStack.EMPTY);
+			}
+
 			if (nbt.contains("item_display", NbtElement.STRING_TYPE)) {
 				ModelTransformationMode.CODEC
 					.decode(NbtOps.INSTANCE, nbt.get("item_display"))
@@ -739,7 +744,10 @@ public abstract class DisplayEntity extends Entity {
 		@Override
 		protected void writeCustomDataToNbt(NbtCompound nbt) {
 			super.writeCustomDataToNbt(nbt);
-			nbt.put("item", this.getItemStack().writeNbt(new NbtCompound()));
+			if (!this.getItemStack().isEmpty()) {
+				nbt.put("item", this.getItemStack().encode(this.getRegistryManager()));
+			}
+
 			ModelTransformationMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getTransformationMode()).result().ifPresent(nbtx -> nbt.put("item_display", nbtx));
 		}
 
@@ -902,7 +910,7 @@ public abstract class DisplayEntity extends Entity {
 				String string = nbt.getString("text");
 
 				try {
-					Text text = Text.Serialization.fromJson(string);
+					Text text = Text.Serialization.fromJson(string, this.getRegistryManager());
 					if (text != null) {
 						ServerCommandSource serverCommandSource = this.getCommandSource().withLevel(2);
 						Text text2 = Texts.parse(serverCommandSource, text, this, 0);
@@ -923,7 +931,7 @@ public abstract class DisplayEntity extends Entity {
 		@Override
 		protected void writeCustomDataToNbt(NbtCompound nbt) {
 			super.writeCustomDataToNbt(nbt);
-			nbt.putString("text", Text.Serialization.toJsonString(this.getText()));
+			nbt.putString("text", Text.Serialization.toJsonString(this.getText(), this.getRegistryManager()));
 			nbt.putInt("line_width", this.getLineWidth());
 			nbt.putInt("background", this.getBackground());
 			nbt.putByte("text_opacity", this.getTextOpacity());

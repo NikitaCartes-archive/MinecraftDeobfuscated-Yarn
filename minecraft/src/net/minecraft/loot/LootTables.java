@@ -101,6 +101,7 @@ public class LootTables {
 	public static final Identifier PIGLIN_BARTERING_GAMEPLAY = register("gameplay/piglin_bartering");
 	public static final Identifier TRIAL_CHAMBER_KEY_SPAWNER = register("spawners/trial_chamber/key");
 	public static final Identifier TRIAL_CHAMBER_CONSUMABLES_SPAWNER = register("spawners/trial_chamber/consumables");
+	public static final Identifier BOGGED_SHEARING = register("shearing/bogged");
 	public static final Identifier DESERT_WELL_ARCHAEOLOGY = register("archaeology/desert_well");
 	public static final Identifier DESERT_PYRAMID_ARCHAEOLOGY = register("archaeology/desert_pyramid");
 	public static final Identifier TRAIL_RUINS_COMMON_ARCHAEOLOGY = register("archaeology/trail_ruins_common");

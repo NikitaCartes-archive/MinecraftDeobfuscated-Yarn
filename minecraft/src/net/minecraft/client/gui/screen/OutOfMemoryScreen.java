@@ -2,44 +2,42 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.MultilineText;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.NarratedMultilineTextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class OutOfMemoryScreen extends Screen {
-	private MultilineText message = MultilineText.EMPTY;
+	private static final Text TITLE = Text.translatable("outOfMemory.title");
+	private static final Text MESSAGE = Text.translatable("outOfMemory.message");
+	private static final int MAX_TEXT_WIDTH = 300;
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 
 	public OutOfMemoryScreen() {
-		super(Text.translatable("outOfMemory.title"));
+		super(TITLE);
 	}
 
 	@Override
 	protected void init() {
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.TO_TITLE, button -> this.client.setScreen(new TitleScreen()))
-				.dimensions(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20)
-				.build()
-		);
-		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop())
-				.dimensions(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20)
-				.build()
-		);
-		this.message = MultilineText.create(this.textRenderer, Text.translatable("outOfMemory.message"), 295);
+		this.layout.addHeader(TITLE, this.textRenderer);
+		this.layout.addBody(new NarratedMultilineTextWidget(300, MESSAGE, this.textRenderer));
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.TO_TITLE, button -> this.client.setScreen(new TitleScreen())).build());
+		directionalLayoutWidget.add(ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop()).build());
+		this.layout.forEachChild(this::addDrawableChild);
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
 	}
 
 	@Override
 	public boolean shouldCloseOnEsc() {
 		return false;
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, this.height / 4 - 60 + 20, 16777215);
-		this.message.drawWithShadow(context, this.width / 2 - 145, this.height / 4, 9, 10526880);
 	}
 }

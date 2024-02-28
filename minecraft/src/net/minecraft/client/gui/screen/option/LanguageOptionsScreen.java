@@ -7,6 +7,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.resource.language.LanguageDefinition;
@@ -20,6 +22,7 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class LanguageOptionsScreen extends GameOptionsScreen {
 	private static final Text LANGUAGE_WARNING_TEXT = Text.translatable("options.languageAccuracyWarning").formatted(Formatting.GRAY);
+	private static final int field_49497 = 53;
 	private LanguageOptionsScreen.LanguageSelectionListWidget languageSelectionList;
 	final LanguageManager languageManager;
 
@@ -31,14 +34,26 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	@Override
 	protected void init() {
 		this.languageSelectionList = this.addDrawableChild(new LanguageOptionsScreen.LanguageSelectionListWidget(this.client));
-		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("options.font"), button -> this.client.setScreen(new FontOptionsScreen(this, this.gameOptions)))
-				.dimensions(this.width / 2 - 155, this.height - 38, 150, 20)
-				.build()
+		this.layout.setFooterHeight(53);
+		super.init();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		super.initTabNavigation();
+		this.languageSelectionList.position(this.width, this.layout);
+	}
+
+	@Override
+	protected void initFooter() {
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.vertical()).spacing(8);
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
+		directionalLayoutWidget.add(new TextWidget(LANGUAGE_WARNING_TEXT, this.textRenderer));
+		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget2.add(
+			ButtonWidget.builder(Text.translatable("options.font"), buttonWidget -> this.client.setScreen(new FontOptionsScreen(this, this.gameOptions))).build()
 		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.DONE, button -> this.onDone()).dimensions(this.width / 2 - 155 + 160, this.height - 38, 150, 20).build()
-		);
+		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).build());
 	}
 
 	void onDone() {
@@ -67,22 +82,10 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
-		context.drawCenteredTextWithShadow(this.textRenderer, LANGUAGE_WARNING_TEXT, this.width / 2, this.height - 56, Colors.GRAY);
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
-	}
-
 	@Environment(EnvType.CLIENT)
 	class LanguageSelectionListWidget extends AlwaysSelectedEntryListWidget<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
 		public LanguageSelectionListWidget(MinecraftClient client) {
-			super(client, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height - 93, 32, 18);
+			super(client, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height - 33 - 53, 33, 18);
 			String string = LanguageOptionsScreen.this.languageManager.getLanguage();
 			LanguageOptionsScreen.this.languageManager
 				.getAllLanguages()
@@ -100,11 +103,6 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			if (this.getSelectedOrNull() != null) {
 				this.centerScrollOn(this.getSelectedOrNull());
 			}
-		}
-
-		@Override
-		protected int getScrollbarPositionX() {
-			return super.getScrollbarPositionX() + 20;
 		}
 
 		@Override
@@ -126,7 +124,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				context.drawCenteredTextWithShadow(
-					LanguageOptionsScreen.this.textRenderer, this.languageDefinition, LanguageSelectionListWidget.this.width / 2, y + 1, 16777215
+					LanguageOptionsScreen.this.textRenderer, this.languageDefinition, LanguageSelectionListWidget.this.width / 2, y + 1, Colors.WHITE
 				);
 			}
 
@@ -138,7 +136,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 				}
 
 				this.clickTime = Util.getMeasuringTimeMs();
-				return true;
+				return super.mouseClicked(mouseX, mouseY, button);
 			}
 
 			void onPressed() {

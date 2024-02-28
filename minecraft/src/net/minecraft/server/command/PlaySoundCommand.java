@@ -7,6 +7,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
@@ -26,7 +28,19 @@ public class PlaySoundCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = CommandManager.argument("sound", IdentifierArgumentType.identifier())
-			.suggests(SuggestionProviders.AVAILABLE_SOUNDS);
+			.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
+			.executes(
+				context -> execute(
+						context.getSource(),
+						toList(context.getSource().getPlayer()),
+						IdentifierArgumentType.getIdentifier(context, "sound"),
+						SoundCategory.MASTER,
+						context.getSource().getPosition(),
+						1.0F,
+						1.0F,
+						0.0F
+					)
+			);
 
 		for (SoundCategory soundCategory : SoundCategory.values()) {
 			requiredArgumentBuilder.then(makeArgumentsForCategory(soundCategory));
@@ -37,6 +51,18 @@ public class PlaySoundCommand {
 
 	private static LiteralArgumentBuilder<ServerCommandSource> makeArgumentsForCategory(SoundCategory category) {
 		return CommandManager.literal(category.getName())
+			.executes(
+				context -> execute(
+						context.getSource(),
+						toList(context.getSource().getPlayer()),
+						IdentifierArgumentType.getIdentifier(context, "sound"),
+						category,
+						context.getSource().getPosition(),
+						1.0F,
+						1.0F,
+						0.0F
+					)
+			)
 			.then(
 				CommandManager.argument("targets", EntityArgumentType.players())
 					.executes(
@@ -112,6 +138,10 @@ public class PlaySoundCommand {
 							)
 					)
 			);
+	}
+
+	private static Collection<ServerPlayerEntity> toList(@Nullable ServerPlayerEntity player) {
+		return player != null ? List.of(player) : List.of();
 	}
 
 	private static int execute(

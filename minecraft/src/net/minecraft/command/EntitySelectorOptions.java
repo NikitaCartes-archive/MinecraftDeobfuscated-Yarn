@@ -313,10 +313,10 @@ public class EntitySelectorOptions {
 				NbtCompound nbtCompound = new StringNbtReader(reader.getReader()).parseCompound();
 				reader.setPredicate(entity -> {
 					NbtCompound nbtCompound2 = entity.writeNbt(new NbtCompound());
-					if (entity instanceof ServerPlayerEntity) {
-						ItemStack itemStack = ((ServerPlayerEntity)entity).getInventory().getMainHandStack();
+					if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+						ItemStack itemStack = serverPlayerEntity.getInventory().getMainHandStack();
 						if (!itemStack.isEmpty()) {
-							nbtCompound2.put("SelectedItem", itemStack.writeNbt(new NbtCompound()));
+							nbtCompound2.put("SelectedItem", itemStack.encode(serverPlayerEntity.getRegistryManager()));
 						}
 					}
 

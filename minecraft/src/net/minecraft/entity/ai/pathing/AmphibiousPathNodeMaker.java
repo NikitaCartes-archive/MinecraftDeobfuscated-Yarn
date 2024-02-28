@@ -5,7 +5,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
@@ -95,12 +94,14 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	}
 
 	@Override
-	public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		PathNodeType pathNodeType = getCommonNodeType(world, mutable.set(x, y, z));
+	public PathNodeType getDefaultNodeType(PathContext context, int x, int y, int z) {
+		PathNodeType pathNodeType = context.getNodeType(x, y, z);
 		if (pathNodeType == PathNodeType.WATER) {
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
 			for (Direction direction : Direction.values()) {
-				PathNodeType pathNodeType2 = getCommonNodeType(world, mutable.set(x, y, z).move(direction));
+				mutable.set(x, y, z).move(direction);
+				PathNodeType pathNodeType2 = context.getNodeType(mutable.getX(), mutable.getY(), mutable.getZ());
 				if (pathNodeType2 == PathNodeType.BLOCKED) {
 					return PathNodeType.WATER_BORDER;
 				}
@@ -108,7 +109,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 			return PathNodeType.WATER;
 		} else {
-			return getLandNodeType(world, mutable);
+			return super.getDefaultNodeType(context, x, y, z);
 		}
 	}
 }

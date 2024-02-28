@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.ResourceIndex;
 import net.minecraft.client.session.Session;
-import net.minecraft.util.Util;
+import net.minecraft.util.StringHelper;
 
 @Environment(EnvType.CLIENT)
 public class RunArgs {
@@ -82,7 +82,7 @@ public class RunArgs {
 	@Environment(EnvType.CLIENT)
 	public static record QuickPlay(@Nullable String path, @Nullable String singleplayer, @Nullable String multiplayer, @Nullable String realms) {
 		public boolean isEnabled() {
-			return !Util.isBlank(this.singleplayer) || !Util.isBlank(this.multiplayer) || !Util.isBlank(this.realms);
+			return !StringHelper.isBlank(this.singleplayer) || !StringHelper.isBlank(this.multiplayer) || !StringHelper.isBlank(this.realms);
 		}
 	}
 }

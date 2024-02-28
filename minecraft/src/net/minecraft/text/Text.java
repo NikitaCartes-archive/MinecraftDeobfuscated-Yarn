@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -306,49 +307,51 @@ public interface Text extends Message, StringVisitable {
 		private Serialization() {
 		}
 
-		static MutableText fromJson(JsonElement json) {
-			return (MutableText)Util.getResult(TextCodecs.CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new);
+		static MutableText fromJson(JsonElement json, RegistryWrapper.WrapperLookup registries) {
+			return (MutableText)Util.getResult(TextCodecs.CODEC.parse(registries.getOps(JsonOps.INSTANCE), json), JsonParseException::new);
 		}
 
-		static JsonElement toJson(Text text) {
-			return Util.getResult(TextCodecs.CODEC.encodeStart(JsonOps.INSTANCE, text), JsonParseException::new);
+		static JsonElement toJson(Text text, RegistryWrapper.WrapperLookup registries) {
+			return Util.getResult(TextCodecs.CODEC.encodeStart(registries.getOps(JsonOps.INSTANCE), text), JsonParseException::new);
 		}
 
-		public static String toJsonString(Text text) {
-			return GSON.toJson(toJson(text));
-		}
-
-		public static JsonElement toJsonTree(Text text) {
-			return toJson(text);
+		public static String toJsonString(Text text, RegistryWrapper.WrapperLookup registries) {
+			return GSON.toJson(toJson(text, registries));
 		}
 
 		@Nullable
-		public static MutableText fromJson(String json) {
+		public static MutableText fromJson(String json, RegistryWrapper.WrapperLookup registries) {
 			JsonElement jsonElement = JsonParser.parseString(json);
-			return jsonElement == null ? null : fromJson(jsonElement);
+			return jsonElement == null ? null : fromJson(jsonElement, registries);
 		}
 
 		@Nullable
-		public static MutableText fromJsonTree(@Nullable JsonElement json) {
-			return json == null ? null : fromJson(json);
+		public static MutableText fromJsonTree(@Nullable JsonElement json, RegistryWrapper.WrapperLookup registries) {
+			return json == null ? null : fromJson(json, registries);
 		}
 
 		@Nullable
-		public static MutableText fromLenientJson(String json) {
+		public static MutableText fromLenientJson(String json, RegistryWrapper.WrapperLookup registries) {
 			JsonReader jsonReader = new JsonReader(new StringReader(json));
 			jsonReader.setLenient(true);
 			JsonElement jsonElement = JsonParser.parseReader(jsonReader);
-			return jsonElement == null ? null : fromJson(jsonElement);
+			return jsonElement == null ? null : fromJson(jsonElement, registries);
 		}
 	}
 
 	public static class Serializer implements JsonDeserializer<MutableText>, JsonSerializer<Text> {
+		private final RegistryWrapper.WrapperLookup registries;
+
+		public Serializer(RegistryWrapper.WrapperLookup registries) {
+			this.registries = registries;
+		}
+
 		public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			return Text.Serialization.fromJson(jsonElement);
+			return Text.Serialization.fromJson(jsonElement, this.registries);
 		}
 
 		public JsonElement serialize(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
-			return Text.Serialization.toJson(text);
+			return Text.Serialization.toJson(text, this.registries);
 		}
 	}
 }

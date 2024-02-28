@@ -132,6 +132,16 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 		return RaycastContext.ShapeType.OUTLINE;
 	}
 
+	@Override
+	public void tick() {
+		if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
+			this.createExplosion();
+			this.discard();
+		} else {
+			super.tick();
+		}
+	}
+
 	public static class WindChargeExplosionBehavior extends ExplosionBehavior {
 		@Override
 		public boolean shouldDamage(Explosion explosion, Entity entity) {

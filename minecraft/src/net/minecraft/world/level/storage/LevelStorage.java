@@ -87,6 +87,7 @@ public class LevelStorage {
 	private static final PathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = path -> false;
 	public static final String ALLOWED_SYMLINKS_FILE_NAME = "allowed_symlinks.txt";
 	private static final int MAX_LEVEL_DATA_SIZE = 104857600;
+	private static final int RECOMMENDED_USABLE_SPACE_BYTES = 67108864;
 	private final Path savesDirectory;
 	private final Path backupsDirectory;
 	final DataFixer dataFixer;
@@ -420,6 +421,7 @@ public class LevelStorage {
 	}
 
 	public static record LevelSave(Path path) {
+
 		public String getRootPath() {
 			return this.path.getFileName().toString();
 		}
@@ -463,6 +465,18 @@ public class LevelStorage {
 			this.directoryName = directoryName;
 			this.directory = new LevelStorage.LevelSave(path);
 			this.lock = SessionLock.create(path);
+		}
+
+		public long getUsableSpace() {
+			try {
+				return Files.getFileStore(this.directory.path).getUsableSpace();
+			} catch (Exception var2) {
+				return Long.MAX_VALUE;
+			}
+		}
+
+		public boolean shouldShowLowDiskSpaceWarning() {
+			return this.getUsableSpace() < 67108864L;
 		}
 
 		public void tryClose() {

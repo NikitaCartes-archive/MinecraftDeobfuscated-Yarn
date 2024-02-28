@@ -84,6 +84,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class GameRenderer implements AutoCloseable {
 	private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
+	private static final Identifier BLUR_PROCESSOR = new Identifier("shaders/post/blur.json");
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final boolean field_32688 = false;
 	/**
@@ -125,6 +126,8 @@ public class GameRenderer implements AutoCloseable {
 	private float floatingItemHeight;
 	@Nullable
 	PostEffectProcessor postProcessor;
+	@Nullable
+	private PostEffectProcessor blurPostProcessor;
 	static final Identifier[] SUPER_SECRET_SETTING_PROGRAMS = new Identifier[]{
 		new Identifier("shaders/post/notch.json"),
 		new Identifier("shaders/post/fxaa.json"),
@@ -144,7 +147,7 @@ public class GameRenderer implements AutoCloseable {
 		new Identifier("shaders/post/bits.json"),
 		new Identifier("shaders/post/desaturate.json"),
 		new Identifier("shaders/post/green.json"),
-		new Identifier("shaders/post/blur.json"),
+		BLUR_PROCESSOR,
 		new Identifier("shaders/post/wobble.json"),
 		new Identifier("shaders/post/blobs.json"),
 		new Identifier("shaders/post/antialias.json"),
@@ -371,6 +374,30 @@ public class GameRenderer implements AutoCloseable {
 			LOGGER.warn("Failed to parse shader: {}", id, var4);
 			this.superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
 			this.postProcessorEnabled = false;
+		}
+	}
+
+	public void loadBlurPostProcessor() {
+		if (this.blurPostProcessor != null) {
+			this.blurPostProcessor.close();
+		}
+
+		try {
+			this.blurPostProcessor = new PostEffectProcessor(this.client.getTextureManager(), this.resourceManager, this.client.getFramebuffer(), BLUR_PROCESSOR);
+			this.blurPostProcessor.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
+		} catch (IOException var2) {
+			LOGGER.warn("Failed to load shader: {}", BLUR_PROCESSOR, var2);
+		} catch (JsonSyntaxException var3) {
+			LOGGER.warn("Failed to parse shader: {}", BLUR_PROCESSOR, var3);
+		}
+	}
+
+	public void renderBlur(float delta) {
+		if (this.blurPostProcessor != null) {
+			this.blurPostProcessor.setUniforms("Alpha", (float)this.client.options.getMenuBackgroundBlurrinessValue());
+			RenderSystem.enableBlend();
+			this.blurPostProcessor.render(delta);
+			RenderSystem.disableBlend();
 		}
 	}
 
@@ -697,6 +724,7 @@ public class GameRenderer implements AutoCloseable {
 					program -> renderTypeBreezeWindProgram = program
 				)
 			);
+			this.loadBlurPostProcessor();
 		} catch (IOException var5) {
 			list2.forEach(pair -> ((ShaderProgram)pair.getFirst()).close());
 			throw new RuntimeException("could not reload shaders", var5);
@@ -760,6 +788,10 @@ public class GameRenderer implements AutoCloseable {
 	public void onResized(int width, int height) {
 		if (this.postProcessor != null) {
 			this.postProcessor.setupDimensions(width, height);
+		}
+
+		if (this.blurPostProcessor != null) {
+			this.blurPostProcessor.setupDimensions(width, height);
 		}
 
 		this.client.worldRenderer.onResized(width, height);
@@ -1153,7 +1185,7 @@ public class GameRenderer implements AutoCloseable {
 					} else {
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
 						Registry<Block> registry = this.client.world.getRegistryManager().get(RegistryKeys.BLOCK);
-						bl = !itemStack.isEmpty() && (itemStack.canDestroy(registry, cachedBlockPosition) || itemStack.canPlaceOn(registry, cachedBlockPosition));
+						bl = !itemStack.isEmpty() && (itemStack.canBreak(cachedBlockPosition) || itemStack.canPlaceOn(cachedBlockPosition));
 					}
 				}
 			}

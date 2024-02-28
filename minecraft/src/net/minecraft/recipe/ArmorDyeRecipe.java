@@ -2,9 +2,9 @@ package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -65,7 +65,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 			}
 		}
 
-		return !itemStack.isEmpty() && !list.isEmpty() ? DyeableItem.blendAndSetColor(itemStack, list) : ItemStack.EMPTY;
+		return !itemStack.isEmpty() && !list.isEmpty() ? DyedColorComponent.setColor(itemStack, list) : ItemStack.EMPTY;
 	}
 
 	@Override

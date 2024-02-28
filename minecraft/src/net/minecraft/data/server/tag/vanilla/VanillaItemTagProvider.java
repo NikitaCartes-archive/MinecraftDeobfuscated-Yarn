@@ -395,6 +395,6 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.add(Items.CARVED_PUMPKIN)
 			.addTag(ItemTags.SKULLS);
 		this.getOrCreateTagBuilder(ItemTags.DYEABLE)
-			.add(Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS, Items.LEATHER_HORSE_ARMOR);
+			.add(Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS, Items.LEATHER_HORSE_ARMOR, Items.WOLF_ARMOR);
 	}
 }

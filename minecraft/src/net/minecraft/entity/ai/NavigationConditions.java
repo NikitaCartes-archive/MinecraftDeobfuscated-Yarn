@@ -35,7 +35,7 @@ public class NavigationConditions {
 	}
 
 	public static boolean hasPathfindingPenalty(PathAwareEntity entity, BlockPos pos) {
-		return entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(entity.getWorld(), pos.mutableCopy())) != 0.0F;
+		return entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(entity, pos)) != 0.0F;
 	}
 
 	public static boolean isSolidAt(PathAwareEntity entity, BlockPos pos) {

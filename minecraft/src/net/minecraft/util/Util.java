@@ -1,6 +1,8 @@
 package net.minecraft.util;
 
 import com.google.common.base.Ticker;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -75,6 +77,7 @@ import javax.annotation.Nullable;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.Schemas;
+import net.minecraft.registry.Registry;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -101,7 +104,7 @@ public class Util {
 	 * as the format string. Example: {@code 2022-01-01_00.00.00}
 	 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
-	private static final int field_46220 = 8;
+	public static final int field_46220 = 8;
 	public static final long field_45714 = 1000000L;
 	public static TimeSupplier.Nanoseconds nanoTimeSupplier = System::nanoTime;
 	public static final Ticker TICKER = new Ticker() {
@@ -361,6 +364,11 @@ public class Util {
 
 			return var4;
 		} : supplier;
+	}
+
+	public static <T> String registryValueToString(Registry<T> registry, T value) {
+		Identifier identifier = registry.getId(value);
+		return identifier == null ? "[unregistered]" : identifier.toString();
 	}
 
 	public static <T> Predicate<T> allOf(List<? extends Predicate<T>> predicates) {
@@ -1161,22 +1169,12 @@ public class Util {
 		}
 	}
 
-	/**
-	 * {@return whether {@code c} represents a space character}
-	 * 
-	 * @see Character#isWhitespace
-	 * @see Character#isSpaceChar
-	 */
-	public static boolean isWhitespace(int c) {
-		return Character.isWhitespace(c) || Character.isSpaceChar(c);
+	public static <T> List<T> listWith(List<T> list, T valueToAppend) {
+		return ImmutableList.<T>builderWithExpectedSize(list.size() + 1).addAll(list).add(valueToAppend).build();
 	}
 
-	/**
-	 * {@return whether {@code string} is {@code null}, empty, or composed entirely
-	 * of {@linkplain #isWhitespace} spaces}
-	 */
-	public static boolean isBlank(@Nullable String string) {
-		return string != null && string.length() != 0 ? string.chars().allMatch(Util::isWhitespace) : true;
+	public static <K, V> Map<K, V> mapWith(Map<K, V> map, K keyToAppend, V valueToAppend) {
+		return ImmutableMap.<K, V>builderWithExpectedSize(map.size() + 1).putAll(map).put(keyToAppend, valueToAppend).buildKeepingLast();
 	}
 
 	/**

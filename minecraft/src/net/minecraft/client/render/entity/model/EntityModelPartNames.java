@@ -320,6 +320,7 @@ public class EntityModelPartNames {
 	 * The key of a rods model part, whose value is {@value}.
 	 */
 	public static final String RODS = "rods";
+	public static final String field_49564 = "mushrooms";
 	/**
 	 * The key of a bone model part, whose value is {@value}.
 	 */

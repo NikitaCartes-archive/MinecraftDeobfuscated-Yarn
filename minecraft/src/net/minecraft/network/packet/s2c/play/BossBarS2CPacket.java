@@ -134,7 +134,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		private AddAction(RegistryByteBuf buf) {
-			this.name = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
+			this.name = TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.decode(buf);
 			this.percent = buf.readFloat();
 			this.color = buf.readEnumConstant(BossBar.Color.class);
 			this.style = buf.readEnumConstant(BossBar.Style.class);
@@ -156,7 +156,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		@Override
 		public void toPacket(RegistryByteBuf buf) {
-			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.name);
+			TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.encode(buf, this.name);
 			buf.writeFloat(this.percent);
 			buf.writeEnumConstant(this.color);
 			buf.writeEnumConstant(this.style);
@@ -201,7 +201,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	static record UpdateNameAction(Text name) implements BossBarS2CPacket.Action {
 		private UpdateNameAction(RegistryByteBuf buf) {
-			this(TextCodecs.REGISTRY_PACKET_CODEC.decode(buf));
+			this(TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.decode(buf));
 		}
 
 		@Override
@@ -216,7 +216,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		@Override
 		public void toPacket(RegistryByteBuf buf) {
-			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.name);
+			TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.encode(buf, this.name);
 		}
 	}
 

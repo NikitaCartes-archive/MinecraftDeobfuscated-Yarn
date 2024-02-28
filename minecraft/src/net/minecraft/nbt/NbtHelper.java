@@ -181,20 +181,27 @@ public final class NbtHelper {
 			return false;
 		} else if (standard instanceof NbtCompound nbtCompound) {
 			NbtCompound nbtCompound2 = (NbtCompound)subject;
-
-			for (String string : nbtCompound.getKeys()) {
-				NbtElement nbtElement = nbtCompound.get(string);
-				if (!matches(nbtElement, nbtCompound2.get(string), ignoreListOrder)) {
-					return false;
+			if (nbtCompound2.getSize() < nbtCompound.getSize()) {
+				return false;
+			} else {
+				for (String string : nbtCompound.getKeys()) {
+					NbtElement nbtElement = nbtCompound.get(string);
+					if (!matches(nbtElement, nbtCompound2.get(string), ignoreListOrder)) {
+						return false;
+					}
 				}
-			}
 
-			return true;
+				return true;
+			}
 		} else {
 			if (standard instanceof NbtList nbtList && ignoreListOrder) {
 				NbtList nbtList2 = (NbtList)subject;
 				if (nbtList.isEmpty()) {
 					return nbtList2.isEmpty();
+				}
+
+				if (nbtList2.size() < nbtList.size()) {
+					return false;
 				}
 
 				for (NbtElement nbtElement2 : nbtList) {

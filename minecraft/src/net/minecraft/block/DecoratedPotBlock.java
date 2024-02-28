@@ -5,20 +5,21 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.block.entity.Sherds;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
@@ -99,7 +100,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 				return ItemActionResult.CONSUME;
 			} else {
 				ItemStack itemStack = decoratedPotBlockEntity.getStack();
-				if (!stack.isEmpty() && (itemStack.isEmpty() || ItemStack.areItemsAndNbtEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount())) {
+				if (!stack.isEmpty() && (itemStack.isEmpty() || ItemStack.areItemsAndComponentsEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount())) {
 					decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.POSITIVE);
 					player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 					ItemStack itemStack2 = player.isCreative() ? stack.copyWithCount(1) : stack.split(1);
@@ -142,14 +143,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		if (world.isClient) {
-			world.getBlockEntity(pos, BlockEntityType.DECORATED_POT).ifPresent(blockEntity -> blockEntity.readNbtFromStack(itemStack));
-		}
-	}
-
-	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		return false;
 	}
 
@@ -179,7 +173,11 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
 		BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
-			builder.addDynamicDrop(SHERDS_DYNAMIC_DROP_ID, lootConsumer -> decoratedPotBlockEntity.getSherds().stream().map(Item::getDefaultStack).forEach(lootConsumer));
+			builder.addDynamicDrop(SHERDS_DYNAMIC_DROP_ID, lootConsumer -> {
+				for (Item item : decoratedPotBlockEntity.getSherds().stream()) {
+					lootConsumer.accept(item.getDefaultStack());
+				}
+			});
 		}
 
 		return super.getDroppedStacks(state, builder);
@@ -212,11 +210,11 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
 	) {
 		super.appendTooltip(stack, world, tooltip, options, registryManager);
-		DecoratedPotBlockEntity.Sherds sherds = DecoratedPotBlockEntity.Sherds.fromNbt(BlockItem.getBlockEntityNbt(stack));
-		if (!sherds.equals(DecoratedPotBlockEntity.Sherds.DEFAULT)) {
+		Sherds sherds = stack.getOrDefault(DataComponentTypes.POT_DECORATIONS, Sherds.DEFAULT);
+		if (!sherds.equals(Sherds.DEFAULT)) {
 			tooltip.add(ScreenTexts.EMPTY);
 			Stream.of(sherds.front(), sherds.left(), sherds.right(), sherds.back())
-				.forEach(sherd -> tooltip.add(new ItemStack(sherd, 1).getName().copyContentOnly().formatted(Formatting.GRAY)));
+				.forEach(sherd -> tooltip.add(new ItemStack((ItemConvertible)sherd.orElse(Items.BRICK), 1).getName().copyContentOnly().formatted(Formatting.GRAY)));
 		}
 	}
 

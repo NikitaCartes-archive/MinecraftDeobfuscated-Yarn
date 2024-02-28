@@ -26,6 +26,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.PathUtil;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.MathHelper;
@@ -73,7 +74,7 @@ public class EditWorldScreen extends Screen {
 			ButtonWidget.builder(SAVE_TEXT, button -> this.commit(this.nameFieldWidget.getText())).width(98).build()
 		);
 		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).width(98).build());
-		this.nameFieldWidget.setChangedListener(name -> buttonWidget.active = !Util.isBlank(name));
+		this.nameFieldWidget.setChangedListener(name -> buttonWidget.active = !StringHelper.isBlank(name));
 		this.layout.add(ButtonWidget.builder(RESET_ICON_TEXT, buttonWidgetx -> {
 			session.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
 			buttonWidgetx.active = false;

@@ -93,7 +93,6 @@ public class GameOptions {
 	public static final int field_32154 = 16;
 	public static final int field_32155 = 32;
 	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
-	private static final float field_32151 = 1.0F;
 	public static final String EMPTY_STRING = "";
 	private static final Text DARK_MOJANG_STUDIOS_BACKGROUND_COLOR_TOOLTIP = Text.translatable("options.darkMojangStudiosBackgroundColor.tooltip");
 	private final SimpleOption<Boolean> monochromeLogo = SimpleOption.ofBoolean(
@@ -235,6 +234,17 @@ public class GameOptions {
 	);
 	private final SimpleOption<Double> chatLineSpacing = new SimpleOption<>(
 		"options.chat.line_spacing", SimpleOption.emptyTooltip(), GameOptions::getPercentValueText, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.0, value -> {
+		}
+	);
+	private static final Text MENU_BACKGROUND_BLURRINESS_TOOLTIP = Text.translatable("options.accessibility.menu_background_blurriness.tooltip");
+	private static final double DEFAULT_MENU_BACKGROUND_BLURRINESS = 0.5;
+	private final SimpleOption<Double> menuBackgroundBlurriness = new SimpleOption<>(
+		"options.accessibility.menu_background_blurriness",
+		SimpleOption.constantTooltip(MENU_BACKGROUND_BLURRINESS_TOOLTIP),
+		GameOptions::getPercentValueText,
+		SimpleOption.DoubleSliderCallbacks.INSTANCE,
+		0.5,
+		double_ -> {
 		}
 	);
 	private final SimpleOption<Double> textBackgroundOpacity = new SimpleOption<>(
@@ -914,6 +924,14 @@ public class GameOptions {
 		return this.chatLineSpacing;
 	}
 
+	public SimpleOption<Double> getMenuBackgroundBlurriness() {
+		return this.menuBackgroundBlurriness;
+	}
+
+	public double getMenuBackgroundBlurrinessValue() {
+		return this.getMenuBackgroundBlurriness().getValue();
+	}
+
 	public SimpleOption<Double> getTextBackgroundOpacity() {
 		return this.textBackgroundOpacity;
 	}
@@ -1309,6 +1327,7 @@ public class GameOptions {
 		visitor.accept("panoramaScrollSpeed", this.panoramaSpeed);
 		visitor.accept("telemetryOptInExtra", this.telemetryOptInExtra);
 		this.onboardAccessibility = visitor.visitBoolean("onboardAccessibility", this.onboardAccessibility);
+		visitor.accept("menuBackgroundBlurriness", this.menuBackgroundBlurriness);
 
 		for (KeyBinding keyBinding : this.allKeys) {
 			String string = keyBinding.getBoundKeyTranslationKey();

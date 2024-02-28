@@ -2,13 +2,15 @@ package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -77,36 +79,42 @@ public class BrewingRecipeRegistry {
 	}
 
 	protected static boolean hasPotionRecipe(ItemStack input, ItemStack ingredient) {
-		RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(input);
-
-		for (BrewingRecipeRegistry.Recipe<Potion> recipe : POTION_RECIPES) {
-			if (recipe.from.matches(registryEntry) && recipe.ingredient.test(ingredient)) {
-				return true;
+		Optional<RegistryEntry<Potion>> optional = input.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).potion();
+		if (optional.isEmpty()) {
+			return false;
+		} else {
+			for (BrewingRecipeRegistry.Recipe<Potion> recipe : POTION_RECIPES) {
+				if (recipe.from.matches((RegistryEntry<Potion>)optional.get()) && recipe.ingredient.test(ingredient)) {
+					return true;
+				}
 			}
-		}
 
-		return false;
+			return false;
+		}
 	}
 
 	public static ItemStack craft(ItemStack ingredient, ItemStack input) {
 		if (input.isEmpty()) {
 			return input;
 		} else {
-			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(input);
-
-			for (BrewingRecipeRegistry.Recipe<Item> recipe : ITEM_RECIPES) {
-				if (input.itemMatches(recipe.from) && recipe.ingredient.test(ingredient)) {
-					return PotionUtil.setPotion(new ItemStack(recipe.to), registryEntry);
+			Optional<RegistryEntry<Potion>> optional = input.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).potion();
+			if (optional.isEmpty()) {
+				return input;
+			} else {
+				for (BrewingRecipeRegistry.Recipe<Item> recipe : ITEM_RECIPES) {
+					if (input.itemMatches(recipe.from) && recipe.ingredient.test(ingredient)) {
+						return PotionContentsComponent.createStack(recipe.to.value(), (RegistryEntry<Potion>)optional.get());
+					}
 				}
-			}
 
-			for (BrewingRecipeRegistry.Recipe<Potion> recipex : POTION_RECIPES) {
-				if (recipex.from.matches(registryEntry) && recipex.ingredient.test(ingredient)) {
-					return PotionUtil.setPotion(new ItemStack(input.getItem()), recipex.to);
+				for (BrewingRecipeRegistry.Recipe<Potion> recipex : POTION_RECIPES) {
+					if (recipex.from.matches((RegistryEntry<Potion>)optional.get()) && recipex.ingredient.test(ingredient)) {
+						return PotionContentsComponent.createStack(input.getItem(), recipex.to);
+					}
 				}
-			}
 
-			return input;
+				return input;
+			}
 		}
 	}
 

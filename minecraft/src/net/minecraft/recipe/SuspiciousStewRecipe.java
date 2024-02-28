@@ -2,10 +2,10 @@ package net.minecraft.recipe;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SuspiciousStewIngredient;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.ItemTags;
@@ -52,7 +52,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 			if (!itemStack2.isEmpty()) {
 				SuspiciousStewIngredient suspiciousStewIngredient = SuspiciousStewIngredient.of(itemStack2.getItem());
 				if (suspiciousStewIngredient != null) {
-					SuspiciousStewItem.writeEffectsToStew(itemStack, suspiciousStewIngredient.getStewEffects());
+					itemStack.set(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, suspiciousStewIngredient.getStewEffects());
 					break;
 				}
 			}

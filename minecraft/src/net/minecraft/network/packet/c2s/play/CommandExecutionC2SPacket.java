@@ -18,7 +18,7 @@ import net.minecraft.network.packet.PlayPackets;
  * it will reject the message and disconnect the client.
  * 
  * <p>If the command contains an invalid character (see {@link
- * net.minecraft.SharedConstants#isValidChar}) or if the server receives
+ * net.minecraft.util.StringHelper#isValidChar}) or if the server receives
  * the commands in improper order, the server will reject the command and disconnect
  * the client.
  * 

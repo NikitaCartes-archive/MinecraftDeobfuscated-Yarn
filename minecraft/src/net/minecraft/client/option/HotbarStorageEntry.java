@@ -32,7 +32,7 @@ public class HotbarStorageEntry {
 		.xmap(HotbarStorageEntry::new, entry -> entry.stacks);
 	private static final DynamicOps<NbtElement> NBT_OPS = NbtOps.INSTANCE;
 	private static final Dynamic<?> EMPTY_STACK = new Dynamic<>(
-		NBT_OPS, Util.getResult(ItemStack.CODEC.encodeStart(NBT_OPS, ItemStack.EMPTY), IllegalStateException::new)
+		NBT_OPS, Util.getResult(ItemStack.OPTIONAL_CODEC.encodeStart(NBT_OPS, ItemStack.EMPTY), IllegalStateException::new)
 	);
 	private List<Dynamic<?>> stacks;
 
@@ -48,7 +48,7 @@ public class HotbarStorageEntry {
 		return this.stacks
 			.stream()
 			.map(
-				stack -> (ItemStack)ItemStack.CODEC
+				stack -> (ItemStack)ItemStack.OPTIONAL_CODEC
 						.parse(RegistryOps.withRegistry(stack, registryLookup))
 						.resultOrPartial(error -> LOGGER.warn("Could not parse hotbar item: {}", error))
 						.orElse(ItemStack.EMPTY)
@@ -62,7 +62,7 @@ public class HotbarStorageEntry {
 
 		for (int i = 0; i < HOTBAR_SIZE; i++) {
 			ItemStack itemStack = playerInventory.getStack(i);
-			Optional<Dynamic<?>> optional = ItemStack.CODEC
+			Optional<Dynamic<?>> optional = ItemStack.OPTIONAL_CODEC
 				.encodeStart(registryOps, itemStack)
 				.resultOrPartial(error -> LOGGER.warn("Could not encode hotbar item: {}", error))
 				.map(nbt -> new Dynamic<>(NBT_OPS, nbt));

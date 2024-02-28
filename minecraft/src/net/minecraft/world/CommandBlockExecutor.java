@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
@@ -36,7 +37,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	@Nullable
 	private Text lastOutput;
 	private String command = "";
-	private Text customName = DEFAULT_NAME;
+	@Nullable
+	private Text customName;
 
 	public int getSuccessCount() {
 		return this.successCount;
@@ -50,13 +52,16 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.lastOutput == null ? ScreenTexts.EMPTY : this.lastOutput;
 	}
 
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		nbt.putString("Command", this.command);
 		nbt.putInt("SuccessCount", this.successCount);
-		nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName));
+		if (this.customName != null) {
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registries));
+		}
+
 		nbt.putBoolean("TrackOutput", this.trackOutput);
 		if (this.lastOutput != null && this.trackOutput) {
-			nbt.putString("LastOutput", Text.Serialization.toJsonString(this.lastOutput));
+			nbt.putString("LastOutput", Text.Serialization.toJsonString(this.lastOutput, registries));
 		}
 
 		nbt.putBoolean("UpdateLastExecution", this.updateLastExecution);
@@ -67,11 +72,13 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return nbt;
 	}
 
-	public void readNbt(NbtCompound nbt) {
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		this.command = nbt.getString("Command");
 		this.successCount = nbt.getInt("SuccessCount");
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.setCustomName(Text.Serialization.fromJson(nbt.getString("CustomName")));
+			this.setCustomName(Text.Serialization.fromJson(nbt.getString("CustomName"), registries));
+		} else {
+			this.setCustomName(null);
 		}
 
 		if (nbt.contains("TrackOutput", NbtElement.BYTE_TYPE)) {
@@ -80,9 +87,9 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 		if (nbt.contains("LastOutput", NbtElement.STRING_TYPE) && this.trackOutput) {
 			try {
-				this.lastOutput = Text.Serialization.fromJson(nbt.getString("LastOutput"));
-			} catch (Throwable var3) {
-				this.lastOutput = Text.literal(var3.getMessage());
+				this.lastOutput = Text.Serialization.fromJson(nbt.getString("LastOutput"), registries);
+			} catch (Throwable var4) {
+				this.lastOutput = Text.literal(var4.getMessage());
 			}
 		} else {
 			this.lastOutput = null;
@@ -121,8 +128,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			if (minecraftServer.areCommandBlocksEnabled() && !StringHelper.isEmpty(this.command)) {
 				try {
 					this.lastOutput = null;
-					ServerCommandSource serverCommandSource = this.getSource().withReturnValueConsumer((bl, i) -> {
-						if (bl) {
+					ServerCommandSource serverCommandSource = this.getSource().withReturnValueConsumer((successful, returnValue) -> {
+						if (successful) {
 							this.successCount++;
 						}
 					});
@@ -147,15 +154,16 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	public Text getCustomName() {
+		return this.customName != null ? this.customName : DEFAULT_NAME;
+	}
+
+	@Nullable
+	public Text getCustomNameNullable() {
 		return this.customName;
 	}
 
-	public void setCustomName(@Nullable Text name) {
-		if (name != null) {
-			this.customName = name;
-		} else {
-			this.customName = DEFAULT_NAME;
-		}
+	public void setCustomName(@Nullable Text customName) {
+		this.customName = customName;
 	}
 
 	@Override

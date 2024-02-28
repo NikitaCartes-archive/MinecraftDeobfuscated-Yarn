@@ -1,10 +1,14 @@
 package net.minecraft.text;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Encoder;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -12,14 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.component.ComponentChanges;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Uuids;
@@ -64,7 +72,7 @@ public class HoverEvent {
 	}
 
 	public static class Action<T> implements StringIdentifiable {
-		public static final HoverEvent.Action<Text> SHOW_TEXT = new HoverEvent.Action<>("show_text", true, TextCodecs.CODEC, DataResult::success);
+		public static final HoverEvent.Action<Text> SHOW_TEXT = new HoverEvent.Action<>("show_text", true, TextCodecs.CODEC, (text, ops) -> DataResult.success(text));
 		public static final HoverEvent.Action<HoverEvent.ItemStackContent> SHOW_ITEM = new HoverEvent.Action<>(
 			"show_item", true, HoverEvent.ItemStackContent.CODEC, HoverEvent.ItemStackContent::legacySerializer
 		);
@@ -80,15 +88,31 @@ public class HoverEvent {
 		final Codec<HoverEvent.EventData<T>> codec;
 		final Codec<HoverEvent.EventData<T>> legacyCodec;
 
-		public Action(String name, boolean parsable, Codec<T> contentCodec, Function<Text, DataResult<T>> legacySerializer) {
+		public Action(String name, boolean parsable, Codec<T> contentCodec, HoverEvent.LegacySerializer<T> legacySerializer) {
 			this.name = name;
 			this.parsable = parsable;
-			this.codec = contentCodec.<HoverEvent.EventData<T>>xmap(content -> new HoverEvent.EventData<>(this, (T)content), action -> action.value)
+			this.codec = contentCodec.<HoverEvent.EventData<T>>xmap(value -> new HoverEvent.EventData<>(this, (T)value), action -> action.value)
 				.fieldOf("contents")
 				.codec();
-			this.legacyCodec = Codec.of(
-				Encoder.error("Can't encode in legacy format"), TextCodecs.CODEC.flatMap(legacySerializer).map(text -> new HoverEvent.EventData<>(this, (T)text))
-			);
+			this.legacyCodec = new Codec<HoverEvent.EventData<T>>() {
+				@Override
+				public <D> DataResult<Pair<HoverEvent.EventData<T>, D>> decode(DynamicOps<D> ops, D input) {
+					return TextCodecs.CODEC.decode(ops, input).flatMap(pair -> {
+						DataResult<T> dataResult;
+						if (ops instanceof RegistryOps<D> registryOps) {
+							dataResult = legacySerializer.parse((Text)pair.getFirst(), registryOps);
+						} else {
+							dataResult = legacySerializer.parse((Text)pair.getFirst(), null);
+						}
+
+						return dataResult.map(value -> Pair.of(new HoverEvent.EventData<>(Action.this, value), pair.getSecond()));
+					});
+				}
+
+				public <D> DataResult<D> encode(HoverEvent.EventData<T> eventData, DynamicOps<D> dynamicOps, D object) {
+					return DataResult.error(() -> "Can't encode in legacy format");
+				}
+			};
 		}
 
 		public boolean isParsable() {
@@ -142,15 +166,16 @@ public class HoverEvent {
 			this.name = name;
 		}
 
-		public static DataResult<HoverEvent.EntityContent> legacySerializer(Text text) {
+		public static DataResult<HoverEvent.EntityContent> legacySerializer(Text text, @Nullable RegistryOps<?> ops) {
 			try {
 				NbtCompound nbtCompound = StringNbtReader.parse(text.getString());
-				Text text2 = Text.Serialization.fromJson(nbtCompound.getString("name"));
+				DynamicOps<JsonElement> dynamicOps = (DynamicOps<JsonElement>)(ops != null ? ops.withDelegate(JsonOps.INSTANCE) : JsonOps.INSTANCE);
+				DataResult<Text> dataResult = TextCodecs.CODEC.parse(dynamicOps, JsonParser.parseString(nbtCompound.getString("name")));
 				EntityType<?> entityType = Registries.ENTITY_TYPE.get(new Identifier(nbtCompound.getString("type")));
 				UUID uUID = UUID.fromString(nbtCompound.getString("id"));
-				return DataResult.success(new HoverEvent.EntityContent(entityType, uUID, text2));
-			} catch (Exception var5) {
-				return DataResult.error(() -> "Failed to parse tooltip: " + var5.getMessage());
+				return dataResult.map(textx -> new HoverEvent.EntityContent(entityType, uUID, textx));
+			} catch (Exception var7) {
+				return DataResult.error(() -> "Failed to parse tooltip: " + var7.getMessage());
 			}
 		}
 
@@ -191,34 +216,25 @@ public class HoverEvent {
 	}
 
 	public static class ItemStackContent {
-		public static final Codec<HoverEvent.ItemStackContent> ITEM_STACK_CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Registries.ITEM.getCodec().fieldOf("id").forGetter(content -> content.item),
-						Codecs.createStrictOptionalFieldCodec(Codec.INT, "count", 1).forGetter(content -> content.count),
-						Codecs.createStrictOptionalFieldCodec(StringNbtReader.STRINGIFIED_CODEC, "tag").forGetter(content -> content.nbt)
-					)
-					.apply(instance, HoverEvent.ItemStackContent::new)
-		);
-		public static final Codec<HoverEvent.ItemStackContent> CODEC = Codec.either(Registries.ITEM.getCodec(), ITEM_STACK_CODEC)
-			.xmap(either -> either.map(item -> new HoverEvent.ItemStackContent(item, 1, Optional.empty()), content -> content), Either::right);
-		private final Item item;
+		public static final Codec<HoverEvent.ItemStackContent> ITEM_STACK_CODEC = ItemStack.CODEC
+			.xmap(HoverEvent.ItemStackContent::new, HoverEvent.ItemStackContent::asStack);
+		private static final Codec<HoverEvent.ItemStackContent> ENTRY_BASED_CODEC = ItemStack.REGISTRY_ENTRY_CODEC
+			.xmap(HoverEvent.ItemStackContent::new, HoverEvent.ItemStackContent::asStack);
+		public static final Codec<HoverEvent.ItemStackContent> CODEC = Codecs.alternatively(ITEM_STACK_CODEC, ENTRY_BASED_CODEC);
+		private final RegistryEntry<Item> item;
 		private final int count;
-		private final Optional<NbtCompound> nbt;
+		private final ComponentChanges changes;
 		@Nullable
 		private ItemStack stack;
 
-		ItemStackContent(Item item, int count, @Nullable NbtCompound nbt) {
-			this(item, count, Optional.ofNullable(nbt));
-		}
-
-		ItemStackContent(Item item, int count, Optional<NbtCompound> nbt) {
+		ItemStackContent(RegistryEntry<Item> item, int count, ComponentChanges changes) {
 			this.item = item;
 			this.count = count;
-			this.nbt = nbt;
+			this.changes = changes;
 		}
 
 		public ItemStackContent(ItemStack stack) {
-			this(stack.getItem(), stack.getCount(), stack.getNbt() != null ? Optional.of(stack.getNbt().copy()) : Optional.empty());
+			this(stack.getRegistryEntry(), stack.getCount(), stack.getComponentChanges());
 		}
 
 		public boolean equals(Object o) {
@@ -226,7 +242,7 @@ public class HoverEvent {
 				return true;
 			} else if (o != null && this.getClass() == o.getClass()) {
 				HoverEvent.ItemStackContent itemStackContent = (HoverEvent.ItemStackContent)o;
-				return this.count == itemStackContent.count && this.item.equals(itemStackContent.item) && this.nbt.equals(itemStackContent.nbt);
+				return this.count == itemStackContent.count && this.item.equals(itemStackContent.item) && this.changes.equals(itemStackContent.changes);
 			} else {
 				return false;
 			}
@@ -235,25 +251,29 @@ public class HoverEvent {
 		public int hashCode() {
 			int i = this.item.hashCode();
 			i = 31 * i + this.count;
-			return 31 * i + this.nbt.hashCode();
+			return 31 * i + this.changes.hashCode();
 		}
 
 		public ItemStack asStack() {
 			if (this.stack == null) {
-				this.stack = new ItemStack(this.item, this.count);
-				this.nbt.ifPresent(this.stack::setNbt);
+				this.stack = new ItemStack(this.item, this.count, this.changes);
 			}
 
 			return this.stack;
 		}
 
-		private static DataResult<HoverEvent.ItemStackContent> legacySerializer(Text text) {
+		private static DataResult<HoverEvent.ItemStackContent> legacySerializer(Text text, @Nullable RegistryOps<?> ops) {
 			try {
 				NbtCompound nbtCompound = StringNbtReader.parse(text.getString());
-				return DataResult.success(new HoverEvent.ItemStackContent(ItemStack.fromNbt(nbtCompound)));
-			} catch (CommandSyntaxException var2) {
-				return DataResult.error(() -> "Failed to parse item tag: " + var2.getMessage());
+				DynamicOps<NbtElement> dynamicOps = (DynamicOps<NbtElement>)(ops != null ? ops.withDelegate(NbtOps.INSTANCE) : NbtOps.INSTANCE);
+				return ItemStack.CODEC.parse(dynamicOps, nbtCompound).map(HoverEvent.ItemStackContent::new);
+			} catch (CommandSyntaxException var4) {
+				return DataResult.error(() -> "Failed to parse item tag: " + var4.getMessage());
 			}
 		}
+	}
+
+	public interface LegacySerializer<T> {
+		DataResult<T> parse(Text text, @Nullable RegistryOps<?> os);
 	}
 }

@@ -12,22 +12,28 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 
 @Environment(EnvType.CLIENT)
 public class OptionListWidget extends ElementListWidget<OptionListWidget.WidgetEntry> {
-	public OptionListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l) {
-		super(minecraftClient, i, j, k, l);
+	private static final int field_49481 = 310;
+	private static final int field_49482 = 25;
+	private final GameOptionsScreen optionsScreen;
+
+	public OptionListWidget(MinecraftClient client, int width, int i, GameOptionsScreen optionsScreen) {
+		super(client, width, optionsScreen.layout.getContentHeight(), optionsScreen.layout.getHeaderHeight(), 25);
 		this.centerListVertically = false;
+		this.optionsScreen = optionsScreen;
 	}
 
-	public int addSingleOptionEntry(SimpleOption<?> option) {
-		return this.addEntry(OptionListWidget.WidgetEntry.create(this.client.options, this.width, option));
+	public void addSingleOptionEntry(SimpleOption<?> option) {
+		this.addEntry(OptionListWidget.WidgetEntry.create(this.client.options, option, this.optionsScreen));
 	}
 
 	public void addOptionEntry(SimpleOption<?> firstOption, @Nullable SimpleOption<?> secondOption) {
-		this.addEntry(OptionListWidget.WidgetEntry.create(this.client.options, this.width, firstOption, secondOption));
+		this.addEntry(OptionListWidget.WidgetEntry.create(this.client.options, firstOption, secondOption, this.optionsScreen));
 	}
 
 	public void addAll(SimpleOption<?>[] options) {
@@ -38,12 +44,7 @@ public class OptionListWidget extends ElementListWidget<OptionListWidget.WidgetE
 
 	@Override
 	public int getRowWidth() {
-		return 400;
-	}
-
-	@Override
-	protected int getScrollbarPositionX() {
-		return super.getScrollbarPositionX() + 32;
+		return 310;
 	}
 
 	@Nullable
@@ -74,31 +75,38 @@ public class OptionListWidget extends ElementListWidget<OptionListWidget.WidgetE
 	protected static class WidgetEntry extends ElementListWidget.Entry<OptionListWidget.WidgetEntry> {
 		final Map<SimpleOption<?>, ClickableWidget> optionsToWidgets;
 		final List<ClickableWidget> widgets;
+		private static final int field_49484 = 160;
+		private final GameOptionsScreen optionsScreen;
 
-		private WidgetEntry(Map<SimpleOption<?>, ClickableWidget> optionsToWidgets) {
+		private WidgetEntry(Map<SimpleOption<?>, ClickableWidget> optionsToWidgets, GameOptionsScreen optionsScreen) {
 			this.optionsToWidgets = optionsToWidgets;
 			this.widgets = ImmutableList.copyOf(optionsToWidgets.values());
+			this.optionsScreen = optionsScreen;
 		}
 
-		public static OptionListWidget.WidgetEntry create(GameOptions options, int width, SimpleOption<?> option) {
-			return new OptionListWidget.WidgetEntry(ImmutableMap.of(option, option.createWidget(options, width / 2 - 155, 0, 310)));
+		public static OptionListWidget.WidgetEntry create(GameOptions options, SimpleOption<?> option, GameOptionsScreen optionsSCreen) {
+			return new OptionListWidget.WidgetEntry(ImmutableMap.of(option, option.createWidget(options, 0, 0, 310)), optionsSCreen);
 		}
 
-		public static OptionListWidget.WidgetEntry create(GameOptions options, int width, SimpleOption<?> firstOption, @Nullable SimpleOption<?> secondOption) {
-			ClickableWidget clickableWidget = firstOption.createWidget(options, width / 2 - 155, 0, 150);
+		public static OptionListWidget.WidgetEntry create(
+			GameOptions options, SimpleOption<?> firstOption, @Nullable SimpleOption<?> secondOption, GameOptionsScreen optionsScreen
+		) {
+			ClickableWidget clickableWidget = firstOption.createWidget(options);
 			return secondOption == null
-				? new OptionListWidget.WidgetEntry(ImmutableMap.of(firstOption, clickableWidget))
-				: new OptionListWidget.WidgetEntry(
-					ImmutableMap.of(firstOption, clickableWidget, secondOption, secondOption.createWidget(options, width / 2 - 155 + 160, 0, 150))
-				);
+				? new OptionListWidget.WidgetEntry(ImmutableMap.of(firstOption, clickableWidget), optionsScreen)
+				: new OptionListWidget.WidgetEntry(ImmutableMap.of(firstOption, clickableWidget, secondOption, secondOption.createWidget(options)), optionsScreen);
 		}
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.widgets.forEach(widget -> {
-				widget.setY(y);
-				widget.render(context, mouseX, mouseY, tickDelta);
-			});
+			int i = 0;
+			int j = this.optionsScreen.width / 2 - 155;
+
+			for (ClickableWidget clickableWidget : this.widgets) {
+				clickableWidget.setPosition(j + i, y);
+				clickableWidget.render(context, mouseX, mouseY, tickDelta);
+				i += 160;
+			}
 		}
 
 		@Override

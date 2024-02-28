@@ -13,14 +13,15 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LightBlock;
 import net.minecraft.block.SuspiciousStewIngredient;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FireworksComponent;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -35,6 +36,7 @@ import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.village.raid.Raid;
 
 public class ItemGroups {
@@ -1796,10 +1798,7 @@ public class ItemGroups {
 	}
 
 	private static void addPotions(ItemGroup.Entries entries, RegistryWrapper<Potion> registryWrapper, Item item, ItemGroup.StackVisibility visibility) {
-		registryWrapper.streamEntries()
-			.filter(entry -> !entry.matchesKey(Potions.EMPTY_KEY))
-			.map(entry -> PotionUtil.setPotion(new ItemStack(item), entry))
-			.forEach(stack -> entries.add(stack, visibility));
+		registryWrapper.streamEntries().map(entry -> PotionContentsComponent.createStack(item, entry)).forEach(stack -> entries.add(stack, visibility));
 	}
 
 	private static void addMaxLevelEnchantedBooks(
@@ -1840,7 +1839,7 @@ public class ItemGroups {
 
 		for (SuspiciousStewIngredient suspiciousStewIngredient : list) {
 			ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW);
-			SuspiciousStewItem.writeEffectsToStew(itemStack, suspiciousStewIngredient.getStewEffects());
+			itemStack.set(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, suspiciousStewIngredient.getStewEffects());
 			set.add(itemStack);
 		}
 
@@ -1850,7 +1849,7 @@ public class ItemGroups {
 	private static void addFireworkRockets(ItemGroup.Entries entries, ItemGroup.StackVisibility visibility) {
 		for (byte b : FireworkRocketItem.FLIGHT_VALUES) {
 			ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET);
-			FireworkRocketItem.setFlight(itemStack, b);
+			itemStack.set(DataComponentTypes.FIREWORKS, new FireworksComponent(b, List.of()));
 			entries.add(itemStack, visibility);
 		}
 	}
@@ -1862,9 +1861,9 @@ public class ItemGroups {
 		ItemGroup.StackVisibility visibility
 	) {
 		registryWrapper.streamEntries().filter(predicate).sorted(PAINTING_VARIANT_COMPARATOR).forEach(variant -> {
+			NbtComponent nbtComponent = Util.getResult(NbtComponent.DEFAULT.with(PaintingEntity.VARIANT_MAP_CODEC, variant), IllegalStateException::new);
 			ItemStack itemStack = new ItemStack(Items.PAINTING);
-			NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("EntityTag");
-			PaintingEntity.writeVariantToNbt(nbtCompound, variant);
+			itemStack.set(DataComponentTypes.ENTITY_DATA, nbtComponent);
 			entries.add(itemStack, visibility);
 		});
 	}

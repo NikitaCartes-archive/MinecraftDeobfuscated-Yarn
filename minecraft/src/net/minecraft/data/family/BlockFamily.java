@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.util.Util;
+import net.minecraft.util.StringHelper;
 
 public class BlockFamily {
 	private final Block baseBlock;
@@ -42,11 +42,11 @@ public class BlockFamily {
 	}
 
 	public Optional<String> getGroup() {
-		return Util.isBlank(this.group) ? Optional.empty() : Optional.of(this.group);
+		return StringHelper.isBlank(this.group) ? Optional.empty() : Optional.of(this.group);
 	}
 
 	public Optional<String> getUnlockCriterionName() {
-		return Util.isBlank(this.unlockCriterionName) ? Optional.empty() : Optional.of(this.unlockCriterionName);
+		return StringHelper.isBlank(this.unlockCriterionName) ? Optional.empty() : Optional.of(this.unlockCriterionName);
 	}
 
 	public static class Builder {

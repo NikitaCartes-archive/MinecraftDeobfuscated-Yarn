@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -235,7 +236,7 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	public static boolean canMerge(ItemStack stack1, ItemStack stack2) {
-		return stack2.getCount() + stack1.getCount() > stack2.getMaxCount() ? false : ItemStack.areItemsAndNbtEqual(stack1, stack2);
+		return stack2.getCount() + stack1.getCount() > stack2.getMaxCount() ? false : ItemStack.areItemsAndComponentsEqual(stack1, stack2);
 	}
 
 	public static ItemStack merge(ItemStack stack1, ItemStack stack2, int maxCount) {
@@ -301,7 +302,7 @@ public class ItemEntity extends Entity implements Ownable {
 		}
 
 		if (!this.getStack().isEmpty()) {
-			nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
+			nbt.put("Item", this.getStack().encode(this.getRegistryManager()));
 		}
 	}
 
@@ -322,8 +323,13 @@ public class ItemEntity extends Entity implements Ownable {
 			this.thrower = null;
 		}
 
-		NbtCompound nbtCompound = nbt.getCompound("Item");
-		this.setStack(ItemStack.fromNbt(nbtCompound));
+		if (nbt.contains("Item", NbtElement.COMPOUND_TYPE)) {
+			NbtCompound nbtCompound = nbt.getCompound("Item");
+			this.setStack((ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY));
+		} else {
+			this.setStack(ItemStack.EMPTY);
+		}
+
 		if (this.getStack().isEmpty()) {
 			this.discard();
 		}

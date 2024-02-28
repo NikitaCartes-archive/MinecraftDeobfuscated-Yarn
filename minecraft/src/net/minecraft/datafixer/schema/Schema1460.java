@@ -5,9 +5,11 @@ import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import com.mojang.datafixers.types.templates.Hook.HookFunction;
+import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public class Schema1460 extends IdentifierNormalizingSchema {
@@ -244,20 +246,14 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 		schema.registerType(
 			false,
 			TypeReferences.PLAYER,
-			() -> DSL.optionalFields(
-					"RootVehicle",
-					DSL.optionalFields("Entity", TypeReferences.ENTITY_TREE.in(schema)),
-					"Inventory",
-					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
-					"EnderItems",
-					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
-					DSL.optionalFields(
-						"ShoulderEntityLeft",
-						TypeReferences.ENTITY_TREE.in(schema),
-						"ShoulderEntityRight",
-						TypeReferences.ENTITY_TREE.in(schema),
-						"recipeBook",
-						DSL.optionalFields("recipes", DSL.list(TypeReferences.RECIPE.in(schema)), "toBeDisplayed", DSL.list(TypeReferences.RECIPE.in(schema)))
+			() -> FixUtil.method_57188(
+					Pair.of("RootVehicle", DSL.optionalFields("Entity", TypeReferences.ENTITY_TREE.in(schema))),
+					Pair.of("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
+					Pair.of("EnderItems", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
+					Pair.of("ShoulderEntityLeft", TypeReferences.ENTITY_TREE.in(schema)),
+					Pair.of("ShoulderEntityRight", TypeReferences.ENTITY_TREE.in(schema)),
+					Pair.of(
+						"recipeBook", DSL.optionalFields("recipes", DSL.list(TypeReferences.RECIPE.in(schema)), "toBeDisplayed", DSL.list(TypeReferences.RECIPE.in(schema)))
 					)
 				)
 		);
@@ -291,17 +287,13 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 						"id",
 						TypeReferences.ITEM_NAME.in(schema),
 						"tag",
-						DSL.optionalFields(
-							"EntityTag",
-							TypeReferences.ENTITY_TREE.in(schema),
-							"BlockEntityTag",
-							TypeReferences.BLOCK_ENTITY.in(schema),
-							"CanDestroy",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
-							"CanPlaceOn",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
-							"Items",
-							DSL.list(TypeReferences.ITEM_STACK.in(schema))
+						FixUtil.method_57188(
+							Pair.of("EntityTag", TypeReferences.ENTITY_TREE.in(schema)),
+							Pair.of("BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema)),
+							Pair.of("CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema))),
+							Pair.of("CanPlaceOn", DSL.list(TypeReferences.BLOCK_NAME.in(schema))),
+							Pair.of("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
+							Pair.of("ChargedProjectiles", DSL.list(TypeReferences.ITEM_STACK.in(schema)))
 						)
 					),
 					Schema705.field_5746,
@@ -332,27 +324,16 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 			TypeReferences.STATS,
 			() -> DSL.optionalFields(
 					"stats",
-					DSL.optionalFields(
-						"minecraft:mined",
-						DSL.compoundList(TypeReferences.BLOCK_NAME.in(schema), DSL.constType(DSL.intType())),
-						"minecraft:crafted",
-						(TypeTemplate)supplier.get(),
-						"minecraft:used",
-						(TypeTemplate)supplier.get(),
-						"minecraft:broken",
-						(TypeTemplate)supplier.get(),
-						"minecraft:picked_up",
-						(TypeTemplate)supplier.get(),
-						DSL.optionalFields(
-							"minecraft:dropped",
-							(TypeTemplate)supplier.get(),
-							"minecraft:killed",
-							DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.intType())),
-							"minecraft:killed_by",
-							DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.intType())),
-							"minecraft:custom",
-							DSL.compoundList(DSL.constType(getIdentifierType()), DSL.constType(DSL.intType()))
-						)
+					FixUtil.method_57188(
+						Pair.of("minecraft:mined", DSL.compoundList(TypeReferences.BLOCK_NAME.in(schema), DSL.constType(DSL.intType()))),
+						Pair.of("minecraft:crafted", (TypeTemplate)supplier.get()),
+						Pair.of("minecraft:used", (TypeTemplate)supplier.get()),
+						Pair.of("minecraft:broken", (TypeTemplate)supplier.get()),
+						Pair.of("minecraft:picked_up", (TypeTemplate)supplier.get()),
+						Pair.of("minecraft:dropped", (TypeTemplate)supplier.get()),
+						Pair.of("minecraft:killed", DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.intType()))),
+						Pair.of("minecraft:killed_by", DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.intType()))),
+						Pair.of("minecraft:custom", DSL.compoundList(DSL.constType(getIdentifierType()), DSL.constType(DSL.intType())))
 					)
 				)
 		);
@@ -408,5 +389,6 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 		schema.registerType(false, TypeReferences.POI_CHUNK, DSL::remainder);
 		schema.registerType(false, TypeReferences.WORLD_GEN_SETTINGS, DSL::remainder);
 		schema.registerType(false, TypeReferences.ENTITY_CHUNK, () -> DSL.optionalFields("Entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema))));
+		schema.registerType(true, TypeReferences.DATA_COMPONENTS, DSL::remainder);
 	}
 }

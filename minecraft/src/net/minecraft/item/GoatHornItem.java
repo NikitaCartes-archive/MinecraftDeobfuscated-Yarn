@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -19,7 +18,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
@@ -28,7 +26,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class GoatHornItem extends Item {
-	private static final String INSTRUMENT_KEY = "instrument";
 	private final TagKey<Instrument> instrumentTag;
 
 	public GoatHornItem(Item.Settings settings, TagKey<Instrument> instrumentTag) {
@@ -48,28 +45,21 @@ public class GoatHornItem extends Item {
 
 	public static ItemStack getStackForInstrument(Item item, RegistryEntry<Instrument> instrument) {
 		ItemStack itemStack = new ItemStack(item);
-		setInstrument(itemStack, instrument);
+		itemStack.set(DataComponentTypes.INSTRUMENT, instrument);
 		return itemStack;
 	}
 
 	public static void setRandomInstrumentFromTag(ItemStack stack, TagKey<Instrument> instrumentTag, Random random) {
 		Optional<RegistryEntry<Instrument>> optional = Registries.INSTRUMENT.getRandomEntry(instrumentTag, random);
-		optional.ifPresent(instrument -> setInstrument(stack, instrument));
-	}
-
-	private static void setInstrument(ItemStack stack, RegistryEntry<Instrument> instrument) {
-		NbtCompound nbtCompound = stack.getOrCreateNbt();
-		nbtCompound.putString(
-			"instrument", ((RegistryKey)instrument.getKey().orElseThrow(() -> new IllegalStateException("Invalid instrument"))).getValue().toString()
-		);
+		optional.ifPresent(instrument -> stack.set(DataComponentTypes.INSTRUMENT, instrument));
 	}
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		Optional<? extends RegistryEntry<Instrument>> optional = this.getInstrument(itemStack);
-		if (optional.isPresent()) {
-			Instrument instrument = (Instrument)((RegistryEntry)optional.get()).value();
+		RegistryEntry<Instrument> registryEntry = itemStack.get(DataComponentTypes.INSTRUMENT);
+		if (registryEntry != null) {
+			Instrument instrument = registryEntry.value();
 			user.setCurrentHand(hand);
 			playSound(world, user, instrument);
 			user.getItemCooldownManager().set(this, instrument.useDuration());
@@ -82,21 +72,18 @@ public class GoatHornItem extends Item {
 
 	@Override
 	public int getMaxUseTime(ItemStack stack) {
-		Optional<? extends RegistryEntry<Instrument>> optional = this.getInstrument(stack);
+		Optional<RegistryEntry<Instrument>> optional = this.getInstrument(stack);
 		return (Integer)optional.map(instrument -> ((Instrument)instrument.value()).useDuration()).orElse(0);
 	}
 
-	private Optional<? extends RegistryEntry<Instrument>> getInstrument(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getNbt();
-		if (nbtCompound != null && nbtCompound.contains("instrument", NbtElement.STRING_TYPE)) {
-			Identifier identifier = Identifier.tryParse(nbtCompound.getString("instrument"));
-			if (identifier != null) {
-				return Registries.INSTRUMENT.getEntry(identifier);
-			}
+	private Optional<RegistryEntry<Instrument>> getInstrument(ItemStack stack) {
+		RegistryEntry<Instrument> registryEntry = stack.get(DataComponentTypes.INSTRUMENT);
+		if (registryEntry != null) {
+			return Optional.of(registryEntry);
+		} else {
+			Iterator<RegistryEntry<Instrument>> iterator = Registries.INSTRUMENT.iterateEntries(this.instrumentTag).iterator();
+			return iterator.hasNext() ? Optional.of((RegistryEntry)iterator.next()) : Optional.empty();
 		}
-
-		Iterator<RegistryEntry<Instrument>> iterator = Registries.INSTRUMENT.iterateEntries(this.instrumentTag).iterator();
-		return iterator.hasNext() ? Optional.of((RegistryEntry)iterator.next()) : Optional.empty();
 	}
 
 	@Override

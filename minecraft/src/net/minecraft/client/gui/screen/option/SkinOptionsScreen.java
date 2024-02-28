@@ -2,55 +2,36 @@ package net.minecraft.client.gui.screen.option;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class SkinOptionsScreen extends GameOptionsScreen {
+	private static final Text TITLE_TEXT = Text.translatable("options.skinCustomisation.title");
+
 	public SkinOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, Text.translatable("options.skinCustomisation.title"));
+		super(parent, gameOptions, TITLE_TEXT);
 	}
 
 	@Override
 	protected void init() {
-		int i = 0;
+		GridWidget gridWidget = new GridWidget();
+		gridWidget.getMainPositioner().marginX(5).marginBottom(4).alignHorizontalCenter();
+		GridWidget.Adder adder = gridWidget.createAdder(2);
 
 		for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
-			this.addDrawableChild(
+			adder.add(
 				CyclingButtonWidget.onOffBuilder(this.gameOptions.isPlayerModelPartEnabled(playerModelPart))
-					.build(
-						this.width / 2 - 155 + i % 2 * 160,
-						this.height / 6 + 24 * (i >> 1),
-						150,
-						20,
-						playerModelPart.getOptionName(),
-						(button, enabled) -> this.gameOptions.togglePlayerModelPart(playerModelPart, enabled)
-					)
+					.build(playerModelPart.getOptionName(), (button, enabled) -> this.gameOptions.togglePlayerModelPart(playerModelPart, enabled))
 			);
-			i++;
 		}
 
-		this.addDrawableChild(this.gameOptions.getMainArm().createWidget(this.gameOptions, this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150));
-		if (++i % 2 == 1) {
-			i++;
-		}
-
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
-				.dimensions(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20)
-				.build()
-		);
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		adder.add(this.gameOptions.getMainArm().createWidget(this.gameOptions));
+		this.layout.addBody(gridWidget);
+		super.init();
 	}
 }

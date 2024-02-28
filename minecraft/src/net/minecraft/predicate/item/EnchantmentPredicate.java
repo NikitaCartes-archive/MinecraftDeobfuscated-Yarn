@@ -2,8 +2,9 @@ package net.minecraft.predicate.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Map;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.Optional;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.Registries;
@@ -23,20 +24,20 @@ public record EnchantmentPredicate(Optional<RegistryEntry<Enchantment>> enchantm
 		this(Optional.of(enchantment.getRegistryEntry()), levels);
 	}
 
-	public boolean test(Map<Enchantment, Integer> enchantments) {
+	public boolean test(ItemEnchantmentsComponent enchantmentsComponent) {
 		if (this.enchantment.isPresent()) {
 			Enchantment enchantment = (Enchantment)((RegistryEntry)this.enchantment.get()).value();
-			if (!enchantments.containsKey(enchantment)) {
+			int i = enchantmentsComponent.getLevel(enchantment);
+			if (i == 0) {
 				return false;
 			}
 
-			int i = (Integer)enchantments.get(enchantment);
 			if (this.levels != NumberRange.IntRange.ANY && !this.levels.test(i)) {
 				return false;
 			}
 		} else if (this.levels != NumberRange.IntRange.ANY) {
-			for (Integer integer : enchantments.values()) {
-				if (this.levels.test(integer)) {
+			for (Entry<RegistryEntry<Enchantment>> entry : enchantmentsComponent.getEnchantmentsMap()) {
+				if (this.levels.test(entry.getIntValue())) {
 					return true;
 				}
 			}

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.screen.ScreenTexts;
@@ -14,12 +15,15 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
+	public static final Text TITLE_TEXT = Text.translatable("options.accessibility.title");
+
 	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
 		return new SimpleOption[]{
 			gameOptions.getNarrator(),
 			gameOptions.getShowSubtitles(),
 			gameOptions.getHighContrast(),
 			gameOptions.getAutoJump(),
+			gameOptions.getMenuBackgroundBlurriness(),
 			gameOptions.getTextBackgroundOpacity(),
 			gameOptions.getBackgroundForChatOnly(),
 			gameOptions.getChatOpacity(),
@@ -43,7 +47,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	}
 
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, Text.translatable("options.accessibility.title"), getOptions(gameOptions));
+		super(parent, gameOptions, TITLE_TEXT, getOptions(gameOptions));
 	}
 
 	@Override
@@ -58,13 +62,10 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 
 	@Override
 	protected void initFooter() {
-		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("options.accessibility.link"), ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftJavaAccessibility"))
-				.dimensions(this.width / 2 - 155, this.height - 27, 150, 20)
-				.build()
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget.add(
+			ButtonWidget.builder(Text.translatable("options.accessibility.link"), ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftJavaAccessibility")).build()
 		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 27, 150, 20).build()
-		);
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).build());
 	}
 }

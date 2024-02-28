@@ -14,6 +14,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.type.FireworkExplosionComponent;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -23,9 +25,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -1023,11 +1023,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Nullable
-	public abstract MapState getMapState(MapId id);
+	public abstract MapState getMapState(MapIdComponent id);
 
-	public abstract void putMapState(MapId id, MapState state);
+	public abstract void putMapState(MapIdComponent id, MapState state);
 
-	public abstract MapId getNextMapId();
+	public abstract MapIdComponent getNextMapId();
 
 	public void syncGlobalEvent(int eventId, BlockPos pos, int data) {
 	}
@@ -1049,7 +1049,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public abstract void setBlockBreakingInfo(int entityId, BlockPos pos, int progress);
 
-	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound nbt) {
+	public void addFireworkParticle(
+		double x, double y, double z, double velocityX, double velocityY, double velocityZ, List<FireworkExplosionComponent> explosions
+	) {
 	}
 
 	public abstract Scoreboard getScoreboard();

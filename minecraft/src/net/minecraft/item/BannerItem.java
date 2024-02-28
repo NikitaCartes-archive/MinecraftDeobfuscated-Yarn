@@ -4,12 +4,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
@@ -27,21 +24,16 @@ public class BannerItem extends VerticallyAttachableBlockItem {
 	}
 
 	public static void appendBannerTooltip(ItemStack stack, List<Text> tooltip) {
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-		if (nbtCompound != null && nbtCompound.contains("Patterns")) {
-			NbtList nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
-
-			for (int i = 0; i < nbtList.size() && i < 6; i++) {
-				NbtCompound nbtCompound2 = nbtList.getCompound(i);
-				DyeColor dyeColor = DyeColor.byId(nbtCompound2.getInt("Color"));
-				RegistryEntry<BannerPattern> registryEntry = BannerPattern.byId(nbtCompound2.getString("Pattern"));
-				if (registryEntry != null) {
-					registryEntry.getKey()
-						.map(key -> key.getValue().toShortTranslationKey())
-						.ifPresent(
-							translationKey -> tooltip.add(Text.translatable("block.minecraft.banner." + translationKey + "." + dyeColor.getName()).formatted(Formatting.GRAY))
-						);
-				}
+		BannerPatternsComponent bannerPatternsComponent = stack.get(DataComponentTypes.BANNER_PATTERNS);
+		if (bannerPatternsComponent != null) {
+			for (int i = 0; i < Math.min(bannerPatternsComponent.layers().size(), 6); i++) {
+				BannerPatternsComponent.Layer layer = (BannerPatternsComponent.Layer)bannerPatternsComponent.layers().get(i);
+				layer.pattern()
+					.getKey()
+					.map(key -> key.getValue().toShortTranslationKey())
+					.ifPresent(
+						translationKey -> tooltip.add(Text.translatable("block.minecraft.banner." + translationKey + "." + layer.color().getName()).formatted(Formatting.GRAY))
+					);
 			}
 		}
 	}

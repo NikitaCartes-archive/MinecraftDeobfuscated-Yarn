@@ -410,7 +410,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		this.getPlayerManager().setMainWorld(serverWorld);
 		if (this.saveProperties.getCustomBossEvents() != null) {
-			this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
+			this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents(), this.getRegistryManager());
 		}
 
 		RandomSequencesState randomSequencesState = serverWorld.getRandomSequences();
@@ -578,7 +578,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ServerWorld serverWorld2 = this.getOverworld();
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
-		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
+		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt(this.getRegistryManager()));
 		this.session.backupLevelDataFile(this.getRegistryManager(), this.saveProperties, this.getPlayerManager().getUserData());
 		if (flush) {
 			for (ServerWorld serverWorld3 : this.getWorlds()) {
@@ -1166,6 +1166,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					.collect(Collectors.joining(", ")))
 		);
 		details.addSection("World Generation", (Supplier<String>)(() -> this.saveProperties.getLifecycle().toString()));
+		details.addSection("World Seed", (Supplier<String>)(() -> String.valueOf(this.saveProperties.getGeneratorOptions().getSeed())));
 		if (this.serverId != null) {
 			details.addSection("Server Id", (Supplier<String>)(() -> this.serverId));
 		}
@@ -2103,6 +2104,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public boolean acceptsTransfers() {
 		return false;
+	}
+
+	public void onChunkLoadFailure(ChunkPos pos) {
+	}
+
+	public void onChunkSaveFailure(ChunkPos pos) {
 	}
 
 	static class DebugStart {

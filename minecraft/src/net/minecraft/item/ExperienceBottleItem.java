@@ -15,11 +15,6 @@ public class ExperienceBottleItem extends Item {
 	}
 
 	@Override
-	public boolean hasGlint(ItemStack stack) {
-		return true;
-	}
-
-	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		world.playSound(

@@ -5,6 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.WarningScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.LayoutWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -23,17 +25,22 @@ public class MultiplayerWarningScreen extends WarningScreen {
 	}
 
 	@Override
-	protected void initButtons(int yOffset) {
-		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.PROCEED, button -> {
+	protected LayoutWidget getLayout() {
+		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.horizontal().spacing(8);
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.PROCEED, buttonWidget -> {
 			if (this.checkbox.isChecked()) {
 				this.client.options.skipMultiplayerWarning = true;
 				this.client.options.write();
 			}
 
 			this.client.setScreen(new MultiplayerScreen(this.parent));
-		}).dimensions(this.width / 2 - 155, 100 + yOffset, 150, 20).build());
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 155 + 160, 100 + yOffset, 150, 20).build()
-		);
+		}).build());
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.BACK, buttonWidget -> this.close()).build());
+		return directionalLayoutWidget;
+	}
+
+	@Override
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 }

@@ -7,17 +7,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TaskScreen;
 import net.minecraft.client.gui.screen.WarningScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
+import net.minecraft.client.gui.widget.LayoutWidget;
 import net.minecraft.client.session.report.AbuseReport;
 import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.TextifiedException;
 import org.slf4j.Logger;
@@ -131,7 +131,6 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 
 	@Environment(EnvType.CLIENT)
 	class DiscardWarningScreen extends WarningScreen {
-		private static final int field_46030 = 20;
 		private static final Text TITLE = Text.translatable("gui.abuseReport.discard.title").formatted(Formatting.BOLD);
 		private static final Text MESSAGE = Text.translatable("gui.abuseReport.discard.content");
 		private static final Text RETURN_BUTTON_TEXT = Text.translatable("gui.abuseReport.discard.return");
@@ -143,16 +142,20 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 		}
 
 		@Override
-		protected void initButtons(int yOffset) {
-			this.addDrawableChild(ButtonWidget.builder(RETURN_BUTTON_TEXT, button -> this.close()).position(this.width / 2 - 155, 100 + yOffset).build());
-			this.addDrawableChild(ButtonWidget.builder(DRAFT_BUTTON_TEXT, button -> {
+		protected LayoutWidget getLayout() {
+			DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.vertical().spacing(8);
+			directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
+			DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.horizontal().spacing(8));
+			directionalLayoutWidget2.add(ButtonWidget.builder(RETURN_BUTTON_TEXT, buttonWidget -> this.close()).build());
+			directionalLayoutWidget2.add(ButtonWidget.builder(DRAFT_BUTTON_TEXT, buttonWidget -> {
 				ReportScreen.this.saveDraft();
 				this.client.setScreen(ReportScreen.this.parent);
-			}).position(this.width / 2 + 5, 100 + yOffset).build());
-			this.addDrawableChild(ButtonWidget.builder(DISCARD_BUTTON_TEXT, button -> {
+			}).build());
+			directionalLayoutWidget.add(ButtonWidget.builder(DISCARD_BUTTON_TEXT, buttonWidget -> {
 				ReportScreen.this.resetDraft();
 				this.client.setScreen(ReportScreen.this.parent);
-			}).position(this.width / 2 - 75, 130 + yOffset).build());
+			}).build());
+			return directionalLayoutWidget;
 		}
 
 		@Override
@@ -163,11 +166,6 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 		@Override
 		public boolean shouldCloseOnEsc() {
 			return false;
-		}
-
-		@Override
-		protected void drawTitle(DrawContext context) {
-			context.drawTextWithShadow(this.textRenderer, this.title, this.width / 2 - 155, 30, Colors.WHITE);
 		}
 	}
 }

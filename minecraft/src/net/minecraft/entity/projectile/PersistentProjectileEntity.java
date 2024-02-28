@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -32,6 +33,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -64,13 +66,19 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	private IntOpenHashSet piercedEntities;
 	@Nullable
 	private List<Entity> piercingKilledEntities;
-	private ItemStack stack;
+	private ItemStack stack = this.getDefaultItemStack();
+
+	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
+		super(entityType, world);
+	}
 
 	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, World world, ItemStack stack) {
-		super(type, world);
+		this(type, world);
 		this.stack = stack.copy();
-		if (stack.hasCustomName()) {
-			this.setCustomName(stack.getName());
+		this.setCustomName(stack.get(DataComponentTypes.CUSTOM_NAME));
+		Unit unit = stack.remove(DataComponentTypes.INTANGIBLE_PROJECTILE);
+		if (unit != null) {
+			this.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 		}
 	}
 
@@ -82,9 +90,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, LivingEntity owner, World world, ItemStack stack) {
 		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world, stack);
 		this.setOwner(owner);
-		if (owner instanceof PlayerEntity) {
-			this.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-		}
 	}
 
 	public void setSound(SoundEvent sound) {
@@ -460,7 +465,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		nbt.putByte("PierceLevel", this.getPierceLevel());
 		nbt.putString("SoundEvent", Registries.SOUND_EVENT.getId(this.sound).toString());
 		nbt.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
-		nbt.put("item", this.stack.writeNbt(new NbtCompound()));
+		nbt.put("item", this.stack.encode(this.getRegistryManager()));
 	}
 
 	@Override
@@ -486,17 +491,17 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 		this.setShotFromCrossbow(nbt.getBoolean("ShotFromCrossbow"));
 		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
-			this.stack = ItemStack.fromNbt(nbt.getCompound("item"));
+			this.stack = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("item")).orElse(this.getDefaultItemStack());
+		} else {
+			this.stack = this.getDefaultItemStack();
 		}
 	}
 
 	@Override
 	public void setOwner(@Nullable Entity entity) {
 		super.setOwner(entity);
-		if (entity instanceof PlayerEntity playerEntity) {
-			this.pickupType = playerEntity.isInCreativeMode()
-				? PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY
-				: PersistentProjectileEntity.PickupPermission.ALLOWED;
+		if (entity instanceof PlayerEntity && this.pickupType == PersistentProjectileEntity.PickupPermission.DISALLOWED) {
+			this.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 		}
 	}
 
@@ -511,19 +516,18 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	protected boolean tryPickup(PlayerEntity player) {
-		switch (this.pickupType) {
-			case ALLOWED:
-				return player.getInventory().insertStack(this.asItemStack());
-			case CREATIVE_ONLY:
-				return player.isInCreativeMode();
-			default:
-				return false;
-		}
+		return switch (this.pickupType) {
+			case DISALLOWED -> false;
+			case ALLOWED -> player.getInventory().insertStack(this.asItemStack());
+			case CREATIVE_ONLY -> player.isInCreativeMode();
+		};
 	}
 
 	protected ItemStack asItemStack() {
 		return this.stack.copy();
 	}
+
+	protected abstract ItemStack getDefaultItemStack();
 
 	@Override
 	protected Entity.MoveEffect getMoveEffect() {
@@ -577,6 +581,10 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		} else {
 			this.dataTracker.set(PROJECTILE_FLAGS, (byte)(b & ~index));
 		}
+	}
+
+	protected void setStack(ItemStack stack) {
+		this.stack = stack;
 	}
 
 	public boolean isCritical() {

@@ -3,38 +3,40 @@ package net.minecraft.loot.function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 
-public class SetNbtLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetNbtLootFunction> CODEC = RecordCodecBuilder.create(
+public class SetCustomDataLootFunction extends ConditionalLootFunction {
+	public static final Codec<SetCustomDataLootFunction> CODEC = RecordCodecBuilder.create(
 		instance -> addConditionsField(instance)
 				.and(StringNbtReader.STRINGIFIED_CODEC.fieldOf("tag").forGetter(function -> function.nbt))
-				.apply(instance, SetNbtLootFunction::new)
+				.apply(instance, SetCustomDataLootFunction::new)
 	);
 	private final NbtCompound nbt;
 
-	private SetNbtLootFunction(List<LootCondition> conditions, NbtCompound nbt) {
+	private SetCustomDataLootFunction(List<LootCondition> conditions, NbtCompound nbt) {
 		super(conditions);
 		this.nbt = nbt;
 	}
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.SET_NBT;
+		return LootFunctionTypes.SET_CUSTOM_DATA;
 	}
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		stack.getOrCreateNbt().copyFrom(this.nbt);
+		NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbt -> nbt.copyFrom(this.nbt));
 		return stack;
 	}
 
 	@Deprecated
 	public static ConditionalLootFunction.Builder<?> builder(NbtCompound nbt) {
-		return builder(conditions -> new SetNbtLootFunction(conditions, nbt));
+		return builder(conditions -> new SetCustomDataLootFunction(conditions, nbt));
 	}
 }

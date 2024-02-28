@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen.ingame;
 
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -97,7 +98,7 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 
 	void updatePageProvider() {
 		ItemStack itemStack = this.handler.getBookItem();
-		this.setPageProvider(BookScreen.Contents.create(itemStack));
+		this.setPageProvider((BookScreen.Contents)Objects.requireNonNullElse(BookScreen.Contents.create(itemStack), BookScreen.EMPTY_PROVIDER));
 	}
 
 	void updatePage() {

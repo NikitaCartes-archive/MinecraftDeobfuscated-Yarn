@@ -10,6 +10,7 @@ import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
@@ -74,14 +75,14 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 
 			for (int i = 0; i < items.length; i++) {
 				itemPredicates[i] = new ItemPredicate(
-					Optional.empty(),
 					Optional.of(RegistryEntryList.of(items[i].asItem().getRegistryEntry())),
 					NumberRange.IntRange.ANY,
 					NumberRange.IntRange.ANY,
 					List.of(),
 					List.of(),
 					Optional.empty(),
-					Optional.empty()
+					Optional.empty(),
+					ComponentPredicate.EMPTY
 				);
 			}
 

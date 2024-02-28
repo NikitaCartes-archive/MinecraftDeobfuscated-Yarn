@@ -7,10 +7,9 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.DialogScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
@@ -25,6 +24,7 @@ import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class VideoOptionsScreen extends GameOptionsScreen {
+	private static final Text TITLE_TEXT = Text.translatable("options.videoTitle");
 	private static final Text GRAPHICS_FABULOUS_TEXT = Text.translatable("options.graphics.fabulous").formatted(Formatting.ITALIC);
 	private static final Text GRAPHICS_WARNING_MESSAGE_TEXT = Text.translatable("options.graphics.warning.message", GRAPHICS_FABULOUS_TEXT, GRAPHICS_FABULOUS_TEXT);
 	private static final Text GRAPHICS_WARNING_TITLE_TEXT = Text.translatable("options.graphics.warning.title").formatted(Formatting.RED);
@@ -62,7 +62,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	public VideoOptionsScreen(Screen parent, GameOptions options) {
-		super(parent, options, Text.translatable("options.videoTitle"));
+		super(parent, options, TITLE_TEXT);
 		this.warningManager = parent.client.getVideoWarningManager();
 		this.warningManager.reset();
 		if (options.getGraphicsMode().getValue() == GraphicsMode.FABULOUS) {
@@ -74,7 +74,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.list = this.addDrawableChild(new OptionListWidget(this.client, this.width, this.height - 64, 32, 25));
+		this.list = this.addDrawableChild(new OptionListWidget(this.client, this.width, this.height, this));
 		int i = -1;
 		Window window = this.client.getWindow();
 		Monitor monitor = window.getMonitor();
@@ -119,11 +119,20 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.list.addSingleOptionEntry(simpleOption);
 		this.list.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
 		this.list.addAll(getOptions(this.gameOptions));
-		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
-			this.client.options.write();
-			window.applyVideoMode();
-			this.client.setScreen(this.parent);
-		}).dimensions(this.width / 2 - 100, this.height - 27, 200, 20).build());
+		super.init();
+	}
+
+	@Override
+	public void close() {
+		this.client.options.write();
+		this.client.getWindow().applyVideoMode();
+		super.close();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		super.initTabNavigation();
+		this.list.position(this.width, this.layout);
 	}
 
 	@Override
@@ -186,12 +195,20 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		if (Screen.hasControlDown()) {
 			SimpleOption<Integer> simpleOption = this.gameOptions.getGuiScale();
-			int i = simpleOption.getValue() + (int)Math.signum(verticalAmount);
-			if (i != 0) {
-				simpleOption.setValue(i);
-				if (simpleOption.getValue() == i) {
-					this.client.onResolutionChanged();
-					return true;
+			if (simpleOption.getCallbacks() instanceof SimpleOption.MaxSuppliableIntCallbacks maxSuppliableIntCallbacks) {
+				int i = simpleOption.getValue() + (int)Math.signum(verticalAmount);
+				if (i != 0 && i <= maxSuppliableIntCallbacks.maxInclusive()) {
+					CyclingButtonWidget<Integer> cyclingButtonWidget = (CyclingButtonWidget<Integer>)this.list.getWidgetFor(simpleOption);
+					if (cyclingButtonWidget != null) {
+						simpleOption.setValue(i);
+						cyclingButtonWidget.setValue(i);
+					}
+
+					if (simpleOption.getValue() == i) {
+						this.client.onResolutionChanged();
+						this.list.setScrollAmount(0.0);
+						return true;
+					}
 				}
 			}
 
@@ -199,16 +216,5 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		} else {
 			return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
 		}
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
 	}
 }

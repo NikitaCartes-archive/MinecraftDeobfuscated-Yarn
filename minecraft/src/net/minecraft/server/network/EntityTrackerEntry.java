@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -22,7 +24,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -101,12 +102,12 @@ public class EntityTrackerEntry {
 		if (this.entity instanceof ItemFrameEntity itemFrameEntity && this.trackingTick % 10 == 0) {
 			ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 			if (itemStack.getItem() instanceof FilledMapItem) {
-				MapId mapId = FilledMapItem.getMapId(itemStack);
-				MapState mapState = FilledMapItem.getMapState(mapId, this.world);
+				MapIdComponent mapIdComponent = itemStack.get(DataComponentTypes.MAP_ID);
+				MapState mapState = FilledMapItem.getMapState(mapIdComponent, this.world);
 				if (mapState != null) {
 					for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
 						mapState.update(serverPlayerEntity, itemStack);
-						Packet<?> packet = mapState.getPlayerMarkerPacket(mapId, serverPlayerEntity);
+						Packet<?> packet = mapState.getPlayerMarkerPacket(mapIdComponent, serverPlayerEntity);
 						if (packet != null) {
 							serverPlayerEntity.networkHandler.sendPacket(packet);
 						}

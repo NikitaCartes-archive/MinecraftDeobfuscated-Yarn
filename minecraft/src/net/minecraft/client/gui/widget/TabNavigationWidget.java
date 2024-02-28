@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,7 +34,7 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 	private static final int field_43077 = 24;
 	private static final int field_43078 = 14;
 	private static final Text USAGE_NARRATION_TEXT = Text.translatable("narration.tab_navigation.usage");
-	private final GridWidget grid;
+	private final DirectionalLayoutWidget grid = DirectionalLayoutWidget.horizontal();
 	private int tabNavWidth;
 	private final TabManager tabManager;
 	private final ImmutableList<Tab> tabs;
@@ -43,13 +44,11 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 		this.tabNavWidth = x;
 		this.tabManager = tabManager;
 		this.tabs = ImmutableList.copyOf(tabs);
-		this.grid = new GridWidget(0, 0);
 		this.grid.getMainPositioner().alignHorizontalCenter();
 		ImmutableList.Builder<TabButtonWidget> builder = ImmutableList.builder();
-		int i = 0;
 
 		for (Tab tab : tabs) {
-			builder.add(this.grid.add(new TabButtonWidget(tabManager, tab, 0, 24), 0, i++));
+			builder.add(this.grid.add(new TabButtonWidget(tabManager, tab, 0, 24)));
 		}
 
 		this.tabButtons = builder.build();
@@ -129,8 +128,21 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.fill(0, 0, this.tabNavWidth, 24, -16777216);
-		context.drawTexture(CreateWorldScreen.HEADER_SEPARATOR_TEXTURE, 0, this.grid.getY() + this.grid.getHeight() - 2, 0.0F, 0.0F, this.tabNavWidth, 2, 32, 2);
+		RenderSystem.enableBlend();
+		context.drawTexture(
+			CreateWorldScreen.HEADER_SEPARATOR_TEXTURE,
+			0,
+			this.grid.getY() + this.grid.getHeight() - 2,
+			0.0F,
+			0.0F,
+			((TabButtonWidget)this.tabButtons.get(0)).getX(),
+			2,
+			32,
+			2
+		);
+		int i = ((TabButtonWidget)this.tabButtons.get(this.tabButtons.size() - 1)).getRight();
+		context.drawTexture(CreateWorldScreen.HEADER_SEPARATOR_TEXTURE, i, this.grid.getY() + this.grid.getHeight() - 2, 0.0F, 0.0F, this.tabNavWidth, 2, 32, 2);
+		RenderSystem.disableBlend();
 
 		for (TabButtonWidget tabButtonWidget : this.tabButtons) {
 			tabButtonWidget.render(context, mouseX, mouseY, delta);

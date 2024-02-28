@@ -9,7 +9,7 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Util;
+import net.minecraft.util.StringHelper;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSettingsScreen extends RealmsScreen {
@@ -58,7 +58,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 		ButtonWidget buttonWidget2 = this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.done"), button -> this.save()).dimensions(i - 2, row(12), 106, 20).build()
 		);
-		this.nameEdit.setChangedListener(name -> buttonWidget2.active = !Util.isBlank(name));
+		this.nameEdit.setChangedListener(name -> buttonWidget2.active = !StringHelper.isBlank(name));
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).dimensions(this.width / 2 + 2, row(12), 106, 20).build());
 	}
 

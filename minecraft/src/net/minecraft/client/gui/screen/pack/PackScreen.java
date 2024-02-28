@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
@@ -34,6 +33,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.SymlinkWarningScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -55,11 +58,15 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class PackScreen extends Screen {
 	static final Logger LOGGER = LogUtils.getLogger();
+	private static final Text AVAILABLE_TITLE = Text.translatable("pack.available.title");
+	private static final Text SELECTED_TITLE = Text.translatable("pack.selected.title");
+	private static final Text OPEN_FOLDER = Text.translatable("pack.openFolder");
 	private static final int field_32395 = 200;
 	private static final Text DROP_INFO = Text.translatable("pack.dropInfo").formatted(Formatting.GRAY);
 	private static final Text FOLDER_INFO = Text.translatable("pack.folderInfo");
 	private static final int field_32396 = 20;
 	private static final Identifier UNKNOWN_PACK = new Identifier("textures/misc/unknown_pack.png");
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private final ResourcePackOrganizer organizer;
 	@Nullable
 	private PackScreen.DirectoryWatcher directoryWatcher;
@@ -95,20 +102,31 @@ public class PackScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.availablePackList = this.addDrawableChild(new PackListWidget(this.client, this, 200, this.height, Text.translatable("pack.available.title")));
-		this.availablePackList.setX(this.width / 2 - 4 - 200);
-		this.selectedPackList = this.addDrawableChild(new PackListWidget(this.client, this, 200, this.height, Text.translatable("pack.selected.title")));
-		this.selectedPackList.setX(this.width / 2 + 4);
-		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri()))
-				.dimensions(this.width / 2 - 154, this.height - 48, 150, 20)
-				.tooltip(Tooltip.of(FOLDER_INFO))
-				.build()
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addHeader(DirectionalLayoutWidget.vertical().spacing(5));
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
+		directionalLayoutWidget.add(new TextWidget(this.getTitle(), this.textRenderer));
+		directionalLayoutWidget.add(new TextWidget(DROP_INFO, this.textRenderer));
+		this.availablePackList = this.addDrawableChild(new PackListWidget(this.client, this, 200, this.height - 66, AVAILABLE_TITLE));
+		this.selectedPackList = this.addDrawableChild(new PackListWidget(this.client, this, 200, this.height - 66, SELECTED_TITLE));
+		DirectionalLayoutWidget directionalLayoutWidget2 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget2.add(
+			ButtonWidget.builder(OPEN_FOLDER, button -> Util.getOperatingSystem().open(this.file.toUri())).tooltip(Tooltip.of(FOLDER_INFO)).build()
 		);
-		this.doneButton = this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).dimensions(this.width / 2 + 4, this.height - 48, 150, 20).build()
-		);
+		this.doneButton = directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).build());
 		this.refresh();
+		this.layout.forEachChild(element -> {
+			ClickableWidget var10000 = this.addDrawableChild(element);
+		});
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		this.availablePackList.position(200, this.layout);
+		this.availablePackList.setX(this.width / 2 - 15 - 200);
+		this.selectedPackList.position(200, this.layout);
+		this.selectedPackList.setX(this.width / 2 + 15);
 	}
 
 	@Override
@@ -164,18 +182,6 @@ public class PackScreen extends Screen {
 		this.updatePackLists();
 		this.refreshTimeout = 0L;
 		this.iconTextures.clear();
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
-		context.drawCenteredTextWithShadow(this.textRenderer, DROP_INFO, this.width / 2, 20, 16777215);
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
 	}
 
 	protected static void copyPacks(MinecraftClient client, List<Path> srcPaths, Path destPath) {

@@ -50,6 +50,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
@@ -256,9 +257,9 @@ public class IntegratedServerLoader {
 		}
 	}
 
-	public void start(String levelName, Runnable onCancel) {
+	public void start(String name, Runnable onCancel) {
 		this.client.setScreenAndRender(new MessageScreen(Text.translatable("selectWorld.data_read")));
-		LevelStorage.Session session = this.createSession(levelName);
+		LevelStorage.Session session = this.createSession(name);
 		if (session != null) {
 			this.start(session, onCancel);
 		}
@@ -273,8 +274,8 @@ public class IntegratedServerLoader {
 			dynamic = session.readLevelProperties();
 			levelSummary = session.getLevelSummary(dynamic);
 		} catch (NbtException | NbtCrashException | IOException var10) {
-			this.client.setScreen(new RecoverWorldScreen(this.client, recovered -> {
-				if (recovered) {
+			this.client.setScreen(new RecoverWorldScreen(this.client, confirmed -> {
+				if (confirmed) {
 					this.start(session, onCancel);
 				} else {
 					session.tryClose();
@@ -295,18 +296,22 @@ public class IntegratedServerLoader {
 			throw new CrashException(crashReport);
 		}
 
-		if (!levelSummary.isVersionAvailable()) {
+		this.start(session, levelSummary, dynamic, onCancel);
+	}
+
+	private void start(LevelStorage.Session session, LevelSummary summary, Dynamic<?> levelProperties, Runnable onCancel) {
+		if (!summary.isVersionAvailable()) {
 			session.tryClose();
 			this.client
 				.setScreen(
 					new NoticeScreen(
 						onCancel,
 						Text.translatable("selectWorld.incompatible.title").withColor(Colors.RED),
-						Text.translatable("selectWorld.incompatible.description", levelSummary.getVersion())
+						Text.translatable("selectWorld.incompatible.description", summary.getVersion())
 					)
 				);
 		} else {
-			LevelSummary.ConversionWarning conversionWarning = levelSummary.getConversionWarning();
+			LevelSummary.ConversionWarning conversionWarning = summary.getConversionWarning();
 			if (conversionWarning.promptsBackup()) {
 				String string = "selectWorld.backupQuestion." + conversionWarning.getTranslationKeySuffix();
 				String string2 = "selectWorld.backupWarning." + conversionWarning.getTranslationKeySuffix();
@@ -315,7 +320,7 @@ public class IntegratedServerLoader {
 					mutableText.withColor(Colors.LIGHT_RED);
 				}
 
-				Text text = Text.translatable(string2, levelSummary.getVersion(), SharedConstants.getGameVersion().getName());
+				Text text = Text.translatable(string2, summary.getVersion(), SharedConstants.getGameVersion().getName());
 				this.client.setScreen(new BackupPromptScreen(() -> {
 					session.tryClose();
 					onCancel.run();
@@ -324,40 +329,28 @@ public class IntegratedServerLoader {
 						EditWorldScreen.backupLevel(session);
 					}
 
-					this.start(session, dynamic, false, true, onCancel);
+					this.start(session, levelProperties, false, onCancel);
 				}, mutableText, text, false));
 			} else {
-				this.start(session, dynamic, false, true, onCancel);
+				this.start(session, levelProperties, false, onCancel);
 			}
 		}
 	}
 
-	public CompletableFuture<Void> applyWorldPack(ServerResourcePackLoader loader, LevelStorage.Session session) {
-		Path path = session.getDirectory(WorldSavePath.RESOURCES_ZIP);
-		if (Files.exists(path, new LinkOption[0]) && !Files.isDirectory(path, new LinkOption[0])) {
-			loader.initWorldPack();
-			CompletableFuture<Void> completableFuture = loader.getPackLoadFuture(WORLD_PACK_ID);
-			loader.addResourcePack(WORLD_PACK_ID, path);
-			return completableFuture;
-		} else {
-			return CompletableFuture.completedFuture(null);
-		}
-	}
-
-	private void start(LevelStorage.Session session, Dynamic<?> levelProperties, boolean safeMode, boolean canShowBackupPrompt, Runnable onCancel) {
+	private void start(LevelStorage.Session session, Dynamic<?> levelProperties, boolean safeMode, Runnable onCancel) {
 		this.client.setScreenAndRender(new MessageScreen(Text.translatable("selectWorld.resource_load")));
 		ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
 
 		SaveLoader saveLoader;
 		try {
 			saveLoader = this.load(levelProperties, safeMode, resourcePackManager);
-		} catch (Exception var12) {
-			LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)var12);
+		} catch (Exception var8) {
+			LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)var8);
 			if (!safeMode) {
 				this.client.setScreen(new DataPackFailureScreen(() -> {
 					session.tryClose();
 					onCancel.run();
-				}, () -> this.start(session, levelProperties, true, canShowBackupPrompt, onCancel)));
+				}, () -> this.start(session, levelProperties, true, onCancel)));
 			} else {
 				session.tryClose();
 				this.client
@@ -375,33 +368,85 @@ public class IntegratedServerLoader {
 			return;
 		}
 
+		this.checkBackupAndStart(session, saveLoader, resourcePackManager, onCancel);
+	}
+
+	private void checkBackupAndStart(LevelStorage.Session session, SaveLoader saveLoader, ResourcePackManager dataPackManager, Runnable onCancel) {
 		SaveProperties saveProperties = saveLoader.saveProperties();
 		boolean bl = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
 		boolean bl2 = saveProperties.getLifecycle() != Lifecycle.stable();
-		if (!canShowBackupPrompt || !bl && !bl2) {
-			ServerResourcePackLoader serverResourcePackLoader = this.client.getServerResourcePackProvider();
-			this.applyWorldPack(serverResourcePackLoader, session).thenApply(v -> true).exceptionallyComposeAsync(throwable -> {
-				LOGGER.warn("Failed to load pack: ", throwable);
-				return this.showPackLoadFailureScreen();
-			}, this.client).thenAcceptAsync(confirmed -> {
-				if (confirmed) {
-					this.client.startIntegratedServer(session, resourcePackManager, saveLoader, false);
-				} else {
-					saveLoader.close();
-					session.tryClose();
-					serverResourcePackLoader.removeAll();
-					onCancel.run();
-				}
-			}, this.client).exceptionally(throwable -> {
-				this.client.setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Load world"));
-				return null;
-			});
+		if (!bl && !bl2) {
+			this.start(session, saveLoader, dataPackManager, onCancel);
 		} else {
-			this.showBackupPromptScreen(session, bl, () -> this.start(session, levelProperties, safeMode, false, onCancel), () -> {
+			this.showBackupPromptScreen(session, bl, () -> this.start(session, saveLoader, dataPackManager, onCancel), () -> {
+				saveLoader.close();
 				session.tryClose();
 				onCancel.run();
 			});
-			saveLoader.close();
+		}
+	}
+
+	private void start(LevelStorage.Session session, SaveLoader saveLoader, ResourcePackManager dataPackManager, Runnable onCancel) {
+		ServerResourcePackLoader serverResourcePackLoader = this.client.getServerResourcePackProvider();
+		this.applyWorldPack(serverResourcePackLoader, session).thenApply(v -> true).exceptionallyComposeAsync(throwable -> {
+			LOGGER.warn("Failed to load pack: ", throwable);
+			return this.showPackLoadFailureScreen();
+		}, this.client).thenAcceptAsync(successful -> {
+			if (successful) {
+				this.start(session, saveLoader, serverResourcePackLoader, dataPackManager, onCancel);
+			} else {
+				serverResourcePackLoader.removeAll();
+				saveLoader.close();
+				session.tryClose();
+				onCancel.run();
+			}
+		}, this.client).exceptionally(throwable -> {
+			this.client.setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Load world"));
+			return null;
+		});
+	}
+
+	private void start(
+		LevelStorage.Session session, SaveLoader saveLoader, ServerResourcePackLoader resourcePackLoader, ResourcePackManager dataPackManager, Runnable onCancel
+	) {
+		if (session.shouldShowLowDiskSpaceWarning()) {
+			this.client
+				.setScreen(
+					new ConfirmScreen(
+						confirmed -> {
+							if (confirmed) {
+								this.start(session, saveLoader, dataPackManager);
+							} else {
+								resourcePackLoader.removeAll();
+								saveLoader.close();
+								session.tryClose();
+								onCancel.run();
+							}
+						},
+						Text.translatable("selectWorld.warning.lowDiskSpace.title").formatted(Formatting.RED),
+						Text.translatable("selectWorld.warning.lowDiskSpace.description"),
+						ScreenTexts.CONTINUE,
+						ScreenTexts.BACK
+					)
+				);
+		} else {
+			this.start(session, saveLoader, dataPackManager);
+		}
+	}
+
+	private void start(LevelStorage.Session session, SaveLoader saveLoader, ResourcePackManager dataPackManager) {
+		this.client.startIntegratedServer(session, dataPackManager, saveLoader, false);
+	}
+
+	private CompletableFuture<Void> applyWorldPack(ServerResourcePackLoader loader, LevelStorage.Session session) {
+		Path path = session.getDirectory(WorldSavePath.RESOURCES_ZIP);
+		if (Files.exists(path, new LinkOption[0]) && !Files.isDirectory(path, new LinkOption[0])) {
+			loader.initWorldPack();
+			CompletableFuture<Void> completableFuture = loader.getPackLoadFuture(WORLD_PACK_ID);
+			loader.addResourcePack(WORLD_PACK_ID, path);
+			return completableFuture;
+		} else {
+			return CompletableFuture.completedFuture(null);
 		}
 	}
 

@@ -109,8 +109,8 @@ public class HoldTradeOffersTask extends MultiTickTask<VillagerEntity> {
 	}
 
 	private boolean isPossible(TradeOffer offer) {
-		return ItemStack.areItemsEqual(this.customerHeldStack, offer.getAdjustedFirstBuyItem())
-			|| ItemStack.areItemsEqual(this.customerHeldStack, offer.getSecondBuyItem());
+		return ItemStack.areItemsEqual(this.customerHeldStack, offer.getDisplayedFirstBuyItem())
+			|| ItemStack.areItemsEqual(this.customerHeldStack, offer.getDisplayedSecondBuyItem());
 	}
 
 	private static void holdNothing(VillagerEntity villager) {

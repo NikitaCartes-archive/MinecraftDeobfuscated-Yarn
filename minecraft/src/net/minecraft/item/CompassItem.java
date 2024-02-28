@@ -1,15 +1,11 @@
 package net.minecraft.item;
 
-import com.mojang.logging.LogUtils;
-import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LodestoneTargetComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -17,43 +13,10 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
-import net.minecraft.world.poi.PointOfInterestTypes;
-import org.slf4j.Logger;
 
 public class CompassItem extends Item {
-	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final String LODESTONE_POS_KEY = "LodestonePos";
-	public static final String LODESTONE_DIMENSION_KEY = "LodestoneDimension";
-	public static final String LODESTONE_TRACKED_KEY = "LodestoneTracked";
-
 	public CompassItem(Item.Settings settings) {
 		super(settings);
-	}
-
-	public static boolean hasLodestone(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getNbt();
-		return nbtCompound != null && (nbtCompound.contains("LodestoneDimension") || nbtCompound.contains("LodestonePos"));
-	}
-
-	private static Optional<RegistryKey<World>> getLodestoneDimension(NbtCompound nbt) {
-		return World.CODEC.parse(NbtOps.INSTANCE, nbt.get("LodestoneDimension")).result();
-	}
-
-	@Nullable
-	public static GlobalPos createLodestonePos(NbtCompound nbt) {
-		boolean bl = nbt.contains("LodestonePos");
-		boolean bl2 = nbt.contains("LodestoneDimension");
-		if (bl && bl2) {
-			Optional<RegistryKey<World>> optional = getLodestoneDimension(nbt);
-			if (optional.isPresent()) {
-				Optional<BlockPos> optional2 = NbtHelper.toBlockPos(nbt, "LodestonePos");
-				if (optional2.isPresent()) {
-					return GlobalPos.create((RegistryKey<World>)optional.get(), (BlockPos)optional2.get());
-				}
-			}
-		}
-
-		return null;
 	}
 
 	@Nullable
@@ -63,27 +26,15 @@ public class CompassItem extends Item {
 
 	@Override
 	public boolean hasGlint(ItemStack stack) {
-		return hasLodestone(stack) || super.hasGlint(stack);
+		return stack.contains(DataComponentTypes.LODESTONE_TARGET) || super.hasGlint(stack);
 	}
 
 	@Override
 	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-		if (!world.isClient) {
-			if (hasLodestone(stack)) {
-				NbtCompound nbtCompound = stack.getOrCreateNbt();
-				if (nbtCompound.contains("LodestoneTracked") && !nbtCompound.getBoolean("LodestoneTracked")) {
-					return;
-				}
-
-				Optional<RegistryKey<World>> optional = getLodestoneDimension(nbtCompound);
-				if (optional.isPresent() && optional.get() == world.getRegistryKey() && nbtCompound.contains("LodestonePos")) {
-					Optional<BlockPos> optional2 = NbtHelper.toBlockPos(nbtCompound, "LodestonePos");
-					if (optional2.isEmpty()
-						|| !world.isInBuildLimit((BlockPos)optional2.get())
-						|| !((ServerWorld)world).getPointOfInterestStorage().hasTypeAt(PointOfInterestTypes.LODESTONE, (BlockPos)optional2.get())) {
-						nbtCompound.remove("LodestonePos");
-					}
-				}
+		if (world instanceof ServerWorld serverWorld) {
+			LodestoneTargetComponent lodestoneTargetComponent = stack.get(DataComponentTypes.LODESTONE_TARGET);
+			if (lodestoneTargetComponent != null && lodestoneTargetComponent.isInvalid(serverWorld)) {
+				stack.remove(DataComponentTypes.LODESTONE_TARGET);
 			}
 		}
 	}
@@ -99,12 +50,13 @@ public class CompassItem extends Item {
 			PlayerEntity playerEntity = context.getPlayer();
 			ItemStack itemStack = context.getStack();
 			boolean bl = !playerEntity.isInCreativeMode() && itemStack.getCount() == 1;
+			LodestoneTargetComponent lodestoneTargetComponent = new LodestoneTargetComponent(GlobalPos.create(world.getRegistryKey(), blockPos), true);
 			if (bl) {
-				this.writeNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateNbt());
+				itemStack.set(DataComponentTypes.LODESTONE_TARGET, lodestoneTargetComponent);
 			} else {
-				ItemStack itemStack2 = itemStack.copyNbtToNewStack(Items.COMPASS, 1);
+				ItemStack itemStack2 = itemStack.copyComponentsToNewStack(Items.COMPASS, 1);
 				itemStack.decrementUnlessCreative(1, playerEntity);
-				this.writeNbt(world.getRegistryKey(), blockPos, itemStack2.getOrCreateNbt());
+				itemStack2.set(DataComponentTypes.LODESTONE_TARGET, lodestoneTargetComponent);
 				if (!playerEntity.getInventory().insertStack(itemStack2)) {
 					playerEntity.dropItem(itemStack2, false);
 				}
@@ -114,14 +66,8 @@ public class CompassItem extends Item {
 		}
 	}
 
-	private void writeNbt(RegistryKey<World> worldKey, BlockPos pos, NbtCompound nbt) {
-		nbt.put("LodestonePos", NbtHelper.fromBlockPos(pos));
-		World.CODEC.encodeStart(NbtOps.INSTANCE, worldKey).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("LodestoneDimension", nbtElement));
-		nbt.putBoolean("LodestoneTracked", true);
-	}
-
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return hasLodestone(stack) ? "item.minecraft.lodestone_compass" : super.getTranslationKey(stack);
+		return stack.contains(DataComponentTypes.LODESTONE_TARGET) ? "item.minecraft.lodestone_compass" : super.getTranslationKey(stack);
 	}
 }

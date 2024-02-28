@@ -14,11 +14,9 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.LogoDrawer;
-import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
 import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
@@ -39,7 +37,6 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.GeneratorOptions;
@@ -51,16 +48,14 @@ import org.slf4j.Logger;
 public class TitleScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text NARRATOR_SCREEN_TITLE = Text.translatable("narrator.screen.title");
-	public static final Text COPYRIGHT = Text.translatable("title.credits");
-	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
-	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
+	private static final Text COPYRIGHT = Text.translatable("title.credits");
 	private static final String DEMO_WORLD_NAME = "Demo_World";
 	@Nullable
 	private SplashTextRenderer splashText;
 	private ButtonWidget buttonResetDemo;
 	@Nullable
 	private RealmsNotificationsScreen realmsNotificationGui;
-	private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
+	private float backgroundAlpha;
 	private final boolean doBackgroundFade;
 	private long backgroundFadeStart;
 	@Nullable
@@ -98,8 +93,8 @@ public class TitleScreen extends Screen {
 		return CompletableFuture.allOf(
 			textureManager.loadTextureAsync(LogoDrawer.LOGO_TEXTURE, executor),
 			textureManager.loadTextureAsync(LogoDrawer.EDITION_TEXTURE, executor),
-			textureManager.loadTextureAsync(PANORAMA_OVERLAY, executor),
-			PANORAMA_CUBE_MAP.loadTexturesAsync(textureManager, executor)
+			textureManager.loadTextureAsync(PANORAMA_OVERLAY_TEXTURE, executor),
+			PANORAMA_RENDERER.loadTexturesAsync(textureManager, executor)
 		);
 	}
 
@@ -277,15 +272,9 @@ public class TitleScreen extends Screen {
 			this.backgroundFadeStart = Util.getMeasuringTimeMs();
 		}
 
-		float f = this.doBackgroundFade ? (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
-		this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
-		RenderSystem.enableBlend();
-		context.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
-		context.drawTexture(PANORAMA_OVERLAY, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
-		this.logoDrawer.draw(context, this.width, g);
-		int i = MathHelper.ceil(g * 255.0F) << 24;
+		this.backgroundAlpha = this.doBackgroundFade ? (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
+		float f = this.doBackgroundFade ? MathHelper.clamp(this.backgroundAlpha - 1.0F, 0.0F, 1.0F) : 1.0F;
+		int i = MathHelper.ceil(f * 255.0F) << 24;
 		if ((i & -67108864) != 0) {
 			if (this.deprecationNotice != null) {
 				this.deprecationNotice.render(context, i);
@@ -309,21 +298,29 @@ public class TitleScreen extends Screen {
 			context.drawTextWithShadow(this.textRenderer, string, 2, this.height - 10, 16777215 | i);
 
 			for (Element element : this.children()) {
-				if (element instanceof ClickableWidget) {
-					((ClickableWidget)element).setAlpha(g);
+				if (element instanceof ClickableWidget clickableWidget) {
+					clickableWidget.setAlpha(f);
 				}
 			}
 
-			super.render(context, mouseX, mouseY, delta);
-			if (this.isRealmsNotificationsGuiDisplayed() && g >= 1.0F) {
+			if (this.isRealmsNotificationsGuiDisplayed() && f >= 1.0F) {
 				RenderSystem.enableDepthTest();
 				this.realmsNotificationGui.render(context, mouseX, mouseY, delta);
 			}
+
+			super.render(context, mouseX, mouseY, delta);
+			this.logoDrawer.draw(context, this.width, f);
 		}
 	}
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderPanoramaBackground(context, delta);
+	}
+
+	@Override
+	protected void renderPanoramaBackground(DrawContext context, float delta) {
+		ROTATING_PANORAMA_RENDERER.render(delta, MathHelper.clamp(this.backgroundAlpha, 0.0F, 1.0F));
 	}
 
 	@Override

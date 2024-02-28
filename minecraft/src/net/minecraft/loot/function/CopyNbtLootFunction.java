@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import net.minecraft.command.argument.NbtPathArgumentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -22,6 +24,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.StringIdentifiable;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 public class CopyNbtLootFunction extends ConditionalLootFunction {
 	public static final Codec<CopyNbtLootFunction> CODEC = RecordCodecBuilder.create(
@@ -45,7 +48,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public LootFunctionType getType() {
-		return LootFunctionTypes.COPY_NBT;
+		return LootFunctionTypes.COPY_CUSTOM_DATA;
 	}
 
 	@Override
@@ -56,13 +59,28 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		NbtElement nbtElement = this.source.getNbt(context);
-		if (nbtElement != null) {
-			this.operations.forEach(operation -> operation.execute(stack::getOrCreateNbt, nbtElement));
-		}
+		if (nbtElement == null) {
+			return stack;
+		} else {
+			MutableObject<NbtCompound> mutableObject = new MutableObject<>();
+			Supplier<NbtElement> supplier = () -> {
+				if (mutableObject.getValue() == null) {
+					mutableObject.setValue(stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt());
+				}
 
-		return stack;
+				return mutableObject.getValue();
+			};
+			this.operations.forEach(operation -> operation.execute(supplier, nbtElement));
+			NbtCompound nbtCompound = mutableObject.getValue();
+			if (nbtCompound != null) {
+				NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbtCompound);
+			}
+
+			return stack;
+		}
 	}
 
+	@Deprecated
 	public static CopyNbtLootFunction.Builder builder(LootNbtProvider source) {
 		return new CopyNbtLootFunction.Builder(source);
 	}

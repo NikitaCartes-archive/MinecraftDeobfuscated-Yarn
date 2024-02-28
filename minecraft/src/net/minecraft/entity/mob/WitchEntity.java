@@ -1,7 +1,8 @@
 package net.minecraft.entity.mob;
 
-import java.util.List;
 import java.util.UUID;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -23,7 +24,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
@@ -32,7 +32,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -120,13 +119,9 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					this.setDrinking(false);
 					ItemStack itemStack = this.getMainHandStack();
 					this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-					if (itemStack.isOf(Items.POTION)) {
-						List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-						if (list != null) {
-							for (StatusEffectInstance statusEffectInstance : list) {
-								this.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
-							}
-						}
+					PotionContentsComponent potionContentsComponent = itemStack.get(DataComponentTypes.POTION_CONTENTS);
+					if (itemStack.isOf(Items.POTION) && potionContentsComponent != null) {
+						potionContentsComponent.forEachEffect(this::addStatusEffect);
 					}
 
 					this.emitGameEvent(GameEvent.DRINK);
@@ -150,7 +145,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				}
 
 				if (registryEntry != null) {
-					this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.POTION), registryEntry));
+					this.equipStack(EquipmentSlot.MAINHAND, PotionContentsComponent.createStack(Items.POTION, registryEntry));
 					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
 					if (!this.isSilent()) {
@@ -239,7 +234,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			}
 
 			PotionEntity potionEntity = new PotionEntity(this.getWorld(), this);
-			potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), registryEntry));
+			potionEntity.setItem(PotionContentsComponent.createStack(Items.SPLASH_POTION, registryEntry));
 			potionEntity.setPitch(potionEntity.getPitch() - -20.0F);
 			potionEntity.setVelocity(d, e + g * 0.2, f, 0.75F, 8.0F);
 			if (!this.isSilent()) {

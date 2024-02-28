@@ -3164,9 +3164,9 @@ public class BlockStateModelGenerator {
 
 	private void registerVault() {
 		Block block = Blocks.VAULT;
-		TextureMap textureMap = TextureMap.vault(block, "_front_off", "_side_off", "_top_off", "_bottom");
-		TextureMap textureMap2 = TextureMap.vault(block, "_front_on", "_side_on", "_top_on", "_bottom");
-		TextureMap textureMap3 = TextureMap.vault(block, "_front_ejecting", "_side_on", "_top_on", "_bottom");
+		TextureMap textureMap = TextureMap.vault(block, "_front_off", "_side_off", "_top", "_bottom");
+		TextureMap textureMap2 = TextureMap.vault(block, "_front_on", "_side_on", "_top", "_bottom");
+		TextureMap textureMap3 = TextureMap.vault(block, "_front_ejecting", "_side_on", "_top", "_bottom");
 		TextureMap textureMap4 = TextureMap.vault(block, "_front_ejecting", "_side_on", "_top_ejecting", "_bottom");
 		Identifier identifier = Models.TEMPLATE_VAULT.upload(block, textureMap, this.modelCollector);
 		Identifier identifier2 = Models.TEMPLATE_VAULT.upload(block, "_active", textureMap2, this.modelCollector);
@@ -3750,18 +3750,16 @@ public class BlockStateModelGenerator {
 		Block block = Blocks.CHISELED_BOOKSHELF;
 		Identifier identifier = ModelIds.getBlockModelId(block);
 		MultipartBlockStateSupplier multipartBlockStateSupplier = MultipartBlockStateSupplier.create(block);
-		Map.of(
-				Direction.NORTH,
-				VariantSettings.Rotation.R0,
-				Direction.EAST,
-				VariantSettings.Rotation.R90,
-				Direction.SOUTH,
-				VariantSettings.Rotation.R180,
-				Direction.WEST,
-				VariantSettings.Rotation.R270
+		List.of(
+				Pair.of(Direction.NORTH, VariantSettings.Rotation.R0),
+				Pair.of(Direction.EAST, VariantSettings.Rotation.R90),
+				Pair.of(Direction.SOUTH, VariantSettings.Rotation.R180),
+				Pair.of(Direction.WEST, VariantSettings.Rotation.R270)
 			)
 			.forEach(
-				(direction, rotation) -> {
+				pair -> {
+					Direction direction = (Direction)pair.getFirst();
+					VariantSettings.Rotation rotation = (VariantSettings.Rotation)pair.getSecond();
 					When.PropertyCondition propertyCondition = When.create().set(Properties.HORIZONTAL_FACING, direction);
 					multipartBlockStateSupplier.with(
 						propertyCondition, BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, rotation).put(VariantSettings.UVLOCK, true)

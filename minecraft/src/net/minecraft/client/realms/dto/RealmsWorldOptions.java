@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.util.JsonUtils;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.Util;
+import net.minecraft.util.StringHelper;
 
 @Environment(EnvType.CLIENT)
 public class RealmsWorldOptions extends ValueObject {
@@ -105,7 +105,7 @@ public class RealmsWorldOptions extends ValueObject {
 	}
 
 	public String getSlotName(int index) {
-		if (Util.isBlank(this.slotName)) {
+		if (StringHelper.isBlank(this.slotName)) {
 			return this.empty ? I18n.translate("mco.configure.world.slot.empty") : this.getDefaultSlotName(index);
 		} else {
 			return this.slotName;

@@ -4,19 +4,16 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.BannerPatternItem;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BannerPatternTags;
@@ -183,11 +180,8 @@ public class LoomScreenHandler extends ScreenHandler {
 			}
 
 			if (registryEntry != null) {
-				NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
-				boolean bl2 = nbtCompound != null
-					&& nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
-					&& !itemStack.isEmpty()
-					&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
+				BannerPatternsComponent bannerPatternsComponent = itemStack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
+				boolean bl2 = bannerPatternsComponent.layers().size() >= 6;
 				if (bl2) {
 					this.selectedPattern.set(-1);
 					this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);
@@ -284,24 +278,11 @@ public class LoomScreenHandler extends ScreenHandler {
 		if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 			itemStack3 = itemStack.copyWithCount(1);
 			DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack3);
-			NbtList nbtList;
-			if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
-				nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
-			} else {
-				nbtList = new NbtList();
-				if (nbtCompound == null) {
-					nbtCompound = new NbtCompound();
-				}
-
-				nbtCompound.put("Patterns", nbtList);
-			}
-
-			NbtCompound nbtCompound2 = new NbtCompound();
-			nbtCompound2.putString("Pattern", pattern.value().getId());
-			nbtCompound2.putInt("Color", dyeColor.getId());
-			nbtList.add(nbtCompound2);
-			BlockItem.setBlockEntityNbt(itemStack3, BlockEntityType.BANNER, nbtCompound);
+			itemStack3.apply(
+				DataComponentTypes.BANNER_PATTERNS,
+				BannerPatternsComponent.DEFAULT,
+				component -> new BannerPatternsComponent.Builder().addAll(component).add(pattern, dyeColor).build()
+			);
 		}
 
 		if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {

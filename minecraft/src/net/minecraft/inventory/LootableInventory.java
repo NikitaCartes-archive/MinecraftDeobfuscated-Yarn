@@ -105,10 +105,15 @@ public interface LootableInventory extends Inventory {
 	 * 
 	 * @return whether the loot table ID was found
 	 */
-	default boolean readLootTable(NbtCompound nbt) {
-		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
-			this.setLootTableId(new Identifier(nbt.getString("LootTable")));
-			this.setLootTableSeed(nbt.getLong("LootTableSeed"));
+	default boolean readLootTable(NbtCompound nbtCompound) {
+		if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
+			this.setLootTableId(new Identifier(nbtCompound.getString("LootTable")));
+			if (nbtCompound.contains("LootTableSeed", NbtElement.LONG_TYPE)) {
+				this.setLootTableSeed(nbtCompound.getLong("LootTableSeed"));
+			} else {
+				this.setLootTableSeed(0L);
+			}
+
 			return true;
 		} else {
 			return false;

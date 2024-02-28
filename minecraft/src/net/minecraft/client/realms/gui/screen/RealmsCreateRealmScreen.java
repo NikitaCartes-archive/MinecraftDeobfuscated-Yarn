@@ -8,14 +8,13 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.task.CreatingSnapshotWorldTask;
 import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import net.minecraft.util.StringHelper;
 
 @Environment(EnvType.CLIENT)
 public class RealmsCreateRealmScreen extends RealmsScreen {
@@ -44,12 +43,12 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
+		this.layout.addHeader(this.title, this.textRenderer);
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(10);
 		ButtonWidget buttonWidget = ButtonWidget.builder(ScreenTexts.CONTINUE, button -> this.worldCreator.run()).build();
 		buttonWidget.active = false;
 		this.nameBox = new TextFieldWidget(this.textRenderer, 210, 20, WORLD_NAME_TEXT);
-		this.nameBox.setChangedListener(name -> buttonWidget.active = !Util.isBlank(name));
+		this.nameBox.setChangedListener(name -> buttonWidget.active = !StringHelper.isBlank(name));
 		this.descriptionBox = new TextFieldWidget(this.textRenderer, 210, 20, WORLD_DESCRIPTION_TEXT);
 		directionalLayoutWidget.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.nameBox, WORLD_NAME_TEXT));
 		directionalLayoutWidget.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.descriptionBox, WORLD_DESCRIPTION_TEXT));

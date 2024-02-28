@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
@@ -39,12 +40,13 @@ import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.Positioner;
-import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TabNavigationWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.CombinedDynamicRegistries;
@@ -68,7 +70,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.path.SymlinkFinder;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -90,7 +91,6 @@ import org.slf4j.Logger;
 public class CreateWorldScreen extends Screen {
 	private static final int field_42165 = 1;
 	private static final int field_42166 = 210;
-	private static final int field_42167 = 36;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String TEMP_DIR_PREFIX = "mcworld-";
 	static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
@@ -102,7 +102,7 @@ public class CreateWorldScreen extends Screen {
 	private static final int field_42171 = 8;
 	public static final Identifier HEADER_SEPARATOR_TEXTURE = new Identifier("textures/gui/header_separator.png");
 	public static final Identifier FOOTER_SEPARATOR_TEXTURE = new Identifier("textures/gui/footer_separator.png");
-	public static final Identifier LIGHT_DIRT_BACKGROUND_TEXTURE = new Identifier("textures/gui/light_dirt_background.png");
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	final WorldCreator worldCreator;
 	private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove(child));
 	private boolean recreated;
@@ -113,8 +113,6 @@ public class CreateWorldScreen extends Screen {
 	private Path dataPackTempDir;
 	@Nullable
 	private ResourcePackManager packManager;
-	@Nullable
-	private GridWidget grid;
 	@Nullable
 	private TabNavigationWidget tabNavigation;
 
@@ -193,11 +191,10 @@ public class CreateWorldScreen extends Screen {
 			.tabs(new CreateWorldScreen.GameTab(), new CreateWorldScreen.WorldTab(), new CreateWorldScreen.MoreTab())
 			.build();
 		this.addDrawableChild(this.tabNavigation);
-		this.grid = new GridWidget().setColumnSpacing(10);
-		GridWidget.Adder adder = this.grid.createAdder(2);
-		adder.add(ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).build());
-		adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).build());
-		this.grid.forEachChild(child -> {
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget.add(ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).build());
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).build());
+		this.layout.forEachChild(child -> {
 			child.setNavigationOrder(1);
 			this.addDrawableChild(child);
 		});
@@ -212,14 +209,14 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	public void initTabNavigation() {
-		if (this.tabNavigation != null && this.grid != null) {
+		if (this.tabNavigation != null) {
 			this.tabNavigation.setWidth(this.width);
 			this.tabNavigation.init();
-			this.grid.refreshPositions();
-			SimplePositioningWidget.setPos(this.grid, 0, this.height - 36, this.width, 36);
 			int i = this.tabNavigation.getNavigationFocus().getBottom();
-			ScreenRect screenRect = new ScreenRect(0, i, this.width, this.grid.getY() - i);
+			ScreenRect screenRect = new ScreenRect(0, i, this.width, this.height - this.layout.getFooterHeight() - i);
 			this.tabManager.setTabArea(screenRect);
+			this.layout.setHeaderHeight(i);
+			this.layout.refreshPositions();
 		}
 	}
 
@@ -305,13 +302,14 @@ public class CreateWorldScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawTexture(FOOTER_SEPARATOR_TEXTURE, 0, MathHelper.roundUpToMultiple(this.height - 36 - 2, 2), 0.0F, 0.0F, this.width, 2, 32, 2);
+		RenderSystem.enableBlend();
+		context.drawTexture(FOOTER_SEPARATOR_TEXTURE, 0, this.height - this.layout.getFooterHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2);
+		RenderSystem.disableBlend();
 	}
 
 	@Override
-	public void renderBackgroundTexture(DrawContext context) {
-		int i = 32;
-		context.drawTexture(LIGHT_DIRT_BACKGROUND_TEXTURE, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
+	protected void renderDarkening(DrawContext context) {
+		this.renderDarkening(context, 0, this.layout.getHeaderHeight(), this.width, this.height);
 	}
 
 	@Override

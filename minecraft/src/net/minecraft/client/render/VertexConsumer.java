@@ -212,8 +212,8 @@ public interface VertexConsumer {
 	 * @throws IllegalStateException if a color has been set in {@link
 	 * #fixedColor}.
 	 */
-	default void quad(MatrixStack.Entry matrixEntry, BakedQuad quad, float red, float green, float blue, int light, int overlay) {
-		this.quad(matrixEntry, quad, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, red, green, blue, new int[]{light, light, light, light}, overlay, false);
+	default void quad(MatrixStack.Entry matrixEntry, BakedQuad quad, float red, float green, float blue, float f, int i, int j) {
+		this.quad(matrixEntry, quad, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, red, green, blue, f, new int[]{i, i, i, i}, j, false);
 	}
 
 	/**
@@ -224,48 +224,48 @@ public interface VertexConsumer {
 	 * #fixedColor}.
 	 */
 	default void quad(
-		MatrixStack.Entry matrixEntry, BakedQuad quad, float[] brightnesses, float red, float green, float blue, int[] lights, int overlay, boolean useQuadColorData
+		MatrixStack.Entry matrixEntry, BakedQuad quad, float[] brightnesses, float red, float green, float blue, float f, int[] is, int i, boolean bl
 	) {
 		float[] fs = new float[]{brightnesses[0], brightnesses[1], brightnesses[2], brightnesses[3]};
-		int[] is = new int[]{lights[0], lights[1], lights[2], lights[3]};
-		int[] js = quad.getVertexData();
+		int[] js = new int[]{is[0], is[1], is[2], is[3]};
+		int[] ks = quad.getVertexData();
 		Vec3i vec3i = quad.getFace().getVector();
 		Matrix4f matrix4f = matrixEntry.getPositionMatrix();
 		Vector3f vector3f = matrixEntry.transformNormal((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), new Vector3f());
-		int i = 8;
-		int j = js.length / 8;
+		int j = 8;
+		int k = ks.length / 8;
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			ByteBuffer byteBuffer = memoryStack.malloc(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL.getVertexSizeByte());
 			IntBuffer intBuffer = byteBuffer.asIntBuffer();
 
-			for (int k = 0; k < j; k++) {
+			for (int l = 0; l < k; l++) {
 				intBuffer.clear();
-				intBuffer.put(js, k * 8, 8);
-				float f = byteBuffer.getFloat(0);
-				float g = byteBuffer.getFloat(4);
-				float h = byteBuffer.getFloat(8);
-				float o;
-				float p;
+				intBuffer.put(ks, l * 8, 8);
+				float g = byteBuffer.getFloat(0);
+				float h = byteBuffer.getFloat(4);
+				float m = byteBuffer.getFloat(8);
 				float q;
-				if (useQuadColorData) {
-					float l = (float)(byteBuffer.get(12) & 255) / 255.0F;
-					float m = (float)(byteBuffer.get(13) & 255) / 255.0F;
-					float n = (float)(byteBuffer.get(14) & 255) / 255.0F;
-					o = l * fs[k] * red;
-					p = m * fs[k] * green;
-					q = n * fs[k] * blue;
+				float r;
+				float s;
+				if (bl) {
+					float n = (float)(byteBuffer.get(12) & 255) / 255.0F;
+					float o = (float)(byteBuffer.get(13) & 255) / 255.0F;
+					float p = (float)(byteBuffer.get(14) & 255) / 255.0F;
+					q = n * fs[l] * red;
+					r = o * fs[l] * green;
+					s = p * fs[l] * blue;
 				} else {
-					o = fs[k] * red;
-					p = fs[k] * green;
-					q = fs[k] * blue;
+					q = fs[l] * red;
+					r = fs[l] * green;
+					s = fs[l] * blue;
 				}
 
-				int r = is[k];
-				float m = byteBuffer.getFloat(16);
-				float n = byteBuffer.getFloat(20);
-				Vector4f vector4f = matrix4f.transform(new Vector4f(f, g, h, 1.0F));
-				this.vertex(vector4f.x(), vector4f.y(), vector4f.z(), o, p, q, 1.0F, m, n, overlay, r, vector3f.x(), vector3f.y(), vector3f.z());
+				int t = js[l];
+				float o = byteBuffer.getFloat(16);
+				float p = byteBuffer.getFloat(20);
+				Vector4f vector4f = matrix4f.transform(new Vector4f(g, h, m, 1.0F));
+				this.vertex(vector4f.x(), vector4f.y(), vector4f.z(), q, r, s, f, o, p, i, t, vector3f.x(), vector3f.y(), vector3f.z());
 			}
 		}
 	}

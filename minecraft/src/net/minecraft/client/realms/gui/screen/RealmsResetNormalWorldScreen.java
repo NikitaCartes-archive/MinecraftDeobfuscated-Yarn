@@ -12,7 +12,6 @@ import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
@@ -45,7 +44,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	public void init() {
 		this.seedEdit = new TextFieldWidget(this.textRenderer, 210, 20, Text.translatable("mco.reset.world.seed"));
 		this.seedEdit.setMaxLength(32);
-		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
+		this.layout.addHeader(this.title, this.textRenderer);
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(10);
 		directionalLayoutWidget.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.seedEdit, RESET_SEED_TEXT));
 		directionalLayoutWidget.add(

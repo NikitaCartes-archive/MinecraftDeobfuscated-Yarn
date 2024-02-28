@@ -224,13 +224,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Override
-	protected int getScrollbarPositionX() {
-		return super.getScrollbarPositionX() + 20;
-	}
-
-	@Override
 	public int getRowWidth() {
-		return super.getRowWidth() + 50;
+		return 270;
 	}
 
 	public void setSelected(@Nullable WorldListWidget.Entry entry) {
@@ -431,7 +426,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				WorldListWidget.this.setSelected((WorldListWidget.Entry)this);
 				if (!(mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) && Util.getMeasuringTimeMs() - this.time >= 250L) {
 					this.time = Util.getMeasuringTimeMs();
-					return true;
+					return super.mouseClicked(mouseX, mouseY, button);
 				} else {
 					if (this.isLevelSelectable()) {
 						this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));

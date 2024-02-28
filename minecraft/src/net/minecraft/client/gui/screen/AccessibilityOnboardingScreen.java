@@ -7,24 +7,23 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.LogoDrawer;
-import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.NarratedMultilineTextWidget;
-import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityOnboardingScreen extends Screen {
+	private static final Text TITLE_TEXT = Text.translatable("accessibility.onboarding.screen.title");
 	private static final Text NARRATOR_PROMPT = Text.translatable("accessibility.onboarding.screen.narrator");
 	private static final int field_41838 = 4;
 	private static final int field_41839 = 16;
-	private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(TitleScreen.PANORAMA_CUBE_MAP);
 	private final LogoDrawer logoDrawer;
 	private final GameOptions gameOptions;
 	private final boolean isNarratorUsable;
@@ -35,9 +34,10 @@ public class AccessibilityOnboardingScreen extends Screen {
 	private NarratedMultilineTextWidget textWidget;
 	@Nullable
 	private ClickableWidget narratorWidget;
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this, this.yMargin(), 33);
 
 	public AccessibilityOnboardingScreen(GameOptions gameOptions, Runnable onClose) {
-		super(Text.translatable("accessibility.onboarding.screen.title"));
+		super(TITLE_TEXT);
 		this.gameOptions = gameOptions;
 		this.onClose = onClose;
 		this.logoDrawer = new LogoDrawer(true);
@@ -46,14 +46,10 @@ public class AccessibilityOnboardingScreen extends Screen {
 
 	@Override
 	public void init() {
-		int i = this.yMargin();
-		SimplePositioningWidget simplePositioningWidget = new SimplePositioningWidget(this.width, this.height - i);
-		simplePositioningWidget.getMainPositioner().alignTop().margin(4);
-		DirectionalLayoutWidget directionalLayoutWidget = simplePositioningWidget.add(DirectionalLayoutWidget.vertical());
-		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter().margin(2);
-		this.textWidget = new NarratedMultilineTextWidget(this.width - 16, this.title, this.textRenderer);
-		directionalLayoutWidget.add(this.textWidget, positioner -> positioner.marginBottom(16));
-		this.narratorWidget = this.gameOptions.getNarrator().createWidget(this.gameOptions, 0, 0, 150);
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical());
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter().margin(4);
+		this.textWidget = directionalLayoutWidget.add(new NarratedMultilineTextWidget(this.width, this.title, this.textRenderer), positioner -> positioner.margin(8));
+		this.narratorWidget = this.gameOptions.getNarrator().createWidget(this.gameOptions);
 		this.narratorWidget.active = this.isNarratorUsable;
 		directionalLayoutWidget.add(this.narratorWidget);
 		directionalLayoutWidget.add(
@@ -64,12 +60,18 @@ public class AccessibilityOnboardingScreen extends Screen {
 				150, button -> this.setScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())), false
 			)
 		);
-		simplePositioningWidget.add(
-			ButtonWidget.builder(ScreenTexts.CONTINUE, button -> this.close()).build(), simplePositioningWidget.copyPositioner().alignBottom().margin(8)
-		);
-		simplePositioningWidget.refreshPositions();
-		SimplePositioningWidget.setPos(simplePositioningWidget, 0, i, this.width, this.height, 0.5F, 0.0F);
-		simplePositioningWidget.forEachChild(this::addDrawableChild);
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.CONTINUE, button -> this.close()).build());
+		this.layout.forEachChild(this::addDrawableChild);
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		if (this.textWidget != null) {
+			this.textWidget.initMaxWidth(this.width);
+		}
+
+		this.layout.refreshPositions();
 	}
 
 	@Override
@@ -106,15 +108,11 @@ public class AccessibilityOnboardingScreen extends Screen {
 		super.render(context, mouseX, mouseY, delta);
 		this.tickNarratorPrompt();
 		this.logoDrawer.draw(context, this.width, 1.0F);
-		if (this.textWidget != null) {
-			this.textWidget.render(context, mouseX, mouseY, delta);
-		}
 	}
 
 	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.backgroundRenderer.render(0.0F, 1.0F);
-		context.fill(0, 0, this.width, this.height, -1877995504);
+	protected void renderPanoramaBackground(DrawContext context, float delta) {
+		ROTATING_PANORAMA_RENDERER.render(0.0F);
 	}
 
 	private void tickNarratorPrompt() {

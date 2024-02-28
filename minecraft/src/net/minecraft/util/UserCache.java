@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.entity.player.PlayerEntity;
 import org.slf4j.Logger;
 
 public class UserCache {
@@ -69,7 +68,7 @@ public class UserCache {
 	}
 
 	private static Optional<GameProfile> findProfileByName(GameProfileRepository repository, String name) {
-		if (!PlayerEntity.isUsernameValid(name)) {
+		if (!StringHelper.isValidPlayerName(name)) {
 			return getOfflinePlayerProfile(name);
 		} else {
 			final AtomicReference<GameProfile> atomicReference = new AtomicReference();

@@ -105,7 +105,7 @@ public class ChorusPlantBlock extends ConnectingBlock {
 	}
 
 	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		return false;
 	}
 }

@@ -3,6 +3,8 @@ package net.minecraft.client.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.LayoutWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -21,14 +23,16 @@ public class Realms32BitWarningScreen extends WarningScreen {
 	}
 
 	@Override
-	protected void initButtons(int yOffset) {
-		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
+	protected LayoutWidget getLayout() {
+		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.horizontal().spacing(8);
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> {
 			if (this.checkbox.isChecked()) {
 				this.client.options.skipRealms32BitWarning = true;
 				this.client.options.write();
 			}
 
 			this.client.setScreen(this.parent);
-		}).dimensions(this.width / 2 - 75, 100 + yOffset, 150, 20).build());
+		}).build());
+		return directionalLayoutWidget;
 	}
 }

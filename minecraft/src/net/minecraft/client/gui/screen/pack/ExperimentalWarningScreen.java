@@ -16,12 +16,14 @@ import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Colors;
 
 @Environment(EnvType.CLIENT)
 public class ExperimentalWarningScreen extends Screen {
@@ -75,10 +77,27 @@ public class ExperimentalWarningScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class DetailsScreen extends Screen {
-		private ExperimentalWarningScreen.DetailsScreen.PackListWidget packList;
+		private static final Text TITLE = Text.translatable("selectWorld.experimental.details.title");
+		final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 
 		DetailsScreen() {
-			super(Text.translatable("selectWorld.experimental.details.title"));
+			super(TITLE);
+		}
+
+		@Override
+		protected void init() {
+			this.layout.addHeader(TITLE, this.textRenderer);
+			this.layout.addBody(new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this.client, ExperimentalWarningScreen.this.enabledProfiles));
+			this.layout.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
+			this.layout.forEachChild(element -> {
+				ClickableWidget var10000 = this.addDrawableChild(element);
+			});
+			this.initTabNavigation();
+		}
+
+		@Override
+		protected void initTabNavigation() {
+			this.layout.refreshPositions();
 		}
 
 		@Override
@@ -86,27 +105,10 @@ public class ExperimentalWarningScreen extends Screen {
 			this.client.setScreen(ExperimentalWarningScreen.this);
 		}
 
-		@Override
-		protected void init() {
-			super.init();
-			this.addDrawableChild(
-				ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20).build()
-			);
-			this.packList = this.addDrawableChild(
-				new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this.client, ExperimentalWarningScreen.this.enabledProfiles)
-			);
-		}
-
-		@Override
-		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-			super.render(context, mouseX, mouseY, delta);
-			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 16777215);
-		}
-
 		@Environment(EnvType.CLIENT)
 		class PackListWidget extends AlwaysSelectedEntryListWidget<ExperimentalWarningScreen.DetailsScreen.PackListWidgetEntry> {
 			public PackListWidget(MinecraftClient client, Collection<ResourcePackProfile> enabledProfiles) {
-				super(client, DetailsScreen.this.width, DetailsScreen.this.height - 96, 32, (9 + 2) * 3);
+				super(client, DetailsScreen.this.width, DetailsScreen.this.layout.getContentHeight(), DetailsScreen.this.layout.getHeaderHeight(), (9 + 2) * 3);
 
 				for (ResourcePackProfile resourcePackProfile : enabledProfiles) {
 					String string = FeatureFlags.printMissingFlags(FeatureFlags.VANILLA_FEATURES, resourcePackProfile.getRequestedFeatures());
@@ -138,8 +140,8 @@ public class ExperimentalWarningScreen extends Screen {
 
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				context.drawTextWithShadow(DetailsScreen.this.client.textRenderer, this.displayName, x, y, 16777215);
-				this.multilineDetails.drawWithShadow(context, x, y + 12, 9, 16777215);
+				context.drawTextWithShadow(DetailsScreen.this.client.textRenderer, this.displayName, x, y, Colors.WHITE);
+				this.multilineDetails.drawWithShadow(context, x, y + 12, 9, -1);
 			}
 
 			@Override

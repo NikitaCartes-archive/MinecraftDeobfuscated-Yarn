@@ -417,7 +417,7 @@ public abstract class ChunkGenerator {
 				world.setCurrentlyGeneratingStructureName(null);
 			} catch (Exception var31) {
 				CrashReport crashReport3 = CrashReport.create(var31, "Biome decoration");
-				crashReport3.addElement("Generation").add("CenterX", chunkPos.x).add("CenterZ", chunkPos.z).add("Seed", l);
+				crashReport3.addElement("Generation").add("CenterX", chunkPos.x).add("CenterZ", chunkPos.z).add("Decoration Seed", l);
 				throw new CrashException(crashReport3);
 			}
 		}

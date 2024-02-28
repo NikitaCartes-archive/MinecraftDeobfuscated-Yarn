@@ -13,7 +13,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
@@ -27,6 +29,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsScreen extends Screen {
+	private static final Text TITLE = Text.translatable("gui.socialInteractions.title");
 	private static final Identifier BACKGROUND_TEXTURE = new Identifier("social_interactions/background");
 	private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
 	private static final Text ALL_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_all");
@@ -49,6 +52,9 @@ public class SocialInteractionsScreen extends Screen {
 	private static final int field_32429 = 238;
 	private static final int field_32430 = 20;
 	private static final int field_32431 = 36;
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
+	@Nullable
+	private final Screen parent;
 	SocialInteractionsPlayerListWidget playerList;
 	TextFieldWidget searchBox;
 	private String currentSearch = "";
@@ -63,7 +69,12 @@ public class SocialInteractionsScreen extends Screen {
 	private boolean initialized;
 
 	public SocialInteractionsScreen() {
-		super(Text.translatable("gui.socialInteractions.title"));
+		this(null);
+	}
+
+	public SocialInteractionsScreen(@Nullable Screen parent) {
+		super(TITLE);
+		this.parent = parent;
 		this.updateServerLabel(MinecraftClient.getInstance());
 	}
 
@@ -86,18 +97,16 @@ public class SocialInteractionsScreen extends Screen {
 
 	@Override
 	protected void init() {
+		this.layout.addHeader(TITLE, this.textRenderer);
 		if (this.initialized) {
-			this.playerList.setDimensionsAndPosition(this.width, this.getPlayerListBottom() - 88, 0, 88);
+			this.playerList.setDimensionsAndPosition(this.width, this.getScreenHeight(), 0, 88);
 		} else {
-			this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.getPlayerListBottom() - 88, 88, 36);
+			this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.getScreenHeight(), 88, 36);
 		}
 
 		int i = this.playerList.getRowWidth() / 3;
 		int j = this.playerList.getRowLeft();
 		int k = this.playerList.getRowRight();
-		int l = this.textRenderer.getWidth(BLOCKING_TEXT) + 40;
-		int m = 64 + this.getScreenHeight();
-		int n = (this.width - l) / 2 + 3;
 		this.allTabButton = this.addDrawableChild(
 			ButtonWidget.builder(ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)).dimensions(j, 45, i, 20).build()
 		);
@@ -118,17 +127,48 @@ public class SocialInteractionsScreen extends Screen {
 		};
 		this.searchBox.setMaxLength(16);
 		this.searchBox.setVisible(true);
-		this.searchBox.setEditableColor(16777215);
+		this.searchBox.setEditableColor(-1);
 		this.searchBox.setText(string);
 		this.searchBox.setPlaceholder(SEARCH_TEXT);
 		this.searchBox.setChangedListener(this::onSearchChange);
-		this.addSelectableChild(this.searchBox);
+		this.addDrawableChild(this.searchBox);
 		this.addSelectableChild(this.playerList);
 		this.blockingButton = this.addDrawableChild(
-			ButtonWidget.builder(BLOCKING_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/javablocking")).dimensions(n, m, l, 20).build()
+			ButtonWidget.builder(BLOCKING_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/javablocking"))
+				.dimensions(this.width / 2 - 100, 64 + this.getScreenHeight(), 200, 20)
+				.build()
 		);
 		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).width(200).build());
+		this.layout.forEachChild(element -> {
+			ClickableWidget var10000 = this.addDrawableChild(element);
+		});
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		this.playerList.position(this.width, this.getScreenHeight(), 88);
+		this.searchBox.setPosition(this.getSearchBoxX() + 28, 74);
+		int i = this.playerList.getRowLeft();
+		int j = this.playerList.getRowRight();
+		int k = this.playerList.getRowWidth() / 3;
+		this.allTabButton.setPosition(i, 45);
+		this.hiddenTabButton.setPosition((i + j - k) / 2 + 1, 45);
+		this.blockedTabButton.setPosition(j - k + 1, 45);
+		this.blockingButton.setPosition(this.width / 2 - 100, 64 + this.getScreenHeight());
+	}
+
+	@Override
+	protected void setInitialFocus() {
+		this.setInitialFocus(this.searchBox);
+	}
+
+	@Override
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	private void setCurrentTab(SocialInteractionsScreen.Tab currentTab) {
@@ -177,8 +217,8 @@ public class SocialInteractionsScreen extends Screen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		int i = this.getSearchBoxX() + 3;
 		super.renderBackground(context, mouseX, mouseY, delta);
+		int i = this.getSearchBoxX() + 3;
 		context.drawGuiTexture(BACKGROUND_TEXTURE, i, 64, 236, this.getScreenHeight() + 16);
 		context.drawGuiTexture(SEARCH_ICON_TEXTURE, i + 10, 76, 12, 12);
 	}
@@ -201,14 +241,13 @@ public class SocialInteractionsScreen extends Screen {
 			context.drawCenteredTextWithShadow(this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, Colors.WHITE);
 		}
 
-		this.searchBox.render(context, mouseX, mouseY, delta);
 		this.blockingButton.visible = this.currentTab == SocialInteractionsScreen.Tab.BLOCKED;
 	}
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (!this.searchBox.isFocused() && this.client.options.socialInteractionsKey.matchesKey(keyCode, scanCode)) {
-			this.client.setScreen(null);
+			this.close();
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);

@@ -114,7 +114,7 @@ public class NbtTextContent implements TextContent {
 				Text text = DataFixUtils.orElse(Texts.parse(source, this.separator, sender, depth), Texts.DEFAULT_SEPARATOR_TEXT);
 				return (MutableText)stream.flatMap(textx -> {
 					try {
-						MutableText mutableText = Text.Serialization.fromJson(textx);
+						MutableText mutableText = Text.Serialization.fromJson(textx, source.getRegistryManager());
 						return Stream.of(Texts.parse(source, mutableText, sender, depth));
 					} catch (Exception var5x) {
 						LOGGER.warn("Failed to parse component: {}", textx, var5x);

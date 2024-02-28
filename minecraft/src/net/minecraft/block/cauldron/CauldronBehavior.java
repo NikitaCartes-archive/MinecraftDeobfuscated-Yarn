@@ -10,14 +10,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.entity.BannerBlockEntity;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
@@ -134,7 +134,7 @@ public interface CauldronBehavior {
 			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
-				player.setStackInHand(hand, stack.copyNbtToNewStack(Blocks.SHULKER_BOX, 1));
+				player.setStackInHand(hand, stack.copyComponentsToNewStack(Blocks.SHULKER_BOX, 1));
 				player.incrementStat(Stats.CLEAN_SHULKER_BOX);
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
@@ -146,12 +146,13 @@ public interface CauldronBehavior {
 	 * A behavior that cleans banners with patterns.
 	 */
 	CauldronBehavior CLEAN_BANNER = (state, world, pos, player, hand, stack) -> {
-		if (BannerBlockEntity.getPatternCount(stack) <= 0) {
+		BannerPatternsComponent bannerPatternsComponent = stack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
+		if (bannerPatternsComponent.layers().isEmpty()) {
 			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
 				ItemStack itemStack = stack.copyWithCount(1);
-				BannerBlockEntity.loadFromItemStack(itemStack);
+				itemStack.set(DataComponentTypes.BANNER_PATTERNS, bannerPatternsComponent.withoutTopLayer());
 				stack.decrementUnlessCreative(1, player);
 				if (stack.isEmpty()) {
 					player.setStackInHand(hand, itemStack);
@@ -169,16 +170,16 @@ public interface CauldronBehavior {
 		}
 	};
 	/**
-	 * A behavior that cleans {@linkplain net.minecraft.item.DyeableItem dyeable items}.
+	 * A behavior that cleans dyeable items.
 	 */
 	CauldronBehavior CLEAN_DYEABLE_ITEM = (state, world, pos, player, hand, stack) -> {
 		if (!stack.isIn(ItemTags.DYEABLE)) {
 			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		} else if (!DyeableItem.hasColor(stack)) {
+		} else if (!stack.contains(DataComponentTypes.DYED_COLOR)) {
 			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
-				DyeableItem.removeColor(stack);
+				stack.remove(DataComponentTypes.DYED_COLOR);
 				player.incrementStat(Stats.CLEAN_ARMOR);
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
@@ -226,9 +227,8 @@ public interface CauldronBehavior {
 		Map<Item, CauldronBehavior> map = EMPTY_CAULDRON_BEHAVIOR.map();
 		registerBucketBehavior(map);
 		map.put(Items.POTION, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
-			if (!PotionUtil.getPotion(stack).matches(Potions.WATER)) {
-				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-			} else {
+			PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
+			if (potionContentsComponent != null && potionContentsComponent.matches(Potions.WATER)) {
 				if (!world.isClient) {
 					Item item = stack.getItem();
 					player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
@@ -240,6 +240,8 @@ public interface CauldronBehavior {
 				}
 
 				return ItemActionResult.success(world.isClient);
+			} else {
+				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 			}
 		});
 		Map<Item, CauldronBehavior> map2 = WATER_CAULDRON_BEHAVIOR.map();
@@ -261,7 +263,7 @@ public interface CauldronBehavior {
 		map2.put(Items.GLASS_BOTTLE, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
 			if (!world.isClient) {
 				Item item = stack.getItem();
-				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionContentsComponent.createStack(Items.POTION, Potions.WATER)));
 				player.incrementStat(Stats.USE_CAULDRON);
 				player.incrementStat(Stats.USED.getOrCreateStat(item));
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
@@ -272,19 +274,24 @@ public interface CauldronBehavior {
 			return ItemActionResult.success(world.isClient);
 		});
 		map2.put(Items.POTION, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
-			if ((Integer)state.get(LeveledCauldronBlock.LEVEL) != 3 && PotionUtil.getPotion(stack).matches(Potions.WATER)) {
-				if (!world.isClient) {
-					player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
-					player.incrementStat(Stats.USE_CAULDRON);
-					player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-					world.setBlockState(pos, state.cycle(LeveledCauldronBlock.LEVEL));
-					world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
-					world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
-				}
-
-				return ItemActionResult.success(world.isClient);
-			} else {
+			if ((Integer)state.get(LeveledCauldronBlock.LEVEL) == 3) {
 				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			} else {
+				PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
+				if (potionContentsComponent != null && potionContentsComponent.matches(Potions.WATER)) {
+					if (!world.isClient) {
+						player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
+						player.incrementStat(Stats.USE_CAULDRON);
+						player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+						world.setBlockState(pos, state.cycle(LeveledCauldronBlock.LEVEL));
+						world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
+					}
+
+					return ItemActionResult.success(world.isClient);
+				} else {
+					return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				}
 			}
 		});
 		map2.put(Items.LEATHER_BOOTS, CLEAN_DYEABLE_ITEM);
@@ -292,6 +299,7 @@ public interface CauldronBehavior {
 		map2.put(Items.LEATHER_CHESTPLATE, CLEAN_DYEABLE_ITEM);
 		map2.put(Items.LEATHER_HELMET, CLEAN_DYEABLE_ITEM);
 		map2.put(Items.LEATHER_HORSE_ARMOR, CLEAN_DYEABLE_ITEM);
+		map2.put(Items.WOLF_ARMOR, CLEAN_DYEABLE_ITEM);
 		map2.put(Items.WHITE_BANNER, CLEAN_BANNER);
 		map2.put(Items.GRAY_BANNER, CLEAN_BANNER);
 		map2.put(Items.BLACK_BANNER, CLEAN_BANNER);

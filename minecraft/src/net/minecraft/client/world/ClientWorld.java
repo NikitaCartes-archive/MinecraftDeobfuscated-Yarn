@@ -27,6 +27,8 @@ import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.EntityTrackingSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.component.type.FireworkExplosionComponent;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -35,9 +37,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
@@ -107,7 +107,7 @@ public class ClientWorld extends World {
 	private final TickManager tickManager;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
-	private final Map<MapId, MapState> mapStates = Maps.<MapId, MapState>newHashMap();
+	private final Map<MapIdComponent, MapState> mapStates = Maps.<MapIdComponent, MapState>newHashMap();
 	private static final long field_32640 = 16777215L;
 	private int lightningTicksLeft;
 	private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap<>(3), map -> {
@@ -505,10 +505,18 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound nbt) {
-		this.client
-			.particleManager
-			.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, nbt));
+	public void addFireworkParticle(
+		double x, double y, double z, double velocityX, double velocityY, double velocityZ, List<FireworkExplosionComponent> explosions
+	) {
+		if (explosions.isEmpty()) {
+			for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
+				this.addParticle(ParticleTypes.POOF, x, y, z, this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
+			}
+		} else {
+			this.client
+				.particleManager
+				.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, explosions));
+		}
 	}
 
 	@Override
@@ -542,21 +550,21 @@ public class ClientWorld extends World {
 
 	@Nullable
 	@Override
-	public MapState getMapState(MapId id) {
+	public MapState getMapState(MapIdComponent id) {
 		return (MapState)this.mapStates.get(id);
 	}
 
-	public void putClientsideMapState(MapId id, MapState state) {
+	public void putClientsideMapState(MapIdComponent id, MapState state) {
 		this.mapStates.put(id, state);
 	}
 
 	@Override
-	public void putMapState(MapId id, MapState state) {
+	public void putMapState(MapIdComponent id, MapState state) {
 	}
 
 	@Override
-	public MapId getNextMapId() {
-		return new MapId(0);
+	public MapIdComponent getNextMapId() {
+		return new MapIdComponent(0);
 	}
 
 	@Override
@@ -805,11 +813,11 @@ public class ClientWorld extends World {
 	public void emitGameEvent(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter) {
 	}
 
-	public Map<MapId, MapState> getMapStates() {
+	public Map<MapIdComponent, MapState> getMapStates() {
 		return ImmutableMap.copyOf(this.mapStates);
 	}
 
-	public void putMapStates(Map<MapId, MapState> mapStates) {
+	public void putMapStates(Map<MapIdComponent, MapState> mapStates) {
 		this.mapStates.putAll(mapStates);
 	}
 

@@ -16,6 +16,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.LanServerPinger;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.SaveLoader;
@@ -26,6 +27,7 @@ import net.minecraft.util.ApiServices;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.GameMode;
@@ -292,5 +294,30 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public GameMode getForcedGameMode() {
 		return this.isRemote() ? MoreObjects.firstNonNull(this.forcedGameMode, this.saveProperties.getGameMode()) : null;
+	}
+
+	@Override
+	public boolean saveAll(boolean suppressLogs, boolean flush, boolean force) {
+		boolean bl = super.saveAll(suppressLogs, flush, force);
+		this.checkLowDiskSpaceWarning();
+		return bl;
+	}
+
+	private void checkLowDiskSpaceWarning() {
+		if (this.session.shouldShowLowDiskSpaceWarning()) {
+			SystemToast.addLowDiskSpace(this.client);
+		}
+	}
+
+	@Override
+	public void onChunkLoadFailure(ChunkPos pos) {
+		this.checkLowDiskSpaceWarning();
+		SystemToast.addChunkLoadFailure(this.client, pos);
+	}
+
+	@Override
+	public void onChunkSaveFailure(ChunkPos pos) {
+		this.checkLowDiskSpaceWarning();
+		SystemToast.addChunkSaveFailure(this.client, pos);
 	}
 }

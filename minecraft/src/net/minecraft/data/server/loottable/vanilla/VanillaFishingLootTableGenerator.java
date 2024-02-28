@@ -9,7 +9,6 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LocationCheckLootCondition;
-import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LootTableEntry;
@@ -23,21 +22,18 @@ import net.minecraft.potion.Potions;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.FishingHookPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
 public class VanillaFishingLootTableGenerator implements LootTableGenerator {
-	public static final LootCondition.Builder NEEDS_JUNGLE_BIOME = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE));
-	public static final LootCondition.Builder NEEDS_SPARSE_JUNGLE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BiomeKeys.SPARSE_JUNGLE)
-	);
-	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BiomeKeys.BAMBOO_JUNGLE)
-	);
-
 	@Override
-	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
-		exporter.accept(
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+		RegistryWrapper.Impl<Biome> impl = registryLookup.getWrapperOrThrow(RegistryKeys.BIOME);
+		consumer.accept(
 			LootTables.FISHING_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -55,8 +51,8 @@ public class VanillaFishingLootTableGenerator implements LootTableGenerator {
 						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY).weight(85).quality(-1))
 				)
 		);
-		exporter.accept(LootTables.FISHING_FISH_GAMEPLAY, createFishTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.FISHING_FISH_GAMEPLAY, createFishTableBuilder());
+		consumer.accept(
 			LootTables.FISHING_JUNK_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -73,10 +69,19 @@ public class VanillaFishingLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.INK_SAC).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(10.0F))))
 						.with(ItemEntry.builder(Blocks.TRIPWIRE_HOOK).weight(10))
 						.with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(10))
-						.with(ItemEntry.builder(Blocks.BAMBOO).conditionally(NEEDS_JUNGLE_BIOME.or(NEEDS_SPARSE_JUNGLE_BIOME).or(NEEDS_BAMBOO_JUNGLE_BIOME)).weight(10))
+						.with(
+							ItemEntry.builder(Blocks.BAMBOO)
+								.conditionally(
+									LocationCheckLootCondition.builder(
+										LocationPredicate.Builder.create()
+											.biome(RegistryEntryList.of(impl.getOrThrow(BiomeKeys.JUNGLE), impl.getOrThrow(BiomeKeys.SPARSE_JUNGLE), impl.getOrThrow(BiomeKeys.BAMBOO_JUNGLE)))
+									)
+								)
+								.weight(10)
+						)
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.FISHING_TREASURE_GAMEPLAY,
 			LootTable.builder()
 				.pool(

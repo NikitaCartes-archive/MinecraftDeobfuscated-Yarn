@@ -23,6 +23,8 @@ import net.minecraft.block.WitherSkullBlock;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
@@ -53,7 +55,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
@@ -97,7 +98,6 @@ public interface DispenserBehavior {
 			@Override
 			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
 				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ(), stack.copyWithCount(1));
-				arrowEntity.initFromStack(stack);
 				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 				return arrowEntity;
 			}
@@ -189,7 +189,7 @@ public interface DispenserBehavior {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				Direction direction = pointer.state().get(DispenserBlock.FACING);
-				EntityType<?> entityType = ((SpawnEggItem)stack.getItem()).getEntityType(stack.getNbt());
+				EntityType<?> entityType = ((SpawnEggItem)stack.getItem()).getEntityType(stack);
 
 				try {
 					entityType.spawnFromItemStack(pointer.world(), stack, null, pointer.pos().offset(direction), SpawnReason.DISPENSER, direction != Direction.UP, false);
@@ -603,7 +603,7 @@ public interface DispenserBehavior {
 						return this.tryPutFilledBottle(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
 					} else if (serverWorld.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						this.setSuccess(true);
-						return this.tryPutFilledBottle(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
+						return this.tryPutFilledBottle(pointer, stack, PotionContentsComponent.createStack(Items.POTION, Potions.WATER));
 					} else {
 						return super.dispenseSilently(pointer, stack);
 					}
@@ -643,11 +643,17 @@ public interface DispenserBehavior {
 					this.setSuccess(false);
 					return stack;
 				} else {
-					((ArmadilloEntity)list.get(0)).brushScute();
-					stack.damage(16, serverWorld.getRandom(), null, () -> {
-						stack.decrement(1);
-						stack.setDamage(0);
-					});
+					for (ArmadilloEntity armadilloEntity : list) {
+						if (armadilloEntity.brushScute()) {
+							stack.damage(16, serverWorld.getRandom(), null, () -> {
+								stack.decrement(1);
+								stack.setDamage(0);
+							});
+							return stack;
+						}
+					}
+
+					this.setSuccess(false);
 					return stack;
 				}
 			}
@@ -677,7 +683,8 @@ public interface DispenserBehavior {
 
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					if (!PotionUtil.getPotion(stack).matches(Potions.WATER)) {
+					PotionContentsComponent potionContentsComponent = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
+					if (!potionContentsComponent.matches(Potions.WATER)) {
 						return this.fallback.dispense(pointer, stack);
 					} else {
 						ServerWorld serverWorld = pointer.world();

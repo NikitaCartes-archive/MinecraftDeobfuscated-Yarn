@@ -30,7 +30,7 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 
 	@Override
 	public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
-		return inventory.getStack(1).copyNbtToNewStack(this.result.getItem(), this.result.getCount());
+		return inventory.getStack(1).copyComponentsToNewStack(this.result.getItem(), this.result.getCount());
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
+import net.minecraft.component.DataComponentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
@@ -164,6 +165,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<String>> DECORATED_POT_PATTERN = of("decorated_pot_patterns");
 	public static final RegistryKey<Registry<NumberFormatType<?>>> NUMBER_FORMAT_TYPE = of("number_format_type");
 	public static final RegistryKey<Registry<ArmorMaterial>> ARMOR_MATERIAL = of("armor_material");
+	public static final RegistryKey<Registry<DataComponentType<?>>> DATA_COMPONENT_TYPE = of("data_component_type");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");

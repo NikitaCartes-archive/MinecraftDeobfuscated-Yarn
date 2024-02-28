@@ -214,7 +214,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		float k = abstractClientPlayerEntity.getPitch(h);
 		if (abstractClientPlayerEntity.isFallFlying()) {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h, i);
-			float l = (float)abstractClientPlayerEntity.getRoll() + h;
+			float l = (float)abstractClientPlayerEntity.getFallFlyingTicks() + h;
 			float m = MathHelper.clamp(l * l / 100.0F, 0.0F, 1.0F);
 			if (!abstractClientPlayerEntity.isUsingRiptide()) {
 				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(m * (-90.0F - k)));

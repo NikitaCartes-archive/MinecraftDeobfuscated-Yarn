@@ -11,10 +11,13 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -38,6 +41,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private static final Text SAD_LABEL_TEXT = Text.translatable("advancements.sad_label");
 	private static final Text EMPTY_TEXT = Text.translatable("advancements.empty");
 	private static final Text ADVANCEMENTS_TEXT = Text.translatable("gui.advancements");
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
+	@Nullable
+	private final Screen parent;
 	private final ClientAdvancementManager advancementHandler;
 	private final Map<AdvancementEntry, AdvancementTab> tabs = Maps.<AdvancementEntry, AdvancementTab>newLinkedHashMap();
 	@Nullable
@@ -45,12 +51,18 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private boolean movingTab;
 
 	public AdvancementsScreen(ClientAdvancementManager advancementHandler) {
-		super(NarratorManager.EMPTY);
+		this(advancementHandler, null);
+	}
+
+	public AdvancementsScreen(ClientAdvancementManager advancementHandler, @Nullable Screen parent) {
+		super(ADVANCEMENTS_TEXT);
 		this.advancementHandler = advancementHandler;
+		this.parent = parent;
 	}
 
 	@Override
 	protected void init() {
+		this.layout.addHeader(ADVANCEMENTS_TEXT, this.textRenderer);
 		this.tabs.clear();
 		this.selectedTab = null;
 		this.advancementHandler.setListener(this);
@@ -60,6 +72,22 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		} else {
 			this.advancementHandler.selectTab(this.selectedTab == null ? null : this.selectedTab.getRoot().getAdvancementEntry(), true);
 		}
+
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).width(200).build());
+		this.layout.forEachChild(element -> {
+			ClickableWidget var10000 = this.addDrawableChild(element);
+		});
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+	}
+
+	@Override
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	@Override
@@ -101,9 +129,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		int i = (this.width - 252) / 2;
 		int j = (this.height - 140) / 2;
-		this.renderBackground(context, mouseX, mouseY, delta);
 		this.drawAdvancementTree(context, mouseX, mouseY, i, j);
 		this.drawWindow(context, i, j);
 		this.drawWidgetTooltip(context, mouseX, mouseY, i, j);
@@ -160,7 +188,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			}
 		}
 
-		context.drawText(this.textRenderer, ADVANCEMENTS_TEXT, x + 8, y + 6, 4210752, false);
+		context.drawText(this.textRenderer, this.selectedTab != null ? this.selectedTab.getTitle() : ADVANCEMENTS_TEXT, x + 8, y + 6, 4210752, false);
 	}
 
 	private void drawWidgetTooltip(DrawContext context, int mouseX, int mouseY, int x, int y) {

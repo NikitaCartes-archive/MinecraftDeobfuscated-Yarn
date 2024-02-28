@@ -3,6 +3,7 @@ package net.minecraft.block.entity;
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -63,34 +64,35 @@ public class VaultBlockEntity extends BlockEntity {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return Util.make(new NbtCompound(), nbt -> nbt.put("shared_data", encodeValue(VaultSharedData.codec, this.sharedData)));
+		return Util.make(new NbtCompound(), nbt -> nbt.put("shared_data", encodeValue(VaultSharedData.codec, this.sharedData, registryLookup)));
 	}
 
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
-		nbt.put("config", encodeValue(VaultConfig.codec, this.config));
-		nbt.put("shared_data", encodeValue(VaultSharedData.codec, this.sharedData));
-		nbt.put("server_data", encodeValue(VaultServerData.codec, this.serverData));
+		nbt.put("config", encodeValue(VaultConfig.codec, this.config, registryLookup));
+		nbt.put("shared_data", encodeValue(VaultSharedData.codec, this.sharedData, registryLookup));
+		nbt.put("server_data", encodeValue(VaultServerData.codec, this.serverData, registryLookup));
 	}
 
-	private static <T> NbtElement encodeValue(Codec<T> codec, T value) {
-		return Util.getResult(codec.encodeStart(NbtOps.INSTANCE, value), IllegalStateException::new);
+	private static <T> NbtElement encodeValue(Codec<T> codec, T value, RegistryWrapper.WrapperLookup registries) {
+		return Util.getResult(codec.encodeStart(registries.getOps(NbtOps.INSTANCE), value), IllegalStateException::new);
 	}
 
 	@Override
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
+		DynamicOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("server_data")) {
-			VaultServerData.codec.parse(NbtOps.INSTANCE, nbt.get("server_data")).resultOrPartial(LOGGER::error).ifPresent(this.serverData::copyFrom);
+			VaultServerData.codec.parse(dynamicOps, nbt.get("server_data")).resultOrPartial(LOGGER::error).ifPresent(this.serverData::copyFrom);
 		}
 
 		if (nbt.contains("config")) {
-			VaultConfig.codec.parse(NbtOps.INSTANCE, nbt.get("config")).resultOrPartial(LOGGER::error).ifPresent(config -> this.config = config);
+			VaultConfig.codec.parse(dynamicOps, nbt.get("config")).resultOrPartial(LOGGER::error).ifPresent(config -> this.config = config);
 		}
 
 		if (nbt.contains("shared_data")) {
-			VaultSharedData.codec.parse(NbtOps.INSTANCE, nbt.get("shared_data")).resultOrPartial(LOGGER::error).ifPresent(this.sharedData::copyFrom);
+			VaultSharedData.codec.parse(dynamicOps, nbt.get("shared_data")).resultOrPartial(LOGGER::error).ifPresent(this.sharedData::copyFrom);
 		}
 	}
 
@@ -333,7 +335,7 @@ public class VaultBlockEntity extends BlockEntity {
 		}
 
 		private static boolean isValidKey(VaultConfig config, ItemStack stack) {
-			return ItemStack.areItemsAndNbtEqual(stack, config.keyItem()) && stack.getCount() >= config.keyItem().getCount();
+			return ItemStack.areItemsAndComponentsEqual(stack, config.keyItem()) && stack.getCount() >= config.keyItem().getCount();
 		}
 
 		private static boolean shouldUpdateDisplayItem(long time, VaultState state) {

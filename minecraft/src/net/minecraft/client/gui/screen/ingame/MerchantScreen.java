@@ -172,8 +172,8 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 			for (TradeOffer tradeOffer : tradeOfferList) {
 				if (!this.canScroll(tradeOfferList.size()) || m >= this.indexStartOffset && m < 7 + this.indexStartOffset) {
 					ItemStack itemStack = tradeOffer.getOriginalFirstBuyItem();
-					ItemStack itemStack2 = tradeOffer.getAdjustedFirstBuyItem();
-					ItemStack itemStack3 = tradeOffer.getSecondBuyItem();
+					ItemStack itemStack2 = tradeOffer.getDisplayedFirstBuyItem();
+					ItemStack itemStack3 = tradeOffer.getDisplayedSecondBuyItem();
 					ItemStack itemStack4 = tradeOffer.getSellItem();
 					context.getMatrices().push();
 					context.getMatrices().translate(0.0F, 0.0F, 100.0F);
@@ -307,10 +307,11 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 			if (this.hovered && MerchantScreen.this.handler.getRecipes().size() > this.index + MerchantScreen.this.indexStartOffset) {
 				if (x < this.getX() + 20) {
 					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset))
-						.getAdjustedFirstBuyItem();
+						.getDisplayedFirstBuyItem();
 					context.drawItemTooltip(MerchantScreen.this.textRenderer, itemStack, x, y);
 				} else if (x < this.getX() + 50 && x > this.getX() + 30) {
-					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getSecondBuyItem();
+					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset))
+						.getDisplayedSecondBuyItem();
 					if (!itemStack.isEmpty()) {
 						context.drawItemTooltip(MerchantScreen.this.textRenderer, itemStack, x, y);
 					}

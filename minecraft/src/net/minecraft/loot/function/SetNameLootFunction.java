@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
@@ -73,7 +74,10 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		this.name.ifPresent(name -> stack.setCustomName((Text)applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null)).apply(name)));
+		this.name
+			.ifPresent(
+				name -> stack.set(DataComponentTypes.CUSTOM_NAME, (Text)applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null)).apply(name))
+			);
 		return stack;
 	}
 

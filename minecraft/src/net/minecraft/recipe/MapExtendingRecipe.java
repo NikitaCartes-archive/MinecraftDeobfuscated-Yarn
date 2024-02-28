@@ -1,6 +1,8 @@
 package net.minecraft.recipe;
 
 import java.util.Map;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapPostProcessingComponent;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -42,7 +44,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	@Override
 	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		ItemStack itemStack = findFilledMap(recipeInputInventory).copyWithCount(1);
-		itemStack.getOrCreateNbt().putInt("map_scale_direction", 1);
+		itemStack.set(DataComponentTypes.MAP_POST_PROCESSING, MapPostProcessingComponent.SCALE);
 		return itemStack;
 	}
 

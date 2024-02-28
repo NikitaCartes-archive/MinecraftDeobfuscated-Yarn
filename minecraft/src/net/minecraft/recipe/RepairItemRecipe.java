@@ -2,7 +2,7 @@ package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Map;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.RecipeInputInventory;
@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.World;
 
 public class RepairItemRecipe extends SpecialCraftingRecipe {
@@ -68,14 +68,16 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 
 				ItemStack itemStack4 = new ItemStack(itemStack3.getItem());
 				itemStack4.setDamage(m);
-				Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack3);
-				Map<Enchantment, Integer> map2 = EnchantmentHelper.get(itemStack);
-				Registries.ENCHANTMENT.stream().filter(Enchantment::isCursed).forEach(enchantment -> {
-					int ix = Math.max((Integer)map.getOrDefault(enchantment, 0), (Integer)map2.getOrDefault(enchantment, 0));
-					if (ix > 0) {
-						itemStack4.addEnchantment(enchantment, ix);
-					}
-				});
+				ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(itemStack3);
+				ItemEnchantmentsComponent itemEnchantmentsComponent2 = EnchantmentHelper.getEnchantments(itemStack);
+				EnchantmentHelper.apply(
+					itemStack4, builder -> dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT).stream().filter(Enchantment::isCursed).forEach(enchantment -> {
+							int ix = Math.max(itemEnchantmentsComponent.getLevel(enchantment), itemEnchantmentsComponent2.getLevel(enchantment));
+							if (ix > 0) {
+								builder.add(enchantment, ix);
+							}
+						})
+				);
 				return itemStack4;
 			}
 		}

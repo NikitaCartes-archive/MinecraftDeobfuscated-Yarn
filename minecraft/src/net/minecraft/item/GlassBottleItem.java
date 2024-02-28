@@ -2,10 +2,10 @@ package net.minecraft.item;
 
 import java.util.List;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -58,7 +58,7 @@ public class GlassBottleItem extends Item {
 					if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 						world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
-						return TypedActionResult.success(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)), world.isClient());
+						return TypedActionResult.success(this.fill(itemStack, user, PotionContentsComponent.createStack(Items.POTION, Potions.WATER)), world.isClient());
 					}
 				}
 

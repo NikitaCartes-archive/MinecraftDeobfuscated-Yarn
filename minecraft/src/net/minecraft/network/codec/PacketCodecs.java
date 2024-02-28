@@ -1,5 +1,9 @@
 package net.minecraft.network.codec;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
@@ -9,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
@@ -27,7 +32,11 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.IndexedIterable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -38,6 +47,7 @@ import org.joml.Vector3f;
  * @see PacketCodec
  */
 public interface PacketCodecs {
+	int field_49674 = 65536;
 	/**
 	 * A codec for a boolean value.
 	 * 
@@ -81,6 +91,21 @@ public interface PacketCodecs {
 
 		public void encode(ByteBuf byteBuf, Short short_) {
 			byteBuf.writeShort(short_);
+		}
+	};
+	/**
+	 * A codec for an integer value.
+	 * 
+	 * @see io.netty.buffer.ByteBuf#readInt
+	 * @see io.netty.buffer.ByteBuf#writeInt
+	 */
+	PacketCodec<ByteBuf, Integer> INTEGER = new PacketCodec<ByteBuf, Integer>() {
+		public Integer decode(ByteBuf byteBuf) {
+			return byteBuf.readInt();
+		}
+
+		public void encode(ByteBuf byteBuf, Integer integer) {
+			byteBuf.writeInt(integer);
 		}
 	};
 	/**
@@ -150,11 +175,11 @@ public interface PacketCodecs {
 	 * @see net.minecraft.network.PacketByteBuf#writeByteArray(byte[])
 	 */
 	PacketCodec<ByteBuf, byte[]> BYTE_ARRAY = new PacketCodec<ByteBuf, byte[]>() {
-		public byte[] read(ByteBuf buf) {
+		public byte[] decode(ByteBuf buf) {
 			return PacketByteBuf.readByteArray(buf);
 		}
 
-		public void write(ByteBuf buf, byte[] value) {
+		public void encode(ByteBuf buf, byte[] value) {
 			PacketByteBuf.writeByteArray(buf, value);
 		}
 	};
@@ -167,13 +192,29 @@ public interface PacketCodecs {
 	 */
 	PacketCodec<ByteBuf, String> STRING = string(32767);
 	/**
+	 * A codec for an NBT element of up to {@code 0x200000L} bytes.
+	 * 
+	 * @see #nbt
+	 * @see net.minecraft.network.PacketByteBuf#readNbt(NbtSizeTracker)
+	 * @see net.minecraft.network.PacketByteBuf#writeNbt(NbtElement)
+	 */
+	PacketCodec<ByteBuf, NbtElement> NBT_ELEMENT = nbt(() -> NbtSizeTracker.of(2097152L));
+	/**
 	 * A codec for an NBT element of unlimited size.
 	 * 
 	 * @see #nbt
 	 * @see net.minecraft.network.PacketByteBuf#readNbt(NbtSizeTracker)
 	 * @see net.minecraft.network.PacketByteBuf#writeNbt(NbtElement)
 	 */
-	PacketCodec<ByteBuf, NbtElement> NBT_ELEMENT = nbt(NbtSizeTracker::ofUnlimitedBytes);
+	PacketCodec<ByteBuf, NbtElement> UNLIMITED_NBT_ELEMENT = nbt(NbtSizeTracker::ofUnlimitedBytes);
+	/**
+	 * A codec for an NBT compound of up to {@code 0x200000L} bytes.
+	 * 
+	 * @see #nbt
+	 * @see net.minecraft.network.PacketByteBuf#readNbt(NbtSizeTracker)
+	 * @see net.minecraft.network.PacketByteBuf#writeNbt(NbtElement)
+	 */
+	PacketCodec<ByteBuf, NbtCompound> NBT_COMPOUND = nbtCompound(() -> NbtSizeTracker.of(2097152L));
 	/**
 	 * A codec for an NBT compound of unlimited size.
 	 * 
@@ -181,13 +222,7 @@ public interface PacketCodecs {
 	 * @see net.minecraft.network.PacketByteBuf#readNbt(NbtSizeTracker)
 	 * @see net.minecraft.network.PacketByteBuf#writeNbt(NbtElement)
 	 */
-	PacketCodec<ByteBuf, NbtCompound> NBT_COMPOUND = nbt(NbtSizeTracker::ofUnlimitedBytes).xmap(nbt -> {
-		if (nbt instanceof NbtCompound) {
-			return (NbtCompound)nbt;
-		} else {
-			throw new DecoderException("Not a compound tag: " + nbt);
-		}
-	}, nbt -> nbt);
+	PacketCodec<ByteBuf, NbtCompound> UNLIMITED_NBT_COMPOUND = nbtCompound(NbtSizeTracker::ofUnlimitedBytes);
 	/**
 	 * A codec for an optional NBT compound of up to {@value
 	 * net.minecraft.network.PacketByteBuf#MAX_READ_NBT_SIZE} bytes.
@@ -235,6 +270,52 @@ public interface PacketCodecs {
 			PacketByteBuf.writeQuaternionf(byteBuf, quaternionf);
 		}
 	};
+	PacketCodec<ByteBuf, PropertyMap> PROPERTY_MAP = new PacketCodec<ByteBuf, PropertyMap>() {
+		private static final int NAME_MAX_LENGTH = 64;
+		private static final int VALUE_MAX_LENGTH = 32767;
+		private static final int SIGNATURE_MAX_LENGTH = 1024;
+		private static final int MAP_MAX_SIZE = 16;
+
+		public PropertyMap decode(ByteBuf byteBuf) {
+			int i = PacketCodecs.readCollectionSize(byteBuf, 16);
+			PropertyMap propertyMap = new PropertyMap();
+
+			for (int j = 0; j < i; j++) {
+				String string = StringEncoding.decode(byteBuf, 64);
+				String string2 = StringEncoding.decode(byteBuf, 32767);
+				String string3 = PacketByteBuf.readNullable(byteBuf, buf2 -> StringEncoding.decode(buf2, 1024));
+				Property property = new Property(string, string2, string3);
+				propertyMap.put(property.name(), property);
+			}
+
+			return propertyMap;
+		}
+
+		public void encode(ByteBuf byteBuf, PropertyMap propertyMap) {
+			PacketCodecs.writeCollectionSize(byteBuf, propertyMap.size(), 16);
+
+			for (Property property : propertyMap.values()) {
+				StringEncoding.encode(byteBuf, property.name(), 64);
+				StringEncoding.encode(byteBuf, property.value(), 32767);
+				PacketByteBuf.writeNullable(byteBuf, property.signature(), (buf2, signature) -> StringEncoding.encode(buf2, signature, 1024));
+			}
+		}
+	};
+	PacketCodec<ByteBuf, GameProfile> GAME_PROFILE = new PacketCodec<ByteBuf, GameProfile>() {
+		public GameProfile decode(ByteBuf byteBuf) {
+			UUID uUID = Uuids.PACKET_CODEC.decode(byteBuf);
+			String string = StringEncoding.decode(byteBuf, 16);
+			GameProfile gameProfile = new GameProfile(uUID, string);
+			gameProfile.getProperties().putAll(PacketCodecs.PROPERTY_MAP.decode(byteBuf));
+			return gameProfile;
+		}
+
+		public void encode(ByteBuf byteBuf, GameProfile gameProfile) {
+			Uuids.PACKET_CODEC.encode(byteBuf, gameProfile.getId());
+			StringEncoding.encode(byteBuf, gameProfile.getName(), 16);
+			PacketCodecs.PROPERTY_MAP.encode(byteBuf, gameProfile.getProperties());
+		}
+	};
 
 	/**
 	 * {@return a codec for a byte array with maximum length {@code maxLength}}
@@ -245,15 +326,15 @@ public interface PacketCodecs {
 	 */
 	static PacketCodec<ByteBuf, byte[]> byteArray(int maxLength) {
 		return new PacketCodec<ByteBuf, byte[]>() {
-			public byte[] decode(ByteBuf buf) {
+			public byte[] read(ByteBuf buf) {
 				return PacketByteBuf.readByteArray(buf, maxLength);
 			}
 
-			public void encode(ByteBuf buf, byte[] value) {
-				if (value.length > maxLength) {
-					throw new EncoderException("ByteArray with size " + value.length + " is bigger than allowed " + maxLength);
+			public void write(ByteBuf buf, byte[] bytes) {
+				if (bytes.length > maxLength) {
+					throw new EncoderException("ByteArray with size " + bytes.length + " is bigger than allowed " + maxLength);
 				} else {
-					PacketByteBuf.writeByteArray(buf, value);
+					PacketByteBuf.writeByteArray(buf, bytes);
 				}
 			}
 		};
@@ -306,22 +387,56 @@ public interface PacketCodecs {
 		};
 	}
 
+	static PacketCodec<ByteBuf, NbtCompound> nbtCompound(Supplier<NbtSizeTracker> sizeTracker) {
+		return nbt(sizeTracker).xmap(nbt -> {
+			if (nbt instanceof NbtCompound) {
+				return (NbtCompound)nbt;
+			} else {
+				throw new DecoderException("Not a compound tag: " + nbt);
+			}
+		}, nbt -> nbt);
+	}
+
 	/**
 	 * {@return a codec from DataFixerUpper codec {@code codec}}
 	 * 
 	 * <p>Internally, the data is serialized as an NBT element of unlimited size.
 	 */
+	static <T> PacketCodec<ByteBuf, T> unlimitedCodec(Codec<T> codec) {
+		return codec(codec, NbtSizeTracker::ofUnlimitedBytes);
+	}
+
+	/**
+	 * {@return a codec from DataFixerUpper codec {@code codec}}
+	 * 
+	 * <p>Internally, the data is serialized as an NBT element of up to {@code 200000L}
+	 * bytes.
+	 */
 	static <T> PacketCodec<ByteBuf, T> codec(Codec<T> codec) {
-		return NBT_ELEMENT.xmap(
-			nbt -> Util.getResult(codec.parse(NbtOps.INSTANCE, nbt), error -> new DecoderException("Failed to decode: " + error + " " + nbt)),
-			value -> Util.getResult(codec.encodeStart(NbtOps.INSTANCE, (T)value), error -> new EncoderException("Failed to encode: " + error + " " + value))
-		);
+		return codec(codec, () -> NbtSizeTracker.of(2097152L));
+	}
+
+	static <T> PacketCodec<ByteBuf, T> codec(Codec<T> codec, Supplier<NbtSizeTracker> sizeTracker) {
+		return nbt(sizeTracker)
+			.xmap(
+				nbt -> Util.getResult(codec.parse(NbtOps.INSTANCE, nbt), error -> new DecoderException("Failed to decode: " + error + " " + nbt)),
+				value -> Util.getResult(codec.encodeStart(NbtOps.INSTANCE, (T)value), error -> new EncoderException("Failed to encode: " + error + " " + value))
+			);
+	}
+
+	static <T> PacketCodec<RegistryByteBuf, T> unlimitedRegistryCodec(Codec<T> codec) {
+		return registryCodec(codec, NbtSizeTracker::ofUnlimitedBytes);
 	}
 
 	static <T> PacketCodec<RegistryByteBuf, T> registryCodec(Codec<T> codec) {
+		return registryCodec(codec, () -> NbtSizeTracker.of(2097152L));
+	}
+
+	static <T> PacketCodec<RegistryByteBuf, T> registryCodec(Codec<T> codec, Supplier<NbtSizeTracker> sizeTracker) {
+		final PacketCodec<ByteBuf, NbtElement> packetCodec = nbt(sizeTracker);
 		return new PacketCodec<RegistryByteBuf, T>() {
 			public T decode(RegistryByteBuf registryByteBuf) {
-				NbtElement nbtElement = PacketCodecs.NBT_ELEMENT.decode(registryByteBuf);
+				NbtElement nbtElement = packetCodec.decode(registryByteBuf);
 				RegistryOps<NbtElement> registryOps = registryByteBuf.getRegistryManager().getOps(NbtOps.INSTANCE);
 				return Util.getResult(codec.parse(registryOps, nbtElement), error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
 			}
@@ -329,7 +444,7 @@ public interface PacketCodecs {
 			public void encode(RegistryByteBuf registryByteBuf, T object) {
 				RegistryOps<NbtElement> registryOps = registryByteBuf.getRegistryManager().getOps(NbtOps.INSTANCE);
 				NbtElement nbtElement = Util.getResult(codec.encodeStart(registryOps, object), error -> new EncoderException("Failed to encode: " + error + " " + object));
-				PacketCodecs.NBT_ELEMENT.encode(registryByteBuf, nbtElement);
+				packetCodec.encode(registryByteBuf, nbtElement);
 			}
 		};
 	}
@@ -360,6 +475,23 @@ public interface PacketCodecs {
 		};
 	}
 
+	static int readCollectionSize(ByteBuf buf, int maxSize) {
+		int i = VarInts.read(buf);
+		if (i > maxSize) {
+			throw new DecoderException(i + " elements exceeded max size of: " + maxSize);
+		} else {
+			return i;
+		}
+	}
+
+	static void writeCollectionSize(ByteBuf buf, int size, int maxSize) {
+		if (size > maxSize) {
+			throw new EncoderException(size + " elements exceeded max size of: " + maxSize);
+		} else {
+			VarInts.write(buf, size);
+		}
+	}
+
 	/**
 	 * {@return a codec for a collection of values}
 	 * 
@@ -370,10 +502,16 @@ public interface PacketCodecs {
 	 * @param factory a function that, given the collection's size, returns a new empty collection
 	 */
 	static <B extends ByteBuf, V, C extends Collection<V>> PacketCodec<B, C> collection(IntFunction<C> factory, PacketCodec<? super B, V> elementCodec) {
+		return collection(factory, elementCodec, Integer.MAX_VALUE);
+	}
+
+	static <B extends ByteBuf, V, C extends Collection<V>> PacketCodec<B, C> collection(
+		IntFunction<C> factory, PacketCodec<? super B, V> elementCodec, int maxSize
+	) {
 		return new PacketCodec<B, C>() {
 			public C decode(B byteBuf) {
-				int i = VarInts.read(byteBuf);
-				C collection = (C)factory.apply(i);
+				int i = PacketCodecs.readCollectionSize(byteBuf, maxSize);
+				C collection = (C)factory.apply(Math.min(i, 65536));
 
 				for (int j = 0; j < i; j++) {
 					collection.add(elementCodec.decode(byteBuf));
@@ -383,7 +521,7 @@ public interface PacketCodecs {
 			}
 
 			public void encode(B byteBuf, C collection) {
-				VarInts.write(byteBuf, collection.size());
+				PacketCodecs.writeCollectionSize(byteBuf, collection.size(), maxSize);
 
 				for (V object : collection) {
 					elementCodec.encode(byteBuf, object);
@@ -419,6 +557,10 @@ public interface PacketCodecs {
 		return codec -> collection(ArrayList::new, codec);
 	}
 
+	static <B extends ByteBuf, V> PacketCodec.ResultFunction<B, V, List<V>> toList(int maxLength) {
+		return codec -> collection(ArrayList::new, codec, maxLength);
+	}
+
 	/**
 	 * {@return a codec for a map}
 	 * 
@@ -432,9 +574,15 @@ public interface PacketCodecs {
 	static <B extends ByteBuf, K, V, M extends Map<K, V>> PacketCodec<B, M> map(
 		IntFunction<? extends M> factory, PacketCodec<? super B, K> keyCodec, PacketCodec<? super B, V> valueCodec
 	) {
+		return map(factory, keyCodec, valueCodec, Integer.MAX_VALUE);
+	}
+
+	static <B extends ByteBuf, K, V, M extends Map<K, V>> PacketCodec<B, M> map(
+		IntFunction<? extends M> factory, PacketCodec<? super B, K> keyCodec, PacketCodec<? super B, V> valueCodec, int maxSize
+	) {
 		return new PacketCodec<B, M>() {
 			public void encode(B byteBuf, M map) {
-				VarInts.write(byteBuf, map.size());
+				PacketCodecs.writeCollectionSize(byteBuf, map.size(), maxSize);
 				map.forEach((k, v) -> {
 					keyCodec.encode(byteBuf, (K)k);
 					valueCodec.encode(byteBuf, (V)v);
@@ -442,8 +590,8 @@ public interface PacketCodecs {
 			}
 
 			public M decode(B byteBuf) {
-				int i = VarInts.read(byteBuf);
-				M map = (M)factory.apply(i);
+				int i = PacketCodecs.readCollectionSize(byteBuf, maxSize);
+				M map = (M)factory.apply(Math.min(i, 65536));
 
 				for (int j = 0; j < i; j++) {
 					K object = keyCodec.decode(byteBuf);
@@ -452,6 +600,24 @@ public interface PacketCodecs {
 				}
 
 				return map;
+			}
+		};
+	}
+
+	static <B extends ByteBuf, L, R> PacketCodec<B, Either<L, R>> either(PacketCodec<? super B, L> left, PacketCodec<? super B, R> right) {
+		return new PacketCodec<B, Either<L, R>>() {
+			public Either<L, R> decode(B byteBuf) {
+				return byteBuf.readBoolean() ? Either.left(left.decode(byteBuf)) : Either.right(right.decode(byteBuf));
+			}
+
+			public void encode(B byteBuf, Either<L, R> either) {
+				either.ifLeft(leftxx -> {
+					byteBuf.writeBoolean(true);
+					left.encode(byteBuf, (L)leftxx);
+				}).ifRight(rightxx -> {
+					byteBuf.writeBoolean(false);
+					right.encode(byteBuf, (R)rightxx);
+				});
 			}
 		};
 	}
@@ -582,6 +748,43 @@ public interface PacketCodecs {
 					case DIRECT:
 						VarInts.write(registryByteBuf, 0);
 						directCodec.encode(registryByteBuf, registryEntry.value());
+				}
+			}
+		};
+	}
+
+	static <T> PacketCodec<RegistryByteBuf, RegistryEntryList<T>> registryEntryList(RegistryKey<? extends Registry<T>> registryRef) {
+		return new PacketCodec<RegistryByteBuf, RegistryEntryList<T>>() {
+			private static final int DIRECT_ENTRY_MARKER = -1;
+			private final PacketCodec<RegistryByteBuf, RegistryEntry<T>> entryPacketCodec = PacketCodecs.registryEntry(registryRef);
+
+			public RegistryEntryList<T> decode(RegistryByteBuf registryByteBuf) {
+				int i = VarInts.read(registryByteBuf) - 1;
+				if (i == -1) {
+					Registry<T> registry = registryByteBuf.getRegistryManager().get(registryRef);
+					return (RegistryEntryList<T>)registry.getEntryList(TagKey.of(registryRef, Identifier.PACKET_CODEC.decode(registryByteBuf))).orElseThrow();
+				} else {
+					List<RegistryEntry<T>> list = new ArrayList(Math.min(i, 65536));
+
+					for (int j = 0; j < i; j++) {
+						list.add(this.entryPacketCodec.decode(registryByteBuf));
+					}
+
+					return RegistryEntryList.of(list);
+				}
+			}
+
+			public void encode(RegistryByteBuf registryByteBuf, RegistryEntryList<T> registryEntryList) {
+				Optional<TagKey<T>> optional = registryEntryList.getTagKey();
+				if (optional.isPresent()) {
+					VarInts.write(registryByteBuf, 0);
+					Identifier.PACKET_CODEC.encode(registryByteBuf, ((TagKey)optional.get()).id());
+				} else {
+					VarInts.write(registryByteBuf, registryEntryList.size() + 1);
+
+					for (RegistryEntry<T> registryEntry : registryEntryList) {
+						this.entryPacketCodec.encode(registryByteBuf, registryEntry);
+					}
 				}
 			}
 		};

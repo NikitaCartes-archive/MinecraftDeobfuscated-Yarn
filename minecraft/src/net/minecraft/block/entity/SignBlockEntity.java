@@ -2,6 +2,7 @@ package net.minecraft.block.entity;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DynamicOps;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -11,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
@@ -89,24 +91,26 @@ public class SignBlockEntity extends BlockEntity {
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
-		SignText.CODEC.encodeStart(NbtOps.INSTANCE, this.frontText).resultOrPartial(LOGGER::error).ifPresent(frontText -> nbt.put("front_text", frontText));
-		SignText.CODEC.encodeStart(NbtOps.INSTANCE, this.backText).resultOrPartial(LOGGER::error).ifPresent(backText -> nbt.put("back_text", backText));
+		DynamicOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
+		SignText.CODEC.encodeStart(dynamicOps, this.frontText).resultOrPartial(LOGGER::error).ifPresent(frontText -> nbt.put("front_text", frontText));
+		SignText.CODEC.encodeStart(dynamicOps, this.backText).resultOrPartial(LOGGER::error).ifPresent(backText -> nbt.put("back_text", backText));
 		nbt.putBoolean("is_waxed", this.waxed);
 	}
 
 	@Override
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
+		DynamicOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("front_text")) {
 			SignText.CODEC
-				.parse(NbtOps.INSTANCE, nbt.getCompound("front_text"))
+				.parse(dynamicOps, nbt.getCompound("front_text"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(signText -> this.frontText = this.parseLines(signText));
 		}
 
 		if (nbt.contains("back_text")) {
 			SignText.CODEC
-				.parse(NbtOps.INSTANCE, nbt.getCompound("back_text"))
+				.parse(dynamicOps, nbt.getCompound("back_text"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(signText -> this.backText = this.parseLines(signText));
 		}

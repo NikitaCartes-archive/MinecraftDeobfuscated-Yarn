@@ -1,21 +1,23 @@
 package net.minecraft.client.realms.gui.screen;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.logging.LogUtils;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ButtonTextures;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.widget.TextIconButtonWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.dto.Ops;
 import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsServer;
@@ -24,93 +26,63 @@ import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsPlayerScreen extends RealmsScreen {
-	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier OPTIONS_BACKGROUND = new Identifier("minecraft", "textures/gui/options_background.png");
-	private static final Text QUESTION_TEXT = Text.translatable("mco.question");
-	static final Text NORMAL_TOOLTIP = Text.translatable("mco.configure.world.invites.normal.tooltip");
-	static final Text OPERATOR_TOOLTIP = Text.translatable("mco.configure.world.invites.ops.tooltip");
-	static final Text REMOVE_TOOLTIP = Text.translatable("mco.configure.world.invites.remove.tooltip");
-	private static final int field_44530 = -1;
+	static final Logger LOGGER = LogUtils.getLogger();
+	private static final Text TITLE = Text.translatable("mco.configure.world.players.title");
+	static final Text QUESTION_TEXT = Text.translatable("mco.question");
+	private static final int field_49462 = 8;
+	final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private final RealmsConfigureWorldScreen parent;
 	final RealmsServer serverData;
-	RealmsPlayerScreen.InvitedObjectSelectionList invitedObjectSelectionList;
-	int column1_x;
-	int column_width;
-	private ButtonWidget removeButton;
-	private ButtonWidget opdeopButton;
-	int player = -1;
-	private boolean stateChanged;
+	@Nullable
+	private RealmsPlayerScreen.InvitedObjectSelectionList selectionList;
+	boolean stateChanged;
 
 	public RealmsPlayerScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData) {
-		super(Text.translatable("mco.configure.world.players.title"));
+		super(TITLE);
 		this.parent = parent;
 		this.serverData = serverData;
 	}
 
 	@Override
 	public void init() {
-		this.column1_x = this.width / 2 - 160;
-		this.column_width = 150;
-		int i = this.width / 2 + 12;
-		this.invitedObjectSelectionList = this.addDrawableChild(new RealmsPlayerScreen.InvitedObjectSelectionList());
-		this.invitedObjectSelectionList.setX(this.column1_x);
+		this.layout.addHeader(TITLE, this.textRenderer);
+		this.selectionList = this.layout.addBody(new RealmsPlayerScreen.InvitedObjectSelectionList());
 
 		for (PlayerInfo playerInfo : this.serverData.players) {
-			this.invitedObjectSelectionList.addEntry(playerInfo);
+			this.selectionList.children().add(new RealmsPlayerScreen.InvitedObjectSelectionListEntry(playerInfo));
 		}
 
-		this.player = -1;
-		this.addDrawableChild(
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget.add(
 			ButtonWidget.builder(
 					Text.translatable("mco.configure.world.buttons.invite"), button -> this.client.setScreen(new RealmsInviteScreen(this.parent, this, this.serverData))
 				)
-				.dimensions(i, row(1), this.column_width + 10, 20)
 				.build()
 		);
-		this.removeButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.configure.world.invites.remove.tooltip"), button -> this.uninvite(this.player))
-				.dimensions(i, row(7), this.column_width + 10, 20)
-				.build()
-		);
-		this.opdeopButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.configure.world.invites.ops.tooltip"), button -> {
-			if (((PlayerInfo)this.serverData.players.get(this.player)).isOperator()) {
-				this.deop(this.player);
-			} else {
-				this.op(this.player);
-			}
-		}).dimensions(i, row(9), this.column_width + 10, 20).build());
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.BACK, button -> this.backButtonClicked())
-				.dimensions(i + this.column_width / 2 + 2, row(12), this.column_width / 2 + 10 - 2, 20)
-				.build()
-		);
-		this.updateButtonStates();
-	}
-
-	void updateButtonStates() {
-		this.removeButton.visible = this.shouldRemoveAndOpdeopButtonBeVisible(this.player);
-		this.opdeopButton.visible = this.shouldRemoveAndOpdeopButtonBeVisible(this.player);
-		this.invitedObjectSelectionList.updateButtonStates();
-	}
-
-	private boolean shouldRemoveAndOpdeopButtonBeVisible(int player) {
-		return player != -1;
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.BACK, buttonWidget -> this.close()).build());
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
+		this.initTabNavigation();
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.backButtonClicked();
-			return true;
-		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		if (this.selectionList != null) {
+			this.selectionList.position(this.width, this.layout);
 		}
+	}
+
+	@Override
+	public void close() {
+		this.backButtonClicked();
 	}
 
 	private void backButtonClicked() {
@@ -121,177 +93,161 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 	}
 
-	void op(int index) {
-		RealmsClient realmsClient = RealmsClient.create();
-		UUID uUID = ((PlayerInfo)this.serverData.players.get(index)).getUuid();
-
-		try {
-			this.updateOps(realmsClient.op(this.serverData.id, uUID));
-		} catch (RealmsServiceException var5) {
-			LOGGER.error("Couldn't op the user", (Throwable)var5);
-		}
-
-		this.updateButtonStates();
-	}
-
-	void deop(int index) {
-		RealmsClient realmsClient = RealmsClient.create();
-		UUID uUID = ((PlayerInfo)this.serverData.players.get(index)).getUuid();
-
-		try {
-			this.updateOps(realmsClient.deop(this.serverData.id, uUID));
-		} catch (RealmsServiceException var5) {
-			LOGGER.error("Couldn't deop the user", (Throwable)var5);
-		}
-
-		this.updateButtonStates();
-	}
-
-	private void updateOps(Ops ops) {
-		for (PlayerInfo playerInfo : this.serverData.players) {
-			playerInfo.setOperator(ops.ops.contains(playerInfo.getName()));
-		}
-	}
-
-	void uninvite(int index) {
-		this.updateButtonStates();
-		if (index >= 0 && index < this.serverData.players.size()) {
-			PlayerInfo playerInfo = (PlayerInfo)this.serverData.players.get(index);
-			RealmsConfirmScreen realmsConfirmScreen = new RealmsConfirmScreen(confirmed -> {
-				if (confirmed) {
-					RealmsClient realmsClient = RealmsClient.create();
-
-					try {
-						realmsClient.uninvite(this.serverData.id, playerInfo.getUuid());
-					} catch (RealmsServiceException var5) {
-						LOGGER.error("Couldn't uninvite user", (Throwable)var5);
-					}
-
-					this.serverData.players.remove(this.player);
-					this.player = -1;
-					this.updateButtonStates();
-				}
-
-				this.stateChanged = true;
-				this.client.setScreen(this);
-			}, QUESTION_TEXT, Text.translatable("mco.configure.world.uninvite.player", playerInfo.getName()));
-			this.client.setScreen(realmsConfirmScreen);
-		}
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, Colors.WHITE);
-		int i = row(12) + 20;
-		context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-		context.drawTexture(OPTIONS_BACKGROUND, 0, i, 0.0F, 0.0F, this.width, this.height - i, 32, 32);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		String string = this.serverData.players != null ? Integer.toString(this.serverData.players.size()) : "0";
-		context.drawText(this.textRenderer, Text.translatable("mco.configure.world.invited.number", string), this.column1_x, row(0), Colors.WHITE, false);
-	}
-
 	@Environment(EnvType.CLIENT)
-	class InvitedObjectSelectionList extends RealmsObjectSelectionList<RealmsPlayerScreen.InvitedObjectSelectionListEntry> {
+	class InvitedObjectSelectionList extends ElementListWidget<RealmsPlayerScreen.InvitedObjectSelectionListEntry> {
+		private static final int field_49472 = 36;
+
 		public InvitedObjectSelectionList() {
-			super(RealmsPlayerScreen.this.column_width + 10, RealmsPlayerScreen.row(12) + 20, RealmsPlayerScreen.row(1), 13);
-		}
-
-		public void updateButtonStates() {
-			if (RealmsPlayerScreen.this.player != -1) {
-				this.getEntry(RealmsPlayerScreen.this.player).updateButtonStates();
-			}
-		}
-
-		public void addEntry(PlayerInfo playerInfo) {
-			this.addEntry(RealmsPlayerScreen.this.new InvitedObjectSelectionListEntry(playerInfo));
+			super(
+				MinecraftClient.getInstance(),
+				RealmsPlayerScreen.this.width,
+				RealmsPlayerScreen.this.layout.getContentHeight(),
+				RealmsPlayerScreen.this.layout.getHeaderHeight(),
+				36
+			);
+			this.setRenderHeader(true, (int)(9.0F * 1.5F));
 		}
 
 		@Override
-		public int getRowWidth() {
-			return (int)((double)this.width * 1.0);
-		}
-
-		@Override
-		public void setSelected(int index) {
-			super.setSelected(index);
-			this.selectInviteListItem(index);
-		}
-
-		public void selectInviteListItem(int item) {
-			RealmsPlayerScreen.this.player = item;
-			RealmsPlayerScreen.this.updateButtonStates();
-		}
-
-		public void setSelected(@Nullable RealmsPlayerScreen.InvitedObjectSelectionListEntry invitedObjectSelectionListEntry) {
-			super.setSelected(invitedObjectSelectionListEntry);
-			RealmsPlayerScreen.this.player = this.children().indexOf(invitedObjectSelectionListEntry);
-			RealmsPlayerScreen.this.updateButtonStates();
-		}
-
-		@Override
-		public int getScrollbarPositionX() {
-			return RealmsPlayerScreen.this.column1_x + this.width;
+		protected void renderHeader(DrawContext context, int x, int y) {
+			String string = RealmsPlayerScreen.this.serverData.players != null ? Integer.toString(RealmsPlayerScreen.this.serverData.players.size()) : "0";
+			Text text = Text.translatable("mco.configure.world.invited.number", string).formatted(Formatting.UNDERLINE);
+			context.drawText(
+				RealmsPlayerScreen.this.textRenderer, text, x + this.getRowWidth() / 2 - RealmsPlayerScreen.this.textRenderer.getWidth(text) / 2, y, Colors.WHITE, false
+			);
 		}
 
 		@Override
 		public int getMaxPosition() {
-			return this.getEntryCount() * 13;
+			return this.getEntryCount() * this.itemHeight + this.headerHeight;
+		}
+
+		@Override
+		public int getRowWidth() {
+			return 300;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	class InvitedObjectSelectionListEntry extends AlwaysSelectedEntryListWidget.Entry<RealmsPlayerScreen.InvitedObjectSelectionListEntry> {
-		private static final int field_44531 = 3;
-		private static final int field_44532 = 1;
-		private static final int field_44533 = 8;
-		private static final int field_44534 = 7;
-		private static final ButtonTextures REMOVE_PLAYER_TEXTURES = new ButtonTextures(
-			new Identifier("player_list/remove_player"), new Identifier("player_list/remove_player_highlighted")
-		);
-		private static final ButtonTextures MAKE_OPERATOR_TEXTURES = new ButtonTextures(
-			new Identifier("player_list/make_operator"), new Identifier("player_list/make_operator_highlighted")
-		);
-		private static final ButtonTextures REMOVE_OPERATOR_TEXTURES = new ButtonTextures(
-			new Identifier("player_list/remove_operator"), new Identifier("player_list/remove_operator_highlighted")
-		);
+	class InvitedObjectSelectionListEntry extends ElementListWidget.Entry<RealmsPlayerScreen.InvitedObjectSelectionListEntry> {
+		private static final Text field_49464 = Text.translatable("mco.configure.world.invites.normal.tooltip");
+		private static final Text field_49465 = Text.translatable("mco.configure.world.invites.ops.tooltip");
+		private static final Text field_49466 = Text.translatable("mco.configure.world.invites.remove.tooltip");
+		private static final Identifier field_49467 = new Identifier("player_list/make_operator");
+		private static final Identifier field_49468 = new Identifier("player_list/remove_operator");
+		private static final Identifier field_49469 = new Identifier("player_list/remove_player");
+		private static final int field_49470 = 8;
+		private static final int field_49471 = 7;
 		private final PlayerInfo playerInfo;
-		private final List<ClickableWidget> buttons = new ArrayList();
-		private final TexturedButtonWidget uninviteButton;
-		private final TexturedButtonWidget opButton;
-		private final TexturedButtonWidget deopButton;
+		private final ButtonWidget uninviteButton;
+		private final ButtonWidget opButton;
+		private final ButtonWidget deopButton;
 
 		public InvitedObjectSelectionListEntry(PlayerInfo playerInfo) {
 			this.playerInfo = playerInfo;
 			int i = RealmsPlayerScreen.this.serverData.players.indexOf(this.playerInfo);
-			int j = RealmsPlayerScreen.this.invitedObjectSelectionList.getRowRight() - 16 - 9;
-			int k = RealmsPlayerScreen.this.invitedObjectSelectionList.getRowTop(i) + 1;
-			this.uninviteButton = new TexturedButtonWidget(j, k, 8, 7, REMOVE_PLAYER_TEXTURES, button -> RealmsPlayerScreen.this.uninvite(i), ScreenTexts.EMPTY);
-			this.uninviteButton.setTooltip(Tooltip.of(RealmsPlayerScreen.REMOVE_TOOLTIP));
-			this.buttons.add(this.uninviteButton);
-			j += 11;
-			this.opButton = new TexturedButtonWidget(j, k, 8, 7, MAKE_OPERATOR_TEXTURES, button -> RealmsPlayerScreen.this.op(i), ScreenTexts.EMPTY);
-			this.opButton.setTooltip(Tooltip.of(RealmsPlayerScreen.NORMAL_TOOLTIP));
-			this.buttons.add(this.opButton);
-			this.deopButton = new TexturedButtonWidget(j, k, 8, 7, REMOVE_OPERATOR_TEXTURES, button -> RealmsPlayerScreen.this.deop(i), ScreenTexts.EMPTY);
-			this.deopButton.setTooltip(Tooltip.of(RealmsPlayerScreen.OPERATOR_TOOLTIP));
-			this.buttons.add(this.deopButton);
-			this.updateButtonStates();
+			this.opButton = TextIconButtonWidget.builder(field_49464, button -> this.method_57691(i), false)
+				.texture(field_49467, 8, 7)
+				.width(16 + RealmsPlayerScreen.this.textRenderer.getWidth(field_49464))
+				.narration(
+					supplier -> ScreenTexts.joinSentences(
+							Text.translatable("mco.invited.player.narration", playerInfo.getName()),
+							(Text)supplier.get(),
+							Text.translatable("narration.cycle_button.usage.focused", field_49465)
+						)
+				)
+				.build();
+			this.deopButton = TextIconButtonWidget.builder(field_49465, button -> this.method_57695(i), false)
+				.texture(field_49468, 8, 7)
+				.width(16 + RealmsPlayerScreen.this.textRenderer.getWidth(field_49465))
+				.narration(
+					supplier -> ScreenTexts.joinSentences(
+							Text.translatable("mco.invited.player.narration", playerInfo.getName()),
+							(Text)supplier.get(),
+							Text.translatable("narration.cycle_button.usage.focused", field_49464)
+						)
+				)
+				.build();
+			this.uninviteButton = TextIconButtonWidget.builder(field_49466, button -> this.method_57698(i), false)
+				.texture(field_49469, 8, 7)
+				.width(16 + RealmsPlayerScreen.this.textRenderer.getWidth(field_49466))
+				.narration(supplier -> ScreenTexts.joinSentences(Text.translatable("mco.invited.player.narration", playerInfo.getName()), (Text)supplier.get()))
+				.build();
+			this.method_57697();
 		}
 
-		public void updateButtonStates() {
+		private void method_57691(int i) {
+			RealmsClient realmsClient = RealmsClient.create();
+			UUID uUID = ((PlayerInfo)RealmsPlayerScreen.this.serverData.players.get(i)).getUuid();
+
+			try {
+				this.method_57692(realmsClient.op(RealmsPlayerScreen.this.serverData.id, uUID));
+			} catch (RealmsServiceException var5) {
+				RealmsPlayerScreen.LOGGER.error("Couldn't op the user", (Throwable)var5);
+			}
+
+			this.method_57697();
+		}
+
+		private void method_57695(int i) {
+			RealmsClient realmsClient = RealmsClient.create();
+			UUID uUID = ((PlayerInfo)RealmsPlayerScreen.this.serverData.players.get(i)).getUuid();
+
+			try {
+				this.method_57692(realmsClient.deop(RealmsPlayerScreen.this.serverData.id, uUID));
+			} catch (RealmsServiceException var5) {
+				RealmsPlayerScreen.LOGGER.error("Couldn't deop the user", (Throwable)var5);
+			}
+
+			this.method_57697();
+		}
+
+		private void method_57698(int i) {
+			if (i >= 0 && i < RealmsPlayerScreen.this.serverData.players.size()) {
+				PlayerInfo playerInfo = (PlayerInfo)RealmsPlayerScreen.this.serverData.players.get(i);
+				RealmsConfirmScreen realmsConfirmScreen = new RealmsConfirmScreen(bl -> {
+					if (bl) {
+						RealmsClient realmsClient = RealmsClient.create();
+
+						try {
+							realmsClient.uninvite(RealmsPlayerScreen.this.serverData.id, playerInfo.getUuid());
+						} catch (RealmsServiceException var6) {
+							RealmsPlayerScreen.LOGGER.error("Couldn't uninvite user", (Throwable)var6);
+						}
+
+						RealmsPlayerScreen.this.serverData.players.remove(i);
+					}
+
+					RealmsPlayerScreen.this.stateChanged = true;
+					RealmsPlayerScreen.this.client.setScreen(RealmsPlayerScreen.this);
+				}, RealmsPlayerScreen.QUESTION_TEXT, Text.translatable("mco.configure.world.uninvite.player", playerInfo.getName()));
+				RealmsPlayerScreen.this.client.setScreen(realmsConfirmScreen);
+			}
+		}
+
+		private void method_57692(Ops ops) {
+			for (PlayerInfo playerInfo : RealmsPlayerScreen.this.serverData.players) {
+				playerInfo.setOperator(ops.ops.contains(playerInfo.getName()));
+			}
+		}
+
+		private void method_57697() {
 			this.opButton.visible = !this.playerInfo.isOperator();
 			this.deopButton.visible = !this.opButton.visible;
 		}
 
-		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (!this.opButton.mouseClicked(mouseX, mouseY, button)) {
-				this.deopButton.mouseClicked(mouseX, mouseY, button);
-			}
+		private ButtonWidget method_57700() {
+			return this.opButton.visible ? this.opButton : this.deopButton;
+		}
 
-			this.uninviteButton.mouseClicked(mouseX, mouseY, button);
-			return true;
+		@Override
+		public List<? extends Element> children() {
+			return ImmutableList.of(this.method_57700(), this.uninviteButton);
+		}
+
+		@Override
+		public List<? extends Selectable> selectableChildren() {
+			return ImmutableList.of(this.method_57700(), this.uninviteButton);
 		}
 
 		@Override
@@ -305,17 +261,19 @@ public class RealmsPlayerScreen extends RealmsScreen {
 				i = Colors.WHITE;
 			}
 
-			RealmsUtil.drawPlayerHead(context, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, this.playerInfo.getUuid());
-			context.drawText(RealmsPlayerScreen.this.textRenderer, this.playerInfo.getName(), RealmsPlayerScreen.this.column1_x + 3 + 12, y + 1, i, false);
-			this.buttons.forEach(button -> {
-				button.setY(y + 1);
-				button.render(context, mouseX, mouseY, tickDelta);
-			});
-		}
-
-		@Override
-		public Text getNarration() {
-			return Text.translatable("narrator.select", this.playerInfo.getName());
+			int j = y + entryHeight / 2 - 16;
+			RealmsUtil.drawPlayerHead(context, x, j, 32, this.playerInfo.getUuid());
+			int k = y + entryHeight / 2 - 9 / 2;
+			context.drawText(RealmsPlayerScreen.this.textRenderer, this.playerInfo.getName(), x + 8 + 32, k, i, false);
+			int l = y + entryHeight / 2 - 10;
+			int m = x + entryWidth - this.uninviteButton.getWidth();
+			this.uninviteButton.setPosition(m, l);
+			this.uninviteButton.render(context, mouseX, mouseY, tickDelta);
+			int n = m - this.method_57700().getWidth() - 8;
+			this.opButton.setPosition(n, l);
+			this.opButton.render(context, mouseX, mouseY, tickDelta);
+			this.deopButton.setPosition(n, l);
+			this.deopButton.render(context, mouseX, mouseY, tickDelta);
 		}
 	}
 }

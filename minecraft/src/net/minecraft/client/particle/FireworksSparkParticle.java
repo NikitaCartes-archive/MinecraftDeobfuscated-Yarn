@@ -1,16 +1,14 @@
 package net.minecraft.client.particle;
 
-import javax.annotation.Nullable;
+import it.unimi.dsi.fastutil.ints.IntList;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.FireworkRocketItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -18,6 +16,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -110,9 +109,20 @@ public class FireworksSparkParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class FireworkParticle extends NoRenderParticle {
+		private static final double[][] field_49565 = new double[][]{
+			{0.0, 0.2}, {0.2, 0.2}, {0.2, 0.6}, {0.6, 0.6}, {0.6, 0.2}, {0.2, 0.2}, {0.2, 0.0}, {0.4, 0.0}, {0.4, -0.6}, {0.2, -0.6}, {0.2, -0.4}, {0.0, -0.4}
+		};
+		private static final double[][] field_49566 = new double[][]{
+			{0.0, 1.0},
+			{0.3455, 0.309},
+			{0.9511, 0.309},
+			{0.3795918367346939, -0.12653061224489795},
+			{0.6122448979591837, -0.8040816326530612},
+			{0.0, -0.35918367346938773}
+		};
 		private int age;
 		private final ParticleManager particleManager;
-		private NbtList explosions;
+		private final List<FireworkExplosionComponent> explosions;
 		private boolean flicker;
 
 		public FireworkParticle(
@@ -124,28 +134,24 @@ public class FireworksSparkParticle {
 			double velocityY,
 			double velocityZ,
 			ParticleManager particleManager,
-			@Nullable NbtCompound nbt
+			List<FireworkExplosionComponent> list
 		) {
 			super(world, x, y, z);
 			this.velocityX = velocityX;
 			this.velocityY = velocityY;
 			this.velocityZ = velocityZ;
 			this.particleManager = particleManager;
-			this.maxAge = 8;
-			if (nbt != null) {
-				this.explosions = nbt.getList("Explosions", NbtElement.COMPOUND_TYPE);
-				if (this.explosions.isEmpty()) {
-					this.explosions = null;
-				} else {
-					this.maxAge = this.explosions.size() * 2 - 1;
+			if (list.isEmpty()) {
+				throw new IllegalArgumentException("Cannot create firework starter with no explosions");
+			} else {
+				this.explosions = list;
+				this.maxAge = list.size() * 2 - 1;
 
-					for (int i = 0; i < this.explosions.size(); i++) {
-						NbtCompound nbtCompound = this.explosions.getCompound(i);
-						if (nbtCompound.getBoolean("Flicker")) {
-							this.flicker = true;
-							this.maxAge += 15;
-							break;
-						}
+				for (FireworkExplosionComponent fireworkExplosionComponent : list) {
+					if (fireworkExplosionComponent.hasTwinkle()) {
+						this.flicker = true;
+						this.maxAge += 15;
+						break;
 					}
 				}
 			}
@@ -153,15 +159,14 @@ public class FireworksSparkParticle {
 
 		@Override
 		public void tick() {
-			if (this.age == 0 && this.explosions != null) {
+			if (this.age == 0) {
 				boolean bl = this.isFar();
 				boolean bl2 = false;
 				if (this.explosions.size() >= 3) {
 					bl2 = true;
 				} else {
-					for (int i = 0; i < this.explosions.size(); i++) {
-						NbtCompound nbtCompound = this.explosions.getCompound(i);
-						if (FireworkRocketItem.Type.byId(nbtCompound.getByte("Type")) == FireworkRocketItem.Type.LARGE_BALL) {
+					for (FireworkExplosionComponent fireworkExplosionComponent : this.explosions) {
+						if (fireworkExplosionComponent.shape() == FireworkExplosionComponent.Type.LARGE_BALL) {
 							bl2 = true;
 							break;
 						}
@@ -178,67 +183,37 @@ public class FireworksSparkParticle {
 				this.world.playSound(this.x, this.y, this.z, soundEvent, SoundCategory.AMBIENT, 20.0F, 0.95F + this.random.nextFloat() * 0.1F, true);
 			}
 
-			if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
-				int j = this.age / 2;
-				NbtCompound nbtCompound2 = this.explosions.getCompound(j);
-				FireworkRocketItem.Type type = FireworkRocketItem.Type.byId(nbtCompound2.getByte("Type"));
-				boolean bl3 = nbtCompound2.getBoolean("Trail");
-				boolean bl4 = nbtCompound2.getBoolean("Flicker");
-				int[] is = nbtCompound2.getIntArray("Colors");
-				int[] js = nbtCompound2.getIntArray("FadeColors");
-				if (is.length == 0) {
-					is = new int[]{DyeColor.BLACK.getFireworkColor()};
+			if (this.age % 2 == 0 && this.age / 2 < this.explosions.size()) {
+				int i = this.age / 2;
+				FireworkExplosionComponent fireworkExplosionComponent2 = (FireworkExplosionComponent)this.explosions.get(i);
+				boolean bl3 = fireworkExplosionComponent2.hasTrail();
+				boolean bl4 = fireworkExplosionComponent2.hasTwinkle();
+				IntList intList = fireworkExplosionComponent2.colors();
+				IntList intList2 = fireworkExplosionComponent2.fadeColors();
+				if (intList.isEmpty()) {
+					intList = IntList.of(DyeColor.BLACK.getFireworkColor());
 				}
 
-				switch (type) {
+				switch (fireworkExplosionComponent2.shape()) {
 					case SMALL_BALL:
-					default:
-						this.explodeBall(0.25, 2, is, js, bl3, bl4);
+						this.explodeBall(0.25, 2, intList, intList2, bl3, bl4);
 						break;
 					case LARGE_BALL:
-						this.explodeBall(0.5, 4, is, js, bl3, bl4);
+						this.explodeBall(0.5, 4, intList, intList2, bl3, bl4);
 						break;
 					case STAR:
-						this.explodeStar(
-							0.5,
-							new double[][]{
-								{0.0, 1.0},
-								{0.3455, 0.309},
-								{0.9511, 0.309},
-								{0.3795918367346939, -0.12653061224489795},
-								{0.6122448979591837, -0.8040816326530612},
-								{0.0, -0.35918367346938773}
-							},
-							is,
-							js,
-							bl3,
-							bl4,
-							false
-						);
+						this.explodeStar(0.5, field_49566, intList, intList2, bl3, bl4, false);
 						break;
 					case CREEPER:
-						this.explodeStar(
-							0.5,
-							new double[][]{
-								{0.0, 0.2}, {0.2, 0.2}, {0.2, 0.6}, {0.6, 0.6}, {0.6, 0.2}, {0.2, 0.2}, {0.2, 0.0}, {0.4, 0.0}, {0.4, -0.6}, {0.2, -0.6}, {0.2, -0.4}, {0.0, -0.4}
-							},
-							is,
-							js,
-							bl3,
-							bl4,
-							true
-						);
+						this.explodeStar(0.5, field_49565, intList, intList2, bl3, bl4, true);
 						break;
 					case BURST:
-						this.explodeBurst(is, js, bl3, bl4);
+						this.explodeBurst(intList, intList2, bl3, bl4);
 				}
 
-				int k = is[0];
-				float f = (float)((k & 0xFF0000) >> 16) / 255.0F;
-				float g = (float)((k & 0xFF00) >> 8) / 255.0F;
-				float h = (float)((k & 0xFF) >> 0) / 255.0F;
+				int j = intList.getInt(0);
 				Particle particle = this.particleManager.addParticle(ParticleTypes.FLASH, this.x, this.y, this.z, 0.0, 0.0, 0.0);
-				particle.setColor(f, g, h);
+				particle.setColor((float)ColorHelper.Argb.getRed(j) / 255.0F, (float)ColorHelper.Argb.getGreen(j) / 255.0F, (float)ColorHelper.Argb.getBlue(j) / 255.0F);
 			}
 
 			this.age++;
@@ -259,21 +234,20 @@ public class FireworksSparkParticle {
 		}
 
 		private void addExplosionParticle(
-			double x, double y, double z, double velocityX, double velocityY, double velocityZ, int[] colors, int[] fadeColors, boolean trail, boolean flicker
+			double x, double y, double z, double velocityX, double velocityY, double velocityZ, IntList intList, IntList intList2, boolean trail, boolean flicker
 		) {
 			FireworksSparkParticle.Explosion explosion = (FireworksSparkParticle.Explosion)this.particleManager
 				.addParticle(ParticleTypes.FIREWORK, x, y, z, velocityX, velocityY, velocityZ);
 			explosion.setTrail(trail);
 			explosion.setFlicker(flicker);
 			explosion.setAlpha(0.99F);
-			int i = this.random.nextInt(colors.length);
-			explosion.setColor(colors[i]);
-			if (fadeColors.length > 0) {
-				explosion.setTargetColor(Util.getRandom(fadeColors, this.random));
+			explosion.setColor(Util.<Integer>getRandom(intList, this.random));
+			if (!intList2.isEmpty()) {
+				explosion.setTargetColor(Util.<Integer>getRandom(intList2, this.random));
 			}
 		}
 
-		private void explodeBall(double size, int amount, int[] colors, int[] fadeColors, boolean trail, boolean flicker) {
+		private void explodeBall(double size, int amount, IntList intList, IntList intList2, boolean trail, boolean flicker) {
 			double d = this.x;
 			double e = this.y;
 			double f = this.z;
@@ -285,7 +259,7 @@ public class FireworksSparkParticle {
 						double h = (double)i + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
 						double l = (double)k + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
 						double m = Math.sqrt(g * g + h * h + l * l) / size + this.random.nextGaussian() * 0.05;
-						this.addExplosionParticle(d, e, f, g / m, h / m, l / m, colors, fadeColors, trail, flicker);
+						this.addExplosionParticle(d, e, f, g / m, h / m, l / m, intList, intList2, trail, flicker);
 						if (i != -amount && i != amount && j != -amount && j != amount) {
 							k += amount * 2 - 1;
 						}
@@ -294,10 +268,10 @@ public class FireworksSparkParticle {
 			}
 		}
 
-		private void explodeStar(double size, double[][] pattern, int[] colors, int[] fadeColors, boolean trail, boolean flicker, boolean keepShape) {
+		private void explodeStar(double size, double[][] pattern, IntList intList, IntList intList2, boolean trail, boolean flicker, boolean keepShape) {
 			double d = pattern[0][0];
 			double e = pattern[0][1];
-			this.addExplosionParticle(this.x, this.y, this.z, d * size, e * size, 0.0, colors, fadeColors, trail, flicker);
+			this.addExplosionParticle(this.x, this.y, this.z, d * size, e * size, 0.0, intList, intList2, trail, flicker);
 			float f = this.random.nextFloat() * (float) Math.PI;
 			double g = keepShape ? 0.034 : 0.34;
 
@@ -317,7 +291,7 @@ public class FireworksSparkParticle {
 						p *= Math.cos(h);
 
 						for (double s = -1.0; s <= 1.0; s += 2.0) {
-							this.addExplosionParticle(this.x, this.y, this.z, p * s, q, r * s, colors, fadeColors, trail, flicker);
+							this.addExplosionParticle(this.x, this.y, this.z, p * s, q, r * s, intList, intList2, trail, flicker);
 						}
 					}
 
@@ -327,7 +301,7 @@ public class FireworksSparkParticle {
 			}
 		}
 
-		private void explodeBurst(int[] colors, int[] fadeColors, boolean trail, boolean flicker) {
+		private void explodeBurst(IntList intList, IntList intList2, boolean trail, boolean flicker) {
 			double d = this.random.nextGaussian() * 0.05;
 			double e = this.random.nextGaussian() * 0.05;
 
@@ -335,7 +309,7 @@ public class FireworksSparkParticle {
 				double f = this.velocityX * 0.5 + this.random.nextGaussian() * 0.15 + d;
 				double g = this.velocityZ * 0.5 + this.random.nextGaussian() * 0.15 + e;
 				double h = this.velocityY * 0.5 + this.random.nextDouble() * 0.5;
-				this.addExplosionParticle(this.x, this.y, this.z, f, h, g, colors, fadeColors, trail, flicker);
+				this.addExplosionParticle(this.x, this.y, this.z, f, h, g, intList, intList2, trail, flicker);
 			}
 		}
 	}

@@ -57,7 +57,7 @@ public class LootTableProvider implements DataProvider {
 	private CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup) {
 		final Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
 		Map<RandomSeed.XoroshiroSeed, Identifier> map2 = new Object2ObjectOpenHashMap<>();
-		this.lootTypeGenerators.forEach(generator -> ((LootTableGenerator)generator.provider().get()).accept((id, builder) -> {
+		this.lootTypeGenerators.forEach(generator -> ((LootTableGenerator)generator.provider().get()).accept(registryLookup, (id, builder) -> {
 				Identifier identifierx = (Identifier)map2.put(RandomSequence.createSeed(id), id);
 				if (identifierx != null) {
 					Util.error("Loot table random sequence seed collision on " + identifierx + " and " + id);

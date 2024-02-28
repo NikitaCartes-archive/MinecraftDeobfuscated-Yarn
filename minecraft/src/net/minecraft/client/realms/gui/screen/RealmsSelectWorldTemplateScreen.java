@@ -19,7 +19,6 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.RealmsClient;
@@ -88,7 +87,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
+		this.layout.addHeader(this.title, this.textRenderer);
 		this.templateList = this.layout.addBody(new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList(this.templateList.getValues()));
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(10));
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
@@ -242,7 +241,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	}
 
 	int getTemplateListTop() {
-		return this.warning != null ? row(1) : 36;
+		return this.warning != null ? row(1) : 33;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -254,7 +253,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		public WorldTemplateObjectSelectionList(Iterable<WorldTemplate> templates) {
 			super(
 				RealmsSelectWorldTemplateScreen.this.width,
-				RealmsSelectWorldTemplateScreen.this.height - 36 - RealmsSelectWorldTemplateScreen.this.getTemplateListTop(),
+				RealmsSelectWorldTemplateScreen.this.height - 33 - RealmsSelectWorldTemplateScreen.this.getTemplateListTop(),
 				RealmsSelectWorldTemplateScreen.this.getTemplateListTop(),
 				46
 			);
@@ -334,26 +333,22 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (button == 0) {
-				RealmsSelectWorldTemplateScreen.this.selectedTemplate = this.mTemplate;
-				RealmsSelectWorldTemplateScreen.this.updateButtonStates();
-				if (Util.getMeasuringTimeMs() - this.prevClickTime < 250L && this.isFocused()) {
-					RealmsSelectWorldTemplateScreen.this.callback.accept(this.mTemplate);
-				}
-
-				this.prevClickTime = Util.getMeasuringTimeMs();
-				if (this.infoButton != null) {
-					this.infoButton.mouseClicked(mouseX, mouseY, button);
-				}
-
-				if (this.trailerButton != null) {
-					this.trailerButton.mouseClicked(mouseX, mouseY, button);
-				}
-
-				return true;
-			} else {
-				return super.mouseClicked(mouseX, mouseY, button);
+			RealmsSelectWorldTemplateScreen.this.selectedTemplate = this.mTemplate;
+			RealmsSelectWorldTemplateScreen.this.updateButtonStates();
+			if (Util.getMeasuringTimeMs() - this.prevClickTime < 250L && this.isFocused()) {
+				RealmsSelectWorldTemplateScreen.this.callback.accept(this.mTemplate);
 			}
+
+			this.prevClickTime = Util.getMeasuringTimeMs();
+			if (this.infoButton != null) {
+				this.infoButton.mouseClicked(mouseX, mouseY, button);
+			}
+
+			if (this.trailerButton != null) {
+				this.trailerButton.mouseClicked(mouseX, mouseY, button);
+			}
+
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 
 		@Override

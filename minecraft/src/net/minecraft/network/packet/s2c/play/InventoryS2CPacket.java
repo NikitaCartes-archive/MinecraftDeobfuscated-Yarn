@@ -39,15 +39,15 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 	private InventoryS2CPacket(RegistryByteBuf buf) {
 		this.syncId = buf.readUnsignedByte();
 		this.revision = buf.readVarInt();
-		this.contents = ItemStack.LIST_PACKET_CODEC.decode(buf);
-		this.cursorStack = ItemStack.PACKET_CODEC.decode(buf);
+		this.contents = ItemStack.OPTIONAL_LIST_PACKET_CODEC.decode(buf);
+		this.cursorStack = ItemStack.OPTIONAL_PACKET_CODEC.decode(buf);
 	}
 
 	private void write(RegistryByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeVarInt(this.revision);
-		ItemStack.LIST_PACKET_CODEC.encode(buf, this.contents);
-		ItemStack.PACKET_CODEC.encode(buf, this.cursorStack);
+		ItemStack.OPTIONAL_LIST_PACKET_CODEC.encode(buf, this.contents);
+		ItemStack.OPTIONAL_PACKET_CODEC.encode(buf, this.cursorStack);
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class SkeletonEntityRenderer extends BipedEntityRenderer<AbstractSkeletonEntity, SkeletonEntityModel<AbstractSkeletonEntity>> {
+public class SkeletonEntityRenderer<T extends AbstractSkeletonEntity> extends BipedEntityRenderer<T, SkeletonEntityModel<T>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/skeleton.png");
 
 	public SkeletonEntityRenderer(EntityRendererFactory.Context context) {
@@ -18,19 +18,25 @@ public class SkeletonEntityRenderer extends BipedEntityRenderer<AbstractSkeleton
 	}
 
 	public SkeletonEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer, EntityModelLayer legArmorLayer, EntityModelLayer bodyArmorLayer) {
-		super(ctx, new SkeletonEntityModel<>(ctx.getPart(layer)), 0.5F);
+		this(ctx, legArmorLayer, bodyArmorLayer, new SkeletonEntityModel<>(ctx.getPart(layer)));
+	}
+
+	public SkeletonEntityRenderer(
+		EntityRendererFactory.Context context, EntityModelLayer entityModelLayer, EntityModelLayer entityModelLayer2, SkeletonEntityModel<T> skeletonEntityModel
+	) {
+		super(context, skeletonEntityModel, 0.5F);
 		this.addFeature(
 			new ArmorFeatureRenderer<>(
-				this, new SkeletonEntityModel(ctx.getPart(legArmorLayer)), new SkeletonEntityModel(ctx.getPart(bodyArmorLayer)), ctx.getModelManager()
+				this, new SkeletonEntityModel(context.getPart(entityModelLayer)), new SkeletonEntityModel(context.getPart(entityModelLayer2)), context.getModelManager()
 			)
 		);
 	}
 
-	public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
+	public Identifier getTexture(T abstractSkeletonEntity) {
 		return TEXTURE;
 	}
 
-	protected boolean isShaking(AbstractSkeletonEntity abstractSkeletonEntity) {
+	protected boolean isShaking(T abstractSkeletonEntity) {
 		return abstractSkeletonEntity.isShaking();
 	}
 }

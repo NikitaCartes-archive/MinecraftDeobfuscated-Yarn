@@ -1,6 +1,7 @@
 package net.minecraft.recipe;
 
-import net.minecraft.block.entity.BannerBlockEntity;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.Item;
@@ -36,7 +37,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 					return false;
 				}
 
-				int j = BannerBlockEntity.getPatternCount(itemStack3);
+				int j = itemStack3.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT).layers().size();
 				if (j > 6) {
 					return false;
 				}
@@ -64,7 +65,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < recipeInputInventory.size(); i++) {
 			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
-				int j = BannerBlockEntity.getPatternCount(itemStack);
+				int j = itemStack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT).layers().size();
 				if (j > 0 && j <= 6) {
 					return itemStack.copyWithCount(1);
 				}
@@ -82,7 +83,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem().hasRecipeRemainder()) {
 					defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
-				} else if (BannerBlockEntity.getPatternCount(itemStack) > 0) {
+				} else if (!itemStack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT).layers().isEmpty()) {
 					defaultedList.set(i, itemStack.copyWithCount(1));
 				}
 			}

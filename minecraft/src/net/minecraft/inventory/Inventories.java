@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 
 /**
@@ -48,15 +49,15 @@ public class Inventories {
 	 * Writes the inventory to {@code nbt}. This method will always write to the NBT,
 	 * even if {@code stacks} only contains empty stacks.
 	 * 
-	 * <p>See {@link #writeNbt(NbtCompound, DefaultedList, boolean)} for the serialization
-	 * format.
+	 * <p>See {@link #writeNbt(NbtCompound, DefaultedList, boolean, RegistryWrapper.WrapperLookup)}
+	 * for the serialization format.
 	 * 
-	 * @see #readNbt(NbtCompound, DefaultedList)
-	 * @see #writeNbt(NbtCompound, DefaultedList, boolean)
+	 * @see #readNbt(NbtCompound, DefaultedList, RegistryWrapper.WrapperLookup)
+	 * @see #writeNbt(NbtCompound, DefaultedList, boolean, RegistryWrapper.WrapperLookup)
 	 * @return the passed {@code nbt}
 	 */
-	public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks) {
-		return writeNbt(nbt, stacks, true);
+	public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, RegistryWrapper.WrapperLookup registries) {
+		return writeNbt(nbt, stacks, true, registries);
 	}
 
 	/**
@@ -71,10 +72,10 @@ public class Inventories {
 	 * then {@code nbt} will not be modified at all. Otherwise, the {@code Items} entry
 	 * will always be present.
 	 * 
-	 * @see #readNbt(NbtCompound, DefaultedList)
+	 * @see #readNbt(NbtCompound, DefaultedList, RegistryWrapper.WrapperLookup)
 	 * @return the passed {@code nbt}
 	 */
-	public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, boolean setIfEmpty) {
+	public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, boolean setIfEmpty, RegistryWrapper.WrapperLookup registries) {
 		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < stacks.size(); i++) {
@@ -82,8 +83,7 @@ public class Inventories {
 			if (!itemStack.isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)i);
-				itemStack.writeNbt(nbtCompound);
-				nbtList.add(nbtCompound);
+				nbtList.add(itemStack.encode(registries, nbtCompound));
 			}
 		}
 
@@ -97,20 +97,20 @@ public class Inventories {
 	/**
 	 * Reads {@code nbt} and sets the elements of {@code stacks} accordingly.
 	 * 
-	 * <p>See {@link #writeNbt(NbtCompound, DefaultedList, boolean)} for the serialization
-	 * format. If the slot is out of bounds, it is ignored.
+	 * <p>See {@link #writeNbt(NbtCompound, DefaultedList, boolean, RegistryWrapper.WrapperLookup)}
+	 * for the serialization format. If the slot is out of bounds, it is ignored.
 	 * 
-	 * @see #writeNbt(NbtCompound, DefaultedList)
-	 * @see #writeNbt(NbtCompound, DefaultedList, boolean)
+	 * @see #writeNbt(NbtCompound, DefaultedList, RegistryWrapper.WrapperLookup)
+	 * @see #writeNbt(NbtCompound, DefaultedList, boolean, RegistryWrapper.WrapperLookup)
 	 */
-	public static void readNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks) {
+	public static void readNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, RegistryWrapper.WrapperLookup registries) {
 		NbtList nbtList = nbt.getList("Items", NbtElement.COMPOUND_TYPE);
 
 		for (int i = 0; i < nbtList.size(); i++) {
 			NbtCompound nbtCompound = nbtList.getCompound(i);
 			int j = nbtCompound.getByte("Slot") & 255;
 			if (j >= 0 && j < stacks.size()) {
-				stacks.set(j, ItemStack.fromNbt(nbtCompound));
+				stacks.set(j, (ItemStack)ItemStack.fromNbt(registries, nbtCompound).orElse(ItemStack.EMPTY));
 			}
 		}
 	}

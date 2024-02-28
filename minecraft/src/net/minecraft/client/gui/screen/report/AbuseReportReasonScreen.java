@@ -10,6 +10,10 @@ import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.EmptyWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.session.report.AbuseReportReason;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -21,10 +25,8 @@ public class AbuseReportReasonScreen extends Screen {
 	private static final Text TITLE_TEXT = Text.translatable("gui.abuseReport.reason.title");
 	private static final Text DESCRIPTION_TEXT = Text.translatable("gui.abuseReport.reason.description");
 	private static final Text READ_INFO_TEXT = Text.translatable("gui.abuseReport.read_info");
-	private static final int REASON_LIST_BOTTOM_MARGIN = 95;
-	private static final int DONE_BUTTON_WIDTH = 150;
-	private static final int DONE_BUTTON_HEIGHT = 20;
-	private static final int SCREEN_WIDTH = 320;
+	private static final int field_49546 = 320;
+	private static final int field_49547 = 62;
 	private static final int TOP_MARGIN = 4;
 	@Nullable
 	private final Screen parent;
@@ -33,6 +35,7 @@ public class AbuseReportReasonScreen extends Screen {
 	@Nullable
 	AbuseReportReason reason;
 	private final Consumer<AbuseReportReason> reasonConsumer;
+	final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 
 	public AbuseReportReasonScreen(@Nullable Screen parent, @Nullable AbuseReportReason reason, Consumer<AbuseReportReason> reasonConsumer) {
 		super(TITLE_TEXT);
@@ -43,33 +46,42 @@ public class AbuseReportReasonScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.reasonList = this.addDrawableChild(new AbuseReportReasonScreen.ReasonListWidget(this.client));
+		this.layout.addHeader(TITLE_TEXT, this.textRenderer);
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical().spacing(4));
+		this.reasonList = directionalLayoutWidget.add(new AbuseReportReasonScreen.ReasonListWidget(this.client));
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = Nullables.map(this.reason, this.reasonList::getEntry);
 		this.reasonList.setSelected(reasonEntry);
-		int i = this.width / 2 - 150 - 5;
-		this.addDrawableChild(
-			ButtonWidget.builder(READ_INFO_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/aboutjavareporting"))
-				.dimensions(i, this.getDoneButtonY(), 150, 20)
-				.build()
-		);
-		int j = this.width / 2 + 5;
-		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
+		directionalLayoutWidget.add(EmptyWidget.ofHeight(this.getHeight()));
+		DirectionalLayoutWidget directionalLayoutWidget2 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget2.add(ButtonWidget.builder(READ_INFO_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/aboutjavareporting")).build());
+		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntryx = this.reasonList.getSelectedOrNull();
 			if (reasonEntryx != null) {
 				this.reasonConsumer.accept(reasonEntryx.getReason());
 			}
 
 			this.client.setScreen(this.parent);
-		}).dimensions(j, this.getDoneButtonY(), 150, 20).build());
-		super.init();
+		}).build());
+		this.layout.forEachChild(element -> {
+			ClickableWidget var10000 = this.addDrawableChild(element);
+		});
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		if (this.reasonList != null) {
+			this.reasonList.position(this.width, this.getReasonListHeight(), this.layout.getHeaderHeight());
+		}
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
-		context.fill(this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), 2130706432);
-		context.drawTextWithShadow(this.textRenderer, DESCRIPTION_TEXT, this.getLeft() + 4, this.getTop() + 4, -8421505);
+		context.fill(this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), -16777216);
+		context.drawBorder(this.getLeft(), this.getTop(), this.getWidth(), this.getHeight(), Colors.WHITE);
+		context.drawTextWithShadow(this.textRenderer, DESCRIPTION_TEXT, this.getLeft() + 4, this.getTop() + 4, Colors.WHITE);
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = this.reasonList.getSelectedOrNull();
 		if (reasonEntry != null) {
 			int i = this.getLeft() + 4 + 16;
@@ -83,15 +95,6 @@ public class AbuseReportReasonScreen extends Screen {
 		}
 	}
 
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
-	}
-
-	private int getDoneButtonY() {
-		return this.height - 20 - 4;
-	}
-
 	private int getLeft() {
 		return (this.width - 320) / 2;
 	}
@@ -101,11 +104,23 @@ public class AbuseReportReasonScreen extends Screen {
 	}
 
 	private int getTop() {
-		return this.height - 95 + 4;
+		return this.getBottom() - this.getHeight();
 	}
 
 	private int getBottom() {
-		return this.getDoneButtonY() - 4;
+		return this.height - this.layout.getFooterHeight() - 4;
+	}
+
+	private int getWidth() {
+		return 320;
+	}
+
+	private int getHeight() {
+		return 62;
+	}
+
+	int getReasonListHeight() {
+		return this.layout.getContentHeight() - this.getHeight() - 8;
 	}
 
 	@Override
@@ -116,7 +131,9 @@ public class AbuseReportReasonScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	public class ReasonListWidget extends AlwaysSelectedEntryListWidget<AbuseReportReasonScreen.ReasonListWidget.ReasonEntry> {
 		public ReasonListWidget(MinecraftClient client) {
-			super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height - 95 - 40, 40, 18);
+			super(
+				client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.getReasonListHeight(), AbuseReportReasonScreen.this.layout.getHeaderHeight(), 18
+			);
 
 			for (AbuseReportReason abuseReportReason : AbuseReportReason.values()) {
 				this.addEntry(new AbuseReportReasonScreen.ReasonListWidget.ReasonEntry(abuseReportReason));
@@ -131,11 +148,6 @@ public class AbuseReportReasonScreen extends Screen {
 		@Override
 		public int getRowWidth() {
 			return 320;
-		}
-
-		@Override
-		protected int getScrollbarPositionX() {
-			return this.getRowRight() - 2;
 		}
 
 		public void setSelected(@Nullable AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry) {
@@ -166,7 +178,7 @@ public class AbuseReportReasonScreen extends Screen {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				ReasonListWidget.this.setSelected(this);
-				return true;
+				return super.mouseClicked(mouseX, mouseY, button);
 			}
 
 			public AbuseReportReason getReason() {

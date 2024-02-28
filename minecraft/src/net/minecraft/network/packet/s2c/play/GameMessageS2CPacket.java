@@ -12,7 +12,7 @@ import net.minecraft.text.TextCodecs;
 
 public record GameMessageS2CPacket(Text content, boolean overlay) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, GameMessageS2CPacket> CODEC = PacketCodec.tuple(
-		TextCodecs.REGISTRY_PACKET_CODEC, GameMessageS2CPacket::content, PacketCodecs.BOOL, GameMessageS2CPacket::overlay, GameMessageS2CPacket::new
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC, GameMessageS2CPacket::content, PacketCodecs.BOOL, GameMessageS2CPacket::overlay, GameMessageS2CPacket::new
 	);
 
 	@Override

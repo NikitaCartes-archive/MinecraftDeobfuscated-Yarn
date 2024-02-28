@@ -158,7 +158,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 
 	static record StackEntry(ItemStack stack) implements Ingredient.Entry {
 		static final Codec<Ingredient.StackEntry> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(ItemStack.INGREDIENT_ENTRY_CODEC.fieldOf("item").forGetter(entry -> entry.stack)).apply(instance, Ingredient.StackEntry::new)
+			instance -> instance.group(ItemStack.REGISTRY_ENTRY_CODEC.fieldOf("item").forGetter(entry -> entry.stack)).apply(instance, Ingredient.StackEntry::new)
 		);
 
 		public boolean equals(Object o) {

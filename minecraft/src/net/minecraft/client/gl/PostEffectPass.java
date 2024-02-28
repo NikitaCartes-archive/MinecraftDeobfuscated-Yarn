@@ -13,7 +13,7 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceFactory;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
@@ -27,8 +27,8 @@ public class PostEffectPass implements AutoCloseable {
 	private final List<Integer> samplerHeights = Lists.<Integer>newArrayList();
 	private Matrix4f projectionMatrix;
 
-	public PostEffectPass(ResourceManager resourceManager, String programName, Framebuffer input, Framebuffer output) throws IOException {
-		this.program = new JsonEffectShaderProgram(resourceManager, programName);
+	public PostEffectPass(ResourceFactory resourceFactory, String programName, Framebuffer input, Framebuffer output) throws IOException {
+		this.program = new JsonEffectShaderProgram(resourceFactory, programName);
 		this.input = input;
 		this.output = output;
 	}

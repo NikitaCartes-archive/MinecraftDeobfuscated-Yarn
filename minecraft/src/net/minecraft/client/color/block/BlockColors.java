@@ -22,6 +22,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
 
@@ -79,16 +80,13 @@ public class BlockColors {
 		blockColors.registerColorProvider(
 			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : -1, Blocks.SUGAR_CANE
 		);
-		blockColors.registerColorProvider((state, world, pos, tintIndex) -> 14731036, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
+		blockColors.registerColorProvider((state, world, pos, tintIndex) -> -2046180, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> {
 			int i = (Integer)state.get(StemBlock.AGE);
-			int j = i * 32;
-			int k = 255 - i * 8;
-			int l = i * 4;
-			return j << 16 | k << 8 | l;
+			return ColorHelper.Argb.getArgb(i * 32, 255 - i * 8, i * 4);
 		}, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
 		blockColors.registerColorProperty(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
-		blockColors.registerColorProvider((state, world, pos, tintIndex) -> world != null && pos != null ? 2129968 : 7455580, Blocks.LILY_PAD);
+		blockColors.registerColorProvider((state, world, pos, tintIndex) -> world != null && pos != null ? -14647248 : -9321636, Blocks.LILY_PAD);
 		return blockColors;
 	}
 

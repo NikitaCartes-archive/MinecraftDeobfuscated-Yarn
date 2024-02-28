@@ -43,7 +43,7 @@ public class RecoverWorldScreen extends Screen {
 	private static final Text ISSUE_NONE_TEXT = Text.translatable("recover_world.issue.none").formatted(Formatting.GREEN);
 	private static final Text MISSING_FILE_TEXT = Text.translatable("recover_world.issue.missing_file").formatted(Formatting.RED);
 	private final BooleanConsumer callback;
-	private final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical().spacing(10);
+	private final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical().spacing(8);
 	private final Text message;
 	private final MultilineTextWidget messageWidget;
 	private final MultilineTextWidget exceptionWidget;

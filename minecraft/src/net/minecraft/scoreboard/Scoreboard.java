@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -53,7 +54,7 @@ public class Scoreboard {
 			throw new IllegalArgumentException("An objective with the name '" + name + "' already exists!");
 		} else {
 			ScoreboardObjective scoreboardObjective = new ScoreboardObjective(this, name, criterion, displayName, renderType, displayAutoUpdate, numberFormat);
-			this.objectivesByCriterion.computeIfAbsent(criterion, object -> Lists.<ScoreboardObjective>newArrayList()).add(scoreboardObjective);
+			this.objectivesByCriterion.computeIfAbsent(criterion, criterion2 -> Lists.<ScoreboardObjective>newArrayList()).add(scoreboardObjective);
 			this.objectives.put(name, scoreboardObjective);
 			this.updateObjective(scoreboardObjective);
 			return scoreboardObjective;
@@ -67,7 +68,7 @@ public class Scoreboard {
 	}
 
 	private Scores getScores(String scoreHolderName) {
-		return (Scores)this.scores.computeIfAbsent(scoreHolderName, string -> new Scores());
+		return (Scores)this.scores.computeIfAbsent(scoreHolderName, name -> new Scores());
 	}
 
 	public ScoreAccess getOrCreateScore(ScoreHolder scoreHolder, ScoreboardObjective objective) {
@@ -78,7 +79,7 @@ public class Scoreboard {
 		final boolean bl = forceWritable || !objective.getCriterion().isReadOnly();
 		Scores scores = this.getScores(scoreHolder.getNameForScoreboard());
 		final MutableBoolean mutableBoolean = new MutableBoolean();
-		final ScoreboardScore scoreboardScore = scores.getOrCreate(objective, scoreboardScorex -> mutableBoolean.setTrue());
+		final ScoreboardScore scoreboardScore = scores.getOrCreate(objective, score -> mutableBoolean.setTrue());
 		return new ScoreAccess() {
 			@Override
 			public int getScore() {
@@ -353,10 +354,10 @@ public class Scoreboard {
 		}
 	}
 
-	protected NbtList toNbt() {
+	protected NbtList toNbt(RegistryWrapper.WrapperLookup registries) {
 		NbtList nbtList = new NbtList();
 		this.scores.forEach((name, scores) -> scores.getScores().forEach((objective, score) -> {
-				NbtCompound nbtCompound = score.toNbt();
+				NbtCompound nbtCompound = score.toNbt(registries);
 				nbtCompound.putString("Name", name);
 				nbtCompound.putString("Objective", objective.getName());
 				nbtList.add(nbtCompound);
@@ -364,10 +365,10 @@ public class Scoreboard {
 		return nbtList;
 	}
 
-	protected void readNbt(NbtList list) {
+	protected void readNbt(NbtList list, RegistryWrapper.WrapperLookup registries) {
 		for (int i = 0; i < list.size(); i++) {
 			NbtCompound nbtCompound = list.getCompound(i);
-			ScoreboardScore scoreboardScore = ScoreboardScore.fromNbt(nbtCompound);
+			ScoreboardScore scoreboardScore = ScoreboardScore.fromNbt(nbtCompound, registries);
 			String string = nbtCompound.getString("Name");
 			String string2 = nbtCompound.getString("Objective");
 			ScoreboardObjective scoreboardObjective = this.getNullableObjective(string2);

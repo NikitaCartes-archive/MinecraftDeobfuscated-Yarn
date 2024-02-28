@@ -1,6 +1,8 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
@@ -56,7 +58,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 		if (this.actor.isUsingItem()) {
 			this.actor.clearActiveItem();
 			this.actor.setCharging(false);
-			CrossbowItem.setCharged(this.actor.getActiveItem(), false);
+			this.actor.getActiveItem().set(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT);
 		}
 	}
 
@@ -121,8 +123,6 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.READY_TO_ATTACK && bl) {
 				this.actor.shootAt(livingEntity, 1.0F);
-				ItemStack itemStack2 = this.actor.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.CROSSBOW));
-				CrossbowItem.setCharged(itemStack2, false);
 				this.stage = CrossbowAttackGoal.Stage.UNCHARGED;
 			}
 		}

@@ -36,6 +36,7 @@ import net.minecraft.entity.ai.brain.task.WalkTowardsLandTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsWaterTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathContext;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.recipe.Ingredient;
@@ -215,8 +216,9 @@ public class FrogBrain {
 			BlockState blockState = world.getBlockState(pos);
 			BlockState blockState2 = world.getBlockState(blockPos);
 			if (!blockState.isIn(BlockTags.FROG_PREFER_JUMP_TO) && !blockState2.isIn(BlockTags.FROG_PREFER_JUMP_TO)) {
-				PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(world, pos.mutableCopy());
-				PathNodeType pathNodeType2 = LandPathNodeMaker.getLandNodeType(world, blockPos.mutableCopy());
+				PathContext pathContext = new PathContext(frog.getWorld(), frog);
+				PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(pathContext, pos.mutableCopy());
+				PathNodeType pathNodeType2 = LandPathNodeMaker.getLandNodeType(pathContext, blockPos.mutableCopy());
 				return pathNodeType != PathNodeType.TRAPDOOR && (!blockState.isAir() || pathNodeType2 != PathNodeType.TRAPDOOR)
 					? LongJumpTask.shouldJumpTo(frog, pos)
 					: true;

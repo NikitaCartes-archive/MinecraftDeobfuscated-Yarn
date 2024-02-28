@@ -51,13 +51,13 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 	@Override
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		this.inventory.clear();
-		Inventories.readNbt(nbt, this.inventory);
+		Inventories.readNbt(nbt, this.inventory, registryLookup);
 		this.lastInteractedSlot = nbt.getInt("last_interacted_slot");
 	}
 
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		Inventories.writeNbt(nbt, this.inventory, true);
+		Inventories.writeNbt(nbt, this.inventory, true, registryLookup);
 		nbt.putInt("last_interacted_slot", this.lastInteractedSlot);
 	}
 
@@ -116,7 +116,7 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 		return hopperInventory.containsAny(
 			(Predicate<ItemStack>)(stack2 -> stack2.isEmpty()
 					? true
-					: ItemStack.areItemsAndNbtEqual(stack, stack2)
+					: ItemStack.areItemsAndComponentsEqual(stack, stack2)
 						&& stack2.getCount() + stack.getCount() <= Math.min(stack2.getMaxCount(), hopperInventory.getMaxCountPerStack()))
 		);
 	}

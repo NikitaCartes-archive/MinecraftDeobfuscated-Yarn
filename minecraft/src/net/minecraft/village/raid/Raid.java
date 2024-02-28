@@ -16,9 +16,9 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BannerPatterns;
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -32,7 +32,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -48,6 +47,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
@@ -66,7 +66,7 @@ public class Raid {
 	private static final int field_30680 = 32;
 	private static final int field_30681 = 48000;
 	private static final int field_30682 = 3;
-	private static final String OMINOUS_BANNER_TRANSLATION_KEY = "block.minecraft.ominous_banner";
+	private static final Text OMINOUS_BANNER_TRANSLATION_KEY = Text.translatable("block.minecraft.ominous_banner").formatted(Formatting.GOLD);
 	private static final String RAIDERS_REMAINING_TRANSLATION_KEY = "event.minecraft.raid.raiders_remaining";
 	public static final int field_30669 = 16;
 	private static final int field_30685 = 40;
@@ -598,8 +598,7 @@ public class Raid {
 
 	public static ItemStack getOminousBanner() {
 		ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
-		NbtCompound nbtCompound = new NbtCompound();
-		NbtList nbtList = new BannerPattern.Patterns()
+		BannerPatternsComponent bannerPatternsComponent = new BannerPatternsComponent.Builder()
 			.add(BannerPatterns.RHOMBUS, DyeColor.CYAN)
 			.add(BannerPatterns.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
 			.add(BannerPatterns.STRIPE_CENTER, DyeColor.GRAY)
@@ -608,11 +607,10 @@ public class Raid {
 			.add(BannerPatterns.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY)
 			.add(BannerPatterns.CIRCLE, DyeColor.LIGHT_GRAY)
 			.add(BannerPatterns.BORDER, DyeColor.BLACK)
-			.toNbt();
-		nbtCompound.put("Patterns", nbtList);
-		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);
-		itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);
-		itemStack.setCustomName(Text.translatable("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
+			.build();
+		itemStack.set(DataComponentTypes.BANNER_PATTERNS, bannerPatternsComponent);
+		itemStack.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+		itemStack.set(DataComponentTypes.CUSTOM_NAME, OMINOUS_BANNER_TRANSLATION_KEY);
 		return itemStack;
 	}
 

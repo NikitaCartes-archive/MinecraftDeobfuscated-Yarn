@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -38,8 +39,8 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		if (context.get(this.source.parameter) instanceof Nameable nameable && nameable.hasCustomName()) {
-			stack.setCustomName(nameable.getDisplayName());
+		if (context.get(this.source.parameter) instanceof Nameable nameable) {
+			stack.set(DataComponentTypes.CUSTOM_NAME, nameable.getCustomName());
 		}
 
 		return stack;

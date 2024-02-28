@@ -35,7 +35,9 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MatrixUtil;
 import net.minecraft.util.math.random.Random;
@@ -197,15 +199,16 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		MatrixStack.Entry entry = matrices.peek();
 
 		for (BakedQuad bakedQuad : quads) {
-			int i = -1;
+			int i = Colors.WHITE;
 			if (bl && bakedQuad.hasColor()) {
 				i = this.colors.getColor(stack, bakedQuad.getColorIndex());
 			}
 
-			float f = (float)(i >> 16 & 0xFF) / 255.0F;
-			float g = (float)(i >> 8 & 0xFF) / 255.0F;
-			float h = (float)(i & 0xFF) / 255.0F;
-			vertices.quad(entry, bakedQuad, f, g, h, light, overlay);
+			float f = (float)ColorHelper.Argb.getAlpha(i) / 255.0F;
+			float g = (float)ColorHelper.Argb.getRed(i) / 255.0F;
+			float h = (float)ColorHelper.Argb.getGreen(i) / 255.0F;
+			float j = (float)ColorHelper.Argb.getBlue(i) / 255.0F;
+			vertices.quad(entry, bakedQuad, g, h, j, f, light, overlay);
 		}
 	}
 

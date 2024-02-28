@@ -44,7 +44,7 @@ public interface SpawnLocationTypes {
 		@Override
 		public BlockPos adjustPosition(WorldView world, BlockPos pos) {
 			BlockPos blockPos = pos.down();
-			return world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.LAND) ? blockPos : pos;
+			return world.getBlockState(blockPos).canPathfindThrough(NavigationType.LAND) ? blockPos : pos;
 		}
 	};
 }

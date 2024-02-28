@@ -1,7 +1,11 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.context.CommandContext;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.command.argument.TestFunctionArgumentType;
 import net.minecraft.test.StructureBlockFinder;
@@ -51,84 +55,116 @@ public class TestFinder<T> implements StructureBlockFinder, TestFunctionFinder {
 
 	public static class Runners<T> {
 		private final Function<TestFinder<T>, T> runnerFactory;
+		private final UnaryOperator<Supplier<Stream<TestFunction>>> testFunctionsSupplierMapper;
+		private final UnaryOperator<Supplier<Stream<BlockPos>>> structurePosSupplierMapper;
 
 		public Runners(Function<TestFinder<T>, T> runnerFactory) {
 			this.runnerFactory = runnerFactory;
+			this.testFunctionsSupplierMapper = testFunctionsSupplier -> testFunctionsSupplier;
+			this.structurePosSupplierMapper = structurePosSupplier -> structurePosSupplier;
+		}
+
+		private Runners(
+			Function<TestFinder<T>, T> runnerFactory,
+			UnaryOperator<Supplier<Stream<TestFunction>>> testFunctionsSupplierMapper,
+			UnaryOperator<Supplier<Stream<BlockPos>>> structurePosSupplierMapper
+		) {
+			this.runnerFactory = runnerFactory;
+			this.testFunctionsSupplierMapper = testFunctionsSupplierMapper;
+			this.structurePosSupplierMapper = structurePosSupplierMapper;
+		}
+
+		public TestFinder.Runners<T> repeat(int count) {
+			return new TestFinder.Runners<>(this.runnerFactory, repeating(count), repeating(count));
+		}
+
+		private static <Q> UnaryOperator<Supplier<Stream<Q>>> repeating(int count) {
+			return supplier -> {
+				List<Q> list = new LinkedList();
+				List<Q> list2 = ((Stream)supplier.get()).toList();
+
+				for (int j = 0; j < count; j++) {
+					list.addAll(list2);
+				}
+
+				return list::stream;
+			};
+		}
+
+		private T createRunner(ServerCommandSource source, TestFunctionFinder testFunctionFinder, StructureBlockFinder structureBlockFinder) {
+			return new TestFinder<T>(
+					source,
+					this.runnerFactory,
+					((Supplier)this.testFunctionsSupplierMapper.apply(testFunctionFinder::findTestFunctions))::get,
+					((Supplier)this.structurePosSupplierMapper.apply(structureBlockFinder::findStructureBlockPos))::get
+				)
+				.createRunner();
 		}
 
 		public T surface(CommandContext<ServerCommandSource> context, int radius) {
 			ServerCommandSource serverCommandSource = context.getSource();
-			return new TestFinder<T>(
-					serverCommandSource,
-					this.runnerFactory,
-					TestFinder.NOOP_TEST_FUNCTION_FINDER,
-					() -> StructureTestUtil.findSurfaceStructureBlocks(radius, serverCommandSource.getPosition(), serverCommandSource.getWorld())
-				)
-				.createRunner();
+			return this.createRunner(
+				serverCommandSource,
+				TestFinder.NOOP_TEST_FUNCTION_FINDER,
+				() -> StructureTestUtil.findSurfaceStructureBlocks(radius, serverCommandSource.getPosition(), serverCommandSource.getWorld())
+			);
 		}
 
 		public T nearest(CommandContext<ServerCommandSource> context) {
 			ServerCommandSource serverCommandSource = context.getSource();
 			BlockPos blockPos = BlockPos.ofFloored(serverCommandSource.getPosition());
-			return new TestFinder<T>(
-					serverCommandSource,
-					this.runnerFactory,
-					TestFinder.NOOP_TEST_FUNCTION_FINDER,
-					() -> StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverCommandSource.getWorld()).stream()
-				)
-				.createRunner();
+			return this.createRunner(
+				serverCommandSource,
+				TestFinder.NOOP_TEST_FUNCTION_FINDER,
+				() -> StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverCommandSource.getWorld()).stream()
+			);
 		}
 
 		public T allStructures(CommandContext<ServerCommandSource> context) {
 			ServerCommandSource serverCommandSource = context.getSource();
 			BlockPos blockPos = BlockPos.ofFloored(serverCommandSource.getPosition());
-			return new TestFinder<T>(
-					serverCommandSource,
-					this.runnerFactory,
-					TestFinder.NOOP_TEST_FUNCTION_FINDER,
-					() -> StructureTestUtil.findStructureBlocks(blockPos, 200, serverCommandSource.getWorld())
-				)
-				.createRunner();
+			return this.createRunner(
+				serverCommandSource, TestFinder.NOOP_TEST_FUNCTION_FINDER, () -> StructureTestUtil.findStructureBlocks(blockPos, 200, serverCommandSource.getWorld())
+			);
 		}
 
 		public T targeted(CommandContext<ServerCommandSource> context) {
 			ServerCommandSource serverCommandSource = context.getSource();
-			return new TestFinder<T>(
-					serverCommandSource,
-					this.runnerFactory,
-					TestFinder.NOOP_TEST_FUNCTION_FINDER,
-					() -> StructureTestUtil.findTargetedStructureBlock(
-							BlockPos.ofFloored(serverCommandSource.getPosition()), serverCommandSource.getPlayer().getCameraEntity(), serverCommandSource.getWorld()
-						)
-				)
-				.createRunner();
+			return this.createRunner(
+				serverCommandSource,
+				TestFinder.NOOP_TEST_FUNCTION_FINDER,
+				() -> StructureTestUtil.findTargetedStructureBlock(
+						BlockPos.ofFloored(serverCommandSource.getPosition()), serverCommandSource.getPlayer().getCameraEntity(), serverCommandSource.getWorld()
+					)
+			);
 		}
 
 		public T allTestFunctions(CommandContext<ServerCommandSource> context) {
-			return new TestFinder<T>(context.getSource(), this.runnerFactory, () -> TestFunctions.getTestFunctions().stream(), TestFinder.NOOP_STRUCTURE_BLOCK_FINDER)
-				.createRunner();
+			return this.createRunner(
+				context.getSource(),
+				() -> TestFunctions.getTestFunctions().stream().filter(testFunction -> !testFunction.manualOnly()),
+				TestFinder.NOOP_STRUCTURE_BLOCK_FINDER
+			);
 		}
 
 		public T in(CommandContext<ServerCommandSource> context, String testClass) {
-			return new TestFinder<T>(context.getSource(), this.runnerFactory, () -> TestFunctions.getTestFunctions(testClass), TestFinder.NOOP_STRUCTURE_BLOCK_FINDER)
-				.createRunner();
+			return this.createRunner(
+				context.getSource(),
+				() -> TestFunctions.getTestFunctions(testClass).filter(testFunction -> !testFunction.manualOnly()),
+				TestFinder.NOOP_STRUCTURE_BLOCK_FINDER
+			);
 		}
 
 		public T failed(CommandContext<ServerCommandSource> context, boolean onlyRequired) {
-			return new TestFinder<T>(
-					context.getSource(),
-					this.runnerFactory,
-					() -> TestFunctions.getFailedTestFunctions().filter(function -> !onlyRequired || function.required()),
-					TestFinder.NOOP_STRUCTURE_BLOCK_FINDER
-				)
-				.createRunner();
+			return this.createRunner(
+				context.getSource(),
+				() -> TestFunctions.getFailedTestFunctions().filter(function -> !onlyRequired || function.required()),
+				TestFinder.NOOP_STRUCTURE_BLOCK_FINDER
+			);
 		}
 
 		public T named(CommandContext<ServerCommandSource> context, String name) {
-			return new TestFinder<T>(
-					context.getSource(), this.runnerFactory, () -> Stream.of(TestFunctionArgumentType.getFunction(context, name)), TestFinder.NOOP_STRUCTURE_BLOCK_FINDER
-				)
-				.createRunner();
+			return this.createRunner(context.getSource(), () -> Stream.of(TestFunctionArgumentType.getFunction(context, name)), TestFinder.NOOP_STRUCTURE_BLOCK_FINDER);
 		}
 
 		public T failed(CommandContext<ServerCommandSource> context) {

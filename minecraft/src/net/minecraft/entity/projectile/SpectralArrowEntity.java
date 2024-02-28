@@ -11,11 +11,10 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
 public class SpectralArrowEntity extends PersistentProjectileEntity {
-	private static final ItemStack DEFAULT_STACK = new ItemStack(Items.SPECTRAL_ARROW);
 	private int duration = 200;
 
 	public SpectralArrowEntity(EntityType<? extends SpectralArrowEntity> entityType, World world) {
-		super(entityType, world, DEFAULT_STACK);
+		super(entityType, world);
 	}
 
 	public SpectralArrowEntity(World world, LivingEntity owner, ItemStack stack) {
@@ -53,5 +52,10 @@ public class SpectralArrowEntity extends PersistentProjectileEntity {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("Duration", this.duration);
+	}
+
+	@Override
+	protected ItemStack getDefaultItemStack() {
+		return new ItemStack(Items.SPECTRAL_ARROW);
 	}
 }

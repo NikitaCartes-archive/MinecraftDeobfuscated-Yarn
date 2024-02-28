@@ -1,20 +1,17 @@
 package net.minecraft.item;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.ImmutableMultimap.Builder;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -31,20 +28,24 @@ public class TridentItem extends Item {
 	public static final int MIN_DRAW_DURATION = 10;
 	public static final float ATTACK_DAMAGE = 8.0F;
 	public static final float THROW_SPEED = 2.5F;
-	private final Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifiers;
 
 	public TridentItem(Item.Settings settings) {
 		super(settings);
-		Builder<RegistryEntry<EntityAttribute>, EntityAttributeModifier> builder = ImmutableMultimap.builder();
-		builder.put(
-			EntityAttributes.GENERIC_ATTACK_DAMAGE,
-			new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", 8.0, EntityAttributeModifier.Operation.ADDITION)
-		);
-		builder.put(
-			EntityAttributes.GENERIC_ATTACK_SPEED,
-			new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", -2.9F, EntityAttributeModifier.Operation.ADDITION)
-		);
-		this.attributeModifiers = builder.build();
+	}
+
+	public static AttributeModifiersComponent createAttributeModifiers() {
+		return AttributeModifiersComponent.builder()
+			.add(
+				EntityAttributes.GENERIC_ATTACK_DAMAGE,
+				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", 8.0, EntityAttributeModifier.Operation.ADDITION),
+				AttributeModifierSlot.MAINHAND
+			)
+			.add(
+				EntityAttributes.GENERIC_ATTACK_SPEED,
+				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", -2.9F, EntityAttributeModifier.Operation.ADDITION),
+				AttributeModifierSlot.MAINHAND
+			)
+			.build();
 	}
 
 	@Override
@@ -147,11 +148,6 @@ public class TridentItem extends Item {
 		}
 
 		return true;
-	}
-
-	@Override
-	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return slot == EquipmentSlot.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 
 	@Override

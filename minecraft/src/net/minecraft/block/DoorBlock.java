@@ -127,7 +127,7 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		return switch (type) {
 			case LAND, AIR -> state.get(OPEN);
 			case WATER -> false;

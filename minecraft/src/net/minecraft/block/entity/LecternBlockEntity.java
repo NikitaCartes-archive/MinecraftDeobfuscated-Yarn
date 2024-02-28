@@ -3,6 +3,9 @@ package net.minecraft.block.entity;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LecternBlock;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.WritableBookContentComponent;
+import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -148,7 +151,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	public void setBook(ItemStack book, @Nullable PlayerEntity player) {
 		this.book = this.resolveBook(book, player);
 		this.currentPage = 0;
-		this.pageCount = WrittenBookItem.getPageCount(this.book);
+		this.pageCount = getPageCount(this.book);
 		this.markDirty();
 	}
 
@@ -202,12 +205,12 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("Book", NbtElement.COMPOUND_TYPE)) {
-			this.book = this.resolveBook(ItemStack.fromNbt(nbt.getCompound("Book")), null);
+			this.book = this.resolveBook((ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("Book")).orElse(ItemStack.EMPTY), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
 
-		this.pageCount = WrittenBookItem.getPageCount(this.book);
+		this.pageCount = getPageCount(this.book);
 		this.currentPage = MathHelper.clamp(nbt.getInt("Page"), 0, this.pageCount - 1);
 	}
 
@@ -215,7 +218,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		if (!this.getBook().isEmpty()) {
-			nbt.put("Book", this.getBook().writeNbt(new NbtCompound()));
+			nbt.put("Book", this.getBook().encode(registryLookup));
 			nbt.putInt("Page", this.currentPage);
 		}
 	}
@@ -233,5 +236,15 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	@Override
 	public Text getDisplayName() {
 		return Text.translatable("container.lectern");
+	}
+
+	private static int getPageCount(ItemStack stack) {
+		WrittenBookContentComponent writtenBookContentComponent = stack.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
+		if (writtenBookContentComponent != null) {
+			return writtenBookContentComponent.pages().size();
+		} else {
+			WritableBookContentComponent writableBookContentComponent = stack.get(DataComponentTypes.WRITABLE_BOOK_CONTENT);
+			return writableBookContentComponent != null ? writableBookContentComponent.pages().size() : 0;
+		}
 	}
 }

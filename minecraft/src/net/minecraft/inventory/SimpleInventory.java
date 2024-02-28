@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 
 /**
@@ -153,7 +153,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		boolean bl = false;
 
 		for (ItemStack itemStack : this.heldStacks) {
-			if (itemStack.isEmpty() || ItemStack.areItemsAndNbtEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
+			if (itemStack.isEmpty() || ItemStack.areItemsAndComponentsEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
 				bl = true;
 				break;
 			}
@@ -243,7 +243,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	private void addToExistingSlot(ItemStack stack) {
 		for (int i = 0; i < this.size; i++) {
 			ItemStack itemStack = this.getStack(i);
-			if (ItemStack.areItemsAndNbtEqual(itemStack, stack)) {
+			if (ItemStack.areItemsAndComponentsEqual(itemStack, stack)) {
 				this.transfer(stack, itemStack);
 				if (stack.isEmpty()) {
 					return;
@@ -267,32 +267,29 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	 * 
 	 * @see #toNbtList
 	 */
-	public void readNbtList(NbtList nbtList) {
+	public void readNbtList(NbtList list, RegistryWrapper.WrapperLookup registries) {
 		this.clear();
 
-		for (int i = 0; i < nbtList.size(); i++) {
-			ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
-			if (!itemStack.isEmpty()) {
-				this.addStack(itemStack);
-			}
+		for (int i = 0; i < list.size(); i++) {
+			ItemStack.fromNbt(registries, list.getCompound(i)).ifPresent(this::addStack);
 		}
 	}
 
 	/**
-	 * {@return an NBT list of non-empty {@linkplain ItemStack#writeNbt item stacks}}
+	 * {@return an NBT list of non-empty {@linkplain ItemStack#encode(RegistryWrapper.WrapperLookup) item stacks}}
 	 * 
-	 * <p>Unlike {@link Inventories#writeNbt(NbtCompound, DefaultedList, boolean)},
+	 * <p>Unlike {@link Inventories#writeNbt(NbtCompound, DefaultedList, boolean, RegistryWrapper.WrapperLookup)},
 	 * this does not serialize the slots.
 	 * 
 	 * @see #readNbtList
 	 */
-	public NbtList toNbtList() {
+	public NbtList toNbtList(RegistryWrapper.WrapperLookup registries) {
 		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < this.size(); i++) {
 			ItemStack itemStack = this.getStack(i);
 			if (!itemStack.isEmpty()) {
-				nbtList.add(itemStack.writeNbt(new NbtCompound()));
+				nbtList.add(itemStack.encode(registries));
 			}
 		}
 

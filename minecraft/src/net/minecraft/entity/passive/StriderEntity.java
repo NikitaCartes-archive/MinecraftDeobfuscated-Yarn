@@ -523,7 +523,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
-			return world.getBlockState(pos).isOf(Blocks.LAVA) && world.getBlockState(pos.up()).canPathfindThrough(world, pos, NavigationType.LAND);
+			return world.getBlockState(pos).isOf(Blocks.LAVA) && world.getBlockState(pos.up()).canPathfindThrough(NavigationType.LAND);
 		}
 	}
 

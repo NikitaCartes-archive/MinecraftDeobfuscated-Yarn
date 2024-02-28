@@ -110,7 +110,7 @@ public class AttributeCommand {
 																.then(
 																	CommandManager.argument("value", DoubleArgumentType.doubleArg())
 																		.then(
-																			CommandManager.literal("add")
+																			CommandManager.literal("add_value")
 																				.executes(
 																					context -> executeModifierAdd(
 																							context.getSource(),
@@ -124,21 +124,7 @@ public class AttributeCommand {
 																				)
 																		)
 																		.then(
-																			CommandManager.literal("multiply")
-																				.executes(
-																					context -> executeModifierAdd(
-																							context.getSource(),
-																							EntityArgumentType.getEntity(context, "target"),
-																							RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
-																							UuidArgumentType.getUuid(context, "uuid"),
-																							StringArgumentType.getString(context, "name"),
-																							DoubleArgumentType.getDouble(context, "value"),
-																							EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-																						)
-																				)
-																		)
-																		.then(
-																			CommandManager.literal("multiply_base")
+																			CommandManager.literal("add_multiplied_base")
 																				.executes(
 																					context -> executeModifierAdd(
 																							context.getSource(),
@@ -148,6 +134,20 @@ public class AttributeCommand {
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
 																							EntityAttributeModifier.Operation.MULTIPLY_BASE
+																						)
+																				)
+																		)
+																		.then(
+																			CommandManager.literal("add_multiplied_total")
+																				.executes(
+																					context -> executeModifierAdd(
+																							context.getSource(),
+																							EntityArgumentType.getEntity(context, "target"),
+																							RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																							UuidArgumentType.getUuid(context, "uuid"),
+																							StringArgumentType.getString(context, "name"),
+																							DoubleArgumentType.getDouble(context, "value"),
+																							EntityAttributeModifier.Operation.MULTIPLY_TOTAL
 																						)
 																				)
 																		)

@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -12,7 +13,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
@@ -30,6 +35,13 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 					StatusEffectInstance.Parameters.CODEC.forGetter(StatusEffectInstance::asParameters)
 				)
 				.apply(instance, StatusEffectInstance::new)
+	);
+	public static final PacketCodec<RegistryByteBuf, StatusEffectInstance> PACKET_CODEC = PacketCodec.tuple(
+		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT),
+		StatusEffectInstance::getEffectType,
+		StatusEffectInstance.Parameters.PACKET_CODEC,
+		StatusEffectInstance::asParameters,
+		StatusEffectInstance::new
 	);
 	private final RegistryEntry<StatusEffect> type;
 	private int duration;
@@ -415,6 +427,23 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 								Codecs.createStrictOptionalFieldCodec(codec, "hidden_effect").forGetter(StatusEffectInstance.Parameters::hiddenEffect)
 							)
 							.apply(instance, StatusEffectInstance.Parameters::create)
+				)
+		);
+		public static final PacketCodec<ByteBuf, StatusEffectInstance.Parameters> PACKET_CODEC = PacketCodec.recursive(
+			packetCodec -> PacketCodec.tuple(
+					PacketCodecs.VAR_INT,
+					StatusEffectInstance.Parameters::amplifier,
+					PacketCodecs.VAR_INT,
+					StatusEffectInstance.Parameters::duration,
+					PacketCodecs.BOOL,
+					StatusEffectInstance.Parameters::ambient,
+					PacketCodecs.BOOL,
+					StatusEffectInstance.Parameters::showParticles,
+					PacketCodecs.BOOL,
+					StatusEffectInstance.Parameters::showIcon,
+					packetCodec.collect(PacketCodecs::optional),
+					StatusEffectInstance.Parameters::hiddenEffect,
+					StatusEffectInstance.Parameters::new
 				)
 		);
 

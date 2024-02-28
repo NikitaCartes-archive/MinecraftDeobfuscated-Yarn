@@ -3,12 +3,10 @@ package net.minecraft.server.world;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
@@ -120,7 +118,7 @@ public class ServerChunkManager extends ChunkManager {
 		return this.threadedAnvilChunkStorage.getTotalChunksLoadedCount();
 	}
 
-	private void putInCache(long pos, Chunk chunk, ChunkStatus status) {
+	private void putInCache(long pos, @Nullable Chunk chunk, ChunkStatus status) {
 		for (int i = 3; i > 0; i--) {
 			this.chunkPosCache[i] = this.chunkPosCache[i - 1];
 			this.chunkStatusCache[i] = this.chunkStatusCache[i - 1];
@@ -152,17 +150,16 @@ public class ServerChunkManager extends ChunkManager {
 			}
 
 			profiler.visit("getChunkCacheMiss");
-			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getChunkFuture(x, z, leastStatus, create);
+			CompletableFuture<OptionalChunk<Chunk>> completableFuture = this.getChunkFuture(x, z, leastStatus, create);
 			this.mainThreadExecutor.runTasks(completableFuture::isDone);
-			Chunk chunk = ((Either)completableFuture.join()).map(chunkx -> chunkx, unloaded -> {
-				if (create) {
-					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Chunk not there when requested: " + unloaded));
-				} else {
-					return null;
-				}
-			});
-			this.putInCache(l, chunk, leastStatus);
-			return chunk;
+			OptionalChunk<Chunk> optionalChunk = (OptionalChunk<Chunk>)completableFuture.join();
+			Chunk chunk2 = optionalChunk.orElse(null);
+			if (chunk2 == null && create) {
+				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Chunk not there when requested: " + optionalChunk.getError()));
+			} else {
+				this.putInCache(l, chunk2, leastStatus);
+				return chunk2;
+			}
 		}
 	}
 
@@ -186,11 +183,11 @@ public class ServerChunkManager extends ChunkManager {
 			if (chunkHolder == null) {
 				return null;
 			} else {
-				Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)chunkHolder.getValidFutureFor(ChunkStatus.FULL).getNow(null);
-				if (either == null) {
+				OptionalChunk<Chunk> optionalChunk = (OptionalChunk<Chunk>)chunkHolder.getValidFutureFor(ChunkStatus.FULL).getNow(null);
+				if (optionalChunk == null) {
 					return null;
 				} else {
-					Chunk chunk2 = (Chunk)either.left().orElse(null);
+					Chunk chunk2 = optionalChunk.orElse(null);
 					if (chunk2 != null) {
 						this.putInCache(l, chunk2, ChunkStatus.FULL);
 						if (chunk2 instanceof WorldChunk) {
@@ -210,9 +207,9 @@ public class ServerChunkManager extends ChunkManager {
 		Arrays.fill(this.chunkCache, null);
 	}
 
-	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFutureSyncOnMainThread(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
+	public CompletableFuture<OptionalChunk<Chunk>> getChunkFutureSyncOnMainThread(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
 		boolean bl = Thread.currentThread() == this.serverThread;
-		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture;
+		CompletableFuture<OptionalChunk<Chunk>> completableFuture;
 		if (bl) {
 			completableFuture = this.getChunkFuture(chunkX, chunkZ, leastStatus, create);
 			this.mainThreadExecutor.runTasks(completableFuture::isDone);
@@ -224,7 +221,7 @@ public class ServerChunkManager extends ChunkManager {
 		return completableFuture;
 	}
 
-	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFuture(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
+	private CompletableFuture<OptionalChunk<Chunk>> getChunkFuture(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
 		ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
 		long l = chunkPos.toLong();
 		int i = ChunkLevels.getLevelFromStatus(leastStatus);
@@ -269,9 +266,9 @@ public class ServerChunkManager extends ChunkManager {
 
 			while (true) {
 				ChunkStatus chunkStatus = (ChunkStatus)CHUNK_STATUSES.get(i);
-				Optional<Chunk> optional = ((Either)chunkHolder.getFutureFor(chunkStatus).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
-				if (optional.isPresent()) {
-					return (LightSourceView)optional.get();
+				Chunk chunk = (Chunk)((OptionalChunk)chunkHolder.getFutureFor(chunkStatus).getNow(ChunkHolder.UNLOADED_CHUNK)).orElse(null);
+				if (chunk != null) {
+					return chunk;
 				}
 
 				if (chunkStatus == ChunkStatus.INITIALIZE_LIGHT.getPrevious()) {
@@ -309,11 +306,10 @@ public class ServerChunkManager extends ChunkManager {
 		ChunkHolder chunkHolder = this.getChunkHolder(pos);
 		if (chunkHolder == null) {
 			return false;
-		} else if (!this.world.shouldTickBlocksInChunk(pos)) {
-			return false;
 		} else {
-			Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)chunkHolder.getTickingFuture().getNow(null);
-			return either != null && either.left().isPresent();
+			return !this.world.shouldTickBlocksInChunk(pos)
+				? false
+				: ((OptionalChunk)chunkHolder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).isPresent();
 		}
 	}
 
@@ -410,7 +406,7 @@ public class ServerChunkManager extends ChunkManager {
 	private void ifChunkLoaded(long pos, Consumer<WorldChunk> chunkConsumer) {
 		ChunkHolder chunkHolder = this.getChunkHolder(pos);
 		if (chunkHolder != null) {
-			((Either)chunkHolder.getAccessibleFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left().ifPresent(chunkConsumer);
+			((OptionalChunk)chunkHolder.getAccessibleFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).ifPresent(chunkConsumer);
 		}
 	}
 

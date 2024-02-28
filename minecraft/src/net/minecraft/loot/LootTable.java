@@ -32,6 +32,7 @@ public class LootTable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, Optional.empty(), List.of(), List.of());
 	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
+	public static final long DEFAULT_SEED = 0L;
 	public static final Codec<LootTable> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					LootContextTypes.CODEC.optionalFieldOf("type", GENERIC).forGetter(table -> table.type),

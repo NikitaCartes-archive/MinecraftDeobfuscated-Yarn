@@ -1,6 +1,10 @@
 package net.minecraft.text;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -19,6 +23,8 @@ import java.util.stream.Stream;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -26,9 +32,45 @@ public class TextCodecs {
 	public static final Codec<Text> CODEC = Codecs.createRecursive("Component", TextCodecs::createCodec);
 	public static final PacketCodec<RegistryByteBuf, Text> REGISTRY_PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 	public static final PacketCodec<RegistryByteBuf, Optional<Text>> OPTIONAL_PACKET_CODEC = REGISTRY_PACKET_CODEC.collect(PacketCodecs::optional);
-	public static final PacketCodec<ByteBuf, Text> PACKET_CODEC = PacketCodecs.codec(CODEC);
-	public static final Codec<Text> STRINGIFIED_CODEC = Codecs.STRINGIFIED_TEXT
-		.flatXmap(json -> CODEC.parse(JsonOps.INSTANCE, json), text -> CODEC.encodeStart(JsonOps.INSTANCE, text));
+	public static final PacketCodec<RegistryByteBuf, Text> UNLIMITED_REGISTRY_PACKET_CODEC = PacketCodecs.unlimitedRegistryCodec(CODEC);
+	public static final PacketCodec<RegistryByteBuf, Optional<Text>> OPTIONAL_UNLIMITED_REGISTRY_PACKET_CODEC = UNLIMITED_REGISTRY_PACKET_CODEC.collect(
+		PacketCodecs::optional
+	);
+	public static final PacketCodec<ByteBuf, Text> PACKET_CODEC = PacketCodecs.unlimitedCodec(CODEC);
+	public static final Codec<Text> STRINGIFIED_CODEC = codec(Integer.MAX_VALUE);
+
+	public static Codec<Text> codec(int maxSerializedLength) {
+		final Codec<String> codec = Codecs.string(0, maxSerializedLength);
+		return new Codec<Text>() {
+			@Override
+			public <T> DataResult<Pair<Text, T>> decode(DynamicOps<T> ops, T input) {
+				DynamicOps<JsonElement> dynamicOps = toJsonOps(ops);
+				return codec.decode(ops, input).flatMap(pair -> {
+					try {
+						JsonElement jsonElement = JsonParser.parseString((String)pair.getFirst());
+						return TextCodecs.CODEC.parse(dynamicOps, jsonElement).map(text -> Pair.of(text, pair.getSecond()));
+					} catch (JsonParseException var3x) {
+						return DataResult.error(var3x::getMessage);
+					}
+				});
+			}
+
+			public <T> DataResult<T> encode(Text text, DynamicOps<T> dynamicOps, T object) {
+				DynamicOps<JsonElement> dynamicOps2 = toJsonOps(dynamicOps);
+				return TextCodecs.CODEC.encodeStart(dynamicOps2, text).flatMap(json -> {
+					try {
+						return codec.encodeStart(dynamicOps, JsonHelper.toSortedString(json));
+					} catch (IllegalArgumentException var4x) {
+						return DataResult.error(var4x::getMessage);
+					}
+				});
+			}
+
+			private static <T> DynamicOps<JsonElement> toJsonOps(DynamicOps<T> ops) {
+				return (DynamicOps<JsonElement>)(ops instanceof RegistryOps<T> registryOps ? registryOps.withDelegate(JsonOps.INSTANCE) : JsonOps.INSTANCE);
+			}
+		};
+	}
 
 	private static MutableText combine(List<Text> texts) {
 		MutableText mutableText = ((Text)texts.get(0)).copy();

@@ -317,6 +317,10 @@ public class CyclingButtonWidget<T> extends PressableWidget {
 			return this;
 		}
 
+		public CyclingButtonWidget<T> build(Text optionText, CyclingButtonWidget.UpdateCallback<T> callback) {
+			return this.build(0, 0, 150, 20, optionText, callback);
+		}
+
 		public CyclingButtonWidget<T> build(int x, int y, int width, int height, Text optionText) {
 			return this.build(x, y, width, height, optionText, (button, value) -> {
 			});

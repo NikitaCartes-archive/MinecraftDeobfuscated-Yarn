@@ -10,8 +10,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.item.map.MapIcon;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -33,15 +33,15 @@ public class MapRenderer implements AutoCloseable {
 		this.textureManager = textureManager;
 	}
 
-	public void updateTexture(MapId id, MapState state) {
+	public void updateTexture(MapIdComponent id, MapState state) {
 		this.getMapTexture(id, state).setNeedsUpdate();
 	}
 
-	public void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, MapId id, MapState state, boolean hidePlayerIcons, int light) {
+	public void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, MapIdComponent id, MapState state, boolean hidePlayerIcons, int light) {
 		this.getMapTexture(id, state).draw(matrices, vertexConsumers, hidePlayerIcons, light);
 	}
 
-	private MapRenderer.MapTexture getMapTexture(MapId id, MapState state) {
+	private MapRenderer.MapTexture getMapTexture(MapIdComponent id, MapState state) {
 		return this.mapTextures.compute(id.id(), (id2, texture) -> {
 			if (texture == null) {
 				return new MapRenderer.MapTexture(id2, state);

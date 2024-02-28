@@ -47,7 +47,7 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		switch (type) {
 			case LAND:
 				return (Integer)state.get(LAYERS) < 5;

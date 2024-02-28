@@ -1,11 +1,10 @@
 package net.minecraft.client.render.item;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.datafixers.util.Pair;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBannerBlock;
@@ -17,7 +16,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
-import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -25,8 +23,8 @@ import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -42,13 +40,13 @@ import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.ShieldItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.DyeColor;
@@ -91,8 +89,14 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 		if (item instanceof BlockItem) {
 			Block block = ((BlockItem)item).getBlock();
 			if (block instanceof AbstractSkullBlock abstractSkullBlock) {
-				NbtCompound nbtCompound = stack.getNbt();
-				GameProfile gameProfile = nbtCompound != null ? SkullBlockEntity.getProfile(nbtCompound) : null;
+				ProfileComponent profileComponent = stack.get(DataComponentTypes.PROFILE);
+				if (profileComponent != null && !profileComponent.isCompleted()) {
+					stack.remove(DataComponentTypes.PROFILE);
+					profileComponent.getFuture().thenAcceptAsync(profileComponentx -> stack.set(DataComponentTypes.PROFILE, profileComponentx), MinecraftClient.getInstance());
+					profileComponent = null;
+				}
+
+				GameProfile gameProfile = profileComponent != null ? profileComponent.gameProfile() : null;
 				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.skullModels.get(abstractSkullBlock.getSkullType());
 				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(abstractSkullBlock.getSkullType(), gameProfile);
 				SkullBlockEntityRenderer.renderSkull(null, 180.0F, 0.0F, matrices, vertexConsumers, light, skullBlockEntityModel, renderLayer);
@@ -133,7 +137,9 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 			}
 		} else {
 			if (stack.isOf(Items.SHIELD)) {
-				boolean bl = BlockItem.getBlockEntityNbt(stack) != null;
+				BannerPatternsComponent bannerPatternsComponent = stack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
+				DyeColor dyeColor2 = stack.get(DataComponentTypes.BASE_COLOR);
+				boolean bl = !bannerPatternsComponent.layers().isEmpty() || dyeColor2 != null;
 				matrices.push();
 				matrices.scale(1.0F, -1.0F, -1.0F);
 				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
@@ -143,11 +149,9 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 					);
 				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
-					List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(
-						ShieldItem.getColor(stack), BannerBlockEntity.getPatternListNbt(stack)
-					);
+					BannerPatternsComponent bannerPatternsComponent2 = bannerPatternsComponent.withBase((DyeColor)Objects.requireNonNullElse(dyeColor2, DyeColor.WHITE));
 					BannerBlockEntityRenderer.renderCanvas(
-						matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, list, stack.hasGlint()
+						matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, bannerPatternsComponent2, stack.hasGlint()
 					);
 				} else {
 					this.modelShield.getPlate().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);

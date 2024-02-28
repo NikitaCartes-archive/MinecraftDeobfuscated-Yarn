@@ -30,14 +30,14 @@ public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacket
 		this.syncId = buf.readByte();
 		this.revision = buf.readVarInt();
 		this.slot = buf.readShort();
-		this.stack = ItemStack.PACKET_CODEC.decode(buf);
+		this.stack = ItemStack.OPTIONAL_PACKET_CODEC.decode(buf);
 	}
 
 	private void write(RegistryByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeVarInt(this.revision);
 		buf.writeShort(this.slot);
-		ItemStack.PACKET_CODEC.encode(buf, this.stack);
+		ItemStack.OPTIONAL_PACKET_CODEC.encode(buf, this.stack);
 	}
 
 	@Override

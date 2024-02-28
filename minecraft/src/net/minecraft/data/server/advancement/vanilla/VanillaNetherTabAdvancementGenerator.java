@@ -43,6 +43,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -130,7 +131,12 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				true,
 				false
 			)
-			.criterion("fortress", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.FORTRESS)))
+			.criterion(
+				"fortress",
+				TickCriterion.Conditions.createLocation(
+					LocationPredicate.Builder.createStructure(lookup.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.FORTRESS))
+				)
+			)
 			.build(exporter, "nether/find_fortress");
 		Advancement.Builder.create()
 			.parent(advancementEntry)
@@ -463,7 +469,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.build(exporter, "nether/ride_strider_in_overworld_lava");
 		VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(
-				Advancement.Builder.create(), MultiNoiseBiomeSourceParameterList.Preset.NETHER.biomeStream().toList()
+				Advancement.Builder.create(), lookup, MultiNoiseBiomeSourceParameterList.Preset.NETHER.biomeStream().toList()
 			)
 			.parent(advancementEntry12)
 			.display(
@@ -490,7 +496,12 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				true,
 				false
 			)
-			.criterion("bastion", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.BASTION_REMNANT)))
+			.criterion(
+				"bastion",
+				TickCriterion.Conditions.createLocation(
+					LocationPredicate.Builder.createStructure(lookup.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.BASTION_REMNANT))
+				)
+			)
 			.build(exporter, "nether/find_bastion");
 		Advancement.Builder.create()
 			.parent(advancementEntry13)

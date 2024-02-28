@@ -15,22 +15,22 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3817;
+	public static final int WORLD_VERSION = 3819;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "24w07a";
+	public static final String VERSION_NAME = "24w09a";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 766;
 	@Deprecated
-	public static final int field_29736 = 177;
+	public static final int field_29736 = 178;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3798;
 	private static final int field_29708 = 30;
 	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 26;
+	public static final int RESOURCE_PACK_VERSION = 28;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 32;
+	public static final int DATA_PACK_VERSION = 33;
 	@Deprecated
 	public static final int field_39963 = 1;
 	public static final int field_39964 = 1;
@@ -131,6 +131,7 @@ public class SharedConstants {
 	public static final int DEFAULT_WORLD_HEIGHT = 256;
 	public static final int COMMAND_MAX_LENGTH = 32500;
 	public static final int EXPANDED_MACRO_COMMAND_MAX_LENGTH = 2000000;
+	public static final int field_49170 = 16;
 	public static final int field_38052 = 1000000;
 	public static final int field_39898 = 32;
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
@@ -144,57 +145,6 @@ public class SharedConstants {
 	public static final int field_44922 = 64;
 	@Nullable
 	private static GameVersion gameVersion;
-
-	/**
-	 * {@return true if the character is not {@linkplain
-	 * net.minecraft.util.Formatting#FORMATTING_CODE_PREFIX the formatting code
-	 * prefix} (&bsol;u00a7), C0 control code (&bsol;u0000 to &bsol;u001f) or
-	 * delete (&bsol;u007f)}
-	 * 
-	 * @apiNote This method is used to determine if the server should
-	 * accept a chat message sent from client.
-	 * 
-	 * @see net.minecraft.server.network.ServerPlayNetworkHandler#hasIllegalCharacter
-	 */
-	public static boolean isValidChar(char chr) {
-		return chr != 167 && chr >= ' ' && chr != 127;
-	}
-
-	/**
-	 * {@return {@code s} with all {@linkplain #isValidChar invalid characters} stripped}
-	 * 
-	 * <p>LF (linebreak; U+000A) is an invalid character and therefore stripped. Use
-	 * {@link #stripInvalidChars(String, boolean)} to keep linebreaks.
-	 * 
-	 * @see #isValidChar
-	 * @see #stripInvalidChars(String, boolean)
-	 */
-	public static String stripInvalidChars(String s) {
-		return stripInvalidChars(s, false);
-	}
-
-	/**
-	 * {@return {@code s} with {@linkplain #isValidChar invalid characters} stripped}
-	 * 
-	 * <p>LF (linebreak; U+000A) may or may not be stripped depending on the passed
-	 * {@code allowLinebreaks} value.
-	 * 
-	 * @see #isValidChar
-	 * @see #stripInvalidChars(String)
-	 */
-	public static String stripInvalidChars(String s, boolean allowLinebreaks) {
-		StringBuilder stringBuilder = new StringBuilder();
-
-		for (char c : s.toCharArray()) {
-			if (isValidChar(c)) {
-				stringBuilder.append(c);
-			} else if (allowLinebreaks && c == '\n') {
-				stringBuilder.append(c);
-			}
-		}
-
-		return stringBuilder.toString();
-	}
 
 	public static void setGameVersion(GameVersion gameVersion) {
 		if (SharedConstants.gameVersion == null) {
@@ -219,7 +169,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073742001;
+		return 1073742002;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {

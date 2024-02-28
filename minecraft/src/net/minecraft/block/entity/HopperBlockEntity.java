@@ -47,7 +47,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		super.readNbt(nbt, registryLookup);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.readLootTable(nbt)) {
-			Inventories.readNbt(nbt, this.inventory);
+			Inventories.readNbt(nbt, this.inventory, registryLookup);
 		}
 
 		this.transferCooldown = nbt.getInt("TransferCooldown");
@@ -57,7 +57,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		if (!this.writeLootTable(nbt)) {
-			Inventories.writeNbt(nbt, this.inventory);
+			Inventories.writeNbt(nbt, this.inventory, registryLookup);
 		}
 
 		nbt.putInt("TransferCooldown", this.transferCooldown);
@@ -406,7 +406,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	private static boolean canMergeItems(ItemStack first, ItemStack second) {
-		return first.getCount() <= first.getMaxCount() && ItemStack.areItemsAndNbtEqual(first, second);
+		return first.getCount() <= first.getMaxCount() && ItemStack.areItemsAndComponentsEqual(first, second);
 	}
 
 	@Override

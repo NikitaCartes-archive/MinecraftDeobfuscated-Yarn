@@ -4,18 +4,15 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.RecipeMatcher;
-import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -77,7 +74,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	private boolean canStackAddMore(ItemStack existingStack, ItemStack stack) {
 		return !existingStack.isEmpty()
-			&& ItemStack.areItemsAndNbtEqual(existingStack, stack)
+			&& ItemStack.areItemsAndComponentsEqual(existingStack, stack)
 			&& existingStack.isStackable()
 			&& existingStack.getCount() < existingStack.getMaxCount()
 			&& existingStack.getCount() < this.getMaxCountPerStack();
@@ -127,7 +124,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	public int getSlotWithStack(ItemStack stack) {
 		for (int i = 0; i < this.main.size(); i++) {
-			if (!this.main.get(i).isEmpty() && ItemStack.areItemsAndNbtEqual(stack, this.main.get(i))) {
+			if (!this.main.get(i).isEmpty() && ItemStack.areItemsAndComponentsEqual(stack, this.main.get(i))) {
 				return i;
 			}
 		}
@@ -145,10 +142,10 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (int i = 0; i < this.main.size(); i++) {
 			ItemStack itemStack = this.main.get(i);
 			if (!this.main.get(i).isEmpty()
-				&& ItemStack.areItemsAndNbtEqual(stack, this.main.get(i))
+				&& ItemStack.areItemsAndComponentsEqual(stack, this.main.get(i))
 				&& !this.main.get(i).isDamaged()
 				&& !itemStack.hasEnchantments()
-				&& !itemStack.hasCustomName()) {
+				&& !itemStack.contains(DataComponentTypes.CUSTOM_NAME)) {
 				return i;
 			}
 		}
@@ -415,8 +412,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.main.get(i).isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)i);
-				this.main.get(i).writeNbt(nbtCompound);
-				nbtList.add(nbtCompound);
+				nbtList.add(this.main.get(i).encode(this.player.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -424,8 +420,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.armor.get(ix).isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)(ix + 100));
-				this.armor.get(ix).writeNbt(nbtCompound);
-				nbtList.add(nbtCompound);
+				nbtList.add(this.armor.get(ix).encode(this.player.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -433,8 +428,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.offHand.get(ixx).isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)(ixx + 150));
-				this.offHand.get(ixx).writeNbt(nbtCompound);
-				nbtList.add(nbtCompound);
+				nbtList.add(this.offHand.get(ixx).encode(this.player.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -449,15 +443,13 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (int i = 0; i < nbtList.size(); i++) {
 			NbtCompound nbtCompound = nbtList.getCompound(i);
 			int j = nbtCompound.getByte("Slot") & 255;
-			ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
-			if (!itemStack.isEmpty()) {
-				if (j >= 0 && j < this.main.size()) {
-					this.main.set(j, itemStack);
-				} else if (j >= 100 && j < this.armor.size() + 100) {
-					this.armor.set(j - 100, itemStack);
-				} else if (j >= 150 && j < this.offHand.size() + 150) {
-					this.offHand.set(j - 150, itemStack);
-				}
+			ItemStack itemStack = (ItemStack)ItemStack.fromNbt(this.player.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
+			if (j >= 0 && j < this.main.size()) {
+				this.main.set(j, itemStack);
+			} else if (j >= 100 && j < this.armor.size() + 100) {
+				this.armor.set(j - 100, itemStack);
+			} else if (j >= 150 && j < this.offHand.size() + 150) {
+				this.offHand.set(j - 150, itemStack);
 			}
 		}
 	}
@@ -515,22 +507,6 @@ public class PlayerInventory implements Inventory, Nameable {
 		return this.armor.get(slot);
 	}
 
-	public void damageArmor(DamageSource damageSource, float amount, int[] slots) {
-		if (!(amount <= 0.0F)) {
-			amount /= 4.0F;
-			if (amount < 1.0F) {
-				amount = 1.0F;
-			}
-
-			for (int i : slots) {
-				ItemStack itemStack = this.armor.get(i);
-				if ((!damageSource.isIn(DamageTypeTags.IS_FIRE) || !itemStack.getItem().isFireproof()) && itemStack.getItem() instanceof ArmorItem) {
-					itemStack.damage((int)amount, this.player, EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, i));
-				}
-			}
-		}
-	}
-
 	public void dropAll() {
 		for (List<ItemStack> list : this.combinedInventory) {
 			for (int i = 0; i < list.size(); i++) {
@@ -560,7 +536,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public boolean contains(ItemStack stack) {
 		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack : list) {
-				if (!itemStack.isEmpty() && ItemStack.areItemsAndNbtEqual(itemStack, stack)) {
+				if (!itemStack.isEmpty() && ItemStack.areItemsAndComponentsEqual(itemStack, stack)) {
 					return true;
 				}
 			}

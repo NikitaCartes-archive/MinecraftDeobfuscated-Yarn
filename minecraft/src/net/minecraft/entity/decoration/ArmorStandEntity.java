@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -182,24 +183,14 @@ public class ArmorStandEntity extends LivingEntity {
 		NbtList nbtList = new NbtList();
 
 		for (ItemStack itemStack : this.armorItems) {
-			NbtCompound nbtCompound = new NbtCompound();
-			if (!itemStack.isEmpty()) {
-				itemStack.writeNbt(nbtCompound);
-			}
-
-			nbtList.add(nbtCompound);
+			nbtList.add(itemStack.encodeAllowEmpty(this.getRegistryManager()));
 		}
 
 		nbt.put("ArmorItems", nbtList);
 		NbtList nbtList2 = new NbtList();
 
 		for (ItemStack itemStack2 : this.heldItems) {
-			NbtCompound nbtCompound2 = new NbtCompound();
-			if (!itemStack2.isEmpty()) {
-				itemStack2.writeNbt(nbtCompound2);
-			}
-
-			nbtList2.add(nbtCompound2);
+			nbtList2.add(itemStack2.encodeAllowEmpty(this.getRegistryManager()));
 		}
 
 		nbt.put("HandItems", nbtList2);
@@ -222,7 +213,8 @@ public class ArmorStandEntity extends LivingEntity {
 			NbtList nbtList = nbt.getList("ArmorItems", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				this.armorItems.set(i, ItemStack.fromNbtOrEmpty(this.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -230,7 +222,8 @@ public class ArmorStandEntity extends LivingEntity {
 			NbtList nbtList = nbt.getList("HandItems", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < this.heldItems.size(); i++) {
-				this.heldItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				this.heldItems.set(i, ItemStack.fromNbtOrEmpty(this.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -241,8 +234,8 @@ public class ArmorStandEntity extends LivingEntity {
 		this.setHideBasePlate(nbt.getBoolean("NoBasePlate"));
 		this.setMarker(nbt.getBoolean("Marker"));
 		this.noClip = !this.canClip();
-		NbtCompound nbtCompound = nbt.getCompound("Pose");
-		this.readPoseNbt(nbtCompound);
+		NbtCompound nbtCompound2 = nbt.getCompound("Pose");
+		this.readPoseNbt(nbtCompound2);
 	}
 
 	private void readPoseNbt(NbtCompound nbt) {
@@ -498,10 +491,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void breakAndDropItem(DamageSource damageSource) {
 		ItemStack itemStack = new ItemStack(Items.ARMOR_STAND);
-		if (this.hasCustomName()) {
-			itemStack.setCustomName(this.getCustomName());
-		}
-
+		itemStack.set(DataComponentTypes.CUSTOM_NAME, this.getCustomName());
 		Block.dropStack(this.getWorld(), this.getBlockPos(), itemStack);
 		this.onBreak(damageSource);
 	}

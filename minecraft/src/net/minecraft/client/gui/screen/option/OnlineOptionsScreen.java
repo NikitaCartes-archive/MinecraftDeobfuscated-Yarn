@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen.option;
 
 import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -14,15 +15,15 @@ import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nullables;
 import net.minecraft.world.Difficulty;
-import org.apache.commons.compress.utils.Lists;
 
 @Environment(EnvType.CLIENT)
 public class OnlineOptionsScreen extends SimpleOptionsScreen {
+	private static final Text TITLE_TEXT = Text.translatable("options.online.title");
 	@Nullable
 	private final SimpleOption<Unit> difficulty;
 
 	public static OnlineOptionsScreen create(MinecraftClient client, Screen parent, GameOptions gameOptions) {
-		List<SimpleOption<?>> list = Lists.<SimpleOption<?>>newArrayList();
+		List<SimpleOption<?>> list = new ArrayList();
 		list.add(gameOptions.getRealmsNotifications());
 		list.add(gameOptions.getAllowServerListing());
 		SimpleOption<Unit> simpleOption = Nullables.map(
@@ -48,7 +49,7 @@ public class OnlineOptionsScreen extends SimpleOptionsScreen {
 	}
 
 	private OnlineOptionsScreen(Screen parent, GameOptions gameOptions, SimpleOption<?>[] options, @Nullable SimpleOption<Unit> difficulty) {
-		super(parent, gameOptions, Text.translatable("options.online.title"), options);
+		super(parent, gameOptions, TITLE_TEXT, options);
 		this.difficulty = difficulty;
 	}
 

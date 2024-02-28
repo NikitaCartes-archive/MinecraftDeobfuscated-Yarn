@@ -3,6 +3,7 @@ package net.minecraft.block;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
@@ -11,14 +12,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class FlowerBlock extends PlantBlock implements SuspiciousStewIngredient {
-	protected static final MapCodec<List<SuspiciousStewIngredient.StewEffect>> STEW_EFFECT_CODEC = SuspiciousStewIngredient.StewEffect.LIST_CODEC
-		.fieldOf("suspicious_stew_effects");
+	protected static final MapCodec<SuspiciousStewEffectsComponent> STEW_EFFECT_CODEC = SuspiciousStewEffectsComponent.CODEC.fieldOf("suspicious_stew_effects");
 	public static final MapCodec<FlowerBlock> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(STEW_EFFECT_CODEC.forGetter(FlowerBlock::getStewEffects), createSettingsCodec()).apply(instance, FlowerBlock::new)
 	);
 	protected static final float field_31094 = 3.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0);
-	private final List<SuspiciousStewIngredient.StewEffect> stewEffects;
+	private final SuspiciousStewEffectsComponent stewEffects;
 
 	@Override
 	public MapCodec<? extends FlowerBlock> getCodec() {
@@ -29,13 +29,13 @@ public class FlowerBlock extends PlantBlock implements SuspiciousStewIngredient 
 		this(createStewEffectList(stewEffect, duration), settings);
 	}
 
-	public FlowerBlock(List<SuspiciousStewIngredient.StewEffect> stewEffects, AbstractBlock.Settings settings) {
+	public FlowerBlock(SuspiciousStewEffectsComponent suspiciousStewEffectsComponent, AbstractBlock.Settings settings) {
 		super(settings);
-		this.stewEffects = stewEffects;
+		this.stewEffects = suspiciousStewEffectsComponent;
 	}
 
-	protected static List<SuspiciousStewIngredient.StewEffect> createStewEffectList(RegistryEntry<StatusEffect> effect, int duration) {
-		return List.of(new SuspiciousStewIngredient.StewEffect(effect, duration * 20));
+	protected static SuspiciousStewEffectsComponent createStewEffectList(RegistryEntry<StatusEffect> effect, int duration) {
+		return new SuspiciousStewEffectsComponent(List.of(new SuspiciousStewEffectsComponent.StewEffect(effect, duration * 20)));
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class FlowerBlock extends PlantBlock implements SuspiciousStewIngredient 
 	}
 
 	@Override
-	public List<SuspiciousStewIngredient.StewEffect> getStewEffects() {
+	public SuspiciousStewEffectsComponent getStewEffects() {
 		return this.stewEffects;
 	}
 }

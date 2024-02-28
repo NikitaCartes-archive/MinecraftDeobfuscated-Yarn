@@ -7,15 +7,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.dynamic.Codecs;
@@ -55,53 +54,17 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		NbtList nbtList = this.getLoreForMerge(stack, !this.lore.isEmpty());
-		if (nbtList != null) {
-			if (this.replace) {
-				nbtList.clear();
-			}
-
-			UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null));
-			this.lore.stream().map(unaryOperator).map(Text.Serialization::toJsonString).map(NbtString::of).forEach(nbtList::add);
-		}
-
+		stack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, component -> new LoreComponent(this.getNewLoreTexts(component, context)));
 		return stack;
 	}
 
-	@Nullable
-	private NbtList getLoreForMerge(ItemStack stack, boolean otherLoreExists) {
-		NbtCompound nbtCompound;
-		if (stack.hasNbt()) {
-			nbtCompound = stack.getNbt();
+	private List<Text> getNewLoreTexts(@Nullable LoreComponent current, LootContext context) {
+		if (current == null && this.lore.isEmpty()) {
+			return List.of();
 		} else {
-			if (!otherLoreExists) {
-				return null;
-			}
-
-			nbtCompound = new NbtCompound();
-			stack.setNbt(nbtCompound);
-		}
-
-		NbtCompound nbtCompound2;
-		if (nbtCompound.contains("display", NbtElement.COMPOUND_TYPE)) {
-			nbtCompound2 = nbtCompound.getCompound("display");
-		} else {
-			if (!otherLoreExists) {
-				return null;
-			}
-
-			nbtCompound2 = new NbtCompound();
-			nbtCompound.put("display", nbtCompound2);
-		}
-
-		if (nbtCompound2.contains("Lore", NbtElement.LIST_TYPE)) {
-			return nbtCompound2.getList("Lore", NbtElement.STRING_TYPE);
-		} else if (otherLoreExists) {
-			NbtList nbtList = new NbtList();
-			nbtCompound2.put("Lore", nbtList);
-			return nbtList;
-		} else {
-			return null;
+			UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(context, (LootContext.EntityTarget)this.entity.orElse(null));
+			Stream<Text> stream = this.lore.stream().map(unaryOperator);
+			return !this.replace && current != null ? Stream.concat(current.lines().stream(), stream).toList() : stream.toList();
 		}
 	}
 

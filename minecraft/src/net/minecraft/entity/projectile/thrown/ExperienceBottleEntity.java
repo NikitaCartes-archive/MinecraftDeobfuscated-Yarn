@@ -1,11 +1,11 @@
 package net.minecraft.entity.projectile.thrown;
 
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
@@ -39,7 +39,7 @@ public class ExperienceBottleEntity extends ThrownItemEntity {
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
 		if (this.getWorld() instanceof ServerWorld) {
-			this.getWorld().syncWorldEvent(WorldEvents.SPLASH_POTION_SPLASHED, this.getBlockPos(), PotionUtil.getColor(Potions.WATER));
+			this.getWorld().syncWorldEvent(WorldEvents.SPLASH_POTION_SPLASHED, this.getBlockPos(), PotionContentsComponent.getColor(Potions.WATER));
 			int i = 3 + this.getWorld().random.nextInt(5) + this.getWorld().random.nextInt(5);
 			ExperienceOrbEntity.spawn((ServerWorld)this.getWorld(), this.getPos(), i);
 			this.discard();

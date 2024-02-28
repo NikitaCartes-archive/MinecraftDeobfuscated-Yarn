@@ -28,7 +28,7 @@ public record VaultConfig(
 						Identifier.CODEC.optionalFieldOf("loot_table", DEFAULT.lootTable()).forGetter(VaultConfig::lootTable),
 						Codec.DOUBLE.optionalFieldOf("activation_range", Double.valueOf(DEFAULT.activationRange())).forGetter(VaultConfig::activationRange),
 						Codec.DOUBLE.optionalFieldOf("deactivation_range", Double.valueOf(DEFAULT.deactivationRange())).forGetter(VaultConfig::deactivationRange),
-						ItemStack.CODEC.optionalFieldOf("key_item", DEFAULT.keyItem()).forGetter(VaultConfig::keyItem),
+						ItemStack.createOptionalCodec("key_item").forGetter(VaultConfig::keyItem),
 						Identifier.CODEC.optionalFieldOf("override_loot_table_to_display").forGetter(VaultConfig::overrideLootTableToDisplay)
 					)
 					.apply(instance, VaultConfig::new)

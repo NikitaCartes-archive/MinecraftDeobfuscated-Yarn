@@ -456,7 +456,7 @@ public class DebugHud {
 
 			this.chunkFuture = serverWorld.getChunkManager()
 				.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false)
-				.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
+				.thenApply(optionalChunk -> (WorldChunk)optionalChunk.orElse(null));
 		}
 
 		return (WorldChunk)this.chunkFuture.getNow(null);

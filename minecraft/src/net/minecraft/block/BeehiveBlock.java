@@ -8,6 +8,8 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -20,14 +22,12 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -266,19 +266,12 @@ public class BeehiveBlock extends BlockWithEntity {
 			&& player.isCreative()
 			&& world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)
 			&& world.getBlockEntity(pos) instanceof BeehiveBlockEntity beehiveBlockEntity) {
-			ItemStack itemStack = new ItemStack(this);
 			int i = (Integer)state.get(HONEY_LEVEL);
 			boolean bl = !beehiveBlockEntity.hasNoBees();
 			if (bl || i > 0) {
-				if (bl) {
-					NbtCompound nbtCompound = new NbtCompound();
-					nbtCompound.put("Bees", beehiveBlockEntity.getBees());
-					BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BEEHIVE, nbtCompound);
-				}
-
-				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.putInt("honey_level", i);
-				itemStack.setSubNbt("BlockStateTag", nbtCompound);
+				ItemStack itemStack = new ItemStack(this);
+				itemStack.applyComponentsFrom(beehiveBlockEntity.createComponentMap());
+				itemStack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(HONEY_LEVEL, i));
 				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);

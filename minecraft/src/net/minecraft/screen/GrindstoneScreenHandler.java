@@ -1,9 +1,9 @@
 package net.minecraft.screen;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -15,6 +15,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -92,13 +93,13 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 
 			private int getExperience(ItemStack stack) {
 				int i = 0;
-				Map<Enchantment, Integer> map = EnchantmentHelper.get(stack);
+				ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(stack);
 
-				for (Entry<Enchantment, Integer> entry : map.entrySet()) {
-					Enchantment enchantment = (Enchantment)entry.getKey();
-					Integer integer = (Integer)entry.getValue();
+				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+					Enchantment enchantment = (Enchantment)((RegistryEntry)entry.getKey()).value();
+					int j = entry.getIntValue();
 					if (!enchantment.isCursed()) {
-						i += enchantment.getMinPower(integer);
+						i += enchantment.getMinPower(j);
 					}
 				}
 
@@ -180,46 +181,36 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 
 	private ItemStack transferEnchantments(ItemStack target, ItemStack source) {
 		ItemStack itemStack = target.copy();
-		Map<Enchantment, Integer> map = EnchantmentHelper.get(source);
+		EnchantmentHelper.apply(itemStack, builder -> {
+			ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(source);
 
-		for (Entry<Enchantment, Integer> entry : map.entrySet()) {
-			Enchantment enchantment = (Enchantment)entry.getKey();
-			if (!enchantment.isCursed() || EnchantmentHelper.getLevel(enchantment, itemStack) == 0) {
-				itemStack.addEnchantment(enchantment, (Integer)entry.getValue());
+			for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+				Enchantment enchantment = (Enchantment)((RegistryEntry)entry.getKey()).value();
+				if (!enchantment.isCursed() || builder.getLevel(enchantment) == 0) {
+					builder.add(enchantment, entry.getIntValue());
+				}
 			}
-		}
-
+		});
 		return itemStack;
 	}
 
 	private ItemStack grind(ItemStack item, int damage, int amount) {
 		ItemStack itemStack = item.copyWithCount(amount);
-		itemStack.removeSubNbt("Enchantments");
-		itemStack.removeSubNbt("StoredEnchantments");
-		if (damage > 0) {
-			itemStack.setDamage(damage);
-		} else {
-			itemStack.removeSubNbt("Damage");
+		itemStack.setDamage(damage);
+		ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.apply(
+			itemStack, builder -> builder.remove(enchantment -> !((Enchantment)enchantment.value()).isCursed())
+		);
+		if (itemStack.isOf(Items.ENCHANTED_BOOK) && itemEnchantmentsComponent.isEmpty()) {
+			itemStack = itemStack.copyComponentsToNewStack(Items.BOOK, amount);
 		}
 
-		Map<Enchantment, Integer> map = (Map<Enchantment, Integer>)EnchantmentHelper.get(item)
-			.entrySet()
-			.stream()
-			.filter(entry -> ((Enchantment)entry.getKey()).isCursed())
-			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-		EnchantmentHelper.set(map, itemStack);
-		itemStack.setRepairCost(0);
-		if (itemStack.isOf(Items.ENCHANTED_BOOK) && map.size() == 0) {
-			itemStack = new ItemStack(Items.BOOK);
-			if (item.hasCustomName()) {
-				itemStack.setCustomName(item.getName());
-			}
+		int i = 0;
+
+		for (int j = 0; j < itemEnchantmentsComponent.getSize(); j++) {
+			i = AnvilScreenHandler.getNextCost(i);
 		}
 
-		for (int i = 0; i < map.size(); i++) {
-			itemStack.setRepairCost(AnvilScreenHandler.getNextCost(itemStack.getRepairCost()));
-		}
-
+		itemStack.set(DataComponentTypes.REPAIR_COST, i);
 		return itemStack;
 	}
 

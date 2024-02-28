@@ -5,10 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.item.BundleTooltipData;
+import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class BundleTooltipComponent implements TooltipComponent {
@@ -17,12 +16,10 @@ public class BundleTooltipComponent implements TooltipComponent {
 	private static final int field_32382 = 1;
 	private static final int WIDTH_PER_COLUMN = 18;
 	private static final int HEIGHT_PER_ROW = 20;
-	private final DefaultedList<ItemStack> inventory;
-	private final int occupancy;
+	private final BundleContentsComponent field_49537;
 
-	public BundleTooltipComponent(BundleTooltipData data) {
-		this.inventory = data.getInventory();
-		this.occupancy = data.getBundleOccupancy();
+	public BundleTooltipComponent(BundleContentsComponent data) {
+		this.field_49537 = data;
 	}
 
 	@Override
@@ -48,7 +45,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 		int i = this.getColumns();
 		int j = this.getRows();
 		context.drawGuiTexture(BACKGROUND_TEXTURE, x, y, this.getColumnsWidth(), this.getRowsHeight());
-		boolean bl = this.occupancy >= 64;
+		boolean bl = this.field_49537.getOccupancy() >= 64;
 		int k = 0;
 
 		for (int l = 0; l < j; l++) {
@@ -61,10 +58,10 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	private void drawSlot(int x, int y, int index, boolean shouldBlock, DrawContext context, TextRenderer textRenderer) {
-		if (index >= this.inventory.size()) {
+		if (index >= this.field_49537.size()) {
 			this.draw(context, x, y, shouldBlock ? BundleTooltipComponent.SlotSprite.BLOCKED_SLOT : BundleTooltipComponent.SlotSprite.SLOT);
 		} else {
-			ItemStack itemStack = this.inventory.get(index);
+			ItemStack itemStack = this.field_49537.get(index);
 			this.draw(context, x, y, BundleTooltipComponent.SlotSprite.SLOT);
 			context.drawItem(itemStack, x + 1, y + 1, index);
 			context.drawItemInSlot(textRenderer, itemStack, x + 1, y + 1);
@@ -79,11 +76,11 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	private int getColumns() {
-		return Math.max(2, (int)Math.ceil(Math.sqrt((double)this.inventory.size() + 1.0)));
+		return Math.max(2, (int)Math.ceil(Math.sqrt((double)this.field_49537.size() + 1.0)));
 	}
 
 	private int getRows() {
-		return (int)Math.ceil(((double)this.inventory.size() + 1.0) / (double)this.getColumns());
+		return (int)Math.ceil(((double)this.field_49537.size() + 1.0) / (double)this.getColumns());
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -8,23 +8,28 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsInviteScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Text INVITE_TEXT = Text.translatable("mco.configure.world.buttons.invite");
 	private static final Text INVITE_PROFILE_NAME_TEXT = Text.translatable("mco.configure.world.invite.profile.name").withColor(Colors.LIGHT_GRAY);
 	private static final Text INVITING_TEXT = Text.translatable("mco.configure.world.players.inviting").withColor(Colors.LIGHT_GRAY);
 	private static final Text PLAYER_ERROR_TEXT = Text.translatable("mco.configure.world.players.error").withColor(Colors.RED);
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private TextFieldWidget nameWidget;
 	private ButtonWidget inviteButton;
 	private final RealmsServer serverData;
@@ -34,7 +39,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 	private Text errorMessage;
 
 	public RealmsInviteScreen(RealmsConfigureWorldScreen configureScreen, Screen parent, RealmsServer serverData) {
-		super(NarratorManager.EMPTY);
+		super(INVITE_TEXT);
 		this.configureScreen = configureScreen;
 		this.parent = parent;
 		this.serverData = serverData;
@@ -42,18 +47,21 @@ public class RealmsInviteScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.nameWidget = new TextFieldWidget(
-			this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, Text.translatable("mco.configure.world.invite.profile.name")
-		);
-		this.addSelectableChild(this.nameWidget);
-		this.inviteButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.invite"), button -> this.onInvite())
-				.dimensions(this.width / 2 - 100, row(10), 200, 20)
-				.build()
-		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, row(12), 200, 20).build()
-		);
+		this.layout.addHeader(INVITE_TEXT, this.textRenderer);
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical().spacing(8));
+		this.nameWidget = new TextFieldWidget(this.client.textRenderer, 200, 20, Text.translatable("mco.configure.world.invite.profile.name"));
+		directionalLayoutWidget.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.nameWidget, INVITE_PROFILE_NAME_TEXT));
+		this.inviteButton = directionalLayoutWidget.add(ButtonWidget.builder(INVITE_TEXT, button -> this.onInvite()).width(200).build());
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.BACK, buttonWidget -> this.close()).width(200).build());
+		this.layout.forEachChild(element -> {
+			ClickableWidget var10000 = this.addDrawableChild(element);
+		});
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
 	}
 
 	@Override
@@ -62,7 +70,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 	}
 
 	private void onInvite() {
-		if (Util.isBlank(this.nameWidget.getText())) {
+		if (StringHelper.isBlank(this.nameWidget.getText())) {
 			this.showError(PLAYER_ERROR_TEXT);
 		} else {
 			long l = this.serverData.id;
@@ -97,23 +105,17 @@ public class RealmsInviteScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.setScreen(this.parent);
-			return true;
-		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawText(this.textRenderer, INVITE_PROFILE_NAME_TEXT, this.width / 2 - 100, row(1), Colors.WHITE, false);
 		if (this.errorMessage != null) {
-			context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessage, this.width / 2, row(5), Colors.WHITE);
+			context.drawCenteredTextWithShadow(
+				this.textRenderer, this.errorMessage, this.width / 2, this.inviteButton.getY() + this.inviteButton.getHeight() + 8, Colors.WHITE
+			);
 		}
-
-		this.nameWidget.render(context, mouseX, mouseY, delta);
 	}
 }

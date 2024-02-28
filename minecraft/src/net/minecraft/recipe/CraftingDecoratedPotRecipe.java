@@ -1,6 +1,7 @@
 package net.minecraft.recipe;
 
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.block.entity.Sherds;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -44,7 +45,7 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
-		DecoratedPotBlockEntity.Sherds sherds = new DecoratedPotBlockEntity.Sherds(
+		Sherds sherds = new Sherds(
 			recipeInputInventory.getStack(1).getItem(),
 			recipeInputInventory.getStack(3).getItem(),
 			recipeInputInventory.getStack(5).getItem(),

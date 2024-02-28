@@ -1,12 +1,13 @@
 package net.minecraft.entity.passive;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SuspiciousStewIngredient;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -20,7 +21,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -46,7 +46,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	private static final int MUTATION_CHANCE = 1024;
 	private static final String STEW_EFFECTS_NBT_KEY = "stew_effects";
 	@Nullable
-	private List<SuspiciousStewIngredient.StewEffect> stewEffects;
+	private SuspiciousStewEffectsComponent stewEffects;
 	@Nullable
 	private UUID lightningId;
 
@@ -88,7 +88,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 			if (this.stewEffects != null) {
 				bl = true;
 				itemStack2 = new ItemStack(Items.SUSPICIOUS_STEW);
-				SuspiciousStewItem.writeEffectsToStew(itemStack2, this.stewEffects);
+				itemStack2.set(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, this.stewEffects);
 				this.stewEffects = null;
 			} else {
 				itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
@@ -128,7 +128,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 						);
 				}
 			} else {
-				Optional<List<SuspiciousStewIngredient.StewEffect>> optional = this.getStewEffectFrom(itemStack);
+				Optional<SuspiciousStewEffectsComponent> optional = this.getStewEffectFrom(itemStack);
 				if (optional.isEmpty()) {
 					return ActionResult.PASS;
 				}
@@ -148,7 +148,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 						);
 				}
 
-				this.stewEffects = (List<SuspiciousStewIngredient.StewEffect>)optional.get();
+				this.stewEffects = (SuspiciousStewEffectsComponent)optional.get();
 				this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
 			}
 
@@ -199,10 +199,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		super.writeCustomDataToNbt(nbt);
 		nbt.putString("Type", this.getVariant().asString());
 		if (this.stewEffects != null) {
-			SuspiciousStewIngredient.StewEffect.LIST_CODEC
-				.encodeStart(NbtOps.INSTANCE, this.stewEffects)
-				.result()
-				.ifPresent(nbtElement -> nbt.put("stew_effects", nbtElement));
+			SuspiciousStewEffectsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.stewEffects).result().ifPresent(nbtElement -> nbt.put("stew_effects", nbtElement));
 		}
 	}
 
@@ -211,14 +208,14 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		super.readCustomDataFromNbt(nbt);
 		this.setVariant(MooshroomEntity.Type.fromName(nbt.getString("Type")));
 		if (nbt.contains("stew_effects", NbtElement.LIST_TYPE)) {
-			SuspiciousStewIngredient.StewEffect.LIST_CODEC
+			SuspiciousStewEffectsComponent.CODEC
 				.parse(NbtOps.INSTANCE, nbt.get("stew_effects"))
 				.result()
-				.ifPresent(stewEffects -> this.stewEffects = stewEffects);
+				.ifPresent(suspiciousStewEffectsComponent -> this.stewEffects = suspiciousStewEffectsComponent);
 		}
 	}
 
-	private Optional<List<SuspiciousStewIngredient.StewEffect>> getStewEffectFrom(ItemStack flower) {
+	private Optional<SuspiciousStewEffectsComponent> getStewEffectFrom(ItemStack flower) {
 		SuspiciousStewIngredient suspiciousStewIngredient = SuspiciousStewIngredient.of(flower.getItem());
 		return suspiciousStewIngredient != null ? Optional.of(suspiciousStewIngredient.getStewEffects()) : Optional.empty();
 	}

@@ -88,7 +88,9 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
 		if (this.offerData != null) {
-			nbt.put("Offers", Util.getResult(TradeOfferList.CODEC.encodeStart(NbtOps.INSTANCE, this.offerData), IllegalStateException::new));
+			nbt.put(
+				"Offers", Util.getResult(TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), this.offerData), IllegalStateException::new)
+			);
 		}
 
 		if (this.gossipData != null) {
@@ -113,7 +115,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		if (nbt.contains("Offers")) {
 			TradeOfferList.CODEC
-				.parse(NbtOps.INSTANCE, nbt.get("Offers"))
+				.parse(this.getRegistryManager().getOps(NbtOps.INSTANCE), nbt.get("Offers"))
 				.resultOrPartial(Util.addPrefix("Failed to load offers: ", LOGGER::warn))
 				.ifPresent(offerData -> this.offerData = offerData);
 		}

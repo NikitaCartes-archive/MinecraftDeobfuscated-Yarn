@@ -4,20 +4,21 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.component.ComponentHolder;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
+import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -25,37 +26,31 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.dynamic.Codecs;
 
 public record ItemPredicate(
-	Optional<TagKey<Item>> tag,
 	Optional<RegistryEntryList<Item>> items,
 	NumberRange.IntRange count,
 	NumberRange.IntRange durability,
 	List<EnchantmentPredicate> enchantments,
 	List<EnchantmentPredicate> storedEnchantments,
-	Optional<RegistryEntry<Potion>> potion,
-	Optional<NbtPredicate> nbt
+	Optional<RegistryEntryList<Potion>> potions,
+	Optional<NbtPredicate> customData,
+	ComponentPredicate components
 ) {
-	private static final Codec<RegistryEntryList<Item>> ITEM_ENTRY_LIST_CODEC = Registries.ITEM
-		.getEntryCodec()
-		.listOf()
-		.xmap(RegistryEntryList::of, items -> items.stream().toList());
 	public static final Codec<ItemPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.ITEM), "tag").forGetter(ItemPredicate::tag),
-					Codecs.createStrictOptionalFieldCodec(ITEM_ENTRY_LIST_CODEC, "items").forGetter(ItemPredicate::items),
+					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.ITEM), "items").forGetter(ItemPredicate::items),
 					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "count", NumberRange.IntRange.ANY).forGetter(ItemPredicate::count),
 					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "durability", NumberRange.IntRange.ANY).forGetter(ItemPredicate::durability),
 					Codecs.createStrictOptionalFieldCodec(EnchantmentPredicate.CODEC.listOf(), "enchantments", List.of()).forGetter(ItemPredicate::enchantments),
 					Codecs.createStrictOptionalFieldCodec(EnchantmentPredicate.CODEC.listOf(), "stored_enchantments", List.of()).forGetter(ItemPredicate::storedEnchantments),
-					Codecs.createStrictOptionalFieldCodec(Registries.POTION.getEntryCodec(), "potion").forGetter(ItemPredicate::potion),
-					Codecs.createStrictOptionalFieldCodec(NbtPredicate.CODEC, "nbt").forGetter(ItemPredicate::nbt)
+					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.POTION), "potions").forGetter(ItemPredicate::potions),
+					Codecs.createStrictOptionalFieldCodec(NbtPredicate.CODEC, "custom_data").forGetter(ItemPredicate::customData),
+					Codecs.createStrictOptionalFieldCodec(ComponentPredicate.CODEC, "components", ComponentPredicate.EMPTY).forGetter(ItemPredicate::components)
 				)
 				.apply(instance, ItemPredicate::new)
 	);
 
 	public boolean test(ItemStack stack) {
-		if (this.tag.isPresent() && !stack.isIn((TagKey<Item>)this.tag.get())) {
-			return false;
-		} else if (this.items.isPresent() && !stack.itemMatches((RegistryEntryList<Item>)this.items.get())) {
+		if (this.items.isPresent() && !stack.itemMatches((RegistryEntryList<Item>)this.items.get())) {
 			return false;
 		} else if (!this.count.test(stack.getCount())) {
 			return false;
@@ -63,30 +58,37 @@ public record ItemPredicate(
 			return false;
 		} else if (!this.durability.test(stack.getMaxDamage() - stack.getDamage())) {
 			return false;
-		} else if (this.nbt.isPresent() && !((NbtPredicate)this.nbt.get()).test(stack)) {
+		} else if (this.customData.isPresent() && !((NbtPredicate)this.customData.get()).test(stack)) {
 			return false;
 		} else {
 			if (!this.enchantments.isEmpty()) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.fromNbt(stack.getEnchantments());
+				ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
 				for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
-					if (!enchantmentPredicate.test(map)) {
+					if (!enchantmentPredicate.test(itemEnchantmentsComponent)) {
 						return false;
 					}
 				}
 			}
 
 			if (!this.storedEnchantments.isEmpty()) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(stack));
+				ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
 				for (EnchantmentPredicate enchantmentPredicatex : this.storedEnchantments) {
-					if (!enchantmentPredicatex.test(map)) {
+					if (!enchantmentPredicatex.test(itemEnchantmentsComponent)) {
 						return false;
 					}
 				}
 			}
 
-			return !this.potion.isPresent() || ((RegistryEntry)this.potion.get()).equals(PotionUtil.getPotion(stack));
+			if (this.potions.isPresent()) {
+				Optional<RegistryEntry<Potion>> optional = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).potion();
+				if (optional.isEmpty() || !((RegistryEntryList)this.potions.get()).contains((RegistryEntry)optional.get())) {
+					return false;
+				}
+			}
+
+			return this.components.test((ComponentHolder)stack);
 		}
 	}
 
@@ -94,11 +96,11 @@ public record ItemPredicate(
 		private final ImmutableList.Builder<EnchantmentPredicate> enchantments = ImmutableList.builder();
 		private final ImmutableList.Builder<EnchantmentPredicate> storedEnchantments = ImmutableList.builder();
 		private Optional<RegistryEntryList<Item>> item = Optional.empty();
-		private Optional<TagKey<Item>> tag = Optional.empty();
 		private NumberRange.IntRange count = NumberRange.IntRange.ANY;
 		private NumberRange.IntRange durability = NumberRange.IntRange.ANY;
-		private Optional<RegistryEntry<Potion>> potion = Optional.empty();
-		private Optional<NbtPredicate> nbt = Optional.empty();
+		private Optional<RegistryEntryList<Potion>> potion = Optional.empty();
+		private Optional<NbtPredicate> nbtPredicate = Optional.empty();
+		private ComponentPredicate componentPredicate = ComponentPredicate.EMPTY;
 
 		private Builder() {
 		}
@@ -113,7 +115,7 @@ public record ItemPredicate(
 		}
 
 		public ItemPredicate.Builder tag(TagKey<Item> tag) {
-			this.tag = Optional.of(tag);
+			this.item = Optional.of(Registries.ITEM.getOrCreateEntryList(tag));
 			return this;
 		}
 
@@ -127,13 +129,13 @@ public record ItemPredicate(
 			return this;
 		}
 
-		public ItemPredicate.Builder potion(RegistryEntry<Potion> potion) {
+		public ItemPredicate.Builder potion(RegistryEntryList<Potion> potion) {
 			this.potion = Optional.of(potion);
 			return this;
 		}
 
 		public ItemPredicate.Builder nbt(NbtCompound nbt) {
-			this.nbt = Optional.of(new NbtPredicate(nbt));
+			this.nbtPredicate = Optional.of(new NbtPredicate(nbt));
 			return this;
 		}
 
@@ -147,10 +149,15 @@ public record ItemPredicate(
 			return this;
 		}
 
+		public ItemPredicate.Builder component(ComponentPredicate componentPredicate) {
+			this.componentPredicate = componentPredicate;
+			return this;
+		}
+
 		public ItemPredicate build() {
 			List<EnchantmentPredicate> list = this.enchantments.build();
 			List<EnchantmentPredicate> list2 = this.storedEnchantments.build();
-			return new ItemPredicate(this.tag, this.item, this.count, this.durability, list, list2, this.potion, this.nbt);
+			return new ItemPredicate(this.item, this.count, this.durability, list, list2, this.potion, this.nbtPredicate, this.componentPredicate);
 		}
 	}
 }

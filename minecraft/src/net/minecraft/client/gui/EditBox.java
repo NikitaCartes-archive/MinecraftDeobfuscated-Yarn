@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -129,12 +128,12 @@ public class EditBox {
 	/**
 	 * Replaces the current selection with {@code string}. If there is no
 	 * selection, this inserts the string at the cursor position. This removes
-	 * {@linkplain net.minecraft.SharedConstants#isValidChar invalid characters} and truncates
+	 * {@linkplain net.minecraft.util.StringHelper#isValidChar invalid characters} and truncates
 	 * the passed string if necessary.
 	 */
 	public void replaceSelection(String string) {
 		if (!string.isEmpty() || this.hasSelection()) {
-			String string2 = this.truncate(SharedConstants.stripInvalidChars(string, true));
+			String string2 = this.truncate(StringHelper.stripInvalidChars(string, true));
 			EditBox.Substring substring = this.getSelection();
 			this.text = new StringBuilder(this.text).replace(substring.beginIndex, substring.endIndex, string2).toString();
 			this.cursor = substring.beginIndex + string2.length();

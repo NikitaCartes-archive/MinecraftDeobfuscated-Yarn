@@ -2,9 +2,13 @@ package net.minecraft.item.trim;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
@@ -29,7 +33,23 @@ public record ArmorTrimMaterial(
 				)
 				.apply(instance, ArmorTrimMaterial::new)
 	);
+	public static final PacketCodec<RegistryByteBuf, ArmorTrimMaterial> PACKET_CODEC = PacketCodec.tuple(
+		PacketCodecs.STRING,
+		ArmorTrimMaterial::assetName,
+		PacketCodecs.registryEntry(RegistryKeys.ITEM),
+		ArmorTrimMaterial::ingredient,
+		PacketCodecs.FLOAT,
+		ArmorTrimMaterial::itemModelIndex,
+		PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryEntry(RegistryKeys.ARMOR_MATERIAL), PacketCodecs.STRING),
+		ArmorTrimMaterial::overrideArmorMaterials,
+		TextCodecs.REGISTRY_PACKET_CODEC,
+		ArmorTrimMaterial::description,
+		ArmorTrimMaterial::new
+	);
 	public static final Codec<RegistryEntry<ArmorTrimMaterial>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.TRIM_MATERIAL, CODEC);
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<ArmorTrimMaterial>> ENTRY_PACKET_CODEC = PacketCodecs.registryEntry(
+		RegistryKeys.TRIM_MATERIAL, PACKET_CODEC
+	);
 
 	public static ArmorTrimMaterial of(
 		String assetName, Item ingredient, float itemModelIndex, Text description, Map<RegistryEntry<ArmorMaterial>, String> overrideArmorMaterials

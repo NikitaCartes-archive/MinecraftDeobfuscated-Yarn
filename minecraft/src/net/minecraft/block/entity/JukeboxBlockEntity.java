@@ -41,7 +41,9 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("RecordItem", NbtElement.COMPOUND_TYPE)) {
-			this.recordStack = ItemStack.fromNbt(nbt.getCompound("RecordItem"));
+			this.recordStack = (ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("RecordItem")).orElse(ItemStack.EMPTY);
+		} else {
+			this.recordStack = ItemStack.EMPTY;
 		}
 
 		this.isPlaying = nbt.getBoolean("IsPlaying");
@@ -53,7 +55,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		if (!this.getStack().isEmpty()) {
-			nbt.put("RecordItem", this.getStack().writeNbt(new NbtCompound()));
+			nbt.put("RecordItem", this.getStack().encode(registryLookup));
 		}
 
 		nbt.putBoolean("IsPlaying", this.isPlaying);

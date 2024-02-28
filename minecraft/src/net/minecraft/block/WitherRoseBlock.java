@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.List;
+import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -32,8 +32,8 @@ public class WitherRoseBlock extends FlowerBlock {
 		this(createStewEffectList(registryEntry, i), settings);
 	}
 
-	public WitherRoseBlock(List<SuspiciousStewIngredient.StewEffect> list, AbstractBlock.Settings settings) {
-		super(list, settings);
+	public WitherRoseBlock(SuspiciousStewEffectsComponent suspiciousStewEffectsComponent, AbstractBlock.Settings settings) {
+		super(suspiciousStewEffectsComponent, settings);
 	}
 
 	@Override

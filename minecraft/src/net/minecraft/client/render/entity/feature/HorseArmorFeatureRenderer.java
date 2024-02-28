@@ -10,11 +10,12 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.AnimalArmorItem;
-import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
@@ -37,10 +38,10 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 			float p;
 			float n;
 			if (itemStack.isIn(ItemTags.DYEABLE)) {
-				int m = DyeableItem.getColor(itemStack);
-				n = (float)(m >> 16 & 0xFF) / 255.0F;
-				o = (float)(m >> 8 & 0xFF) / 255.0F;
-				p = (float)(m & 0xFF) / 255.0F;
+				int m = DyedColorComponent.getColor(itemStack, -6265536);
+				n = (float)ColorHelper.Argb.getRed(m) / 255.0F;
+				o = (float)ColorHelper.Argb.getGreen(m) / 255.0F;
+				p = (float)ColorHelper.Argb.getBlue(m) / 255.0F;
 			} else {
 				n = 1.0F;
 				o = 1.0F;

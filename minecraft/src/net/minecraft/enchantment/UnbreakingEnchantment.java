@@ -1,5 +1,6 @@
 package net.minecraft.enchantment;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
@@ -28,7 +29,7 @@ public class UnbreakingEnchantment extends Enchantment {
 
 	@Override
 	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.isUnbreakable() ? false : super.isAcceptableItem(stack);
+		return stack.contains(DataComponentTypes.UNBREAKABLE) ? false : super.isAcceptableItem(stack);
 	}
 
 	public static boolean shouldPreventDamage(ItemStack item, int level, Random random) {

@@ -12,8 +12,9 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
@@ -115,16 +116,19 @@ public class StructureAccessor {
 		return StructureStart.DEFAULT;
 	}
 
-	public StructureStart getStructureContaining(BlockPos pos, RegistryKey<Structure> structure) {
-		Structure structure2 = this.getRegistryManager().get(RegistryKeys.STRUCTURE).get(structure);
-		return structure2 == null ? StructureStart.DEFAULT : this.getStructureContaining(pos, structure2);
+	public StructureStart getStructureContaining(BlockPos pos, TagKey<Structure> tag) {
+		return this.getStructureContaining(pos, structure -> structure.isIn(tag));
 	}
 
-	public StructureStart getStructureContaining(BlockPos pos, TagKey<Structure> structureTag) {
+	public StructureStart getStructureContaining(BlockPos pos, RegistryEntryList<Structure> structures) {
+		return this.getStructureContaining(pos, structures::contains);
+	}
+
+	public StructureStart getStructureContaining(BlockPos pos, Predicate<RegistryEntry<Structure>> predicate) {
 		Registry<Structure> registry = this.getRegistryManager().get(RegistryKeys.STRUCTURE);
 
 		for (StructureStart structureStart : this.getStructureStarts(
-			new ChunkPos(pos), structure -> (Boolean)registry.getEntry(registry.getRawId(structure)).map(reference -> reference.isIn(structureTag)).orElse(false)
+			new ChunkPos(pos), structure -> (Boolean)registry.getEntry(registry.getRawId(structure)).map(predicate::test).orElse(false)
 		)) {
 			if (this.structureContains(pos, structureStart)) {
 				return structureStart;

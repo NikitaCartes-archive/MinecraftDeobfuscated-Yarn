@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 public class WindChargeEntity extends AbstractWindChargeEntity {
 	private static final WindChargeEntity.WindChargeExplosionBehavior EXPLOSION_BEHAVIOR = new WindChargeEntity.WindChargeExplosionBehavior();
-	private static final float BASE_EXPLOSION_POWER = 1.0F;
+	private static final float EXPLOSION_POWER = 1.2F;
 
 	public WindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {
 		super(entityType, world);
@@ -32,7 +32,7 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 				this.getX(),
 				this.getY(),
 				this.getZ(),
-				1.0F + 0.3F * this.random.nextFloat(),
+				1.2F,
 				false,
 				World.ExplosionSourceType.BLOW,
 				ParticleTypes.GUST_EMITTER_SMALL,

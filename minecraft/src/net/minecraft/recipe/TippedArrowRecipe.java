@@ -1,9 +1,9 @@
 package net.minecraft.recipe;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.world.World;
@@ -44,8 +44,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 			return ItemStack.EMPTY;
 		} else {
 			ItemStack itemStack2 = new ItemStack(Items.TIPPED_ARROW, 8);
-			PotionUtil.setPotion(itemStack2, PotionUtil.getPotion(itemStack));
-			PotionUtil.setCustomPotionEffects(itemStack2, PotionUtil.getCustomPotionEffects(itemStack));
+			itemStack2.set(DataComponentTypes.POTION_CONTENTS, itemStack.get(DataComponentTypes.POTION_CONTENTS));
 			return itemStack2;
 		}
 	}

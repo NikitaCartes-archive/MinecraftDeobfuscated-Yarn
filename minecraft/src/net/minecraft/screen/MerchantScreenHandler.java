@@ -14,6 +14,7 @@ import net.minecraft.village.MerchantInventory;
 import net.minecraft.village.SimpleMerchant;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.village.TradedItem;
 
 public class MerchantScreenHandler extends ScreenHandler {
 	protected static final int INPUT_1_ID = 0;
@@ -201,31 +202,26 @@ public class MerchantScreenHandler extends ScreenHandler {
 
 			if (this.merchantInventory.getStack(0).isEmpty() && this.merchantInventory.getStack(1).isEmpty()) {
 				TradeOffer tradeOffer = (TradeOffer)this.getRecipes().get(recipeIndex);
-				boolean bl = tradeOffer.shouldIgnoreNbt();
-				ItemStack itemStack3 = tradeOffer.getAdjustedFirstBuyItem();
-				this.autofill(0, itemStack3, bl);
-				ItemStack itemStack4 = tradeOffer.getSecondBuyItem();
-				this.autofill(1, itemStack4, bl);
+				this.autofill(0, tradeOffer.getFirstBuyItem());
+				tradeOffer.getSecondBuyItem().ifPresent(item -> this.autofill(1, item));
 			}
 		}
 	}
 
-	private void autofill(int slot, ItemStack stack, boolean ignoreTags) {
-		if (!stack.isEmpty()) {
-			for (int i = 3; i < 39; i++) {
-				ItemStack itemStack = this.slots.get(i).getStack();
-				if (!itemStack.isEmpty() && TradeOffer.acceptsBuy(stack, itemStack, ignoreTags)) {
-					ItemStack itemStack2 = this.merchantInventory.getStack(slot);
-					int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
-					int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());
-					ItemStack itemStack3 = itemStack.copy();
-					int l = j + k;
-					itemStack.decrement(k);
-					itemStack3.setCount(l);
-					this.merchantInventory.setStack(slot, itemStack3);
-					if (l >= stack.getMaxCount()) {
-						break;
-					}
+	private void autofill(int slot, TradedItem stack) {
+		for (int i = 3; i < 39; i++) {
+			ItemStack itemStack = this.slots.get(i).getStack();
+			if (!itemStack.isEmpty() && stack.matches(itemStack)) {
+				ItemStack itemStack2 = this.merchantInventory.getStack(slot);
+				int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
+				int k = Math.min(stack.itemStack().getMaxCount() - j, itemStack.getCount());
+				ItemStack itemStack3 = itemStack.copy();
+				int l = j + k;
+				itemStack.decrement(k);
+				itemStack3.setCount(l);
+				this.merchantInventory.setStack(slot, itemStack3);
+				if (l >= stack.itemStack().getMaxCount()) {
+					break;
 				}
 			}
 		}

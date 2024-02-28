@@ -124,6 +124,7 @@ public class TestFunctions {
 			gameTest.tickLimit(),
 			gameTest.duration(),
 			gameTest.required(),
+			gameTest.manualOnly(),
 			gameTest.requiredSuccesses(),
 			gameTest.maxAttempts(),
 			gameTest.skyAccess(),

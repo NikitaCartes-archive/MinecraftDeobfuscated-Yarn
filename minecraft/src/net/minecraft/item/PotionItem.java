@@ -6,12 +6,12 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,7 +38,9 @@ public class PotionItem extends Item {
 
 	@Override
 	public ItemStack getDefaultStack() {
-		return PotionUtil.setPotion(super.getDefaultStack(), Potions.WATER);
+		ItemStack itemStack = super.getDefaultStack();
+		itemStack.set(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(Potions.WATER));
+		return itemStack;
 	}
 
 	@Override
@@ -49,13 +51,14 @@ public class PotionItem extends Item {
 		}
 
 		if (!world.isClient) {
-			for (StatusEffectInstance statusEffectInstance : PotionUtil.getPotionEffects(stack)) {
-				if (statusEffectInstance.getEffectType().value().isInstant()) {
-					statusEffectInstance.getEffectType().value().applyInstantEffect(playerEntity, playerEntity, user, statusEffectInstance.getAmplifier(), 1.0);
+			PotionContentsComponent potionContentsComponent = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
+			potionContentsComponent.forEachEffect(effect -> {
+				if (effect.getEffectType().value().isInstant()) {
+					effect.getEffectType().value().applyInstantEffect(playerEntity, playerEntity, user, effect.getAmplifier(), 1.0);
 				} else {
-					user.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
+					user.addStatusEffect(effect);
 				}
-			}
+			});
 		}
 
 		if (playerEntity != null) {
@@ -83,8 +86,9 @@ public class PotionItem extends Item {
 		BlockPos blockPos = context.getBlockPos();
 		PlayerEntity playerEntity = context.getPlayer();
 		ItemStack itemStack = context.getStack();
+		PotionContentsComponent potionContentsComponent = itemStack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
 		BlockState blockState = world.getBlockState(blockPos);
-		if (context.getSide() != Direction.DOWN && blockState.isIn(BlockTags.CONVERTABLE_TO_MUD) && PotionUtil.getPotion(itemStack).matches(Potions.WATER)) {
+		if (context.getSide() != Direction.DOWN && blockState.isIn(BlockTags.CONVERTABLE_TO_MUD) && potionContentsComponent.matches(Potions.WATER)) {
 			world.playSound(null, blockPos, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			playerEntity.setStackInHand(context.getHand(), ItemUsage.exchangeStack(itemStack, playerEntity, new ItemStack(Items.GLASS_BOTTLE)));
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
@@ -132,11 +136,16 @@ public class PotionItem extends Item {
 
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return Potion.finishTranslationKey(PotionUtil.getPotion(stack), this.getTranslationKey() + ".effect.");
+		return Potion.finishTranslationKey(
+			stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).potion(), this.getTranslationKey() + ".effect."
+		);
 	}
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		PotionUtil.buildTooltip(stack, tooltip, 1.0F, world == null ? 20.0F : world.getTickManager().getTickRate());
+		PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
+		if (potionContentsComponent != null) {
+			potionContentsComponent.buildTooltip(tooltip::add, 1.0F, world == null ? 20.0F : world.getTickManager().getTickRate());
+		}
 	}
 }

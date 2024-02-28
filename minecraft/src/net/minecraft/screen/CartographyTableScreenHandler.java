@@ -1,6 +1,8 @@
 package net.minecraft.screen;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapPostProcessingComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingResultInventory;
@@ -117,11 +119,11 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				ItemStack itemStack4;
 				if (item.isOf(Items.PAPER) && !mapState.locked && mapState.scale < 4) {
 					itemStack4 = map.copyWithCount(1);
-					itemStack4.getOrCreateNbt().putInt("map_scale_direction", 1);
+					itemStack4.set(DataComponentTypes.MAP_POST_PROCESSING, MapPostProcessingComponent.SCALE);
 					this.sendContentUpdates();
 				} else if (item.isOf(Items.GLASS_PANE) && !mapState.locked) {
 					itemStack4 = map.copyWithCount(1);
-					itemStack4.getOrCreateNbt().putBoolean("map_to_lock", true);
+					itemStack4.set(DataComponentTypes.MAP_POST_PROCESSING, MapPostProcessingComponent.LOCK);
 					this.sendContentUpdates();
 				} else {
 					if (!item.isOf(Items.MAP)) {

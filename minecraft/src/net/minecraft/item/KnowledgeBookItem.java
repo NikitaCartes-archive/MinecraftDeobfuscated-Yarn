@@ -1,13 +1,11 @@
 package net.minecraft.item;
 
-import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.stat.Stats;
@@ -18,7 +16,6 @@ import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 public class KnowledgeBookItem extends Item {
-	private static final String RECIPES_KEY = "Recipes";
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public KnowledgeBookItem(Item.Settings settings) {
@@ -28,36 +25,33 @@ public class KnowledgeBookItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		NbtCompound nbtCompound = itemStack.getNbt();
 		if (!user.isInCreativeMode()) {
 			user.setStackInHand(hand, ItemStack.EMPTY);
 		}
 
-		if (nbtCompound != null && nbtCompound.contains("Recipes", NbtElement.LIST_TYPE)) {
+		List<Identifier> list = itemStack.getOrDefault(DataComponentTypes.RECIPES, List.of());
+		if (list.isEmpty()) {
+			return TypedActionResult.fail(itemStack);
+		} else {
 			if (!world.isClient) {
-				NbtList nbtList = nbtCompound.getList("Recipes", NbtElement.STRING_TYPE);
-				List<RecipeEntry<?>> list = Lists.<RecipeEntry<?>>newArrayList();
 				RecipeManager recipeManager = world.getServer().getRecipeManager();
+				List<RecipeEntry<?>> list2 = new ArrayList(list.size());
 
-				for (int i = 0; i < nbtList.size(); i++) {
-					String string = nbtList.getString(i);
-					Optional<RecipeEntry<?>> optional = recipeManager.get(new Identifier(string));
+				for (Identifier identifier : list) {
+					Optional<RecipeEntry<?>> optional = recipeManager.get(identifier);
 					if (!optional.isPresent()) {
-						LOGGER.error("Invalid recipe: {}", string);
+						LOGGER.error("Invalid recipe: {}", identifier);
 						return TypedActionResult.fail(itemStack);
 					}
 
-					list.add((RecipeEntry)optional.get());
+					list2.add((RecipeEntry)optional.get());
 				}
 
-				user.unlockRecipes(list);
+				user.unlockRecipes(list2);
 				user.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
 			return TypedActionResult.success(itemStack, world.isClient());
-		} else {
-			LOGGER.error("Tag not valid: {}", nbtCompound);
-			return TypedActionResult.fail(itemStack);
 		}
 	}
 }

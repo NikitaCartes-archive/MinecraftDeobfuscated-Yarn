@@ -37,7 +37,7 @@ public class CheckboxWidget extends PressableWidget {
 		return new CheckboxWidget.Builder(text, textRenderer);
 	}
 
-	private static int getSize(TextRenderer textRenderer) {
+	public static int getSize(TextRenderer textRenderer) {
 		return 9 + 8;
 	}
 

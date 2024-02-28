@@ -12,12 +12,16 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.world.biome.Biome;
@@ -25,7 +29,9 @@ import net.minecraft.world.biome.BiomeKeys;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen extends Screen {
-	private static final Text BUFFET_BIOME_TEXT = Text.translatable("createWorld.customize.buffet.biome");
+	private static final Text BUFFET_BIOME_TEXT = Text.translatable("createWorld.customize.buffet.biome").withColor(Colors.GRAY);
+	private static final int field_49494 = 8;
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private final Screen parent;
 	private final Consumer<RegistryEntry<Biome>> onDone;
 	final Registry<Biome> biomeRegistry;
@@ -58,14 +64,17 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.biomeSelectionList = this.addDrawableChild(new CustomizeBuffetLevelScreen.BuffetBiomesListWidget());
-		this.confirmButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addHeader(DirectionalLayoutWidget.vertical().spacing(8));
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
+		directionalLayoutWidget.add(new TextWidget(this.getTitle(), this.textRenderer));
+		directionalLayoutWidget.add(new TextWidget(BUFFET_BIOME_TEXT, this.textRenderer));
+		this.biomeSelectionList = this.layout.addBody(new CustomizeBuffetLevelScreen.BuffetBiomesListWidget());
+		DirectionalLayoutWidget directionalLayoutWidget2 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		this.confirmButton = directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.onDone.accept(this.biome);
-			this.client.setScreen(this.parent);
-		}).dimensions(this.width / 2 - 155, this.height - 28, 150, 20).build());
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 28, 150, 20).build()
-		);
+			this.close();
+		}).build());
+		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
 		this.biomeSelectionList
 			.setSelected(
 				(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList
@@ -75,22 +84,18 @@ public class CustomizeBuffetLevelScreen extends Screen {
 					.findFirst()
 					.orElse(null)
 			);
+		this.layout.forEachChild(this::addDrawableChild);
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		this.biomeSelectionList.position(this.width, this.layout);
 	}
 
 	void refreshConfirmButton() {
 		this.confirmButton.active = this.biomeSelectionList.getSelectedOrNull() != null;
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
-		context.drawCenteredTextWithShadow(this.textRenderer, BUFFET_BIOME_TEXT, this.width / 2, 28, 10526880);
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -143,7 +148,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				BuffetBiomesListWidget.this.setSelected(this);
-				return true;
+				return super.mouseClicked(mouseX, mouseY, button);
 			}
 		}
 	}

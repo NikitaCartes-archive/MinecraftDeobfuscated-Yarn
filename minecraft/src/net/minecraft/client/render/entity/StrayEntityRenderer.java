@@ -4,11 +4,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.SkeletonOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.mob.StrayEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class StrayEntityRenderer extends SkeletonEntityRenderer {
+public class StrayEntityRenderer extends SkeletonEntityRenderer<StrayEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/stray.png");
 	private static final Identifier field_49165 = new Identifier("textures/entity/skeleton/stray_overlay.png");
 
@@ -17,8 +17,7 @@ public class StrayEntityRenderer extends SkeletonEntityRenderer {
 		this.addFeature(new SkeletonOverlayFeatureRenderer<>(this, context.getModelLoader(), EntityModelLayers.STRAY_OUTER, field_49165));
 	}
 
-	@Override
-	public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
+	public Identifier getTexture(StrayEntity strayEntity) {
 		return TEXTURE;
 	}
 }

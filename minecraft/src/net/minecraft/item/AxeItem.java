@@ -49,8 +49,8 @@ public class AxeItem extends MiningToolItem {
 		.put(Blocks.BAMBOO_BLOCK, Blocks.STRIPPED_BAMBOO_BLOCK)
 		.build();
 
-	protected AxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
-		super(attackDamage, attackSpeed, material, BlockTags.AXE_MINEABLE, settings);
+	public AxeItem(ToolMaterial toolMaterial, Item.Settings settings) {
+		super(toolMaterial, BlockTags.AXE_MINEABLE, settings);
 	}
 
 	@Override

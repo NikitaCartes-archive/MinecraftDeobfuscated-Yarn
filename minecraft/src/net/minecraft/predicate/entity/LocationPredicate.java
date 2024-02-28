@@ -8,8 +8,11 @@ import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.FluidPredicate;
 import net.minecraft.predicate.LightPredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
@@ -19,8 +22,8 @@ import net.minecraft.world.gen.structure.Structure;
 
 public record LocationPredicate(
 	Optional<LocationPredicate.PositionRange> position,
-	Optional<RegistryKey<Biome>> biome,
-	Optional<RegistryKey<Structure>> structure,
+	Optional<RegistryEntryList<Biome>> biomes,
+	Optional<RegistryEntryList<Structure>> structures,
 	Optional<RegistryKey<World>> dimension,
 	Optional<Boolean> smokey,
 	Optional<LightPredicate> light,
@@ -30,8 +33,8 @@ public record LocationPredicate(
 	public static final Codec<LocationPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(LocationPredicate.PositionRange.CODEC, "position").forGetter(LocationPredicate::position),
-					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.BIOME), "biome").forGetter(LocationPredicate::biome),
-					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.STRUCTURE), "structure").forGetter(LocationPredicate::structure),
+					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.BIOME), "biomes").forGetter(LocationPredicate::biomes),
+					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.STRUCTURE), "structures").forGetter(LocationPredicate::structures),
 					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.WORLD), "dimension").forGetter(LocationPredicate::dimension),
 					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "smokey").forGetter(LocationPredicate::smokey),
 					Codecs.createStrictOptionalFieldCodec(LightPredicate.CODEC, "light").forGetter(LocationPredicate::light),
@@ -41,28 +44,6 @@ public record LocationPredicate(
 				.apply(instance, LocationPredicate::new)
 	);
 
-	private static Optional<LocationPredicate> create(
-		Optional<LocationPredicate.PositionRange> position,
-		Optional<RegistryKey<Biome>> biome,
-		Optional<RegistryKey<Structure>> structure,
-		Optional<RegistryKey<World>> dimension,
-		Optional<Boolean> smokey,
-		Optional<LightPredicate> light,
-		Optional<BlockPredicate> block,
-		Optional<FluidPredicate> fluid
-	) {
-		return position.isEmpty()
-				&& biome.isEmpty()
-				&& structure.isEmpty()
-				&& dimension.isEmpty()
-				&& smokey.isEmpty()
-				&& light.isEmpty()
-				&& block.isEmpty()
-				&& fluid.isEmpty()
-			? Optional.empty()
-			: Optional.of(new LocationPredicate(position, biome, structure, dimension, smokey, light, block, fluid));
-	}
-
 	public boolean test(ServerWorld world, double x, double y, double z) {
 		if (this.position.isPresent() && !((LocationPredicate.PositionRange)this.position.get()).test(x, y, z)) {
 			return false;
@@ -71,9 +52,9 @@ public record LocationPredicate(
 		} else {
 			BlockPos blockPos = BlockPos.ofFloored(x, y, z);
 			boolean bl = world.canSetBlock(blockPos);
-			if (!this.biome.isPresent() || bl && world.getBiome(blockPos).matchesKey((RegistryKey<Biome>)this.biome.get())) {
-				if (!this.structure.isPresent()
-					|| bl && world.getStructureAccessor().getStructureContaining(blockPos, (RegistryKey<Structure>)this.structure.get()).hasChildren()) {
+			if (!this.biomes.isPresent() || bl && ((RegistryEntryList)this.biomes.get()).contains(world.getBiome(blockPos))) {
+				if (!this.structures.isPresent()
+					|| bl && world.getStructureAccessor().getStructureContaining(blockPos, (RegistryEntryList<Structure>)this.structures.get()).hasChildren()) {
 					if (!this.smokey.isPresent() || bl && (Boolean)this.smokey.get() == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
 						if (this.light.isPresent() && !((LightPredicate)this.light.get()).test(world, blockPos)) {
 							return false;
@@ -98,8 +79,8 @@ public record LocationPredicate(
 		private NumberRange.DoubleRange x = NumberRange.DoubleRange.ANY;
 		private NumberRange.DoubleRange y = NumberRange.DoubleRange.ANY;
 		private NumberRange.DoubleRange z = NumberRange.DoubleRange.ANY;
-		private Optional<RegistryKey<Biome>> biome = Optional.empty();
-		private Optional<RegistryKey<Structure>> feature = Optional.empty();
+		private Optional<RegistryEntryList<Biome>> biome = Optional.empty();
+		private Optional<RegistryEntryList<Structure>> feature = Optional.empty();
 		private Optional<RegistryKey<World>> dimension = Optional.empty();
 		private Optional<Boolean> smokey = Optional.empty();
 		private Optional<LightPredicate> light = Optional.empty();
@@ -110,16 +91,16 @@ public record LocationPredicate(
 			return new LocationPredicate.Builder();
 		}
 
-		public static LocationPredicate.Builder createBiome(RegistryKey<Biome> biome) {
-			return create().biome(biome);
+		public static LocationPredicate.Builder createBiome(RegistryEntry<Biome> biome) {
+			return create().biome(RegistryEntryList.of(biome));
 		}
 
 		public static LocationPredicate.Builder createDimension(RegistryKey<World> dimension) {
 			return create().dimension(dimension);
 		}
 
-		public static LocationPredicate.Builder createStructure(RegistryKey<Structure> structure) {
-			return create().structure(structure);
+		public static LocationPredicate.Builder createStructure(RegistryEntry<Structure> structure) {
+			return create().structure(RegistryEntryList.of(structure));
 		}
 
 		public static LocationPredicate.Builder createY(NumberRange.DoubleRange y) {
@@ -141,12 +122,12 @@ public record LocationPredicate(
 			return this;
 		}
 
-		public LocationPredicate.Builder biome(RegistryKey<Biome> biome) {
+		public LocationPredicate.Builder biome(RegistryEntryList<Biome> biome) {
 			this.biome = Optional.of(biome);
 			return this;
 		}
 
-		public LocationPredicate.Builder structure(RegistryKey<Structure> structure) {
+		public LocationPredicate.Builder structure(RegistryEntryList<Structure> structure) {
 			this.feature = Optional.of(structure);
 			return this;
 		}

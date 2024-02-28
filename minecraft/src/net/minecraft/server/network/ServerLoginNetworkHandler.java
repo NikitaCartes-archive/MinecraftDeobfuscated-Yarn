@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionException;
@@ -35,6 +34,7 @@ import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -128,7 +128,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	@Override
 	public void onHello(LoginHelloC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.HELLO, "Unexpected hello packet");
-		Validate.validState(PlayerEntity.isUsernameValid(packet.name()), "Invalid characters in username");
+		Validate.validState(StringHelper.isValidPlayerName(packet.name()), "Invalid characters in username");
 		this.profileName = packet.name();
 		GameProfile gameProfile = this.server.getHostProfile();
 		if (gameProfile != null && this.profileName.equalsIgnoreCase(gameProfile.getName())) {

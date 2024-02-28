@@ -4,9 +4,10 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DebugStickStateComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -21,11 +22,6 @@ import net.minecraft.world.WorldAccess;
 public class DebugStickItem extends Item {
 	public DebugStickItem(Item.Settings settings) {
 		super(settings);
-	}
-
-	@Override
-	public boolean hasGlint(ItemStack stack) {
-		return true;
 	}
 
 	@Override
@@ -55,33 +51,34 @@ public class DebugStickItem extends Item {
 		if (!player.isCreativeLevelTwoOp()) {
 			return false;
 		} else {
-			Block block = state.getBlock();
-			StateManager<Block, BlockState> stateManager = block.getStateManager();
+			RegistryEntry<Block> registryEntry = state.getRegistryEntry();
+			StateManager<Block, BlockState> stateManager = registryEntry.value().getStateManager();
 			Collection<Property<?>> collection = stateManager.getProperties();
-			String string = Registries.BLOCK.getId(block).toString();
 			if (collection.isEmpty()) {
-				sendMessage(player, Text.translatable(this.getTranslationKey() + ".empty", string));
+				sendMessage(player, Text.translatable(this.getTranslationKey() + ".empty", registryEntry.getIdAsString()));
 				return false;
 			} else {
-				NbtCompound nbtCompound = stack.getOrCreateSubNbt("DebugProperty");
-				String string2 = nbtCompound.getString(string);
-				Property<?> property = stateManager.getProperty(string2);
-				if (update) {
-					if (property == null) {
-						property = (Property<?>)collection.iterator().next();
+				DebugStickStateComponent debugStickStateComponent = stack.get(DataComponentTypes.DEBUG_STICK_STATE);
+				if (debugStickStateComponent == null) {
+					return false;
+				} else {
+					Property<?> property = (Property<?>)debugStickStateComponent.properties().get(registryEntry);
+					if (update) {
+						if (property == null) {
+							property = (Property<?>)collection.iterator().next();
+						}
+
+						BlockState blockState = cycle(state, property, player.shouldCancelInteraction());
+						world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
+						sendMessage(player, Text.translatable(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState, property)));
+					} else {
+						property = cycle(collection, property, player.shouldCancelInteraction());
+						stack.set(DataComponentTypes.DEBUG_STICK_STATE, debugStickStateComponent.with(registryEntry, property));
+						sendMessage(player, Text.translatable(this.getTranslationKey() + ".select", property.getName(), getValueString(state, property)));
 					}
 
-					BlockState blockState = cycle(state, property, player.shouldCancelInteraction());
-					world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
-					sendMessage(player, Text.translatable(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState, property)));
-				} else {
-					property = cycle(collection, property, player.shouldCancelInteraction());
-					String string3 = property.getName();
-					nbtCompound.putString(string, string3);
-					sendMessage(player, Text.translatable(this.getTranslationKey() + ".select", string3, getValueString(state, property)));
+					return true;
 				}
-
-				return true;
 			}
 		}
 	}

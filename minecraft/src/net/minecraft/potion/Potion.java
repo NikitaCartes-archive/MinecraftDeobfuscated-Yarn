@@ -1,23 +1,15 @@
 package net.minecraft.potion;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 
 public class Potion {
 	@Nullable
 	private final String baseName;
 	private final List<StatusEffectInstance> effects;
-
-	public static RegistryEntry<Potion> byId(String id) {
-		Identifier identifier = Identifier.tryParse(id);
-		return identifier == null ? Potions.EMPTY : (RegistryEntry)Registries.POTION.getEntry(identifier).map(Function.identity()).orElse(Potions.EMPTY);
-	}
 
 	public Potion(StatusEffectInstance... effects) {
 		this(null, effects);
@@ -28,14 +20,16 @@ public class Potion {
 		this.effects = List.of(effects);
 	}
 
-	public static String finishTranslationKey(RegistryEntry<Potion> potion, String prefix) {
-		String string = potion.value().baseName;
-		if (string != null) {
-			return prefix + string;
-		} else {
-			RegistryKey<Potion> registryKey = (RegistryKey<Potion>)potion.getKey().orElse(Potions.EMPTY_KEY);
-			return prefix + registryKey.getValue().getPath();
+	public static String finishTranslationKey(Optional<RegistryEntry<Potion>> potion, String prefix) {
+		if (potion.isPresent()) {
+			String string = ((Potion)((RegistryEntry)potion.get()).value()).baseName;
+			if (string != null) {
+				return prefix + string;
+			}
 		}
+
+		String string = (String)potion.flatMap(RegistryEntry::getKey).map(key -> key.getValue().getPath()).orElse("empty");
+		return prefix + string;
 	}
 
 	public List<StatusEffectInstance> getEffects() {

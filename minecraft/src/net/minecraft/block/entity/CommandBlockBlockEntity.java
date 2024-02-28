@@ -4,6 +4,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.ServerCommandSource;
@@ -70,7 +72,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
-		this.commandExecutor.writeNbt(nbt);
+		this.commandExecutor.writeNbt(nbt, registryLookup);
 		nbt.putBoolean("powered", this.isPowered());
 		nbt.putBoolean("conditionMet", this.isConditionMet());
 		nbt.putBoolean("auto", this.isAuto());
@@ -79,7 +81,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	@Override
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
-		this.commandExecutor.readNbt(nbt);
+		this.commandExecutor.readNbt(nbt, registryLookup);
 		this.powered = nbt.getBoolean("powered");
 		this.conditionMet = nbt.getBoolean("conditionMet");
 		this.setAuto(nbt.getBoolean("auto"));
@@ -162,6 +164,23 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public boolean isConditionalCommandBlock() {
 		BlockState blockState = this.world.getBlockState(this.getPos());
 		return blockState.getBlock() instanceof CommandBlock ? (Boolean)blockState.get(CommandBlock.CONDITIONAL) : false;
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		this.commandExecutor.setCustomName(components.get(DataComponentTypes.CUSTOM_NAME));
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		super.addComponents(componentMapBuilder);
+		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.commandExecutor.getCustomNameNullable());
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		super.removeFromCopiedStackNbt(nbt);
+		nbt.remove("CustomName");
 	}
 
 	public static enum Type {

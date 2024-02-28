@@ -160,10 +160,12 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		super.writeCustomDataToNbt(nbt);
 		TradeOfferList tradeOfferList = this.getOffers();
 		if (!tradeOfferList.isEmpty()) {
-			nbt.put("Offers", Util.getResult(TradeOfferList.CODEC.encodeStart(NbtOps.INSTANCE, tradeOfferList), IllegalStateException::new));
+			nbt.put(
+				"Offers", Util.getResult(TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), tradeOfferList), IllegalStateException::new)
+			);
 		}
 
-		this.writeInventory(nbt);
+		this.writeInventory(nbt, this.getRegistryManager());
 	}
 
 	@Override
@@ -171,12 +173,12 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		super.readCustomDataFromNbt(nbt);
 		if (nbt.contains("Offers")) {
 			TradeOfferList.CODEC
-				.parse(NbtOps.INSTANCE, nbt.get("Offers"))
+				.parse(this.getRegistryManager().getOps(NbtOps.INSTANCE), nbt.get("Offers"))
 				.resultOrPartial(Util.addPrefix("Failed to load offers: ", LOGGER::warn))
 				.ifPresent(offers -> this.offers = offers);
 		}
 
-		this.readInventory(nbt);
+		this.readInventory(nbt, this.getRegistryManager());
 	}
 
 	@Nullable

@@ -2,11 +2,13 @@ package net.minecraft.client.render.block.entity;
 
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.DecoratedPotPatterns;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.block.entity.Sherds;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -89,13 +91,15 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 	}
 
 	@Nullable
-	private static SpriteIdentifier getTextureIdFromSherd(Item item) {
-		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.fromSherd(item));
-		if (spriteIdentifier == null) {
-			spriteIdentifier = TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.fromSherd(Items.BRICK));
+	private static SpriteIdentifier getTextureIdFromSherd(Optional<Item> optional) {
+		if (optional.isPresent()) {
+			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.fromSherd((Item)optional.get()));
+			if (spriteIdentifier != null) {
+				return spriteIdentifier;
+			}
 		}
 
-		return spriteIdentifier;
+		return TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.fromSherd(Items.BRICK));
 	}
 
 	public void render(
@@ -129,7 +133,7 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 		this.neck.render(matrixStack, vertexConsumer, i, j);
 		this.top.render(matrixStack, vertexConsumer, i, j);
 		this.bottom.render(matrixStack, vertexConsumer, i, j);
-		DecoratedPotBlockEntity.Sherds sherds = decoratedPotBlockEntity.getSherds();
+		Sherds sherds = decoratedPotBlockEntity.getSherds();
 		this.renderDecoratedSide(this.front, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd(sherds.front()));
 		this.renderDecoratedSide(this.back, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd(sherds.back()));
 		this.renderDecoratedSide(this.left, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd(sherds.left()));
@@ -141,7 +145,7 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 		ModelPart part, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, @Nullable SpriteIdentifier textureId
 	) {
 		if (textureId == null) {
-			textureId = getTextureIdFromSherd(Items.BRICK);
+			textureId = getTextureIdFromSherd(Optional.empty());
 		}
 
 		if (textureId != null) {

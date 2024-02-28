@@ -1,34 +1,38 @@
 package net.minecraft.item;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Collection;
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.EncoderException;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Map.Entry;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
-import net.minecraft.command.argument.BlockArgumentParser;
+import net.minecraft.component.ComponentChanges;
+import net.minecraft.component.ComponentHolder;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.ComponentMapImpl;
+import net.minecraft.component.DataComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -43,20 +47,15 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
-import net.minecraft.item.map.MapId;
-import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
@@ -68,14 +67,12 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -85,11 +82,12 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
 
 /**
  * Represents a stack of items. This is a data container that holds the item count
- * and the stack's NBT. Logics for items (such as the action for using it) are delegated
+ * and the stack's components. Logics for items (such as the action for using it) are delegated
  * to the stack's logic container, {@link Item}. Instances can be created using one of
  * the constructors and are usually stored in an {@link net.minecraft.inventory.Inventory}.
  * 
@@ -97,8 +95,8 @@ import org.slf4j.Logger;
  * method. This also means they cannot be used as a map key. To check if an item stack
  * is of a certain item, use {@link #isOf(Item)}. To compare two item stacks, use {@link
  * #areItemsEqual} to check the item only, or {@link #areEqual} to also check the item
- * count and the NBT. Use {@link #isEmpty} to check if an item stack is empty instead of
- * doing {@code stack == ItemStack.EMPTY}.
+ * count and the components. Use {@link #isEmpty} to check if an item stack is empty instead
+ * of doing {@code stack == ItemStack.EMPTY}.
  * 
  * <p>When storing an item stack in an inventory or other places, make sure that an instance
  * is never stored in multiple places. When two inventories hold the same instance, it
@@ -108,7 +106,7 @@ import org.slf4j.Logger;
  * 
  * <h3>NBT serialization</h3>
  * 
- * An Item Stack can be serialized with {@link #writeNbt(NbtCompound)}, and deserialized with {@link #fromNbt(NbtCompound)}.
+ * An Item Stack can be serialized with {@link #encode(RegistryWrapper.WrapperLookup)}, and deserialized with {@link #fromNbt(RegistryWrapper.WrapperLookup, NbtCompound)}.
  * 
  * <div class="fabric">
  * <table border=1>
@@ -120,121 +118,87 @@ import org.slf4j.Logger;
  *   <td>{@code id}</td><td>{@link net.minecraft.nbt.NbtString}</td><td>The identifier of the item.</td>
  * </tr>
  * <tr>
- *   <td>{@code Count}</td><td>{@link net.minecraft.nbt.NbtByte}</td><td>The count of items in the stack.</td>
+ *   <td>{@code count}</td><td>{@link net.minecraft.nbt.NbtInt}</td><td>The count of items in the stack.</td>
  * </tr>
  * <tr>
- *   <td>{@code tag}</td><td>{@link NbtCompound}</td><td>The item stack's custom NBT.</td>
- * </tr>
- * </table>
- * </div>
- * 
- * <h3>Custom NBT</h3>
- * 
- * The item stack's custom NBT may be used to store extra information,
- * like the block entity data for shulker boxes,
- * or the damage of a damageable item, etc.
- * <p>
- * Various methods are available to interact with the custom NBT, some methods might refer to a "sub NBT",
- * a sub NBT is a child element of the custom NBT.
- * 
- * <div class="fabric">
- * <table border=1>
- * <caption>Custom NBT operations</caption>
- * <tr>
- *   <th>Category</th><th>Method</th><th>Summary</th>
- * </tr>
- * <tr>
- *   <td>Custom NBT</td><td>{@link #hasNbt()}</td><td>Returns whether the item stack has custom NBT.</td>
- * </tr>
- * <tr>
- *   <td>Custom NBT</td><td>{@link #getNbt()}</td><td>Returns the custom NBT of the item stack.</td>
- * </tr>
- * <tr>
- *   <td>Custom NBT</td><td>{@link #getOrCreateNbt()}</td><td>Returns the custom NBT of the item stack, or creates one if absent, mutating the stack.</td>
- * </tr>
- * <tr>
- *   <td>Custom NBT</td><td>{@link #setNbt(NbtCompound)}</td><td>Sets the custom NBT of the item stack.</td>
- * </tr>
- * <tr>
- *   <td>Sub Custom NBT</td><td>{@link #getSubNbt(String)}</td><td>Returns the sub NBT compound at the specified key.</td>
- * </tr>
- * <tr>
- *   <td>Sub Custom NBT</td><td>{@link #getOrCreateSubNbt(String)}</td><td>Returns the sub NBT compound at the specified key, or create one if absent, mutating the stack.</td>
- * </tr>
- * <tr>
- *   <td>Sub Custom NBT</td><td>{@link #removeSubNbt(String)}</td><td>Removes the sub NBT element at the specified key.</td>
- * </tr>
- * <tr>
- *   <td>Sub Custom NBT</td><td>{@link #setSubNbt(String, NbtElement)}</td><td>Sets the sub NBT element at the specified key.</td>
+ *   <td>{@code components}</td><td>{@link ComponentChanges}</td><td>The item stack's components.</td>
  * </tr>
  * </table>
  * </div>
  */
-public final class ItemStack {
-	public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Registries.ITEM.getEntryCodec().fieldOf("id").forGetter(ItemStack::getRegistryEntry),
-					Codec.INT.fieldOf("Count").forGetter(ItemStack::getCount),
-					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.getNbt()))
-				)
-				.apply(instance, ItemStack::new)
+public final class ItemStack implements ComponentHolder {
+	private static final Codec<RegistryEntry<Item>> ITEM_CODEC = Codecs.validate(
+		Registries.ITEM.getEntryCodec(),
+		entry -> entry.matches(Items.AIR.getRegistryEntry()) ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(entry)
 	);
-	private static final Codec<Item> ITEM_CODEC = Codecs.validate(
-		Registries.ITEM.getCodec(), item -> item == Items.AIR ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(item)
+	public static final Codec<ItemStack> CODEC = Codecs.createLazy(
+		() -> Codecs.validate(
+				RecordCodecBuilder.create(
+					instance -> instance.group(
+								ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
+								Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount),
+								Codecs.createStrictOptionalFieldCodec(ComponentChanges.CODEC, "components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
+							)
+							.apply(instance, ItemStack::new)
+				),
+				ItemStack::validate
+			)
 	);
-	public static final Codec<ItemStack> ADVANCEMENT_DISPLAY_CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Registries.ITEM.getEntryCodec().fieldOf("item").forGetter(ItemStack::getRegistryEntry),
-					Codecs.createStrictOptionalFieldCodec(StringNbtReader.STRINGIFIED_CODEC, "nbt").forGetter(stack -> Optional.ofNullable(stack.getNbt()))
-				)
-				.apply(instance, (itemEntry, nbt) -> new ItemStack(itemEntry, 1, nbt))
-	);
+	public static final Codec<ItemStack> OPTIONAL_CODEC = Codecs.optional(CODEC)
+		.xmap(optional -> (ItemStack)optional.orElse(ItemStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
+	public static final Codec<ItemStack> REGISTRY_ENTRY_CODEC = ITEM_CODEC.xmap(ItemStack::new, ItemStack::getRegistryEntry);
 	public static final Codec<ItemStack> RECIPE_RESULT_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ITEM_CODEC.fieldOf("item").forGetter(ItemStack::getItem),
+					ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
 					Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount)
 				)
 				.apply(instance, ItemStack::new)
 	);
-	public static final Codec<ItemStack> INGREDIENT_ENTRY_CODEC = ITEM_CODEC.xmap(ItemStack::new, ItemStack::getItem);
-	public static final MapCodec<ItemStack> CUTTING_RECIPE_RESULT_CODEC = RecordCodecBuilder.mapCodec(
-		instance -> instance.group(
-					Registries.ITEM.getCodec().fieldOf("result").forGetter(ItemStack::getItem), Codec.INT.fieldOf("count").forGetter(ItemStack::getCount)
-				)
-				.apply(instance, ItemStack::new)
-	);
-	public static final PacketCodec<RegistryByteBuf, ItemStack> PACKET_CODEC = new PacketCodec<RegistryByteBuf, ItemStack>() {
-		private static final PacketCodec<RegistryByteBuf, Item> ITEM_PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.ITEM);
+	public static final PacketCodec<RegistryByteBuf, ItemStack> OPTIONAL_PACKET_CODEC = new PacketCodec<RegistryByteBuf, ItemStack>() {
+		private static final PacketCodec<RegistryByteBuf, RegistryEntry<Item>> ITEM_PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.ITEM);
 
 		public ItemStack decode(RegistryByteBuf registryByteBuf) {
-			if (!registryByteBuf.readBoolean()) {
+			int i = registryByteBuf.readByte();
+			if (i <= 0) {
 				return ItemStack.EMPTY;
 			} else {
-				Item item = ITEM_PACKET_CODEC.decode(registryByteBuf);
-				int i = registryByteBuf.readByte();
-				ItemStack itemStack = new ItemStack(item, i);
-				itemStack.setNbt(PacketByteBuf.readNbt(registryByteBuf));
+				RegistryEntry<Item> registryEntry = ITEM_PACKET_CODEC.decode(registryByteBuf);
+				ComponentChanges componentChanges = ComponentChanges.PACKET_CODEC.decode(registryByteBuf);
+				return new ItemStack(registryEntry, i, componentChanges);
+			}
+		}
+
+		public void encode(RegistryByteBuf registryByteBuf, ItemStack itemStack) {
+			if (itemStack.isEmpty()) {
+				registryByteBuf.writeByte(0);
+			} else {
+				registryByteBuf.writeByte(itemStack.getCount());
+				ITEM_PACKET_CODEC.encode(registryByteBuf, itemStack.getRegistryEntry());
+				ComponentChanges.PACKET_CODEC.encode(registryByteBuf, itemStack.components.getChanges());
+			}
+		}
+	};
+	public static final PacketCodec<RegistryByteBuf, ItemStack> PACKET_CODEC = new PacketCodec<RegistryByteBuf, ItemStack>() {
+		public ItemStack decode(RegistryByteBuf registryByteBuf) {
+			ItemStack itemStack = ItemStack.OPTIONAL_PACKET_CODEC.decode(registryByteBuf);
+			if (itemStack.isEmpty()) {
+				throw new DecoderException("Empty ItemStack not allowed");
+			} else {
 				return itemStack;
 			}
 		}
 
 		public void encode(RegistryByteBuf registryByteBuf, ItemStack itemStack) {
 			if (itemStack.isEmpty()) {
-				registryByteBuf.writeBoolean(false);
+				throw new EncoderException("Empty ItemStack not allowed");
 			} else {
-				registryByteBuf.writeBoolean(true);
-				Item item = itemStack.getItem();
-				ITEM_PACKET_CODEC.encode(registryByteBuf, item);
-				registryByteBuf.writeByte(itemStack.getCount());
-				NbtCompound nbtCompound = null;
-				if (item.isDamageable() || item.isNbtSynced()) {
-					nbtCompound = itemStack.getNbt();
-				}
-
-				PacketByteBuf.writeNbt(registryByteBuf, nbtCompound);
+				ItemStack.OPTIONAL_PACKET_CODEC.encode(registryByteBuf, itemStack);
 			}
 		}
 	};
+	public static final PacketCodec<RegistryByteBuf, List<ItemStack>> OPTIONAL_LIST_PACKET_CODEC = OPTIONAL_PACKET_CODEC.collect(
+		PacketCodecs.toCollection(DefaultedList::ofSize)
+	);
 	public static final PacketCodec<RegistryByteBuf, List<ItemStack>> LIST_PACKET_CODEC = PACKET_CODEC.collect(PacketCodecs.toCollection(DefaultedList::ofSize));
 	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
@@ -245,70 +209,34 @@ public final class ItemStack {
 	 * @see ItemStack#isEmpty
 	 */
 	public static final ItemStack EMPTY = new ItemStack((Void)null);
-	public static final DecimalFormat MODIFIER_FORMAT = Util.make(
-		new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
-	);
-	/**
-	 * The key of the enchantments in an item stack's custom NBT, whose value is {@value}.
-	 */
-	public static final String ENCHANTMENTS_KEY = "Enchantments";
-	/**
-	 * The key of the display NBT in an item stack's custom NBT, whose value is {@value}.
-	 */
-	public static final String DISPLAY_KEY = "display";
-	/**
-	 * The key of the item stack's name in the {@linkplain #DISPLAY_KEY display NBT}, whose value is {@value}.
-	 */
-	public static final String NAME_KEY = "Name";
-	/**
-	 * The key of the item stack's lore in the {@linkplain #DISPLAY_KEY display NBT}, whose value is {@value}.
-	 */
-	public static final String LORE_KEY = "Lore";
-	/**
-	 * The key of the damage in an item stack's custom NBT, whose value is {@value}.
-	 */
-	public static final String DAMAGE_KEY = "Damage";
-	/**
-	 * The key of the item's color in the {@linkplain #DISPLAY_KEY display NBT}, whose value is {@value}.
-	 */
-	public static final String COLOR_KEY = "color";
-	/**
-	 * The key of the unbreakable boolean in an item stack's custom NBT, whose value is {@value}.
-	 */
-	private static final String UNBREAKABLE_KEY = "Unbreakable";
-	/**
-	 * The key of the repair cost in an item stack's custom NBT, whose value is {@value}.
-	 */
-	private static final String REPAIR_COST_KEY = "RepairCost";
-	private static final String CAN_DESTROY_KEY = "CanDestroy";
-	private static final String CAN_PLACE_ON_KEY = "CanPlaceOn";
-	private static final String HIDE_FLAGS_KEY = "HideFlags";
 	private static final Text DISABLED_TEXT = Text.translatable("item.disabled").formatted(Formatting.RED);
-	private static final int field_30903 = 0;
-	private static final Style LORE_STYLE = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
 	private int count;
 	private int bobbingAnimationTime;
 	@Deprecated
 	@Nullable
 	private final Item item;
-	/**
-	 * Represents the item stack's custom NBT.
-	 * <p>
-	 * Stored at the key {@code tag} in the serialized item stack NBT.
-	 * 
-	 * @see <a href="nbt-operations">Item Stack NBT Operations</a>
-	 */
-	@Nullable
-	private NbtCompound nbt;
+	final ComponentMapImpl components;
 	@Nullable
 	private Entity holder;
-	@Nullable
-	private BlockPredicatesChecker destroyChecker;
-	@Nullable
-	private BlockPredicatesChecker placeChecker;
+
+	private static DataResult<ItemStack> validate(ItemStack stack) {
+		return stack.getCount() > stack.getMaxCount()
+			? DataResult.<ItemStack>error(() -> "Item stack with stack size of " + stack.getCount() + " was larger than maximum: " + stack.getMaxCount())
+				.setPartial((Supplier<ItemStack>)(() -> stack.copyWithCount(stack.getMaxCount())))
+			: DataResult.success(stack);
+	}
 
 	public Optional<TooltipData> getTooltipData() {
 		return this.getItem().getTooltipData(this);
+	}
+
+	@Override
+	public ComponentMap getComponents() {
+		return (ComponentMap)(!this.isEmpty() ? this.components : ComponentMap.EMPTY);
+	}
+
+	public ComponentChanges getComponentChanges() {
+		return !this.isEmpty() ? this.components.getChanges() : ComponentChanges.EMPTY;
 	}
 
 	public ItemStack(ItemConvertible item) {
@@ -319,9 +247,8 @@ public final class ItemStack {
 		this(entry.value(), 1);
 	}
 
-	public ItemStack(RegistryEntry<Item> item, int count, Optional<NbtCompound> nbt) {
-		this(item, count);
-		nbt.ifPresent(this::setNbt);
+	public ItemStack(RegistryEntry<Item> item, int count, ComponentChanges changes) {
+		this(item.value(), count, ComponentMapImpl.create(item.value().getComponents(), changes));
 	}
 
 	public ItemStack(RegistryEntry<Item> itemEntry, int count) {
@@ -329,43 +256,27 @@ public final class ItemStack {
 	}
 
 	public ItemStack(ItemConvertible item, int count) {
+		this(item, count, new ComponentMapImpl(item.asItem().getComponents()));
+	}
+
+	private ItemStack(ItemConvertible item, int count, ComponentMapImpl components) {
 		this.item = item.asItem();
 		this.count = count;
-		if (this.item.isDamageable()) {
-			this.setDamage(this.getDamage());
-		}
+		this.components = components;
+		this.getItem().postProcessComponents(this);
 	}
 
 	private ItemStack(@Nullable Void v) {
 		this.item = null;
+		this.components = new ComponentMapImpl(ComponentMap.EMPTY);
 	}
 
-	private ItemStack(NbtCompound nbt) {
-		this.item = Registries.ITEM.get(new Identifier(nbt.getString("id")));
-		this.count = nbt.getByte("Count");
-		if (nbt.contains("tag", NbtElement.COMPOUND_TYPE)) {
-			this.nbt = nbt.getCompound("tag").copy();
-			this.getItem().postProcessNbt(this.nbt);
-		}
-
-		if (this.getItem().isDamageable()) {
-			this.setDamage(this.getDamage());
-		}
+	public static Optional<ItemStack> fromNbt(RegistryWrapper.WrapperLookup registries, NbtElement nbt) {
+		return CODEC.parse(registries.getOps(NbtOps.INSTANCE), nbt).resultOrPartial(error -> LOGGER.error("Tried to load invalid item: '{}'", error));
 	}
 
-	/**
-	 * {@return the item stack deserialized from the NBT, or {@link #EMPTY} if
-	 * it fails to deserialize}
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 */
-	public static ItemStack fromNbt(NbtCompound nbt) {
-		try {
-			return new ItemStack(nbt);
-		} catch (RuntimeException var2) {
-			LOGGER.debug("Tried to load invalid item: {}", nbt, var2);
-			return EMPTY;
-		}
+	public static ItemStack fromNbtOrEmpty(RegistryWrapper.WrapperLookup registries, NbtCompound nbt) {
+		return nbt.isEmpty() ? EMPTY : (ItemStack)fromNbt(registries, nbt).orElse(EMPTY);
 	}
 
 	/**
@@ -478,10 +389,7 @@ public final class ItemStack {
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		PlayerEntity playerEntity = context.getPlayer();
 		BlockPos blockPos = context.getBlockPos();
-		CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(context.getWorld(), blockPos, false);
-		if (playerEntity != null
-			&& !playerEntity.getAbilities().allowModifyWorld
-			&& !this.canPlaceOn(context.getWorld().getRegistryManager().get(RegistryKeys.BLOCK), cachedBlockPosition)) {
+		if (playerEntity != null && !playerEntity.getAbilities().allowModifyWorld && !this.canPlaceOn(new CachedBlockPosition(context.getWorld(), blockPos, false))) {
 			return ActionResult.PASS;
 		} else {
 			Item item = this.getItem();
@@ -506,23 +414,24 @@ public final class ItemStack {
 		return this.getItem().finishUsing(this, world, user);
 	}
 
-	/**
-	 * Writes the serialized item stack into the given {@link NbtCompound}.
-	 * 
-	 * @return the written NBT compound
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 * 
-	 * @param nbt the NBT compound to write to
-	 */
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		Identifier identifier = Registries.ITEM.getId(this.getItem());
-		nbt.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
-		nbt.putByte("Count", (byte)this.count);
-		if (this.nbt != null) {
-			nbt.put("tag", this.nbt.copy());
+	public NbtElement encode(RegistryWrapper.WrapperLookup registries, NbtElement prefix) {
+		if (this.isEmpty()) {
+			throw new IllegalStateException("Cannot encode empty ItemStack");
+		} else {
+			return Util.getResult(CODEC.encode(this, registries.getOps(NbtOps.INSTANCE), prefix), IllegalStateException::new);
 		}
+	}
 
-		return nbt;
+	public NbtElement encode(RegistryWrapper.WrapperLookup registries) {
+		if (this.isEmpty()) {
+			throw new IllegalStateException("Cannot encode empty ItemStack");
+		} else {
+			return Util.getResult(CODEC.encodeStart(registries.getOps(NbtOps.INSTANCE), this), IllegalStateException::new);
+		}
+	}
+
+	public NbtElement encodeAllowEmpty(RegistryWrapper.WrapperLookup registries) {
+		return (NbtElement)(this.isEmpty() ? new NbtCompound() : this.encode(registries, new NbtCompound()));
 	}
 
 	public int getMaxCount() {
@@ -542,31 +451,15 @@ public final class ItemStack {
 	/**
 	 * {@return whether the item can be damaged (lose durability)}
 	 * 
-	 * <p>Items with {@linkplain Item#getMaxDamage 0 max damage} or item stacks with {@value
-	 * #UNBREAKABLE_KEY} NBT set to {@code 1b} cannot be damaged.
+	 * <p>Items with {@linkplain Item#getMaxDamage 0 max damage} or item stacks with {@link
+	 * net.minecraft.component.DataComponentTypes#UNBREAKABLE} component cannot be damaged.
 	 * 
 	 * @see Item#getMaxDamage
 	 * @see #isDamaged
 	 * @see #getDamage
-	 * @see #isUnbreakable
 	 */
 	public boolean isDamageable() {
-		return !this.isEmpty() && this.getItem().getMaxDamage() > 0 ? !this.isUnbreakable() : false;
-	}
-
-	/**
-	 * {@return whether the item stack can never be broken}
-	 * 
-	 * <p>Item stacks with {@value #UNBREAKABLE_KEY} NBT set to {@code 1b} cannot be damaged.
-	 * 
-	 * @see Item#getMaxDamage
-	 * @see #isDamaged
-	 * @see #getDamage
-	 * @see #isDamageable
-	 */
-	public boolean isUnbreakable() {
-		NbtCompound nbtCompound = this.getNbt();
-		return nbtCompound != null && nbtCompound.getBoolean("Unbreakable");
+		return !this.isEmpty() && this.getItem().isDamageable() ? !this.contains(DataComponentTypes.UNBREAKABLE) && this.contains(DataComponentTypes.DAMAGE) : false;
 	}
 
 	/**
@@ -582,16 +475,15 @@ public final class ItemStack {
 	/**
 	 * {@return the damage (lost durability) of the item stack}
 	 * 
-	 * <p>The damage is stored in NBT under {@value #DAMAGE_KEY} key. Note that this method
-	 * does not check if the item is {@linkplain #isDamageable damageable}, unlike {@link
-	 * #isDamaged}.
+	 * <p>Note that this method does not check if the item is {@linkplain #isDamageable
+	 * damageable}, unlike {@link #isDamaged}.
 	 * 
 	 * @see #isDamageable
 	 * @see #isDamaged
 	 * @see #setDamage
 	 */
 	public int getDamage() {
-		return this.nbt == null ? 0 : this.nbt.getInt("Damage");
+		return this.getOrDefault(DataComponentTypes.DAMAGE, Integer.valueOf(0));
 	}
 
 	/**
@@ -605,7 +497,7 @@ public final class ItemStack {
 	 * @see #damage(int, LivingEntity, EquipmentSlot)
 	 */
 	public void setDamage(int damage) {
-		this.getOrCreateNbt().putInt("Damage", Math.max(0, damage));
+		this.set(DataComponentTypes.DAMAGE, damage);
 	}
 
 	public int getMaxDamage() {
@@ -753,34 +645,30 @@ public final class ItemStack {
 	}
 
 	/**
-	 * {@return a copy of this item stack, including the item count, NBT, and
+	 * {@return a copy of this item stack, including the item count, components, and
 	 * {@linkplain #getBobbingAnimationTime bobbing animation time}}
 	 * 
 	 * @see #copyWithCount
-	 * @see #copyNbtToNewStack
-	 * @see #copyNbtToNewStackIgnoreEmpty
+	 * @see #copyComponentsToNewStack
+	 * @see #copyComponentsToNewStackIgnoreEmpty
 	 */
 	public ItemStack copy() {
 		if (this.isEmpty()) {
 			return EMPTY;
 		} else {
-			ItemStack itemStack = new ItemStack(this.getItem(), this.count);
+			ItemStack itemStack = new ItemStack(this.getItem(), this.count, this.components.copy());
 			itemStack.setBobbingAnimationTime(this.getBobbingAnimationTime());
-			if (this.nbt != null) {
-				itemStack.nbt = this.nbt.copy();
-			}
-
 			return itemStack;
 		}
 	}
 
 	/**
-	 * {@return a copy of this item stack, including the NBT, and {@linkplain #getBobbingAnimationTime bobbing animation time}},
+	 * {@return a copy of this item stack, including the components, and {@linkplain #getBobbingAnimationTime bobbing animation time}},
 	 * with the item count set to {@code count}
 	 * 
 	 * @see #copy
-	 * @see #copyNbtToNewStack
-	 * @see #copyNbtToNewStackIgnoreEmpty
+	 * @see #copyComponentsToNewStack
+	 * @see #copyComponentsToNewStackIgnoreEmpty
 	 * 
 	 * @param count the item count of the resultant stack
 	 */
@@ -795,64 +683,74 @@ public final class ItemStack {
 	}
 
 	/**
-	 * {@return a new item stack with the NBT copied from this item stack}
+	 * {@return a new item stack with the components copied from this item stack}
 	 * 
 	 * @see #copy
 	 * @see #copyWithCount
-	 * @see #copyNbtToNewStackIgnoreEmpty
+	 * @see #copyComponentsToNewStackIgnoreEmpty
 	 * 
 	 * @param item the item of the resultant stack
 	 * @param count the item count of the resultant stack
 	 */
-	public ItemStack copyNbtToNewStack(ItemConvertible item, int count) {
-		return this.isEmpty() ? EMPTY : this.copyNbtToNewStackIgnoreEmpty(item, count);
+	public ItemStack copyComponentsToNewStack(ItemConvertible item, int count) {
+		return this.isEmpty() ? EMPTY : this.copyComponentsToNewStackIgnoreEmpty(item, count);
 	}
 
 	/**
-	 * {@return a new item stack with the NBT copied from this item stack, even if this stack is empty}
+	 * {@return a new item stack with the components copied from this item stack, even if this stack is empty}
 	 * 
 	 * @see #copy
 	 * @see #copyWithCount
-	 * @see #copyNbtToNewStack
+	 * @see #copyComponentsToNewStack
 	 * 
 	 * @param count the item count of the resultant stack
 	 * @param item the item of the resultant stack
 	 */
-	public ItemStack copyNbtToNewStackIgnoreEmpty(ItemConvertible item, int count) {
-		ItemStack itemStack = new ItemStack(item, count);
-		if (this.nbt != null) {
-			itemStack.setNbt(this.nbt.copy());
-		}
-
-		return itemStack;
+	public ItemStack copyComponentsToNewStackIgnoreEmpty(ItemConvertible item, int count) {
+		return new ItemStack(item.asItem().getRegistryEntry(), count, this.components.getChanges());
 	}
 
 	/**
-	 * {@return whether the given item stacks are equal, including the item count and NBT}
+	 * {@return whether the given item stacks are equal, including the item count and components}
 	 * 
 	 * @see #areItemsEqual
-	 * @see #areItemsAndNbtEqual
+	 * @see #areItemsAndComponentsEqual
 	 */
 	public static boolean areEqual(ItemStack left, ItemStack right) {
 		if (left == right) {
 			return true;
 		} else {
-			return left.getCount() != right.getCount() ? false : areItemsAndNbtEqual(left, right);
+			return left.getCount() != right.getCount() ? false : areItemsAndComponentsEqual(left, right);
+		}
+	}
+
+	@Deprecated
+	public static boolean stacksEqual(List<ItemStack> left, List<ItemStack> right) {
+		if (left.size() != right.size()) {
+			return false;
+		} else {
+			for (int i = 0; i < left.size(); i++) {
+				if (!areEqual((ItemStack)left.get(i), (ItemStack)right.get(i))) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 
 	/**
-	 * {@return whether the given item stacks contain the same item, regardless of item count or NBT}
+	 * {@return whether the given item stacks contain the same item, regardless of item count or components}
 	 * 
 	 * @see #areEqual
-	 * @see #areItemsAndNbtEqual
+	 * @see #areItemsAndComponentsEqual
 	 */
 	public static boolean areItemsEqual(ItemStack left, ItemStack right) {
 		return left.isOf(right.getItem());
 	}
 
 	/**
-	 * {@return whether the given item stacks' items and NBT are equal}
+	 * {@return whether the given item stacks' items and components are equal}
 	 * 
 	 * <p>If this returns {@code true}, the two item stacks can be combined into one,
 	 * as long as the resulting item count does not exceed {@linkplain Item#getMaxCount
@@ -861,16 +759,36 @@ public final class ItemStack {
 	 * @see #areEqual
 	 * @see #areItemsEqual
 	 */
-	public static boolean areItemsAndNbtEqual(ItemStack stack, ItemStack otherStack) {
+	public static boolean areItemsAndComponentsEqual(ItemStack stack, ItemStack otherStack) {
 		if (!stack.isOf(otherStack.getItem())) {
 			return false;
 		} else {
-			return stack.isEmpty() && otherStack.isEmpty() ? true : Objects.equals(stack.nbt, otherStack.nbt);
+			return stack.isEmpty() && otherStack.isEmpty() ? true : Objects.equals(stack.components, otherStack.components);
 		}
 	}
 
 	public static MapCodec<ItemStack> createOptionalCodec(String fieldName) {
 		return CODEC.optionalFieldOf(fieldName).xmap(optional -> (ItemStack)optional.orElse(EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
+	}
+
+	public static int hashCode(@Nullable ItemStack stack) {
+		if (stack != null) {
+			int i = 31 + stack.getItem().hashCode();
+			return 31 * i + stack.getComponents().hashCode();
+		} else {
+			return 0;
+		}
+	}
+
+	@Deprecated
+	public static int listHashCode(List<ItemStack> stacks) {
+		int i = 0;
+
+		for (ItemStack itemStack : stacks) {
+			i = i * 31 + hashCode(itemStack);
+		}
+
+		return i;
 	}
 
 	public String getTranslationKey() {
@@ -916,345 +834,91 @@ public final class ItemStack {
 		return this.getItem().isUsedOnRelease(this);
 	}
 
-	/**
-	 * {@return whether this item stack has custom NBT}
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 */
-	public boolean hasNbt() {
-		return !this.isEmpty() && this.nbt != null && !this.nbt.isEmpty();
-	}
-
-	/**
-	 * {@return the custom NBT of this item stack, may be {@code null}}
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 */
 	@Nullable
-	public NbtCompound getNbt() {
-		return this.nbt;
+	public <T> T set(DataComponentType<? super T> type, @Nullable T value) {
+		return this.components.set(type, value);
 	}
 
-	/**
-	 * Returns the custom NBT of this item stack, or creates the custom NBT if the
-	 * item stack did not have a custom NBT previously, mutating the stack.
-	 * 
-	 * <p>This should not be used when reading the NBT, as this can modify the item stack.
-	 * Use {@link #getNbt} with a check for {@code null} instead.
-	 * 
-	 * @return the custom NBT of this item stack
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 */
-	public NbtCompound getOrCreateNbt() {
-		if (this.nbt == null) {
-			this.setNbt(new NbtCompound());
-		}
-
-		return this.nbt;
-	}
-
-	/**
-	 * {@return the compound NBT at the specified key in this item stack's NBT, or a
-	 * new compound added to the stack if absent}
-	 * 
-	 * <p>This should not be used when reading the NBT, as this can modify the item stack.
-	 * Use {@link #getSubNbt} with a check for {@code null} instead.
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 */
-	public NbtCompound getOrCreateSubNbt(String key) {
-		if (this.nbt != null && this.nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
-			return this.nbt.getCompound(key);
-		} else {
-			NbtCompound nbtCompound = new NbtCompound();
-			this.setSubNbt(key, nbtCompound);
-			return nbtCompound;
-		}
-	}
-
-	/**
-	 * {@return the NBT compound at the specified key in this item stack's custom NBT, may be {@code null}}
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 */
 	@Nullable
-	public NbtCompound getSubNbt(String key) {
-		return this.nbt != null && this.nbt.contains(key, NbtElement.COMPOUND_TYPE) ? this.nbt.getCompound(key) : null;
+	public <T, U> T apply(DataComponentType<T> type, T defaultValue, U change, BiFunction<T, U, T> applier) {
+		return this.set(type, (T)applier.apply(this.getOrDefault(type, defaultValue), change));
 	}
 
-	/**
-	 * Removes the sub NBT element at the specified key in this item stack's custom NBT.
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 */
-	public void removeSubNbt(String key) {
-		if (this.nbt != null && this.nbt.contains(key)) {
-			this.nbt.remove(key);
-			if (this.nbt.isEmpty()) {
-				this.nbt = null;
-			}
-		}
+	@Nullable
+	public <T> T apply(DataComponentType<T> type, T defaultValue, UnaryOperator<T> applier) {
+		T object = this.getOrDefault(type, defaultValue);
+		return this.set(type, (T)applier.apply(object));
 	}
 
-	/**
-	 * {@return an NBT list of enchantments}
-	 * 
-	 * <p>This will return an empty list for enchanted books, as the book itself is not
-	 * enchanted and therefore does not store enchantments under {@value #ENCHANTMENTS_KEY} key.
-	 * 
-	 * @see net.minecraft.enchantment.EnchantmentHelper#getLevel
-	 * @see #addEnchantment
-	 * @see #hasEnchantments
-	 */
-	public NbtList getEnchantments() {
-		return this.nbt != null ? this.nbt.getList("Enchantments", NbtElement.COMPOUND_TYPE) : new NbtList();
+	@Nullable
+	public <T> T remove(DataComponentType<? extends T> type) {
+		return this.components.remove(type);
 	}
 
-	/**
-	 * Sets the custom NBT of this item stack.
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 * 
-	 * @param nbt the custom NBT compound, may be {@code null} to reset
-	 */
-	public void setNbt(@Nullable NbtCompound nbt) {
-		this.nbt = nbt;
-		if (this.getItem().isDamageable()) {
-			this.setDamage(this.getDamage());
-		}
+	public void applyChanges(ComponentChanges changes) {
+		this.components.applyChanges(changes);
+		this.getItem().postProcessComponents(this);
+	}
 
-		if (nbt != null) {
-			this.getItem().postProcessNbt(nbt);
-		}
+	public void applyComponentsFrom(ComponentMap components) {
+		this.components.setAll(components);
+		this.getItem().postProcessComponents(this);
 	}
 
 	/**
 	 * {@return the custom name of the stack if it exists, or the item's name}
 	 */
 	public Text getName() {
-		NbtCompound nbtCompound = this.getSubNbt("display");
-		if (nbtCompound != null && nbtCompound.contains("Name", NbtElement.STRING_TYPE)) {
-			try {
-				Text text = Text.Serialization.fromJson(nbtCompound.getString("Name"));
-				if (text != null) {
-					return text;
-				}
-
-				nbtCompound.remove("Name");
-			} catch (Exception var3) {
-				nbtCompound.remove("Name");
-			}
-		}
-
-		return this.getItem().getName(this);
+		Text text = this.get(DataComponentTypes.CUSTOM_NAME);
+		return text != null ? text : this.getItem().getName(this);
 	}
 
-	/**
-	 * Sets the custom name of this item stack to {@code name}. If {@code null} is
-	 * passed, this will remove the custom name (but does not remove other NBT compounds
-	 * even if they are empty).
-	 * 
-	 * @return this item stack
-	 * 
-	 * @see #removeCustomName
-	 * @see #hasCustomName
-	 */
-	public ItemStack setCustomName(@Nullable Text name) {
-		NbtCompound nbtCompound = this.getOrCreateSubNbt("display");
-		if (name != null) {
-			nbtCompound.putString("Name", Text.Serialization.toJsonString(name));
-		} else {
-			nbtCompound.remove("Name");
+	private <T extends TooltipAppender> void appendTooltip(DataComponentType<T> componentType, Consumer<Text> textConsumer, TooltipContext context) {
+		T tooltipAppender = (T)this.get(componentType);
+		if (tooltipAppender != null) {
+			tooltipAppender.appendTooltip(textConsumer, context);
 		}
-
-		return this;
-	}
-
-	/**
-	 * Removes the custom name and other NBT compounds that are now empty after the
-	 * removal of the custom name from this item stack.
-	 * 
-	 * @see #setCustomName
-	 * @see #hasCustomName
-	 */
-	public void removeCustomName() {
-		NbtCompound nbtCompound = this.getSubNbt("display");
-		if (nbtCompound != null) {
-			nbtCompound.remove("Name");
-			if (nbtCompound.isEmpty()) {
-				this.removeSubNbt("display");
-			}
-		}
-
-		if (this.nbt != null && this.nbt.isEmpty()) {
-			this.nbt = null;
-		}
-	}
-
-	/**
-	 * {@return whether this item stack has a custom name}
-	 * 
-	 * @see #setCustomName
-	 * @see #removeCustomName
-	 */
-	public boolean hasCustomName() {
-		NbtCompound nbtCompound = this.getSubNbt("display");
-		return nbtCompound != null && nbtCompound.contains("Name", NbtElement.STRING_TYPE);
 	}
 
 	public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
 		List<Text> list = Lists.<Text>newArrayList();
 		MutableText mutableText = Text.empty().append(this.getName()).formatted(this.getRarity().formatting);
-		if (this.hasCustomName()) {
+		if (this.contains(DataComponentTypes.CUSTOM_NAME)) {
 			mutableText.formatted(Formatting.ITALIC);
 		}
 
 		list.add(mutableText);
-		if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP)) {
-			MapId mapId = FilledMapItem.getMapId(this);
-			if (mapId != null) {
-				list.add(FilledMapItem.getIdText(this));
+		if (!context.isAdvanced() && !this.contains(DataComponentTypes.CUSTOM_NAME) && this.isOf(Items.FILLED_MAP)) {
+			MapIdComponent mapIdComponent = this.get(DataComponentTypes.MAP_ID);
+			if (mapIdComponent != null) {
+				list.add(FilledMapItem.getIdText(mapIdComponent));
 			}
 		}
 
-		int i = this.getHideFlags();
-		if (isSectionVisible(i, ItemStack.TooltipSection.ADDITIONAL)) {
+		Consumer<Text> consumer = list::add;
+		if (!this.contains(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP)) {
 			this.getItem().appendTooltip(this, player == null ? null : player.getWorld(), list, context);
-			appendEnchantments(list, EnchantedBookItem.getEnchantmentNbt(this));
 		}
 
-		if (isSectionVisible(i, ItemStack.TooltipSection.UPGRADES) && player != null) {
-			ArmorTrim.appendTooltip(this, player.getWorld().getRegistryManager(), list);
+		this.appendTooltip(DataComponentTypes.TRIM, consumer, context);
+		this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, consumer, context);
+		this.appendTooltip(DataComponentTypes.ENCHANTMENTS, consumer, context);
+		this.appendTooltip(DataComponentTypes.DYED_COLOR, consumer, context);
+		this.appendTooltip(DataComponentTypes.LORE, consumer, context);
+		this.appendAttributeModifiersTooltip(consumer, player);
+		this.appendTooltip(DataComponentTypes.UNBREAKABLE, consumer, context);
+		BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_BREAK);
+		if (blockPredicatesChecker != null && blockPredicatesChecker.showInTooltip()) {
+			consumer.accept(ScreenTexts.EMPTY);
+			consumer.accept(BlockPredicatesChecker.CAN_BREAK_TEXT);
+			blockPredicatesChecker.addTooltips(consumer);
 		}
 
-		if (isSectionVisible(i, ItemStack.TooltipSection.ENCHANTMENTS)) {
-			appendEnchantments(list, this.getEnchantments());
-		}
-
-		if (this.nbt != null && this.nbt.contains("display", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound = this.nbt.getCompound("display");
-			if (isSectionVisible(i, ItemStack.TooltipSection.DYE) && nbtCompound.contains("color", NbtElement.NUMBER_TYPE)) {
-				if (context.isAdvanced()) {
-					list.add(Text.translatable("item.color", String.format(Locale.ROOT, "#%06X", nbtCompound.getInt("color"))).formatted(Formatting.GRAY));
-				} else {
-					list.add(Text.translatable("item.dyed").formatted(Formatting.GRAY, Formatting.ITALIC));
-				}
-			}
-
-			if (nbtCompound.getType("Lore") == NbtElement.LIST_TYPE) {
-				NbtList nbtList = nbtCompound.getList("Lore", NbtElement.STRING_TYPE);
-
-				for (int j = 0; j < nbtList.size(); j++) {
-					String string = nbtList.getString(j);
-
-					try {
-						MutableText mutableText2 = Text.Serialization.fromJson(string);
-						if (mutableText2 != null) {
-							list.add(Texts.setStyleIfAbsent(mutableText2, LORE_STYLE));
-						}
-					} catch (Exception var19) {
-						nbtCompound.remove("Lore");
-					}
-				}
-			}
-		}
-
-		if (isSectionVisible(i, ItemStack.TooltipSection.MODIFIERS)) {
-			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
-				if (!multimap.isEmpty()) {
-					list.add(ScreenTexts.EMPTY);
-					list.add(Text.translatable("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
-
-					for (Entry<RegistryEntry<EntityAttribute>, EntityAttributeModifier> entry : multimap.entries()) {
-						EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
-						double d = entityAttributeModifier.getValue();
-						boolean bl = false;
-						if (player != null) {
-							if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
-								d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-								d += (double)EnchantmentHelper.getAttackDamage(this, null);
-								bl = true;
-							} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_ID) {
-								d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
-								bl = true;
-							}
-						}
-
-						double e;
-						if (entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE
-							|| entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
-							e = d * 100.0;
-						} else if (((RegistryEntry)entry.getKey()).matches(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
-							e = d * 10.0;
-						} else {
-							e = d;
-						}
-
-						if (bl) {
-							list.add(
-								ScreenTexts.space()
-									.append(
-										Text.translatable(
-											"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),
-											MODIFIER_FORMAT.format(e),
-											Text.translatable(((EntityAttribute)((RegistryEntry)entry.getKey()).value()).getTranslationKey())
-										)
-									)
-									.formatted(Formatting.DARK_GREEN)
-							);
-						} else if (d > 0.0) {
-							list.add(
-								Text.translatable(
-										"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
-										MODIFIER_FORMAT.format(e),
-										Text.translatable(((EntityAttribute)((RegistryEntry)entry.getKey()).value()).getTranslationKey())
-									)
-									.formatted(Formatting.BLUE)
-							);
-						} else if (d < 0.0) {
-							e *= -1.0;
-							list.add(
-								Text.translatable(
-										"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
-										MODIFIER_FORMAT.format(e),
-										Text.translatable(((EntityAttribute)((RegistryEntry)entry.getKey()).value()).getTranslationKey())
-									)
-									.formatted(Formatting.RED)
-							);
-						}
-					}
-				}
-			}
-		}
-
-		if (isSectionVisible(i, ItemStack.TooltipSection.UNBREAKABLE) && this.nbt != null && this.nbt.getBoolean("Unbreakable")) {
-			list.add(Text.translatable("item.unbreakable").formatted(Formatting.BLUE));
-		}
-
-		if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.nbt != null && this.nbt.contains("CanDestroy", NbtElement.LIST_TYPE)) {
-			NbtList nbtList2 = this.nbt.getList("CanDestroy", NbtElement.STRING_TYPE);
-			if (!nbtList2.isEmpty()) {
-				list.add(ScreenTexts.EMPTY);
-				list.add(Text.translatable("item.canBreak").formatted(Formatting.GRAY));
-
-				for (int k = 0; k < nbtList2.size(); k++) {
-					list.addAll(parseBlockTag(nbtList2.getString(k)));
-				}
-			}
-		}
-
-		if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.nbt != null && this.nbt.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
-			NbtList nbtList2 = this.nbt.getList("CanPlaceOn", NbtElement.STRING_TYPE);
-			if (!nbtList2.isEmpty()) {
-				list.add(ScreenTexts.EMPTY);
-				list.add(Text.translatable("item.canPlace").formatted(Formatting.GRAY));
-
-				for (int k = 0; k < nbtList2.size(); k++) {
-					list.addAll(parseBlockTag(nbtList2.getString(k)));
-				}
-			}
+		BlockPredicatesChecker blockPredicatesChecker2 = this.get(DataComponentTypes.CAN_PLACE_ON);
+		if (blockPredicatesChecker2 != null && blockPredicatesChecker2.showInTooltip()) {
+			consumer.accept(ScreenTexts.EMPTY);
+			consumer.accept(BlockPredicatesChecker.CAN_PLACE_TEXT);
+			blockPredicatesChecker2.addTooltips(consumer);
 		}
 
 		if (context.isAdvanced()) {
@@ -1263,8 +927,9 @@ public final class ItemStack {
 			}
 
 			list.add(Text.literal(Registries.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
-			if (this.hasNbt()) {
-				list.add(Text.translatable("item.nbt_tags", this.nbt.getKeys().size()).formatted(Formatting.DARK_GRAY));
+			int i = this.components.size();
+			if (i > 0) {
+				list.add(Text.translatable("item.components", i).formatted(Formatting.DARK_GRAY));
 			}
 		}
 
@@ -1275,48 +940,87 @@ public final class ItemStack {
 		return list;
 	}
 
-	/**
-	 * Determines whether the given tooltip section will be visible according to the given flags.
-	 */
-	private static boolean isSectionVisible(int flags, ItemStack.TooltipSection tooltipSection) {
-		return (flags & tooltipSection.getFlag()) == 0;
-	}
+	private void appendAttributeModifiersTooltip(Consumer<Text> textConsumer, @Nullable PlayerEntity player) {
+		AttributeModifiersComponent attributeModifiersComponent = this.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
+		if (attributeModifiersComponent.showInTooltip()) {
+			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+				MutableBoolean mutableBoolean = new MutableBoolean(true);
+				this.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
+					if (mutableBoolean.isTrue()) {
+						textConsumer.accept(ScreenTexts.EMPTY);
+						textConsumer.accept(Text.translatable("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
+						mutableBoolean.setFalse();
+					}
 
-	private int getHideFlags() {
-		return this.hasNbt() && this.nbt.contains("HideFlags", NbtElement.NUMBER_TYPE) ? this.nbt.getInt("HideFlags") : 0;
-	}
-
-	public void addHideFlag(ItemStack.TooltipSection tooltipSection) {
-		NbtCompound nbtCompound = this.getOrCreateNbt();
-		nbtCompound.putInt("HideFlags", nbtCompound.getInt("HideFlags") | tooltipSection.getFlag());
-	}
-
-	public static void appendEnchantments(List<Text> tooltip, NbtList enchantments) {
-		for (int i = 0; i < enchantments.size(); i++) {
-			NbtCompound nbtCompound = enchantments.getCompound(i);
-			Registries.ENCHANTMENT
-				.getOrEmpty(EnchantmentHelper.getIdFromNbt(nbtCompound))
-				.ifPresent(e -> tooltip.add(e.getName(EnchantmentHelper.getLevelFromNbt(nbtCompound))));
+					this.appendAttributeModifierTooltip(textConsumer, player, attribute, modifier);
+				});
+			}
 		}
 	}
 
-	private static Collection<Text> parseBlockTag(String tag) {
-		try {
-			return BlockArgumentParser.blockOrTag(Registries.BLOCK.getReadOnlyWrapper(), tag, true)
-				.map(
-					blockResult -> Lists.<Text>newArrayList(blockResult.blockState().getBlock().getName().formatted(Formatting.DARK_GRAY)),
-					tagResult -> (List)tagResult.tag()
-							.stream()
-							.map(registryEntry -> ((Block)registryEntry.value()).getName().formatted(Formatting.DARK_GRAY))
-							.collect(Collectors.toList())
-				);
-		} catch (CommandSyntaxException var2) {
-			return Lists.<Text>newArrayList(Text.literal("missingno").formatted(Formatting.DARK_GRAY));
+	private void appendAttributeModifierTooltip(
+		Consumer<Text> textConsumer, @Nullable PlayerEntity player, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier
+	) {
+		double d = modifier.getValue();
+		boolean bl = false;
+		if (player != null) {
+			if (modifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
+				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+				d += (double)EnchantmentHelper.getAttackDamage(this, null);
+				bl = true;
+			} else if (modifier.getId() == Item.ATTACK_SPEED_MODIFIER_ID) {
+				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
+				bl = true;
+			}
+		}
+
+		double e;
+		if (modifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || modifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+			)
+		 {
+			e = d * 100.0;
+		} else if (attribute.matches(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
+			e = d * 10.0;
+		} else {
+			e = d;
+		}
+
+		if (bl) {
+			textConsumer.accept(
+				ScreenTexts.space()
+					.append(
+						Text.translatable(
+							"attribute.modifier.equals." + modifier.getOperation().getId(),
+							AttributeModifiersComponent.DECIMAL_FORMAT.format(e),
+							Text.translatable(attribute.value().getTranslationKey())
+						)
+					)
+					.formatted(Formatting.DARK_GREEN)
+			);
+		} else if (d > 0.0) {
+			textConsumer.accept(
+				Text.translatable(
+						"attribute.modifier.plus." + modifier.getOperation().getId(),
+						AttributeModifiersComponent.DECIMAL_FORMAT.format(e),
+						Text.translatable(attribute.value().getTranslationKey())
+					)
+					.formatted(Formatting.BLUE)
+			);
+		} else if (d < 0.0) {
+			textConsumer.accept(
+				Text.translatable(
+						"attribute.modifier.take." + modifier.getOperation().getId(),
+						AttributeModifiersComponent.DECIMAL_FORMAT.format(-e),
+						Text.translatable(attribute.value().getTranslationKey())
+					)
+					.formatted(Formatting.RED)
+			);
 		}
 	}
 
 	public boolean hasGlint() {
-		return this.getItem().hasGlint(this);
+		Boolean boolean_ = this.get(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE);
+		return boolean_ != null ? boolean_ : this.getItem().hasGlint(this);
 	}
 
 	public Rarity getRarity() {
@@ -1329,50 +1033,38 @@ public final class ItemStack {
 	 * <p>This is not used for other methods of enchanting like anvils.
 	 */
 	public boolean isEnchantable() {
-		return !this.getItem().isEnchantable(this) ? false : !this.hasEnchantments();
+		if (!this.getItem().isEnchantable(this)) {
+			return false;
+		} else {
+			ItemEnchantmentsComponent itemEnchantmentsComponent = this.get(DataComponentTypes.ENCHANTMENTS);
+			return itemEnchantmentsComponent != null && itemEnchantmentsComponent.isEmpty();
+		}
 	}
 
 	/**
 	 * Enchants this item with the given enchantment and level.
 	 * 
 	 * <p>This should not be used with enchanted books, as the book itself is not
-	 * enchanted and therefore does not store enchantments under {@value #ENCHANTMENTS_KEY} key.
+	 * enchanted and therefore does not store enchantments under {@link
+	 * net.minecraft.component.DataComponentTypes#ENCHANTMENTS}.
 	 * 
 	 * @see net.minecraft.enchantment.EnchantmentHelper
 	 */
 	public void addEnchantment(Enchantment enchantment, int level) {
-		Map<Enchantment, Integer> map = EnchantmentHelper.get(this);
-		if (level != 0) {
-			map.merge(enchantment, level, Integer::max);
-		}
-
-		EnchantmentHelper.set(map, this);
+		EnchantmentHelper.apply(this, builder -> builder.add(enchantment, level));
 	}
 
 	/**
 	 * {@return whether the item stack has any enchantments}
 	 * 
 	 * <p>This will return {@code false} for enchanted books, as the book itself is not
-	 * enchanted and therefore does not store enchantments under {@value #ENCHANTMENTS_KEY} key.
+	 * enchanted and therefore does not store enchantments under {@link
+	 * net.minecraft.component.DataComponentTypes#ENCHANTMENTS}.
 	 * 
-	 * @see #getEnchantments
+	 * @see net.minecraft.enchantment.EnchantmentHelper#getEnchantments
 	 */
 	public boolean hasEnchantments() {
-		return this.nbt != null && this.nbt.contains("Enchantments", NbtElement.LIST_TYPE)
-			? !this.nbt.getList("Enchantments", NbtElement.COMPOUND_TYPE).isEmpty()
-			: false;
-	}
-
-	/**
-	 * Sets the given NBT element in the item stack's custom NBT at the specified key.
-	 * 
-	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
-	 * 
-	 * @param key the key where to put the given {@link NbtElement}
-	 * @param element the NBT element to put
-	 */
-	public void setSubNbt(String key, NbtElement element) {
-		this.getOrCreateNbt().put(key, element);
+		return !this.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT).isEmpty();
 	}
 
 	/**
@@ -1397,7 +1089,9 @@ public final class ItemStack {
 	 * @see #getHolder
 	 */
 	public void setHolder(@Nullable Entity holder) {
-		this.holder = holder;
+		if (!this.isEmpty()) {
+			this.holder = holder;
+		}
 	}
 
 	/**
@@ -1424,90 +1118,13 @@ public final class ItemStack {
 		return !this.isEmpty() ? this.holder : null;
 	}
 
-	/**
-	 * {@return the stack's repair cost used in anvils}
-	 * 
-	 * <p>This is the the value of the {@value #REPAIR_COST_KEY} key in NBT.
-	 */
-	public int getRepairCost() {
-		return this.hasNbt() && this.nbt.contains("RepairCost", NbtElement.INT_TYPE) ? this.nbt.getInt("RepairCost") : 0;
-	}
-
-	/**
-	 * Sets the stack's repair cost used in anvils to {@code repairCost}.
-	 * 
-	 * <p>This is the the value of the {@value #REPAIR_COST_KEY} key in NBT.
-	 */
-	public void setRepairCost(int repairCost) {
-		if (repairCost > 0) {
-			this.getOrCreateNbt().putInt("RepairCost", repairCost);
+	public void applyAttributeModifiers(EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifierConsumer) {
+		AttributeModifiersComponent attributeModifiersComponent = this.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
+		if (!attributeModifiersComponent.modifiers().isEmpty()) {
+			attributeModifiersComponent.applyModifiers(slot, attributeModifierConsumer);
 		} else {
-			this.removeSubNbt("RepairCost");
+			this.getItem().getAttributeModifiers(slot).forEach(attributeModifierConsumer);
 		}
-	}
-
-	/**
-	 * {@return a multimap of attribute modifiers for {@code slot}}
-	 * 
-	 * <p>If a custom attribute modifier exists under the {@code AttributeModifiers} key,
-	 * this returns those modifiers only; otherwise, this returns the item's default
-	 * attribute modifier.
-	 * 
-	 * @see Item#getAttributeModifiers
-	 * @see #addAttributeModifier
-	 */
-	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> multimap;
-		if (this.hasNbt() && this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
-			multimap = HashMultimap.create();
-			NbtList nbtList = this.nbt.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
-
-			for (int i = 0; i < nbtList.size(); i++) {
-				NbtCompound nbtCompound = nbtList.getCompound(i);
-				if (!nbtCompound.contains("Slot", NbtElement.STRING_TYPE) || nbtCompound.getString("Slot").equals(slot.getName())) {
-					Identifier identifier = Identifier.tryParse(nbtCompound.getString("AttributeName"));
-					if (identifier != null) {
-						Optional<RegistryEntry.Reference<EntityAttribute>> optional = Registries.ATTRIBUTE.getEntry(identifier);
-						if (!optional.isEmpty()) {
-							EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtCompound);
-							if (entityAttributeModifier != null
-								&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
-								&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
-								multimap.put((RegistryEntry<EntityAttribute>)optional.get(), entityAttributeModifier);
-							}
-						}
-					}
-				}
-			}
-		} else {
-			multimap = this.getItem().getAttributeModifiers(slot);
-		}
-
-		return multimap;
-	}
-
-	/**
-	 * Adds an attribute modifier to this stack.
-	 * 
-	 * @see #getAttributeModifiers
-	 */
-	public void addAttributeModifier(RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
-		this.getOrCreateNbt();
-		if (!this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
-			this.nbt.put("AttributeModifiers", new NbtList());
-		}
-
-		NbtList nbtList = this.nbt.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
-		NbtCompound nbtCompound = modifier.toNbt();
-		nbtCompound.putString(
-			"AttributeName",
-			((RegistryKey)attribute.getKey().orElseThrow(() -> new IllegalArgumentException("Cannot add unregistered attribute"))).getValue().toString()
-		);
-		if (slot != null) {
-			nbtCompound.putString("Slot", slot.getName());
-		}
-
-		nbtList.add(nbtCompound);
 	}
 
 	/**
@@ -1516,7 +1133,7 @@ public final class ItemStack {
 	 */
 	public Text toHoverableText() {
 		MutableText mutableText = Text.empty().append(this.getName());
-		if (this.hasCustomName()) {
+		if (this.contains(DataComponentTypes.CUSTOM_NAME)) {
 			mutableText.formatted(Formatting.ITALIC);
 		}
 
@@ -1529,20 +1146,14 @@ public final class ItemStack {
 		return mutableText2;
 	}
 
-	public boolean canPlaceOn(Registry<Block> blockRegistry, CachedBlockPosition pos) {
-		if (this.placeChecker == null) {
-			this.placeChecker = new BlockPredicatesChecker("CanPlaceOn");
-		}
-
-		return this.placeChecker.check(this, blockRegistry, pos);
+	public boolean canPlaceOn(CachedBlockPosition pos) {
+		BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_PLACE_ON);
+		return blockPredicatesChecker != null && blockPredicatesChecker.check(pos);
 	}
 
-	public boolean canDestroy(Registry<Block> blockRegistry, CachedBlockPosition pos) {
-		if (this.destroyChecker == null) {
-			this.destroyChecker = new BlockPredicatesChecker("CanDestroy");
-		}
-
-		return this.destroyChecker.check(this, blockRegistry, pos);
+	public boolean canBreak(CachedBlockPosition pos) {
+		BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_BREAK);
+		return blockPredicatesChecker != null && blockPredicatesChecker.check(pos);
 	}
 
 	public int getBobbingAnimationTime() {
@@ -1617,20 +1228,7 @@ public final class ItemStack {
 		return this.getItem().getEatSound();
 	}
 
-	public static enum TooltipSection {
-		ENCHANTMENTS,
-		MODIFIERS,
-		UNBREAKABLE,
-		CAN_DESTROY,
-		CAN_PLACE,
-		ADDITIONAL,
-		DYE,
-		UPGRADES;
-
-		private final int flag = 1 << this.ordinal();
-
-		public int getFlag() {
-			return this.flag;
-		}
+	public SoundEvent getBreakSound() {
+		return this.getItem().getBreakSound();
 	}
 }

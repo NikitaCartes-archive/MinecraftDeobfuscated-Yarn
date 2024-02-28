@@ -1,12 +1,11 @@
 package net.minecraft.recipe;
 
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.BannerItem;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.world.World;
@@ -38,7 +37,8 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 						return false;
 					}
 
-					if (BlockItem.getBlockEntityNbt(itemStack3) != null) {
+					BannerPatternsComponent bannerPatternsComponent = itemStack3.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
+					if (!bannerPatternsComponent.layers().isEmpty()) {
 						return false;
 					}
 
@@ -68,10 +68,8 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		if (itemStack2.isEmpty()) {
 			return itemStack2;
 		} else {
-			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
-			NbtCompound nbtCompound2 = nbtCompound == null ? new NbtCompound() : nbtCompound.copy();
-			nbtCompound2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
-			BlockItem.setBlockEntityNbt(itemStack2, BlockEntityType.BANNER, nbtCompound2);
+			itemStack2.set(DataComponentTypes.BANNER_PATTERNS, itemStack.get(DataComponentTypes.BANNER_PATTERNS));
+			itemStack2.set(DataComponentTypes.BASE_COLOR, ((BannerItem)itemStack.getItem()).getColor());
 			return itemStack2;
 		}
 	}

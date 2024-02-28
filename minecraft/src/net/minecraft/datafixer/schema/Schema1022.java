@@ -3,8 +3,10 @@ package net.minecraft.datafixer.schema;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
+import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public class Schema1022 extends Schema {
@@ -19,20 +21,14 @@ public class Schema1022 extends Schema {
 		schema.registerType(
 			false,
 			TypeReferences.PLAYER,
-			() -> DSL.optionalFields(
-					"RootVehicle",
-					DSL.optionalFields("Entity", TypeReferences.ENTITY_TREE.in(schema)),
-					"Inventory",
-					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
-					"EnderItems",
-					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
-					DSL.optionalFields(
-						"ShoulderEntityLeft",
-						TypeReferences.ENTITY_TREE.in(schema),
-						"ShoulderEntityRight",
-						TypeReferences.ENTITY_TREE.in(schema),
-						"recipeBook",
-						DSL.optionalFields("recipes", DSL.list(TypeReferences.RECIPE.in(schema)), "toBeDisplayed", DSL.list(TypeReferences.RECIPE.in(schema)))
+			() -> FixUtil.method_57188(
+					Pair.of("RootVehicle", DSL.optionalFields("Entity", TypeReferences.ENTITY_TREE.in(schema))),
+					Pair.of("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
+					Pair.of("EnderItems", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
+					Pair.of("ShoulderEntityLeft", TypeReferences.ENTITY_TREE.in(schema)),
+					Pair.of("ShoulderEntityRight", TypeReferences.ENTITY_TREE.in(schema)),
+					Pair.of(
+						"recipeBook", DSL.optionalFields("recipes", DSL.list(TypeReferences.RECIPE.in(schema)), "toBeDisplayed", DSL.list(TypeReferences.RECIPE.in(schema)))
 					)
 				)
 		);

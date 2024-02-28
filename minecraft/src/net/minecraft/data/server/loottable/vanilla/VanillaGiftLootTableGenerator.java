@@ -13,12 +13,13 @@ import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 
 public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
-		exporter.accept(
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+		consumer.accept(
 			LootTables.CAT_MORNING_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -33,7 +34,7 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.PHANTOM_MEMBRANE).weight(2))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -45,7 +46,7 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.CHAINMAIL_BOOTS))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -58,17 +59,17 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.COOKED_MUTTON))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.MAP)).with(ItemEntry.builder(Items.PAPER)))
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_CLERIC_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.REDSTONE)).with(ItemEntry.builder(Items.LAPIS_LAZULI)))
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_FARMER_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -79,12 +80,12 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.COOKIE))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.COD)).with(ItemEntry.builder(Items.SALMON)))
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_FLETCHER_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -158,19 +159,19 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						)
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_LEATHERWORKER_GIFT_GAMEPLAY,
 			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.LEATHER)))
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_LIBRARIAN_GIFT_GAMEPLAY,
 			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.BOOK)))
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_MASON_GIFT_GAMEPLAY,
 			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.CLAY)))
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -194,7 +195,7 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.BLACK_WOOL))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -206,7 +207,7 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.STONE_SHOVEL))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -217,7 +218,7 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.IRON_AXE))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.SNIFFER_DIGGING_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -227,7 +228,7 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.PITCHER_POD))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.PANDA_SNEEZE_GAMEPLAY,
 			LootTable.builder()
 				.pool(

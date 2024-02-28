@@ -66,7 +66,7 @@ public record CommandSuggestionsS2CPacket(int id, int start, int length, List<Co
 		public static final PacketCodec<RegistryByteBuf, CommandSuggestionsS2CPacket.Suggestion> CODEC = PacketCodec.tuple(
 			PacketCodecs.STRING,
 			CommandSuggestionsS2CPacket.Suggestion::text,
-			TextCodecs.OPTIONAL_PACKET_CODEC,
+			TextCodecs.OPTIONAL_UNLIMITED_REGISTRY_PACKET_CODEC,
 			CommandSuggestionsS2CPacket.Suggestion::tooltip,
 			CommandSuggestionsS2CPacket.Suggestion::new
 		);

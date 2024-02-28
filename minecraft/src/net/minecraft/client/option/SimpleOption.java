@@ -217,6 +217,10 @@ public final class SimpleOption<T> {
 		return (optionText, value) -> value.getText();
 	}
 
+	public ClickableWidget createWidget(GameOptions options) {
+		return this.createWidget(options, 0, 0, 150);
+	}
+
 	public ClickableWidget createWidget(GameOptions options, int x, int y, int width) {
 		return this.createWidget(options, x, y, width, value -> {
 		});

@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -16,6 +17,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class KeybindsScreen extends GameOptionsScreen {
+	private static final Text TITLE_TEXT = Text.translatable("controls.keybinds.title");
 	@Nullable
 	public KeyBinding selectedKeyBinding;
 	public long lastKeyCodeUpdateTime;
@@ -23,24 +25,33 @@ public class KeybindsScreen extends GameOptionsScreen {
 	private ButtonWidget resetAllButton;
 
 	public KeybindsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, Text.translatable("controls.keybinds.title"));
+		super(parent, gameOptions, TITLE_TEXT);
 	}
 
 	@Override
 	protected void init() {
 		this.controlsList = this.addDrawableChild(new ControlsListWidget(this, this.client));
-		this.resetAllButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("controls.resetAll"), button -> {
+		this.resetAllButton = ButtonWidget.builder(Text.translatable("controls.resetAll"), button -> {
 			for (KeyBinding keyBinding : this.gameOptions.allKeys) {
 				keyBinding.setBoundKey(keyBinding.getDefaultKey());
 			}
 
 			this.controlsList.update();
-		}).dimensions(this.width / 2 - 155, this.height - 29, 150, 20).build());
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
-				.dimensions(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
-				.build()
-		);
+		}).build();
+		super.init();
+	}
+
+	@Override
+	protected void initFooter() {
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget.add(this.resetAllButton);
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).build());
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		this.controlsList.position(this.width, this.layout);
 	}
 
 	@Override
@@ -76,7 +87,6 @@ public class KeybindsScreen extends GameOptionsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		boolean bl = false;
 
 		for (KeyBinding keyBinding : this.gameOptions.allKeys) {
@@ -87,10 +97,5 @@ public class KeybindsScreen extends GameOptionsScreen {
 		}
 
 		this.resetAllButton.active = bl;
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
 	}
 }

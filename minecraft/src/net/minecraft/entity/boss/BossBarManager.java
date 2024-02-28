@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -35,20 +36,20 @@ public class BossBarManager {
 		return this.commandBossBars.values();
 	}
 
-	public NbtCompound toNbt() {
+	public NbtCompound toNbt(RegistryWrapper.WrapperLookup wrapperLookup) {
 		NbtCompound nbtCompound = new NbtCompound();
 
 		for (CommandBossBar commandBossBar : this.commandBossBars.values()) {
-			nbtCompound.put(commandBossBar.getId().toString(), commandBossBar.toNbt());
+			nbtCompound.put(commandBossBar.getId().toString(), commandBossBar.toNbt(wrapperLookup));
 		}
 
 		return nbtCompound;
 	}
 
-	public void readNbt(NbtCompound nbt) {
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
 		for (String string : nbt.getKeys()) {
 			Identifier identifier = new Identifier(string);
-			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(nbt.getCompound(string), identifier));
+			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(nbt.getCompound(string), identifier, wrapperLookup));
 		}
 	}
 

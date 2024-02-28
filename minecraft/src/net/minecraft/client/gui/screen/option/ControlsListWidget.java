@@ -21,16 +21,18 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Entry> {
+	private static final int field_49533 = 20;
 	final KeybindsScreen parent;
-	int maxKeyNameLength;
+	private int maxKeyNameLength;
 
 	public ControlsListWidget(KeybindsScreen parent, MinecraftClient client) {
-		super(client, parent.width + 45, parent.height - 52, 20, 20);
+		super(client, parent.width, parent.layout.getContentHeight(), parent.layout.getHeaderHeight(), 20);
 		this.parent = parent;
 		KeyBinding[] keyBindings = ArrayUtils.clone((KeyBinding[])client.options.allKeys);
 		Arrays.sort(keyBindings);
@@ -63,13 +65,8 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 	}
 
 	@Override
-	protected int getScrollbarPositionX() {
-		return super.getScrollbarPositionX() + 15;
-	}
-
-	@Override
 	public int getRowWidth() {
-		return super.getRowWidth() + 32;
+		return 340;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -87,9 +84,9 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			context.drawText(
 				ControlsListWidget.this.client.textRenderer,
 				this.text,
-				ControlsListWidget.this.client.currentScreen.width / 2 - this.textWidth / 2,
+				ControlsListWidget.this.width / 2 - this.textWidth / 2,
 				y + entryHeight - 9 - 1,
-				16777215,
+				Colors.WHITE,
 				false
 			);
 		}
@@ -132,6 +129,8 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 	@Environment(EnvType.CLIENT)
 	public class KeyBindingEntry extends ControlsListWidget.Entry {
+		private static final Text field_49534 = Text.translatable("controls.reset");
+		private static final int field_49535 = 10;
 		private final KeyBinding binding;
 		private final Text bindingName;
 		private final ButtonWidget editButton;
@@ -152,7 +151,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 							: Text.translatable("narrator.controls.bound", bindingName, textSupplier.get())
 				)
 				.build();
-			this.resetButton = ButtonWidget.builder(Text.translatable("controls.reset"), button -> {
+			this.resetButton = ButtonWidget.builder(field_49534, button -> {
 				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
 				ControlsListWidget.this.update();
 			}).dimensions(0, 0, 50, 20).narrationSupplier(textSupplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
@@ -161,20 +160,19 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			int var10003 = x + 90 - ControlsListWidget.this.maxKeyNameLength;
-			context.drawText(ControlsListWidget.this.client.textRenderer, this.bindingName, var10003, y + entryHeight / 2 - 9 / 2, 16777215, false);
-			this.resetButton.setX(x + 190);
-			this.resetButton.setY(y);
+			int i = ControlsListWidget.this.getScrollbarPositionX() - this.resetButton.getWidth() - 10;
+			int j = y - 2;
+			this.resetButton.setPosition(i, j);
 			this.resetButton.render(context, mouseX, mouseY, tickDelta);
-			this.editButton.setX(x + 105);
-			this.editButton.setY(y);
-			if (this.duplicate) {
-				int i = 3;
-				int j = this.editButton.getX() - 6;
-				context.fill(j, y + 2, j + 3, y + entryHeight + 2, Formatting.RED.getColorValue() | 0xFF000000);
-			}
-
+			int k = i - 5 - this.editButton.getWidth();
+			this.editButton.setPosition(k, j);
 			this.editButton.render(context, mouseX, mouseY, tickDelta);
+			context.drawTextWithShadow(ControlsListWidget.this.client.textRenderer, this.bindingName, x, y + entryHeight / 2 - 9 / 2, Colors.WHITE);
+			if (this.duplicate) {
+				int l = 3;
+				int m = this.editButton.getX() - 6;
+				context.fill(m, y - 1, m + 3, y + entryHeight, -65536);
+			}
 		}
 
 		@Override

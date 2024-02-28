@@ -32,7 +32,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -63,7 +62,6 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	private static final int field_30548 = 16;
 	private static final float field_30549 = 0.35F;
 	private static final int field_30550 = 5;
-	private static final float field_30551 = 1.6F;
 	private static final float field_30552 = 0.1F;
 	private static final int field_30553 = 3;
 	private static final float field_30554 = 0.2F;
@@ -132,7 +130,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 			nbt.putBoolean("CannotHunt", true);
 		}
 
-		this.writeInventory(nbt);
+		this.writeInventory(nbt, this.getRegistryManager());
 	}
 
 	@Override
@@ -140,7 +138,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 		super.readCustomDataFromNbt(nbt);
 		this.setBaby(nbt.getBoolean("IsBaby"));
 		this.setCannotHunt(nbt.getBoolean("CannotHunt"));
-		this.readInventory(nbt);
+		this.readInventory(nbt, this.getRegistryManager());
 	}
 
 	@Debug
@@ -378,11 +376,6 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	@Override
 	public void shootAt(LivingEntity target, float pullProgress) {
 		this.shoot(this, 1.6F);
-	}
-
-	@Override
-	public void shoot(LivingEntity target, ItemStack crossbow, ProjectileEntity projectile, float multiShotSpray) {
-		this.shoot(this, target, projectile, multiShotSpray, 1.6F);
 	}
 
 	@Override

@@ -19,7 +19,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidHierarchicalFileException;
 import net.minecraft.util.JsonHelper;
@@ -29,7 +29,7 @@ import org.joml.Matrix4f;
 public class PostEffectProcessor implements AutoCloseable {
 	private static final String MAIN_TARGET_NAME = "minecraft:main";
 	private final Framebuffer mainTarget;
-	private final ResourceManager resourceManager;
+	private final ResourceFactory field_49569;
 	private final String name;
 	private final List<PostEffectPass> passes = Lists.<PostEffectPass>newArrayList();
 	private final Map<String, Framebuffer> targetsByName = Maps.<String, Framebuffer>newHashMap();
@@ -40,8 +40,8 @@ public class PostEffectProcessor implements AutoCloseable {
 	private float time;
 	private float lastTickDelta;
 
-	public PostEffectProcessor(TextureManager textureManager, ResourceManager resourceManager, Framebuffer framebuffer, Identifier id) throws IOException, JsonSyntaxException {
-		this.resourceManager = resourceManager;
+	public PostEffectProcessor(TextureManager textureManager, ResourceFactory resourceFactory, Framebuffer framebuffer, Identifier id) throws IOException, JsonSyntaxException {
+		this.field_49569 = resourceFactory;
 		this.mainTarget = framebuffer;
 		this.time = 0.0F;
 		this.lastTickDelta = 0.0F;
@@ -53,7 +53,7 @@ public class PostEffectProcessor implements AutoCloseable {
 	}
 
 	private void parseEffect(TextureManager textureManager, Identifier id) throws IOException, JsonSyntaxException {
-		Resource resource = this.resourceManager.getResourceOrThrow(id);
+		Resource resource = this.field_49569.getResourceOrThrow(id);
 
 		try {
 			Reader reader = resource.getReader();
@@ -170,7 +170,7 @@ public class PostEffectProcessor implements AutoCloseable {
 							}
 
 							Identifier identifier = new Identifier("textures/effect/" + string6 + ".png");
-							this.resourceManager
+							this.field_49569
 								.getResource(identifier)
 								.orElseThrow(() -> new InvalidHierarchicalFileException("Render target or texture '" + string6 + "' does not exist"));
 							RenderSystem.setShaderTexture(0, identifier);
@@ -289,7 +289,7 @@ public class PostEffectProcessor implements AutoCloseable {
 	}
 
 	public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest) throws IOException {
-		PostEffectPass postEffectPass = new PostEffectPass(this.resourceManager, programName, source, dest);
+		PostEffectPass postEffectPass = new PostEffectPass(this.field_49569, programName, source, dest);
 		this.passes.add(this.passes.size(), postEffectPass);
 		return postEffectPass;
 	}
@@ -328,6 +328,12 @@ public class PostEffectProcessor implements AutoCloseable {
 
 		for (PostEffectPass postEffectPass : this.passes) {
 			postEffectPass.render(this.time / 20.0F);
+		}
+	}
+
+	public void setUniforms(String name, float value) {
+		for (PostEffectPass postEffectPass : this.passes) {
+			postEffectPass.getProgram().getUniformByNameOrDummy(name).set(value);
 		}
 	}
 

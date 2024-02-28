@@ -1,7 +1,11 @@
 package net.minecraft.entity.projectile;
 
+import java.util.List;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FireworkExplosionComponent;
+import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -15,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -47,8 +50,9 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		this.setPosition(x, y, z);
 		this.dataTracker.set(ITEM, stack.copy());
 		int i = 1;
-		if (!stack.isEmpty() && stack.hasNbt()) {
-			i += stack.getOrCreateSubNbt("Fireworks").getByte("Flight");
+		FireworksComponent fireworksComponent = stack.get(DataComponentTypes.FIREWORKS);
+		if (fireworksComponent != null) {
+			i += fireworksComponent.flightDuration();
 		}
 
 		this.setVelocity(this.random.nextTriangular(0.0, 0.002297), 0.05, this.random.nextTriangular(0.0, 0.002297));
@@ -78,7 +82,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
-		builder.add(ITEM, new ItemStack(Items.FIREWORK_ROCKET));
+		builder.add(ITEM, method_57317());
 		builder.add(SHOOTER_ENTITY_ID, OptionalInt.empty());
 		builder.add(SHOT_AT_ANGLE, false);
 	}
@@ -195,24 +199,19 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	}
 
 	private boolean hasExplosionEffects() {
-		ItemStack itemStack = this.dataTracker.get(ITEM);
-		NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
-		NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtElement.COMPOUND_TYPE) : null;
-		return nbtList != null && !nbtList.isEmpty();
+		return !this.method_57318().isEmpty();
 	}
 
 	private void explode() {
 		float f = 0.0F;
-		ItemStack itemStack = this.dataTracker.get(ITEM);
-		NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
-		NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtElement.COMPOUND_TYPE) : null;
-		if (nbtList != null && !nbtList.isEmpty()) {
-			f = 5.0F + (float)(nbtList.size() * 2);
+		List<FireworkExplosionComponent> list = this.method_57318();
+		if (!list.isEmpty()) {
+			f = 5.0F + (float)(list.size() * 2);
 		}
 
 		if (f > 0.0F) {
 			if (this.shooter != null) {
-				this.shooter.damage(this.getDamageSources().fireworks(this, this.getOwner()), 5.0F + (float)(nbtList.size() * 2));
+				this.shooter.damage(this.getDamageSources().fireworks(this, this.getOwner()), 5.0F + (float)(list.size() * 2));
 			}
 
 			double d = 5.0;
@@ -252,17 +251,8 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	@Override
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.EXPLODE_FIREWORK_CLIENT && this.getWorld().isClient) {
-			if (!this.hasExplosionEffects()) {
-				for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
-					this.getWorld()
-						.addParticle(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(), this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
-				}
-			} else {
-				ItemStack itemStack = this.dataTracker.get(ITEM);
-				NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
-				Vec3d vec3d = this.getVelocity();
-				this.getWorld().addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, nbtCompound);
-			}
+			Vec3d vec3d = this.getVelocity();
+			this.getWorld().addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, this.method_57318());
 		}
 
 		super.handleStatus(status);
@@ -273,7 +263,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("Life", this.life);
 		nbt.putInt("LifeTime", this.lifeTime);
-		nbt.put("FireworksItem", this.getStack().writeNbt(new NbtCompound()));
+		nbt.put("FireworksItem", this.getStack().encode(this.getRegistryManager()));
 		nbt.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
 	}
 
@@ -283,15 +273,21 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		this.life = nbt.getInt("Life");
 		this.lifeTime = nbt.getInt("LifeTime");
 		if (nbt.contains("FireworksItem", NbtElement.COMPOUND_TYPE)) {
-			ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("FireworksItem"));
-			if (!itemStack.isEmpty()) {
-				this.dataTracker.set(ITEM, itemStack);
-			}
+			this.dataTracker
+				.set(ITEM, (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("FireworksItem")).orElseGet(FireworkRocketEntity::method_57317));
+		} else {
+			this.dataTracker.set(ITEM, method_57317());
 		}
 
 		if (nbt.contains("ShotAtAngle")) {
 			this.dataTracker.set(SHOT_AT_ANGLE, nbt.getBoolean("ShotAtAngle"));
 		}
+	}
+
+	private List<FireworkExplosionComponent> method_57318() {
+		ItemStack itemStack = this.dataTracker.get(ITEM);
+		FireworksComponent fireworksComponent = itemStack.get(DataComponentTypes.FIREWORKS);
+		return fireworksComponent != null ? fireworksComponent.explosions() : List.of();
 	}
 
 	@Override
@@ -302,5 +298,9 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	@Override
 	public boolean isAttackable() {
 		return false;
+	}
+
+	private static ItemStack method_57317() {
+		return new ItemStack(Items.FIREWORK_ROCKET);
 	}
 }

@@ -136,11 +136,6 @@ public class CustomizeFlatLevelScreen extends Screen {
 			CustomizeFlatLevelScreen.this.updateRemoveLayerButton();
 		}
 
-		@Override
-		protected int getScrollbarPositionX() {
-			return this.width - 70;
-		}
-
 		public void updateLayers() {
 			int i = this.children().indexOf(this.getSelectedOrNull());
 			this.clearEntries();
@@ -205,7 +200,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				SuperflatLayersListWidget.this.setSelected(this);
-				return true;
+				return super.mouseClicked(mouseX, mouseY, button);
 			}
 
 			private void renderIcon(DrawContext context, int x, int y, ItemStack iconItem) {

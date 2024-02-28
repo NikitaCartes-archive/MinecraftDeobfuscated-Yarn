@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +43,6 @@ import net.minecraft.util.Util;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -427,7 +427,21 @@ public class RealmsUploadScreen extends RealmsScreen {
 			TarArchiveEntry tarArchiveEntry = new TarArchiveEntry(file, string);
 			tOut.putArchiveEntry(tarArchiveEntry);
 			if (file.isFile()) {
-				IOUtils.copy(new FileInputStream(file), tOut);
+				InputStream inputStream = new FileInputStream(file);
+
+				try {
+					inputStream.transferTo(tOut);
+				} catch (Throwable var14) {
+					try {
+						inputStream.close();
+					} catch (Throwable var13) {
+						var14.addSuppressed(var13);
+					}
+
+					throw var14;
+				}
+
+				inputStream.close();
 				tOut.closeArchiveEntry();
 			} else {
 				tOut.closeArchiveEntry();

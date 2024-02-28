@@ -39,6 +39,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SnowBlock;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
@@ -49,6 +50,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.PathNodeTypeCache;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -60,7 +62,6 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
@@ -190,6 +191,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final PortalForcer portalForcer;
 	private final WorldTickScheduler<Block> blockTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady, this.getProfilerSupplier());
 	private final WorldTickScheduler<Fluid> fluidTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady, this.getProfilerSupplier());
+	private final PathNodeTypeCache pathNodeTypeCache = new PathNodeTypeCache();
 	final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
 	volatile boolean duringListenerUpdate;
 	protected final RaidManager raidManager;
@@ -1127,6 +1129,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		this.getChunkManager().markForUpdate(pos);
+		this.pathNodeTypeCache.invalidate(pos);
 		VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
 		VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
 		if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
@@ -1445,17 +1448,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Nullable
 	@Override
-	public MapState getMapState(MapId id) {
+	public MapState getMapState(MapIdComponent id) {
 		return this.getServer().getOverworld().getPersistentStateManager().get(MapState.getPersistentStateType(), id.asString());
 	}
 
 	@Override
-	public void putMapState(MapId id, MapState state) {
+	public void putMapState(MapIdComponent id, MapState state) {
 		this.getServer().getOverworld().getPersistentStateManager().set(id.asString(), state);
 	}
 
 	@Override
-	public MapId getNextMapId() {
+	public MapIdComponent getNextMapId() {
 		return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState.getPersistentStateType(), "idcounts").getNextMapId();
 	}
 
@@ -1884,6 +1887,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public void cacheStructures(Chunk chunk) {
 		this.server.execute(() -> this.structureLocator.cache(chunk.getPos(), chunk.getStructureStarts()));
+	}
+
+	public PathNodeTypeCache getPathNodeTypeCache() {
+		return this.pathNodeTypeCache;
 	}
 
 	@Override

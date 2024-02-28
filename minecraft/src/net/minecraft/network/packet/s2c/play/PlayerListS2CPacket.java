@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -101,12 +102,12 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static enum Action {
 		ADD_PLAYER((serialized, buf) -> {
 			GameProfile gameProfile = new GameProfile(serialized.profileId, buf.readString(16));
-			gameProfile.getProperties().putAll(buf.readPropertyMap());
+			gameProfile.getProperties().putAll(PacketCodecs.PROPERTY_MAP.decode(buf));
 			serialized.gameProfile = gameProfile;
 		}, (buf, entry) -> {
 			GameProfile gameProfile = (GameProfile)Objects.requireNonNull(entry.profile());
 			buf.writeString(gameProfile.getName(), 16);
-			buf.writePropertyMap(gameProfile.getProperties());
+			PacketCodecs.PROPERTY_MAP.encode(buf, gameProfile.getProperties());
 		}),
 		INITIALIZE_CHAT(
 			(serialized, buf) -> serialized.session = buf.readNullable(PublicPlayerSession.Serialized::fromBuf),
@@ -116,8 +117,8 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		UPDATE_LISTED((serialized, buf) -> serialized.listed = buf.readBoolean(), (buf, entry) -> buf.writeBoolean(entry.listed())),
 		UPDATE_LATENCY((serialized, buf) -> serialized.latency = buf.readVarInt(), (buf, entry) -> buf.writeVarInt(entry.latency())),
 		UPDATE_DISPLAY_NAME(
-			(serialized, buf) -> serialized.displayName = PacketByteBuf.readNullable(buf, TextCodecs.REGISTRY_PACKET_CODEC),
-			(buf, entry) -> PacketByteBuf.writeNullable(buf, entry.displayName(), TextCodecs.REGISTRY_PACKET_CODEC)
+			(serialized, buf) -> serialized.displayName = PacketByteBuf.readNullable(buf, TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC),
+			(buf, entry) -> PacketByteBuf.writeNullable(buf, entry.displayName(), TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC)
 		);
 
 		final PlayerListS2CPacket.Action.Reader reader;

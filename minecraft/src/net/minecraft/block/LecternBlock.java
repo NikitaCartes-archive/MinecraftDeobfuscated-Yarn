@@ -4,14 +4,14 @@ import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
@@ -108,8 +108,8 @@ public class LecternBlock extends BlockWithEntity {
 		PlayerEntity playerEntity = ctx.getPlayer();
 		boolean bl = false;
 		if (!world.isClient && playerEntity != null && playerEntity.isCreativeLevelTwoOp()) {
-			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
-			if (nbtCompound != null && nbtCompound.contains("Book")) {
+			NbtComponent nbtComponent = itemStack.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT);
+			if (nbtComponent.contains("Book")) {
 				bl = true;
 			}
 		}
@@ -306,7 +306,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		return false;
 	}
 }

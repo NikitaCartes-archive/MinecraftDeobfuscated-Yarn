@@ -1,14 +1,11 @@
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.datafixers.util.Pair;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
-import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -23,8 +20,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.DyeColor;
+import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -60,7 +56,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 	}
 
 	public void render(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = bannerBlockEntity.getPatterns();
+		BannerPatternsComponent bannerPatternsComponent = bannerBlockEntity.getPatterns();
 		float g = 0.6666667F;
 		boolean bl = bannerBlockEntity.getWorld() == null;
 		matrixStack.push();
@@ -95,7 +91,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
 		this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
 		this.banner.pivotY = -32.0F;
-		renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
+		renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, bannerPatternsComponent);
 		matrixStack.pop();
 		matrixStack.pop();
 	}
@@ -108,9 +104,9 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		ModelPart canvas,
 		SpriteIdentifier baseSprite,
 		boolean isBanner,
-		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns
+		BannerPatternsComponent bannerPatternsComponent
 	) {
-		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, patterns, false);
+		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, bannerPatternsComponent, false);
 	}
 
 	public static void renderCanvas(
@@ -121,15 +117,15 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		ModelPart canvas,
 		SpriteIdentifier baseSprite,
 		boolean isBanner,
-		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns,
+		BannerPatternsComponent bannerPatternsComponent,
 		boolean glint
 	) {
 		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
 
-		for (int i = 0; i < 17 && i < patterns.size(); i++) {
-			Pair<RegistryEntry<BannerPattern>, DyeColor> pair = (Pair<RegistryEntry<BannerPattern>, DyeColor>)patterns.get(i);
-			float[] fs = pair.getSecond().getColorComponents();
-			pair.getFirst()
+		for (int i = 0; i < 17 && i < bannerPatternsComponent.layers().size(); i++) {
+			BannerPatternsComponent.Layer layer = (BannerPatternsComponent.Layer)bannerPatternsComponent.layers().get(i);
+			float[] fs = layer.color().getColorComponents();
+			layer.pattern()
 				.getKey()
 				.map(key -> isBanner ? TexturedRenderLayers.getBannerPatternTextureId(key) : TexturedRenderLayers.getShieldPatternTextureId(key))
 				.ifPresent(

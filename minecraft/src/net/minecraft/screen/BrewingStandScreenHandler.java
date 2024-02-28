@@ -1,6 +1,9 @@
 package net.minecraft.screen;
 
+import java.util.Optional;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -8,7 +11,6 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.Slot;
@@ -178,9 +180,9 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 
 		@Override
 		public void onTakeItem(PlayerEntity player, ItemStack stack) {
-			RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(stack);
-			if (player instanceof ServerPlayerEntity) {
-				Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, registryEntry);
+			Optional<RegistryEntry<Potion>> optional = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).potion();
+			if (optional.isPresent() && player instanceof ServerPlayerEntity serverPlayerEntity) {
+				Criteria.BREWED_POTION.trigger(serverPlayerEntity, (RegistryEntry<Potion>)optional.get());
 			}
 
 			super.onTakeItem(player, stack);

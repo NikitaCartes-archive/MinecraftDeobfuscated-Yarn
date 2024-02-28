@@ -16,7 +16,8 @@ public class OneTwentyOneLootTableProviders {
 			List.of(
 				new LootTableProvider.LootTypeGenerator(OneTwentyOneBlockLootTableGenerator::new, LootContextTypes.BLOCK),
 				new LootTableProvider.LootTypeGenerator(OneTwentyOneChestLootTableGenerator::new, LootContextTypes.CHEST),
-				new LootTableProvider.LootTypeGenerator(OneTwentyOneEntityLootTableGenerator::new, LootContextTypes.ENTITY)
+				new LootTableProvider.LootTypeGenerator(OneTwentyOneEntityLootTableGenerator::new, LootContextTypes.ENTITY),
+				new LootTableProvider.LootTypeGenerator(OneTwentyOneShearingLootTableGenerator::new, LootContextTypes.SHEARING)
 			),
 			registryLookupFuture
 		);

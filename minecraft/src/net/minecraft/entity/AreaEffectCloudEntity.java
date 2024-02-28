@@ -7,26 +7,24 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.potion.Potions;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -43,14 +41,11 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	private static final float field_40731 = 3.0F;
 	public static final float field_40732 = 6.0F;
 	public static final float field_40733 = 0.5F;
-	private static final String EFFECTS_NBT_KEY = "effects";
-	private RegistryEntry<Potion> potion = Potions.EMPTY;
-	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
+	private PotionContentsComponent potionContentsComponent = PotionContentsComponent.DEFAULT;
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
 	private int duration = 600;
 	private int waitTime = 20;
 	private int reapplicationDelay = 20;
-	private boolean customColor;
 	private int durationOnUse;
 	private float radiusOnUse;
 	private float radiusGrowth;
@@ -96,35 +91,21 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		return this.getDataTracker().get(RADIUS);
 	}
 
-	public void setPotion(RegistryEntry<Potion> potion) {
-		this.potion = potion;
-		if (!this.customColor) {
-			this.updateColor();
-		}
+	public void setPotionContents(PotionContentsComponent potionContentsComponent) {
+		this.potionContentsComponent = potionContentsComponent;
+		this.updateColor();
 	}
 
 	private void updateColor() {
-		if (this.potion.matches(Potions.EMPTY) && this.effects.isEmpty()) {
-			this.getDataTracker().set(COLOR, 0);
-		} else {
-			this.getDataTracker().set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
-		}
+		this.dataTracker.set(COLOR, this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? 0 : this.potionContentsComponent.getColor());
 	}
 
 	public void addEffect(StatusEffectInstance effect) {
-		this.effects.add(effect);
-		if (!this.customColor) {
-			this.updateColor();
-		}
+		this.setPotionContents(this.potionContentsComponent.with(effect));
 	}
 
 	public int getColor() {
 		return this.getDataTracker().get(COLOR);
-	}
-
-	public void setColor(int rgb) {
-		this.customColor = true;
-		this.getDataTracker().set(COLOR, rgb);
 	}
 
 	public ParticleEffect getParticleType() {
@@ -225,24 +206,25 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 
 			if (this.age % 5 == 0) {
 				this.affectedEntities.entrySet().removeIf(entry -> this.age >= (Integer)entry.getValue());
-				List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
-
-				for (StatusEffectInstance statusEffectInstance : this.potion.value().getEffects()) {
-					list.add(
-						new StatusEffectInstance(
-							statusEffectInstance.getEffectType(),
-							statusEffectInstance.mapDuration(i -> i / 4),
-							statusEffectInstance.getAmplifier(),
-							statusEffectInstance.isAmbient(),
-							statusEffectInstance.shouldShowParticles()
-						)
-					);
-				}
-
-				list.addAll(this.effects);
-				if (list.isEmpty()) {
+				if (!this.potionContentsComponent.hasEffects()) {
 					this.affectedEntities.clear();
 				} else {
+					List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
+					if (this.potionContentsComponent.potion().isPresent()) {
+						for (StatusEffectInstance statusEffectInstance : ((Potion)((RegistryEntry)this.potionContentsComponent.potion().get()).value()).getEffects()) {
+							list.add(
+								new StatusEffectInstance(
+									statusEffectInstance.getEffectType(),
+									statusEffectInstance.mapDuration(i -> i / 4),
+									statusEffectInstance.getAmplifier(),
+									statusEffectInstance.isAmbient(),
+									statusEffectInstance.shouldShowParticles()
+								)
+							);
+						}
+					}
+
+					list.addAll(this.potionContentsComponent.customEffects());
 					List<LivingEntity> list2 = this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox());
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
@@ -353,29 +335,16 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
 			try {
 				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), this.getRegistryManager()));
-			} catch (CommandSyntaxException var5) {
-				LOGGER.warn("Couldn't load custom particle {}", nbt.getString("Particle"), var5);
+			} catch (CommandSyntaxException var3) {
+				LOGGER.warn("Couldn't load custom particle {}", nbt.getString("Particle"), var3);
 			}
 		}
 
-		if (nbt.contains("Color", NbtElement.NUMBER_TYPE)) {
-			this.setColor(nbt.getInt("Color"));
-		}
-
-		if (nbt.contains("Potion", NbtElement.STRING_TYPE)) {
-			this.setPotion(PotionUtil.getPotion(nbt));
-		}
-
-		if (nbt.contains("effects", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("effects", NbtElement.COMPOUND_TYPE);
-			this.effects.clear();
-
-			for (int i = 0; i < nbtList.size(); i++) {
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtList.getCompound(i));
-				if (statusEffectInstance != null) {
-					this.addEffect(statusEffectInstance);
-				}
-			}
+		if (nbt.contains("potion_contents")) {
+			PotionContentsComponent.CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("potion_contents"))
+				.resultOrPartial(string -> LOGGER.warn("Failed to parse area effect cloud potions: '{}'", string))
+				.ifPresent(this::setPotionContents);
 		}
 	}
 
@@ -394,23 +363,9 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 			nbt.putUuid("Owner", this.ownerUuid);
 		}
 
-		if (this.customColor) {
-			nbt.putInt("Color", this.getColor());
-		}
-
-		Optional<RegistryKey<Potion>> optional = this.potion.getKey();
-		if (optional.isPresent() && !this.potion.matches(Potions.EMPTY)) {
-			nbt.putString("Potion", ((RegistryKey)optional.get()).getValue().toString());
-		}
-
-		if (!this.effects.isEmpty()) {
-			NbtList nbtList = new NbtList();
-
-			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				nbtList.add(statusEffectInstance.writeNbt());
-			}
-
-			nbt.put("effects", nbtList);
+		if (!this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT)) {
+			NbtElement nbtElement = Util.getResult(PotionContentsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.potionContentsComponent), IllegalStateException::new);
+			nbt.put("potion_contents", nbtElement);
 		}
 	}
 
@@ -421,10 +376,6 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		}
 
 		super.onTrackedDataSet(data);
-	}
-
-	public RegistryEntry<Potion> getPotion() {
-		return this.potion;
 	}
 
 	@Override

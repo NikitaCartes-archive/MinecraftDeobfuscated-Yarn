@@ -18,13 +18,12 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.block.FlowerbedBlock;
 import net.minecraft.block.MultifaceGrowthBlock;
-import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.TallPlantBlock;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -40,21 +39,17 @@ import net.minecraft.loot.condition.MatchToolLootCondition;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.condition.SurvivesExplosionLootCondition;
 import net.minecraft.loot.condition.TableBonusLootCondition;
-import net.minecraft.loot.entry.DynamicEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
-import net.minecraft.loot.function.CopyNameLootFunction;
-import net.minecraft.loot.function.CopyNbtLootFunction;
-import net.minecraft.loot.function.CopyStateFunction;
+import net.minecraft.loot.function.CopyComponentsLootFunction;
+import net.minecraft.loot.function.CopyStateLootFunction;
 import net.minecraft.loot.function.ExplosionDecayLootFunction;
 import net.minecraft.loot.function.LimitCountLootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
-import net.minecraft.loot.function.SetContentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
-import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
 import net.minecraft.loot.provider.number.BinomialLootNumberProvider;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
@@ -66,6 +61,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -203,7 +199,9 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					drop,
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(drop).apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY)))
+						.with(
+							ItemEntry.builder(drop).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.CUSTOM_NAME))
+						)
 				)
 			);
 	}
@@ -217,14 +215,13 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(drop)
-								.apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
 								.apply(
-									CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY)
-										.withOperation("Lock", "BlockEntityTag.Lock")
-										.withOperation("LootTable", "BlockEntityTag.LootTable")
-										.withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed")
+									CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY)
+										.add(DataComponentTypes.CUSTOM_NAME)
+										.add(DataComponentTypes.CONTAINER)
+										.add(DataComponentTypes.LOCK)
+										.add(DataComponentTypes.CONTAINER_LOOT)
 								)
-								.apply(SetContentsLootFunction.builder(BlockEntityType.SHULKER_BOX).withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS_DYNAMIC_DROP_ID)))
 						)
 				)
 			);
@@ -275,8 +272,11 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(drop)
-								.apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
-								.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Patterns", "BlockEntityTag.Patterns"))
+								.apply(
+									CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY)
+										.add(DataComponentTypes.CUSTOM_NAME)
+										.add(DataComponentTypes.BANNER_PATTERNS)
+								)
 						)
 				)
 			);
@@ -290,8 +290,8 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						ItemEntry.builder(drop)
-							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
-							.apply(CopyStateFunction.builder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
+							.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.BEES))
+							.apply(CopyStateLootFunction.builder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
 					)
 			);
 	}
@@ -304,8 +304,8 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					.with(
 						ItemEntry.builder(drop)
 							.conditionally(WITH_SILK_TOUCH)
-							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
-							.apply(CopyStateFunction.builder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
+							.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.BEES))
+							.apply(CopyStateLootFunction.builder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
 							.alternatively(ItemEntry.builder(drop))
 					)
 			);
@@ -564,7 +564,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	protected abstract void generate();
 
 	@Override
-	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
 		this.generate();
 		Set<Identifier> set = new HashSet();
 
@@ -577,7 +577,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 						throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, Registries.BLOCK.getId(block)));
 					}
 
-					exporter.accept(identifier, builder);
+					consumer.accept(identifier, builder);
 				}
 			}
 		}

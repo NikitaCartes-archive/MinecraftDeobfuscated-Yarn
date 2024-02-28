@@ -174,6 +174,8 @@ import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -182,10 +184,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.PlayerHeadItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.message.ChatVisibility;
@@ -319,6 +318,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
 	private static final Identifier REGIONAL_COMPLIANCIES_ID = new Identifier("regional_compliancies.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
+	private static final Text NBT_TOOLTIP_TEXT = Text.literal("(+NBT)");
 	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.translatable("multiplayer.socialInteractions.not_available");
 	/**
 	 * A message, in English, displayed in a dialog when a GLFW error is encountered.
@@ -2518,23 +2518,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity, DynamicRegistryManager registryManager) {
 		NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData(registryManager);
-		BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), nbtCompound);
-		if (stack.getItem() instanceof PlayerHeadItem && nbtCompound.contains("SkullOwner")) {
-			NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
-			NbtCompound nbtCompound3 = stack.getOrCreateNbt();
-			nbtCompound3.put("SkullOwner", nbtCompound2);
-			NbtCompound nbtCompound4 = nbtCompound3.getCompound("BlockEntityTag");
-			nbtCompound4.remove("SkullOwner");
-			nbtCompound4.remove("x");
-			nbtCompound4.remove("y");
-			nbtCompound4.remove("z");
-		} else {
-			NbtCompound nbtCompound2 = new NbtCompound();
-			NbtList nbtList = new NbtList();
-			nbtList.add(NbtString.of("\"(+NBT)\""));
-			nbtCompound2.put("Lore", nbtList);
-			stack.setSubNbt("display", nbtCompound2);
-		}
+		blockEntity.removeFromCopiedStackNbt(nbtCompound);
+		BlockItem.setBlockEntityData(stack, blockEntity.getType(), nbtCompound);
+		stack.applyComponentsFrom(blockEntity.createComponentMap());
+		stack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, NBT_TOOLTIP_TEXT, LoreComponent::of);
 	}
 
 	public CrashReport addDetailsToCrashReport(CrashReport report) {

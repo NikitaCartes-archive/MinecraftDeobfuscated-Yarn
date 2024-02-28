@@ -14,7 +14,9 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SkullBlock;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -28,13 +30,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SkullBlockEntity extends BlockEntity {
-	public static final String SKULL_OWNER_KEY = "SkullOwner";
-	public static final String NOTE_BLOCK_SOUND_KEY = "note_block_sound";
+	private static final String SKULL_OWNER_KEY = "SkullOwner";
+	private static final String NOTE_BLOCK_SOUND_KEY = "note_block_sound";
 	@Nullable
 	private static Executor currentExecutor;
 	@Nullable
 	private static LoadingCache<String, CompletableFuture<Optional<GameProfile>>> userCache;
-	private static final Executor EXECUTOR = runnable -> {
+	public static final Executor EXECUTOR = runnable -> {
 		Executor executor = currentExecutor;
 		if (executor != null) {
 			executor.execute(runnable);
@@ -73,9 +75,9 @@ public class SkullBlockEntity extends BlockEntity {
 		userCache = null;
 	}
 
-	static CompletableFuture<Optional<GameProfile>> fetchProfile(String name, ApiServices apiServices, BooleanSupplier booleanSupplier) {
+	static CompletableFuture<Optional<GameProfile>> fetchProfile(String name, ApiServices apiServices, BooleanSupplier missingUserCache) {
 		return apiServices.userCache().findByNameAsync(name).thenApplyAsync(profile -> {
-			if (profile.isPresent() && !booleanSupplier.getAsBoolean()) {
+			if (profile.isPresent() && !missingUserCache.getAsBoolean()) {
 				UUID uUID = ((GameProfile)profile.get()).getId();
 				ProfileResult profileResult = apiServices.sessionService().fetchProfile(uUID, true);
 				return profileResult != null ? Optional.ofNullable(profileResult.profile()) : profile;
@@ -157,7 +159,7 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	private void loadOwnerProperties() {
-		if (this.owner != null && !Util.isBlank(this.owner.getName()) && !hasTextures(this.owner)) {
+		if (this.owner != null && !StringHelper.isBlank(this.owner.getName()) && !hasTextures(this.owner)) {
 			fetchProfile(this.owner.getName()).thenAcceptAsync(profile -> {
 				this.owner = (GameProfile)profile.orElse(this.owner);
 				this.markDirty();
@@ -167,43 +169,35 @@ public class SkullBlockEntity extends BlockEntity {
 		}
 	}
 
-	@Nullable
-	public static GameProfile getProfile(NbtCompound nbt) {
-		if (nbt.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
-			return NbtHelper.toGameProfile(nbt.getCompound("SkullOwner"));
-		} else {
-			if (nbt.contains("SkullOwner", NbtElement.STRING_TYPE)) {
-				String string = nbt.getString("SkullOwner");
-				if (!Util.isBlank(string)) {
-					nbt.remove("SkullOwner");
-					fillSkullOwner(nbt, string);
-				}
-			}
-
-			return null;
-		}
-	}
-
-	public static void fillSkullOwner(NbtCompound nbt) {
-		String string = nbt.getString("SkullOwner");
-		if (!Util.isBlank(string)) {
-			fillSkullOwner(nbt, string);
-		}
-	}
-
-	private static void fillSkullOwner(NbtCompound nbt, String name) {
-		fetchProfile(name)
-			.thenAccept(
-				profile -> nbt.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), (GameProfile)profile.orElse(new GameProfile(Util.NIL_UUID, name))))
-			);
-	}
-
-	private static CompletableFuture<Optional<GameProfile>> fetchProfile(String name) {
+	public static CompletableFuture<Optional<GameProfile>> fetchProfile(String name) {
 		LoadingCache<String, CompletableFuture<Optional<GameProfile>>> loadingCache = userCache;
-		return loadingCache != null && PlayerEntity.isUsernameValid(name) ? loadingCache.getUnchecked(name) : CompletableFuture.completedFuture(Optional.empty());
+		return loadingCache != null && StringHelper.isValidPlayerName(name) ? loadingCache.getUnchecked(name) : CompletableFuture.completedFuture(Optional.empty());
 	}
 
 	private static boolean hasTextures(GameProfile profile) {
 		return profile.getProperties().containsKey("textures");
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		ProfileComponent profileComponent = components.get(DataComponentTypes.PROFILE);
+		this.setOwner(profileComponent != null ? profileComponent.gameProfile() : null);
+		this.noteBlockSound = components.get(DataComponentTypes.NOTE_BLOCK_SOUND);
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		if (this.owner != null) {
+			componentMapBuilder.add(DataComponentTypes.PROFILE, new ProfileComponent(this.owner));
+		}
+
+		componentMapBuilder.add(DataComponentTypes.NOTE_BLOCK_SOUND, this.noteBlockSound);
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		super.removeFromCopiedStackNbt(nbt);
+		nbt.remove("SkullOwner");
+		nbt.remove("note_block_sound");
 	}
 }

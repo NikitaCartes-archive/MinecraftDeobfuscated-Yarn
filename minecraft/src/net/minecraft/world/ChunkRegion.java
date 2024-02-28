@@ -49,10 +49,10 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.ChunkType;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.tick.MultiTickScheduler;
 import net.minecraft.world.tick.QueryableTickScheduler;
 import org.slf4j.Logger;
@@ -72,7 +72,6 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final BiomeAccess biomeAccess;
 	private final ChunkPos lowerCorner;
 	private final ChunkPos upperCorner;
-	private final StructureAccessor structureAccessor;
 	private final ChunkStatus status;
 	/**
 	 * The number of neighboring chunks which can be accessed for block
@@ -107,7 +106,6 @@ public class ChunkRegion implements StructureWorldAccess {
 			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed));
 			this.lowerCorner = ((Chunk)chunks.get(0)).getPos();
 			this.upperCorner = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
-			this.structureAccessor = world.getStructureAccessor().forRegion(this);
 		}
 	}
 
@@ -300,7 +298,7 @@ public class ChunkRegion implements StructureWorldAccess {
 			}
 
 			if (state.hasBlockEntity()) {
-				if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+				if (chunk.getStatus().getChunkType() == ChunkType.LEVELCHUNK) {
 					BlockEntity blockEntity = ((BlockEntityProvider)state.getBlock()).createBlockEntity(pos, state);
 					if (blockEntity != null) {
 						chunk.setBlockEntity(blockEntity);

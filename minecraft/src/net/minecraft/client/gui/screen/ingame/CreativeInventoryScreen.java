@@ -23,6 +23,7 @@ import net.minecraft.client.option.HotbarStorageEntry;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -44,6 +45,7 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
@@ -89,7 +91,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		new Identifier("container/creative_inventory/tab_bottom_selected_7")
 	};
 	private static final String TAB_TEXTURE_PREFIX = "textures/gui/container/creative_inventory/tab_";
-	private static final String CUSTOM_CREATIVE_LOCK_KEY = "CustomCreativeLock";
 	private static final int ROWS_COUNT = 5;
 	private static final int COLUMNS_COUNT = 9;
 	private static final int TAB_WIDTH = 26;
@@ -253,7 +254,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					return;
 				}
 
-				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && ItemStack.areItemsAndNbtEqual(itemStack, itemStack2)) {
+				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && ItemStack.areItemsAndComponentsEqual(itemStack, itemStack2)) {
 					if (button == 0) {
 						if (bl) {
 							itemStack.setCount(itemStack.getMaxCount());
@@ -506,10 +507,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					for (int j = 0; j < 9; j++) {
 						if (j == i) {
 							ItemStack itemStack = new ItemStack(Items.PAPER);
-							itemStack.getOrCreateSubNbt("CustomCreativeLock");
+							itemStack.set(DataComponentTypes.CREATIVE_SLOT_LOCK, Unit.INSTANCE);
 							Text text = this.client.options.hotbarKeys[i].getBoundKeyLocalizedText();
 							Text text2 = this.client.options.saveToolbarActivatorKey.getBoundKeyLocalizedText();
-							itemStack.setCustomName(Text.translatable("inventory.hotbarInfo", text2, text));
+							itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("inventory.hotbarInfo", text2, text));
 							this.handler.itemList.add(itemStack);
 						} else {
 							this.handler.itemList.add(ItemStack.EMPTY);
@@ -993,7 +994,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		public boolean canTakeItems(PlayerEntity playerEntity) {
 			ItemStack itemStack = this.getStack();
 			return super.canTakeItems(playerEntity) && !itemStack.isEmpty()
-				? itemStack.isItemEnabled(playerEntity.getWorld().getEnabledFeatures()) && itemStack.getSubNbt("CustomCreativeLock") == null
+				? itemStack.isItemEnabled(playerEntity.getWorld().getEnabledFeatures()) && !itemStack.contains(DataComponentTypes.CREATIVE_SLOT_LOCK)
 				: itemStack.isEmpty();
 		}
 	}

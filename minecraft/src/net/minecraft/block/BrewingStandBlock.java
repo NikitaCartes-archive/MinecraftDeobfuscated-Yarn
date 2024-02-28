@@ -6,10 +6,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
@@ -86,16 +84,6 @@ public class BrewingStandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof BrewingStandBlockEntity) {
-				((BrewingStandBlockEntity)blockEntity).setCustomName(itemStack.getName());
-			}
-		}
-	}
-
-	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		double d = (double)pos.getX() + 0.4 + (double)random.nextFloat() * 0.2;
 		double e = (double)pos.getY() + 0.7 + (double)random.nextFloat() * 0.3;
@@ -125,7 +113,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		return false;
 	}
 }

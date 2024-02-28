@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -11,19 +12,19 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BlockStateComponent;
+import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -35,8 +36,6 @@ import net.minecraft.world.event.GameEvent;
  * block in the world.
  */
 public class BlockItem extends Item {
-	public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
-	public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";
 	@Deprecated
 	private final Block block;
 
@@ -80,6 +79,7 @@ public class BlockItem extends Item {
 					if (blockState2.isOf(blockState.getBlock())) {
 						blockState2 = this.placeFromNbt(blockPos, world, itemStack, blockState2);
 						this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
+						copyComponentsToBlockEntity(world, blockPos, itemStack);
 						blockState2.getBlock().onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
 						if (playerEntity instanceof ServerPlayerEntity) {
 							Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
@@ -112,6 +112,13 @@ public class BlockItem extends Item {
 		return context;
 	}
 
+	private static void copyComponentsToBlockEntity(World world, BlockPos pos, ItemStack stack) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if (blockEntity != null) {
+			blockEntity.readComponents(stack.getComponents());
+		}
+	}
+
 	protected boolean postPlacement(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
 		return writeNbtToBlockEntity(world, player, pos, stack);
 	}
@@ -123,30 +130,17 @@ public class BlockItem extends Item {
 	}
 
 	private BlockState placeFromNbt(BlockPos pos, World world, ItemStack stack, BlockState state) {
-		BlockState blockState = state;
-		NbtCompound nbtCompound = stack.getNbt();
-		if (nbtCompound != null) {
-			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
-			StateManager<Block, BlockState> stateManager = state.getBlock().getStateManager();
-
-			for (String string : nbtCompound2.getKeys()) {
-				Property<?> property = stateManager.getProperty(string);
-				if (property != null) {
-					String string2 = nbtCompound2.get(string).asString();
-					blockState = with(blockState, property, string2);
-				}
+		BlockStateComponent blockStateComponent = stack.getOrDefault(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT);
+		if (blockStateComponent.isEmpty()) {
+			return state;
+		} else {
+			BlockState blockState = blockStateComponent.applyToState(state);
+			if (blockState != state) {
+				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 			}
+
+			return blockState;
 		}
-
-		if (blockState != state) {
-			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
-		}
-
-		return blockState;
-	}
-
-	private static <T extends Comparable<T>> BlockState with(BlockState state, Property<T> property, String name) {
-		return (BlockState)property.parse(name).map(value -> state.with(property, value)).orElse(state);
 	}
 
 	protected boolean canPlace(ItemPlacementContext context, BlockState state) {
@@ -169,22 +163,15 @@ public class BlockItem extends Item {
 		if (minecraftServer == null) {
 			return false;
 		} else {
-			NbtCompound nbtCompound = getBlockEntityNbt(stack);
-			if (nbtCompound != null) {
+			NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT);
+			if (!nbtComponent.isEmpty()) {
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity != null) {
-					if (!world.isClient && blockEntity.copyItemDataRequiresOperator() && (player == null || !player.isCreativeLevelTwoOp())) {
-						return false;
+					if (world.isClient || !blockEntity.copyItemDataRequiresOperator() || player != null && player.isCreativeLevelTwoOp()) {
+						return nbtComponent.applyToBlockEntity(blockEntity, world.getRegistryManager());
 					}
 
-					NbtCompound nbtCompound2 = blockEntity.createNbt(world.getRegistryManager());
-					NbtCompound nbtCompound3 = nbtCompound2.copy();
-					nbtCompound2.copyFrom(nbtCompound);
-					if (!nbtCompound2.equals(nbtCompound3)) {
-						blockEntity.readNbt(nbtCompound2, world.getRegistryManager());
-						blockEntity.markDirty();
-						return true;
-					}
+					return false;
 				}
 			}
 
@@ -218,27 +205,29 @@ public class BlockItem extends Item {
 
 	@Override
 	public void onItemEntityDestroyed(ItemEntity entity) {
-		if (this.block instanceof ShulkerBoxBlock) {
-			ItemStack itemStack = entity.getStack();
-			NbtCompound nbtCompound = getBlockEntityNbt(itemStack);
-			if (nbtCompound != null && nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
-				NbtList nbtList = nbtCompound.getList("Items", NbtElement.COMPOUND_TYPE);
-				ItemUsage.spawnItemContents(entity, nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt));
-			}
+		ContainerComponent containerComponent = entity.getStack().set(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
+		if (containerComponent != null) {
+			ItemUsage.spawnItemContents(entity, containerComponent.stream());
 		}
 	}
 
-	@Nullable
-	public static NbtCompound getBlockEntityNbt(ItemStack stack) {
-		return stack.getSubNbt("BlockEntityTag");
+	public static void setBlockEntityData(ItemStack stack, BlockEntityType<?> type, Consumer<NbtCompound> setter) {
+		NbtComponent.set(DataComponentTypes.BLOCK_ENTITY_DATA, stack, nbt -> {
+			setter.accept(nbt);
+			nbt.remove("id");
+			if (!nbt.isEmpty()) {
+				BlockEntity.writeIdToNbt(nbt, type);
+			}
+		});
 	}
 
-	public static void setBlockEntityNbt(ItemStack stack, BlockEntityType<?> blockEntityType, NbtCompound tag) {
-		if (tag.isEmpty()) {
-			stack.removeSubNbt("BlockEntityTag");
+	public static void setBlockEntityData(ItemStack stack, BlockEntityType<?> type, NbtCompound nbt) {
+		nbt.remove("id");
+		if (nbt.isEmpty()) {
+			stack.remove(DataComponentTypes.BLOCK_ENTITY_DATA);
 		} else {
-			BlockEntity.writeIdToNbt(tag, blockEntityType);
-			stack.setSubNbt("BlockEntityTag", tag);
+			BlockEntity.writeIdToNbt(nbt, type);
+			stack.set(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.of(nbt));
 		}
 	}
 

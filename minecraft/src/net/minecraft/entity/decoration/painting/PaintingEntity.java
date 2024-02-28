@@ -1,5 +1,7 @@
 package net.minecraft.entity.decoration.painting;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,16 +17,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.PaintingVariantTags;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,7 +38,8 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 		PaintingEntity.class, TrackedDataHandlerRegistry.PAINTING_VARIANT
 	);
 	private static final RegistryKey<PaintingVariant> DEFAULT_VARIANT = PaintingVariants.KEBAB;
-	public static final String VARIANT_NBT_KEY = "variant";
+	public static final MapCodec<RegistryEntry<PaintingVariant>> VARIANT_MAP_CODEC = Registries.PAINTING_VARIANT.getEntryCodec().fieldOf("variant");
+	public static final Codec<RegistryEntry<PaintingVariant>> VARIANT_ENTRY_CODEC = VARIANT_MAP_CODEC.codec();
 
 	private static RegistryEntry<PaintingVariant> getDefaultVariant() {
 		return Registries.PAINTING_VARIANT.entryOf(DEFAULT_VARIANT);
@@ -119,7 +121,9 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
-		RegistryEntry<PaintingVariant> registryEntry = (RegistryEntry<PaintingVariant>)readVariantFromNbt(nbt).orElseGet(PaintingEntity::getDefaultVariant);
+		RegistryEntry<PaintingVariant> registryEntry = (RegistryEntry<PaintingVariant>)VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, nbt)
+			.result()
+			.orElseGet(PaintingEntity::getDefaultVariant);
 		this.setVariant(registryEntry);
 		this.facing = Direction.fromHorizontal(nbt.getByte("facing"));
 		super.readCustomDataFromNbt(nbt);
@@ -127,13 +131,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	}
 
 	public static void writeVariantToNbt(NbtCompound nbt, RegistryEntry<PaintingVariant> variant) {
-		nbt.putString("variant", ((RegistryKey)variant.getKey().orElse(DEFAULT_VARIANT)).getValue().toString());
-	}
-
-	public static Optional<RegistryEntry<PaintingVariant>> readVariantFromNbt(NbtCompound nbt) {
-		return Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
-			.map(id -> RegistryKey.of(RegistryKeys.PAINTING_VARIANT, id))
-			.flatMap(Registries.PAINTING_VARIANT::getEntry);
+		VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).result().ifPresent(nbtElement -> nbt.copyFrom((NbtCompound)nbtElement));
 	}
 
 	@Override

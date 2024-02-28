@@ -97,8 +97,8 @@ public class TrialSpawnerData {
 		this.spawnedMobsAlive.clear();
 	}
 
-	public boolean hasSpawnData() {
-		boolean bl = this.spawnData.isPresent() && ((MobSpawnerEntry)this.spawnData.get()).getNbt().contains("id", NbtElement.STRING_TYPE);
+	public boolean hasSpawnData(TrialSpawnerLogic logic, Random random) {
+		boolean bl = this.getSpawnData(logic, random).getNbt().contains("id", NbtElement.STRING_TYPE);
 		return bl || !this.spawnDataPool.isEmpty();
 	}
 
@@ -153,9 +153,10 @@ public class TrialSpawnerData {
 		if (this.spawnData.isPresent()) {
 			return (MobSpawnerEntry)this.spawnData.get();
 		} else {
-			this.spawnData = Optional.of((MobSpawnerEntry)this.spawnDataPool.getOrEmpty(random).map(Weighted.Present::getData).orElseGet(MobSpawnerEntry::new));
+			MobSpawnerEntry mobSpawnerEntry = (MobSpawnerEntry)this.spawnDataPool.getOrEmpty(random).map(Weighted.Present::getData).orElseGet(MobSpawnerEntry::new);
+			this.spawnData = Optional.of(mobSpawnerEntry);
 			logic.updateListeners();
-			return (MobSpawnerEntry)this.spawnData.get();
+			return mobSpawnerEntry;
 		}
 	}
 

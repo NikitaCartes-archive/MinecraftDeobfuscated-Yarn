@@ -2,6 +2,7 @@ package net.minecraft.entity.attribute;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
@@ -20,14 +21,26 @@ import org.slf4j.Logger;
 
 public class EntityAttributeModifier {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Codec<EntityAttributeModifier> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<EntityAttributeModifier> field_49232 = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Uuids.INT_STREAM_CODEC.fieldOf("UUID").forGetter(EntityAttributeModifier::getId),
-					Codec.STRING.fieldOf("Name").forGetter(modifier -> modifier.name),
-					Codec.DOUBLE.fieldOf("Amount").forGetter(EntityAttributeModifier::getValue),
-					EntityAttributeModifier.Operation.CODEC.fieldOf("Operation").forGetter(EntityAttributeModifier::getOperation)
+					Uuids.INT_STREAM_CODEC.fieldOf("uuid").forGetter(EntityAttributeModifier::getId),
+					Codec.STRING.fieldOf("name").forGetter(modifier -> modifier.name),
+					Codec.DOUBLE.fieldOf("amount").forGetter(EntityAttributeModifier::getValue),
+					EntityAttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(EntityAttributeModifier::getOperation)
 				)
 				.apply(instance, EntityAttributeModifier::new)
+	);
+	public static final Codec<EntityAttributeModifier> CODEC = field_49232.codec();
+	public static final PacketCodec<ByteBuf, EntityAttributeModifier> field_49233 = PacketCodec.tuple(
+		Uuids.PACKET_CODEC,
+		EntityAttributeModifier::getId,
+		PacketCodecs.STRING,
+		entityAttributeModifier -> entityAttributeModifier.name,
+		PacketCodecs.DOUBLE,
+		EntityAttributeModifier::getValue,
+		EntityAttributeModifier.Operation.PACKET_CODEC,
+		EntityAttributeModifier::getOperation,
+		EntityAttributeModifier::new
 	);
 	private final double value;
 	private final EntityAttributeModifier.Operation operation;
@@ -105,19 +118,19 @@ public class EntityAttributeModifier {
 		/**
 		 * Adds to the base value of an attribute.
 		 */
-		ADDITION("addition", 0),
+		ADDITION("add_value", 0),
 		/**
 		 * Multiplies the base value of the attribute.
 		 * 
 		 * <p>Is applied after addition.
 		 */
-		MULTIPLY_BASE("multiply_base", 1),
+		MULTIPLY_BASE("add_multiplied_base", 1),
 		/**
 		 * Multiplies the total value of the attribute.
 		 * 
 		 * <p>The total value is equal to the sum of all additions and base multiplications applied by an attribute modifier.
 		 */
-		MULTIPLY_TOTAL("multiply_total", 2);
+		MULTIPLY_TOTAL("add_multiplied_total", 2);
 
 		public static final IntFunction<EntityAttributeModifier.Operation> ID_TO_VALUE = ValueLists.createIdToValueFunction(
 			EntityAttributeModifier.Operation::getId, values(), ValueLists.OutOfBoundsHandling.ZERO

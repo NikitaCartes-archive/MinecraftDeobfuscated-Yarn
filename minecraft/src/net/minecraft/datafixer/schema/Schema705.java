@@ -5,11 +5,13 @@ import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import com.mojang.datafixers.types.templates.Hook.HookFunction;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public class Schema705 extends IdentifierNormalizingSchema {
@@ -226,17 +228,13 @@ public class Schema705 extends IdentifierNormalizingSchema {
 						"id",
 						TypeReferences.ITEM_NAME.in(schema),
 						"tag",
-						DSL.optionalFields(
-							"EntityTag",
-							TypeReferences.ENTITY_TREE.in(schema),
-							"BlockEntityTag",
-							TypeReferences.BLOCK_ENTITY.in(schema),
-							"CanDestroy",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
-							"CanPlaceOn",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
-							"Items",
-							DSL.list(TypeReferences.ITEM_STACK.in(schema))
+						FixUtil.method_57188(
+							Pair.of("EntityTag", TypeReferences.ENTITY_TREE.in(schema)),
+							Pair.of("BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema)),
+							Pair.of("CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema))),
+							Pair.of("CanPlaceOn", DSL.list(TypeReferences.BLOCK_NAME.in(schema))),
+							Pair.of("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
+							Pair.of("ChargedProjectiles", DSL.list(TypeReferences.ITEM_STACK.in(schema)))
 						)
 					),
 					field_5746,

@@ -34,7 +34,7 @@ import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.ReconfiguringScreen;
-import net.minecraft.client.gui.screen.StatsListener;
+import net.minecraft.client.gui.screen.StatsScreen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
@@ -66,6 +66,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.SignedArgumentList;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -91,7 +92,6 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
@@ -1064,7 +1064,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		RegistryEntry<DimensionType> registryEntry = commonPlayerSpawnInfo.dimensionType();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
-			Map<MapId, MapState> map = this.world.getMapStates();
+			Map<MapIdComponent, MapState> map = this.world.getMapStates();
 			boolean bl = commonPlayerSpawnInfo.isDebug();
 			boolean bl2 = commonPlayerSpawnInfo.isFlat();
 			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
@@ -1381,15 +1381,15 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onMapUpdate(MapUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		MapRenderer mapRenderer = this.client.gameRenderer.getMapRenderer();
-		MapId mapId = packet.mapId();
-		MapState mapState = this.client.world.getMapState(mapId);
+		MapIdComponent mapIdComponent = packet.mapId();
+		MapState mapState = this.client.world.getMapState(mapIdComponent);
 		if (mapState == null) {
 			mapState = MapState.of(packet.scale(), packet.locked(), this.client.world.getRegistryKey());
-			this.client.world.putClientsideMapState(mapId, mapState);
+			this.client.world.putClientsideMapState(mapIdComponent, mapState);
 		}
 
 		packet.apply(mapState);
-		mapRenderer.updateTexture(mapId, mapState);
+		mapRenderer.updateTexture(mapIdComponent, mapState);
 	}
 
 	@Override
@@ -1474,8 +1474,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			this.client.player.getStatHandler().setStat(this.client.player, stat, i);
 		}
 
-		if (this.client.currentScreen instanceof StatsListener) {
-			((StatsListener)this.client.currentScreen).onStatsReady();
+		if (this.client.currentScreen instanceof StatsScreen statsScreen) {
+			statsScreen.onStatsReady();
 		}
 	}
 
@@ -1851,8 +1851,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onOpenWrittenBook(OpenWrittenBookS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ItemStack itemStack = this.client.player.getStackInHand(packet.getHand());
-		if (itemStack.isOf(Items.WRITTEN_BOOK)) {
-			this.client.setScreen(new BookScreen(new BookScreen.WrittenBookContents(itemStack)));
+		BookScreen.Contents contents = BookScreen.Contents.create(itemStack);
+		if (contents != null) {
+			this.client.setScreen(new BookScreen(contents));
 		}
 	}
 

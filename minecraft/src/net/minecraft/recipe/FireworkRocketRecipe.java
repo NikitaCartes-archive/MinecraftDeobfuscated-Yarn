@@ -1,10 +1,13 @@
 package net.minecraft.recipe;
 
+import java.util.ArrayList;
+import java.util.List;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FireworkExplosionComponent;
+import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.world.World;
@@ -45,31 +48,26 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
-		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
-		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("Fireworks");
-		NbtList nbtList = new NbtList();
+		List<FireworkExplosionComponent> list = new ArrayList();
 		int i = 0;
 
 		for (int j = 0; j < recipeInputInventory.size(); j++) {
-			ItemStack itemStack2 = recipeInputInventory.getStack(j);
-			if (!itemStack2.isEmpty()) {
-				if (DURATION_MODIFIER.test(itemStack2)) {
+			ItemStack itemStack = recipeInputInventory.getStack(j);
+			if (!itemStack.isEmpty()) {
+				if (DURATION_MODIFIER.test(itemStack)) {
 					i++;
-				} else if (FIREWORK_STAR.test(itemStack2)) {
-					NbtCompound nbtCompound2 = itemStack2.getSubNbt("Explosion");
-					if (nbtCompound2 != null) {
-						nbtList.add(nbtCompound2);
+				} else if (FIREWORK_STAR.test(itemStack)) {
+					FireworkExplosionComponent fireworkExplosionComponent = itemStack.get(DataComponentTypes.FIREWORK_EXPLOSION);
+					if (fireworkExplosionComponent != null) {
+						list.add(fireworkExplosionComponent);
 					}
 				}
 			}
 		}
 
-		nbtCompound.putByte("Flight", (byte)i);
-		if (!nbtList.isEmpty()) {
-			nbtCompound.put("Explosions", nbtList);
-		}
-
-		return itemStack;
+		ItemStack itemStack2 = new ItemStack(Items.FIREWORK_ROCKET, 3);
+		itemStack2.set(DataComponentTypes.FIREWORKS, new FireworksComponent(i, list));
+		return itemStack2;
 	}
 
 	@Override

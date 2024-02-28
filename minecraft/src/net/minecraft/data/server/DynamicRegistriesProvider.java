@@ -1,4 +1,4 @@
-package net.minecraft.data.report;
+package net.minecraft.data.server;
 
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;

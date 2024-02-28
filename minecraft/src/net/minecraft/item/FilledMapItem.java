@@ -10,13 +10,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapIdComponent;
+import net.minecraft.component.type.MapPostProcessingComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -38,10 +38,6 @@ import net.minecraft.world.chunk.WorldChunk;
 public class FilledMapItem extends NetworkSyncedItem {
 	public static final int field_30907 = 128;
 	public static final int field_30908 = 128;
-	private static final int DEFAULT_MAP_COLOR = -12173266;
-	private static final String MAP_KEY = "map";
-	public static final String MAP_SCALE_DIRECTION_KEY = "map_scale_direction";
-	public static final String MAP_TO_LOCK_KEY = "map_to_lock";
 
 	public FilledMapItem(Item.Settings settings) {
 		super(settings);
@@ -49,43 +45,27 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 	public static ItemStack createMap(World world, int x, int z, byte scale, boolean showIcons, boolean unlimitedTracking) {
 		ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
-		createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.getRegistryKey());
+		MapIdComponent mapIdComponent = allocateMapId(world, x, z, scale, showIcons, unlimitedTracking, world.getRegistryKey());
+		itemStack.set(DataComponentTypes.MAP_ID, mapIdComponent);
 		return itemStack;
 	}
 
 	@Nullable
-	public static MapState getMapState(@Nullable MapId id, World world) {
+	public static MapState getMapState(@Nullable MapIdComponent id, World world) {
 		return id == null ? null : world.getMapState(id);
 	}
 
 	@Nullable
 	public static MapState getMapState(ItemStack map, World world) {
-		MapId mapId = getMapId(map);
-		return getMapState(mapId, world);
+		MapIdComponent mapIdComponent = map.get(DataComponentTypes.MAP_ID);
+		return getMapState(mapIdComponent, world);
 	}
 
-	@Nullable
-	public static MapId getMapId(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getNbt();
-		return nbtCompound != null && nbtCompound.contains("map", NbtElement.NUMBER_TYPE) ? new MapId(nbtCompound.getInt("map")) : null;
-	}
-
-	private static MapId allocateMapId(World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
+	private static MapIdComponent allocateMapId(World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
 		MapState mapState = MapState.of((double)x, (double)z, (byte)scale, showIcons, unlimitedTracking, dimension);
-		MapId mapId = world.getNextMapId();
-		world.putMapState(mapId, mapState);
-		return mapId;
-	}
-
-	private static void setMapId(ItemStack stack, MapId id) {
-		stack.getOrCreateNbt().putInt("map", id.id());
-	}
-
-	private static void createMapState(
-		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension
-	) {
-		MapId mapId = allocateMapId(world, x, z, scale, showIcons, unlimitedTracking, dimension);
-		setMapId(stack, mapId);
+		MapIdComponent mapIdComponent = world.getNextMapId();
+		world.putMapState(mapIdComponent, mapState);
+		return mapIdComponent;
 	}
 
 	public void updateColors(World world, Entity entity, MapState state) {
@@ -306,92 +286,71 @@ public class FilledMapItem extends NetworkSyncedItem {
 	@Nullable
 	@Override
 	public Packet<?> createSyncPacket(ItemStack stack, World world, PlayerEntity player) {
-		MapId mapId = getMapId(stack);
-		MapState mapState = getMapState(mapId, world);
-		return mapState != null ? mapState.getPlayerMarkerPacket(mapId, player) : null;
+		MapIdComponent mapIdComponent = stack.get(DataComponentTypes.MAP_ID);
+		MapState mapState = getMapState(mapIdComponent, world);
+		return mapState != null ? mapState.getPlayerMarkerPacket(mapIdComponent, player) : null;
 	}
 
 	@Override
 	public void onCraft(ItemStack stack, World world) {
-		NbtCompound nbtCompound = stack.getNbt();
-		if (nbtCompound != null && nbtCompound.contains("map_scale_direction", NbtElement.NUMBER_TYPE)) {
-			scale(stack, world, nbtCompound.getInt("map_scale_direction"));
-			nbtCompound.remove("map_scale_direction");
-		} else if (nbtCompound != null && nbtCompound.contains("map_to_lock", NbtElement.BYTE_TYPE) && nbtCompound.getBoolean("map_to_lock")) {
-			copyMap(world, stack);
-			nbtCompound.remove("map_to_lock");
+		MapPostProcessingComponent mapPostProcessingComponent = stack.remove(DataComponentTypes.MAP_POST_PROCESSING);
+		if (mapPostProcessingComponent != null) {
+			switch (mapPostProcessingComponent) {
+				case LOCK:
+					copyMap(world, stack);
+					break;
+				case SCALE:
+					scale(stack, world);
+			}
 		}
 	}
 
-	private static void scale(ItemStack map, World world, int amount) {
+	private static void scale(ItemStack map, World world) {
 		MapState mapState = getMapState(map, world);
 		if (mapState != null) {
-			MapId mapId = world.getNextMapId();
-			world.putMapState(mapId, mapState.zoomOut(amount));
-			setMapId(map, mapId);
+			MapIdComponent mapIdComponent = world.getNextMapId();
+			world.putMapState(mapIdComponent, mapState.zoomOut());
+			map.set(DataComponentTypes.MAP_ID, mapIdComponent);
 		}
 	}
 
 	public static void copyMap(World world, ItemStack stack) {
 		MapState mapState = getMapState(stack, world);
 		if (mapState != null) {
-			MapId mapId = world.getNextMapId();
+			MapIdComponent mapIdComponent = world.getNextMapId();
 			MapState mapState2 = mapState.copy();
-			world.putMapState(mapId, mapState2);
-			setMapId(stack, mapId);
+			world.putMapState(mapIdComponent, mapState2);
+			stack.set(DataComponentTypes.MAP_ID, mapIdComponent);
 		}
 	}
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		MapId mapId = getMapId(stack);
-		MapState mapState = world == null ? null : getMapState(mapId, world);
-		NbtCompound nbtCompound = stack.getNbt();
-		boolean bl;
-		byte b;
-		if (nbtCompound != null) {
-			bl = nbtCompound.getBoolean("map_to_lock");
-			b = nbtCompound.getByte("map_scale_direction");
-		} else {
-			bl = false;
-			b = 0;
-		}
-
-		if (mapState != null && (mapState.locked || bl)) {
-			tooltip.add(Text.translatable("filled_map.locked", mapId.id()).formatted(Formatting.GRAY));
+		MapIdComponent mapIdComponent = stack.get(DataComponentTypes.MAP_ID);
+		MapState mapState = world == null ? null : getMapState(mapIdComponent, world);
+		MapPostProcessingComponent mapPostProcessingComponent = stack.get(DataComponentTypes.MAP_POST_PROCESSING);
+		if (mapState != null && (mapState.locked || mapPostProcessingComponent == MapPostProcessingComponent.LOCK)) {
+			tooltip.add(Text.translatable("filled_map.locked", mapIdComponent.id()).formatted(Formatting.GRAY));
 		}
 
 		if (context.isAdvanced()) {
 			if (mapState != null) {
-				if (!bl && b == 0) {
-					tooltip.add(getIdText(mapId));
+				if (mapPostProcessingComponent == null) {
+					tooltip.add(getIdText(mapIdComponent));
 				}
 
-				int i = Math.min(mapState.scale + b, 4);
-				tooltip.add(Text.translatable("filled_map.scale", 1 << i).formatted(Formatting.GRAY));
-				tooltip.add(Text.translatable("filled_map.level", i, 4).formatted(Formatting.GRAY));
+				int i = mapPostProcessingComponent == MapPostProcessingComponent.SCALE ? 1 : 0;
+				int j = Math.min(mapState.scale + i, 4);
+				tooltip.add(Text.translatable("filled_map.scale", 1 << j).formatted(Formatting.GRAY));
+				tooltip.add(Text.translatable("filled_map.level", j, 4).formatted(Formatting.GRAY));
 			} else {
 				tooltip.add(Text.translatable("filled_map.unknown").formatted(Formatting.GRAY));
 			}
 		}
 	}
 
-	private static Text getIdText(MapId id) {
+	public static Text getIdText(MapIdComponent id) {
 		return Text.translatable("filled_map.id", id.id()).formatted(Formatting.GRAY);
-	}
-
-	public static Text getIdText(ItemStack stack) {
-		return getIdText(getMapId(stack));
-	}
-
-	public static int getMapColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubNbt("display");
-		if (nbtCompound != null && nbtCompound.contains("MapColor", NbtElement.NUMBER_TYPE)) {
-			int i = nbtCompound.getInt("MapColor");
-			return 0xFF000000 | i & 16777215;
-		} else {
-			return -12173266;
-		}
 	}
 
 	@Override

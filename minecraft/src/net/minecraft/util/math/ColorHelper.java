@@ -86,6 +86,10 @@ public class ColorHelper {
 			return alpha << 24 | red << 16 | green << 8 | blue;
 		}
 
+		public static int getArgb(int red, int green, int blue) {
+			return getArgb(255, red, green, blue);
+		}
+
 		public static int mixColor(int first, int second) {
 			return getArgb(
 				getAlpha(first) * getAlpha(second) / 255,
@@ -101,6 +105,10 @@ public class ColorHelper {
 			int k = MathHelper.lerp(delta, getGreen(start), getGreen(end));
 			int l = MathHelper.lerp(delta, getBlue(start), getBlue(end));
 			return getArgb(i, j, k, l);
+		}
+
+		public static int fullAlpha(int argb) {
+			return argb | 0xFF000000;
 		}
 	}
 }

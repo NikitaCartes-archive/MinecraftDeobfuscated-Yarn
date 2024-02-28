@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -140,8 +142,7 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 	@Override
 	public void copyDataToStack(ItemStack stack) {
 		super.copyDataToStack(stack);
-		NbtCompound nbtCompound = stack.getOrCreateNbt();
-		nbtCompound.putInt("BucketVariantTag", this.getTropicalFishVariant());
+		NbtComponent.set(DataComponentTypes.BUCKET_ENTITY_DATA, stack, nbtCompound -> nbtCompound.putInt("BucketVariantTag", this.getTropicalFishVariant()));
 	}
 
 	@Override
@@ -229,6 +230,12 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 	}
 
 	public static record Variant(TropicalFishEntity.Variety variety, DyeColor baseColor, DyeColor patternColor) {
+		public static final Codec<TropicalFishEntity.Variant> CODEC = Codec.INT.xmap(TropicalFishEntity.Variant::new, TropicalFishEntity.Variant::getId);
+
+		public Variant(int id) {
+			this(TropicalFishEntity.getVariety(id), TropicalFishEntity.getBaseDyeColor(id), TropicalFishEntity.getPatternDyeColor(id));
+		}
+
 		public int getId() {
 			return TropicalFishEntity.getVariantId(this.variety, this.baseColor, this.patternColor);
 		}

@@ -1,10 +1,6 @@
 package net.minecraft.entity.passive;
 
-import com.google.common.collect.ImmutableList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -208,17 +204,17 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		IronGolemEntity.Crack crack = this.getCrack();
+		Cracks.CrackLevel crackLevel = this.getCrackLevel();
 		boolean bl = super.damage(source, amount);
-		if (bl && this.getCrack() != crack) {
+		if (bl && this.getCrackLevel() != crackLevel) {
 			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 1.0F, 1.0F);
 		}
 
 		return bl;
 	}
 
-	public IronGolemEntity.Crack getCrack() {
-		return IronGolemEntity.Crack.from(this.getHealth() / this.getMaxHealth());
+	public Cracks.CrackLevel getCrackLevel() {
+		return Cracks.IRON_GOLEM.getCrackLevel(this.getHealth() / this.getMaxHealth());
 	}
 
 	@Override
@@ -329,31 +325,5 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.875F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
-	}
-
-	public static enum Crack {
-		NONE(1.0F),
-		LOW(0.75F),
-		MEDIUM(0.5F),
-		HIGH(0.25F);
-
-		private static final List<IronGolemEntity.Crack> VALUES = (List<IronGolemEntity.Crack>)Stream.of(values())
-			.sorted(Comparator.comparingDouble(crack -> (double)crack.maxHealthFraction))
-			.collect(ImmutableList.toImmutableList());
-		private final float maxHealthFraction;
-
-		private Crack(float maxHealthFraction) {
-			this.maxHealthFraction = maxHealthFraction;
-		}
-
-		public static IronGolemEntity.Crack from(float healthFraction) {
-			for (IronGolemEntity.Crack crack : VALUES) {
-				if (healthFraction < crack.maxHealthFraction) {
-					return crack;
-				}
-			}
-
-			return NONE;
-		}
 	}
 }

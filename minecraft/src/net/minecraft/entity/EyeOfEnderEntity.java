@@ -33,8 +33,12 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		this.setPosition(x, y, z);
 	}
 
-	public void setItem(ItemStack stack) {
-		this.getDataTracker().set(ITEM, stack.copyWithCount(1));
+	public void setItem(ItemStack itemStack) {
+		if (itemStack.isEmpty()) {
+			this.getDataTracker().set(ITEM, this.getItem());
+		} else {
+			this.getDataTracker().set(ITEM, itemStack.copyWithCount(1));
+		}
 	}
 
 	@Override
@@ -161,13 +165,13 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
+		nbt.put("Item", this.getStack().encode(this.getRegistryManager()));
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		if (nbt.contains("Item", NbtElement.COMPOUND_TYPE)) {
-			this.setItem(ItemStack.fromNbt(nbt.getCompound("Item")));
+			this.setItem((ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Item")).orElse(this.getItem()));
 		} else {
 			this.setItem(this.getItem());
 		}

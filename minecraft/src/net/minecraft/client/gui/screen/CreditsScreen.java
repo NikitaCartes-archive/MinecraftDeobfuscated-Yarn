@@ -17,11 +17,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.LogoDrawer;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -244,8 +246,9 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.time = Math.max(0.0F, this.time + delta * this.speed);
 		super.render(context, mouseX, mouseY, delta);
+		this.renderVignette(context);
+		this.time = Math.max(0.0F, this.time + delta * this.speed);
 		int i = this.width / 2 - 128;
 		int j = this.height + 50;
 		float f = -this.time;
@@ -265,9 +268,9 @@ public class CreditsScreen extends Screen {
 			if ((float)k + f + 12.0F + 8.0F > 0.0F && (float)k + f < (float)this.height) {
 				OrderedText orderedText = (OrderedText)this.credits.get(l);
 				if (this.centeredLines.contains(l)) {
-					context.drawCenteredTextWithShadow(this.textRenderer, orderedText, i + 128, k, 16777215);
+					context.drawCenteredTextWithShadow(this.textRenderer, orderedText, i + 128, k, Colors.WHITE);
 				} else {
-					context.drawTextWithShadow(this.textRenderer, orderedText, i, k, 16777215);
+					context.drawTextWithShadow(this.textRenderer, orderedText, i, k, -1);
 				}
 			}
 
@@ -275,6 +278,9 @@ public class CreditsScreen extends Screen {
 		}
 
 		context.getMatrices().pop();
+	}
+
+	private void renderVignette(DrawContext context) {
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
 		context.drawTexture(VIGNETTE_TEXTURE, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, this.width, this.height);
@@ -284,26 +290,16 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		int i = this.width;
-		float f = this.time * 0.5F;
-		int j = 64;
-		float g = this.time / this.baseSpeed;
-		float h = g * 0.02F;
-		float k = (float)(this.creditsHeight + this.height + this.height + 24) / this.baseSpeed;
-		float l = (k - 20.0F - g) * 0.005F;
-		if (l < h) {
-			h = l;
+		if (this.endCredits) {
+			context.fillWithLayer(RenderLayer.getEndPortal(), 0, 0, this.width, this.height, 0);
+		} else {
+			super.renderBackground(context, mouseX, mouseY, delta);
 		}
+	}
 
-		if (h > 1.0F) {
-			h = 1.0F;
-		}
-
-		h *= h;
-		h = h * 96.0F / 255.0F;
-		context.setShaderColor(h, h, h, 1.0F);
-		context.drawTexture(OPTIONS_BACKGROUND_TEXTURE, 0, 0, 0, 0.0F, f, i, this.height, 64, 64);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+	@Override
+	public boolean shouldPause() {
+		return false;
 	}
 
 	@Override

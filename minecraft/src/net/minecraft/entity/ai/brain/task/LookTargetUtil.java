@@ -156,11 +156,7 @@ public class LookTargetUtil {
 		Vec3d vec3d = NoPenaltyTargeting.find(entity, horizontalRange, verticalRange);
 		int i = 0;
 
-		while (
-			vec3d != null
-				&& !entity.getWorld().getBlockState(BlockPos.ofFloored(vec3d)).canPathfindThrough(entity.getWorld(), BlockPos.ofFloored(vec3d), NavigationType.WATER)
-				&& i++ < 10
-		) {
+		while (vec3d != null && !entity.getWorld().getBlockState(BlockPos.ofFloored(vec3d)).canPathfindThrough(NavigationType.WATER) && i++ < 10) {
 			vec3d = NoPenaltyTargeting.find(entity, horizontalRange, verticalRange);
 		}
 

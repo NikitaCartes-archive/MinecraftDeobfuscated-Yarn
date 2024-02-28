@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
+import net.minecraft.component.DataComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -26,6 +29,7 @@ public class ItemPredicateStringReader {
 
 	public Predicate<ItemStack> read(StringReader reader) throws CommandSyntaxException {
 		final List<Predicate<ItemStack>> list = new ArrayList();
+		final ComponentPredicate.Builder builder = ComponentPredicate.builder();
 		this.predicateReader.read(reader, new ItemPredicateReader.Callbacks() {
 			@Override
 			public void onItem(RegistryEntry<Item> item) {
@@ -38,15 +42,20 @@ public class ItemPredicateStringReader {
 			}
 
 			@Override
+			public <T> void onComponent(DataComponentType<T> type, T value) {
+				builder.add(type, value);
+			}
+
+			@Override
 			public void setNbt(NbtCompound nbt) {
-				if (!nbt.isEmpty()) {
-					list.add((Predicate)stack -> {
-						NbtCompound nbtCompound2 = stack.getNbt();
-						return NbtHelper.matches(nbt, nbtCompound2, true);
-					});
-				}
+				list.add(NbtComponent.createPredicate(DataComponentTypes.CUSTOM_DATA, nbt));
 			}
 		});
+		ComponentPredicate componentPredicate = builder.build();
+		if (!componentPredicate.isEmpty()) {
+			list.add(componentPredicate::test);
+		}
+
 		return Util.allOf(list);
 	}
 

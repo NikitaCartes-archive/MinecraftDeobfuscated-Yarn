@@ -116,7 +116,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		switch (type) {
 			case LAND:
 				return (Boolean)state.get(OPEN);

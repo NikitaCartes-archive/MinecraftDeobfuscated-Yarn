@@ -1,28 +1,27 @@
 package net.minecraft.enchantment;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
@@ -31,123 +30,51 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class EnchantmentHelper {
-	private static final String ID_KEY = "id";
-	private static final String LEVEL_KEY = "lvl";
 	private static final float field_38222 = 0.15F;
-
-	public static NbtCompound createNbt(@Nullable Identifier id, int lvl) {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("id", String.valueOf(id));
-		nbtCompound.putShort("lvl", (short)lvl);
-		return nbtCompound;
-	}
-
-	public static void writeLevelToNbt(NbtCompound nbt, int lvl) {
-		nbt.putShort("lvl", (short)lvl);
-	}
-
-	public static int getLevelFromNbt(NbtCompound nbt) {
-		return MathHelper.clamp(nbt.getInt("lvl"), 0, 255);
-	}
-
-	@Nullable
-	public static Identifier getIdFromNbt(NbtCompound nbt) {
-		return Identifier.tryParse(nbt.getString("id"));
-	}
-
-	@Nullable
-	public static Identifier getEnchantmentId(Enchantment enchantment) {
-		return Registries.ENCHANTMENT.getId(enchantment);
-	}
 
 	/**
 	 * Gets the level of an enchantment on an item stack.
 	 */
 	public static int getLevel(Enchantment enchantment, ItemStack stack) {
-		if (stack.isEmpty()) {
-			return 0;
+		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
+		return itemEnchantmentsComponent.getLevel(enchantment);
+	}
+
+	public static ItemEnchantmentsComponent apply(ItemStack stack, java.util.function.Consumer<ItemEnchantmentsComponent.Builder> applier) {
+		DataComponentType<ItemEnchantmentsComponent> dataComponentType = getEnchantmentsComponentType(stack);
+		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.get(dataComponentType);
+		if (itemEnchantmentsComponent == null) {
+			return ItemEnchantmentsComponent.DEFAULT;
 		} else {
-			Identifier identifier = getEnchantmentId(enchantment);
-			NbtList nbtList = stack.getEnchantments();
-
-			for (int i = 0; i < nbtList.size(); i++) {
-				NbtCompound nbtCompound = nbtList.getCompound(i);
-				Identifier identifier2 = getIdFromNbt(nbtCompound);
-				if (identifier2 != null && identifier2.equals(identifier)) {
-					return getLevelFromNbt(nbtCompound);
-				}
-			}
-
-			return 0;
+			ItemEnchantmentsComponent.Builder builder = new ItemEnchantmentsComponent.Builder(itemEnchantmentsComponent);
+			applier.accept(builder);
+			ItemEnchantmentsComponent itemEnchantmentsComponent2 = builder.build();
+			stack.set(dataComponentType, itemEnchantmentsComponent2);
+			return itemEnchantmentsComponent2;
 		}
 	}
 
-	/**
-	 * Gets the enchantments on an item stack.
-	 * 
-	 * <p>For enchanted books, it retrieves from the item stack's stored than
-	 * regular enchantments.
-	 * 
-	 * @see ItemStack#getEnchantments()
-	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentNbt(ItemStack)
-	 */
-	public static Map<Enchantment, Integer> get(ItemStack stack) {
-		NbtList nbtList = stack.isOf(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantmentNbt(stack) : stack.getEnchantments();
-		return fromNbt(nbtList);
+	public static boolean hasEnchantments(ItemStack stack) {
+		return stack.contains(getEnchantmentsComponentType(stack));
 	}
 
-	/**
-	 * Loads enchantments from an NBT list.
-	 */
-	public static Map<Enchantment, Integer> fromNbt(NbtList list) {
-		Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
-
-		for (int i = 0; i < list.size(); i++) {
-			NbtCompound nbtCompound = list.getCompound(i);
-			Registries.ENCHANTMENT.getOrEmpty(getIdFromNbt(nbtCompound)).ifPresent(enchantment -> map.put(enchantment, getLevelFromNbt(nbtCompound)));
-		}
-
-		return map;
+	public static void set(ItemStack stack, ItemEnchantmentsComponent enchantments) {
+		stack.set(getEnchantmentsComponentType(stack), enchantments);
 	}
 
-	/**
-	 * Sets the enchantments on an item stack.
-	 * 
-	 * <p>For enchanted books, it sets the enchantments to the item stack's
-	 * stored enchantments than regular enchantments.
-	 * 
-	 * @see ItemStack#getEnchantments()
-	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentNbt(ItemStack)
-	 */
-	public static void set(Map<Enchantment, Integer> enchantments, ItemStack stack) {
-		NbtList nbtList = new NbtList();
+	public static ItemEnchantmentsComponent getEnchantments(ItemStack stack) {
+		return stack.getOrDefault(getEnchantmentsComponentType(stack), ItemEnchantmentsComponent.DEFAULT);
+	}
 
-		for (Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-			Enchantment enchantment = (Enchantment)entry.getKey();
-			if (enchantment != null) {
-				int i = (Integer)entry.getValue();
-				nbtList.add(createNbt(getEnchantmentId(enchantment), i));
-				if (stack.isOf(Items.ENCHANTED_BOOK)) {
-					EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment, i));
-				}
-			}
-		}
-
-		if (nbtList.isEmpty()) {
-			stack.removeSubNbt("Enchantments");
-		} else if (!stack.isOf(Items.ENCHANTED_BOOK)) {
-			stack.setSubNbt("Enchantments", nbtList);
-		}
+	private static DataComponentType<ItemEnchantmentsComponent> getEnchantmentsComponentType(ItemStack stack) {
+		return stack.isOf(Items.ENCHANTED_BOOK) ? DataComponentTypes.STORED_ENCHANTMENTS : DataComponentTypes.ENCHANTMENTS;
 	}
 
 	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, ItemStack stack) {
-		if (!stack.isEmpty()) {
-			NbtList nbtList = stack.getEnchantments();
+		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
-			for (int i = 0; i < nbtList.size(); i++) {
-				NbtCompound nbtCompound = nbtList.getCompound(i);
-				Registries.ENCHANTMENT.getOrEmpty(getIdFromNbt(nbtCompound)).ifPresent(enchantment -> consumer.accept(enchantment, getLevelFromNbt(nbtCompound)));
-			}
+		for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+			consumer.accept((Enchantment)((RegistryEntry)entry.getKey()).value(), entry.getIntValue());
 		}
 	}
 
@@ -304,7 +231,7 @@ public class EnchantmentHelper {
 	 * @param entity the entity to choose equipments from
 	 */
 	@Nullable
-	public static Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity) {
+	public static java.util.Map.Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity) {
 		return chooseEquipmentWith(enchantment, entity, stack -> true);
 	}
 
@@ -321,21 +248,21 @@ public class EnchantmentHelper {
 	 * @param entity the entity to choose equipments from
 	 */
 	@Nullable
-	public static Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity, Predicate<ItemStack> condition) {
+	public static java.util.Map.Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity, Predicate<ItemStack> condition) {
 		Map<EquipmentSlot, ItemStack> map = enchantment.getEquipment(entity);
 		if (map.isEmpty()) {
 			return null;
 		} else {
-			List<Entry<EquipmentSlot, ItemStack>> list = Lists.<Entry<EquipmentSlot, ItemStack>>newArrayList();
+			List<java.util.Map.Entry<EquipmentSlot, ItemStack>> list = Lists.<java.util.Map.Entry<EquipmentSlot, ItemStack>>newArrayList();
 
-			for (Entry<EquipmentSlot, ItemStack> entry : map.entrySet()) {
+			for (java.util.Map.Entry<EquipmentSlot, ItemStack> entry : map.entrySet()) {
 				ItemStack itemStack = (ItemStack)entry.getValue();
 				if (!itemStack.isEmpty() && getLevel(enchantment, itemStack) > 0 && condition.test(itemStack)) {
 					list.add(entry);
 				}
 			}
 
-			return list.isEmpty() ? null : (Entry)list.get(entity.getRandom().nextInt(list.size()));
+			return list.isEmpty() ? null : (java.util.Map.Entry)list.get(entity.getRandom().nextInt(list.size()));
 		}
 	}
 
@@ -376,8 +303,7 @@ public class EnchantmentHelper {
 	 */
 	public static ItemStack enchant(Random random, ItemStack target, int level, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = generateEnchantments(random, target, level, treasureAllowed);
-		boolean bl = target.isOf(Items.BOOK);
-		if (bl) {
+		if (target.isOf(Items.BOOK)) {
 			target = new ItemStack(Items.ENCHANTED_BOOK);
 		}
 
@@ -444,9 +370,9 @@ public class EnchantmentHelper {
 	 * {@return whether the {@code candidate} enchantment is compatible with the
 	 * {@code existing} enchantments}
 	 */
-	public static boolean isCompatible(Collection<Enchantment> existing, Enchantment candidate) {
-		for (Enchantment enchantment : existing) {
-			if (!enchantment.canCombine(candidate)) {
+	public static boolean isCompatible(Collection<RegistryEntry<Enchantment>> existing, Enchantment candidate) {
+		for (RegistryEntry<Enchantment> registryEntry : existing) {
+			if (!registryEntry.value().canCombine(candidate)) {
 				return false;
 			}
 		}

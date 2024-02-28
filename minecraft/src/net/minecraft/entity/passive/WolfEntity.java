@@ -4,9 +4,11 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -40,14 +42,18 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -74,6 +80,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	};
 	private static final float WILD_MAX_HEALTH = 8.0F;
 	private static final float TAMED_MAX_HEALTH = 40.0F;
+	private static final float field_49237 = 0.125F;
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
 	private boolean furWet;
@@ -165,7 +172,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_WOLF_HURT;
+		return this.shouldArmorAbsorbDamage(source) ? SoundEvents.ITEM_WOLF_ARMOR_DAMAGE : SoundEvents.ENTITY_WOLF_HURT;
 	}
 
 	@Override
@@ -312,6 +319,38 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	}
 
 	@Override
+	protected void applyDamage(DamageSource source, float amount) {
+		if (!this.shouldArmorAbsorbDamage(source)) {
+			super.applyDamage(source, amount);
+		} else {
+			ItemStack itemStack = this.getBodyArmor();
+			int i = itemStack.getDamage();
+			int j = itemStack.getMaxDamage();
+			itemStack.damage(MathHelper.ceil(amount), this, EquipmentSlot.BODY);
+			if (Cracks.WOLF_ARMOR.getCrackLevel(i, j) != Cracks.WOLF_ARMOR.getCrackLevel(this.getBodyArmor())) {
+				this.playSoundIfNotSilent(SoundEvents.ITEM_WOLF_ARMOR_CRACK);
+				if (this.getWorld() instanceof ServerWorld serverWorld) {
+					serverWorld.spawnParticles(
+						new ItemStackParticleEffect(ParticleTypes.ITEM, Items.ARMADILLO_SCUTE.getDefaultStack()),
+						this.getX(),
+						this.getY() + 1.0,
+						this.getZ(),
+						20,
+						0.2,
+						0.1,
+						0.2,
+						0.1
+					);
+				}
+			}
+		}
+	}
+
+	private boolean shouldArmorAbsorbDamage(DamageSource source) {
+		return this.hasArmor() && !source.isIn(DamageTypeTags.BYPASSES_WOLF_ARMOR);
+	}
+
+	@Override
 	public boolean tryAttack(Entity target) {
 		boolean bl = target.damage(this.getDamageSources().mobAttack(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
@@ -329,6 +368,11 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		} else {
 			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(8.0);
 		}
+	}
+
+	@Override
+	protected void damageArmor(DamageSource source, float amount) {
+		this.damageEquipment(source, amount, new EquipmentSlot[]{EquipmentSlot.BODY});
 	}
 
 	@Override
@@ -359,12 +403,23 @@ public class WolfEntity extends TameableEntity implements Angerable {
 					this.equipBodyArmor(itemStack.copyWithCount(1));
 					itemStack.decrementUnlessCreative(1, player);
 					return ActionResult.SUCCESS;
-				} else if (itemStack.isOf(Items.SHEARS) && this.isOwner(player) && this.hasArmor()) {
+				} else if (itemStack.isOf(Items.SHEARS) && this.isOwner(player) && this.hasArmor() && !EnchantmentHelper.hasBindingCurse(this.getBodyArmor())) {
 					itemStack.damage(1, player, getSlotForHand(hand));
 					this.playSoundIfNotSilent(SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF);
 					ItemStack itemStack2 = this.getBodyArmor();
 					this.equipBodyArmor(ItemStack.EMPTY);
 					this.dropStack(itemStack2);
+					return ActionResult.SUCCESS;
+				} else if (((Ingredient)ArmorMaterials.ARMADILLO.value().getRepairIngredient().get()).test(itemStack)
+					&& this.isInSittingPose()
+					&& this.hasArmor()
+					&& this.isOwner(player)
+					&& this.getBodyArmor().isDamaged()) {
+					itemStack.decrement(1);
+					this.playSoundIfNotSilent(SoundEvents.ITEM_WOLF_ARMOR_REPAIR);
+					ItemStack itemStack2 = this.getBodyArmor();
+					int i = (int)((float)itemStack2.getMaxDamage() * 0.125F);
+					itemStack2.setDamage(Math.max(0, itemStack2.getDamage() - i));
 					return ActionResult.SUCCESS;
 				} else {
 					ActionResult actionResult = super.interactMob(player, hand);

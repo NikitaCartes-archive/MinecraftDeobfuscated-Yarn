@@ -1,28 +1,17 @@
 package net.minecraft.network.packet.s2c.login;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 
-public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> {
-	public static final PacketCodec<PacketByteBuf, LoginSuccessS2CPacket> CODEC = Packet.createCodec(LoginSuccessS2CPacket::write, LoginSuccessS2CPacket::new);
-	private final GameProfile profile;
-
-	public LoginSuccessS2CPacket(GameProfile profile) {
-		this.profile = profile;
-	}
-
-	private LoginSuccessS2CPacket(PacketByteBuf buf) {
-		this.profile = buf.readGameProfile();
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeGameProfile(this.profile);
-	}
+public record LoginSuccessS2CPacket(GameProfile profile) implements Packet<ClientLoginPacketListener> {
+	public static final PacketCodec<ByteBuf, LoginSuccessS2CPacket> CODEC = PacketCodecs.GAME_PROFILE
+		.xmap(LoginSuccessS2CPacket::new, LoginSuccessS2CPacket::profile);
 
 	@Override
 	public PacketType<LoginSuccessS2CPacket> getPacketId() {
@@ -31,10 +20,6 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 
 	public void apply(ClientLoginPacketListener clientLoginPacketListener) {
 		clientLoginPacketListener.onSuccess(this);
-	}
-
-	public GameProfile getProfile() {
-		return this.profile;
 	}
 
 	@Override

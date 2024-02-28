@@ -252,9 +252,16 @@ public interface CommandSource {
 	 */
 	static boolean shouldSuggest(String remaining, String candidate) {
 		for (int i = 0; !candidate.startsWith(remaining, i); i++) {
-			i = candidate.indexOf(95, i);
-			if (i < 0) {
+			int j = candidate.indexOf(46, i);
+			int k = candidate.indexOf(95, i);
+			if (Math.max(j, k) < 0) {
 				return false;
+			}
+
+			if (j >= 0 && k >= 0) {
+				i = Math.min(k, j);
+			} else {
+				i = j >= 0 ? j : k;
 			}
 		}
 

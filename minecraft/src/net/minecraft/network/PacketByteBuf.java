@@ -4,10 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -149,15 +145,6 @@ import org.joml.Vector3f;
  *  <td>{@link UUID}</td><td>{@link #readUuid()}</td><td>{@link #writeUuid(UUID)}</td>
  * </tr>
  * <tr>
- *  <td>{@index GameProfile}</td><td>{@link #readGameProfile()}</td><td>{@link #writeGameProfile(GameProfile)}</td>
- * </tr>
- * <tr>
- *  <td>{@index Property}</td><td>{@link #readProperty()}</td><td>{@link #writeProperty(Property)}</td>
- * </tr>
- * <tr>
- *  <td>{@index PropertyMap}</td><td>{@link #readPropertyMap()}</td><td>{@link #writePropertyMap(PropertyMap)}</td>
- * </tr>
- * <tr>
  *  <td>{@link NbtCompound}</td><td>{@link #readNbt()}</td><td>{@link #writeNbt(NbtCompound)}</td>
  * </tr>
  * <tr>
@@ -192,9 +179,6 @@ import org.joml.Vector3f;
  * </tr>
  * <tr>
  *  <td>Nullable value</td><td>{@link #readNullable(PacketByteBuf.PacketReader)}</td><td>{@link #writeNullable(Object, PacketByteBuf.PacketWriter)}</td>
- * </tr>
- * <tr>
- *  <td>{@index Either}</td><td>{@link #readEither(PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)}</td><td>{@link #writeEither(Either, PacketByteBuf.PacketWriter, PacketByteBuf.PacketWriter)}</td>
  * </tr>
  * </table></div>
  * 
@@ -592,35 +576,6 @@ public class PacketByteBuf extends ByteBuf {
 		} else {
 			buf.writeBoolean(false);
 		}
-	}
-
-	/**
-	 * Writes an {@code Either} to this buf. An either is represented by
-	 * a boolean indicating if the left side or the right side of the either,
-	 * followed by the value.
-	 * 
-	 * @see #readEither(PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)
-	 */
-	public <L, R> void writeEither(Either<L, R> either, PacketEncoder<? super PacketByteBuf, L> leftWriter, PacketEncoder<? super PacketByteBuf, R> rightWriter) {
-		either.ifLeft(object -> {
-			this.writeBoolean(true);
-			leftWriter.encode(this, (L)object);
-		}).ifRight(object -> {
-			this.writeBoolean(false);
-			rightWriter.encode(this, (R)object);
-		});
-	}
-
-	/**
-	 * Reads an {@code Either} from this buf. An either is represented by
-	 * a boolean indicating if the left side or the right side of the either,
-	 * followed by the value.
-	 * 
-	 * @return the read either
-	 * @see #writeEither(Either, PacketByteBuf.PacketWriter, PacketByteBuf.PacketWriter)
-	 */
-	public <L, R> Either<L, R> readEither(PacketDecoder<? super PacketByteBuf, L> leftReader, PacketDecoder<? super PacketByteBuf, R> rightReader) {
-		return this.readBoolean() ? Either.left(leftReader.decode(this)) : Either.right(rightReader.decode(this));
 	}
 
 	/**
@@ -1575,90 +1530,6 @@ public class PacketByteBuf extends ByteBuf {
 			byte[] bs = bitSet.toByteArray();
 			this.writeBytes(Arrays.copyOf(bs, MathHelper.ceilDiv(size, 8)));
 		}
-	}
-
-	/**
-	 * Reads a game profile from this buf. A game profile is represented by a
-	 * {@linkplain #readUuid() uuid}, a username string, and a collection of
-	 * {@linkplain #readProperty() properties}.
-	 * 
-	 * @return the game profile
-	 * @see #writeGameProfile(GameProfile)
-	 */
-	public GameProfile readGameProfile() {
-		UUID uUID = this.readUuid();
-		String string = this.readString(16);
-		GameProfile gameProfile = new GameProfile(uUID, string);
-		gameProfile.getProperties().putAll(this.readPropertyMap());
-		return gameProfile;
-	}
-
-	/**
-	 * Writes a game profile to this buf. A game profile is represented by a
-	 * {@linkplain #writeUuid(UUID) uuid}, a username string, and a collection of
-	 * {@linkplain #writeProperty(Property) properties}.
-	 * 
-	 * @see #readGameProfile()
-	 */
-	public void writeGameProfile(GameProfile gameProfile) {
-		this.writeUuid(gameProfile.getId());
-		this.writeString(gameProfile.getName());
-		this.writePropertyMap(gameProfile.getProperties());
-	}
-
-	/**
-	 * Reads an authlib property map from this buf. A property map is represented as a
-	 * collection of properties.
-	 * 
-	 * @see #writePropertyMap
-	 */
-	public PropertyMap readPropertyMap() {
-		PropertyMap propertyMap = new PropertyMap();
-		this.forEachInCollection(buf -> {
-			Property property = this.readProperty();
-			propertyMap.put(property.name(), property);
-		});
-		return propertyMap;
-	}
-
-	/**
-	 * Writes an authlib property map to this buf. A property map is represented as a
-	 * collection of properties.
-	 * 
-	 * @see #readPropertyMap
-	 */
-	public void writePropertyMap(PropertyMap propertyMap) {
-		this.writeCollection(propertyMap.values(), PacketByteBuf::writeProperty);
-	}
-
-	/**
-	 * Reads a property from this buf. A property is represented by a string representing
-	 * the property key, a string representing the property value, a boolean indicating
-	 * whether the property is signed, and a string representing the signature (only
-	 * exists if signed).
-	 * 
-	 * @return the property
-	 * @see #writeProperty(Property)
-	 */
-	public Property readProperty() {
-		String string = this.readString();
-		String string2 = this.readString();
-		String string3 = this.readNullable(PacketByteBuf::readString);
-		return new Property(string, string2, string3);
-	}
-
-	/**
-	 * Writes a property to this buf. A property is represented by a string representing
-	 * the property key, a string representing the property value, a boolean indicating
-	 * whether the property is signed, and a string representing the signature (only
-	 * exists if signed).
-	 * 
-	 * @see #readProperty()
-	 */
-	public void writeProperty(Property property) {
-		this.writeString(property.name());
-		this.writeString(property.value());
-		this.writeNullable(property.signature(), PacketByteBuf::writeString);
 	}
 
 	@Override

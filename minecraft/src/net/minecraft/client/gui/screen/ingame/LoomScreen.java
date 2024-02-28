@@ -1,14 +1,11 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BannerPatterns;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.model.ModelPart;
@@ -19,14 +16,11 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BannerItem;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.LoomScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -58,7 +52,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private static final int PATTERN_LIST_OFFSET_Y = 13;
 	private ModelPart bannerField;
 	@Nullable
-	private List<Pair<RegistryEntry<BannerPattern>, DyeColor>> bannerPatterns;
+	private BannerPatternsComponent bannerPatterns;
 	private ItemStack banner = ItemStack.EMPTY;
 	private ItemStack dye = ItemStack.EMPTY;
 	private ItemStack pattern = ItemStack.EMPTY;
@@ -176,11 +170,6 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	}
 
 	private void drawBanner(DrawContext context, RegistryEntry<BannerPattern> pattern, int x, int y) {
-		NbtCompound nbtCompound = new NbtCompound();
-		NbtList nbtList = new BannerPattern.Patterns().add(BannerPatterns.BASE, DyeColor.GRAY).add(pattern, DyeColor.WHITE).toNbt();
-		nbtCompound.put("Patterns", nbtList);
-		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
-		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.push();
 		matrixStack.translate((float)x + 0.5F, (float)(y + 16), 0.0F);
@@ -191,9 +180,12 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
-		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(DyeColor.GRAY, BannerBlockEntity.getPatternListNbt(itemStack));
+		BannerPatternsComponent bannerPatternsComponent = new BannerPatternsComponent.Builder()
+			.add(BannerPatterns.BASE, DyeColor.GRAY)
+			.add(pattern, DyeColor.WHITE)
+			.build();
 		BannerBlockEntityRenderer.renderCanvas(
-			matrixStack, context.getVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list
+			matrixStack, context.getVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, bannerPatternsComponent
 		);
 		matrixStack.pop();
 		context.draw();
@@ -267,17 +259,15 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		if (itemStack.isEmpty()) {
 			this.bannerPatterns = null;
 		} else {
-			this.bannerPatterns = BannerBlockEntity.getPatternsFromNbt(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListNbt(itemStack));
+			this.bannerPatterns = itemStack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+				.withBase(((BannerItem)itemStack.getItem()).getColor());
 		}
 
 		ItemStack itemStack2 = this.handler.getBannerSlot().getStack();
 		ItemStack itemStack3 = this.handler.getDyeSlot().getStack();
 		ItemStack itemStack4 = this.handler.getPatternSlot().getStack();
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack2);
-		this.hasTooManyPatterns = nbtCompound != null
-			&& nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
-			&& !itemStack2.isEmpty()
-			&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
+		BannerPatternsComponent bannerPatternsComponent = itemStack2.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
+		this.hasTooManyPatterns = bannerPatternsComponent.layers().size() >= 6;
 		if (this.hasTooManyPatterns) {
 			this.bannerPatterns = null;
 		}

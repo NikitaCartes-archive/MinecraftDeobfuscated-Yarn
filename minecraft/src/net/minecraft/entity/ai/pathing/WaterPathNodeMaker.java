@@ -13,7 +13,6 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class WaterPathNodeMaker extends PathNodeMaker {
@@ -96,7 +95,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 				pathNode = this.getNode(x, y, z);
 				pathNode.type = pathNodeType;
 				pathNode.penalty = Math.max(pathNode.penalty, f);
-				if (this.cachedWorld.getFluidState(new BlockPos(x, y, z)).isEmpty()) {
+				if (this.context.getWorld().getFluidState(new BlockPos(x, y, z)).isEmpty()) {
 					pathNode.penalty += 8.0F;
 				}
 			}
@@ -107,24 +106,24 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 
 	protected PathNodeType addPathNodePos(int x, int y, int z) {
 		return this.nodePosToType
-			.computeIfAbsent(BlockPos.asLong(x, y, z), (Long2ObjectFunction<? extends PathNodeType>)(pos -> this.getDefaultNodeType(this.cachedWorld, x, y, z)));
+			.computeIfAbsent(BlockPos.asLong(x, y, z), (Long2ObjectFunction<? extends PathNodeType>)(pos -> this.getDefaultNodeType(this.context, x, y, z)));
 	}
 
 	@Override
-	public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
-		return this.getNodeType(world, x, y, z, this.entity);
+	public PathNodeType getDefaultNodeType(PathContext context, int x, int y, int z) {
+		return this.getNodeType(context, x, y, z, this.entity);
 	}
 
 	@Override
-	public PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob) {
+	public PathNodeType getNodeType(PathContext context, int x, int y, int z, MobEntity mob) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int i = x; i < x + this.entityBlockXSize; i++) {
 			for (int j = y; j < y + this.entityBlockYSize; j++) {
 				for (int k = z; k < z + this.entityBlockZSize; k++) {
-					FluidState fluidState = world.getFluidState(mutable.set(i, j, k));
-					BlockState blockState = world.getBlockState(mutable.set(i, j, k));
-					if (fluidState.isEmpty() && blockState.canPathfindThrough(world, mutable.down(), NavigationType.WATER) && blockState.isAir()) {
+					BlockState blockState = context.getBlockState(mutable.set(i, j, k));
+					FluidState fluidState = blockState.getFluidState();
+					if (fluidState.isEmpty() && blockState.canPathfindThrough(NavigationType.WATER) && blockState.isAir()) {
 						return PathNodeType.BREACH;
 					}
 
@@ -135,7 +134,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 			}
 		}
 
-		BlockState blockState2 = world.getBlockState(mutable);
-		return blockState2.canPathfindThrough(world, mutable, NavigationType.WATER) ? PathNodeType.WATER : PathNodeType.BLOCKED;
+		BlockState blockState2 = context.getBlockState(mutable);
+		return blockState2.canPathfindThrough(NavigationType.WATER) ? PathNodeType.WATER : PathNodeType.BLOCKED;
 	}
 }

@@ -206,7 +206,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			RealmsAcceptRejectButton.handleClick(RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, this, this.buttons, button, mouseX, mouseY);
-			return true;
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 
 		private void renderPendingInvitationItem(DrawContext context, PendingInvite invite, int x, int y, int mouseX, int mouseY) {
