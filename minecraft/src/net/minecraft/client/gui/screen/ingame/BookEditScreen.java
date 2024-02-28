@@ -10,7 +10,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -21,19 +21,20 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.Rect2i;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
+import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -86,9 +87,9 @@ public class BookEditScreen extends Screen {
 		this.player = player;
 		this.itemStack = itemStack;
 		this.hand = hand;
-		NbtCompound nbtCompound = itemStack.getNbt();
-		if (nbtCompound != null) {
-			BookScreen.filterPages(nbtCompound, this.pages::add);
+		WritableBookContentComponent writableBookContentComponent = itemStack.get(DataComponentTypes.WRITABLE_BOOK_CONTENT);
+		if (writableBookContentComponent != null) {
+			writableBookContentComponent.stream(MinecraftClient.getInstance().shouldFilterText()).forEach(this.pages::add);
 		}
 
 		if (this.pages.isEmpty()) {
@@ -179,7 +180,7 @@ public class BookEditScreen extends Screen {
 		this.signButton.visible = !this.signing;
 		this.cancelButton.visible = this.signing;
 		this.finalizeButton.visible = this.signing;
-		this.finalizeButton.active = !Util.isBlank(this.title);
+		this.finalizeButton.active = !StringHelper.isBlank(this.title);
 	}
 
 	private void removeEmptyPages() {
@@ -193,23 +194,14 @@ public class BookEditScreen extends Screen {
 	private void finalizeBook(boolean signBook) {
 		if (this.dirty) {
 			this.removeEmptyPages();
-			this.writeNbtData(signBook);
+			this.writeNbtData();
 			int i = this.hand == Hand.MAIN_HAND ? this.player.getInventory().selectedSlot : 40;
 			this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(i, this.pages, signBook ? Optional.of(this.title.trim()) : Optional.empty()));
 		}
 	}
 
-	private void writeNbtData(boolean signBook) {
-		NbtList nbtList = new NbtList();
-		this.pages.stream().map(NbtString::of).forEach(nbtList::add);
-		if (!this.pages.isEmpty()) {
-			this.itemStack.setSubNbt("pages", nbtList);
-		}
-
-		if (signBook) {
-			this.itemStack.setSubNbt("author", NbtString.of(this.player.getGameProfile().getName()));
-			this.itemStack.setSubNbt("title", NbtString.of(this.title.trim()));
-		}
+	private void writeNbtData() {
+		this.itemStack.set(DataComponentTypes.WRITABLE_BOOK_CONTENT, new WritableBookContentComponent(this.pages.stream().map(RawFilteredPair::of).toList()));
 	}
 
 	private void appendNewPage() {
@@ -249,7 +241,7 @@ public class BookEditScreen extends Screen {
 			} else {
 				return false;
 			}
-		} else if (SharedConstants.isValidChar(chr)) {
+		} else if (StringHelper.isValidChar(chr)) {
 			this.currentPageSelectionManager.insert(Character.toString(chr));
 			this.invalidatePageContent();
 			return true;
@@ -413,7 +405,7 @@ public class BookEditScreen extends Screen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.renderBackground(context, mouseX, mouseY, delta);
+		this.renderInGameBackground(context);
 		context.drawTexture(BookScreen.BOOK_TEXTURE, (this.width - 192) / 2, 2, 0, 0, 192, 192);
 	}
 

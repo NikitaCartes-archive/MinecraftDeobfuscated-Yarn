@@ -78,7 +78,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 		super.readNbt(nbt, registryLookup);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.readLootTable(nbt)) {
-			Inventories.readNbt(nbt, this.inventory);
+			Inventories.readNbt(nbt, this.inventory, registryLookup);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		if (!this.writeLootTable(nbt)) {
-			Inventories.writeNbt(nbt, this.inventory);
+			Inventories.writeNbt(nbt, this.inventory, registryLookup);
 		}
 	}
 

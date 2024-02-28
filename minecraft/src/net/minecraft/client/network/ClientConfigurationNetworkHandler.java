@@ -33,7 +33,7 @@ import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandler implements TickablePacketListener, ClientConfigurationPacketListener {
+public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandler implements ClientConfigurationPacketListener, TickablePacketListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final GameProfile profile;
 	private FeatureSet enabledFeatures;

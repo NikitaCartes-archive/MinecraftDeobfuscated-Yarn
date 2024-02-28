@@ -11,7 +11,7 @@ import net.minecraft.text.TextCodecs;
 
 public record SubtitleS2CPacket(Text text) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, SubtitleS2CPacket> CODEC = PacketCodec.tuple(
-		TextCodecs.REGISTRY_PACKET_CODEC, SubtitleS2CPacket::text, SubtitleS2CPacket::new
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC, SubtitleS2CPacket::text, SubtitleS2CPacket::new
 	);
 
 	@Override

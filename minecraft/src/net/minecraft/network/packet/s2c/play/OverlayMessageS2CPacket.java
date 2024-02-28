@@ -11,7 +11,7 @@ import net.minecraft.text.TextCodecs;
 
 public record OverlayMessageS2CPacket(Text text) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, OverlayMessageS2CPacket> CODEC = PacketCodec.tuple(
-		TextCodecs.REGISTRY_PACKET_CODEC, OverlayMessageS2CPacket::text, OverlayMessageS2CPacket::new
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC, OverlayMessageS2CPacket::text, OverlayMessageS2CPacket::new
 	);
 
 	@Override

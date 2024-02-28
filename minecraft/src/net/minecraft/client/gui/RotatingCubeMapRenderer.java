@@ -23,6 +23,10 @@ public class RotatingCubeMapRenderer {
 		this.cubeMap.draw(this.client, 10.0F, -this.pitch, alpha);
 	}
 
+	public void render(float delta) {
+		this.render(delta, 1.0F);
+	}
+
 	private static float wrapOnce(float a, float b) {
 		return a > b ? a - b : a;
 	}

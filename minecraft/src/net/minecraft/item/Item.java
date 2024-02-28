@@ -1,6 +1,8 @@
 package net.minecraft.item;
 
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.mojang.logging.LogUtils;
@@ -14,6 +16,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -23,7 +29,6 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -78,12 +83,13 @@ import org.slf4j.Logger;
 public class Item implements ToggleableFeature, ItemConvertible {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Map<Block, Item> BLOCK_ITEMS = Maps.<Block, Item>newHashMap();
-	protected static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
-	protected static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
+	public static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
+	public static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
 	public static final int DEFAULT_MAX_COUNT = 64;
 	public static final int DEFAULT_MAX_USE_TIME = 32;
 	public static final int ITEM_BAR_STEPS = 13;
 	private final RegistryEntry.Reference<Item> registryEntry = Registries.ITEM.createEntry(this);
+	private final ComponentMap components;
 	private final Rarity rarity;
 	private final int maxCount;
 	private final int maxDamage;
@@ -119,6 +125,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	public Item(Item.Settings settings) {
+		this.components = settings.getComponents();
 		this.rarity = settings.rarity;
 		this.recipeRemainder = settings.recipeRemainder;
 		this.maxDamage = settings.maxDamage;
@@ -137,6 +144,10 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	@Deprecated
 	public RegistryEntry.Reference<Item> getRegistryEntry() {
 		return this.registryEntry;
+	}
+
+	public ComponentMap getComponents() {
+		return this.components;
 	}
 
 	/**
@@ -164,11 +175,11 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	/**
-	 * Processes the NBT applied to an item stack of this item.
+	 * Processes the components applied to an item stack of this item.
 	 * 
-	 * <p>This is only used in vanilla to process player head NBT data.
+	 * <p>This is only used in vanilla to process player head component data.
 	 */
-	public void postProcessNbt(NbtCompound nbt) {
+	public void postProcessComponents(ItemStack stack) {
 	}
 
 	/**
@@ -452,15 +463,6 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	/**
-	 * Checks if an item should have its NBT data stored in {@link ItemStack#nbt} sent to the client.
-	 * 
-	 * <p>If an item is damageable, this method is ignored and data is always synced to client.
-	 */
-	public boolean isNbtSynced() {
-		return true;
-	}
-
-	/**
 	 * Gets the remainder item that should be left behind when this item is used as a crafting ingredient.
 	 */
 	@Nullable
@@ -506,7 +508,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	/**
 	 * {@return whether the item needs to sync additional data to clients}
 	 * 
-	 * <p>Items should ideally store all necessary information on the stack's NBT.
+	 * <p>Items should ideally store all necessary information in the stack's components.
 	 * However, this is not always possible for things like maps. In those cases,
 	 * items can send a packet to the player holding it that syncs additional data.
 	 * Such items must subclass {@link NetworkSyncedItem}.
@@ -644,6 +646,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * 
 	 * <p>Tools and armor should override this to specify the attack damage or armor points.
 	 */
+	@Deprecated
 	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
 		return ImmutableMultimap.of();
 	}
@@ -655,8 +658,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	/**
 	 * {@return the default stack for this item}
 	 * 
-	 * <p>Items that expect certain NBT data in the item stack should override
-	 * this method to return the stack with the NBT data.
+	 * <p>Items that expect certain components in the item stack should override
+	 * this method to return the stack with the component data.
 	 */
 	public ItemStack getDefaultStack() {
 		return new ItemStack(this);
@@ -691,6 +694,10 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return SoundEvents.ENTITY_GENERIC_EAT;
 	}
 
+	public SoundEvent getBreakSound() {
+		return SoundEvents.ENTITY_ITEM_BREAK;
+	}
+
 	/**
 	 * {@return whether this item is immune to fire and lava damage}
 	 */
@@ -723,6 +730,9 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * of {@link Item} (or most of its subclasses).
 	 */
 	public static class Settings {
+		private static final Interner<ComponentMap> COMPONENT_MAP_INTERNER = Interners.newStrongInterner();
+		@Nullable
+		private ComponentMap.Builder components;
 		int maxCount = 64;
 		int maxDamage;
 		@Nullable
@@ -791,6 +801,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		public Item.Settings maxDamage(int maxDamage) {
 			this.maxDamage = maxDamage;
 			this.maxCount = 1;
+			this.component(DataComponentTypes.DAMAGE, 0);
 			return this;
 		}
 
@@ -832,6 +843,23 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		public Item.Settings requires(FeatureFlag... features) {
 			this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
 			return this;
+		}
+
+		public <T> Item.Settings component(DataComponentType<T> type, T value) {
+			if (this.components == null) {
+				this.components = ComponentMap.builder().addAll(DataComponentTypes.DEFAULT_ITEM_COMPONENTS);
+			}
+
+			this.components.add(type, value);
+			return this;
+		}
+
+		public Item.Settings attributeModifiers(AttributeModifiersComponent attributeModifiersComponent) {
+			return this.component(DataComponentTypes.ATTRIBUTE_MODIFIERS, attributeModifiersComponent);
+		}
+
+		ComponentMap getComponents() {
+			return this.components == null ? DataComponentTypes.DEFAULT_ITEM_COMPONENTS : COMPONENT_MAP_INTERNER.intern(this.components.build());
 		}
 	}
 }

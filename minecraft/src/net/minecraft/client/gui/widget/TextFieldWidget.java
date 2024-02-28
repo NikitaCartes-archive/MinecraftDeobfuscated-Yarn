@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -24,6 +23,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -126,7 +126,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		int j = Math.max(this.selectionStart, this.selectionEnd);
 		int k = this.maxLength - this.text.length() - (i - j);
 		if (k > 0) {
-			String string = SharedConstants.stripInvalidChars(text);
+			String string = StringHelper.stripInvalidChars(text);
 			int l = string.length();
 			if (k < l) {
 				if (Character.isHighSurrogate(string.charAt(k - 1))) {
@@ -344,7 +344,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	public boolean charTyped(char chr, int modifiers) {
 		if (!this.isActive()) {
 			return false;
-		} else if (SharedConstants.isValidChar(chr)) {
+		} else if (StringHelper.isValidChar(chr)) {
 			if (this.editable) {
 				this.write(Character.toString(chr));
 			}

@@ -254,7 +254,7 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	private ScoreboardState stateFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createState().readNbt(nbt);
+		return this.createState().readNbt(nbt, registryLookup);
 	}
 
 	public static enum UpdateMode {

@@ -24,6 +24,7 @@ import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.text.Text;
@@ -31,8 +32,8 @@ import net.minecraft.util.Identifier;
 
 public class VanillaChestLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
-		exporter.accept(
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+		consumer.accept(
 			LootTables.ABANDONED_MINESHAFT_CHEST,
 			LootTable.builder()
 				.pool(
@@ -70,11 +71,11 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Blocks.TORCH).weight(15).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 16.0F))))
 				)
 		);
-		exporter.accept(LootTables.BASTION_BRIDGE_CHEST, createBastionBridgeChestTableBuilder());
-		exporter.accept(LootTables.BASTION_HOGLIN_STABLE_CHEST, createBastionHoglinStableChestTableBuilder());
-		exporter.accept(LootTables.BASTION_OTHER_CHEST, createBastionOtherChestTableBuilder());
-		exporter.accept(LootTables.BASTION_TREASURE_CHEST, createBastionTreasureChestTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.BASTION_BRIDGE_CHEST, createBastionBridgeChestTableBuilder());
+		consumer.accept(LootTables.BASTION_HOGLIN_STABLE_CHEST, createBastionHoglinStableChestTableBuilder());
+		consumer.accept(LootTables.BASTION_OTHER_CHEST, createBastionOtherChestTableBuilder());
+		consumer.accept(LootTables.BASTION_TREASURE_CHEST, createBastionTreasureChestTableBuilder());
+		consumer.accept(
 			LootTables.BURIED_TREASURE_CHEST,
 			LootTable.builder()
 				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.HEART_OF_THE_SEA)))
@@ -111,8 +112,8 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.apply(SetPotionLootFunction.builder(Potions.WATER_BREATHING))
 				)
 		);
-		exporter.accept(LootTables.ANCIENT_CITY_CHEST, createAncientCityChestTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.ANCIENT_CITY_CHEST, createAncientCityChestTableBuilder());
+		consumer.accept(
 			LootTables.ANCIENT_CITY_ICE_BOX_CHEST,
 			LootTable.builder()
 				.pool(
@@ -134,9 +135,9 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.SNOWBALL).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 6.0F))))
 				)
 		);
-		exporter.accept(LootTables.DESERT_PYRAMID_CHEST, createDesertPyramidChestTableBuilder());
-		exporter.accept(LootTables.END_CITY_TREASURE_CHEST, createEndCityTreasureChestTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.DESERT_PYRAMID_CHEST, createDesertPyramidChestTableBuilder());
+		consumer.accept(LootTables.END_CITY_TREASURE_CHEST, createEndCityTreasureChestTableBuilder());
+		consumer.accept(
 			LootTables.IGLOO_CHEST_CHEST,
 			LootTable.builder()
 				.pool(
@@ -152,8 +153,8 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 				)
 				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.GOLDEN_APPLE)))
 		);
-		exporter.accept(LootTables.JUNGLE_TEMPLE_CHEST, createJungleTempleChestTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.JUNGLE_TEMPLE_CHEST, createJungleTempleChestTableBuilder());
+		consumer.accept(
 			LootTables.JUNGLE_TEMPLE_DISPENSER_CHEST,
 			LootTable.builder()
 				.pool(
@@ -162,12 +163,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.ARROW).weight(30).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 7.0F))))
 				)
 		);
-		exporter.accept(LootTables.NETHER_BRIDGE_CHEST, createNetherBridgeChestTableBuilder());
-		exporter.accept(LootTables.PILLAGER_OUTPOST_CHEST, createPillagerOutpostChestTableBuilder());
-		exporter.accept(LootTables.SHIPWRECK_MAP_CHEST, createShipwreckMapChestTableBuilder());
-		exporter.accept(LootTables.SHIPWRECK_SUPPLY_CHEST, createShipwreckSupplyChestTableBuilder());
-		exporter.accept(LootTables.SHIPWRECK_TREASURE_CHEST, createShipwreckTreasureChestTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.NETHER_BRIDGE_CHEST, createNetherBridgeChestTableBuilder());
+		consumer.accept(LootTables.PILLAGER_OUTPOST_CHEST, createPillagerOutpostChestTableBuilder());
+		consumer.accept(LootTables.SHIPWRECK_MAP_CHEST, createShipwreckMapChestTableBuilder());
+		consumer.accept(LootTables.SHIPWRECK_SUPPLY_CHEST, createShipwreckSupplyChestTableBuilder());
+		consumer.accept(LootTables.SHIPWRECK_TREASURE_CHEST, createShipwreckTreasureChestTableBuilder());
+		consumer.accept(
 			LootTables.SIMPLE_DUNGEON_CHEST,
 			LootTable.builder()
 				.pool(
@@ -208,7 +209,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.STRING).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.SPAWN_BONUS_CHEST,
 			LootTable.builder()
 				.pool(
@@ -244,8 +245,8 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Blocks.MANGROVE_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 				)
 		);
-		exporter.accept(LootTables.STRONGHOLD_CORRIDOR_CHEST, createStrongholdCorridorChestTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.STRONGHOLD_CORRIDOR_CHEST, createStrongholdCorridorChestTableBuilder());
+		consumer.accept(
 			LootTables.STRONGHOLD_CROSSING_CHEST,
 			LootTable.builder()
 				.pool(
@@ -261,8 +262,8 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.BOOK).apply(EnchantWithLevelsLootFunction.builder(ConstantLootNumberProvider.create(30.0F)).allowTreasureEnchantments()))
 				)
 		);
-		exporter.accept(LootTables.STRONGHOLD_LIBRARY_CHEST, createStrongholdLibraryChestTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.STRONGHOLD_LIBRARY_CHEST, createStrongholdLibraryChestTableBuilder());
+		consumer.accept(
 			LootTables.UNDERWATER_RUIN_BIG_CHEST,
 			LootTable.builder()
 				.pool(
@@ -295,7 +296,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						)
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.UNDERWATER_RUIN_SMALL_CHEST,
 			LootTable.builder()
 				.pool(
@@ -327,7 +328,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						)
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_WEAPONSMITH_CHEST,
 			LootTable.builder()
 				.pool(
@@ -352,7 +353,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.DIAMOND_HORSE_ARMOR))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_TOOLSMITH_CHEST,
 			LootTable.builder()
 				.pool(
@@ -368,7 +369,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.IRON_SHOVEL).weight(5))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_CARTOGRAPHER_CHEST,
 			LootTable.builder()
 				.pool(
@@ -381,7 +382,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.STICK).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_MASON_CHEST,
 			LootTable.builder()
 				.pool(
@@ -397,7 +398,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.EMERALD).weight(1))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_ARMORER_CHEST,
 			LootTable.builder()
 				.pool(
@@ -409,7 +410,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.EMERALD).weight(1))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_SHEPARD_CHEST,
 			LootTable.builder()
 				.pool(
@@ -425,7 +426,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.WHEAT).weight(6).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 6.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_BUTCHER_CHEST,
 			LootTable.builder()
 				.pool(
@@ -439,7 +440,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.COAL).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_FLETCHER_CHEST,
 			LootTable.builder()
 				.pool(
@@ -453,7 +454,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.STICK).weight(6).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_FISHER_CHEST,
 			LootTable.builder()
 				.pool(
@@ -468,7 +469,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.COAL).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_TANNERY_CHEST,
 			LootTable.builder()
 				.pool(
@@ -484,7 +485,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.EMERALD).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_TEMPLE_CHEST,
 			LootTable.builder()
 				.pool(
@@ -498,7 +499,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.EMERALD).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_PLAINS_CHEST,
 			LootTable.builder()
 				.pool(
@@ -516,7 +517,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Blocks.OAK_SAPLING).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_TAIGA_HOUSE_CHEST,
 			LootTable.builder()
 				.pool(
@@ -536,7 +537,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.SPRUCE_LOG).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 5.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_SAVANNA_HOUSE_CHEST,
 			LootTable.builder()
 				.pool(
@@ -554,7 +555,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.BUCKET).weight(1))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_SNOWY_HOUSE_CHEST,
 			LootTable.builder()
 				.pool(
@@ -572,7 +573,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.COAL).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.VILLAGE_DESERT_HOUSE_CHEST,
 			LootTable.builder()
 				.pool(
@@ -588,8 +589,8 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.EMERALD).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 				)
 		);
-		exporter.accept(LootTables.WOODLAND_MANSION_CHEST, createWoodlandMansionChestTableBuilder());
-		exporter.accept(
+		consumer.accept(LootTables.WOODLAND_MANSION_CHEST, createWoodlandMansionChestTableBuilder());
+		consumer.accept(
 			LootTables.RUINED_PORTAL_CHEST,
 			LootTable.builder()
 				.pool(
@@ -622,17 +623,17 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.GOLD_BLOCK).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 				)
 		);
-		exporter.accept(LootTables.TRIAL_CHAMBERS_REWARD_CHEST, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_SUPPLY_CHEST, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_CHEST, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_ENTRANCE_CHEST, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_INTERSECTION_CHEST, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_INTERSECTION_BARREL_CHEST, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_CHAMBER_DISPENSER, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_DISPENSER, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_WATER_DISPENSER, LootTable.builder());
-		exporter.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_POT, LootTable.builder());
-		acceptTrialSpawnerTables(exporter);
+		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_SUPPLY_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_ENTRANCE_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_INTERSECTION_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_INTERSECTION_BARREL_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_CHAMBER_DISPENSER, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_DISPENSER, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_WATER_DISPENSER, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_POT, LootTable.builder());
+		acceptTrialSpawnerTables(consumer);
 	}
 
 	public static void acceptTrialSpawnerTables(BiConsumer<Identifier, LootTable.Builder> exporter) {

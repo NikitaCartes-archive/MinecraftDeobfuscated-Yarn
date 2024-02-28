@@ -6,6 +6,7 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import com.mojang.datafixers.types.templates.Hook.HookFunction;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 import org.slf4j.Logger;
 
@@ -292,17 +294,13 @@ public class Schema99 extends Schema {
 						"id",
 						DSL.or(DSL.constType(DSL.intType()), TypeReferences.ITEM_NAME.in(schema)),
 						"tag",
-						DSL.optionalFields(
-							"EntityTag",
-							TypeReferences.ENTITY_TREE.in(schema),
-							"BlockEntityTag",
-							TypeReferences.BLOCK_ENTITY.in(schema),
-							"CanDestroy",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
-							"CanPlaceOn",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
-							"Items",
-							DSL.list(TypeReferences.ITEM_STACK.in(schema))
+						FixUtil.method_57188(
+							Pair.of("EntityTag", TypeReferences.ENTITY_TREE.in(schema)),
+							Pair.of("BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema)),
+							Pair.of("CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema))),
+							Pair.of("CanPlaceOn", DSL.list(TypeReferences.BLOCK_NAME.in(schema))),
+							Pair.of("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
+							Pair.of("ChargedProjectiles", DSL.list(TypeReferences.ITEM_STACK.in(schema)))
 						)
 					),
 					field_5747,
@@ -340,6 +338,7 @@ public class Schema99 extends Schema {
 		schema.registerType(false, TypeReferences.POI_CHUNK, DSL::remainder);
 		schema.registerType(false, TypeReferences.WORLD_GEN_SETTINGS, DSL::remainder);
 		schema.registerType(false, TypeReferences.ENTITY_CHUNK, () -> DSL.optionalFields("Entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema))));
+		schema.registerType(true, TypeReferences.DATA_COMPONENTS, DSL::remainder);
 	}
 
 	protected static <T> T updateBlockEntityTags(Dynamic<T> stack, Map<String, String> renames, String newArmorStandId) {

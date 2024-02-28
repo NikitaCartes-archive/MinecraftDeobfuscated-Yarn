@@ -9,11 +9,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.block.SuspiciousStewIngredient;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
@@ -73,7 +73,8 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 				i *= 20;
 			}
 
-			SuspiciousStewItem.addEffectsToStew(stack, List.of(new SuspiciousStewIngredient.StewEffect(registryEntry, i)));
+			SuspiciousStewEffectsComponent.StewEffect stewEffect2 = new SuspiciousStewEffectsComponent.StewEffect(registryEntry, i);
+			stack.apply(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffectsComponent.DEFAULT, stewEffect2, SuspiciousStewEffectsComponent::with);
 			return stack;
 		} else {
 			return stack;

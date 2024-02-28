@@ -1,7 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -9,6 +8,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -32,7 +33,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
@@ -43,11 +43,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
@@ -389,10 +386,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	private boolean damageFromPotion(DamageSource source, PotionEntity potion, float amount) {
 		ItemStack itemStack = potion.getStack();
-		RegistryEntry<Potion> registryEntry = PotionUtil.getPotion(itemStack);
-		List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-		boolean bl = registryEntry.matches(Potions.WATER) && list.isEmpty();
-		return bl ? super.damage(source, amount) : false;
+		PotionContentsComponent potionContentsComponent = itemStack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
+		return potionContentsComponent.matches(Potions.WATER) ? super.damage(source, amount) : false;
 	}
 
 	public boolean isAngry() {

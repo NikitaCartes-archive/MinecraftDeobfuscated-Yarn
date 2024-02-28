@@ -250,6 +250,16 @@ public class DrawContext {
 		vertexConsumer.vertex(matrix4f, (float)endX, (float)startY, (float)z).color(g, h, i, f).next();
 	}
 
+	public void fillWithLayer(RenderLayer layer, int startX, int startY, int endX, int endY, int z) {
+		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
+		VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(layer);
+		vertexConsumer.vertex(matrix4f, (float)startX, (float)startY, (float)z).next();
+		vertexConsumer.vertex(matrix4f, (float)startX, (float)endY, (float)z).next();
+		vertexConsumer.vertex(matrix4f, (float)endX, (float)endY, (float)z).next();
+		vertexConsumer.vertex(matrix4f, (float)endX, (float)startY, (float)z).next();
+		this.tryDraw();
+	}
+
 	public void drawCenteredTextWithShadow(TextRenderer textRenderer, String text, int centerX, int y, int color) {
 		this.drawTextWithShadow(textRenderer, text, centerX - textRenderer.getWidth(text) / 2, y, color);
 	}
@@ -578,8 +588,7 @@ public class DrawContext {
 				CrashReport crashReport = CrashReport.create(var12, "Rendering item");
 				CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
 				crashReportSection.add("Item Type", (CrashCallable<String>)(() -> String.valueOf(stack.getItem())));
-				crashReportSection.add("Item Damage", (CrashCallable<String>)(() -> String.valueOf(stack.getDamage())));
-				crashReportSection.add("Item NBT", (CrashCallable<String>)(() -> String.valueOf(stack.getNbt())));
+				crashReportSection.add("Item Components", (CrashCallable<String>)(() -> String.valueOf(stack.getComponents())));
 				crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(stack.hasGlint())));
 				throw new CrashException(crashReport);
 			}

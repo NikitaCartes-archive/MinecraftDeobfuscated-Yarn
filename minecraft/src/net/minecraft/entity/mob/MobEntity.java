@@ -11,6 +11,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -412,12 +415,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		NbtList nbtList = new NbtList();
 
 		for(ItemStack itemStack : this.armorItems) {
-			NbtCompound nbtCompound = new NbtCompound();
 			if (!itemStack.isEmpty()) {
-				itemStack.writeNbt(nbtCompound);
+				nbtList.add(itemStack.encode(this.getRegistryManager()));
+			} else {
+				nbtList.add(new NbtCompound());
 			}
-
-			nbtList.add(nbtCompound);
 		}
 
 		nbt.put("ArmorItems", nbtList);
@@ -431,12 +433,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		NbtList nbtList3 = new NbtList();
 
 		for(ItemStack itemStack2 : this.handItems) {
-			NbtCompound nbtCompound2 = new NbtCompound();
 			if (!itemStack2.isEmpty()) {
-				itemStack2.writeNbt(nbtCompound2);
+				nbtList3.add(itemStack2.encode(this.getRegistryManager()));
+			} else {
+				nbtList3.add(new NbtCompound());
 			}
-
-			nbtList3.add(nbtCompound2);
 		}
 
 		nbt.put("HandItems", nbtList3);
@@ -448,7 +449,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 		nbt.put("HandDropChances", nbtList4);
 		if (!this.bodyArmor.isEmpty()) {
-			nbt.put("body_armor_item", this.bodyArmor.writeNbt(new NbtCompound()));
+			nbt.put("body_armor_item", this.bodyArmor.encode(this.getRegistryManager()));
 			nbt.putFloat("body_armor_drop_chance", this.bodyArmorDropChance);
 		}
 
@@ -456,8 +457,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		if (this.holdingEntity instanceof LivingEntity) {
 			either = Either.left(this.holdingEntity.getUuid());
 		} else {
-			Entity var22 = this.holdingEntity;
-			if (var22 instanceof AbstractDecorationEntity abstractDecorationEntity) {
+			Entity var20 = this.holdingEntity;
+			if (var20 instanceof AbstractDecorationEntity abstractDecorationEntity) {
 				either = Either.right(abstractDecorationEntity.getDecorationBlockPos());
 			}
 		}
@@ -495,7 +496,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			NbtList nbtList = nbt.getList("ArmorItems", NbtElement.COMPOUND_TYPE);
 
 			for(int i = 0; i < this.armorItems.size(); ++i) {
-				this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				this.armorItems.set(i, ItemStack.fromNbtOrEmpty(this.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -511,7 +513,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			NbtList nbtList = nbt.getList("HandItems", NbtElement.COMPOUND_TYPE);
 
 			for(int i = 0; i < this.handItems.size(); ++i) {
-				this.handItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				this.handItems.set(i, ItemStack.fromNbtOrEmpty(this.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -524,8 +527,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		}
 
 		if (nbt.contains("body_armor_item", NbtElement.COMPOUND_TYPE)) {
-			this.bodyArmor = ItemStack.fromNbt(nbt.getCompound("body_armor_item"));
+			this.bodyArmor = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("body_armor_item")).orElse(ItemStack.EMPTY);
 			this.bodyArmorDropChance = nbt.getFloat("body_armor_drop_chance");
+		} else {
+			this.bodyArmor = ItemStack.EMPTY;
 		}
 
 		if (nbt.contains("leash", NbtElement.COMPOUND_TYPE)) {
@@ -682,10 +687,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			if (!(oldStack.getItem() instanceof SwordItem)) {
 				return true;
 			} else {
-				SwordItem swordItem = (SwordItem)newStack.getItem();
-				SwordItem swordItem2 = (SwordItem)oldStack.getItem();
-				if (swordItem.getAttackDamage() != swordItem2.getAttackDamage()) {
-					return swordItem.getAttackDamage() > swordItem2.getAttackDamage();
+				double d = this.getAttackDamageWith(newStack);
+				double e = this.getAttackDamageWith(oldStack);
+				if (d != e) {
+					return d > e;
 				} else {
 					return this.prefersNewDamageableItem(newStack, oldStack);
 				}
@@ -695,8 +700,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		} else if (newStack.getItem() instanceof CrossbowItem && oldStack.getItem() instanceof CrossbowItem) {
 			return this.prefersNewDamageableItem(newStack, oldStack);
 		} else {
-			Item miningToolItem = newStack.getItem();
-			if (miningToolItem instanceof ArmorItem armorItem) {
+			Item d = newStack.getItem();
+			if (d instanceof ArmorItem armorItem) {
 				if (EnchantmentHelper.hasBindingCurse(oldStack)) {
 					return false;
 				} else if (!(oldStack.getItem() instanceof ArmorItem)) {
@@ -717,11 +722,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 						return true;
 					}
 
-					Item miningToolItem2 = oldStack.getItem();
-					if (miningToolItem2 instanceof MiningToolItem miningToolItem) {
-						MiningToolItem miningToolItem2x = (MiningToolItem)newStack.getItem();
-						if (miningToolItem2x.getAttackDamage() != miningToolItem.getAttackDamage()) {
-							return miningToolItem2x.getAttackDamage() > miningToolItem.getAttackDamage();
+					if (oldStack.getItem() instanceof MiningToolItem) {
+						double d = this.getAttackDamageWith(newStack);
+						double e = this.getAttackDamageWith(oldStack);
+						if (d != e) {
+							return d > e;
 						}
 
 						return this.prefersNewDamageableItem(newStack, oldStack);
@@ -733,17 +738,23 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		}
 	}
 
+	private double getAttackDamageWith(ItemStack stack) {
+		AttributeModifiersComponent attributeModifiersComponent = stack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
+		return attributeModifiersComponent.applyOperations(this.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE), EquipmentSlot.MAINHAND);
+	}
+
 	public boolean prefersNewDamageableItem(ItemStack newStack, ItemStack oldStack) {
-		if (newStack.getDamage() >= oldStack.getDamage() && (!newStack.hasNbt() || oldStack.hasNbt())) {
-			if (newStack.hasNbt() && oldStack.hasNbt()) {
-				return newStack.getNbt().getKeys().stream().anyMatch(key -> !key.equals("Damage"))
-					&& !oldStack.getNbt().getKeys().stream().anyMatch(key -> !key.equals("Damage"));
-			} else {
-				return false;
-			}
-		} else {
+		if (newStack.getDamage() < oldStack.getDamage()) {
 			return true;
+		} else {
+			return hasComponentsOtherThanDamage(newStack) && !hasComponentsOtherThanDamage(oldStack);
 		}
+	}
+
+	private static boolean hasComponentsOtherThanDamage(ItemStack stack) {
+		ComponentMap componentMap = stack.getComponents();
+		int i = componentMap.size();
+		return i > 1 || i == 1 && !componentMap.contains(DataComponentTypes.DAMAGE);
 	}
 
 	public boolean canPickupItem(ItemStack stack) {

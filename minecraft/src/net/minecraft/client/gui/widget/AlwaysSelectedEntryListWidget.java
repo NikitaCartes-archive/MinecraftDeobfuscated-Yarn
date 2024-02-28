@@ -63,6 +63,11 @@ public abstract class AlwaysSelectedEntryListWidget<E extends AlwaysSelectedEntr
 		public abstract Text getNarration();
 
 		@Override
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+			return true;
+		}
+
+		@Override
 		public void appendNarrations(NarrationMessageBuilder builder) {
 			builder.put(NarrationPart.TITLE, this.getNarration());
 		}

@@ -20,10 +20,12 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerator {
@@ -96,7 +98,12 @@ public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerato
 				true,
 				false
 			)
-			.criterion("in_city", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.END_CITY)))
+			.criterion(
+				"in_city",
+				TickCriterion.Conditions.createLocation(
+					LocationPredicate.Builder.createStructure(lookup.<Structure>getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.END_CITY))
+				)
+			)
 			.build(exporter, "end/find_end_city");
 		Advancement.Builder.create()
 			.parent(advancementEntry2)

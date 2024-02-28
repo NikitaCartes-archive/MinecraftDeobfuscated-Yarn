@@ -36,10 +36,6 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-	}
-
-	@Override
 	public void close() {
 		this.stopSleeping();
 	}

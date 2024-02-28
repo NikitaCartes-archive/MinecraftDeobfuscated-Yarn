@@ -12,25 +12,23 @@ public class Schema3083 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static void method_42645(Schema schema, Map<String, Supplier<TypeTemplate>> map, String name) {
+	@Override
+	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
+		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
 		schema.register(
 			map,
-			name,
+			"minecraft:allay",
 			(Supplier<TypeTemplate>)(() -> DSL.optionalFields(
 					"ArmorItems",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"HandItems",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
+					"Inventory",
+					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"listener",
 					DSL.optionalFields("event", DSL.optionalFields("game_event", TypeReferences.GAME_EVENT_NAME.in(schema)))
 				))
 		);
-	}
-
-	@Override
-	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
-		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		method_42645(schema, map, "minecraft:allay");
 		return map;
 	}
 }

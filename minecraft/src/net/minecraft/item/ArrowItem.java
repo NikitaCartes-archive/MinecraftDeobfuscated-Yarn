@@ -11,8 +11,6 @@ public class ArrowItem extends Item {
 	}
 
 	public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
-		ArrowEntity arrowEntity = new ArrowEntity(world, shooter, stack.copyWithCount(1));
-		arrowEntity.initFromStack(stack);
-		return arrowEntity;
+		return new ArrowEntity(world, shooter, stack.copyWithCount(1));
 	}
 }

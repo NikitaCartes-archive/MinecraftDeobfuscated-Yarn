@@ -21,7 +21,7 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		BlockEntityUpdateS2CPacket::getPos,
 		PacketCodecs.registryValue(RegistryKeys.BLOCK_ENTITY_TYPE),
 		BlockEntityUpdateS2CPacket::getBlockEntityType,
-		PacketCodecs.NBT_COMPOUND,
+		PacketCodecs.UNLIMITED_NBT_COMPOUND,
 		BlockEntityUpdateS2CPacket::getNbt,
 		BlockEntityUpdateS2CPacket::new
 	);

@@ -1,5 +1,7 @@
 package net.minecraft.recipe;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -63,10 +65,16 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 			}
 		}
 
-		if (!itemStack.isEmpty() && i >= 1 && WrittenBookItem.getGeneration(itemStack) < 2) {
-			ItemStack itemStack3 = itemStack.copyWithCount(i);
-			itemStack3.getOrCreateNbt().putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
-			return itemStack3;
+		WrittenBookContentComponent writtenBookContentComponent = itemStack.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
+		if (!itemStack.isEmpty() && i >= 1 && writtenBookContentComponent != null) {
+			WrittenBookContentComponent writtenBookContentComponent2 = writtenBookContentComponent.copy();
+			if (writtenBookContentComponent2 == null) {
+				return ItemStack.EMPTY;
+			} else {
+				ItemStack itemStack3 = itemStack.copyWithCount(i);
+				itemStack3.set(DataComponentTypes.WRITTEN_BOOK_CONTENT, writtenBookContentComponent2);
+				return itemStack3;
+			}
 		} else {
 			return ItemStack.EMPTY;
 		}

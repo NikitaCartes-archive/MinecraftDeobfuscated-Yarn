@@ -207,7 +207,7 @@ public class BlockModelRenderer {
 		}
 
 		vertexConsumer.quad(
-			matrixEntry, quad, new float[]{brightness0, brightness1, brightness2, brightness3}, f, g, h, new int[]{light0, light1, light2, light3}, overlay, true
+			matrixEntry, quad, new float[]{brightness0, brightness1, brightness2, brightness3}, f, g, h, 1.0F, new int[]{light0, light1, light2, light3}, overlay, true
 		);
 	}
 
@@ -340,7 +340,7 @@ public class BlockModelRenderer {
 				h = 1.0F;
 			}
 
-			vertexConsumer.quad(entry, bakedQuad, f, g, h, light, overlay);
+			vertexConsumer.quad(entry, bakedQuad, f, g, h, 1.0F, light, overlay);
 		}
 	}
 

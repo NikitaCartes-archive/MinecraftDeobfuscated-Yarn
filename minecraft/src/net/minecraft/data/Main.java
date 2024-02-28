@@ -15,11 +15,12 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.data.client.ModelProvider;
 import net.minecraft.data.dev.NbtProvider;
+import net.minecraft.data.report.BiomeParametersProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
-import net.minecraft.data.report.DynamicRegistriesProvider;
+import net.minecraft.data.report.ItemListProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
-import net.minecraft.data.server.BiomeParametersProvider;
+import net.minecraft.data.server.DynamicRegistriesProvider;
 import net.minecraft.data.server.advancement.onetwentyone.OneTwentyOneAdvancementProviders;
 import net.minecraft.data.server.advancement.vanilla.VanillaAdvancementProviders;
 import net.minecraft.data.server.loottable.onetwentyone.OneTwentyOneLootTableProviders;
@@ -153,7 +154,8 @@ public class Main {
 		pack3.addProvider(outputx -> new NbtProvider(outputx, inputs));
 		pack3 = dataGenerator.createVanillaPack(includeReports);
 		pack3.addProvider(toFactory(BiomeParametersProvider::new, completableFuture));
-		pack3.addProvider(BlockListProvider::new);
+		pack3.addProvider(toFactory(ItemListProvider::new, completableFuture));
+		pack3.addProvider(toFactory(BlockListProvider::new, completableFuture));
 		pack3.addProvider(toFactory(CommandSyntaxProvider::new, completableFuture));
 		pack3.addProvider(RegistryDumpProvider::new);
 		pack3 = dataGenerator.createVanillaSubPack(includeServer, "bundle");
@@ -167,18 +169,17 @@ public class Main {
 		pack3.addProvider(toFactory(RebalanceStructureTagProvider::new, completableFuture));
 		CompletableFuture<RegistryBuilder.FullPatchesRegistriesPair> completableFuture2 = OneTwentyOneBuiltinRegistries.createWrapperLookup(completableFuture);
 		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture3 = completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::full);
-		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture4 = completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches);
 		DataGenerator.Pack pack4 = dataGenerator.createVanillaSubPack(includeServer, "update_1_21");
-		pack4.addProvider(toFactory(OneTwentyOneRecipeProvider::new, completableFuture4));
+		pack4.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches)));
+		pack4.addProvider(toFactory(OneTwentyOneRecipeProvider::new, completableFuture3));
 		TagProvider<Block> tagProvider4 = pack4.addProvider(
-			outputx -> new OneTwentyOneBlockTagProvider(outputx, completableFuture4, tagProvider.getTagLookupFuture())
+			outputx -> new OneTwentyOneBlockTagProvider(outputx, completableFuture3, tagProvider.getTagLookupFuture())
 		);
 		pack4.addProvider(
-			outputx -> new OneTwentyOneItemTagProvider(outputx, completableFuture4, tagProvider2.getTagLookupFuture(), tagProvider4.getTagLookupFuture())
+			outputx -> new OneTwentyOneItemTagProvider(outputx, completableFuture3, tagProvider2.getTagLookupFuture(), tagProvider4.getTagLookupFuture())
 		);
-		pack4.addProvider(outputx -> new OneTwentyOneBiomeTagProvider(outputx, completableFuture4, tagProvider3.getTagLookupFuture()));
-		pack4.addProvider(toFactory(OneTwentyOneLootTableProviders::createOneTwentyOneProvider, completableFuture4));
-		pack4.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture4));
+		pack4.addProvider(outputx -> new OneTwentyOneBiomeTagProvider(outputx, completableFuture3, tagProvider3.getTagLookupFuture()));
+		pack4.addProvider(toFactory(OneTwentyOneLootTableProviders::createOneTwentyOneProvider, completableFuture3));
 		pack4.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.update_1_21.description"), FeatureSet.of(FeatureFlags.UPDATE_1_21)));
 		pack4.addProvider(toFactory(OneTwentyOneEntityTypeTagProvider::new, completableFuture3));
 		pack4.addProvider(toFactory(OneTwentyOneDamageTypeTagProvider::new, completableFuture3));

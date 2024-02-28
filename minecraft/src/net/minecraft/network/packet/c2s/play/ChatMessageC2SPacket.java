@@ -19,7 +19,7 @@ import net.minecraft.network.packet.PlayPackets;
  * 256 characters, it will reject the message and disconnect the client.
  * 
  * <p>If the message contains an invalid character (see {@link
- * net.minecraft.SharedConstants#isValidChar}) or if the server
+ * net.minecraft.util.StringHelper#isValidChar}) or if the server
  * receives the messages in improper order. the server will
  * reject the message and disconnect the client.
  * 

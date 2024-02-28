@@ -27,23 +27,27 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild(
+		addLimbs(modelPartData);
+		return TexturedModelData.of(modelData, 64, 32);
+	}
+
+	protected static void addLimbs(ModelPartData data) {
+		data.addChild(
 			EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(40, 16).cuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F), ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
 		);
-		modelPartData.addChild(
+		data.addChild(
 			EntityModelPartNames.LEFT_ARM,
 			ModelPartBuilder.create().uv(40, 16).mirrored().cuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F),
 			ModelTransform.pivot(5.0F, 2.0F, 0.0F)
 		);
-		modelPartData.addChild(
+		data.addChild(
 			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F), ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
 		);
-		modelPartData.addChild(
+		data.addChild(
 			EntityModelPartNames.LEFT_LEG,
 			ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F),
 			ModelTransform.pivot(2.0F, 12.0F, 0.0F)
 		);
-		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	public void animateModel(T mobEntity, float f, float g, float h) {

@@ -18,6 +18,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
@@ -47,7 +48,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final String SOUNDS_JSON = "sounds.json";
 	private static final Gson GSON = new GsonBuilder()
-		.registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
+		.registerTypeHierarchyAdapter(Text.class, new Text.Serializer(DynamicRegistryManager.EMPTY))
 		.registerTypeAdapter(SoundEntry.class, new SoundEntryDeserializer())
 		.create();
 	private static final TypeToken<Map<String, SoundEntry>> TYPE = new TypeToken<Map<String, SoundEntry>>() {

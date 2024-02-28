@@ -1,20 +1,16 @@
 package net.minecraft.block.entity;
 
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.inventory.LootableInventory;
 import net.minecraft.inventory.SingleStackInventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -28,7 +24,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	public long lastWobbleTime;
 	@Nullable
 	public DecoratedPotBlockEntity.WobbleType lastWobbleType;
-	private DecoratedPotBlockEntity.Sherds sherds;
+	private Sherds sherds;
 	private ItemStack stack = ItemStack.EMPTY;
 	@Nullable
 	protected Identifier lootTableId;
@@ -36,7 +32,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 
 	public DecoratedPotBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.DECORATED_POT, pos, state);
-		this.sherds = DecoratedPotBlockEntity.Sherds.DEFAULT;
+		this.sherds = Sherds.DEFAULT;
 	}
 
 	@Override
@@ -44,17 +40,17 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 		super.writeNbt(nbt, registryLookup);
 		this.sherds.toNbt(nbt);
 		if (!this.writeLootTable(nbt) && !this.stack.isEmpty()) {
-			nbt.put("item", this.stack.writeNbt(new NbtCompound()));
+			nbt.put("item", this.stack.encode(registryLookup));
 		}
 	}
 
 	@Override
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
-		this.sherds = DecoratedPotBlockEntity.Sherds.fromNbt(nbt);
+		this.sherds = Sherds.fromNbt(nbt);
 		if (!this.readLootTable(nbt)) {
 			if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
-				this.stack = ItemStack.fromNbt(nbt.getCompound("item"));
+				this.stack = (ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("item")).orElse(ItemStack.EMPTY);
 			} else {
 				this.stack = ItemStack.EMPTY;
 			}
@@ -74,22 +70,23 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 		return this.getCachedState().get(Properties.HORIZONTAL_FACING);
 	}
 
-	public DecoratedPotBlockEntity.Sherds getSherds() {
+	public Sherds getSherds() {
 		return this.sherds;
 	}
 
 	public void readNbtFromStack(ItemStack stack) {
-		this.sherds = DecoratedPotBlockEntity.Sherds.fromNbt(BlockItem.getBlockEntityNbt(stack));
+		this.readComponents(stack.getComponents());
 	}
 
 	public ItemStack asStack() {
-		return getStackWith(this.sherds);
+		ItemStack itemStack = Items.DECORATED_POT.getDefaultStack();
+		itemStack.applyComponentsFrom(this.createComponentMap());
+		return itemStack;
 	}
 
-	public static ItemStack getStackWith(DecoratedPotBlockEntity.Sherds sherds) {
+	public static ItemStack getStackWith(Sherds sherds) {
 		ItemStack itemStack = Items.DECORATED_POT.getDefaultStack();
-		NbtCompound nbtCompound = sherds.toNbt(new NbtCompound());
-		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.DECORATED_POT, nbtCompound);
+		itemStack.set(DataComponentTypes.POT_DECORATIONS, sherds);
 		return itemStack;
 	}
 
@@ -112,6 +109,22 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	@Override
 	public void setLootTableSeed(long lootTableSeed) {
 		this.lootTableSeed = lootTableSeed;
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		componentMapBuilder.add(DataComponentTypes.POT_DECORATIONS, this.sherds);
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		this.sherds = components.getOrDefault(DataComponentTypes.POT_DECORATIONS, Sherds.DEFAULT);
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		super.removeFromCopiedStackNbt(nbt);
+		nbt.remove("sherds");
 	}
 
 	@Override
@@ -156,43 +169,6 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 			return true;
 		} else {
 			return super.onSyncedBlockEvent(type, data);
-		}
-	}
-
-	public static record Sherds(Item back, Item left, Item right, Item front) {
-		public static final DecoratedPotBlockEntity.Sherds DEFAULT = new DecoratedPotBlockEntity.Sherds(Items.BRICK, Items.BRICK, Items.BRICK, Items.BRICK);
-
-		public NbtCompound toNbt(NbtCompound nbt) {
-			if (this.equals(DEFAULT)) {
-				return nbt;
-			} else {
-				NbtList nbtList = new NbtList();
-				this.stream().forEach(sherd -> nbtList.add(NbtString.of(Registries.ITEM.getId(sherd).toString())));
-				nbt.put("sherds", nbtList);
-				return nbt;
-			}
-		}
-
-		public Stream<Item> stream() {
-			return Stream.of(this.back, this.left, this.right, this.front);
-		}
-
-		public static DecoratedPotBlockEntity.Sherds fromNbt(@Nullable NbtCompound nbt) {
-			if (nbt != null && nbt.contains("sherds", NbtElement.LIST_TYPE)) {
-				NbtList nbtList = nbt.getList("sherds", NbtElement.STRING_TYPE);
-				return new DecoratedPotBlockEntity.Sherds(getSherd(nbtList, 0), getSherd(nbtList, 1), getSherd(nbtList, 2), getSherd(nbtList, 3));
-			} else {
-				return DEFAULT;
-			}
-		}
-
-		private static Item getSherd(NbtList list, int index) {
-			if (index >= list.size()) {
-				return Items.BRICK;
-			} else {
-				NbtElement nbtElement = list.get(index);
-				return Registries.ITEM.get(Identifier.tryParse(nbtElement.asString()));
-			}
 		}
 	}
 

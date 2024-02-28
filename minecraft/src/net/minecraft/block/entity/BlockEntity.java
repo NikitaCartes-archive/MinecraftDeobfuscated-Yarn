@@ -3,6 +3,7 @@ package net.minecraft.block.entity;
 import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -209,8 +210,11 @@ public abstract class BlockEntity {
 	 * Sets {@code stack}'s {@code net.minecraft.item.BlockItem#BLOCK_ENTITY_TAG_KEY}
 	 * NBT value to {@linkplain #createNbt the block entity's NBT data}.
 	 */
-	public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registryLookup) {
-		BlockItem.setBlockEntityNbt(stack, this.getType(), this.createNbt(registryLookup));
+	public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registries) {
+		NbtCompound nbtCompound = this.createNbt(registries);
+		this.removeFromCopiedStackNbt(nbtCompound);
+		BlockItem.setBlockEntityData(stack, this.getType(), nbtCompound);
+		stack.applyComponentsFrom(this.createComponentMap());
 	}
 
 	/**
@@ -396,5 +400,21 @@ public abstract class BlockEntity {
 	@Deprecated
 	public void setCachedState(BlockState state) {
 		this.cachedState = state;
+	}
+
+	public void readComponents(ComponentMap components) {
+	}
+
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	}
+
+	@Deprecated
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+	}
+
+	public final ComponentMap createComponentMap() {
+		ComponentMap.Builder builder = ComponentMap.builder();
+		this.addComponents(builder);
+		return builder.build();
 	}
 }

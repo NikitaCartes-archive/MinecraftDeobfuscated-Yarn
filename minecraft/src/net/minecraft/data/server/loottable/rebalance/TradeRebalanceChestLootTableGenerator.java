@@ -19,13 +19,14 @@ import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.util.Identifier;
 
 public class TradeRebalanceChestLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
-		exporter.accept(
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+		consumer.accept(
 			LootTables.ABANDONED_MINESHAFT_CHEST,
 			LootTable.builder()
 				.pool(
@@ -69,10 +70,10 @@ public class TradeRebalanceChestLootTableGenerator implements LootTableGenerator
 						.with(ItemEntry.builder(Items.BOOK).weight(1).apply(new EnchantRandomlyLootFunction.Builder().add(Enchantments.EFFICIENCY)))
 				)
 		);
-		exporter.accept(LootTables.ANCIENT_CITY_CHEST, createAncientCityChestTableBuilder());
-		exporter.accept(LootTables.DESERT_PYRAMID_CHEST, createDesertPyramidChestTableBuilder());
-		exporter.accept(LootTables.JUNGLE_TEMPLE_CHEST, createJungleTempleChestTableBuilder());
-		exporter.accept(LootTables.PILLAGER_OUTPOST_CHEST, createPillagerOutpostChestTableBuilder());
+		consumer.accept(LootTables.ANCIENT_CITY_CHEST, createAncientCityChestTableBuilder());
+		consumer.accept(LootTables.DESERT_PYRAMID_CHEST, createDesertPyramidChestTableBuilder());
+		consumer.accept(LootTables.JUNGLE_TEMPLE_CHEST, createJungleTempleChestTableBuilder());
+		consumer.accept(LootTables.PILLAGER_OUTPOST_CHEST, createPillagerOutpostChestTableBuilder());
 	}
 
 	public static LootTable.Builder createPillagerOutpostChestTableBuilder() {

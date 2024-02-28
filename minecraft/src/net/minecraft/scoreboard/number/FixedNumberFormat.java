@@ -11,7 +11,7 @@ public class FixedNumberFormat implements NumberFormat {
 	public static final NumberFormatType<FixedNumberFormat> TYPE = new NumberFormatType<FixedNumberFormat>() {
 		private static final MapCodec<FixedNumberFormat> CODEC = TextCodecs.CODEC.fieldOf("value").xmap(FixedNumberFormat::new, format -> format.text);
 		private static final PacketCodec<RegistryByteBuf, FixedNumberFormat> PACKET_CODEC = PacketCodec.tuple(
-			TextCodecs.REGISTRY_PACKET_CODEC, format -> format.text, FixedNumberFormat::new
+			TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC, format -> format.text, FixedNumberFormat::new
 		);
 
 		@Override

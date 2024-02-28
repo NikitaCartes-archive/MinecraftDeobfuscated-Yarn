@@ -4,6 +4,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -168,8 +170,7 @@ public class TadpoleEntity extends FishEntity {
 	@Override
 	public void copyDataToStack(ItemStack stack) {
 		Bucketable.copyDataToStack(this, stack);
-		NbtCompound nbtCompound = stack.getOrCreateNbt();
-		nbtCompound.putInt("Age", this.getTadpoleAge());
+		NbtComponent.set(DataComponentTypes.BUCKET_ENTITY_DATA, stack, nbtCompound -> nbtCompound.putInt("Age", this.getTadpoleAge()));
 	}
 
 	@Override

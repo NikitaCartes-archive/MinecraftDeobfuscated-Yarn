@@ -152,7 +152,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.renderBackground(context, mouseX, mouseY, delta);
+		this.renderInGameBackground(context);
 		this.drawBackground(context, delta, mouseX, mouseY);
 	}
 

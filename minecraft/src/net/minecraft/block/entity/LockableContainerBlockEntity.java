@@ -2,6 +2,8 @@ package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
@@ -31,7 +33,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 		super.readNbt(nbt, registryLookup);
 		this.lock = ContainerLock.fromNbt(nbt);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"));
+			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
 		}
 	}
 
@@ -40,12 +42,8 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 		super.writeNbt(nbt, registryLookup);
 		this.lock.writeNbt(nbt);
 		if (this.customName != null) {
-			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registryLookup));
 		}
-	}
-
-	public void setCustomName(Text customName) {
-		this.customName = customName;
 	}
 
 	@Override
@@ -87,4 +85,22 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	protected abstract ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory);
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
+		this.lock = components.getOrDefault(DataComponentTypes.LOCK, ContainerLock.EMPTY);
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+		componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		nbt.remove("CustomName");
+		nbt.remove("Lock");
+	}
 }

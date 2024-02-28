@@ -35,6 +35,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -46,6 +47,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.ChunkType;
 import net.minecraft.world.chunk.PalettedContainer;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.ReadableContainer;
@@ -105,18 +107,20 @@ public class ChunkSerializer {
 			if (l >= 0 && l < chunkSections.length) {
 				PalettedContainer<BlockState> palettedContainer;
 				if (nbtCompound.contains("block_states", NbtElement.COMPOUND_TYPE)) {
-					palettedContainer = CODEC.parse(NbtOps.INSTANCE, nbtCompound.getCompound("block_states"))
-						.promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage))
-						.getOrThrow(false, LOGGER::error);
+					palettedContainer = Util.getResult(
+						CODEC.parse(NbtOps.INSTANCE, nbtCompound.getCompound("block_states")).promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage)),
+						ChunkSerializer.ChunkLoadingException::new
+					);
 				} else {
 					palettedContainer = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
 				}
 
 				ReadableContainer<RegistryEntry<Biome>> readableContainer;
 				if (nbtCompound.contains("biomes", NbtElement.COMPOUND_TYPE)) {
-					readableContainer = codec.parse(NbtOps.INSTANCE, nbtCompound.getCompound("biomes"))
-						.promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage))
-						.getOrThrow(false, LOGGER::error);
+					readableContainer = Util.getResult(
+						codec.parse(NbtOps.INSTANCE, nbtCompound.getCompound("biomes")).promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage)),
+						ChunkSerializer.ChunkLoadingException::new
+					);
 				} else {
 					readableContainer = new PalettedContainer<>(registry.getIndexedEntries(), registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
 				}
@@ -146,7 +150,7 @@ public class ChunkSerializer {
 		}
 
 		long m = nbt.getLong("InhabitedTime");
-		ChunkStatus.ChunkType chunkType = getChunkType(nbt);
+		ChunkType chunkType = getChunkType(nbt);
 		BlendingData blendingData;
 		if (nbt.contains("blending_data", NbtElement.COMPOUND_TYPE)) {
 			blendingData = (BlendingData)BlendingData.CODEC
@@ -158,7 +162,7 @@ public class ChunkSerializer {
 		}
 
 		Chunk chunk;
-		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
+		if (chunkType == ChunkType.LEVELCHUNK) {
 			ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(
 				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
@@ -223,7 +227,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
+		if (chunkType == ChunkType.LEVELCHUNK) {
 			return new WrapperProtoChunk((WorldChunk)chunk, false);
 		} else {
 			ProtoChunk protoChunk2 = (ProtoChunk)chunk;
@@ -341,7 +345,7 @@ public class ChunkSerializer {
 		}
 
 		nbtCompound.put("block_entities", nbtList2);
-		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.PROTOCHUNK) {
+		if (chunk.getStatus().getChunkType() == ChunkType.PROTOCHUNK) {
 			ProtoChunk protoChunk = (ProtoChunk)chunk;
 			NbtList nbtList3 = new NbtList();
 			nbtList3.addAll(protoChunk.getEntities());
@@ -379,8 +383,8 @@ public class ChunkSerializer {
 		nbt.put("fluid_ticks", tickSchedulers.fluids().toNbt(l, fluid -> Registries.FLUID.getId(fluid).toString()));
 	}
 
-	public static ChunkStatus.ChunkType getChunkType(@Nullable NbtCompound nbt) {
-		return nbt != null ? ChunkStatus.byId(nbt.getString("Status")).getChunkType() : ChunkStatus.ChunkType.PROTOCHUNK;
+	public static ChunkType getChunkType(@Nullable NbtCompound nbt) {
+		return nbt != null ? ChunkStatus.byId(nbt.getString("Status")).getChunkType() : ChunkType.PROTOCHUNK;
 	}
 
 	@Nullable
@@ -505,5 +509,11 @@ public class ChunkSerializer {
 		}
 
 		return nbtList;
+	}
+
+	public static class ChunkLoadingException extends RuntimeException {
+		public ChunkLoadingException(String message) {
+			super(message);
+		}
 	}
 }

@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -46,7 +45,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.ServerTickManager;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.OptionalChunk;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
@@ -70,7 +69,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -461,7 +459,7 @@ public class DebugHud {
 
 			this.chunkFuture = serverWorld.getChunkManager()
 				.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false)
-				.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
+				.thenApply(optionalChunk -> (WorldChunk)optionalChunk.orElse(null));
 		}
 
 		return (WorldChunk)this.chunkFuture.getNow(null);

@@ -157,10 +157,6 @@ public final class ProjectileUtil {
 		ArrowItem arrowItem = (ArrowItem)(stack.getItem() instanceof ArrowItem ? stack.getItem() : Items.ARROW);
 		PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(entity.getWorld(), stack, entity);
 		persistentProjectileEntity.applyEnchantmentEffects(entity, damageModifier);
-		if (stack.isOf(Items.TIPPED_ARROW) && persistentProjectileEntity instanceof ArrowEntity) {
-			((ArrowEntity)persistentProjectileEntity).initFromStack(stack);
-		}
-
 		return persistentProjectileEntity;
 	}
 }

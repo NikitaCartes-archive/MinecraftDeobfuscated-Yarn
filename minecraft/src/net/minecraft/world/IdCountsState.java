@@ -3,8 +3,8 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.item.map.MapId;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
@@ -42,10 +42,10 @@ public class IdCountsState extends PersistentState {
 		return nbt;
 	}
 
-	public MapId getNextMapId() {
+	public MapIdComponent getNextMapId() {
 		int i = this.idCounts.getInt("map") + 1;
 		this.idCounts.put("map", i);
 		this.markDirty();
-		return new MapId(i);
+		return new MapIdComponent(i);
 	}
 }

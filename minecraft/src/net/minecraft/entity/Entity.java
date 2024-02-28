@@ -1626,7 +1626,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * {@return whether the block at the entity's position is a bubble column}
 	 */
 	private boolean isInsideBubbleColumn() {
-		return this.getWorld().getBlockState(this.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
+		return this.getBlockStateAtPos().isOf(Blocks.BUBBLE_COLUMN);
 	}
 
 	/**
@@ -2196,7 +2196,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			nbt.putUuid("UUID", this.getUuid());
 			Text text = this.getCustomName();
 			if (text != null) {
-				nbt.putString("CustomName", Text.Serialization.toJsonString(text));
+				nbt.putString("CustomName", Text.Serialization.toJsonString(text, this.getRegistryManager()));
 			}
 
 			if (this.isCustomNameVisible()) {
@@ -2302,7 +2302,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					String string = nbt.getString("CustomName");
 
 					try {
-						this.setCustomName(Text.Serialization.fromJson(string));
+						this.setCustomName(Text.Serialization.fromJson(string, this.getRegistryManager()));
 					} catch (Exception var16) {
 						LOGGER.warn("Failed to parse entity custom name {}", string, var16);
 					}

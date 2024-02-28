@@ -65,11 +65,6 @@ public class DialogScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
-	}
-
-	@Override
 	public boolean shouldCloseOnEsc() {
 		return false;
 	}

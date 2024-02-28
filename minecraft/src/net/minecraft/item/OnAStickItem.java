@@ -30,7 +30,7 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 			if (user.hasVehicle() && entity instanceof ItemSteerable itemSteerable && entity.getType() == this.target && itemSteerable.consumeOnAStickItem()) {
 				itemStack.damage(this.damagePerUse, user, LivingEntity.getSlotForHand(hand));
 				if (itemStack.isEmpty()) {
-					ItemStack itemStack2 = itemStack.copyNbtToNewStackIgnoreEmpty(Items.FISHING_ROD, 1);
+					ItemStack itemStack2 = itemStack.copyComponentsToNewStackIgnoreEmpty(Items.FISHING_ROD, 1);
 					return TypedActionResult.success(itemStack2);
 				}
 

@@ -1,6 +1,8 @@
 package net.minecraft.entity.ai.goal;
 
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -111,7 +113,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	}
 
 	private ItemStack removeEnchantments(ItemStack stack) {
-		stack.removeSubNbt("Enchantments");
+		stack.set(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 		return stack;
 	}
 }

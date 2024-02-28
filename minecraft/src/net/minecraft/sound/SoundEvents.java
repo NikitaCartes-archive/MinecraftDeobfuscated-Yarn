@@ -180,6 +180,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_BOGGED_AMBIENT = register("entity.bogged.ambient");
 	public static final SoundEvent ENTITY_BOGGED_DEATH = register("entity.bogged.death");
 	public static final SoundEvent ENTITY_BOGGED_HURT = register("entity.bogged.hurt");
+	public static final SoundEvent ENTITY_BOGGED_SHEAR = register("entity.bogged.shear");
 	public static final SoundEvent ENTITY_BOGGED_STEP = register("entity.bogged.step");
 	public static final SoundEvent BLOCK_BONE_BLOCK_BREAK = register("block.bone_block.break");
 	public static final SoundEvent BLOCK_BONE_BLOCK_FALL = register("block.bone_block.fall");
@@ -429,6 +430,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_DONKEY_DEATH = register("entity.donkey.death");
 	public static final SoundEvent ENTITY_DONKEY_EAT = register("entity.donkey.eat");
 	public static final SoundEvent ENTITY_DONKEY_HURT = register("entity.donkey.hurt");
+	public static final SoundEvent ENTITY_DONKEY_JUMP = register("entity.donkey.jump");
 	public static final SoundEvent BLOCK_DRIPSTONE_BLOCK_BREAK = register("block.dripstone_block.break");
 	public static final SoundEvent BLOCK_DRIPSTONE_BLOCK_STEP = register("block.dripstone_block.step");
 	public static final SoundEvent BLOCK_DRIPSTONE_BLOCK_PLACE = register("block.dripstone_block.place");
@@ -849,6 +851,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_MULE_DEATH = register("entity.mule.death");
 	public static final SoundEvent ENTITY_MULE_EAT = register("entity.mule.eat");
 	public static final SoundEvent ENTITY_MULE_HURT = register("entity.mule.hurt");
+	public static final SoundEvent ENTITY_MULE_JUMP = register("entity.mule.jump");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_CREATIVE = registerReference("music.creative");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_CREDITS = registerReference("music.credits");
 	public static final SoundEvent MUSIC_DISC_5 = register("music_disc.5");
@@ -1503,6 +1506,7 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_WET_GRASS_PLACE = register("block.wet_grass.place");
 	public static final SoundEvent BLOCK_WET_GRASS_STEP = register("block.wet_grass.step");
 	public static final SoundEvent BLOCK_WET_SPONGE_BREAK = register("block.wet_sponge.break");
+	public static final SoundEvent BLOCK_WET_SPONGE_DRIES = register("block.wet_sponge.dries");
 	public static final SoundEvent BLOCK_WET_SPONGE_FALL = register("block.wet_sponge.fall");
 	public static final SoundEvent BLOCK_WET_SPONGE_HIT = register("block.wet_sponge.hit");
 	public static final SoundEvent BLOCK_WET_SPONGE_PLACE = register("block.wet_sponge.place");
@@ -1525,6 +1529,10 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_WITHER_SKELETON_HURT = register("entity.wither_skeleton.hurt");
 	public static final SoundEvent ENTITY_WITHER_SKELETON_STEP = register("entity.wither_skeleton.step");
 	public static final SoundEvent ENTITY_WITHER_SPAWN = register("entity.wither.spawn");
+	public static final SoundEvent ITEM_WOLF_ARMOR_BREAK = register("item.wolf_armor.break");
+	public static final SoundEvent ITEM_WOLF_ARMOR_CRACK = register("item.wolf_armor.crack");
+	public static final SoundEvent ITEM_WOLF_ARMOR_DAMAGE = register("item.wolf_armor.damage");
+	public static final SoundEvent ITEM_WOLF_ARMOR_REPAIR = register("item.wolf_armor.repair");
 	public static final SoundEvent ENTITY_WOLF_AMBIENT = register("entity.wolf.ambient");
 	public static final SoundEvent ENTITY_WOLF_DEATH = register("entity.wolf.death");
 	public static final SoundEvent ENTITY_WOLF_GROWL = register("entity.wolf.growl");

@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.network.PacketByteBuf;
@@ -19,7 +18,7 @@ public record BookUpdateC2SPacket(int slot, List<String> pages, Optional<String>
 	public static final PacketCodec<PacketByteBuf, BookUpdateC2SPacket> CODEC = PacketCodec.tuple(
 		PacketCodecs.VAR_INT,
 		BookUpdateC2SPacket::slot,
-		PacketCodecs.string(8192).collect(PacketCodecs.toCollection(PacketByteBuf.getMaxValidator(ArrayList::new, 200))),
+		PacketCodecs.string(8192).collect(PacketCodecs.toList(200)),
 		BookUpdateC2SPacket::pages,
 		PacketCodecs.string(128).collect(PacketCodecs::optional),
 		BookUpdateC2SPacket::title,

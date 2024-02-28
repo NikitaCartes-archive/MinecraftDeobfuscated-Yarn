@@ -12,7 +12,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
-import net.minecraft.util.math.MathHelper;
 
 public record MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, Optional<Text> name) {
 	public static final PacketCodec<RegistryByteBuf, MapIcon> CODEC = PacketCodec.tuple(
@@ -131,10 +130,6 @@ public record MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, Optional
 
 		public int getTintColor() {
 			return this.tintColor;
-		}
-
-		public static MapIcon.Type byId(byte id) {
-			return values()[MathHelper.clamp(id, 0, values().length - 1)];
 		}
 
 		public boolean shouldUseIconCountLimit() {

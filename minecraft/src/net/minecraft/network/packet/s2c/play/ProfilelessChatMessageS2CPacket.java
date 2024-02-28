@@ -12,7 +12,7 @@ import net.minecraft.text.TextCodecs;
 
 public record ProfilelessChatMessageS2CPacket(Text message, MessageType.Parameters chatType) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, ProfilelessChatMessageS2CPacket> CODEC = PacketCodec.tuple(
-		TextCodecs.REGISTRY_PACKET_CODEC,
+		TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC,
 		ProfilelessChatMessageS2CPacket::message,
 		MessageType.Parameters.CODEC,
 		ProfilelessChatMessageS2CPacket::chatType,

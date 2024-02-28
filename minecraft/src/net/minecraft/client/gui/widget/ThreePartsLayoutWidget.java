@@ -3,11 +3,13 @@ package net.minecraft.client.gui.widget;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ThreePartsLayoutWidget implements LayoutWidget {
-	public static final int DEFAULT_HEADER_FOOTER_HEIGHT = 36;
+	public static final int DEFAULT_HEADER_FOOTER_HEIGHT = 33;
 	private static final int FOOTER_MARGIN_TOP = 30;
 	private final SimplePositioningWidget header = new SimplePositioningWidget();
 	private final SimplePositioningWidget footer = new SimplePositioningWidget();
@@ -17,7 +19,7 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 	private int footerHeight;
 
 	public ThreePartsLayoutWidget(Screen screen) {
-		this(screen, 36);
+		this(screen, 33);
 	}
 
 	public ThreePartsLayoutWidget(Screen screen, int headerFooterHeight) {
@@ -76,6 +78,10 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 		return this.headerHeight;
 	}
 
+	public int getContentHeight() {
+		return this.screen.height - this.getHeaderHeight() - this.getFooterHeight();
+	}
+
 	@Override
 	public void forEachElement(Consumer<Widget> consumer) {
 		this.header.forEachElement(consumer);
@@ -108,6 +114,10 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 
 	public <T extends Widget> T addHeader(T widget, Consumer<Positioner> callback) {
 		return this.header.add(widget, callback);
+	}
+
+	public void addHeader(Text text, TextRenderer textRenderer) {
+		this.header.add(new TextWidget(text, textRenderer));
 	}
 
 	public <T extends Widget> T addFooter(T widget) {

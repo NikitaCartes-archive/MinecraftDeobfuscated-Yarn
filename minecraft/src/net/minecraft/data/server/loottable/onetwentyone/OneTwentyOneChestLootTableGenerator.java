@@ -16,12 +16,13 @@ import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 
 public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
-		exporter.accept(
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_CORRIDOR_DISPENSER,
 			LootTable.builder()
 				.pool(
@@ -30,7 +31,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.ARROW).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 8.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_WATER_DISPENSER,
 			LootTable.builder()
 				.pool(
@@ -39,7 +40,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.WATER_BUCKET).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_CHAMBER_DISPENSER,
 			LootTable.builder()
 				.pool(
@@ -94,7 +95,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						)
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_CORRIDOR_POT,
 			LootTable.builder()
 				.pool(
@@ -113,7 +114,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.DIAMOND_BLOCK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))).weight(1))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_SUPPLY_CHEST,
 			LootTable.builder()
 				.pool(
@@ -158,7 +159,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.MILK_BUCKET).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_ENTRANCE_CHEST,
 			LootTable.builder()
 				.pool(
@@ -171,7 +172,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.ARROW).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(5.0F, 10.0F))).weight(10))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_INTERSECTION_CHEST,
 			LootTable.builder()
 				.pool(
@@ -197,7 +198,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.IRON_BLOCK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))).weight(20))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_INTERSECTION_BARREL_CHEST,
 			LootTable.builder()
 				.pool(
@@ -240,7 +241,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.BAKED_POTATO).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(6.0F, 10.0F))).weight(10))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_CORRIDOR_CHEST,
 			LootTable.builder()
 				.pool(
@@ -274,7 +275,7 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.TUFF).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(8.0F, 20.0F))).weight(3))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBERS_REWARD_CHEST,
 			LootTable.builder()
 				.pool(
@@ -365,11 +366,11 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 						)
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBER_KEY_SPAWNER,
 			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.TRIAL_KEY)))
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRIAL_CHAMBER_CONSUMABLES_SPAWNER,
 			LootTable.builder()
 				.pool(

@@ -185,13 +185,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		public SerializableTeam(RegistryByteBuf buf) {
-			this.displayName = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
+			this.displayName = TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.decode(buf);
 			this.friendlyFlags = buf.readByte();
 			this.nameTagVisibilityRule = buf.readString(40);
 			this.collisionRule = buf.readString(40);
 			this.color = buf.readEnumConstant(Formatting.class);
-			this.prefix = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
-			this.suffix = TextCodecs.REGISTRY_PACKET_CODEC.decode(buf);
+			this.prefix = TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.decode(buf);
+			this.suffix = TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.decode(buf);
 		}
 
 		public Text getDisplayName() {
@@ -223,13 +223,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		public void write(RegistryByteBuf buf) {
-			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.displayName);
+			TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.encode(buf, this.displayName);
 			buf.writeByte(this.friendlyFlags);
 			buf.writeString(this.nameTagVisibilityRule);
 			buf.writeString(this.collisionRule);
 			buf.writeEnumConstant(this.color);
-			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.prefix);
-			TextCodecs.REGISTRY_PACKET_CODEC.encode(buf, this.suffix);
+			TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.encode(buf, this.prefix);
+			TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC.encode(buf, this.suffix);
 		}
 	}
 }

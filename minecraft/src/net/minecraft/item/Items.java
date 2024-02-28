@@ -1,7 +1,23 @@
 package net.minecraft.item;
 
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.Sherds;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BannerPatternsComponent;
+import net.minecraft.component.type.BundleContentsComponent;
+import net.minecraft.component.type.ChargedProjectilesComponent;
+import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.component.type.DebugStickStateComponent;
+import net.minecraft.component.type.FireworksComponent;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.component.type.MapColorComponent;
+import net.minecraft.component.type.MapDecorationsComponent;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.PotionContentsComponent;
+import net.minecraft.component.type.SuspiciousStewEffectsComponent;
+import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -307,7 +323,9 @@ public class Items {
 	public static final Item BRICKS = register(Blocks.BRICKS);
 	public static final Item BOOKSHELF = register(Blocks.BOOKSHELF);
 	public static final Item CHISELED_BOOKSHELF = register(Blocks.CHISELED_BOOKSHELF);
-	public static final Item DECORATED_POT = register(Blocks.DECORATED_POT);
+	public static final Item DECORATED_POT = register(
+		new BlockItem(Blocks.DECORATED_POT, new Item.Settings().component(DataComponentTypes.POT_DECORATIONS, Sherds.DEFAULT))
+	);
 	public static final Item MOSSY_COBBLESTONE = register(Blocks.MOSSY_COBBLESTONE);
 	public static final Item OBSIDIAN = register(Blocks.OBSIDIAN);
 	public static final Item TORCH = register(new VerticallyAttachableBlockItem(Blocks.TORCH, Blocks.WALL_TORCH, new Item.Settings(), Direction.DOWN));
@@ -543,23 +561,57 @@ public class Items {
 	public static final Item RED_NETHER_BRICKS = register(Blocks.RED_NETHER_BRICKS);
 	public static final Item BONE_BLOCK = register(Blocks.BONE_BLOCK);
 	public static final Item STRUCTURE_VOID = register(new BlockItem(Blocks.STRUCTURE_VOID, new Item.Settings().rarity(Rarity.EPIC)));
-	public static final Item SHULKER_BOX = register(new BlockItem(Blocks.SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item WHITE_SHULKER_BOX = register(new BlockItem(Blocks.WHITE_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item ORANGE_SHULKER_BOX = register(new BlockItem(Blocks.ORANGE_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item MAGENTA_SHULKER_BOX = register(new BlockItem(Blocks.MAGENTA_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item LIGHT_BLUE_SHULKER_BOX = register(new BlockItem(Blocks.LIGHT_BLUE_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item YELLOW_SHULKER_BOX = register(new BlockItem(Blocks.YELLOW_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item LIME_SHULKER_BOX = register(new BlockItem(Blocks.LIME_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item PINK_SHULKER_BOX = register(new BlockItem(Blocks.PINK_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item GRAY_SHULKER_BOX = register(new BlockItem(Blocks.GRAY_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item LIGHT_GRAY_SHULKER_BOX = register(new BlockItem(Blocks.LIGHT_GRAY_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item CYAN_SHULKER_BOX = register(new BlockItem(Blocks.CYAN_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item PURPLE_SHULKER_BOX = register(new BlockItem(Blocks.PURPLE_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item BLUE_SHULKER_BOX = register(new BlockItem(Blocks.BLUE_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item BROWN_SHULKER_BOX = register(new BlockItem(Blocks.BROWN_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item GREEN_SHULKER_BOX = register(new BlockItem(Blocks.GREEN_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item RED_SHULKER_BOX = register(new BlockItem(Blocks.RED_SHULKER_BOX, new Item.Settings().maxCount(1)));
-	public static final Item BLACK_SHULKER_BOX = register(new BlockItem(Blocks.BLACK_SHULKER_BOX, new Item.Settings().maxCount(1)));
+	public static final Item SHULKER_BOX = register(
+		new BlockItem(Blocks.SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item WHITE_SHULKER_BOX = register(
+		new BlockItem(Blocks.WHITE_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item ORANGE_SHULKER_BOX = register(
+		new BlockItem(Blocks.ORANGE_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item MAGENTA_SHULKER_BOX = register(
+		new BlockItem(Blocks.MAGENTA_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item LIGHT_BLUE_SHULKER_BOX = register(
+		new BlockItem(Blocks.LIGHT_BLUE_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item YELLOW_SHULKER_BOX = register(
+		new BlockItem(Blocks.YELLOW_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item LIME_SHULKER_BOX = register(
+		new BlockItem(Blocks.LIME_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item PINK_SHULKER_BOX = register(
+		new BlockItem(Blocks.PINK_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item GRAY_SHULKER_BOX = register(
+		new BlockItem(Blocks.GRAY_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item LIGHT_GRAY_SHULKER_BOX = register(
+		new BlockItem(Blocks.LIGHT_GRAY_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item CYAN_SHULKER_BOX = register(
+		new BlockItem(Blocks.CYAN_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item PURPLE_SHULKER_BOX = register(
+		new BlockItem(Blocks.PURPLE_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item BLUE_SHULKER_BOX = register(
+		new BlockItem(Blocks.BLUE_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item BROWN_SHULKER_BOX = register(
+		new BlockItem(Blocks.BROWN_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item GREEN_SHULKER_BOX = register(
+		new BlockItem(Blocks.GREEN_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item RED_SHULKER_BOX = register(
+		new BlockItem(Blocks.RED_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
+	public static final Item BLACK_SHULKER_BOX = register(
+		new BlockItem(Blocks.BLACK_SHULKER_BOX, new Item.Settings().maxCount(1).component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
+	);
 	public static final Item WHITE_GLAZED_TERRACOTTA = register(Blocks.WHITE_GLAZED_TERRACOTTA);
 	public static final Item ORANGE_GLAZED_TERRACOTTA = register(Blocks.ORANGE_GLAZED_TERRACOTTA);
 	public static final Item MAGENTA_GLAZED_TERRACOTTA = register(Blocks.MAGENTA_GLAZED_TERRACOTTA);
@@ -842,12 +894,13 @@ public class Items {
 	public static final Item STRUCTURE_BLOCK = register(new OperatorOnlyBlockItem(Blocks.STRUCTURE_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item JIGSAW = register(new OperatorOnlyBlockItem(Blocks.JIGSAW, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item TURTLE_HELMET = register(
-		"turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(275))
+		"turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(25)))
 	);
 	public static final Item TURTLE_SCUTE = register("turtle_scute", new Item(new Item.Settings()));
 	public static final Item ARMADILLO_SCUTE = register("armadillo_scute", new Item(new Item.Settings()));
 	public static final Item WOLF_ARMOR = register(
-		"wolf_armor", new AnimalArmorItem(ArmorMaterials.ARMADILLO, AnimalArmorItem.Type.CANINE, new Item.Settings().maxCount(1))
+		"wolf_armor",
+		new AnimalArmorItem(ArmorMaterials.ARMADILLO, AnimalArmorItem.Type.CANINE, true, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BODY.getMaxDamage(4)))
 	);
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64)));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().food(FoodComponents.APPLE)));
@@ -868,36 +921,124 @@ public class Items {
 	public static final Item GOLD_INGOT = register("gold_ingot", new Item(new Item.Settings()));
 	public static final Item NETHERITE_INGOT = register("netherite_ingot", new Item(new Item.Settings().fireproof()));
 	public static final Item NETHERITE_SCRAP = register("netherite_scrap", new Item(new Item.Settings().fireproof()));
-	public static final Item WOODEN_SWORD = register("wooden_sword", new SwordItem(ToolMaterials.WOOD, 3, -2.4F, new Item.Settings()));
-	public static final Item WOODEN_SHOVEL = register("wooden_shovel", new ShovelItem(ToolMaterials.WOOD, 1.5F, -3.0F, new Item.Settings()));
-	public static final Item WOODEN_PICKAXE = register("wooden_pickaxe", new PickaxeItem(ToolMaterials.WOOD, 1, -2.8F, new Item.Settings()));
-	public static final Item WOODEN_AXE = register("wooden_axe", new AxeItem(ToolMaterials.WOOD, 6.0F, -3.2F, new Item.Settings()));
-	public static final Item WOODEN_HOE = register("wooden_hoe", new HoeItem(ToolMaterials.WOOD, 0, -3.0F, new Item.Settings()));
-	public static final Item STONE_SWORD = register("stone_sword", new SwordItem(ToolMaterials.STONE, 3, -2.4F, new Item.Settings()));
-	public static final Item STONE_SHOVEL = register("stone_shovel", new ShovelItem(ToolMaterials.STONE, 1.5F, -3.0F, new Item.Settings()));
-	public static final Item STONE_PICKAXE = register("stone_pickaxe", new PickaxeItem(ToolMaterials.STONE, 1, -2.8F, new Item.Settings()));
-	public static final Item STONE_AXE = register("stone_axe", new AxeItem(ToolMaterials.STONE, 7.0F, -3.2F, new Item.Settings()));
-	public static final Item STONE_HOE = register("stone_hoe", new HoeItem(ToolMaterials.STONE, -1, -2.0F, new Item.Settings()));
-	public static final Item GOLDEN_SWORD = register("golden_sword", new SwordItem(ToolMaterials.GOLD, 3, -2.4F, new Item.Settings()));
-	public static final Item GOLDEN_SHOVEL = register("golden_shovel", new ShovelItem(ToolMaterials.GOLD, 1.5F, -3.0F, new Item.Settings()));
-	public static final Item GOLDEN_PICKAXE = register("golden_pickaxe", new PickaxeItem(ToolMaterials.GOLD, 1, -2.8F, new Item.Settings()));
-	public static final Item GOLDEN_AXE = register("golden_axe", new AxeItem(ToolMaterials.GOLD, 6.0F, -3.0F, new Item.Settings()));
-	public static final Item GOLDEN_HOE = register("golden_hoe", new HoeItem(ToolMaterials.GOLD, 0, -3.0F, new Item.Settings()));
-	public static final Item IRON_SWORD = register("iron_sword", new SwordItem(ToolMaterials.IRON, 3, -2.4F, new Item.Settings()));
-	public static final Item IRON_SHOVEL = register("iron_shovel", new ShovelItem(ToolMaterials.IRON, 1.5F, -3.0F, new Item.Settings()));
-	public static final Item IRON_PICKAXE = register("iron_pickaxe", new PickaxeItem(ToolMaterials.IRON, 1, -2.8F, new Item.Settings()));
-	public static final Item IRON_AXE = register("iron_axe", new AxeItem(ToolMaterials.IRON, 6.0F, -3.1F, new Item.Settings()));
-	public static final Item IRON_HOE = register("iron_hoe", new HoeItem(ToolMaterials.IRON, -2, -1.0F, new Item.Settings()));
-	public static final Item DIAMOND_SWORD = register("diamond_sword", new SwordItem(ToolMaterials.DIAMOND, 3, -2.4F, new Item.Settings()));
-	public static final Item DIAMOND_SHOVEL = register("diamond_shovel", new ShovelItem(ToolMaterials.DIAMOND, 1.5F, -3.0F, new Item.Settings()));
-	public static final Item DIAMOND_PICKAXE = register("diamond_pickaxe", new PickaxeItem(ToolMaterials.DIAMOND, 1, -2.8F, new Item.Settings()));
-	public static final Item DIAMOND_AXE = register("diamond_axe", new AxeItem(ToolMaterials.DIAMOND, 5.0F, -3.0F, new Item.Settings()));
-	public static final Item DIAMOND_HOE = register("diamond_hoe", new HoeItem(ToolMaterials.DIAMOND, -3, 0.0F, new Item.Settings()));
-	public static final Item NETHERITE_SWORD = register("netherite_sword", new SwordItem(ToolMaterials.NETHERITE, 3, -2.4F, new Item.Settings().fireproof()));
-	public static final Item NETHERITE_SHOVEL = register("netherite_shovel", new ShovelItem(ToolMaterials.NETHERITE, 1.5F, -3.0F, new Item.Settings().fireproof()));
-	public static final Item NETHERITE_PICKAXE = register("netherite_pickaxe", new PickaxeItem(ToolMaterials.NETHERITE, 1, -2.8F, new Item.Settings().fireproof()));
-	public static final Item NETHERITE_AXE = register("netherite_axe", new AxeItem(ToolMaterials.NETHERITE, 5.0F, -3.0F, new Item.Settings().fireproof()));
-	public static final Item NETHERITE_HOE = register("netherite_hoe", new HoeItem(ToolMaterials.NETHERITE, -4, 0.0F, new Item.Settings().fireproof()));
+	public static final Item WOODEN_SWORD = register(
+		"wooden_sword", new SwordItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.WOOD, 3, -2.4F)))
+	);
+	public static final Item WOODEN_SHOVEL = register(
+		"wooden_shovel",
+		new ShovelItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.WOOD, 1.5F, -3.0F)))
+	);
+	public static final Item WOODEN_PICKAXE = register(
+		"wooden_pickaxe",
+		new PickaxeItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.WOOD, 1.0F, -2.8F)))
+	);
+	public static final Item WOODEN_AXE = register(
+		"wooden_axe", new AxeItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.WOOD, 6.0F, -3.2F)))
+	);
+	public static final Item WOODEN_HOE = register(
+		"wooden_hoe", new HoeItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.WOOD, 0.0F, -3.0F)))
+	);
+	public static final Item STONE_SWORD = register(
+		"stone_sword", new SwordItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.STONE, 3, -2.4F)))
+	);
+	public static final Item STONE_SHOVEL = register(
+		"stone_shovel",
+		new ShovelItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.STONE, 1.5F, -3.0F)))
+	);
+	public static final Item STONE_PICKAXE = register(
+		"stone_pickaxe",
+		new PickaxeItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.STONE, 1.0F, -2.8F)))
+	);
+	public static final Item STONE_AXE = register(
+		"stone_axe", new AxeItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.STONE, 7.0F, -3.2F)))
+	);
+	public static final Item STONE_HOE = register(
+		"stone_hoe", new HoeItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.STONE, -1.0F, -2.0F)))
+	);
+	public static final Item GOLDEN_SWORD = register(
+		"golden_sword", new SwordItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.GOLD, 3, -2.4F)))
+	);
+	public static final Item GOLDEN_SHOVEL = register(
+		"golden_shovel",
+		new ShovelItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.GOLD, 1.5F, -3.0F)))
+	);
+	public static final Item GOLDEN_PICKAXE = register(
+		"golden_pickaxe",
+		new PickaxeItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.GOLD, 1.0F, -2.8F)))
+	);
+	public static final Item GOLDEN_AXE = register(
+		"golden_axe", new AxeItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.GOLD, 6.0F, -3.0F)))
+	);
+	public static final Item GOLDEN_HOE = register(
+		"golden_hoe", new HoeItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.GOLD, 0.0F, -3.0F)))
+	);
+	public static final Item IRON_SWORD = register(
+		"iron_sword", new SwordItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.IRON, 3, -2.4F)))
+	);
+	public static final Item IRON_SHOVEL = register(
+		"iron_shovel",
+		new ShovelItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.IRON, 1.5F, -3.0F)))
+	);
+	public static final Item IRON_PICKAXE = register(
+		"iron_pickaxe",
+		new PickaxeItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.IRON, 1.0F, -2.8F)))
+	);
+	public static final Item IRON_AXE = register(
+		"iron_axe", new AxeItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.IRON, 6.0F, -3.1F)))
+	);
+	public static final Item IRON_HOE = register(
+		"iron_hoe", new HoeItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.IRON, -2.0F, -1.0F)))
+	);
+	public static final Item DIAMOND_SWORD = register(
+		"diamond_sword",
+		new SwordItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.DIAMOND, 3, -2.4F)))
+	);
+	public static final Item DIAMOND_SHOVEL = register(
+		"diamond_shovel",
+		new ShovelItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.DIAMOND, 1.5F, -3.0F)))
+	);
+	public static final Item DIAMOND_PICKAXE = register(
+		"diamond_pickaxe",
+		new PickaxeItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.DIAMOND, 1.0F, -2.8F)))
+	);
+	public static final Item DIAMOND_AXE = register(
+		"diamond_axe",
+		new AxeItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.DIAMOND, 5.0F, -3.0F)))
+	);
+	public static final Item DIAMOND_HOE = register(
+		"diamond_hoe",
+		new HoeItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.DIAMOND, -3.0F, 0.0F)))
+	);
+	public static final Item NETHERITE_SWORD = register(
+		"netherite_sword",
+		new SwordItem(
+			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.NETHERITE, 3, -2.4F))
+		)
+	);
+	public static final Item NETHERITE_SHOVEL = register(
+		"netherite_shovel",
+		new ShovelItem(
+			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.NETHERITE, 1.5F, -3.0F))
+		)
+	);
+	public static final Item NETHERITE_PICKAXE = register(
+		"netherite_pickaxe",
+		new PickaxeItem(
+			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.NETHERITE, 1.0F, -2.8F))
+		)
+	);
+	public static final Item NETHERITE_AXE = register(
+		"netherite_axe",
+		new AxeItem(
+			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.NETHERITE, 5.0F, -3.0F))
+		)
+	);
+	public static final Item NETHERITE_HOE = register(
+		"netherite_hoe",
+		new HoeItem(
+			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.NETHERITE, -4.0F, 0.0F))
+		)
+	);
 	public static final Item STICK = register("stick", new Item(new Item.Settings()));
 	public static final Item BOWL = register("bowl", new Item(new Item.Settings()));
 	public static final Item MUSHROOM_STEW = register("mushroom_stew", new StewItem(new Item.Settings().maxCount(1).food(FoodComponents.MUSHROOM_STEW)));
@@ -1000,7 +1141,8 @@ public class Items {
 	public static final Item PAINTING = register("painting", new DecorationItem(EntityType.PAINTING, new Item.Settings()));
 	public static final Item GOLDEN_APPLE = register("golden_apple", new Item(new Item.Settings().rarity(Rarity.RARE).food(FoodComponents.GOLDEN_APPLE)));
 	public static final Item ENCHANTED_GOLDEN_APPLE = register(
-		"enchanted_golden_apple", new EnchantedGoldenAppleItem(new Item.Settings().rarity(Rarity.EPIC).food(FoodComponents.ENCHANTED_GOLDEN_APPLE))
+		"enchanted_golden_apple",
+		new Item(new Item.Settings().rarity(Rarity.EPIC).food(FoodComponents.ENCHANTED_GOLDEN_APPLE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
 	);
 	public static final Item OAK_SIGN = register("oak_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.OAK_SIGN, Blocks.OAK_WALL_SIGN));
 	public static final Item SPRUCE_SIGN = register("spruce_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.SPRUCE_SIGN, Blocks.SPRUCE_WALL_SIGN));
@@ -1060,22 +1202,58 @@ public class Items {
 	public static final Item LEATHER = register("leather", new Item(new Item.Settings()));
 	public static final Item MILK_BUCKET = register("milk_bucket", new MilkBucketItem(new Item.Settings().recipeRemainder(BUCKET).maxCount(1)));
 	public static final Item PUFFERFISH_BUCKET = register(
-		"pufferfish_bucket", new EntityBucketItem(EntityType.PUFFERFISH, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new Item.Settings().maxCount(1))
+		"pufferfish_bucket",
+		new EntityBucketItem(
+			EntityType.PUFFERFISH,
+			Fluids.WATER,
+			SoundEvents.ITEM_BUCKET_EMPTY_FISH,
+			new Item.Settings().maxCount(1).component(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT)
+		)
 	);
 	public static final Item SALMON_BUCKET = register(
-		"salmon_bucket", new EntityBucketItem(EntityType.SALMON, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new Item.Settings().maxCount(1))
+		"salmon_bucket",
+		new EntityBucketItem(
+			EntityType.SALMON,
+			Fluids.WATER,
+			SoundEvents.ITEM_BUCKET_EMPTY_FISH,
+			new Item.Settings().maxCount(1).component(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT)
+		)
 	);
 	public static final Item COD_BUCKET = register(
-		"cod_bucket", new EntityBucketItem(EntityType.COD, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new Item.Settings().maxCount(1))
+		"cod_bucket",
+		new EntityBucketItem(
+			EntityType.COD,
+			Fluids.WATER,
+			SoundEvents.ITEM_BUCKET_EMPTY_FISH,
+			new Item.Settings().maxCount(1).component(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT)
+		)
 	);
 	public static final Item TROPICAL_FISH_BUCKET = register(
-		"tropical_fish_bucket", new EntityBucketItem(EntityType.TROPICAL_FISH, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new Item.Settings().maxCount(1))
+		"tropical_fish_bucket",
+		new EntityBucketItem(
+			EntityType.TROPICAL_FISH,
+			Fluids.WATER,
+			SoundEvents.ITEM_BUCKET_EMPTY_FISH,
+			new Item.Settings().maxCount(1).component(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT)
+		)
 	);
 	public static final Item AXOLOTL_BUCKET = register(
-		"axolotl_bucket", new EntityBucketItem(EntityType.AXOLOTL, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_AXOLOTL, new Item.Settings().maxCount(1))
+		"axolotl_bucket",
+		new EntityBucketItem(
+			EntityType.AXOLOTL,
+			Fluids.WATER,
+			SoundEvents.ITEM_BUCKET_EMPTY_AXOLOTL,
+			new Item.Settings().maxCount(1).component(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT)
+		)
 	);
 	public static final Item TADPOLE_BUCKET = register(
-		"tadpole_bucket", new EntityBucketItem(EntityType.TADPOLE, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_TADPOLE, new Item.Settings().maxCount(1))
+		"tadpole_bucket",
+		new EntityBucketItem(
+			EntityType.TADPOLE,
+			Fluids.WATER,
+			SoundEvents.ITEM_BUCKET_EMPTY_TADPOLE,
+			new Item.Settings().maxCount(1).component(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT)
+		)
 	);
 	public static final Item BRICK = register("brick", new Item(new Item.Settings()));
 	public static final Item CLAY_BALL = register("clay_ball", new Item(new Item.Settings()));
@@ -1086,7 +1264,9 @@ public class Items {
 	public static final Item EGG = register("egg", new EggItem(new Item.Settings().maxCount(16)));
 	public static final Item COMPASS = register("compass", new CompassItem(new Item.Settings()));
 	public static final Item RECOVERY_COMPASS = register("recovery_compass", new Item(new Item.Settings()));
-	public static final Item BUNDLE = register("bundle", new BundleItem(new Item.Settings().maxCount(1)));
+	public static final Item BUNDLE = register(
+		"bundle", new BundleItem(new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT))
+	);
 	public static final Item FISHING_ROD = register("fishing_rod", new FishingRodItem(new Item.Settings().maxDamage(64)));
 	public static final Item CLOCK = register("clock", new Item(new Item.Settings()));
 	public static final Item SPYGLASS = register("spyglass", new SpyglassItem(new Item.Settings().maxCount(1)));
@@ -1138,7 +1318,14 @@ public class Items {
 	public static final Item BLACK_BED = register(new BedItem(Blocks.BLACK_BED, new Item.Settings().maxCount(1)));
 	public static final Item COOKIE = register("cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)));
 	public static final Item CRAFTER = register(new BlockItem(Blocks.CRAFTER, new Item.Settings()));
-	public static final Item FILLED_MAP = register("filled_map", new FilledMapItem(new Item.Settings()));
+	public static final Item FILLED_MAP = register(
+		"filled_map",
+		new FilledMapItem(
+			new Item.Settings()
+				.component(DataComponentTypes.MAP_COLOR, MapColorComponent.DEFAULT)
+				.component(DataComponentTypes.MAP_DECORATIONS, MapDecorationsComponent.DEFAULT)
+		)
+	);
 	public static final Item SHEARS = register("shears", new ShearsItem(new Item.Settings().maxDamage(238)));
 	public static final Item MELON_SLICE = register("melon_slice", new Item(new Item.Settings().food(FoodComponents.MELON_SLICE)));
 	public static final Item DRIED_KELP = register("dried_kelp", new Item(new Item.Settings().food(FoodComponents.DRIED_KELP)));
@@ -1154,7 +1341,9 @@ public class Items {
 	public static final Item GHAST_TEAR = register("ghast_tear", new Item(new Item.Settings()));
 	public static final Item GOLD_NUGGET = register("gold_nugget", new Item(new Item.Settings()));
 	public static final Item NETHER_WART = register("nether_wart", new AliasedBlockItem(Blocks.NETHER_WART, new Item.Settings()));
-	public static final Item POTION = register("potion", new PotionItem(new Item.Settings().maxCount(1)));
+	public static final Item POTION = register(
+		"potion", new PotionItem(new Item.Settings().maxCount(1).component(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT))
+	);
 	public static final Item GLASS_BOTTLE = register("glass_bottle", new GlassBottleItem(new Item.Settings()));
 	public static final Item SPIDER_EYE = register("spider_eye", new Item(new Item.Settings().food(FoodComponents.SPIDER_EYE)));
 	public static final Item FERMENTED_SPIDER_EYE = register("fermented_spider_eye", new Item(new Item.Settings()));
@@ -1282,11 +1471,18 @@ public class Items {
 	public static final Item ZOMBIFIED_PIGLIN_SPAWN_EGG = register(
 		"zombified_piglin_spawn_egg", new SpawnEggItem(EntityType.ZOMBIFIED_PIGLIN, 15373203, 5009705, new Item.Settings())
 	);
-	public static final Item EXPERIENCE_BOTTLE = register("experience_bottle", new ExperienceBottleItem(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item EXPERIENCE_BOTTLE = register(
+		"experience_bottle", new ExperienceBottleItem(new Item.Settings().rarity(Rarity.UNCOMMON).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
+	);
 	public static final Item FIRE_CHARGE = register("fire_charge", new FireChargeItem(new Item.Settings()));
 	public static final Item WIND_CHARGE = register("wind_charge", new WindChargeItem(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
-	public static final Item WRITABLE_BOOK = register("writable_book", new WritableBookItem(new Item.Settings().maxCount(1)));
-	public static final Item WRITTEN_BOOK = register("written_book", new WrittenBookItem(new Item.Settings().maxCount(16)));
+	public static final Item WRITABLE_BOOK = register(
+		"writable_book",
+		new WritableBookItem(new Item.Settings().maxCount(1).component(DataComponentTypes.WRITABLE_BOOK_CONTENT, WritableBookContentComponent.DEFAULT))
+	);
+	public static final Item WRITTEN_BOOK = register(
+		"written_book", new WrittenBookItem(new Item.Settings().maxCount(16).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
+	);
 	public static final Item ITEM_FRAME = register("item_frame", new ItemFrameItem(EntityType.ITEM_FRAME, new Item.Settings()));
 	public static final Item GLOW_ITEM_FRAME = register("glow_item_frame", new ItemFrameItem(EntityType.GLOW_ITEM_FRAME, new Item.Settings()));
 	public static final Item FLOWER_POT = register(Blocks.FLOWER_POT);
@@ -1317,11 +1513,24 @@ public class Items {
 	public static final Item PIGLIN_HEAD = register(
 		new VerticallyAttachableBlockItem(Blocks.PIGLIN_HEAD, Blocks.PIGLIN_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN)
 	);
-	public static final Item NETHER_STAR = register("nether_star", new NetherStarItem(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item NETHER_STAR = register(
+		"nether_star", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
+	);
 	public static final Item PUMPKIN_PIE = register("pumpkin_pie", new Item(new Item.Settings().food(FoodComponents.PUMPKIN_PIE)));
-	public static final Item FIREWORK_ROCKET = register("firework_rocket", new FireworkRocketItem(new Item.Settings()));
+	public static final Item FIREWORK_ROCKET = register(
+		"firework_rocket", new FireworkRocketItem(new Item.Settings().component(DataComponentTypes.FIREWORKS, new FireworksComponent(1, List.of())))
+	);
 	public static final Item FIREWORK_STAR = register("firework_star", new FireworkStarItem(new Item.Settings()));
-	public static final Item ENCHANTED_BOOK = register("enchanted_book", new EnchantedBookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)));
+	public static final Item ENCHANTED_BOOK = register(
+		"enchanted_book",
+		new EnchantedBookItem(
+			new Item.Settings()
+				.maxCount(1)
+				.rarity(Rarity.UNCOMMON)
+				.component(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT)
+				.component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+		)
+	);
 	public static final Item NETHER_BRICK = register("nether_brick", new Item(new Item.Settings()));
 	public static final Item PRISMARINE_SHARD = register("prismarine_shard", new Item(new Item.Settings()));
 	public static final Item PRISMARINE_CRYSTALS = register("prismarine_crystals", new Item(new Item.Settings()));
@@ -1332,16 +1541,16 @@ public class Items {
 	public static final Item RABBIT_HIDE = register("rabbit_hide", new Item(new Item.Settings()));
 	public static final Item ARMOR_STAND = register("armor_stand", new ArmorStandItem(new Item.Settings().maxCount(16)));
 	public static final Item IRON_HORSE_ARMOR = register(
-		"iron_horse_armor", new AnimalArmorItem(ArmorMaterials.IRON, AnimalArmorItem.Type.EQUESTRIAN, new Item.Settings().maxCount(1))
+		"iron_horse_armor", new AnimalArmorItem(ArmorMaterials.IRON, AnimalArmorItem.Type.EQUESTRIAN, false, new Item.Settings().maxCount(1))
 	);
 	public static final Item GOLDEN_HORSE_ARMOR = register(
-		"golden_horse_armor", new AnimalArmorItem(ArmorMaterials.GOLD, AnimalArmorItem.Type.EQUESTRIAN, new Item.Settings().maxCount(1))
+		"golden_horse_armor", new AnimalArmorItem(ArmorMaterials.GOLD, AnimalArmorItem.Type.EQUESTRIAN, false, new Item.Settings().maxCount(1))
 	);
 	public static final Item DIAMOND_HORSE_ARMOR = register(
-		"diamond_horse_armor", new AnimalArmorItem(ArmorMaterials.DIAMOND, AnimalArmorItem.Type.EQUESTRIAN, new Item.Settings().maxCount(1))
+		"diamond_horse_armor", new AnimalArmorItem(ArmorMaterials.DIAMOND, AnimalArmorItem.Type.EQUESTRIAN, false, new Item.Settings().maxCount(1))
 	);
 	public static final Item LEATHER_HORSE_ARMOR = register(
-		"leather_horse_armor", new AnimalArmorItem(ArmorMaterials.LEATHER, AnimalArmorItem.Type.EQUESTRIAN, new Item.Settings().maxCount(1))
+		"leather_horse_armor", new AnimalArmorItem(ArmorMaterials.LEATHER, AnimalArmorItem.Type.EQUESTRIAN, false, new Item.Settings().maxCount(1))
 	);
 	public static final Item LEAD = register("lead", new LeadItem(new Item.Settings()));
 	public static final Item NAME_TAG = register("name_tag", new NameTagItem(new Item.Settings()));
@@ -1351,42 +1560,124 @@ public class Items {
 	public static final Item MUTTON = register("mutton", new Item(new Item.Settings().food(FoodComponents.MUTTON)));
 	public static final Item COOKED_MUTTON = register("cooked_mutton", new Item(new Item.Settings().food(FoodComponents.COOKED_MUTTON)));
 	public static final Item WHITE_BANNER = register(
-		"white_banner", new BannerItem(Blocks.WHITE_BANNER, Blocks.WHITE_WALL_BANNER, new Item.Settings().maxCount(16))
+		"white_banner",
+		new BannerItem(
+			Blocks.WHITE_BANNER,
+			Blocks.WHITE_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
 	public static final Item ORANGE_BANNER = register(
-		"orange_banner", new BannerItem(Blocks.ORANGE_BANNER, Blocks.ORANGE_WALL_BANNER, new Item.Settings().maxCount(16))
+		"orange_banner",
+		new BannerItem(
+			Blocks.ORANGE_BANNER,
+			Blocks.ORANGE_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
 	public static final Item MAGENTA_BANNER = register(
-		"magenta_banner", new BannerItem(Blocks.MAGENTA_BANNER, Blocks.MAGENTA_WALL_BANNER, new Item.Settings().maxCount(16))
+		"magenta_banner",
+		new BannerItem(
+			Blocks.MAGENTA_BANNER,
+			Blocks.MAGENTA_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
 	public static final Item LIGHT_BLUE_BANNER = register(
-		"light_blue_banner", new BannerItem(Blocks.LIGHT_BLUE_BANNER, Blocks.LIGHT_BLUE_WALL_BANNER, new Item.Settings().maxCount(16))
+		"light_blue_banner",
+		new BannerItem(
+			Blocks.LIGHT_BLUE_BANNER,
+			Blocks.LIGHT_BLUE_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
 	public static final Item YELLOW_BANNER = register(
-		"yellow_banner", new BannerItem(Blocks.YELLOW_BANNER, Blocks.YELLOW_WALL_BANNER, new Item.Settings().maxCount(16))
+		"yellow_banner",
+		new BannerItem(
+			Blocks.YELLOW_BANNER,
+			Blocks.YELLOW_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
-	public static final Item LIME_BANNER = register("lime_banner", new BannerItem(Blocks.LIME_BANNER, Blocks.LIME_WALL_BANNER, new Item.Settings().maxCount(16)));
-	public static final Item PINK_BANNER = register("pink_banner", new BannerItem(Blocks.PINK_BANNER, Blocks.PINK_WALL_BANNER, new Item.Settings().maxCount(16)));
-	public static final Item GRAY_BANNER = register("gray_banner", new BannerItem(Blocks.GRAY_BANNER, Blocks.GRAY_WALL_BANNER, new Item.Settings().maxCount(16)));
+	public static final Item LIME_BANNER = register(
+		"lime_banner",
+		new BannerItem(
+			Blocks.LIME_BANNER, Blocks.LIME_WALL_BANNER, new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
+	);
+	public static final Item PINK_BANNER = register(
+		"pink_banner",
+		new BannerItem(
+			Blocks.PINK_BANNER, Blocks.PINK_WALL_BANNER, new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
+	);
+	public static final Item GRAY_BANNER = register(
+		"gray_banner",
+		new BannerItem(
+			Blocks.GRAY_BANNER, Blocks.GRAY_WALL_BANNER, new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
+	);
 	public static final Item LIGHT_GRAY_BANNER = register(
-		"light_gray_banner", new BannerItem(Blocks.LIGHT_GRAY_BANNER, Blocks.LIGHT_GRAY_WALL_BANNER, new Item.Settings().maxCount(16))
+		"light_gray_banner",
+		new BannerItem(
+			Blocks.LIGHT_GRAY_BANNER,
+			Blocks.LIGHT_GRAY_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
-	public static final Item CYAN_BANNER = register("cyan_banner", new BannerItem(Blocks.CYAN_BANNER, Blocks.CYAN_WALL_BANNER, new Item.Settings().maxCount(16)));
+	public static final Item CYAN_BANNER = register(
+		"cyan_banner",
+		new BannerItem(
+			Blocks.CYAN_BANNER, Blocks.CYAN_WALL_BANNER, new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
+	);
 	public static final Item PURPLE_BANNER = register(
-		"purple_banner", new BannerItem(Blocks.PURPLE_BANNER, Blocks.PURPLE_WALL_BANNER, new Item.Settings().maxCount(16))
+		"purple_banner",
+		new BannerItem(
+			Blocks.PURPLE_BANNER,
+			Blocks.PURPLE_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
-	public static final Item BLUE_BANNER = register("blue_banner", new BannerItem(Blocks.BLUE_BANNER, Blocks.BLUE_WALL_BANNER, new Item.Settings().maxCount(16)));
+	public static final Item BLUE_BANNER = register(
+		"blue_banner",
+		new BannerItem(
+			Blocks.BLUE_BANNER, Blocks.BLUE_WALL_BANNER, new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
+	);
 	public static final Item BROWN_BANNER = register(
-		"brown_banner", new BannerItem(Blocks.BROWN_BANNER, Blocks.BROWN_WALL_BANNER, new Item.Settings().maxCount(16))
+		"brown_banner",
+		new BannerItem(
+			Blocks.BROWN_BANNER,
+			Blocks.BROWN_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
 	public static final Item GREEN_BANNER = register(
-		"green_banner", new BannerItem(Blocks.GREEN_BANNER, Blocks.GREEN_WALL_BANNER, new Item.Settings().maxCount(16))
+		"green_banner",
+		new BannerItem(
+			Blocks.GREEN_BANNER,
+			Blocks.GREEN_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
-	public static final Item RED_BANNER = register("red_banner", new BannerItem(Blocks.RED_BANNER, Blocks.RED_WALL_BANNER, new Item.Settings().maxCount(16)));
+	public static final Item RED_BANNER = register(
+		"red_banner",
+		new BannerItem(
+			Blocks.RED_BANNER, Blocks.RED_WALL_BANNER, new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
+	);
 	public static final Item BLACK_BANNER = register(
-		"black_banner", new BannerItem(Blocks.BLACK_BANNER, Blocks.BLACK_WALL_BANNER, new Item.Settings().maxCount(16))
+		"black_banner",
+		new BannerItem(
+			Blocks.BLACK_BANNER,
+			Blocks.BLACK_WALL_BANNER,
+			new Item.Settings().maxCount(16).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
+		)
 	);
-	public static final Item END_CRYSTAL = register("end_crystal", new EndCrystalItem(new Item.Settings().rarity(Rarity.RARE)));
+	public static final Item END_CRYSTAL = register(
+		"end_crystal", new EndCrystalItem(new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
+	);
 	public static final Item CHORUS_FRUIT = register("chorus_fruit", new ChorusFruitItem(new Item.Settings().food(FoodComponents.CHORUS_FRUIT)));
 	public static final Item POPPED_CHORUS_FRUIT = register("popped_chorus_fruit", new Item(new Item.Settings()));
 	public static final Item TORCHFLOWER_SEEDS = register("torchflower_seeds", new AliasedBlockItem(Blocks.TORCHFLOWER_CROP, new Item.Settings()));
@@ -1395,16 +1686,35 @@ public class Items {
 	public static final Item BEETROOT_SEEDS = register("beetroot_seeds", new AliasedBlockItem(Blocks.BEETROOTS, new Item.Settings()));
 	public static final Item BEETROOT_SOUP = register("beetroot_soup", new StewItem(new Item.Settings().maxCount(1).food(FoodComponents.BEETROOT_SOUP)));
 	public static final Item DRAGON_BREATH = register("dragon_breath", new Item(new Item.Settings().recipeRemainder(GLASS_BOTTLE).rarity(Rarity.UNCOMMON)));
-	public static final Item SPLASH_POTION = register("splash_potion", new SplashPotionItem(new Item.Settings().maxCount(1)));
+	public static final Item SPLASH_POTION = register(
+		"splash_potion", new SplashPotionItem(new Item.Settings().maxCount(1).component(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT))
+	);
 	public static final Item SPECTRAL_ARROW = register("spectral_arrow", new SpectralArrowItem(new Item.Settings()));
-	public static final Item TIPPED_ARROW = register("tipped_arrow", new TippedArrowItem(new Item.Settings()));
-	public static final Item LINGERING_POTION = register("lingering_potion", new LingeringPotionItem(new Item.Settings().maxCount(1)));
-	public static final Item SHIELD = register("shield", new ShieldItem(new Item.Settings().maxDamage(336)));
+	public static final Item TIPPED_ARROW = register(
+		"tipped_arrow", new TippedArrowItem(new Item.Settings().component(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT))
+	);
+	public static final Item LINGERING_POTION = register(
+		"lingering_potion", new LingeringPotionItem(new Item.Settings().maxCount(1).component(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT))
+	);
+	public static final Item SHIELD = register(
+		"shield", new ShieldItem(new Item.Settings().maxDamage(336).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT))
+	);
 	public static final Item TOTEM_OF_UNDYING = register("totem_of_undying", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)));
 	public static final Item SHULKER_SHELL = register("shulker_shell", new Item(new Item.Settings()));
 	public static final Item IRON_NUGGET = register("iron_nugget", new Item(new Item.Settings()));
-	public static final Item KNOWLEDGE_BOOK = register("knowledge_book", new KnowledgeBookItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
-	public static final Item DEBUG_STICK = register("debug_stick", new DebugStickItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+	public static final Item KNOWLEDGE_BOOK = register(
+		"knowledge_book", new KnowledgeBookItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).component(DataComponentTypes.RECIPES, List.of()))
+	);
+	public static final Item DEBUG_STICK = register(
+		"debug_stick",
+		new DebugStickItem(
+			new Item.Settings()
+				.maxCount(1)
+				.rarity(Rarity.EPIC)
+				.component(DataComponentTypes.DEBUG_STICK_STATE, DebugStickStateComponent.DEFAULT)
+				.component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+		)
+	);
 	public static final Item MUSIC_DISC_13 = register(
 		"music_disc_13", new MusicDiscItem(1, SoundEvents.MUSIC_DISC_13, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 178)
 	);
@@ -1454,13 +1764,24 @@ public class Items {
 		"music_disc_pigstep", new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 149)
 	);
 	public static final Item DISC_FRAGMENT_5 = register("disc_fragment_5", new DiscFragmentItem(new Item.Settings()));
-	public static final Item TRIDENT = register("trident", new TridentItem(new Item.Settings().maxDamage(250)));
+	public static final Item TRIDENT = register(
+		"trident", new TridentItem(new Item.Settings().maxDamage(250).attributeModifiers(TridentItem.createAttributeModifiers()))
+	);
 	public static final Item PHANTOM_MEMBRANE = register("phantom_membrane", new Item(new Item.Settings()));
 	public static final Item NAUTILUS_SHELL = register("nautilus_shell", new Item(new Item.Settings()));
 	public static final Item HEART_OF_THE_SEA = register("heart_of_the_sea", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
-	public static final Item CROSSBOW = register("crossbow", new CrossbowItem(new Item.Settings().maxCount(1).maxDamage(465)));
+	public static final Item CROSSBOW = register(
+		"crossbow",
+		new CrossbowItem(new Item.Settings().maxCount(1).maxDamage(465).component(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT))
+	);
 	public static final Item SUSPICIOUS_STEW = register(
-		"suspicious_stew", new SuspiciousStewItem(new Item.Settings().maxCount(1).food(FoodComponents.SUSPICIOUS_STEW))
+		"suspicious_stew",
+		new SuspiciousStewItem(
+			new Item.Settings()
+				.maxCount(1)
+				.food(FoodComponents.SUSPICIOUS_STEW)
+				.component(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffectsComponent.DEFAULT)
+		)
 	);
 	public static final Item LOOM = register(Blocks.LOOM);
 	public static final Item FLOWER_BANNER_PATTERN = register(
@@ -1504,8 +1825,8 @@ public class Items {
 	public static final Item SOUL_CAMPFIRE = register(Blocks.SOUL_CAMPFIRE);
 	public static final Item SHROOMLIGHT = register(Blocks.SHROOMLIGHT);
 	public static final Item HONEYCOMB = register("honeycomb", new HoneycombItem(new Item.Settings()));
-	public static final Item BEE_NEST = register(Blocks.BEE_NEST);
-	public static final Item BEEHIVE = register(Blocks.BEEHIVE);
+	public static final Item BEE_NEST = register(new BlockItem(Blocks.BEE_NEST, new Item.Settings().component(DataComponentTypes.BEES, List.of())));
+	public static final Item BEEHIVE = register(new BlockItem(Blocks.BEEHIVE, new Item.Settings().component(DataComponentTypes.BEES, List.of())));
 	public static final Item HONEY_BOTTLE = register(
 		"honey_bottle", new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).maxCount(16))
 	);

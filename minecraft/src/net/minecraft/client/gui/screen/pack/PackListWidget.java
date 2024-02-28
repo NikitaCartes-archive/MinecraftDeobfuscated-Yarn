@@ -12,6 +12,7 @@ import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
@@ -32,7 +33,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	final PackScreen screen;
 
 	public PackListWidget(MinecraftClient client, PackScreen screen, int width, int height, Text title) {
-		super(client, width, height - 83, 32, 36);
+		super(client, width, height, 33, 36);
 		this.screen = screen;
 		this.title = title;
 		this.centerListVertically = false;
@@ -43,7 +44,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	protected void renderHeader(DrawContext context, int x, int y) {
 		Text text = Text.empty().append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
 		context.drawText(
-			this.client.textRenderer, text, x + this.width / 2 - this.client.textRenderer.getWidth(text) / 2, Math.min(this.getY() + 3, y), 16777215, false
+			this.client.textRenderer, text, x + this.width / 2 - this.client.textRenderer.getWidth(text) / 2, Math.min(this.getY() + 3, y), Colors.WHITE, false
 		);
 	}
 
@@ -55,6 +56,21 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	@Override
 	protected int getScrollbarPositionX() {
 		return this.getRight() - 6;
+	}
+
+	@Override
+	protected void drawSelectionHighlight(DrawContext context, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
+		if (this.isScrollbarVisible()) {
+			int i = 2;
+			int j = this.getRowLeft() - 2;
+			int k = this.getRight() - 6 - 1;
+			int l = y - 2;
+			int m = y + entryHeight + 2;
+			context.fill(j, l, k, m, borderColor);
+			context.fill(j + 1, l + 1, k - 1, m - 1, fillColor);
+		} else {
+			super.drawSelectionHighlight(context, y, entryWidth, entryHeight, borderColor, fillColor);
+		}
 	}
 
 	@Override
@@ -255,7 +271,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 				}
 			}
 
-			return false;
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 	}
 }

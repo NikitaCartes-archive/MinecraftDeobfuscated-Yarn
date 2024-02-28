@@ -122,13 +122,6 @@ public class CrafterBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		if (itemStack.hasCustomName()) {
-			BlockEntity var7 = world.getBlockEntity(pos);
-			if (var7 instanceof CrafterBlockEntity crafterBlockEntity) {
-				crafterBlockEntity.setCustomName(itemStack.getName());
-			}
-		}
-
 		if (state.get(TRIGGERED)) {
 			world.scheduleBlockTick(pos, this, 4);
 		}

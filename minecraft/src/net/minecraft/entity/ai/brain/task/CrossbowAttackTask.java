@@ -1,6 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
@@ -46,7 +48,7 @@ public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends Li
 
 		if (mobEntity.isHolding(Items.CROSSBOW)) {
 			mobEntity.setCharging(false);
-			CrossbowItem.setCharged(mobEntity.getActiveItem(), false);
+			mobEntity.getActiveItem().set(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT);
 		}
 	}
 
@@ -75,8 +77,6 @@ public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends Li
 			}
 		} else if (this.state == CrossbowAttackTask.CrossbowState.READY_TO_ATTACK) {
 			entity.shootAt(target, 1.0F);
-			ItemStack itemStack2 = entity.getStackInHand(ProjectileUtil.getHandPossiblyHolding(entity, Items.CROSSBOW));
-			CrossbowItem.setCharged(itemStack2, false);
 			this.state = CrossbowAttackTask.CrossbowState.UNCHARGED;
 		}
 	}

@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidHierarchicalFileException;
 import net.minecraft.util.JsonHelper;
@@ -51,13 +51,13 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 	private final EffectShaderStage vertexShader;
 	private final EffectShaderStage fragmentShader;
 
-	public JsonEffectShaderProgram(ResourceManager resource, String name) throws IOException {
+	public JsonEffectShaderProgram(ResourceFactory resourceFactory, String name) throws IOException {
 		Identifier identifier = new Identifier("shaders/program/" + name + ".json");
 		this.name = name;
-		Resource resource2 = resource.getResourceOrThrow(identifier);
+		Resource resource = resourceFactory.getResourceOrThrow(identifier);
 
 		try {
-			Reader reader = resource2.getReader();
+			Reader reader = resource.getReader();
 
 			try {
 				JsonObject jsonObject = JsonHelper.deserialize(reader);
@@ -120,8 +120,8 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 				}
 
 				this.blendState = deserializeBlendState(JsonHelper.getObject(jsonObject, "blend", null));
-				this.vertexShader = loadEffect(resource, ShaderStage.Type.VERTEX, string);
-				this.fragmentShader = loadEffect(resource, ShaderStage.Type.FRAGMENT, string2);
+				this.vertexShader = loadEffect(resourceFactory, ShaderStage.Type.VERTEX, string);
+				this.fragmentShader = loadEffect(resourceFactory, ShaderStage.Type.FRAGMENT, string2);
 				this.glRef = GlProgramManager.createProgram();
 				GlProgramManager.linkProgram(this);
 				this.finalizeUniformsAndSamplers();
@@ -148,14 +148,14 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 			}
 		} catch (Exception var22) {
 			InvalidHierarchicalFileException invalidHierarchicalFileException4 = InvalidHierarchicalFileException.wrap(var22);
-			invalidHierarchicalFileException4.addInvalidFile(identifier.getPath() + " (" + resource2.getPackId() + ")");
+			invalidHierarchicalFileException4.addInvalidFile(identifier.getPath() + " (" + resource.getPackId() + ")");
 			throw invalidHierarchicalFileException4;
 		}
 
 		this.markUniformsDirty();
 	}
 
-	public static EffectShaderStage loadEffect(ResourceManager resourceManager, ShaderStage.Type type, String name) throws IOException {
+	public static EffectShaderStage loadEffect(ResourceFactory resourceFactory, ShaderStage.Type type, String name) throws IOException {
 		ShaderStage shaderStage = (ShaderStage)type.getLoadedShaders().get(name);
 		if (shaderStage != null && !(shaderStage instanceof EffectShaderStage)) {
 			throw new InvalidClassException("Program is not of type EffectProgram");
@@ -163,7 +163,7 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 			EffectShaderStage effectShaderStage;
 			if (shaderStage == null) {
 				Identifier identifier = new Identifier("shaders/program/" + name + type.getFileExtension());
-				Resource resource = resourceManager.getResourceOrThrow(identifier);
+				Resource resource = resourceFactory.getResourceOrThrow(identifier);
 				InputStream inputStream = resource.getInputStream();
 
 				try {

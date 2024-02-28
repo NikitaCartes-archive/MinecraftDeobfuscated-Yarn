@@ -24,7 +24,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.StringHelper;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -409,7 +409,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	public void saveSettings(String name, String desc) {
-		String string = Util.isBlank(desc) ? null : desc;
+		String string = StringHelper.isBlank(desc) ? null : desc;
 		RealmsClient realmsClient = RealmsClient.create();
 
 		try {

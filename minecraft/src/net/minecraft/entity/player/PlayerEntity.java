@@ -70,7 +70,6 @@ import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
@@ -115,7 +114,6 @@ import org.slf4j.Logger;
 
 public abstract class PlayerEntity extends LivingEntity {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final int field_30643 = 16;
 	public static final Arm DEFAULT_MAIN_ARM = Arm.RIGHT;
 	public static final int field_46175 = 0;
 	public static final int field_30644 = 20;
@@ -207,7 +205,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			return false;
 		} else {
 			ItemStack itemStack = this.getMainHandStack();
-			return itemStack.isEmpty() || !itemStack.canDestroy(world.getRegistryManager().get(RegistryKeys.BLOCK), new CachedBlockPosition(world, pos, false));
+			return itemStack.isEmpty() || !itemStack.canBreak(new CachedBlockPosition(world, pos, false));
 		}
 	}
 
@@ -811,7 +809,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.abilities.readNbt(nbt);
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
 		if (nbt.contains("EnderItems", NbtElement.LIST_TYPE)) {
-			this.enderChestInventory.readNbtList(nbt.getList("EnderItems", NbtElement.COMPOUND_TYPE));
+			this.enderChestInventory.readNbtList(nbt.getList("EnderItems", NbtElement.COMPOUND_TYPE), this.getRegistryManager());
 		}
 
 		if (nbt.contains("ShoulderEntityLeft", NbtElement.COMPOUND_TYPE)) {
@@ -845,7 +843,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		nbt.putInt("Score", this.getScore());
 		this.hungerManager.writeNbt(nbt);
 		this.abilities.writeNbt(nbt);
-		nbt.put("EnderItems", this.enderChestInventory.toNbtList());
+		nbt.put("EnderItems", this.enderChestInventory.toNbtList(this.getRegistryManager()));
 		if (!this.getShoulderEntityLeft().isEmpty()) {
 			nbt.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
 		}
@@ -938,12 +936,12 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected void damageArmor(DamageSource source, float amount) {
-		this.inventory.damageArmor(source, amount, PlayerInventory.ARMOR_SLOTS);
+		this.damageEquipment(source, amount, new EquipmentSlot[]{EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD});
 	}
 
 	@Override
 	protected void damageHelmet(DamageSource source, float amount) {
-		this.inventory.damageArmor(source, amount, PlayerInventory.HELMET_SLOTS);
+		this.damageEquipment(source, amount, new EquipmentSlot[]{EquipmentSlot.HEAD});
 	}
 
 	@Override
@@ -1615,7 +1613,6 @@ public abstract class PlayerEntity extends LivingEntity {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
 				this.startFallFlying();
-				this.ignoreFallDamageAboveY = null;
 				return true;
 			}
 		}
@@ -1675,6 +1672,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (!this.abilities.flying) {
 			super.slowMovement(state, multiplier);
 		}
+
+		this.ignoreFallDamageAboveY = null;
 	}
 
 	public void addExperience(int experience) {
@@ -1772,7 +1771,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else {
 			BlockPos blockPos = pos.offset(facing.getOpposite());
 			CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.getWorld(), blockPos, false);
-			return stack.canPlaceOn(this.getWorld().getRegistryManager().get(RegistryKeys.BLOCK), cachedBlockPosition);
+			return stack.canPlaceOn(cachedBlockPosition);
 		}
 	}
 
@@ -2138,12 +2137,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		return false;
 	}
 
-	@Override
-	public void onLanding() {
-		super.onLanding();
-		this.ignoreFallDamageAboveY = null;
-	}
-
 	public Optional<GlobalPos> getLastDeathPos() {
 		return this.lastDeathPos;
 	}
@@ -2175,10 +2168,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else {
 			return this.isSprinting() ? 0.025999999F : 0.02F;
 		}
-	}
-
-	public static boolean isUsernameValid(String name) {
-		return name.length() > 16 ? false : name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
 	}
 
 	public double getBlockInteractionRange() {

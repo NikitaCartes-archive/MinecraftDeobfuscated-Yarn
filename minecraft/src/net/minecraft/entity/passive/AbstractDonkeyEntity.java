@@ -94,8 +94,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 				if (!itemStack.isEmpty()) {
 					NbtCompound nbtCompound = new NbtCompound();
 					nbtCompound.putByte("Slot", (byte)(i - 1));
-					itemStack.writeNbt(nbtCompound);
-					nbtList.add(nbtCompound);
+					nbtList.add(itemStack.encode(this.getRegistryManager(), nbtCompound));
 				}
 			}
 
@@ -115,7 +114,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
 				int j = nbtCompound.getByte("Slot") & 255;
 				if (j < this.items.size() - 1) {
-					this.items.setStack(j + 1, ItemStack.fromNbt(nbtCompound));
+					this.items.setStack(j + 1, (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY));
 				}
 			}
 		}

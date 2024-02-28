@@ -2,6 +2,8 @@ package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -25,6 +27,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	public float lastBookRotation;
 	public float targetBookRotation;
 	private static final Random RANDOM = Random.create();
+	@Nullable
 	private Text customName;
 
 	public EnchantingTableBlockEntity(BlockPos pos, BlockState state) {
@@ -35,7 +38,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		if (this.hasCustomName()) {
-			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registryLookup));
 		}
 	}
 
@@ -43,7 +46,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"));
+			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
 		}
 	}
 
@@ -118,5 +121,20 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	@Override
 	public Text getCustomName() {
 		return this.customName;
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		nbt.remove("CustomName");
 	}
 }

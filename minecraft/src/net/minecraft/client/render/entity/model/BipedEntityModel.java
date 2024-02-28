@@ -149,7 +149,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	}
 
 	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
-		boolean bl = livingEntity.getRoll() > 4;
+		boolean bl = livingEntity.getFallFlyingTicks() > 4;
 		boolean bl2 = livingEntity.isInSwimmingPose();
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		if (bl) {

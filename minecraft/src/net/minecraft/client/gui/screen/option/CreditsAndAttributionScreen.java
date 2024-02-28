@@ -7,7 +7,6 @@ import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -30,7 +29,7 @@ public class CreditsAndAttributionScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.layout.addHeader(new TextWidget(this.getTitle(), this.textRenderer));
+		this.layout.addHeader(TITLE, this.textRenderer);
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(8);
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
 		directionalLayoutWidget.add(ButtonWidget.builder(CREDITS_TEXT, button -> this.openCredits()).width(210).build());
@@ -38,7 +37,7 @@ public class CreditsAndAttributionScreen extends Screen {
 			ButtonWidget.builder(ATTRIBUTION_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftJavaAttribution")).width(210).build()
 		);
 		directionalLayoutWidget.add(ButtonWidget.builder(LICENSE_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftJavaLicenses")).width(210).build());
-		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).build());
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).width(200).build());
 		this.layout.refreshPositions();
 		this.layout.forEachChild(this::addDrawableChild);
 	}

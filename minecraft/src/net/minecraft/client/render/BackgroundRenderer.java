@@ -216,7 +216,7 @@ public class BackgroundRenderer {
 				fogData.fogEnd = viewDistance * 0.5F;
 			} else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 				fogData.fogStart = 0.0F;
-				fogData.fogEnd = 3.0F;
+				fogData.fogEnd = 5.0F;
 			} else {
 				fogData.fogStart = 0.25F;
 				fogData.fogEnd = 1.0F;

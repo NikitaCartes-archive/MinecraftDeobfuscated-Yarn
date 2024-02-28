@@ -1,6 +1,7 @@
 package net.minecraft.entity.damage;
 
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -77,7 +78,7 @@ public class DamageSource {
 			Text text = this.attacker == null ? this.source.getDisplayName() : this.attacker.getDisplayName();
 			Entity var6 = this.attacker;
 			ItemStack itemStack = var6 instanceof LivingEntity livingEntity ? livingEntity.getMainHandStack() : ItemStack.EMPTY;
-			return !itemStack.isEmpty() && itemStack.hasCustomName()
+			return !itemStack.isEmpty() && itemStack.contains(DataComponentTypes.CUSTOM_NAME)
 				? Text.translatable(string + ".item", killed.getDisplayName(), text, itemStack.toHoverableText())
 				: Text.translatable(string, killed.getDisplayName(), text);
 		}

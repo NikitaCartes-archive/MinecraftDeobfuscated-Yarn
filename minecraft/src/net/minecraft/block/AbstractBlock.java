@@ -352,7 +352,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	/**
 	 * Whether this block's collision shape can change.
 	 * 
-	 * @see #hasDynamicBounds
+	 * @see Block#hasDynamicBounds
 	 */
 	protected final boolean dynamicBounds;
 	/**
@@ -428,14 +428,14 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * @see AbstractBlockState#canPathfindThrough
 	 */
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		switch(type) {
 			case LAND:
-				return !state.isFullCube(world, pos);
+				return !state.isFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 			case WATER:
-				return world.getFluidState(pos).isIn(FluidTags.WATER);
+				return state.getFluidState().isIn(FluidTags.WATER);
 			case AIR:
-				return !state.isFullCube(world, pos);
+				return !state.isFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 			default:
 				return false;
 		}
@@ -1516,8 +1516,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.getBlock().getStateForNeighborUpdate(this.asBlockState(), direction, neighborState, world, pos, neighborPos);
 		}
 
-		public boolean canPathfindThrough(BlockView world, BlockPos pos, NavigationType type) {
-			return this.getBlock().canPathfindThrough(this.asBlockState(), world, pos, type);
+		public boolean canPathfindThrough(NavigationType type) {
+			return this.getBlock().canPathfindThrough(this.asBlockState(), type);
 		}
 
 		public boolean canReplace(ItemPlacementContext context) {

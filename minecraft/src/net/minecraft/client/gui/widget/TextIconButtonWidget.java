@@ -19,8 +19,17 @@ public abstract class TextIconButtonWidget extends ButtonWidget {
 	protected final int textureWidth;
 	protected final int textureHeight;
 
-	TextIconButtonWidget(int width, int height, Text message, int textureWidth, int textureHeight, Identifier texture, ButtonWidget.PressAction onPress) {
-		super(0, 0, width, height, message, onPress, DEFAULT_NARRATION_SUPPLIER);
+	TextIconButtonWidget(
+		int width,
+		int height,
+		Text message,
+		int textureWidth,
+		int textureHeight,
+		Identifier texture,
+		ButtonWidget.PressAction onPress,
+		@Nullable ButtonWidget.NarrationSupplier narrationSupplier
+	) {
+		super(0, 0, width, height, message, onPress, narrationSupplier == null ? DEFAULT_NARRATION_SUPPLIER : narrationSupplier);
 		this.textureWidth = textureWidth;
 		this.textureHeight = textureHeight;
 		this.texture = texture;
@@ -41,6 +50,8 @@ public abstract class TextIconButtonWidget extends ButtonWidget {
 		private Identifier texture;
 		private int textureWidth;
 		private int textureHeight;
+		@Nullable
+		ButtonWidget.NarrationSupplier narrationSupplier;
 
 		public Builder(Text text, ButtonWidget.PressAction onPress, boolean hideText) {
 			this.text = text;
@@ -66,21 +77,39 @@ public abstract class TextIconButtonWidget extends ButtonWidget {
 			return this;
 		}
 
+		public TextIconButtonWidget.Builder narration(ButtonWidget.NarrationSupplier narrationSupplier) {
+			this.narrationSupplier = narrationSupplier;
+			return this;
+		}
+
 		public TextIconButtonWidget build() {
 			if (this.texture == null) {
 				throw new IllegalStateException("Sprite not set");
 			} else {
 				return (TextIconButtonWidget)(this.hideText
-					? new TextIconButtonWidget.IconOnly(this.width, this.height, this.text, this.textureWidth, this.textureHeight, this.texture, this.onPress)
-					: new TextIconButtonWidget.WithText(this.width, this.height, this.text, this.textureWidth, this.textureHeight, this.texture, this.onPress));
+					? new TextIconButtonWidget.IconOnly(
+						this.width, this.height, this.text, this.textureWidth, this.textureHeight, this.texture, this.onPress, this.narrationSupplier
+					)
+					: new TextIconButtonWidget.WithText(
+						this.width, this.height, this.text, this.textureWidth, this.textureHeight, this.texture, this.onPress, this.narrationSupplier
+					));
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class IconOnly extends TextIconButtonWidget {
-		protected IconOnly(int i, int j, Text text, int k, int l, Identifier identifier, ButtonWidget.PressAction pressAction) {
-			super(i, j, text, k, l, identifier, pressAction);
+		protected IconOnly(
+			int i,
+			int j,
+			Text text,
+			int k,
+			int l,
+			Identifier identifier,
+			ButtonWidget.PressAction pressAction,
+			@Nullable ButtonWidget.NarrationSupplier narrationSupplier
+		) {
+			super(i, j, text, k, l, identifier, pressAction, narrationSupplier);
 		}
 
 		@Override
@@ -98,8 +127,17 @@ public abstract class TextIconButtonWidget extends ButtonWidget {
 
 	@Environment(EnvType.CLIENT)
 	public static class WithText extends TextIconButtonWidget {
-		protected WithText(int i, int j, Text text, int k, int l, Identifier identifier, ButtonWidget.PressAction pressAction) {
-			super(i, j, text, k, l, identifier, pressAction);
+		protected WithText(
+			int i,
+			int j,
+			Text text,
+			int k,
+			int l,
+			Identifier identifier,
+			ButtonWidget.PressAction pressAction,
+			@Nullable ButtonWidget.NarrationSupplier narrationSupplier
+		) {
+			super(i, j, text, k, l, identifier, pressAction, narrationSupplier);
 		}
 
 		@Override

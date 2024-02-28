@@ -14,11 +14,12 @@ import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
@@ -62,7 +63,7 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 				this.setVisible(model, armorSlot);
 				boolean blx = this.usesInnerModel(armorSlot);
 				ArmorMaterial armorMaterial = (ArmorMaterial)armorItem.getMaterial().value();
-				int i = itemStack.isIn(ItemTags.DYEABLE) ? DyeableItem.getColor(itemStack) : Colors.WHITE;
+				int i = itemStack.isIn(ItemTags.DYEABLE) ? DyedColorComponent.getColor(itemStack, -6265536) : Colors.WHITE;
 
 				for(ArmorMaterial.Layer layer : armorMaterial.layers()) {
 					float f;
@@ -81,8 +82,11 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 					this.renderArmorParts(matrices, vertexConsumers, light, model, f, g, h, layer.getTexture(blx));
 				}
 
-				ArmorTrim.getTrim(entity.getWorld().getRegistryManager(), itemStack, true)
-					.ifPresent(trim -> this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, trim, model, bl));
+				ArmorTrim armorTrim = itemStack.get(DataComponentTypes.TRIM);
+				if (armorTrim != null) {
+					this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, armorTrim, model, blx);
+				}
+
 				if (itemStack.hasGlint()) {
 					this.renderGlint(matrices, vertexConsumers, light, model);
 				}

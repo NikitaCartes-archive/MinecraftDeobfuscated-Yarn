@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -17,7 +19,6 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -238,9 +239,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	private void removeFromFrame(ItemStack stack) {
-		MapId mapId = this.getMapId();
-		if (mapId != null) {
-			MapState mapState = FilledMapItem.getMapState(mapId, this.getWorld());
+		MapIdComponent mapIdComponent = this.getMapId();
+		if (mapIdComponent != null) {
+			MapState mapState = FilledMapItem.getMapState(mapIdComponent, this.getWorld());
 			if (mapState != null) {
 				mapState.removeFrame(this.attachmentPos, this.getId());
 				mapState.setDirty(true);
@@ -255,12 +256,12 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Nullable
-	public MapId getMapId() {
-		return FilledMapItem.getMapId(this.getHeldItemStack());
+	public MapIdComponent getMapId() {
+		return this.getHeldItemStack().get(DataComponentTypes.MAP_ID);
 	}
 
 	public boolean containsMap() {
-		return this.getMapId() != null;
+		return this.getHeldItemStack().contains(DataComponentTypes.MAP_ID);
 	}
 
 	public void setHeldItemStack(ItemStack stack) {
@@ -337,7 +338,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		if (!this.getHeldItemStack().isEmpty()) {
-			nbt.put("Item", this.getHeldItemStack().writeNbt(new NbtCompound()));
+			nbt.put("Item", this.getHeldItemStack().encode(this.getRegistryManager()));
 			nbt.putByte("ItemRotation", (byte)this.getRotation());
 			nbt.putFloat("ItemDropChance", this.itemDropChance);
 		}
@@ -350,19 +351,21 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		NbtCompound nbtCompound = nbt.getCompound("Item");
-		if (nbtCompound != null && !nbtCompound.isEmpty()) {
-			ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
-			if (itemStack.isEmpty()) {
-				ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", nbtCompound);
-			}
+		ItemStack itemStack;
+		if (nbt.contains("Item", NbtElement.COMPOUND_TYPE)) {
+			NbtCompound nbtCompound = nbt.getCompound("Item");
+			itemStack = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
+		} else {
+			itemStack = ItemStack.EMPTY;
+		}
 
-			ItemStack itemStack2 = this.getHeldItemStack();
-			if (!itemStack2.isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
-				this.removeFromFrame(itemStack2);
-			}
+		ItemStack itemStack2 = this.getHeldItemStack();
+		if (!itemStack2.isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
+			this.removeFromFrame(itemStack2);
+		}
 
-			this.setHeldItemStack(itemStack, false);
+		this.setHeldItemStack(itemStack, false);
+		if (!itemStack.isEmpty()) {
 			this.setRotation(nbt.getByte("ItemRotation"), false);
 			if (nbt.contains("ItemDropChance", NbtElement.NUMBER_TYPE)) {
 				this.itemDropChance = nbt.getFloat("ItemDropChance");

@@ -88,6 +88,9 @@ public class LootContextTypes {
 				.allow(LootContextParameters.BLOCK_ENTITY)
 				.allow(LootContextParameters.EXPLOSION_RADIUS)
 	);
+	public static final LootContextType SHEARING = register(
+		"shearing", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY)
+	);
 
 	private static LootContextType register(String name, Consumer<LootContextType.Builder> type) {
 		LootContextType.Builder builder = new LootContextType.Builder();

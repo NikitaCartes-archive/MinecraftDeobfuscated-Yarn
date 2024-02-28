@@ -17,6 +17,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -57,24 +58,24 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 		return this.isInventoryEmpty();
 	}
 
-	default void writeInventoryToNbt(NbtCompound nbt) {
+	default void writeInventoryToNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
 		if (this.getLootTableId() != null) {
 			nbt.putString("LootTable", this.getLootTableId().toString());
 			if (this.getLootTableSeed() != 0L) {
 				nbt.putLong("LootTableSeed", this.getLootTableSeed());
 			}
 		} else {
-			Inventories.writeNbt(nbt, this.getInventory());
+			Inventories.writeNbt(nbt, this.getInventory(), wrapperLookup);
 		}
 	}
 
-	default void readInventoryFromNbt(NbtCompound nbt) {
+	default void readInventoryFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
 		this.resetInventory();
 		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
 			this.setLootTableId(new Identifier(nbt.getString("LootTable")));
 			this.setLootTableSeed(nbt.getLong("LootTableSeed"));
 		} else {
-			Inventories.readNbt(nbt, this.getInventory());
+			Inventories.readNbt(nbt, this.getInventory(), wrapperLookup);
 		}
 	}
 

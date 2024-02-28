@@ -23,6 +23,8 @@ public @interface GameTest {
 
 	boolean required() default true;
 
+	boolean manualOnly() default false;
+
 	String templateName() default "";
 
 	long duration() default 0L;

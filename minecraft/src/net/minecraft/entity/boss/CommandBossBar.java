@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
@@ -132,9 +133,9 @@ public class CommandBossBar extends ServerBossBar {
 		return !set.isEmpty() || !set2.isEmpty();
 	}
 
-	public NbtCompound toNbt() {
+	public NbtCompound toNbt(RegistryWrapper.WrapperLookup wrapperLookup) {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", Text.Serialization.toJsonString(this.name));
+		nbtCompound.putString("Name", Text.Serialization.toJsonString(this.name, wrapperLookup));
 		nbtCompound.putBoolean("Visible", this.isVisible());
 		nbtCompound.putInt("Value", this.value);
 		nbtCompound.putInt("Max", this.maxValue);
@@ -153,8 +154,8 @@ public class CommandBossBar extends ServerBossBar {
 		return nbtCompound;
 	}
 
-	public static CommandBossBar fromNbt(NbtCompound nbt, Identifier id) {
-		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serialization.fromJson(nbt.getString("Name")));
+	public static CommandBossBar fromNbt(NbtCompound nbt, Identifier id, RegistryWrapper.WrapperLookup wrapperLookup) {
+		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serialization.fromJson(nbt.getString("Name"), wrapperLookup));
 		commandBossBar.setVisible(nbt.getBoolean("Visible"));
 		commandBossBar.setValue(nbt.getInt("Value"));
 		commandBossBar.setMaxValue(nbt.getInt("Max"));

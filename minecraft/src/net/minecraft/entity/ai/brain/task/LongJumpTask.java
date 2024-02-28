@@ -57,7 +57,7 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 		World world = entity.getWorld();
 		BlockPos blockPos = pos.down();
 		return world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)
-			&& entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(world, pos.mutableCopy())) == 0.0F;
+			&& entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(entity, pos)) == 0.0F;
 	}
 
 	public LongJumpTask(

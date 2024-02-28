@@ -25,6 +25,7 @@ import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.AmphibiousSwimNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.PathContext;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -55,7 +56,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -402,10 +402,10 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		}
 
 		@Override
-		public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
+		public PathNodeType getDefaultNodeType(PathContext context, int x, int y, int z) {
 			this.pos.set(x, y - 1, z);
-			BlockState blockState = world.getBlockState(this.pos);
-			return blockState.isIn(BlockTags.FROG_PREFER_JUMP_TO) ? PathNodeType.OPEN : super.getDefaultNodeType(world, x, y, z);
+			BlockState blockState = context.getBlockState(this.pos);
+			return blockState.isIn(BlockTags.FROG_PREFER_JUMP_TO) ? PathNodeType.OPEN : super.getDefaultNodeType(context, x, y, z);
 		}
 	}
 }

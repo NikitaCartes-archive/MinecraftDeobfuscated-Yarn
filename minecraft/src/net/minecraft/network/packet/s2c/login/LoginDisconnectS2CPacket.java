@@ -6,6 +6,7 @@ import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.text.Text;
 
 public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListener> {
@@ -19,11 +20,11 @@ public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListene
 	}
 
 	private LoginDisconnectS2CPacket(PacketByteBuf buf) {
-		this.reason = Text.Serialization.fromLenientJson(buf.readString(PacketByteBuf.MAX_TEXT_LENGTH));
+		this.reason = Text.Serialization.fromLenientJson(buf.readString(PacketByteBuf.MAX_TEXT_LENGTH), DynamicRegistryManager.EMPTY);
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeString(Text.Serialization.toJsonString(this.reason));
+		buf.writeString(Text.Serialization.toJsonString(this.reason, DynamicRegistryManager.EMPTY));
 	}
 
 	@Override

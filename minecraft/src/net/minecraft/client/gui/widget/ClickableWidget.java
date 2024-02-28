@@ -14,6 +14,7 @@ import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -122,6 +123,10 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		int i = this.getX() + xMargin;
 		int j = this.getX() + this.getWidth() - xMargin;
 		drawScrollableText(context, textRenderer, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), color);
+	}
+
+	protected void drawBackground(DrawContext context, int startX, int startY, int endX, int endY) {
+		Screen.renderBackgroundTexture(context, startX, startY, endX - startX, endY - startY);
 	}
 
 	public void onClick(double mouseX, double mouseY) {

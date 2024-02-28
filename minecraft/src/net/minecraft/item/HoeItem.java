@@ -42,8 +42,8 @@ public class HoeItem extends MiningToolItem {
 		)
 	);
 
-	protected HoeItem(ToolMaterial material, int attackDamage, float attackSpeed, Item.Settings settings) {
-		super((float)attackDamage, attackSpeed, material, BlockTags.HOE_MINEABLE, settings);
+	public HoeItem(ToolMaterial toolMaterial, Item.Settings settings) {
+		super(toolMaterial, BlockTags.HOE_MINEABLE, settings);
 	}
 
 	@Override

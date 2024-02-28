@@ -19,6 +19,8 @@ import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
+import net.minecraft.component.DataComponentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -124,7 +126,7 @@ public class Registries {
 	public static final Registry<Enchantment> ENCHANTMENT = createIntrusive(RegistryKeys.ENCHANTMENT, registry -> Enchantments.FORTUNE);
 	public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = createIntrusive(RegistryKeys.ENTITY_TYPE, "pig", registry -> EntityType.PIG);
 	public static final DefaultedRegistry<Item> ITEM = createIntrusive(RegistryKeys.ITEM, "air", registry -> Items.AIR);
-	public static final DefaultedRegistry<Potion> POTION = create(RegistryKeys.POTION, "empty", Potions::registerAndGetDefault);
+	public static final Registry<Potion> POTION = create(RegistryKeys.POTION, Potions::registerAndGetDefault);
 	public static final Registry<ParticleType<?>> PARTICLE_TYPE = create(RegistryKeys.PARTICLE_TYPE, registry -> ParticleTypes.BLOCK);
 	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = createIntrusive(RegistryKeys.BLOCK_ENTITY_TYPE, registry -> BlockEntityType.FURNACE);
 	public static final DefaultedRegistry<PaintingVariant> PAINTING_VARIANT = create(
@@ -225,6 +227,7 @@ public class Registries {
 	public static final Registry<Criterion<?>> CRITERION = create(RegistryKeys.CRITERION, Criteria::getDefault);
 	public static final Registry<NumberFormatType<?>> NUMBER_FORMAT_TYPE = create(RegistryKeys.NUMBER_FORMAT_TYPE, NumberFormatTypes::registerAndGetDefault);
 	public static final Registry<ArmorMaterial> ARMOR_MATERIAL = create(RegistryKeys.ARMOR_MATERIAL, ArmorMaterials::getDefault);
+	public static final Registry<DataComponentType<?>> DATA_COMPONENT_TYPE = create(RegistryKeys.DATA_COMPONENT_TYPE, DataComponentTypes::getDefault);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {

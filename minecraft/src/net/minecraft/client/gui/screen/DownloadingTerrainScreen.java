@@ -37,11 +37,6 @@ public class DownloadingTerrainScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
-	}
-
-	@Override
 	public void tick() {
 		if (this.shouldClose.getAsBoolean() || System.currentTimeMillis() > this.loadStartTime + 30000L) {
 			this.close();

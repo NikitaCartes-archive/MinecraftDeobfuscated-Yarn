@@ -30,11 +30,6 @@ public abstract class RealmsObjectSelectionList<E extends AlwaysSelectedEntryLis
 	}
 
 	@Override
-	public int getScrollbarPositionX() {
-		return this.getRowLeft() + this.getRowWidth();
-	}
-
-	@Override
 	public int getRowWidth() {
 		return (int)((double)this.width * 0.6);
 	}

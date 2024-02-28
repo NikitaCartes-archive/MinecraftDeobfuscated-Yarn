@@ -16,6 +16,8 @@ import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LimbAnimator;
@@ -26,9 +28,6 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
@@ -79,21 +78,15 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 					matrixStack.translate(0.0F, 0.0625F, 0.0F);
 				}
 
-				GameProfile gameProfile = null;
-				if (itemStack.hasNbt()) {
-					NbtCompound nbtCompound = itemStack.getNbt();
-					if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
-						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-					}
-				}
-
+				ProfileComponent profileComponent = itemStack.get(DataComponentTypes.PROFILE);
+				GameProfile gameProfile = profileComponent != null ? profileComponent.gameProfile() : null;
 				matrixStack.translate(-0.5, 0.0, -0.5);
 				SkullBlock.SkullType skullType = ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType();
 				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.headModels.get(skullType);
 				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
-				Entity var22 = livingEntity.getVehicle();
+				Entity var23 = livingEntity.getVehicle();
 				LimbAnimator limbAnimator;
-				if (var22 instanceof LivingEntity livingEntity2) {
+				if (var23 instanceof LivingEntity livingEntity2) {
 					limbAnimator = livingEntity2.limbAnimator;
 				} else {
 					limbAnimator = livingEntity.limbAnimator;

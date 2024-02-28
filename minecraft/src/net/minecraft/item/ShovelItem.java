@@ -31,8 +31,8 @@ public class ShovelItem extends MiningToolItem {
 			.build()
 	);
 
-	public ShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
-		super(attackDamage, attackSpeed, material, BlockTags.SHOVEL_MINEABLE, settings);
+	public ShovelItem(ToolMaterial toolMaterial, Item.Settings settings) {
+		super(toolMaterial, BlockTags.SHOVEL_MINEABLE, settings);
 	}
 
 	@Override

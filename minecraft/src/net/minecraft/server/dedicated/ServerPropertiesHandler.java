@@ -139,7 +139,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	private static Text parseResourcePackPrompt(String prompt) {
 		if (!Strings.isNullOrEmpty(prompt)) {
 			try {
-				return Text.Serialization.fromJson(prompt);
+				return Text.Serialization.fromJson(prompt, DynamicRegistryManager.EMPTY);
 			} catch (Exception var2) {
 				LOGGER.warn("Failed to parse resource pack prompt '{}'", prompt, var2);
 			}

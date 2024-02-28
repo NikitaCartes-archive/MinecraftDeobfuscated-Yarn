@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -18,7 +17,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, ClickSlotC2SPacket> CODEC = Packet.createCodec(ClickSlotC2SPacket::write, ClickSlotC2SPacket::new);
 	private static final int MAX_MODIFIED_STACKS = 128;
 	private static final PacketCodec<RegistryByteBuf, Int2ObjectMap<ItemStack>> STACK_MAP_CODEC = PacketCodecs.map(
-		PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128), PacketCodecs.SHORT.xmap(Short::intValue, Integer::shortValue), ItemStack.PACKET_CODEC
+		Int2ObjectOpenHashMap::new, PacketCodecs.SHORT.xmap(Short::intValue, Integer::shortValue), ItemStack.OPTIONAL_PACKET_CODEC, 128
 	);
 	private final int syncId;
 	private final int revision;
@@ -45,7 +44,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.button = buf.readByte();
 		this.actionType = buf.readEnumConstant(SlotActionType.class);
 		this.modifiedStacks = Int2ObjectMaps.unmodifiable(STACK_MAP_CODEC.decode(buf));
-		this.stack = ItemStack.PACKET_CODEC.decode(buf);
+		this.stack = ItemStack.OPTIONAL_PACKET_CODEC.decode(buf);
 	}
 
 	private void write(RegistryByteBuf buf) {
@@ -55,7 +54,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeByte(this.button);
 		buf.writeEnumConstant(this.actionType);
 		STACK_MAP_CODEC.encode(buf, this.modifiedStacks);
-		ItemStack.PACKET_CODEC.encode(buf, this.stack);
+		ItemStack.OPTIONAL_PACKET_CODEC.encode(buf, this.stack);
 	}
 
 	@Override

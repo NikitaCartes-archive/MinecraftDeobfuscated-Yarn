@@ -13,6 +13,7 @@ import net.minecraft.text.Text;
 public class ButtonWidget extends PressableWidget {
 	public static final int DEFAULT_WIDTH_SMALL = 120;
 	public static final int DEFAULT_WIDTH = 150;
+	public static final int field_49479 = 200;
 	public static final int DEFAULT_HEIGHT = 20;
 	public static final int field_46856 = 8;
 	protected static final ButtonWidget.NarrationSupplier DEFAULT_NARRATION_SUPPLIER = textSupplier -> (MutableText)textSupplier.get();

@@ -201,7 +201,10 @@ public class BrushableBlockEntity extends BlockEntity {
 			nbtCompound.putInt("hit_direction", this.hitDirection.ordinal());
 		}
 
-		nbtCompound.put("item", this.item.writeNbt(new NbtCompound()));
+		if (!this.item.isEmpty()) {
+			nbtCompound.put("item", this.item.encode(registryLookup));
+		}
+
 		return nbtCompound;
 	}
 
@@ -212,7 +215,9 @@ public class BrushableBlockEntity extends BlockEntity {
 	@Override
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		if (!this.readLootTableFromNbt(nbt) && nbt.contains("item")) {
-			this.item = ItemStack.fromNbt(nbt.getCompound("item"));
+			this.item = (ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("item")).orElse(ItemStack.EMPTY);
+		} else {
+			this.item = ItemStack.EMPTY;
 		}
 
 		if (nbt.contains("hit_direction")) {
@@ -222,8 +227,8 @@ public class BrushableBlockEntity extends BlockEntity {
 
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		if (!this.writeLootTableToNbt(nbt)) {
-			nbt.put("item", this.item.writeNbt(new NbtCompound()));
+		if (!this.writeLootTableToNbt(nbt) && !this.item.isEmpty()) {
+			nbt.put("item", this.item.encode(registryLookup));
 		}
 	}
 

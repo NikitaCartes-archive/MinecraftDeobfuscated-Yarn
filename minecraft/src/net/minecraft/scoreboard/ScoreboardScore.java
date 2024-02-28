@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.scoreboard.number.NumberFormatTypes;
 import net.minecraft.text.Text;
@@ -57,31 +58,34 @@ public class ScoreboardScore implements ReadableScoreboardScore {
 		this.numberFormat = numberFormat;
 	}
 
-	public NbtCompound toNbt() {
+	public NbtCompound toNbt(RegistryWrapper.WrapperLookup registries) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putInt("Score", this.score);
 		nbtCompound.putBoolean("Locked", this.locked);
 		if (this.displayText != null) {
-			nbtCompound.putString("display", Text.Serialization.toJsonString(this.displayText));
+			nbtCompound.putString("display", Text.Serialization.toJsonString(this.displayText, registries));
 		}
 
 		if (this.numberFormat != null) {
-			NumberFormatTypes.CODEC.encodeStart(NbtOps.INSTANCE, this.numberFormat).result().ifPresent(formatElement -> nbtCompound.put("format", formatElement));
+			NumberFormatTypes.CODEC
+				.encodeStart(registries.getOps(NbtOps.INSTANCE), this.numberFormat)
+				.result()
+				.ifPresent(formatElement -> nbtCompound.put("format", formatElement));
 		}
 
 		return nbtCompound;
 	}
 
-	public static ScoreboardScore fromNbt(NbtCompound nbt) {
+	public static ScoreboardScore fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		ScoreboardScore scoreboardScore = new ScoreboardScore();
 		scoreboardScore.score = nbt.getInt("Score");
 		scoreboardScore.locked = nbt.getBoolean("Locked");
 		if (nbt.contains("display", NbtElement.STRING_TYPE)) {
-			scoreboardScore.displayText = Text.Serialization.fromJson(nbt.getString("display"));
+			scoreboardScore.displayText = Text.Serialization.fromJson(nbt.getString("display"), registries);
 		}
 
 		if (nbt.contains("format", NbtElement.COMPOUND_TYPE)) {
-			NumberFormatTypes.CODEC.parse(NbtOps.INSTANCE, nbt.get("format")).result().ifPresent(format -> scoreboardScore.numberFormat = format);
+			NumberFormatTypes.CODEC.parse(registries.getOps(NbtOps.INSTANCE), nbt.get("format")).result().ifPresent(format -> scoreboardScore.numberFormat = format);
 		}
 
 		return scoreboardScore;

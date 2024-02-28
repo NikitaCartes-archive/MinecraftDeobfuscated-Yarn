@@ -5,11 +5,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -55,7 +55,7 @@ public class SelectionManager {
 	}
 
 	public boolean insert(char c) {
-		if (SharedConstants.isValidChar(c)) {
+		if (StringHelper.isValidChar(c)) {
 			this.insert((String)this.stringGetter.get(), Character.toString(c));
 		}
 

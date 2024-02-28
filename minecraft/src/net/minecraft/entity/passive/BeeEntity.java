@@ -652,6 +652,10 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		return pos.isWithinDistance(this.getBlockPos(), (double)distance);
 	}
 
+	public void setHivePos(BlockPos pos) {
+		this.hivePos = pos;
+	}
+
 	class BeeLookControl extends LookControl {
 		BeeLookControl(MobEntity entity) {
 			super(entity);
@@ -755,7 +759,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		public void start() {
 			BlockEntity blockEntity = BeeEntity.this.getWorld().getBlockEntity(BeeEntity.this.hivePos);
 			if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity) {
-				beehiveBlockEntity.tryEnterHive(BeeEntity.this, BeeEntity.this.hasNectar());
+				beehiveBlockEntity.tryEnterHive(BeeEntity.this);
 			}
 		}
 	}

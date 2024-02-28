@@ -2,12 +2,13 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import java.util.function.ToIntFunction;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -98,9 +99,7 @@ public class LightBlock extends Block implements Waterloggable {
 
 	public static ItemStack addNbtForLevel(ItemStack stack, int level) {
 		if (level != 15) {
-			NbtCompound nbtCompound = new NbtCompound();
-			nbtCompound.putString(LEVEL_15.getName(), String.valueOf(level));
-			stack.setSubNbt("BlockStateTag", nbtCompound);
+			stack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(LEVEL_15, level));
 		}
 
 		return stack;

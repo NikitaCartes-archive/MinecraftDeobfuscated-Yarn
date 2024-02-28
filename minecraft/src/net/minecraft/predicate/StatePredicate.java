@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,6 +13,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -28,6 +31,9 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 			conditions -> (Map)conditions.stream().collect(Collectors.toMap(StatePredicate.Condition::key, StatePredicate.Condition::valueMatcher))
 		);
 	public static final Codec<StatePredicate> CODEC = CONDITION_LIST_CODEC.xmap(StatePredicate::new, StatePredicate::conditions);
+	public static final PacketCodec<ByteBuf, StatePredicate> PACKET_CODEC = StatePredicate.Condition.PACKET_CODEC
+		.collect(PacketCodecs.toList())
+		.xmap(StatePredicate::new, StatePredicate::conditions);
 
 	public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S container) {
 		for(StatePredicate.Condition condition : this.conditions) {
@@ -91,6 +97,14 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 	}
 
 	static record Condition(String key, StatePredicate.ValueMatcher valueMatcher) {
+		public static final PacketCodec<ByteBuf, StatePredicate.Condition> PACKET_CODEC = PacketCodec.tuple(
+			PacketCodecs.STRING,
+			StatePredicate.Condition::key,
+			StatePredicate.ValueMatcher.PACKET_CODEC,
+			StatePredicate.Condition::valueMatcher,
+			StatePredicate.Condition::new
+		);
+
 		public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S state) {
 			Property<?> property = stateManager.getProperty(this.key);
 			return property != null && this.valueMatcher.test(state, property);
@@ -104,6 +118,8 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 
 	static record ExactValueMatcher(String value) implements StatePredicate.ValueMatcher {
 		public static final Codec<StatePredicate.ExactValueMatcher> CODEC = Codec.STRING
+			.xmap(StatePredicate.ExactValueMatcher::new, StatePredicate.ExactValueMatcher::value);
+		public static final PacketCodec<ByteBuf, StatePredicate.ExactValueMatcher> PACKET_CODEC = PacketCodecs.STRING
 			.xmap(StatePredicate.ExactValueMatcher::new, StatePredicate.ExactValueMatcher::value);
 
 		@Override
@@ -121,6 +137,13 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "max").forGetter(StatePredicate.RangedValueMatcher::max)
 					)
 					.apply(instance, StatePredicate.RangedValueMatcher::new)
+		);
+		public static final PacketCodec<ByteBuf, StatePredicate.RangedValueMatcher> PACKET_CODEC = PacketCodec.tuple(
+			PacketCodecs.optional(PacketCodecs.STRING),
+			StatePredicate.RangedValueMatcher::min,
+			PacketCodecs.optional(PacketCodecs.STRING),
+			StatePredicate.RangedValueMatcher::max,
+			StatePredicate.RangedValueMatcher::new
 		);
 
 		@Override
@@ -146,6 +169,18 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 
 	interface ValueMatcher {
 		Codec<StatePredicate.ValueMatcher> CODEC = Codec.either(StatePredicate.ExactValueMatcher.CODEC, StatePredicate.RangedValueMatcher.CODEC)
+			.xmap(either -> either.map(exactValueMatcher -> exactValueMatcher, rangedValueMatcher -> rangedValueMatcher), valueMatcher -> {
+				if (valueMatcher instanceof StatePredicate.ExactValueMatcher exactValueMatcher) {
+					return Either.left(exactValueMatcher);
+				} else if (valueMatcher instanceof StatePredicate.RangedValueMatcher rangedValueMatcher) {
+					return Either.right(rangedValueMatcher);
+				} else {
+					throw new UnsupportedOperationException();
+				}
+			});
+		PacketCodec<ByteBuf, StatePredicate.ValueMatcher> PACKET_CODEC = PacketCodecs.either(
+				StatePredicate.ExactValueMatcher.PACKET_CODEC, StatePredicate.RangedValueMatcher.PACKET_CODEC
+			)
 			.xmap(either -> either.map(exactValueMatcher -> exactValueMatcher, rangedValueMatcher -> rangedValueMatcher), valueMatcher -> {
 				if (valueMatcher instanceof StatePredicate.ExactValueMatcher exactValueMatcher) {
 					return Either.left(exactValueMatcher);

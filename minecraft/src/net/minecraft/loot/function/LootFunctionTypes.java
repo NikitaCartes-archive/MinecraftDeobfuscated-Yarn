@@ -20,7 +20,8 @@ public class LootFunctionTypes {
 	public static final LootFunctionType ENCHANT_WITH_LEVELS = register("enchant_with_levels", EnchantWithLevelsLootFunction.CODEC);
 	public static final LootFunctionType ENCHANT_RANDOMLY = register("enchant_randomly", EnchantRandomlyLootFunction.CODEC);
 	public static final LootFunctionType SET_ENCHANTMENTS = register("set_enchantments", SetEnchantmentsLootFunction.CODEC);
-	public static final LootFunctionType SET_NBT = register("set_nbt", SetNbtLootFunction.CODEC);
+	public static final LootFunctionType SET_CUSTOM_DATA = register("set_custom_data", SetCustomDataLootFunction.CODEC);
+	public static final LootFunctionType SET_COMPONENTS = register("set_components", SetComponentsLootFunction.CODEC);
 	public static final LootFunctionType FURNACE_SMELT = register("furnace_smelt", FurnaceSmeltLootFunction.CODEC);
 	public static final LootFunctionType LOOTING_ENCHANT = register("looting_enchant", LootingEnchantLootFunction.CODEC);
 	public static final LootFunctionType SET_DAMAGE = register("set_damage", SetDamageLootFunction.CODEC);
@@ -36,13 +37,14 @@ public class LootFunctionTypes {
 	public static final LootFunctionType EXPLOSION_DECAY = register("explosion_decay", ExplosionDecayLootFunction.CODEC);
 	public static final LootFunctionType SET_LORE = register("set_lore", SetLoreLootFunction.CODEC);
 	public static final LootFunctionType FILL_PLAYER_HEAD = register("fill_player_head", FillPlayerHeadLootFunction.CODEC);
-	public static final LootFunctionType COPY_NBT = register("copy_nbt", CopyNbtLootFunction.CODEC);
-	public static final LootFunctionType COPY_STATE = register("copy_state", CopyStateFunction.CODEC);
-	public static final LootFunctionType SET_BANNER_PATTERN = register("set_banner_pattern", SetBannerPatternFunction.CODEC);
+	public static final LootFunctionType COPY_CUSTOM_DATA = register("copy_custom_data", CopyNbtLootFunction.CODEC);
+	public static final LootFunctionType COPY_STATE = register("copy_state", CopyStateLootFunction.CODEC);
+	public static final LootFunctionType SET_BANNER_PATTERN = register("set_banner_pattern", SetBannerPatternLootFunction.CODEC);
 	public static final LootFunctionType SET_POTION = register("set_potion", SetPotionLootFunction.CODEC);
 	public static final LootFunctionType SET_INSTRUMENT = register("set_instrument", SetInstrumentLootFunction.CODEC);
 	public static final LootFunctionType REFERENCE = register("reference", ReferenceLootFunction.CODEC);
 	public static final LootFunctionType SEQUENCE = register("sequence", AndLootFunction.CODEC);
+	public static final LootFunctionType COPY_COMPONENTS = register("copy_components", CopyComponentsLootFunction.CODEC);
 
 	private static LootFunctionType register(String id, Codec<? extends LootFunction> codec) {
 		return Registry.register(Registries.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(codec));

@@ -22,12 +22,12 @@ public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacket
 
 	private CreativeInventoryActionC2SPacket(RegistryByteBuf buf) {
 		this.slot = buf.readShort();
-		this.stack = ItemStack.PACKET_CODEC.decode(buf);
+		this.stack = ItemStack.OPTIONAL_PACKET_CODEC.decode(buf);
 	}
 
 	private void write(RegistryByteBuf buf) {
 		buf.writeShort(this.slot);
-		ItemStack.PACKET_CODEC.encode(buf, this.stack);
+		ItemStack.OPTIONAL_PACKET_CODEC.encode(buf, this.stack);
 	}
 
 	@Override

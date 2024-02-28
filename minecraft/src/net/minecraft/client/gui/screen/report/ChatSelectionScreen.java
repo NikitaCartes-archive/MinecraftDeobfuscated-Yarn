@@ -31,7 +31,6 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.Nullables;
@@ -41,7 +40,7 @@ import net.minecraft.util.math.MathHelper;
 public class ChatSelectionScreen extends Screen {
 	static final Identifier CHECKMARK_ICON_TEXTURE = new Identifier("icon/checkmark");
 	private static final Text TITLE_TEXT = Text.translatable("gui.chatSelection.title");
-	private static final Text CONTEXT_TEXT = Text.translatable("gui.chatSelection.context").formatted(Formatting.GRAY);
+	private static final Text CONTEXT_TEXT = Text.translatable("gui.chatSelection.context");
 	@Nullable
 	private final Screen parent;
 	private final AbuseReportContext reporter;
@@ -98,18 +97,13 @@ public class ChatSelectionScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		AbuseReportLimits abuseReportLimits = this.reporter.getSender().getLimits();
 		int i = this.report.getSelectedMessages().size();
 		int j = abuseReportLimits.maxReportedMessageCount();
 		Text text = Text.translatable("gui.chatSelection.selected", i, j);
-		context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, 16 + 9 * 3 / 2, 10526880);
+		context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, 16 + 9 * 3 / 2, Colors.WHITE);
 		this.contextMessage.drawCenterWithShadow(context, this.width / 2, this.selectionList.getContextMessageY());
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
 	}
 
 	@Override
@@ -175,11 +169,6 @@ public class ChatSelectionScreen extends Screen {
 			this.addEntryToTop(new ChatSelectionScreen.SelectionListWidget.TextEntry(text));
 			this.addEntryToTop(new ChatSelectionScreen.SelectionListWidget.SeparatorEntry());
 			this.lastSenderEntryPair = null;
-		}
-
-		@Override
-		protected int getScrollbarPositionX() {
-			return (this.width + this.getRowWidth()) / 2;
 		}
 
 		@Override
@@ -386,6 +375,7 @@ public class ChatSelectionScreen extends Screen {
 		@Environment(EnvType.CLIENT)
 		public class SenderEntry extends ChatSelectionScreen.SelectionListWidget.Entry {
 			private static final int PLAYER_SKIN_SIZE = 12;
+			private static final int field_49545 = 4;
 			private final Text headingText;
 			private final Supplier<SkinTextures> skinTexturesSupplier;
 			private final boolean fromReportedPlayer;
@@ -398,11 +388,11 @@ public class ChatSelectionScreen extends Screen {
 
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				int i = x - 12 - 4;
+				int i = x - 12 + 4;
 				int j = y + (entryHeight - 12) / 2;
 				PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), i, j, 12);
 				int k = y + 1 + (entryHeight - 9) / 2;
-				context.drawTextWithShadow(ChatSelectionScreen.this.textRenderer, this.headingText, x, k, this.fromReportedPlayer ? Colors.WHITE : -1593835521);
+				context.drawTextWithShadow(ChatSelectionScreen.this.textRenderer, this.headingText, i + 12 + 4, k, this.fromReportedPlayer ? Colors.WHITE : -1593835521);
 			}
 		}
 

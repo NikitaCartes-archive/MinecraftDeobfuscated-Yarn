@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -30,7 +31,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.world.ServerWorld;
@@ -65,7 +65,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 				0,
 				new HoldInHandsGoal<>(
 					this,
-					PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY),
+					PotionContentsComponent.createStack(Items.POTION, Potions.INVISIBILITY),
 					SoundEvents.ENTITY_WANDERING_TRADER_DISAPPEARED,
 					wanderingTrader -> this.getWorld().isNight() && !wanderingTrader.isInvisible()
 				)

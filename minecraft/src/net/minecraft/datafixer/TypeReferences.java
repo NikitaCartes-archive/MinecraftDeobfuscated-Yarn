@@ -57,6 +57,7 @@ public class TypeReferences {
 	 */
 	public static final TypeReference BLOCK_STATE = () -> "block_state";
 	public static final TypeReference FLAT_BLOCK_STATE = () -> "flat_block_state";
+	public static final TypeReference DATA_COMPONENTS = () -> "data_components";
 	/**
 	 * A type reference which refers to an entity's identifier.
 	 */

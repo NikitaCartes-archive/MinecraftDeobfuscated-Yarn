@@ -9,11 +9,13 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ChatOptionsScreen extends SimpleOptionsScreen {
+	private static final Text TITLE_TEXT = Text.translatable("options.chat.title");
+
 	public ChatOptionsScreen(Screen parent, GameOptions options) {
 		super(
 			parent,
 			options,
-			Text.translatable("options.chat.title"),
+			TITLE_TEXT,
 			new SimpleOption[]{
 				options.getChatVisibility(),
 				options.getChatColors(),

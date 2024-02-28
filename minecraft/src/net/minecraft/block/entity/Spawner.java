@@ -2,8 +2,9 @@ package net.minecraft.block.entity;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -30,18 +31,14 @@ public interface Spawner {
 
 	@Nullable
 	static Text getSpawnedEntityText(ItemStack stack, String spawnDataKey) {
-		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-		if (nbtCompound != null) {
-			Identifier identifier = getSpawnedEntityId(nbtCompound, spawnDataKey);
-			if (identifier != null) {
-				return (Text)Registries.ENTITY_TYPE
-					.getOrEmpty(identifier)
-					.map(entityType -> Text.translatable(entityType.getTranslationKey()).formatted(Formatting.GRAY))
-					.orElse(null);
-			}
-		}
-
-		return null;
+		NbtCompound nbtCompound = stack.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT).getNbt();
+		Identifier identifier = getSpawnedEntityId(nbtCompound, spawnDataKey);
+		return identifier != null
+			? (Text)Registries.ENTITY_TYPE
+				.getOrEmpty(identifier)
+				.map(entityType -> Text.translatable(entityType.getTranslationKey()).formatted(Formatting.GRAY))
+				.orElse(null)
+			: null;
 	}
 
 	@Nullable

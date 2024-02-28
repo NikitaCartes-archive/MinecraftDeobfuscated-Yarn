@@ -145,7 +145,7 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	protected boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		return true;
 	}
 }

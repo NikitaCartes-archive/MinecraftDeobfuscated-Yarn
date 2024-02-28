@@ -1,5 +1,6 @@
 package net.minecraft.entity.vehicle;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -55,10 +56,7 @@ public abstract class VehicleEntity extends Entity {
 		this.kill();
 		if (this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			ItemStack itemStack = new ItemStack(selfAsItem);
-			if (this.hasCustomName()) {
-				itemStack.setCustomName(this.getCustomName());
-			}
-
+			itemStack.set(DataComponentTypes.CUSTOM_NAME, this.getCustomName());
 			this.dropStack(itemStack);
 		}
 	}

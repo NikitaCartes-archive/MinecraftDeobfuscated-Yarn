@@ -19,12 +19,14 @@ import net.minecraft.predicate.TagPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenerator {
@@ -250,7 +252,12 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 				true,
 				false
 			)
-			.criterion("in_stronghold", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.STRONGHOLD)))
+			.criterion(
+				"in_stronghold",
+				TickCriterion.Conditions.createLocation(
+					LocationPredicate.Builder.createStructure(lookup.<Structure>getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.STRONGHOLD))
+				)
+			)
 			.build(exporter, "story/follow_ender_eye");
 		Advancement.Builder.create()
 			.parent(advancementEntry11)

@@ -23,7 +23,7 @@ public record ScoreboardScoreUpdateS2CPacket(
 		ScoreboardScoreUpdateS2CPacket::objectiveName,
 		PacketCodecs.VAR_INT,
 		ScoreboardScoreUpdateS2CPacket::score,
-		TextCodecs.OPTIONAL_PACKET_CODEC,
+		TextCodecs.OPTIONAL_UNLIMITED_REGISTRY_PACKET_CODEC,
 		ScoreboardScoreUpdateS2CPacket::display,
 		NumberFormatTypes.OPTIONAL_PACKET_CODEC,
 		ScoreboardScoreUpdateS2CPacket::numberFormat,

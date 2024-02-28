@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -53,7 +54,7 @@ public class DamageTracker {
 
 	private Text getAttackedFallDeathMessage(Entity attacker, Text attackerDisplayName, String itemDeathTranslationKey, String deathTranslationKey) {
 		ItemStack itemStack = attacker instanceof LivingEntity livingEntity ? livingEntity.getMainHandStack() : ItemStack.EMPTY;
-		return !itemStack.isEmpty() && itemStack.hasCustomName()
+		return !itemStack.isEmpty() && itemStack.contains(DataComponentTypes.CUSTOM_NAME)
 			? Text.translatable(itemDeathTranslationKey, this.entity.getDisplayName(), attackerDisplayName, itemStack.toHoverableText())
 			: Text.translatable(deathTranslationKey, this.entity.getDisplayName(), attackerDisplayName);
 	}

@@ -124,7 +124,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.itemsBeingCooked.clear();
-		Inventories.readNbt(nbt, this.itemsBeingCooked);
+		Inventories.readNbt(nbt, this.itemsBeingCooked, registryLookup);
 		if (nbt.contains("CookingTimes", NbtElement.INT_ARRAY_TYPE)) {
 			int[] is = nbt.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
@@ -139,7 +139,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
-		Inventories.writeNbt(nbt, this.itemsBeingCooked, true);
+		Inventories.writeNbt(nbt, this.itemsBeingCooked, true, registryLookup);
 		nbt.putIntArray("CookingTimes", this.cookingTimes);
 		nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
 	}
@@ -151,7 +151,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
 		NbtCompound nbtCompound = new NbtCompound();
-		Inventories.writeNbt(nbtCompound, this.itemsBeingCooked, true);
+		Inventories.writeNbt(nbtCompound, this.itemsBeingCooked, true, registryLookup);
 		return nbtCompound;
 	}
 

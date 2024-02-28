@@ -50,7 +50,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.commandExecutor.readNbt(nbt);
+		this.commandExecutor.readNbt(nbt, this.getRegistryManager());
 		this.getDataTracker().set(COMMAND, this.getCommandExecutor().getCommand());
 		this.getDataTracker().set(LAST_OUTPUT, this.getCommandExecutor().getLastOutput());
 	}
@@ -58,7 +58,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		this.commandExecutor.writeNbt(nbt);
+		this.commandExecutor.writeNbt(nbt, this.getRegistryManager());
 	}
 
 	@Override

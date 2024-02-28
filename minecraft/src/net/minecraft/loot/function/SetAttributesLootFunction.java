@@ -12,7 +12,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
@@ -56,16 +58,25 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Random random = context.getRandom();
-
-		for(SetAttributesLootFunction.Attribute attribute : this.attributes) {
-			UUID uUID = (UUID)attribute.id.orElseGet(UUID::randomUUID);
-			EquipmentSlot equipmentSlot = Util.getRandom(attribute.slots, random);
-			stack.addAttributeModifier(
-				attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation), equipmentSlot
-			);
-		}
-
+		stack.apply(
+			DataComponentTypes.ATTRIBUTE_MODIFIERS,
+			AttributeModifiersComponent.DEFAULT,
+			component -> {
+				Random random = context.getRandom();
+	
+				for(SetAttributesLootFunction.Attribute attribute : this.attributes) {
+					UUID uUID = (UUID)attribute.id.orElseGet(UUID::randomUUID);
+					AttributeModifierSlot attributeModifierSlot = Util.getRandom(attribute.slots, random);
+					component = component.with(
+						attribute.attribute,
+						new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation),
+						attributeModifierSlot
+					);
+				}
+	
+				return component;
+			}
+		);
 		return stack;
 	}
 
@@ -84,18 +95,18 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		RegistryEntry<EntityAttribute> attribute,
 		EntityAttributeModifier.Operation operation,
 		LootNumberProvider amount,
-		List<EquipmentSlot> slots,
+		List<AttributeModifierSlot> slots,
 		Optional<UUID> id
 	) {
 		final String name;
 		final RegistryEntry<EntityAttribute> attribute;
 		final EntityAttributeModifier.Operation operation;
 		final LootNumberProvider amount;
-		final List<EquipmentSlot> slots;
+		final List<AttributeModifierSlot> slots;
 		final Optional<UUID> id;
-		private static final Codec<List<EquipmentSlot>> EQUIPMENT_SLOT_LIST_CODEC = Codecs.nonEmptyList(
-			Codec.either(EquipmentSlot.CODEC, EquipmentSlot.CODEC.listOf())
-				.xmap(either -> either.map(List::of, Function.identity()), list -> list.size() == 1 ? Either.left((EquipmentSlot)list.get(0)) : Either.right(list))
+		private static final Codec<List<AttributeModifierSlot>> EQUIPMENT_SLOT_LIST_CODEC = Codecs.nonEmptyList(
+			Codec.either(AttributeModifierSlot.CODEC, AttributeModifierSlot.CODEC.listOf())
+				.xmap(either -> either.map(List::of, Function.identity()), list -> list.size() == 1 ? Either.left((AttributeModifierSlot)list.get(0)) : Either.right(list))
 		);
 		public static final Codec<SetAttributesLootFunction.Attribute> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
@@ -116,7 +127,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		private final EntityAttributeModifier.Operation operation;
 		private final LootNumberProvider amount;
 		private Optional<UUID> uuid = Optional.empty();
-		private final Set<EquipmentSlot> slots = EnumSet.noneOf(EquipmentSlot.class);
+		private final Set<AttributeModifierSlot> slots = EnumSet.noneOf(AttributeModifierSlot.class);
 
 		public AttributeBuilder(String name, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount) {
 			this.name = name;
@@ -125,7 +136,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			this.amount = amount;
 		}
 
-		public SetAttributesLootFunction.AttributeBuilder slot(EquipmentSlot slot) {
+		public SetAttributesLootFunction.AttributeBuilder slot(AttributeModifierSlot slot) {
 			this.slots.add(slot);
 			return this;
 		}

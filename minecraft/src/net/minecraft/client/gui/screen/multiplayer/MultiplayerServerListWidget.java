@@ -128,13 +128,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	}
 
 	@Override
-	protected int getScrollbarPositionX() {
-		return super.getScrollbarPositionX() + 30;
-	}
-
-	@Override
 	public int getRowWidth() {
-		return super.getRowWidth() + 85;
+		return 305;
 	}
 
 	public void onRemoved() {
@@ -181,7 +176,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			this.time = Util.getMeasuringTimeMs();
-			return false;
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 
 		public LanServerInfo getLanServerEntry() {
@@ -490,7 +485,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			this.time = Util.getMeasuringTimeMs();
-			return true;
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 
 		public ServerInfo getServer() {

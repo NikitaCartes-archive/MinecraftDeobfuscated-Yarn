@@ -832,7 +832,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 
 		if (!this.items.getStack(0).isEmpty()) {
-			nbt.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
+			nbt.put("SaddleItem", this.items.getStack(0).encode(this.getRegistryManager()));
 		}
 	}
 
@@ -856,7 +856,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 
 		if (nbt.contains("SaddleItem", NbtElement.COMPOUND_TYPE)) {
-			ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("SaddleItem"));
+			ItemStack itemStack = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("SaddleItem")).orElse(ItemStack.EMPTY);
 			if (itemStack.isOf(Items.SADDLE)) {
 				this.items.setStack(0, itemStack);
 			}

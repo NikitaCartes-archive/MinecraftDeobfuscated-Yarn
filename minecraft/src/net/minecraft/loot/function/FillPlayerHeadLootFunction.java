@@ -1,20 +1,19 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
 import java.util.Set;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	public static final Codec<FillPlayerHeadLootFunction> CODEC = RecordCodecBuilder.create(
@@ -42,10 +41,9 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isOf(Items.PLAYER_HEAD)) {
-			Object gameProfile = context.get(this.entity.getParameter());
-			if (gameProfile instanceof PlayerEntity playerEntity) {
-				GameProfile gameProfilex = playerEntity.getGameProfile();
-				stack.getOrCreateNbt().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfilex));
+			Object var4 = context.get(this.entity.getParameter());
+			if (var4 instanceof PlayerEntity playerEntity) {
+				stack.set(DataComponentTypes.PROFILE, new ProfileComponent(playerEntity.getGameProfile()));
 			}
 		}
 

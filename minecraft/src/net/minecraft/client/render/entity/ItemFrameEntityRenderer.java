@@ -14,12 +14,13 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapId;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -85,25 +86,25 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		}
 
 		if (!itemStack.isEmpty()) {
-			MapId mapId = itemFrameEntity.getMapId();
+			MapIdComponent mapIdComponent = itemFrameEntity.getMapId();
 			if (bl) {
 				matrixStack.translate(0.0F, 0.0F, 0.5F);
 			} else {
 				matrixStack.translate(0.0F, 0.0F, 0.4375F);
 			}
 
-			int j = mapId != null ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
+			int j = mapIdComponent != null ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)j * 360.0F / 8.0F));
-			if (mapId != null) {
+			if (mapIdComponent != null) {
 				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 				float h = 0.0078125F;
 				matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
 				matrixStack.translate(-64.0F, -64.0F, 0.0F);
-				MapState mapState = FilledMapItem.getMapState(mapId, itemFrameEntity.getWorld());
+				MapState mapState = FilledMapItem.getMapState(mapIdComponent, itemFrameEntity.getWorld());
 				matrixStack.translate(0.0F, 0.0F, -1.0F);
 				if (mapState != null) {
 					int k = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE | 210, i);
-					MinecraftClient.getInstance().gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapId, mapState, true, k);
+					MinecraftClient.getInstance().gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapIdComponent, mapState, true, k);
 				}
 			} else {
 				int l = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_LIGHT_COORDINATE, i);
@@ -153,7 +154,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 	protected boolean hasLabel(T itemFrameEntity) {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
-			&& itemFrameEntity.getHeldItemStack().hasCustomName()
+			&& itemFrameEntity.getHeldItemStack().contains(DataComponentTypes.CUSTOM_NAME)
 			&& this.dispatcher.targetedEntity == itemFrameEntity) {
 			double d = this.dispatcher.getSquaredDistanceToCamera(itemFrameEntity);
 			float f = itemFrameEntity.isSneaky() ? 32.0F : 64.0F;

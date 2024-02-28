@@ -11,12 +11,13 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 
 public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
-		exporter.accept(
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+		consumer.accept(
 			LootTables.DESERT_WELL_ARCHAEOLOGY,
 			LootTable.builder()
 				.pool(
@@ -41,7 +42,7 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 						)
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.DESERT_PYRAMID_ARCHAEOLOGY,
 			LootTable.builder()
 				.pool(
@@ -57,7 +58,7 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 						.with(ItemEntry.builder(Items.EMERALD))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY,
 			LootTable.builder()
 				.pool(
@@ -96,7 +97,7 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 						.with(ItemEntry.builder(Items.LEAD))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.TRAIL_RUINS_RARE_ARCHAEOLOGY,
 			LootTable.builder()
 				.pool(
@@ -116,7 +117,7 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 						.with(ItemEntry.builder(Items.MUSIC_DISC_RELIC))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY,
 			LootTable.builder()
 				.pool(
@@ -134,7 +135,7 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 						.with(ItemEntry.builder(Items.GOLD_NUGGET).weight(2))
 				)
 		);
-		exporter.accept(
+		consumer.accept(
 			LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY,
 			LootTable.builder()
 				.pool(

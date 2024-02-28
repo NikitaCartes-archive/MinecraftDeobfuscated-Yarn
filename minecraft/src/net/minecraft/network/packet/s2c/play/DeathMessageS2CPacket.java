@@ -12,7 +12,7 @@ import net.minecraft.text.TextCodecs;
 
 public record DeathMessageS2CPacket(int playerId, Text message) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, DeathMessageS2CPacket> CODEC = PacketCodec.tuple(
-		PacketCodecs.VAR_INT, DeathMessageS2CPacket::playerId, TextCodecs.REGISTRY_PACKET_CODEC, DeathMessageS2CPacket::message, DeathMessageS2CPacket::new
+		PacketCodecs.VAR_INT, DeathMessageS2CPacket::playerId, TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC, DeathMessageS2CPacket::message, DeathMessageS2CPacket::new
 	);
 
 	@Override

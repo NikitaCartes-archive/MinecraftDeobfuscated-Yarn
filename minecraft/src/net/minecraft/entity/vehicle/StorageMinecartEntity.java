@@ -83,13 +83,13 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		this.writeInventoryToNbt(nbt);
+		this.writeInventoryToNbt(nbt, this.getRegistryManager());
 	}
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.readInventoryFromNbt(nbt);
+		this.readInventoryFromNbt(nbt, this.getRegistryManager());
 	}
 
 	@Override

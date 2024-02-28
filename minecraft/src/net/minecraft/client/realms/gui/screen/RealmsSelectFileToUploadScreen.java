@@ -148,7 +148,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			RealmsSelectFileToUploadScreen.this.worldSelectionList.setSelected(RealmsSelectFileToUploadScreen.this.levelList.indexOf(this.summary));
-			return true;
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 
 		protected void renderItem(DrawContext context, int index, int x, int y) {

@@ -34,7 +34,14 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 	public SocialInteractionsPlayerListWidget(SocialInteractionsScreen parent, MinecraftClient client, int width, int height, int y, int itemHeight) {
 		super(client, width, height, y, itemHeight);
 		this.parent = parent;
-		this.setRenderBackground(false);
+	}
+
+	@Override
+	protected void drawMenuListBackground(DrawContext context) {
+	}
+
+	@Override
+	protected void drawHeaderAndFooterSeparators(DrawContext context) {
 	}
 
 	@Override

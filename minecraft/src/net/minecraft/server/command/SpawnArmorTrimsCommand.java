@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToIntFunction;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -133,7 +134,7 @@ public class SpawnArmorTrimsCommand {
 						Item item = (Item)ARMOR_PIECES.get(Pair.of(armorMaterial, equipmentSlot));
 						if (item != null) {
 							ItemStack itemStack = new ItemStack(item);
-							ArmorTrim.apply(world.getRegistryManager(), itemStack, armorTrim);
+							itemStack.set(DataComponentTypes.TRIM, armorTrim);
 							armorStandEntity.equipStack(equipmentSlot, itemStack);
 							if (item instanceof ArmorItem armorItem && armorItem.getMaterial().matches(ArmorMaterials.TURTLE)) {
 								armorStandEntity.setCustomName(

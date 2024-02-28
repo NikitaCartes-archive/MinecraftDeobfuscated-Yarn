@@ -17,8 +17,8 @@ public interface TooltipComponent {
 	}
 
 	static TooltipComponent of(TooltipData data) {
-		if (data instanceof BundleTooltipData) {
-			return new BundleTooltipComponent((BundleTooltipData)data);
+		if (data instanceof BundleTooltipData bundleTooltipData) {
+			return new BundleTooltipComponent(bundleTooltipData.contents());
 		} else {
 			throw new IllegalArgumentException("Unknown TooltipComponent");
 		}

@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.BitSet;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -29,7 +30,7 @@ public class RecipeMatcher {
 	 * <p>This is equivalent to calling {@code addInput(stack, Item.DEFAULT_MAX_COUNT)}.
 	 */
 	public void addUnenchantedInput(ItemStack stack) {
-		if (!stack.isDamaged() && !stack.hasEnchantments() && !stack.hasCustomName()) {
+		if (!stack.isDamaged() && !stack.hasEnchantments() && !stack.contains(DataComponentTypes.CUSTOM_NAME)) {
 			this.addInput(stack);
 		}
 	}

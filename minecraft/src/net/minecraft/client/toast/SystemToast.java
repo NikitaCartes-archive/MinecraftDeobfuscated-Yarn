@@ -11,7 +11,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ChunkPos;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
@@ -167,6 +169,33 @@ public class SystemToast implements Toast {
 		add(client.getToastManager(), SystemToast.Type.PACK_COPY_FAILURE, Text.translatable("pack.copyFailure"), Text.literal(directory));
 	}
 
+	public static void addLowDiskSpace(MinecraftClient client) {
+		show(
+			client.getToastManager(),
+			SystemToast.Type.LOW_DISK_SPACE,
+			Text.translatable("chunk.toast.lowDiskSpace"),
+			Text.translatable("chunk.toast.lowDiskSpace.description")
+		);
+	}
+
+	public static void addChunkLoadFailure(MinecraftClient client, ChunkPos pos) {
+		show(
+			client.getToastManager(),
+			SystemToast.Type.CHUNK_LOAD_FAILURE,
+			Text.translatable("chunk.toast.loadFailure", pos).formatted(Formatting.RED),
+			Text.translatable("chunk.toast.checkLog")
+		);
+	}
+
+	public static void addChunkSaveFailure(MinecraftClient client, ChunkPos pos) {
+		show(
+			client.getToastManager(),
+			SystemToast.Type.CHUNK_SAVE_FAILURE,
+			Text.translatable("chunk.toast.saveFailure", pos).formatted(Formatting.RED),
+			Text.translatable("chunk.toast.checkLog")
+		);
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static class Type {
 		public static final SystemToast.Type NARRATOR_TOGGLE = new SystemToast.Type();
@@ -175,6 +204,9 @@ public class SystemToast implements Toast {
 		public static final SystemToast.Type WORLD_ACCESS_FAILURE = new SystemToast.Type();
 		public static final SystemToast.Type PACK_COPY_FAILURE = new SystemToast.Type();
 		public static final SystemToast.Type PERIODIC_NOTIFICATION = new SystemToast.Type();
+		public static final SystemToast.Type LOW_DISK_SPACE = new SystemToast.Type(10000L);
+		public static final SystemToast.Type CHUNK_LOAD_FAILURE = new SystemToast.Type();
+		public static final SystemToast.Type CHUNK_SAVE_FAILURE = new SystemToast.Type();
 		public static final SystemToast.Type UNSECURE_SERVER_WARNING = new SystemToast.Type(10000L);
 		final long displayDuration;
 
