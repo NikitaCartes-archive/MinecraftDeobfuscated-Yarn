@@ -34,10 +34,10 @@ public class SwizzleArgumentType implements ArgumentType<EnumSet<Direction.Axis>
 				case 'x' -> Direction.Axis.X;
 				case 'y' -> Direction.Axis.Y;
 				case 'z' -> Direction.Axis.Z;
-				default -> throw INVALID_SWIZZLE_EXCEPTION.create();
+				default -> throw INVALID_SWIZZLE_EXCEPTION.createWithContext(stringReader);
 			};
 			if (enumSet.contains(axis)) {
-				throw INVALID_SWIZZLE_EXCEPTION.create();
+				throw INVALID_SWIZZLE_EXCEPTION.createWithContext(stringReader);
 			}
 
 			enumSet.add(axis);

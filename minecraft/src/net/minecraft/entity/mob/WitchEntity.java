@@ -45,7 +45,7 @@ import net.minecraft.world.event.GameEvent;
 public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	private static final UUID DRINKING_SPEED_PENALTY_MODIFIER_ID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
 	private static final EntityAttributeModifier DRINKING_SPEED_PENALTY_MODIFIER = new EntityAttributeModifier(
-		DRINKING_SPEED_PENALTY_MODIFIER_ID, "Drinking speed penalty", -0.25, EntityAttributeModifier.Operation.ADDITION
+		DRINKING_SPEED_PENALTY_MODIFIER_ID, "Drinking speed penalty", -0.25, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	private static final TrackedData<Boolean> DRINKING = DataTracker.registerData(WitchEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int drinkTimeLeft;
@@ -125,7 +125,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					}
 
 					this.emitGameEvent(GameEvent.DRINK);
-					this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.getId());
+					this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.uuid());
 				}
 			} else {
 				RegistryEntry<Potion> registryEntry = null;
@@ -156,7 +156,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					}
 
 					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.getId());
+					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.uuid());
 					entityAttributeInstance.addTemporaryModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 				}
 			}

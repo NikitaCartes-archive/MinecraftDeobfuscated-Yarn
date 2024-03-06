@@ -54,7 +54,7 @@ public class EnchantmentHelper {
 		}
 	}
 
-	public static boolean hasEnchantments(ItemStack stack) {
+	public static boolean canHaveEnchantments(ItemStack stack) {
 		return stack.contains(getEnchantmentsComponentType(stack));
 	}
 
@@ -68,6 +68,11 @@ public class EnchantmentHelper {
 
 	private static DataComponentType<ItemEnchantmentsComponent> getEnchantmentsComponentType(ItemStack stack) {
 		return stack.isOf(Items.ENCHANTED_BOOK) ? DataComponentTypes.STORED_ENCHANTMENTS : DataComponentTypes.ENCHANTMENTS;
+	}
+
+	public static boolean hasEnchantments(ItemStack stack) {
+		return !stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT).isEmpty()
+			|| !stack.getOrDefault(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT).isEmpty();
 	}
 
 	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, ItemStack stack) {

@@ -70,6 +70,7 @@ public class ArgumentTypes {
 		register(registry, "swizzle", SwizzleArgumentType.class, ConstantArgumentSerializer.of(SwizzleArgumentType::swizzle));
 		register(registry, "team", TeamArgumentType.class, ConstantArgumentSerializer.of(TeamArgumentType::team));
 		register(registry, "item_slot", ItemSlotArgumentType.class, ConstantArgumentSerializer.of(ItemSlotArgumentType::itemSlot));
+		register(registry, "item_slots", SlotRangeArgumentType.class, ConstantArgumentSerializer.of(SlotRangeArgumentType::slotRange));
 		register(registry, "resource_location", IdentifierArgumentType.class, ConstantArgumentSerializer.of(IdentifierArgumentType::identifier));
 		register(registry, "function", CommandFunctionArgumentType.class, ConstantArgumentSerializer.of(CommandFunctionArgumentType::commandFunction));
 		register(registry, "entity_anchor", EntityAnchorArgumentType.class, ConstantArgumentSerializer.of(EntityAnchorArgumentType::entityAnchor));

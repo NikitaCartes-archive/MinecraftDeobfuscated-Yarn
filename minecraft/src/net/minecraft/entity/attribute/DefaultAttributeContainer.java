@@ -36,7 +36,7 @@ public class DefaultAttributeContainer {
 		if (entityAttributeModifier == null) {
 			throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + attribute.getIdAsString());
 		} else {
-			return entityAttributeModifier.getValue();
+			return entityAttributeModifier.value();
 		}
 	}
 

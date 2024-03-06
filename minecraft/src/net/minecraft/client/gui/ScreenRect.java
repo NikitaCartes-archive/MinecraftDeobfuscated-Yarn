@@ -130,4 +130,8 @@ public record ScreenRect(ScreenPos position, int width, int height) {
 	public int getRight() {
 		return this.position.x() + this.width;
 	}
+
+	public boolean contains(int x, int y) {
+		return x >= this.getLeft() && x < this.getRight() && y >= this.getTop() && y < this.getBottom();
+	}
 }

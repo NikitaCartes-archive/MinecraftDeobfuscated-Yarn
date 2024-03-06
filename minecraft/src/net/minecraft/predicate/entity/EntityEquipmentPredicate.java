@@ -5,12 +5,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.village.raid.Raid;
 
@@ -33,9 +35,12 @@ public record EntityEquipmentPredicate(
 				)
 				.apply(instance, EntityEquipmentPredicate::new)
 	);
-	public static final EntityEquipmentPredicate OMINOUS_BANNER_ON_HEAD = EntityEquipmentPredicate.Builder.create()
-		.head(ItemPredicate.Builder.create().items(Items.WHITE_BANNER).component(ComponentPredicate.of(Raid.getOminousBanner().getComponents())))
-		.build();
+
+	public static EntityEquipmentPredicate ominousBannerOnHead(RegistryEntryLookup<BannerPattern> bannerPatternLookup) {
+		return EntityEquipmentPredicate.Builder.create()
+			.head(ItemPredicate.Builder.create().items(Items.WHITE_BANNER).component(ComponentPredicate.of(Raid.getOminousBanner(bannerPatternLookup).getComponents())))
+			.build();
+	}
 
 	public boolean test(@Nullable Entity entity) {
 		if (entity instanceof LivingEntity livingEntity) {

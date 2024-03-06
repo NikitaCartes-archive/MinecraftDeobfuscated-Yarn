@@ -71,7 +71,7 @@ public class AttributeContainer {
 
 	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
-		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid).getValue() : this.fallback.getModifierValue(attribute, uuid);
+		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid).value() : this.fallback.getModifierValue(attribute, uuid);
 	}
 
 	public void setFrom(AttributeContainer other) {

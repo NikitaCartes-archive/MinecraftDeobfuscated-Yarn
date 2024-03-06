@@ -1,7 +1,9 @@
 package net.minecraft.registry;
 
 import java.util.List;
+import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.passive.WolfVariants;
 import net.minecraft.item.trim.ArmorTrimMaterials;
 import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.network.message.MessageType;
@@ -48,7 +50,9 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap)
 		.addRegistry(RegistryKeys.TRIM_PATTERN, ArmorTrimPatterns::bootstrap)
 		.addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::bootstrap)
-		.addRegistry(RegistryKeys.DAMAGE_TYPE, DamageTypes::bootstrap);
+		.addRegistry(RegistryKeys.WOLF_VARIANT, WolfVariants::bootstrap)
+		.addRegistry(RegistryKeys.DAMAGE_TYPE, DamageTypes::bootstrap)
+		.addRegistry(RegistryKeys.BANNER_PATTERN, BannerPatterns::registerAndGetDefault);
 
 	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
 		validate(wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME));

@@ -14,6 +14,8 @@ import net.minecraft.util.collection.DefaultedList;
  * with inventories.
  */
 public class Inventories {
+	public static final String ITEMS_NBT_KEY = "Items";
+
 	/**
 	 * {@return the copy of the stack split from the stack at {@code slot}}
 	 * 
@@ -63,8 +65,8 @@ public class Inventories {
 	/**
 	 * Writes the inventory to {@code nbt}.
 	 * 
-	 * <p>The inventory is serialized as a list of non-empty {@linkplain ItemStack#writeNbt
-	 * item stacks}. In addition, each compound has a byte entry with the key {@code Slot},
+	 * <p>The inventory is serialized as a list of non-empty item stacks.
+	 * In addition, each compound has a byte entry with the key {@code Slot},
 	 * indicating the slot. The list is then written to {@code nbt} under the key {@code
 	 * Items}.
 	 * 

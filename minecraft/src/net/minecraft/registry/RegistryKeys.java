@@ -20,6 +20,7 @@ import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
+import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Instrument;
@@ -105,6 +106,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<BlockStateProviderType<?>>> BLOCK_STATE_PROVIDER_TYPE = of("worldgen/block_state_provider_type");
 	public static final RegistryKey<Registry<Carver<?>>> CARVER = of("worldgen/carver");
 	public static final RegistryKey<Registry<CatVariant>> CAT_VARIANT = of("cat_variant");
+	public static final RegistryKey<Registry<WolfVariant>> WOLF_VARIANT = of("wolf_variant");
 	public static final RegistryKey<Registry<Codec<? extends ChunkGenerator>>> CHUNK_GENERATOR = of("worldgen/chunk_generator");
 	public static final RegistryKey<Registry<ChunkStatus>> CHUNK_STATUS = of("chunk_status");
 	public static final RegistryKey<Registry<ArgumentSerializer<?, ?>>> COMMAND_ARGUMENT_TYPE = of("command_argument_type");

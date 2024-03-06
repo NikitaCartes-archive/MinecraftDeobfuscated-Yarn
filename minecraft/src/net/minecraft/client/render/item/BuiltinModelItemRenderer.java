@@ -1,6 +1,5 @@
 package net.minecraft.client.render.item;
 
-import com.mojang.authlib.GameProfile;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
@@ -96,9 +95,8 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 					profileComponent = null;
 				}
 
-				GameProfile gameProfile = profileComponent != null ? profileComponent.gameProfile() : null;
 				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.skullModels.get(abstractSkullBlock.getSkullType());
-				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(abstractSkullBlock.getSkullType(), gameProfile);
+				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(abstractSkullBlock.getSkullType(), profileComponent);
 				SkullBlockEntityRenderer.renderSkull(null, 180.0F, 0.0F, matrices, vertexConsumers, light, skullBlockEntityModel, renderLayer);
 			} else {
 				BlockState blockState = block.getDefaultState();
@@ -118,7 +116,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 				} else if (blockState.isOf(Blocks.TRAPPED_CHEST)) {
 					blockEntity = this.renderChestTrapped;
 				} else if (blockState.isOf(Blocks.DECORATED_POT)) {
-					this.renderDecoratedPot.readNbtFromStack(stack);
+					this.renderDecoratedPot.readFrom(stack);
 					blockEntity = this.renderDecoratedPot;
 				} else {
 					if (!(block instanceof ShulkerBoxBlock)) {
@@ -149,9 +147,17 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 					);
 				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
-					BannerPatternsComponent bannerPatternsComponent2 = bannerPatternsComponent.withBase((DyeColor)Objects.requireNonNullElse(dyeColor2, DyeColor.WHITE));
 					BannerBlockEntityRenderer.renderCanvas(
-						matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, bannerPatternsComponent2, stack.hasGlint()
+						matrices,
+						vertexConsumers,
+						light,
+						overlay,
+						this.modelShield.getPlate(),
+						spriteIdentifier,
+						false,
+						(DyeColor)Objects.requireNonNullElse(dyeColor2, DyeColor.WHITE),
+						bannerPatternsComponent,
+						stack.hasGlint()
 					);
 				} else {
 					this.modelShield.getPlate().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);

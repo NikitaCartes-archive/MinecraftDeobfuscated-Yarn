@@ -29,13 +29,13 @@ public class MiningToolItem extends ToolItem {
 			.add(
 				EntityAttributes.GENERIC_ATTACK_DAMAGE,
 				new EntityAttributeModifier(
-					ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", (double)(baseAttackDamage + material.getAttackDamage()), EntityAttributeModifier.Operation.ADDITION
+					ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", (double)(baseAttackDamage + material.getAttackDamage()), EntityAttributeModifier.Operation.ADD_VALUE
 				),
 				AttributeModifierSlot.MAINHAND
 			)
 			.add(
 				EntityAttributes.GENERIC_ATTACK_SPEED,
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", (double)attackSpeed, EntityAttributeModifier.Operation.ADDITION),
+				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", (double)attackSpeed, EntityAttributeModifier.Operation.ADD_VALUE),
 				AttributeModifierSlot.MAINHAND
 			)
 			.build();

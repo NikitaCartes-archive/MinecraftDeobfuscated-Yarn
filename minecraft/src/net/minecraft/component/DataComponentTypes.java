@@ -18,7 +18,7 @@ import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.component.type.LodestoneTargetComponent;
+import net.minecraft.component.type.LodestoneTrackerComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.MapColorComponent;
 import net.minecraft.component.type.MapDecorationsComponent;
@@ -140,8 +140,8 @@ public class DataComponentTypes {
 		"instrument", builder -> builder.codec(Instrument.ENTRY_CODEC).packetCodec(Instrument.ENTRY_PACKET_CODEC)
 	);
 	public static final DataComponentType<List<Identifier>> RECIPES = register("recipes", builder -> builder.codec(Identifier.CODEC.listOf()));
-	public static final DataComponentType<LodestoneTargetComponent> LODESTONE_TARGET = register(
-		"lodestone_target", builder -> builder.codec(LodestoneTargetComponent.CODEC).packetCodec(LodestoneTargetComponent.PACKET_CODEC)
+	public static final DataComponentType<LodestoneTrackerComponent> LODESTONE_TRACKER = register(
+		"lodestone_tracker", builder -> builder.codec(LodestoneTrackerComponent.CODEC).packetCodec(LodestoneTrackerComponent.PACKET_CODEC)
 	);
 	public static final DataComponentType<FireworkExplosionComponent> FIREWORK_EXPLOSION = register(
 		"firework_explosion", builder -> builder.codec(FireworkExplosionComponent.CODEC).packetCodec(FireworkExplosionComponent.PACKET_CODEC)

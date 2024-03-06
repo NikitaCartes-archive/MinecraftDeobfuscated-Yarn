@@ -23,8 +23,10 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 	public static final int field_30802 = 0;
 	public static final int CRAFTING_RESULT_ID = 0;
 	public static final int CRAFTING_INPUT_START = 1;
+	public static final int CRAFTING_INPUT_COUNT = 4;
 	public static final int CRAFTING_INPUT_END = 5;
 	public static final int EQUIPMENT_START = 5;
+	public static final int EQUIPMENT_COUNT = 4;
 	public static final int EQUIPMENT_END = 9;
 	public static final int INVENTORY_START = 9;
 	public static final int INVENTORY_END = 36;

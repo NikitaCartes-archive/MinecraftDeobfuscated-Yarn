@@ -103,7 +103,7 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry.
 		RegistryKey<T> registryKey = RegistryKey.of(this.registryRef, identifier);
 		return (RegistryEntry.Reference<T>)this.registryWrapper
 			.getOptional(registryKey)
-			.orElseThrow(() -> NOT_FOUND_EXCEPTION.create(identifier, this.registryRef.getValue()));
+			.orElseThrow(() -> NOT_FOUND_EXCEPTION.createWithContext(stringReader, identifier, this.registryRef.getValue()));
 	}
 
 	@Override

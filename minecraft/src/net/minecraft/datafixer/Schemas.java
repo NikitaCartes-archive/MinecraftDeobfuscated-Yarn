@@ -132,6 +132,7 @@ import net.minecraft.datafixer.fix.LegacyDragonFightFix;
 import net.minecraft.datafixer.fix.LevelDataGeneratorOptionsFix;
 import net.minecraft.datafixer.fix.LevelFlatGeneratorInfoFix;
 import net.minecraft.datafixer.fix.LevelLegacyWorldGenSettingsFix;
+import net.minecraft.datafixer.fix.LodestoneCompassComponentFix;
 import net.minecraft.datafixer.fix.MapBannerBlockPosFormatFix;
 import net.minecraft.datafixer.fix.MapIdFix;
 import net.minecraft.datafixer.fix.MemoryExpiryDataFix;
@@ -152,6 +153,7 @@ import net.minecraft.datafixer.fix.OptionsKeyTranslationFix;
 import net.minecraft.datafixer.fix.OptionsLowerCaseLanguageFix;
 import net.minecraft.datafixer.fix.OptionsProgrammerArtFix;
 import net.minecraft.datafixer.fix.PersistentStateUuidFix;
+import net.minecraft.datafixer.fix.PlayerHeadBlockProfileFix;
 import net.minecraft.datafixer.fix.PlayerUuidFix;
 import net.minecraft.datafixer.fix.PointOfInterestRemoveFix;
 import net.minecraft.datafixer.fix.PointOfInterestRenameFix;
@@ -1261,6 +1263,9 @@ public class Schemas {
 		builder.addFixer(new ItemStackComponentizationFix(schema215));
 		Schema schema216 = builder.addSchema(3818, 5, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new AreaEffectCloudPotionFix(schema216));
+		Schema schema217 = builder.addSchema(3820, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new PlayerHeadBlockProfileFix(schema217));
+		builder.addFixer(new LodestoneCompassComponentFix(schema217));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

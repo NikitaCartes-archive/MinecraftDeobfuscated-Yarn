@@ -193,8 +193,8 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	@Override
-	protected void setHeldStacks(DefaultedList<ItemStack> list) {
-		this.inputStacks = list;
+	protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+		this.inputStacks = inventory;
 	}
 
 	@Override

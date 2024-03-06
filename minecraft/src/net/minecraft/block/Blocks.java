@@ -786,7 +786,7 @@ public class Blocks {
 		"dandelion",
 		new FlowerBlock(
 			StatusEffects.SATURATION,
-			7,
+			0.35F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -800,7 +800,7 @@ public class Blocks {
 		"torchflower",
 		new FlowerBlock(
 			StatusEffects.NIGHT_VISION,
-			5,
+			5.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -814,7 +814,7 @@ public class Blocks {
 		"poppy",
 		new FlowerBlock(
 			StatusEffects.NIGHT_VISION,
-			5,
+			5.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -828,7 +828,7 @@ public class Blocks {
 		"blue_orchid",
 		new FlowerBlock(
 			StatusEffects.SATURATION,
-			7,
+			0.35F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -842,7 +842,7 @@ public class Blocks {
 		"allium",
 		new FlowerBlock(
 			StatusEffects.FIRE_RESISTANCE,
-			4,
+			4.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -856,7 +856,7 @@ public class Blocks {
 		"azure_bluet",
 		new FlowerBlock(
 			StatusEffects.BLINDNESS,
-			8,
+			8.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -870,7 +870,7 @@ public class Blocks {
 		"red_tulip",
 		new FlowerBlock(
 			StatusEffects.WEAKNESS,
-			9,
+			9.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -884,7 +884,7 @@ public class Blocks {
 		"orange_tulip",
 		new FlowerBlock(
 			StatusEffects.WEAKNESS,
-			9,
+			9.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -898,7 +898,7 @@ public class Blocks {
 		"white_tulip",
 		new FlowerBlock(
 			StatusEffects.WEAKNESS,
-			9,
+			9.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -912,7 +912,7 @@ public class Blocks {
 		"pink_tulip",
 		new FlowerBlock(
 			StatusEffects.WEAKNESS,
-			9,
+			9.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -926,7 +926,7 @@ public class Blocks {
 		"oxeye_daisy",
 		new FlowerBlock(
 			StatusEffects.REGENERATION,
-			8,
+			8.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -940,7 +940,7 @@ public class Blocks {
 		"cornflower",
 		new FlowerBlock(
 			StatusEffects.JUMP_BOOST,
-			6,
+			6.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -954,7 +954,7 @@ public class Blocks {
 		"wither_rose",
 		new WitherRoseBlock(
 			StatusEffects.WITHER,
-			8,
+			8.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()
@@ -968,7 +968,7 @@ public class Blocks {
 		"lily_of_the_valley",
 		new FlowerBlock(
 			StatusEffects.POISON,
-			12,
+			12.0F,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
 				.noCollision()

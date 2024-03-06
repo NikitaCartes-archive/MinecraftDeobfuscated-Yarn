@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.authlib.GameProfile;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -79,14 +78,13 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				}
 
 				ProfileComponent profileComponent = itemStack.get(DataComponentTypes.PROFILE);
-				GameProfile gameProfile = profileComponent != null ? profileComponent.gameProfile() : null;
 				matrixStack.translate(-0.5, 0.0, -0.5);
 				SkullBlock.SkullType skullType = ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType();
 				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.headModels.get(skullType);
-				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
-				Entity var23 = livingEntity.getVehicle();
+				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, profileComponent);
+				Entity var22 = livingEntity.getVehicle();
 				LimbAnimator limbAnimator;
-				if (var23 instanceof LivingEntity livingEntity2) {
+				if (var22 instanceof LivingEntity livingEntity2) {
 					limbAnimator = livingEntity2.limbAnimator;
 				} else {
 					limbAnimator = livingEntity.limbAnimator;

@@ -129,7 +129,7 @@ public class CrossbowItem extends RangedWeaponItem {
 
 		projectile.setVelocity((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), speed, divergence);
 		float h = getSoundPitch(shooter.getRandom(), index);
-		shooter.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0F, h);
+		shooter.getWorld().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, shooter.getSoundCategory(), 1.0F, h);
 	}
 
 	private static Vector3f calcVelocity(LivingEntity shooter, Vec3d direction, float yaw) {

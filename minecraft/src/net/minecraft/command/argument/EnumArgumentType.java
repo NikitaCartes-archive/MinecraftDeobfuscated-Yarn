@@ -33,7 +33,10 @@ public class EnumArgumentType<T extends Enum<T> & StringIdentifiable> implements
 
 	public T parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
-		return (T)this.codec.parse(JsonOps.INSTANCE, new JsonPrimitive(string)).result().orElseThrow(() -> INVALID_ENUM_EXCEPTION.create(string));
+		return (T)this.codec
+			.parse(JsonOps.INSTANCE, new JsonPrimitive(string))
+			.result()
+			.orElseThrow(() -> INVALID_ENUM_EXCEPTION.createWithContext(stringReader, string));
 	}
 
 	@Override

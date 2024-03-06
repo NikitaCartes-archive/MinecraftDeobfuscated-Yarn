@@ -14,8 +14,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockTypes;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DecoratedPotPatterns;
-import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
@@ -220,7 +218,6 @@ public class Registries {
 	);
 	public static final Registry<CatVariant> CAT_VARIANT = create(RegistryKeys.CAT_VARIANT, CatVariant::registerAndGetDefault);
 	public static final Registry<FrogVariant> FROG_VARIANT = create(RegistryKeys.FROG_VARIANT, registry -> FrogVariant.TEMPERATE);
-	public static final Registry<BannerPattern> BANNER_PATTERN = create(RegistryKeys.BANNER_PATTERN, BannerPatterns::registerAndGetDefault);
 	public static final Registry<Instrument> INSTRUMENT = create(RegistryKeys.INSTRUMENT, Instruments::registerAndGetDefault);
 	public static final Registry<String> DECORATED_POT_PATTERN = create(RegistryKeys.DECORATED_POT_PATTERN, DecoratedPotPatterns::registerAndGetDefault);
 	public static final Registry<ItemGroup> ITEM_GROUP = create(RegistryKeys.ITEM_GROUP, ItemGroups::registerAndGetDefault);

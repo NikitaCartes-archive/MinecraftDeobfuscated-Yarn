@@ -125,6 +125,7 @@ public class OverworldBiomeCreator {
 	public static Biome createSparseJungle(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addJungleMobs(builder);
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 2, 4));
 		return createJungleFeatures(
 			featureLookup, carverLookup, 0.8F, false, true, false, builder, MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_SPARSE_JUNGLE)
 		);
@@ -321,6 +322,7 @@ public class OverworldBiomeCreator {
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		if (plateau) {
 			builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.LLAMA, 8, 4, 4));
+			builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 8));
 		}
 
 		return createBiome(false, 2.0F, 0.0F, builder, lookupBackedBuilder, DEFAULT_MUSIC);
@@ -329,8 +331,13 @@ public class OverworldBiomeCreator {
 	public static Biome createBadlands(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup, boolean plateau) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
-		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.ARMADILLO, 1, 1, 2));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.ARMADILLO, 6, 1, 2));
 		builder.creatureSpawnProbability(0.03F);
+		if (plateau) {
+			builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 2, 4, 8));
+			builder.creatureSpawnProbability(0.04F);
+		}
+
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
 		addBasicFeatures(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDefaultOres(lookupBackedBuilder);
@@ -802,10 +809,9 @@ public class OverworldBiomeCreator {
 	public static Biome createGrove(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
-		DefaultBiomeFeatures.addFarmAnimals(builder);
-		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4))
-			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3))
-			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 1, 1, 1))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 8, 2, 3))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 4, 2, 4));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		addBasicFeatures(lookupBackedBuilder);
 		DefaultBiomeFeatures.addFrozenLavaSpring(lookupBackedBuilder);

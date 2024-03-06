@@ -28,13 +28,11 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Nullable
 	private Text customName;
 	private DyeColor baseColor;
-	private BannerPatternsComponent patternsComponent = BannerPatternsComponent.DEFAULT;
-	private BannerPatternsComponent patternsComponentWithBase = BannerPatternsComponent.DEFAULT;
+	private BannerPatternsComponent patterns = BannerPatternsComponent.DEFAULT;
 
 	public BannerBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.BANNER, pos, state);
 		this.baseColor = ((AbstractBannerBlock)state.getBlock()).getColor();
-		this.setPatterns(BannerPatternsComponent.DEFAULT);
 	}
 
 	public BannerBlockEntity(BlockPos pos, BlockState state, DyeColor baseColor) {
@@ -61,8 +59,10 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
-		if (!this.patternsComponent.equals(BannerPatternsComponent.DEFAULT)) {
-			nbt.put("patterns", Util.getResult(BannerPatternsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.patternsComponent), IllegalStateException::new));
+		if (!this.patterns.equals(BannerPatternsComponent.DEFAULT)) {
+			nbt.put(
+				"patterns", Util.getResult(BannerPatternsComponent.CODEC.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), this.patterns), IllegalStateException::new)
+			);
 		}
 
 		if (this.customName != null) {
@@ -79,9 +79,9 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 		if (nbt.contains("patterns")) {
 			BannerPatternsComponent.CODEC
-				.parse(NbtOps.INSTANCE, nbt.get("patterns"))
-				.resultOrPartial(string -> LOGGER.error("Failed to parse banner patterns: '{}'", string))
-				.ifPresent(this::setPatterns);
+				.parse(registryLookup.getOps(NbtOps.INSTANCE), nbt.get("patterns"))
+				.resultOrPartial(patterns -> LOGGER.error("Failed to parse banner patterns: '{}'", patterns))
+				.ifPresent(patterns -> this.patterns = patterns);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	public BannerPatternsComponent getPatterns() {
-		return this.patternsComponentWithBase;
+		return this.patterns;
 	}
 
 	public ItemStack getPickStack() {
@@ -110,13 +110,13 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Override
 	public void readComponents(ComponentMap components) {
-		this.setPatterns(components.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT));
+		this.patterns = components.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
 		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
 	}
 
 	@Override
 	public void addComponents(ComponentMap.Builder componentMapBuilder) {
-		componentMapBuilder.add(DataComponentTypes.BANNER_PATTERNS, this.patternsComponent);
+		componentMapBuilder.add(DataComponentTypes.BANNER_PATTERNS, this.patterns);
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 	}
 
@@ -124,10 +124,5 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public void removeFromCopiedStackNbt(NbtCompound nbt) {
 		nbt.remove("patterns");
 		nbt.remove("CustomName");
-	}
-
-	private void setPatterns(BannerPatternsComponent patternsComponent) {
-		this.patternsComponent = patternsComponent;
-		this.patternsComponentWithBase = this.patternsComponent.withBase(this.baseColor);
 	}
 }

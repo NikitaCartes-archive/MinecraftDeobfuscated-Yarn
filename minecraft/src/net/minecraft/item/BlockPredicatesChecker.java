@@ -131,12 +131,19 @@ public class BlockPredicatesChecker {
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
+		} else if (!(o instanceof BlockPredicatesChecker)) {
+			return false;
 		} else {
-			return o instanceof BlockPredicatesChecker blockPredicatesChecker ? this.predicates.equals(blockPredicatesChecker.predicates) : false;
+			BlockPredicatesChecker blockPredicatesChecker = (BlockPredicatesChecker)o;
+			return this.predicates.equals(blockPredicatesChecker.predicates) && this.showInTooltip == blockPredicatesChecker.showInTooltip;
 		}
 	}
 
 	public int hashCode() {
-		return this.predicates.hashCode();
+		return this.predicates.hashCode() * 31 + (this.showInTooltip ? 1 : 0);
+	}
+
+	public String toString() {
+		return "AdventureModePredicate{predicates=" + this.predicates + ", showInTooltip=" + this.showInTooltip + "}";
 	}
 }

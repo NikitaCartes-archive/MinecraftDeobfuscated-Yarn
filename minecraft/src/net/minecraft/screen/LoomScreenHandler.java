@@ -15,7 +15,8 @@ import net.minecraft.item.BannerPatternItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BannerPatternTags;
 import net.minecraft.screen.slot.Slot;
@@ -36,6 +37,7 @@ public class LoomScreenHandler extends ScreenHandler {
 	private List<RegistryEntry<BannerPattern>> bannerPatterns = List.of();
 	Runnable inventoryChangeListener = () -> {
 	};
+	private final RegistryEntryLookup<BannerPattern> bannerPatternLookup;
 	final Slot bannerSlot;
 	final Slot dyeSlot;
 	private final Slot patternSlot;
@@ -118,6 +120,7 @@ public class LoomScreenHandler extends ScreenHandler {
 		}
 
 		this.addProperty(this.selectedPattern);
+		this.bannerPatternLookup = playerInventory.player.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN);
 	}
 
 	@Override
@@ -138,14 +141,14 @@ public class LoomScreenHandler extends ScreenHandler {
 
 	private List<RegistryEntry<BannerPattern>> getPatternsFor(ItemStack stack) {
 		if (stack.isEmpty()) {
-			return (List<RegistryEntry<BannerPattern>>)Registries.BANNER_PATTERN
-				.getEntryList(BannerPatternTags.NO_ITEM_REQUIRED)
+			return (List<RegistryEntry<BannerPattern>>)this.bannerPatternLookup
+				.getOptional(BannerPatternTags.NO_ITEM_REQUIRED)
 				.map(ImmutableList::copyOf)
 				.orElse(ImmutableList.of());
 		} else {
 			Item var3 = stack.getItem();
 			return var3 instanceof BannerPatternItem bannerPatternItem
-				? (List)Registries.BANNER_PATTERN.getEntryList(bannerPatternItem.getPattern()).map(ImmutableList::copyOf).orElse(ImmutableList.of())
+				? (List)this.bannerPatternLookup.getOptional(bannerPatternItem.getPattern()).map(ImmutableList::copyOf).orElse(ImmutableList.of())
 				: List.of();
 		}
 	}

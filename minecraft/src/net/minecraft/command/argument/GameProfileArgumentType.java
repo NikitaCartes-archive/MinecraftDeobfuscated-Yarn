@@ -40,7 +40,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 			EntitySelector entitySelector = entitySelectorReader.read();
 			if (entitySelector.includesNonPlayers()) {
-				throw EntityArgumentType.PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.create();
+				throw EntityArgumentType.PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.createWithContext(stringReader);
 			} else {
 				return new GameProfileArgumentType.SelectorBacked(entitySelector);
 			}
