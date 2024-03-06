@@ -1,6 +1,6 @@
 package net.minecraft.block.entity;
 
-import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
@@ -52,7 +52,7 @@ public class BannerPatterns {
 		return RegistryKey.of(RegistryKeys.BANNER_PATTERN, new Identifier(id));
 	}
 
-	public static BannerPattern registerAndGetDefault(Registry<BannerPattern> registry) {
+	public static void registerAndGetDefault(Registerable<BannerPattern> registry) {
 		register(registry, BASE);
 		register(registry, SQUARE_BOTTOM_LEFT);
 		register(registry, SQUARE_BOTTOM_RIGHT);
@@ -93,10 +93,10 @@ public class BannerPatterns {
 		register(registry, SKULL);
 		register(registry, FLOWER);
 		register(registry, MOJANG);
-		return register(registry, PIGLIN);
+		register(registry, PIGLIN);
 	}
 
-	private static BannerPattern register(Registry<BannerPattern> registry, RegistryKey<BannerPattern> key) {
-		return Registry.register(registry, key, new BannerPattern());
+	private static void register(Registerable<BannerPattern> registry, RegistryKey<BannerPattern> key) {
+		registry.register(key, new BannerPattern(key.getValue(), "block.minecraft.banner." + key.getValue().toShortTranslationKey()));
 	}
 }

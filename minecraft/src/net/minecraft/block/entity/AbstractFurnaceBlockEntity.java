@@ -329,7 +329,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				ItemStack itemStack2 = slots.get(2);
 				if (itemStack2.isEmpty()) {
 					return true;
-				} else if (!ItemStack.areItemsEqual(itemStack2, itemStack)) {
+				} else if (!ItemStack.areItemsAndComponentsEqual(itemStack2, itemStack)) {
 					return false;
 				} else {
 					return itemStack2.getCount() < count && itemStack2.getCount() < itemStack2.getMaxCount() ? true : itemStack2.getCount() < itemStack.getMaxCount();
@@ -347,7 +347,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 			ItemStack itemStack3 = slots.get(2);
 			if (itemStack3.isEmpty()) {
 				slots.set(2, itemStack2.copy());
-			} else if (itemStack3.isOf(itemStack2.getItem())) {
+			} else if (ItemStack.areItemsAndComponentsEqual(itemStack3, itemStack2)) {
 				itemStack3.increment(1);
 			}
 
@@ -404,29 +404,13 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public boolean isEmpty() {
-		for (ItemStack itemStack : this.inventory) {
-			if (!itemStack.isEmpty()) {
-				return false;
-			}
-		}
-
-		return true;
+	protected DefaultedList<ItemStack> getHeldStacks() {
+		return this.inventory;
 	}
 
 	@Override
-	public ItemStack getStack(int slot) {
-		return this.inventory.get(slot);
-	}
-
-	@Override
-	public ItemStack removeStack(int slot, int amount) {
-		return Inventories.splitStack(this.inventory, slot, amount);
-	}
-
-	@Override
-	public ItemStack removeStack(int slot) {
-		return Inventories.removeStack(this.inventory, slot);
+	protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+		this.inventory = inventory;
 	}
 
 	@Override
@@ -446,11 +430,6 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public boolean canPlayerUse(PlayerEntity player) {
-		return Inventory.canPlayerUse(this, player);
-	}
-
-	@Override
 	public boolean isValid(int slot, ItemStack stack) {
 		if (slot == 2) {
 			return false;
@@ -460,11 +439,6 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 			ItemStack itemStack = this.inventory.get(1);
 			return canUseAsFuel(stack) || stack.isOf(Items.BUCKET) && !itemStack.isOf(Items.BUCKET);
 		}
-	}
-
-	@Override
-	public void clear() {
-		this.inventory.clear();
 	}
 
 	@Override

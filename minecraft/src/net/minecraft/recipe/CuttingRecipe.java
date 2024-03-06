@@ -82,7 +82,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 				instance -> instance.group(
 							Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
 							Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
-							ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
+							ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 						)
 						.apply(instance, recipeFactory::create)
 			);

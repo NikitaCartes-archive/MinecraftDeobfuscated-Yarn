@@ -15,7 +15,9 @@ public class PlayerHeadItem extends VerticallyAttachableBlockItem {
 	@Override
 	public Text getName(ItemStack stack) {
 		ProfileComponent profileComponent = stack.get(DataComponentTypes.PROFILE);
-		return (Text)(profileComponent != null ? Text.translatable(this.getTranslationKey() + ".named", profileComponent.name()) : super.getName(stack));
+		return (Text)(profileComponent != null && profileComponent.name().isPresent()
+			? Text.translatable(this.getTranslationKey() + ".named", profileComponent.name().get())
+			: super.getName(stack));
 	}
 
 	@Override

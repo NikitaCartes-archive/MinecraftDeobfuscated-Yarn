@@ -55,10 +55,11 @@ public class Schema99 extends Schema {
 		map.put("minecraft:end_gateway", "EndGateway");
 		map.put("minecraft:shield", "Banner");
 	});
+	public static final Map<String, String> field_49718 = Map.of("minecraft:armor_stand", "ArmorStand", "minecraft:painting", "Painting");
 	protected static final HookFunction field_5747 = new HookFunction() {
 		@Override
 		public <T> T apply(DynamicOps<T> ops, T value) {
-			return Schema99.updateBlockEntityTags(new Dynamic<>(ops, value), Schema99.BLOCKS_TO_BLOCK_ENTITIES, "ArmorStand");
+			return Schema99.updateBlockEntityTags(new Dynamic<>(ops, value), Schema99.BLOCKS_TO_BLOCK_ENTITIES, Schema99.field_49718);
 		}
 	};
 
@@ -340,32 +341,23 @@ public class Schema99 extends Schema {
 		schema.registerType(true, TypeReferences.DATA_COMPONENTS, DSL::remainder);
 	}
 
-	protected static <T> T updateBlockEntityTags(Dynamic<T> stack, Map<String, String> renames, String newArmorStandId) {
-		return stack.update(
-				"tag",
-				tag -> tag.update("BlockEntityTag", blockEntityTag -> {
-							String stringx = (String)stack.get("id").asString().result().map(IdentifierNormalizingSchema::normalize).orElse("minecraft:air");
-							if (!"minecraft:air".equals(stringx)) {
-								String string2 = (String)renames.get(stringx);
-								if (string2 != null) {
-									return blockEntityTag.set("id", stack.createString(string2));
-								}
+	protected static <T> T updateBlockEntityTags(Dynamic<T> stack, Map<String, String> renames, Map<String, String> map) {
+		return stack.update("tag", tag -> tag.update("BlockEntityTag", blockEntityTag -> {
+				String string = (String)stack.get("id").asString().result().map(IdentifierNormalizingSchema::normalize).orElse("minecraft:air");
+				if (!"minecraft:air".equals(string)) {
+					String string2 = (String)renames.get(string);
+					if (string2 != null) {
+						return blockEntityTag.set("id", stack.createString(string2));
+					}
 
-								LOGGER.warn("Unable to resolve BlockEntity for ItemStack: {}", stringx);
-							}
+					LOGGER.warn("Unable to resolve BlockEntity for ItemStack: {}", string);
+				}
 
-							return blockEntityTag;
-						})
-						.update(
-							"EntityTag",
-							entityTag -> {
-								String string2 = stack.get("id").asString("");
-								return "minecraft:armor_stand".equals(IdentifierNormalizingSchema.normalize(string2))
-									? entityTag.set("id", stack.createString(newArmorStandId))
-									: entityTag;
-							}
-						)
-			)
-			.getValue();
+				return blockEntityTag;
+			}).update("EntityTag", entityTag -> {
+				String string = IdentifierNormalizingSchema.normalize(stack.get("id").asString(""));
+				String string2 = (String)map.get(string);
+				return string2 != null ? entityTag.set("id", stack.createString(string2)) : entityTag;
+			})).getValue();
 	}
 }

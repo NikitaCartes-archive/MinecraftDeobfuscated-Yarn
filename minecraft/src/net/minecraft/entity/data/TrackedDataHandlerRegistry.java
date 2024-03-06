@@ -13,6 +13,7 @@ import net.minecraft.entity.passive.ArmadilloEntity;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.entity.passive.SnifferEntity;
+import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
@@ -106,6 +107,9 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = TrackedDataHandler.create(OPTIONAL_INT_CODEC);
 	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.create(EntityPose.PACKET_CODEC);
 	public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.create(PacketCodecs.registryValue(RegistryKeys.CAT_VARIANT));
+	public static final TrackedDataHandler<RegistryEntry<WolfVariant>> WOLF_VARIANT = TrackedDataHandler.create(
+		PacketCodecs.registryEntry(RegistryKeys.WOLF_VARIANT)
+	);
 	public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.create(PacketCodecs.registryValue(RegistryKeys.FROG_VARIANT));
 	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.create(
 		PacketCodecs.registryEntry(RegistryKeys.PAINTING_VARIANT)
@@ -154,6 +158,7 @@ public class TrackedDataHandlerRegistry {
 		register(OPTIONAL_INT);
 		register(ENTITY_POSE);
 		register(CAT_VARIANT);
+		register(WOLF_VARIANT);
 		register(FROG_VARIANT);
 		register(OPTIONAL_GLOBAL_POS);
 		register(PAINTING_VARIANT);

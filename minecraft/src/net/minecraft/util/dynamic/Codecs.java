@@ -3,7 +3,6 @@ package net.minecraft.util.dynamic;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.primitives.UnsignedBytes;
 import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
@@ -30,6 +29,7 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +53,7 @@ import java.util.function.ToIntFunction;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
@@ -534,6 +535,7 @@ public class Codecs {
 			codec,
 			list -> list.size() > maxLength
 					? DataResult.error(() -> "List is too long: " + list.size() + ", expected range [0-" + maxLength + "]")
+						.setPartial((Supplier)(() -> List.copyOf(list.subList(0, maxLength))))
 					: DataResult.success(list)
 		);
 	}
@@ -630,20 +632,30 @@ public class Codecs {
 				return ops.getMap(input)
 					.flatMap(
 						map -> {
-							Builder<K, V> builder = ImmutableMap.builder();
-							java.util.stream.Stream.Builder<Pair<T, T>> builder2 = Stream.builder();
+							Map<K, V> map2 = new Object2ObjectArrayMap<>();
+							Builder<Pair<T, T>> builder = Stream.builder();
 							DataResult<Unit> dataResult = (DataResult<Unit>)map.entries().reduce(DataResult.success(Unit.INSTANCE, Lifecycle.stable()), (result, entry) -> {
 								DataResult<K> dataResultx = keyCodec.parse(ops, (T)entry.getFirst());
 								DataResult<V> dataResult2 = dataResultx.map(keyToValueCodec).flatMap(codecxx -> codecxx.parse(ops, (T)entry.getSecond()).map(Function.identity()));
 								DataResult<Pair<K, V>> dataResult3 = dataResultx.apply2stable(Pair::of, dataResult2);
-								dataResult3.result().ifPresent(decoded -> builder.put((K)decoded.getFirst(), (V)decoded.getSecond()));
-								dataResult3.error().ifPresent(resultx -> builder2.add(entry));
+								Optional<Pair<K, V>> optional = dataResult3.resultOrPartial(string -> {
+								});
+								if (optional.isPresent()) {
+									V objectx = (V)map2.putIfAbsent(((Pair)optional.get()).getFirst(), ((Pair)optional.get()).getSecond());
+									if (objectx != null) {
+										builder.add(entry);
+										return result.apply2stable((unit, objectxx) -> unit, DataResult.error(() -> "Duplicate entry for key: '" + ((Pair)optional.get()).getFirst() + "'"));
+									}
+								} else {
+									builder.add(entry);
+								}
+
 								return result.apply2stable((unit, pair) -> unit, dataResult3);
 							}, (a, b) -> a.apply2stable((unit, unit2) -> unit, b));
-							Map<K, V> map2 = builder.build();
-							T object2 = ops.createMap(builder2.build());
-							return dataResult.<Pair<Map<K, V>, T>>map(unit -> Pair.of(map2, input))
-								.setPartial(Pair.of(map2, input))
+							Map<K, V> map3 = Map.copyOf(map2);
+							T object2 = ops.createMap(builder.build());
+							return dataResult.<Pair<Map<K, V>, T>>map(unit -> Pair.of(map3, input))
+								.setPartial(Pair.of(map3, input))
 								.mapError(error -> error + " missed input: " + object2);
 						}
 					);
@@ -816,7 +828,7 @@ public class Codecs {
 	public static record StrictUnboundedMapCodec<K, V>(Codec<K> keyCodec, Codec<V> elementCodec) implements Codec<Map<K, V>>, BaseMapCodec<K, V> {
 		@Override
 		public <T> DataResult<Map<K, V>> decode(DynamicOps<T> ops, MapLike<T> input) {
-			Builder<K, V> builder = ImmutableMap.builder();
+			com.google.common.collect.ImmutableMap.Builder<K, V> builder = ImmutableMap.builder();
 
 			for (Pair<T, T> pair : input.entries().toList()) {
 				DataResult<K> dataResult = this.keyCodec().parse(ops, pair.getFirst());

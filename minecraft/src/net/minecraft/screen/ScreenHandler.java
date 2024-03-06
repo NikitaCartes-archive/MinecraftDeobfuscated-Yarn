@@ -997,7 +997,7 @@ public abstract class ScreenHandler {
 		return switch (mode) {
 			case 0 -> MathHelper.floor((float)stack.getCount() / (float)slots.size());
 			case 1 -> 1;
-			case 2 -> stack.getItem().getMaxCount();
+			case 2 -> stack.getMaxCount();
 			default -> stack.getCount();
 		};
 	}

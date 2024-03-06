@@ -1275,8 +1275,8 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public ProcessItemFactory(ItemConvertible item, int count, int price, Item processed, int processedCount, int maxUses, int experience, float mutiplier) {
-			this(item, count, price, new ItemStack(processed), processedCount, maxUses, experience, mutiplier);
+		public ProcessItemFactory(ItemConvertible item, int count, int price, Item processed, int processedCount, int maxUses, int experience, float multiplier) {
+			this(item, count, price, new ItemStack(processed), processedCount, maxUses, experience, multiplier);
 		}
 
 		ProcessItemFactory(ItemConvertible item, int count, int price, ItemStack processed, int processedCount, int maxUses, int experience, float multiplier) {

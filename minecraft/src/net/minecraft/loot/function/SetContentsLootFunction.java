@@ -5,8 +5,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.BlockItem;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
@@ -14,7 +14,6 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.entry.LootPoolEntryTypes;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.collection.DefaultedList;
@@ -52,9 +51,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			DefaultedList<ItemStack> defaultedList = DefaultedList.of();
 			this.entries
 				.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(context.getWorld(), defaultedList::add), context)));
-			NbtCompound nbtCompound = new NbtCompound();
-			Inventories.writeNbt(nbtCompound, defaultedList, context.getWorld().getRegistryManager());
-			BlockItem.setBlockEntityData(stack, this.type.value(), nbt -> nbt.copyFrom(nbtCompound));
+			stack.set(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(defaultedList));
 			return stack;
 		}
 	}

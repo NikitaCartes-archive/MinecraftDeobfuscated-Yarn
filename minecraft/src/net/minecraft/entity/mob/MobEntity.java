@@ -1172,7 +1172,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		Random random = world.getRandom();
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(
-				new EntityAttributeModifier("Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE)
+				new EntityAttributeModifier("Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE)
 			);
 		this.setLeftHanded(random.nextFloat() < 0.05F);
 		return entityData;

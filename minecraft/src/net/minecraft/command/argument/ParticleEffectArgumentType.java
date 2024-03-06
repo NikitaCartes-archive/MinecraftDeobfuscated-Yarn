@@ -58,7 +58,8 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 	private static ParticleType<?> getType(StringReader reader, RegistryWrapper<ParticleType<?>> registryWrapper) throws CommandSyntaxException {
 		Identifier identifier = Identifier.fromCommandInput(reader);
 		RegistryKey<ParticleType<?>> registryKey = RegistryKey.of(RegistryKeys.PARTICLE_TYPE, identifier);
-		return (ParticleType<?>)((RegistryEntry.Reference)registryWrapper.getOptional(registryKey).orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier)))
+		return (ParticleType<?>)((RegistryEntry.Reference)registryWrapper.getOptional(registryKey)
+				.orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.createWithContext(reader, identifier)))
 			.value();
 	}
 

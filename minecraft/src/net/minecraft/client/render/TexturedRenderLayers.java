@@ -3,9 +3,9 @@ package net.minecraft.client.render;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +23,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
@@ -58,14 +59,10 @@ public class TexturedRenderLayers {
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
 	public static final Map<WoodType, SpriteIdentifier> HANGING_SIGN_TYPE_TEXTURES = (Map<WoodType, SpriteIdentifier>)WoodType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createHangingSignTextureId));
-	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registries.BANNER_PATTERN
-		.getKeys()
-		.stream()
-		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createBannerPatternTextureId));
-	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registries.BANNER_PATTERN
-		.getKeys()
-		.stream()
-		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createShieldPatternTextureId));
+	public static final SpriteIdentifier BANNER_BASE = new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, new Identifier("entity/banner/base"));
+	public static final SpriteIdentifier SHIELD_BASE = new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, new Identifier("entity/shield/base"));
+	private static final Map<Identifier, SpriteIdentifier> BANNER_PATTERN_TEXTURES = new HashMap();
+	private static final Map<Identifier, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = new HashMap();
 	public static final Map<RegistryKey<String>, SpriteIdentifier> DECORATED_POT_PATTERN_TEXTURES = (Map<RegistryKey<String>, SpriteIdentifier>)Registries.DECORATED_POT_PATTERN
 		.getKeys()
 		.stream()
@@ -133,30 +130,6 @@ public class TexturedRenderLayers {
 		return ENTITY_TRANSLUCENT_CULL;
 	}
 
-	public static void addDefaultTextures(Consumer<SpriteIdentifier> adder) {
-		adder.accept(SHULKER_TEXTURE_ID);
-		COLORED_SHULKER_BOXES_TEXTURES.forEach(adder);
-		BANNER_PATTERN_TEXTURES.values().forEach(adder);
-		SHIELD_PATTERN_TEXTURES.values().forEach(adder);
-		SIGN_TYPE_TEXTURES.values().forEach(adder);
-		HANGING_SIGN_TYPE_TEXTURES.values().forEach(adder);
-
-		for (SpriteIdentifier spriteIdentifier : BED_TEXTURES) {
-			adder.accept(spriteIdentifier);
-		}
-
-		adder.accept(TRAPPED);
-		adder.accept(TRAPPED_LEFT);
-		adder.accept(TRAPPED_RIGHT);
-		adder.accept(CHRISTMAS);
-		adder.accept(CHRISTMAS_LEFT);
-		adder.accept(CHRISTMAS_RIGHT);
-		adder.accept(NORMAL);
-		adder.accept(NORMAL_LEFT);
-		adder.accept(NORMAL_RIGHT);
-		adder.accept(ENDER);
-	}
-
 	private static SpriteIdentifier createSignTextureId(WoodType type) {
 		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + type.name()));
 	}
@@ -173,20 +146,18 @@ public class TexturedRenderLayers {
 		return (SpriteIdentifier)HANGING_SIGN_TYPE_TEXTURES.get(signType);
 	}
 
-	private static SpriteIdentifier createBannerPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
-		return new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, BannerPattern.getSpriteId(bannerPattern, true));
+	public static SpriteIdentifier getBannerPatternTextureId(RegistryEntry<BannerPattern> pattern) {
+		return (SpriteIdentifier)BANNER_PATTERN_TEXTURES.computeIfAbsent(pattern.value().assetId(), id -> {
+			Identifier identifier = id.withPrefixedPath("entity/banner/");
+			return new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, identifier);
+		});
 	}
 
-	public static SpriteIdentifier getBannerPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
-		return (SpriteIdentifier)BANNER_PATTERN_TEXTURES.get(bannerPattern);
-	}
-
-	private static SpriteIdentifier createShieldPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
-		return new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, BannerPattern.getSpriteId(bannerPattern, false));
-	}
-
-	public static SpriteIdentifier getShieldPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
-		return (SpriteIdentifier)SHIELD_PATTERN_TEXTURES.get(bannerPattern);
+	public static SpriteIdentifier getShieldPatternTextureId(RegistryEntry<BannerPattern> pattern) {
+		return (SpriteIdentifier)SHIELD_PATTERN_TEXTURES.computeIfAbsent(pattern.value().assetId(), id -> {
+			Identifier identifier = id.withPrefixedPath("entity/shield/");
+			return new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, identifier);
+		});
 	}
 
 	private static SpriteIdentifier createChestTextureId(String variant) {

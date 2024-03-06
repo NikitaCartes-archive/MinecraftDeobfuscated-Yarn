@@ -119,7 +119,7 @@ public class AttributeCommand {
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
-																							EntityAttributeModifier.Operation.ADDITION
+																							EntityAttributeModifier.Operation.ADD_VALUE
 																						)
 																				)
 																		)
@@ -133,7 +133,7 @@ public class AttributeCommand {
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
-																							EntityAttributeModifier.Operation.MULTIPLY_BASE
+																							EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 																						)
 																				)
 																		)
@@ -147,7 +147,7 @@ public class AttributeCommand {
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
-																							EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+																							EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 																						)
 																				)
 																		)

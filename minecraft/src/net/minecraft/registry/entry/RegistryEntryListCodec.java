@@ -64,11 +64,23 @@ public class RegistryEntryListCodec<E> implements Codec<RegistryEntryList<E>> {
 				RegistryEntryLookup<E> registryEntryLookup = (RegistryEntryLookup<E>)optional.get();
 				return this.entryListStorageCodec
 					.decode(ops, input)
-					.map(pair -> pair.mapFirst(either -> either.map(registryEntryLookup::getOrThrow, RegistryEntryList::of)));
+					.flatMap(
+						pair -> {
+							DataResult<RegistryEntryList<E>> dataResult = ((Either)pair.getFirst())
+								.map(tag -> get(registryEntryLookup, tag), entries -> DataResult.success(RegistryEntryList.of(entries)));
+							return dataResult.map(entries -> Pair.of(entries, pair.getSecond()));
+						}
+					);
 			}
 		}
 
 		return this.decodeDirect(ops, input);
+	}
+
+	private static <E> DataResult<RegistryEntryList<E>> get(RegistryEntryLookup<E> registry, TagKey<E> tag) {
+		return (DataResult<RegistryEntryList<E>>)registry.getOptional(tag)
+			.map(DataResult::success)
+			.orElseGet(() -> DataResult.error(() -> "Missing tag: '" + tag.id() + "' in '" + tag.registry().getValue() + "'"));
 	}
 
 	public <T> DataResult<T> encode(RegistryEntryList<E> registryEntryList, DynamicOps<T> dynamicOps, T object) {

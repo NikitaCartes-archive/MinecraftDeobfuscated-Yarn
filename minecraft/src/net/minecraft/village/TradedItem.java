@@ -21,7 +21,7 @@ public record TradedItem(RegistryEntry<Item> item, int count, ComponentPredicate
 	public static final Codec<TradedItem> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Registries.ITEM.getEntryCodec().fieldOf("id").forGetter(TradedItem::item),
-					Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_INT, "count", 1).forGetter(TradedItem::count),
+					Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(TradedItem::count),
 					Codecs.createStrictOptionalFieldCodec(ComponentPredicate.CODEC, "components", ComponentPredicate.EMPTY).forGetter(TradedItem::components)
 				)
 				.apply(instance, TradedItem::new)

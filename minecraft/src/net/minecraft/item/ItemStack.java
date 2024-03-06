@@ -80,6 +80,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -136,7 +137,7 @@ public final class ItemStack implements ComponentHolder {
 				RecordCodecBuilder.create(
 					instance -> instance.group(
 								ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
-								Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount),
+								Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
 								Codecs.createStrictOptionalFieldCodec(ComponentChanges.CODEC, "components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
 							)
 							.apply(instance, ItemStack::new)
@@ -144,21 +145,26 @@ public final class ItemStack implements ComponentHolder {
 				ItemStack::validate
 			)
 	);
+	public static final Codec<ItemStack> COOKING_RECIPE_RESULT_CODEC = Codecs.createLazy(
+		() -> Codecs.validate(
+				RecordCodecBuilder.create(
+					instance -> instance.group(
+								ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
+								Codecs.createStrictOptionalFieldCodec(ComponentChanges.CODEC, "components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
+							)
+							.apply(instance, (item, components) -> new ItemStack(item, 1, components))
+				),
+				ItemStack::validate
+			)
+	);
 	public static final Codec<ItemStack> OPTIONAL_CODEC = Codecs.optional(CODEC)
 		.xmap(optional -> (ItemStack)optional.orElse(ItemStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
 	public static final Codec<ItemStack> REGISTRY_ENTRY_CODEC = ITEM_CODEC.xmap(ItemStack::new, ItemStack::getRegistryEntry);
-	public static final Codec<ItemStack> RECIPE_RESULT_CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
-					Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount)
-				)
-				.apply(instance, ItemStack::new)
-	);
 	public static final PacketCodec<RegistryByteBuf, ItemStack> OPTIONAL_PACKET_CODEC = new PacketCodec<RegistryByteBuf, ItemStack>() {
 		private static final PacketCodec<RegistryByteBuf, RegistryEntry<Item>> ITEM_PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.ITEM);
 
 		public ItemStack decode(RegistryByteBuf registryByteBuf) {
-			int i = registryByteBuf.readByte();
+			int i = registryByteBuf.readVarInt();
 			if (i <= 0) {
 				return ItemStack.EMPTY;
 			} else {
@@ -170,9 +176,9 @@ public final class ItemStack implements ComponentHolder {
 
 		public void encode(RegistryByteBuf registryByteBuf, ItemStack itemStack) {
 			if (itemStack.isEmpty()) {
-				registryByteBuf.writeByte(0);
+				registryByteBuf.writeVarInt(0);
 			} else {
-				registryByteBuf.writeByte(itemStack.getCount());
+				registryByteBuf.writeVarInt(itemStack.getCount());
 				ITEM_PACKET_CODEC.encode(registryByteBuf, itemStack.getRegistryEntry());
 				ComponentChanges.PACKET_CODEC.encode(registryByteBuf, itemStack.components.getChanges());
 			}
@@ -483,7 +489,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @see #setDamage
 	 */
 	public int getDamage() {
-		return this.getOrDefault(DataComponentTypes.DAMAGE, Integer.valueOf(0));
+		return MathHelper.clamp(this.getOrDefault(DataComponentTypes.DAMAGE, Integer.valueOf(0)), 0, this.getMaxDamage());
 	}
 
 	/**
@@ -497,7 +503,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @see #damage(int, LivingEntity, EquipmentSlot)
 	 */
 	public void setDamage(int damage) {
-		this.set(DataComponentTypes.DAMAGE, damage);
+		this.set(DataComponentTypes.DAMAGE, MathHelper.clamp(damage, 0, this.getMaxDamage()));
 	}
 
 	public int getMaxDamage() {
@@ -961,23 +967,22 @@ public final class ItemStack implements ComponentHolder {
 	private void appendAttributeModifierTooltip(
 		Consumer<Text> textConsumer, @Nullable PlayerEntity player, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier
 	) {
-		double d = modifier.getValue();
+		double d = modifier.value();
 		boolean bl = false;
 		if (player != null) {
-			if (modifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
+			if (modifier.uuid() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
 				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 				d += (double)EnchantmentHelper.getAttackDamage(this, null);
 				bl = true;
-			} else if (modifier.getId() == Item.ATTACK_SPEED_MODIFIER_ID) {
+			} else if (modifier.uuid() == Item.ATTACK_SPEED_MODIFIER_ID) {
 				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
 				bl = true;
 			}
 		}
 
 		double e;
-		if (modifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || modifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-			)
-		 {
+		if (modifier.operation() == EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
+			|| modifier.operation() == EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
 			e = d * 100.0;
 		} else if (attribute.matches(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
 			e = d * 10.0;
@@ -990,7 +995,7 @@ public final class ItemStack implements ComponentHolder {
 				ScreenTexts.space()
 					.append(
 						Text.translatable(
-							"attribute.modifier.equals." + modifier.getOperation().getId(),
+							"attribute.modifier.equals." + modifier.operation().getId(),
 							AttributeModifiersComponent.DECIMAL_FORMAT.format(e),
 							Text.translatable(attribute.value().getTranslationKey())
 						)
@@ -1000,7 +1005,7 @@ public final class ItemStack implements ComponentHolder {
 		} else if (d > 0.0) {
 			textConsumer.accept(
 				Text.translatable(
-						"attribute.modifier.plus." + modifier.getOperation().getId(),
+						"attribute.modifier.plus." + modifier.operation().getId(),
 						AttributeModifiersComponent.DECIMAL_FORMAT.format(e),
 						Text.translatable(attribute.value().getTranslationKey())
 					)
@@ -1009,7 +1014,7 @@ public final class ItemStack implements ComponentHolder {
 		} else if (d < 0.0) {
 			textConsumer.accept(
 				Text.translatable(
-						"attribute.modifier.take." + modifier.getOperation().getId(),
+						"attribute.modifier.take." + modifier.operation().getId(),
 						AttributeModifiersComponent.DECIMAL_FORMAT.format(-e),
 						Text.translatable(attribute.value().getTranslationKey())
 					)

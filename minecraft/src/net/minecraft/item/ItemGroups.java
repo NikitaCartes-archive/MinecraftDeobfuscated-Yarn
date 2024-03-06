@@ -1093,7 +1093,7 @@ public class ItemGroups {
 						entries.add(Items.PURPLE_BANNER);
 						entries.add(Items.MAGENTA_BANNER);
 						entries.add(Items.PINK_BANNER);
-						entries.add(Raid.getOminousBanner());
+						entries.add(Raid.getOminousBanner(displayContext.lookup().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
 						entries.add(Items.SKELETON_SKULL);
 						entries.add(Items.WITHER_SKELETON_SKULL);
 						entries.add(Items.PLAYER_HEAD);
@@ -1860,12 +1860,18 @@ public class ItemGroups {
 		Predicate<RegistryEntry<PaintingVariant>> predicate,
 		ItemGroup.StackVisibility visibility
 	) {
-		registryWrapper.streamEntries().filter(predicate).sorted(PAINTING_VARIANT_COMPARATOR).forEach(variant -> {
-			NbtComponent nbtComponent = Util.getResult(NbtComponent.DEFAULT.with(PaintingEntity.VARIANT_MAP_CODEC, variant), IllegalStateException::new);
-			ItemStack itemStack = new ItemStack(Items.PAINTING);
-			itemStack.set(DataComponentTypes.ENTITY_DATA, nbtComponent);
-			entries.add(itemStack, visibility);
-		});
+		registryWrapper.streamEntries()
+			.filter(predicate)
+			.sorted(PAINTING_VARIANT_COMPARATOR)
+			.forEach(
+				variant -> {
+					NbtComponent nbtComponent = Util.getResult(NbtComponent.DEFAULT.with(PaintingEntity.VARIANT_MAP_CODEC, variant), IllegalStateException::new)
+						.apply(nbtCompound -> nbtCompound.putString("id", "minecraft:painting"));
+					ItemStack itemStack = new ItemStack(Items.PAINTING);
+					itemStack.set(DataComponentTypes.ENTITY_DATA, nbtComponent);
+					entries.add(itemStack, visibility);
+				}
+			);
 	}
 
 	public static List<ItemGroup> getGroupsToDisplay() {

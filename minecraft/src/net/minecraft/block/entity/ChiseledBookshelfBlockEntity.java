@@ -6,6 +6,9 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChiseledBookshelfBlock;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -138,5 +141,20 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 
 	public int getLastInteractedSlot() {
 		return this.lastInteractedSlot;
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyTo(this.inventory);
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.inventory));
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		nbt.remove("Items");
 	}
 }

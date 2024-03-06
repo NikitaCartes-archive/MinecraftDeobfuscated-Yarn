@@ -84,7 +84,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 			EntitySelector entitySelector = entitySelectorReader.read();
 			if (!this.multiple && entitySelector.getLimit() > 1) {
-				throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.create();
+				throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.createWithContext(stringReader);
 			} else {
 				return new ScoreHolderArgumentType.SelectorScoreHolders(entitySelector);
 			}

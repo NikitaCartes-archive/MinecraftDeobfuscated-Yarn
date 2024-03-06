@@ -81,15 +81,15 @@ public class ArmorItem extends Item implements Equipment {
 				float f = material.value().getToughness();
 				Builder<RegistryEntry<EntityAttribute>, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 				UUID uUID = (UUID)MODIFIERS.get(type);
-				builder.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(uUID, "Armor modifier", (double)i, EntityAttributeModifier.Operation.ADDITION));
+				builder.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(uUID, "Armor modifier", (double)i, EntityAttributeModifier.Operation.ADD_VALUE));
 				builder.put(
-					EntityAttributes.GENERIC_ARMOR_TOUGHNESS, new EntityAttributeModifier(uUID, "Armor toughness", (double)f, EntityAttributeModifier.Operation.ADDITION)
+					EntityAttributes.GENERIC_ARMOR_TOUGHNESS, new EntityAttributeModifier(uUID, "Armor toughness", (double)f, EntityAttributeModifier.Operation.ADD_VALUE)
 				);
 				float g = material.value().getKnockbackResistance();
 				if (g > 0.0F) {
 					builder.put(
 						EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
-						new EntityAttributeModifier(uUID, "Armor knockback resistance", (double)g, EntityAttributeModifier.Operation.ADDITION)
+						new EntityAttributeModifier(uUID, "Armor knockback resistance", (double)g, EntityAttributeModifier.Operation.ADD_VALUE)
 					);
 				}
 

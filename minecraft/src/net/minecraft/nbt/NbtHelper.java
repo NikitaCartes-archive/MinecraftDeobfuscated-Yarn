@@ -5,7 +5,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -38,7 +37,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import org.slf4j.Logger;
@@ -65,83 +63,6 @@ public final class NbtHelper {
 	private static final int field_33230 = -1;
 
 	private NbtHelper() {
-	}
-
-	/**
-	 * {@return the game profile converted from {@code nbt}}
-	 * 
-	 * @see #writeGameProfile(NbtCompound, GameProfile)
-	 */
-	@Nullable
-	public static GameProfile toGameProfile(NbtCompound nbt) {
-		UUID uUID = nbt.containsUuid("Id") ? nbt.getUuid("Id") : Util.NIL_UUID;
-		String string = nbt.getString("Name");
-
-		try {
-			GameProfile gameProfile = new GameProfile(uUID, string);
-			if (nbt.contains("Properties", NbtElement.COMPOUND_TYPE)) {
-				NbtCompound nbtCompound = nbt.getCompound("Properties");
-
-				for (String string2 : nbtCompound.getKeys()) {
-					NbtList nbtList = nbtCompound.getList(string2, NbtElement.COMPOUND_TYPE);
-
-					for (int i = 0; i < nbtList.size(); i++) {
-						NbtCompound nbtCompound2 = nbtList.getCompound(i);
-						String string3 = nbtCompound2.getString("Value");
-						if (nbtCompound2.contains("Signature", NbtElement.STRING_TYPE)) {
-							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3, nbtCompound2.getString("Signature")));
-						} else {
-							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3));
-						}
-					}
-				}
-			}
-
-			return gameProfile;
-		} catch (Throwable var11) {
-			return null;
-		}
-	}
-
-	/**
-	 * Writes the game profile to {@code nbt}. This modifies the passed compound.
-	 * 
-	 * @return the compound with the serialized game profile
-	 * @see #toGameProfile(NbtCompound)
-	 */
-	public static NbtCompound writeGameProfile(NbtCompound nbt, GameProfile profile) {
-		if (!profile.getName().isEmpty()) {
-			nbt.putString("Name", profile.getName());
-		}
-
-		if (!profile.getId().equals(Util.NIL_UUID)) {
-			nbt.putUuid("Id", profile.getId());
-		}
-
-		if (!profile.getProperties().isEmpty()) {
-			NbtCompound nbtCompound = new NbtCompound();
-
-			for (String string : profile.getProperties().keySet()) {
-				NbtList nbtList = new NbtList();
-
-				for (com.mojang.authlib.properties.Property property : profile.getProperties().get(string)) {
-					NbtCompound nbtCompound2 = new NbtCompound();
-					nbtCompound2.putString("Value", property.value());
-					String string2 = property.signature();
-					if (string2 != null) {
-						nbtCompound2.putString("Signature", string2);
-					}
-
-					nbtList.add(nbtCompound2);
-				}
-
-				nbtCompound.put(string, nbtList);
-			}
-
-			nbt.put("Properties", nbtCompound);
-		}
-
-		return nbt;
 	}
 
 	/**

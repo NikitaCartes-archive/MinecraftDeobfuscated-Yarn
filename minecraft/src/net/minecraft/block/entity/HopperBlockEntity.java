@@ -447,8 +447,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	protected void setHeldStacks(DefaultedList<ItemStack> list) {
-		this.inventory = list;
+	protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+		this.inventory = inventory;
 	}
 
 	public static void onEntityCollided(World world, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {

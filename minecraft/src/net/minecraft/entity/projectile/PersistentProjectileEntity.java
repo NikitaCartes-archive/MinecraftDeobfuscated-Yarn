@@ -491,9 +491,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 		this.setShotFromCrossbow(nbt.getBoolean("ShotFromCrossbow"));
 		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
-			this.stack = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("item")).orElse(this.getDefaultItemStack());
+			this.setStack((ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("item")).orElse(this.getDefaultItemStack()));
 		} else {
-			this.stack = this.getDefaultItemStack();
+			this.setStack(this.stack);
 		}
 	}
 

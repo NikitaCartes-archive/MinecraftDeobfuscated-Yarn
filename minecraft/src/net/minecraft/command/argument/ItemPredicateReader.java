@@ -9,7 +9,9 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import net.minecraft.command.CommandSource;
@@ -45,6 +47,9 @@ public class ItemPredicateReader {
 	);
 	static final SimpleCommandExceptionType EXPECTED_ITEM_COMPONENT_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("arguments.item.component.expected")
+	);
+	static final DynamicCommandExceptionType REPEATED_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(
+		type -> Text.stringifiedTranslatable("arguments.item.component.repeated", type)
 	);
 	private static final char HASH = '#';
 	public static final char SQUARE_OPEN_BRACKET = '[';
@@ -162,10 +167,15 @@ public class ItemPredicateReader {
 		private void readComponents() throws CommandSyntaxException {
 			this.reader.expect('[');
 			this.callbacks.setSuggestor(this::suggestComponentType);
+			Set<DataComponentType<?>> set = new ReferenceArraySet<>();
 
 			while (this.reader.canRead() && this.reader.peek() != ']') {
 				this.reader.skipWhitespace();
 				DataComponentType<?> dataComponentType = readComponentType(this.reader);
+				if (!set.add(dataComponentType)) {
+					throw ItemPredicateReader.REPEATED_COMPONENT_EXCEPTION.create(dataComponentType);
+				}
+
 				this.callbacks.setSuggestor(this::suggestEqual);
 				this.reader.skipWhitespace();
 				this.reader.expect('=');

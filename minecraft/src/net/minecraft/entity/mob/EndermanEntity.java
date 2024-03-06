@@ -68,7 +68,7 @@ import net.minecraft.world.event.GameEvent;
 public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.15F, EntityAttributeModifier.Operation.ADDITION
+		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.15F, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	private static final int field_30462 = 400;
 	private static final int field_30461 = 600;
@@ -122,7 +122,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
 			this.dataTracker.set(PROVOKED, false);
-			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST.getId());
+			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST.uuid());
 		} else {
 			this.ageWhenTargetSet = this.age;
 			this.dataTracker.set(ANGRY, true);

@@ -130,11 +130,17 @@ public class BlockPredicatesChecker {
 		if (this == o) {
 			return true;
 		} else {
-			return o instanceof BlockPredicatesChecker blockPredicatesChecker ? this.predicates.equals(blockPredicatesChecker.predicates) : false;
+			return !(o instanceof BlockPredicatesChecker blockPredicatesChecker)
+				? false
+				: this.predicates.equals(blockPredicatesChecker.predicates) && this.showInTooltip == blockPredicatesChecker.showInTooltip;
 		}
 	}
 
 	public int hashCode() {
-		return this.predicates.hashCode();
+		return this.predicates.hashCode() * 31 + (this.showInTooltip ? 1 : 0);
+	}
+
+	public String toString() {
+		return "AdventureModePredicate{predicates=" + this.predicates + ", showInTooltip=" + this.showInTooltip + "}";
 	}
 }

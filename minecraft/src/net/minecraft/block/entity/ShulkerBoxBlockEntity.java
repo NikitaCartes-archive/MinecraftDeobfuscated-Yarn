@@ -7,9 +7,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -44,7 +41,6 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	public static final int field_31358 = 10;
 	public static final float field_31359 = 0.5F;
 	public static final float field_31360 = 270.0F;
-	private static final String ITEMS_KEY = "Items";
 	private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	private int viewerCount;
@@ -223,8 +219,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	protected void setHeldStacks(DefaultedList<ItemStack> list) {
-		this.inventory = list;
+	protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+		this.inventory = inventory;
 	}
 
 	@Override
@@ -258,24 +254,6 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 	public boolean suffocates() {
 		return this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSED;
-	}
-
-	@Override
-	public void readComponents(ComponentMap components) {
-		super.readComponents(components);
-		components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyTo(this.inventory);
-	}
-
-	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.inventory));
-	}
-
-	@Override
-	public void removeFromCopiedStackNbt(NbtCompound nbt) {
-		super.removeFromCopiedStackNbt(nbt);
-		nbt.remove("Items");
 	}
 
 	public static enum AnimationStage {

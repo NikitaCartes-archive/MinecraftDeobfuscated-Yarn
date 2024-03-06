@@ -38,7 +38,7 @@ public class ColorArgumentType implements ArgumentType<Formatting> {
 		if (formatting != null && !formatting.isModifier()) {
 			return formatting;
 		} else {
-			throw INVALID_COLOR_EXCEPTION.create(string);
+			throw INVALID_COLOR_EXCEPTION.createWithContext(stringReader, string);
 		}
 	}
 

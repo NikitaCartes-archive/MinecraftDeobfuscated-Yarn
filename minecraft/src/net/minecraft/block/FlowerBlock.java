@@ -7,6 +7,7 @@ import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -25,17 +26,17 @@ public class FlowerBlock extends PlantBlock implements SuspiciousStewIngredient 
 		return CODEC;
 	}
 
-	public FlowerBlock(RegistryEntry<StatusEffect> stewEffect, int duration, AbstractBlock.Settings settings) {
-		this(createStewEffectList(stewEffect, duration), settings);
+	public FlowerBlock(RegistryEntry<StatusEffect> stewEffect, float effectLengthInSeconds, AbstractBlock.Settings settings) {
+		this(createStewEffectList(stewEffect, effectLengthInSeconds), settings);
 	}
 
-	public FlowerBlock(SuspiciousStewEffectsComponent suspiciousStewEffectsComponent, AbstractBlock.Settings settings) {
+	public FlowerBlock(SuspiciousStewEffectsComponent stewEffects, AbstractBlock.Settings settings) {
 		super(settings);
-		this.stewEffects = suspiciousStewEffectsComponent;
+		this.stewEffects = stewEffects;
 	}
 
-	protected static SuspiciousStewEffectsComponent createStewEffectList(RegistryEntry<StatusEffect> effect, int duration) {
-		return new SuspiciousStewEffectsComponent(List.of(new SuspiciousStewEffectsComponent.StewEffect(effect, duration * 20)));
+	protected static SuspiciousStewEffectsComponent createStewEffectList(RegistryEntry<StatusEffect> effect, float effectLengthInSeconds) {
+		return new SuspiciousStewEffectsComponent(List.of(new SuspiciousStewEffectsComponent.StewEffect(effect, MathHelper.floor(effectLengthInSeconds * 20.0F))));
 	}
 
 	@Override

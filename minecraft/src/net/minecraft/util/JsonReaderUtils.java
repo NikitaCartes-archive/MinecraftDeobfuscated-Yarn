@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.lang.reflect.Field;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.function.CharPredicate;
 
 public class JsonReaderUtils {
 	private static final Field POS = Util.make(() -> {
@@ -32,7 +33,7 @@ public class JsonReaderUtils {
 
 	private static int getPos(JsonReader jsonReader) {
 		try {
-			return POS.getInt(jsonReader) - LINE_START.getInt(jsonReader) + 1;
+			return POS.getInt(jsonReader) - LINE_START.getInt(jsonReader);
 		} catch (IllegalAccessException var2) {
 			throw new IllegalStateException("Couldn't read position of JsonReader", var2);
 		}
@@ -53,5 +54,15 @@ public class JsonReaderUtils {
 		}
 
 		return (T)var5;
+	}
+
+	public static String readWhileMatching(StringReader stringReader, CharPredicate predicate) {
+		int i = stringReader.getCursor();
+
+		while (stringReader.canRead() && predicate.test(stringReader.peek())) {
+			stringReader.skip();
+		}
+
+		return stringReader.getString().substring(i, stringReader.getCursor());
 	}
 }

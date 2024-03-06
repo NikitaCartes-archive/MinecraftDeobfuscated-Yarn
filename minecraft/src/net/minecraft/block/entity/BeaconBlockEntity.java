@@ -358,7 +358,9 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	public void addComponents(ComponentMap.Builder componentMapBuilder) {
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
-		componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);
+		if (!this.lock.equals(ContainerLock.EMPTY)) {
+			componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);
+		}
 	}
 
 	@Override

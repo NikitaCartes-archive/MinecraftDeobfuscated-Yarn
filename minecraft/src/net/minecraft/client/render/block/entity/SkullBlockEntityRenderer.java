@@ -3,7 +3,6 @@ package net.minecraft.client.render.block.entity;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.authlib.GameProfile;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -26,6 +25,7 @@ import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
@@ -98,11 +98,11 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 		matrices.pop();
 	}
 
-	public static RenderLayer getRenderLayer(SkullBlock.SkullType type, @Nullable GameProfile profile) {
+	public static RenderLayer getRenderLayer(SkullBlock.SkullType type, @Nullable ProfileComponent profile) {
 		Identifier identifier = (Identifier)TEXTURES.get(type);
 		if (type == SkullBlock.Type.PLAYER && profile != null) {
 			PlayerSkinProvider playerSkinProvider = MinecraftClient.getInstance().getSkinProvider();
-			return RenderLayer.getEntityTranslucent(playerSkinProvider.getSkinTextures(profile).texture());
+			return RenderLayer.getEntityTranslucent(playerSkinProvider.getSkinTextures(profile.gameProfile()).texture());
 		} else {
 			return RenderLayer.getEntityCutoutNoCullZOffset(identifier);
 		}

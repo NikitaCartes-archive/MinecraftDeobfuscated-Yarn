@@ -15,17 +15,20 @@ import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.dynamic.Codecs;
 
-public record ProfileComponent(String name, Optional<UUID> id, PropertyMap properties, GameProfile gameProfile) {
-	public static final Codec<ProfileComponent> CODEC = RecordCodecBuilder.create(
+public record ProfileComponent(Optional<String> name, Optional<UUID> id, PropertyMap properties, GameProfile gameProfile) {
+	private static final Codec<ProfileComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.PLAYER_NAME.fieldOf("name").forGetter(ProfileComponent::name),
+					Codecs.createStrictOptionalFieldCodec(Codecs.PLAYER_NAME, "name").forGetter(ProfileComponent::name),
 					Codecs.createStrictOptionalFieldCodec(Uuids.INT_STREAM_CODEC, "id").forGetter(ProfileComponent::id),
 					Codecs.createStrictOptionalFieldCodec(Codecs.GAME_PROFILE_PROPERTY_MAP, "properties", new PropertyMap()).forGetter(ProfileComponent::properties)
 				)
 				.apply(instance, ProfileComponent::new)
 	);
+	public static final Codec<ProfileComponent> CODEC = Codecs.either(
+		BASE_CODEC, Codecs.PLAYER_NAME, name -> new ProfileComponent(Optional.of(name), Optional.empty(), new PropertyMap())
+	);
 	public static final PacketCodec<ByteBuf, ProfileComponent> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.string(16),
+		PacketCodecs.string(16).collect(PacketCodecs::optional),
 		ProfileComponent::name,
 		Uuids.PACKET_CODEC.collect(PacketCodecs::optional),
 		ProfileComponent::id,
@@ -34,28 +37,28 @@ public record ProfileComponent(String name, Optional<UUID> id, PropertyMap prope
 		ProfileComponent::new
 	);
 
-	public ProfileComponent(String name, Optional<UUID> id, PropertyMap properties) {
+	public ProfileComponent(Optional<String> name, Optional<UUID> id, PropertyMap properties) {
 		this(name, id, properties, createProfile(name, id, properties));
 	}
 
 	public ProfileComponent(GameProfile gameProfile) {
-		this(gameProfile.getName(), Optional.ofNullable(gameProfile.getId()), gameProfile.getProperties(), gameProfile);
+		this(Optional.of(gameProfile.getName()), Optional.of(gameProfile.getId()), gameProfile.getProperties(), gameProfile);
 	}
 
 	public CompletableFuture<ProfileComponent> getFuture() {
-		return this.isCompleted() ? CompletableFuture.completedFuture(this) : SkullBlockEntity.fetchProfile(this.name).thenApply(profile -> {
-			GameProfile gameProfile = (GameProfile)profile.orElseGet(() -> new GameProfile(Util.NIL_UUID, this.name));
+		return this.isCompleted() ? CompletableFuture.completedFuture(this) : SkullBlockEntity.fetchProfile((String)this.name.orElseThrow()).thenApply(profile -> {
+			GameProfile gameProfile = (GameProfile)profile.orElseGet(() -> new GameProfile(Util.NIL_UUID, (String)this.name.get()));
 			return new ProfileComponent(gameProfile);
 		});
 	}
 
-	private static GameProfile createProfile(String name, Optional<UUID> id, PropertyMap properties) {
-		GameProfile gameProfile = new GameProfile((UUID)id.orElse(Util.NIL_UUID), name);
+	private static GameProfile createProfile(Optional<String> name, Optional<UUID> id, PropertyMap properties) {
+		GameProfile gameProfile = new GameProfile((UUID)id.orElse(Util.NIL_UUID), (String)name.orElse(""));
 		gameProfile.getProperties().putAll(properties);
 		return gameProfile;
 	}
 
 	public boolean isCompleted() {
-		return this.id.isPresent() || !this.properties.isEmpty();
+		return this.id.isPresent() || !this.properties.isEmpty() || this.name.isEmpty();
 	}
 }

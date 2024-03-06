@@ -38,7 +38,6 @@ public class SuspiciousStewItem extends Item {
 
 	@Override
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		ItemStack itemStack = super.finishUsing(stack, world, user);
 		SuspiciousStewEffectsComponent suspiciousStewEffectsComponent = stack.getOrDefault(
 			DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffectsComponent.DEFAULT
 		);
@@ -47,6 +46,7 @@ public class SuspiciousStewItem extends Item {
 			user.addStatusEffect(stewEffect.createStatusEffectInstance());
 		}
 
-		return user.isInCreativeMode() ? itemStack : new ItemStack(Items.BOWL);
+		super.finishUsing(stack, world, user);
+		return user.isInCreativeMode() ? stack : new ItemStack(Items.BOWL);
 	}
 }

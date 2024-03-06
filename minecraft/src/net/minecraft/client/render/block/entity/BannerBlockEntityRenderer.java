@@ -21,6 +21,7 @@ import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.BannerPatternsComponent;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -56,7 +57,6 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 	}
 
 	public void render(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-		BannerPatternsComponent bannerPatternsComponent = bannerBlockEntity.getPatterns();
 		float g = 0.6666667F;
 		boolean bl = bannerBlockEntity.getWorld() == null;
 		matrixStack.push();
@@ -91,7 +91,9 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
 		this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
 		this.banner.pivotY = -32.0F;
-		renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, bannerPatternsComponent);
+		renderCanvas(
+			matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, bannerBlockEntity.getColorForState(), bannerBlockEntity.getPatterns()
+		);
 		matrixStack.pop();
 		matrixStack.pop();
 	}
@@ -104,9 +106,10 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		ModelPart canvas,
 		SpriteIdentifier baseSprite,
 		boolean isBanner,
-		BannerPatternsComponent bannerPatternsComponent
+		DyeColor color,
+		BannerPatternsComponent patterns
 	) {
-		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, bannerPatternsComponent, false);
+		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, color, patterns, false);
 	}
 
 	public static void renderCanvas(
@@ -117,20 +120,26 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		ModelPart canvas,
 		SpriteIdentifier baseSprite,
 		boolean isBanner,
-		BannerPatternsComponent bannerPatternsComponent,
+		DyeColor color,
+		BannerPatternsComponent patterns,
 		boolean glint
 	) {
 		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
+		renderLayer(matrices, vertexConsumers, light, overlay, canvas, isBanner ? TexturedRenderLayers.BANNER_BASE : TexturedRenderLayers.SHIELD_BASE, color);
 
-		for (int i = 0; i < 17 && i < bannerPatternsComponent.layers().size(); i++) {
-			BannerPatternsComponent.Layer layer = (BannerPatternsComponent.Layer)bannerPatternsComponent.layers().get(i);
-			float[] fs = layer.color().getColorComponents();
-			layer.pattern()
-				.getKey()
-				.map(key -> isBanner ? TexturedRenderLayers.getBannerPatternTextureId(key) : TexturedRenderLayers.getShieldPatternTextureId(key))
-				.ifPresent(
-					sprite -> canvas.render(matrices, sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0F)
-				);
+		for (int i = 0; i < 16 && i < patterns.layers().size(); i++) {
+			BannerPatternsComponent.Layer layer = (BannerPatternsComponent.Layer)patterns.layers().get(i);
+			SpriteIdentifier spriteIdentifier = isBanner
+				? TexturedRenderLayers.getBannerPatternTextureId(layer.pattern())
+				: TexturedRenderLayers.getShieldPatternTextureId(layer.pattern());
+			renderLayer(matrices, vertexConsumers, light, overlay, canvas, spriteIdentifier, layer.color());
 		}
+	}
+
+	private static void renderLayer(
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, ModelPart canvas, SpriteIdentifier textureId, DyeColor color
+	) {
+		float[] fs = color.getColorComponents();
+		canvas.render(matrices, textureId.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0F);
 	}
 }

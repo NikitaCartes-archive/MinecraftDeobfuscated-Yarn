@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import com.mojang.logging.LogUtils;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,19 +20,23 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.slf4j.Logger;
 
 public class SkullBlockEntity extends BlockEntity {
-	private static final String SKULL_OWNER_KEY = "SkullOwner";
-	private static final String NOTE_BLOCK_SOUND_KEY = "note_block_sound";
+	private static final String PROFILE_NBT_KEY = "profile";
+	private static final String NOTE_BLOCK_SOUND_NBT_KEY = "note_block_sound";
+	private static final String CUSTOM_NAME_NBT_KEY = "custom_name";
+	private static final Logger LOGGER = LogUtils.getLogger();
 	@Nullable
 	private static Executor currentExecutor;
 	@Nullable
@@ -43,11 +48,13 @@ public class SkullBlockEntity extends BlockEntity {
 		}
 	};
 	@Nullable
-	private GameProfile owner;
+	private ProfileComponent owner;
 	@Nullable
 	private Identifier noteBlockSound;
 	private int poweredTicks;
 	private boolean powered;
+	@Nullable
+	private Text customName;
 
 	public SkullBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.SKULL, pos, state);
@@ -91,30 +98,36 @@ public class SkullBlockEntity extends BlockEntity {
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		if (this.owner != null) {
-			NbtCompound nbtCompound = new NbtCompound();
-			NbtHelper.writeGameProfile(nbtCompound, this.owner);
-			nbt.put("SkullOwner", nbtCompound);
+			nbt.put("profile", Util.getResult(ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.owner), IllegalStateException::new));
 		}
 
 		if (this.noteBlockSound != null) {
 			nbt.putString("note_block_sound", this.noteBlockSound.toString());
+		}
+
+		if (this.customName != null) {
+			nbt.putString("custom_name", Text.Serialization.toJsonString(this.customName, registryLookup));
 		}
 	}
 
 	@Override
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
-		if (nbt.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
-			this.setOwner(NbtHelper.toGameProfile(nbt.getCompound("SkullOwner")));
-		} else if (nbt.contains("ExtraType", NbtElement.STRING_TYPE)) {
-			String string = nbt.getString("ExtraType");
-			if (!StringHelper.isEmpty(string)) {
-				this.setOwner(new GameProfile(Util.NIL_UUID, string));
-			}
+		if (nbt.contains("profile")) {
+			ProfileComponent.CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("profile"))
+				.resultOrPartial(string -> LOGGER.error("Failed to load profile from player head: {}", string))
+				.ifPresent(this::setOwner);
 		}
 
 		if (nbt.contains("note_block_sound", NbtElement.STRING_TYPE)) {
 			this.noteBlockSound = Identifier.tryParse(nbt.getString("note_block_sound"));
+		}
+
+		if (nbt.contains("custom_name", NbtElement.STRING_TYPE)) {
+			this.customName = Text.Serialization.fromJson(nbt.getString("custom_name"), registryLookup);
+		} else {
+			this.customName = null;
 		}
 	}
 
@@ -132,7 +145,7 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Nullable
-	public GameProfile getOwner() {
+	public ProfileComponent getOwner() {
 		return this.owner;
 	}
 
@@ -150,18 +163,18 @@ public class SkullBlockEntity extends BlockEntity {
 		return this.createNbt(registryLookup);
 	}
 
-	public void setOwner(@Nullable GameProfile owner) {
+	public void setOwner(@Nullable ProfileComponent profile) {
 		synchronized (this) {
-			this.owner = owner;
+			this.owner = profile;
 		}
 
 		this.loadOwnerProperties();
 	}
 
 	private void loadOwnerProperties() {
-		if (this.owner != null && !StringHelper.isBlank(this.owner.getName()) && !hasTextures(this.owner)) {
-			fetchProfile(this.owner.getName()).thenAcceptAsync(profile -> {
-				this.owner = (GameProfile)profile.orElse(this.owner);
+		if (this.owner != null && !this.owner.isCompleted()) {
+			this.owner.getFuture().thenAcceptAsync(owner -> {
+				this.owner = owner;
 				this.markDirty();
 			}, EXECUTOR);
 		} else {
@@ -174,30 +187,25 @@ public class SkullBlockEntity extends BlockEntity {
 		return loadingCache != null && StringHelper.isValidPlayerName(name) ? loadingCache.getUnchecked(name) : CompletableFuture.completedFuture(Optional.empty());
 	}
 
-	private static boolean hasTextures(GameProfile profile) {
-		return profile.getProperties().containsKey("textures");
-	}
-
 	@Override
 	public void readComponents(ComponentMap components) {
-		ProfileComponent profileComponent = components.get(DataComponentTypes.PROFILE);
-		this.setOwner(profileComponent != null ? profileComponent.gameProfile() : null);
+		this.setOwner(components.get(DataComponentTypes.PROFILE));
 		this.noteBlockSound = components.get(DataComponentTypes.NOTE_BLOCK_SOUND);
+		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
 	}
 
 	@Override
 	public void addComponents(ComponentMap.Builder componentMapBuilder) {
-		if (this.owner != null) {
-			componentMapBuilder.add(DataComponentTypes.PROFILE, new ProfileComponent(this.owner));
-		}
-
+		componentMapBuilder.add(DataComponentTypes.PROFILE, this.owner);
 		componentMapBuilder.add(DataComponentTypes.NOTE_BLOCK_SOUND, this.noteBlockSound);
+		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 	}
 
 	@Override
 	public void removeFromCopiedStackNbt(NbtCompound nbt) {
 		super.removeFromCopiedStackNbt(nbt);
-		nbt.remove("SkullOwner");
+		nbt.remove("profile");
 		nbt.remove("note_block_sound");
+		nbt.remove("custom_name");
 	}
 }

@@ -110,7 +110,7 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 	/**
 	 * A direct registry entry list that holds the values directly, instead of using tags.
 	 */
-	public static class Direct<T> extends RegistryEntryList.ListBacked<T> {
+	public static final class Direct<T> extends RegistryEntryList.ListBacked<T> {
 		private final List<RegistryEntry<T>> entries;
 		@Nullable
 		private Set<RegistryEntry<T>> entrySet;
@@ -145,6 +145,22 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 
 		public String toString() {
 			return "DirectSet[" + this.entries + "]";
+		}
+
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			} else {
+				if (o instanceof RegistryEntryList.Direct<?> direct && this.entries.equals(direct.entries)) {
+					return true;
+				}
+
+				return false;
+			}
+		}
+
+		public int hashCode() {
+			return this.entries.hashCode();
 		}
 	}
 

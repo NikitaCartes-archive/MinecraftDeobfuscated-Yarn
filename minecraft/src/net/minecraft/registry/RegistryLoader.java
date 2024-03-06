@@ -20,7 +20,9 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.damage.DamageType;
+import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.nbt.NbtElement;
@@ -78,8 +80,10 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPreset.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterList.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterList.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC)
 	);
 	public static final List<RegistryLoader.Entry<?>> DIMENSION_REGISTRIES = List.of(new RegistryLoader.Entry<>(RegistryKeys.DIMENSION, DimensionOptions.CODEC));
 	public static final List<RegistryLoader.Entry<?>> SYNCED_REGISTRIES = List.of(
@@ -87,8 +91,10 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.MESSAGE_TYPE, MessageType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC)
 	);
 
 	public static DynamicRegistryManager.Immutable loadFromResource(

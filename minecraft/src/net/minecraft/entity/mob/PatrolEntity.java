@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -73,7 +74,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		if (this.isPatrolLeader()) {
-			this.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
+			this.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
 			this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 		}
 

@@ -36,7 +36,8 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 	private static final Text NONE_TEXT = Text.translatable("effect.none").formatted(Formatting.GRAY);
 	private static final int UNCRAFTABLE_COLOR = 16253176;
 	private static final int EFFECTLESS_COLOR = 3694022;
-	public static final Codec<PotionContentsComponent> CODEC = RecordCodecBuilder.create(
+	public static final int field_49748 = -1;
+	private static final Codec<PotionContentsComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(Registries.POTION.getEntryCodec(), "potion").forGetter(PotionContentsComponent::potion),
 					Codecs.createStrictOptionalFieldCodec(Codec.INT, "custom_color").forGetter(PotionContentsComponent::customColor),
@@ -44,6 +45,7 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 				)
 				.apply(instance, PotionContentsComponent::new)
 	);
+	public static final Codec<PotionContentsComponent> CODEC = Codecs.either(BASE_CODEC, Registries.POTION.getEntryCodec(), PotionContentsComponent::new);
 	public static final PacketCodec<RegistryByteBuf, PotionContentsComponent> PACKET_CODEC = PacketCodec.tuple(
 		PacketCodecs.registryEntry(RegistryKeys.POTION).collect(PacketCodecs::optional),
 		PotionContentsComponent::potion,
@@ -115,23 +117,28 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 	}
 
 	public static int getColor(Iterable<StatusEffectInstance> effects) {
-		float f = 0.0F;
-		float g = 0.0F;
-		float h = 0.0F;
+		int i = mixColors(effects);
+		return i == -1 ? 3694022 : i;
+	}
+
+	public static int mixColors(Iterable<StatusEffectInstance> effects) {
 		int i = 0;
+		int j = 0;
+		int k = 0;
+		int l = 0;
 
 		for (StatusEffectInstance statusEffectInstance : effects) {
 			if (statusEffectInstance.shouldShowParticles()) {
-				int j = statusEffectInstance.getEffectType().value().getColor();
-				int k = statusEffectInstance.getAmplifier() + 1;
-				f += (float)(k * ColorHelper.Argb.getRed(j)) / 255.0F;
-				g += (float)(k * ColorHelper.Argb.getGreen(j)) / 255.0F;
-				h += (float)(k * ColorHelper.Argb.getBlue(j)) / 255.0F;
-				i += k;
+				int m = statusEffectInstance.getEffectType().value().getColor();
+				int n = statusEffectInstance.getAmplifier() + 1;
+				i += n * ColorHelper.Argb.getRed(m);
+				j += n * ColorHelper.Argb.getGreen(m);
+				k += n * ColorHelper.Argb.getBlue(m);
+				l += n;
 			}
 		}
 
-		return i == 0 ? 3694022 : ColorHelper.Argb.getArgb(0, (int)(f / (float)i * 255.0F), (int)(g / (float)i * 255.0F), (int)(h / (float)i * 255.0F));
+		return l == 0 ? -1 : ColorHelper.Argb.getArgb(0, i / l, j / l, k / l);
 	}
 
 	public boolean hasEffects() {
@@ -176,19 +183,19 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 
 			for (Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier> pair : list) {
 				EntityAttributeModifier entityAttributeModifier = pair.getSecond();
-				double d = entityAttributeModifier.getValue();
+				double d = entityAttributeModifier.value();
 				double e;
-				if (entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
-					&& entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
-					e = entityAttributeModifier.getValue();
+				if (entityAttributeModifier.operation() != EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
+					&& entityAttributeModifier.operation() != EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
+					e = entityAttributeModifier.value();
 				} else {
-					e = entityAttributeModifier.getValue() * 100.0;
+					e = entityAttributeModifier.value() * 100.0;
 				}
 
 				if (d > 0.0) {
 					textConsumer.accept(
 						Text.translatable(
-								"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
+								"attribute.modifier.plus." + entityAttributeModifier.operation().getId(),
 								AttributeModifiersComponent.DECIMAL_FORMAT.format(e),
 								Text.translatable(pair.getFirst().value().getTranslationKey())
 							)
@@ -198,7 +205,7 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 					e *= -1.0;
 					textConsumer.accept(
 						Text.translatable(
-								"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
+								"attribute.modifier.take." + entityAttributeModifier.operation().getId(),
 								AttributeModifiersComponent.DECIMAL_FORMAT.format(e),
 								Text.translatable(pair.getFirst().value().getTranslationKey())
 							)

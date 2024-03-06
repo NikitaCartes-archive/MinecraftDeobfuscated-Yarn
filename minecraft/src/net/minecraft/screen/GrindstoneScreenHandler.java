@@ -51,13 +51,13 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 		this.addSlot(new Slot(this.input, 0, 49, 19) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.isDamageable() || stack.isOf(Items.ENCHANTED_BOOK) || stack.hasEnchantments();
+				return stack.isDamageable() || EnchantmentHelper.hasEnchantments(stack);
 			}
 		});
 		this.addSlot(new Slot(this.input, 1, 49, 40) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.isDamageable() || stack.isOf(Items.ENCHANTED_BOOK) || stack.hasEnchantments();
+				return stack.isDamageable() || EnchantmentHelper.hasEnchantments(stack);
 			}
 		});
 		this.addSlot(new Slot(this.result, 2, 129, 34) {
@@ -127,81 +127,74 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	}
 
 	private void updateResult() {
-		ItemStack itemStack = this.input.getStack(0);
-		ItemStack itemStack2 = this.input.getStack(1);
-		boolean bl = !itemStack.isEmpty() || !itemStack2.isEmpty();
-		boolean bl2 = !itemStack.isEmpty() && !itemStack2.isEmpty();
-		if (!bl) {
-			this.result.setStack(0, ItemStack.EMPTY);
-		} else {
-			boolean bl3 = !itemStack.isEmpty() && !itemStack.isOf(Items.ENCHANTED_BOOK) && !itemStack.hasEnchantments()
-				|| !itemStack2.isEmpty() && !itemStack2.isOf(Items.ENCHANTED_BOOK) && !itemStack2.hasEnchantments();
-			if (itemStack.getCount() > 1 || itemStack2.getCount() > 1 || !bl2 && bl3) {
-				this.result.setStack(0, ItemStack.EMPTY);
-				this.sendContentUpdates();
-				return;
-			}
-
-			int i = 1;
-			int m;
-			ItemStack itemStack3;
-			if (bl2) {
-				if (!itemStack.isOf(itemStack2.getItem())) {
-					this.result.setStack(0, ItemStack.EMPTY);
-					this.sendContentUpdates();
-					return;
-				}
-
-				Item item = itemStack.getItem();
-				int j = item.getMaxDamage() - itemStack.getDamage();
-				int k = item.getMaxDamage() - itemStack2.getDamage();
-				int l = j + k + item.getMaxDamage() * 5 / 100;
-				m = Math.max(item.getMaxDamage() - l, 0);
-				itemStack3 = this.transferEnchantments(itemStack, itemStack2);
-				if (!itemStack3.isDamageable()) {
-					if (!ItemStack.areEqual(itemStack, itemStack2)) {
-						this.result.setStack(0, ItemStack.EMPTY);
-						this.sendContentUpdates();
-						return;
-					}
-
-					i = 2;
-				}
-			} else {
-				boolean bl4 = !itemStack.isEmpty();
-				m = bl4 ? itemStack.getDamage() : itemStack2.getDamage();
-				itemStack3 = bl4 ? itemStack : itemStack2;
-			}
-
-			this.result.setStack(0, this.grind(itemStack3, m, i));
-		}
-
+		this.result.setStack(0, this.getOutputStack(this.input.getStack(0), this.input.getStack(1)));
 		this.sendContentUpdates();
 	}
 
-	private ItemStack transferEnchantments(ItemStack target, ItemStack source) {
-		ItemStack itemStack = target.copy();
-		EnchantmentHelper.apply(itemStack, builder -> {
+	private ItemStack getOutputStack(ItemStack firstInput, ItemStack secondInput) {
+		boolean bl = !firstInput.isEmpty() || !secondInput.isEmpty();
+		if (!bl) {
+			return ItemStack.EMPTY;
+		} else if (firstInput.getCount() <= 1 && secondInput.getCount() <= 1) {
+			boolean bl2 = !firstInput.isEmpty() && !secondInput.isEmpty();
+			if (!bl2) {
+				ItemStack itemStack = !firstInput.isEmpty() ? firstInput : secondInput;
+				return !EnchantmentHelper.hasEnchantments(itemStack) ? ItemStack.EMPTY : this.grind(itemStack.copy());
+			} else {
+				return this.combineItems(firstInput, secondInput);
+			}
+		} else {
+			return ItemStack.EMPTY;
+		}
+	}
+
+	private ItemStack combineItems(ItemStack firstInput, ItemStack secondInput) {
+		if (!firstInput.isOf(secondInput.getItem())) {
+			return ItemStack.EMPTY;
+		} else {
+			Item item = firstInput.getItem();
+			int i = item.getMaxDamage() - firstInput.getDamage();
+			int j = item.getMaxDamage() - secondInput.getDamage();
+			int k = i + j + item.getMaxDamage() * 5 / 100;
+			int l = Math.max(item.getMaxDamage() - k, 0);
+			int m = 1;
+			if (!firstInput.isDamageable()) {
+				if (firstInput.getMaxCount() < 2 || !ItemStack.areEqual(firstInput, secondInput)) {
+					return ItemStack.EMPTY;
+				}
+
+				m = 2;
+			}
+
+			ItemStack itemStack = firstInput.copyWithCount(m);
+			if (itemStack.isDamageable()) {
+				itemStack.setDamage(l);
+			}
+
+			this.transferEnchantments(firstInput, secondInput);
+			return this.grind(itemStack);
+		}
+	}
+
+	private void transferEnchantments(ItemStack target, ItemStack source) {
+		EnchantmentHelper.apply(target, components -> {
 			ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(source);
 
 			for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
 				Enchantment enchantment = (Enchantment)((RegistryEntry)entry.getKey()).value();
-				if (!enchantment.isCursed() || builder.getLevel(enchantment) == 0) {
-					builder.add(enchantment, entry.getIntValue());
+				if (!enchantment.isCursed() || components.getLevel(enchantment) == 0) {
+					components.add(enchantment, entry.getIntValue());
 				}
 			}
 		});
-		return itemStack;
 	}
 
-	private ItemStack grind(ItemStack item, int damage, int amount) {
-		ItemStack itemStack = item.copyWithCount(amount);
-		itemStack.setDamage(damage);
+	private ItemStack grind(ItemStack item) {
 		ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.apply(
-			itemStack, builder -> builder.remove(enchantment -> !((Enchantment)enchantment.value()).isCursed())
+			item, components -> components.remove(enchantment -> !((Enchantment)enchantment.value()).isCursed())
 		);
-		if (itemStack.isOf(Items.ENCHANTED_BOOK) && itemEnchantmentsComponent.isEmpty()) {
-			itemStack = itemStack.copyComponentsToNewStack(Items.BOOK, amount);
+		if (item.isOf(Items.ENCHANTED_BOOK) && itemEnchantmentsComponent.isEmpty()) {
+			item = item.copyComponentsToNewStack(Items.BOOK, item.getCount());
 		}
 
 		int i = 0;
@@ -210,8 +203,8 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			i = AnvilScreenHandler.getNextCost(i);
 		}
 
-		itemStack.set(DataComponentTypes.REPAIR_COST, i);
-		return itemStack;
+		item.set(DataComponentTypes.REPAIR_COST, i);
+		return item;
 	}
 
 	@Override

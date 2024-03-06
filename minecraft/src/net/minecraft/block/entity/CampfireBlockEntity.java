@@ -5,6 +5,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -191,5 +194,20 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 		if (this.world != null) {
 			this.updateListeners();
 		}
+	}
+
+	@Override
+	public void readComponents(ComponentMap components) {
+		components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyTo(this.getItemsBeingCooked());
+	}
+
+	@Override
+	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.getItemsBeingCooked()));
+	}
+
+	@Override
+	public void removeFromCopiedStackNbt(NbtCompound nbt) {
+		nbt.remove("Items");
 	}
 }

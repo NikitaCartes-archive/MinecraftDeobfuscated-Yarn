@@ -40,7 +40,7 @@ public class UuidArgumentType implements ArgumentType<UUID> {
 			}
 		}
 
-		throw INVALID_UUID.create();
+		throw INVALID_UUID.createWithContext(stringReader);
 	}
 
 	@Override

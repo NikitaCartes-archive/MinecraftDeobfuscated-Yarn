@@ -22,12 +22,15 @@ import net.minecraft.util.dynamic.Codecs;
 
 public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry> modifiers, boolean showInTooltip) {
 	public static final AttributeModifiersComponent DEFAULT = new AttributeModifiersComponent(List.of(), true);
-	public static final Codec<AttributeModifiersComponent> CODEC = RecordCodecBuilder.create(
+	private static final Codec<AttributeModifiersComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					AttributeModifiersComponent.Entry.CODEC.listOf().fieldOf("modifiers").forGetter(AttributeModifiersComponent::modifiers),
 					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(AttributeModifiersComponent::showInTooltip)
 				)
 				.apply(instance, AttributeModifiersComponent::new)
+	);
+	public static final Codec<AttributeModifiersComponent> CODEC = Codecs.either(
+		BASE_CODEC, AttributeModifiersComponent.Entry.CODEC.listOf(), attributeModifiers -> new AttributeModifiersComponent(attributeModifiers, true)
 	);
 	public static final PacketCodec<RegistryByteBuf, AttributeModifiersComponent> PACKET_CODEC = PacketCodec.tuple(
 		AttributeModifiersComponent.Entry.PACKET_CODEC.collect(PacketCodecs.toList()),
@@ -61,12 +64,12 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 
 		for (AttributeModifiersComponent.Entry entry : this.modifiers) {
 			if (entry.slot.matches(slot)) {
-				double e = entry.modifier.getValue();
+				double e = entry.modifier.value();
 
-				d += switch (entry.modifier.getOperation()) {
-					case ADDITION -> e;
-					case MULTIPLY_BASE -> e * base;
-					case MULTIPLY_TOTAL -> e * d;
+				d += switch (entry.modifier.operation()) {
+					case ADD_VALUE -> e;
+					case ADD_MULTIPLIED_BASE -> e * base;
+					case ADD_MULTIPLIED_TOTAL -> e * d;
 				};
 			}
 		}
@@ -94,7 +97,7 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 		public static final Codec<AttributeModifiersComponent.Entry> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Registries.ATTRIBUTE.getEntryCodec().fieldOf("type").forGetter(AttributeModifiersComponent.Entry::attribute),
-						EntityAttributeModifier.field_49232.forGetter(AttributeModifiersComponent.Entry::modifier),
+						EntityAttributeModifier.MAP_CODEC.forGetter(AttributeModifiersComponent.Entry::modifier),
 						Codecs.createStrictOptionalFieldCodec(AttributeModifierSlot.CODEC, "slot", AttributeModifierSlot.ANY).forGetter(AttributeModifiersComponent.Entry::slot)
 					)
 					.apply(instance, AttributeModifiersComponent.Entry::new)
@@ -102,7 +105,7 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 		public static final PacketCodec<RegistryByteBuf, AttributeModifiersComponent.Entry> PACKET_CODEC = PacketCodec.tuple(
 			PacketCodecs.registryEntry(RegistryKeys.ATTRIBUTE),
 			AttributeModifiersComponent.Entry::attribute,
-			EntityAttributeModifier.field_49233,
+			EntityAttributeModifier.PACKET_CODEC,
 			AttributeModifiersComponent.Entry::modifier,
 			AttributeModifierSlot.PACKET_CODEC,
 			AttributeModifiersComponent.Entry::slot,

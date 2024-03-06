@@ -161,6 +161,10 @@ public class DrawContext {
 		this.setScissor(this.scissorStack.pop());
 	}
 
+	public boolean scissorContains(int x, int y) {
+		return this.scissorStack.contains(x, y);
+	}
+
 	private void setScissor(@Nullable ScreenRect rect) {
 		this.drawIfRunning();
 		if (rect != null) {
@@ -748,6 +752,10 @@ public class DrawContext {
 				this.stack.removeLast();
 				return (ScreenRect)this.stack.peekLast();
 			}
+		}
+
+		public boolean contains(int x, int y) {
+			return this.stack.isEmpty() ? true : ((ScreenRect)this.stack.peek()).contains(x, y);
 		}
 	}
 }

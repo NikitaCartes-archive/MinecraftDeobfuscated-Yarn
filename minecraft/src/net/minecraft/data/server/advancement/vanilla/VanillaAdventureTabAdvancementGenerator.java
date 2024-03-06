@@ -33,6 +33,7 @@ import net.minecraft.advancement.criterion.VillagerTradeCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ComparatorBlock;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.block.entity.Sherds;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
@@ -378,10 +379,11 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.rewards(AdvancementRewards.Builder.experience(85))
 			.criterion("arbalistic", KilledByCrossbowCriterion.Conditions.create(NumberRange.IntRange.exactly(5)))
 			.build(exporter, "adventure/arbalistic");
+		RegistryWrapper.Impl<BannerPattern> impl = lookup.getWrapperOrThrow(RegistryKeys.BANNER_PATTERN);
 		AdvancementEntry advancementEntry8 = Advancement.Builder.create()
 			.parent(advancementEntry)
 			.display(
-				Raid.getOminousBanner(),
+				Raid.getOminousBanner(impl),
 				Text.translatable("advancements.adventure.voluntary_exile.title"),
 				Text.translatable("advancements.adventure.voluntary_exile.description"),
 				null,
@@ -393,14 +395,14 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"voluntary_exile",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityTypeTags.RAIDERS).equipment(EntityEquipmentPredicate.OMINOUS_BANNER_ON_HEAD)
+					EntityPredicate.Builder.create().type(EntityTypeTags.RAIDERS).equipment(EntityEquipmentPredicate.ominousBannerOnHead(impl))
 				)
 			)
 			.build(exporter, "adventure/voluntary_exile");
 		Advancement.Builder.create()
 			.parent(advancementEntry8)
 			.display(
-				Raid.getOminousBanner(),
+				Raid.getOminousBanner(impl),
 				Text.translatable("advancements.adventure.hero_of_the_village.title"),
 				Text.translatable("advancements.adventure.hero_of_the_village.description"),
 				null,

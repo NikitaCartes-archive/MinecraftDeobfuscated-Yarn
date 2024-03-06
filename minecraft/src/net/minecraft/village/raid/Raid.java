@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
@@ -39,6 +40,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -596,17 +599,17 @@ public class Raid {
 		this.world.getRaidManager().markDirty();
 	}
 
-	public static ItemStack getOminousBanner() {
+	public static ItemStack getOminousBanner(RegistryEntryLookup<BannerPattern> bannerPatternLookup) {
 		ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
 		BannerPatternsComponent bannerPatternsComponent = new BannerPatternsComponent.Builder()
-			.add(BannerPatterns.RHOMBUS, DyeColor.CYAN)
-			.add(BannerPatterns.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
-			.add(BannerPatterns.STRIPE_CENTER, DyeColor.GRAY)
-			.add(BannerPatterns.BORDER, DyeColor.LIGHT_GRAY)
-			.add(BannerPatterns.STRIPE_MIDDLE, DyeColor.BLACK)
-			.add(BannerPatterns.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY)
-			.add(BannerPatterns.CIRCLE, DyeColor.LIGHT_GRAY)
-			.add(BannerPatterns.BORDER, DyeColor.BLACK)
+			.add(bannerPatternLookup, BannerPatterns.RHOMBUS, DyeColor.CYAN)
+			.add(bannerPatternLookup, BannerPatterns.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
+			.add(bannerPatternLookup, BannerPatterns.STRIPE_CENTER, DyeColor.GRAY)
+			.add(bannerPatternLookup, BannerPatterns.BORDER, DyeColor.LIGHT_GRAY)
+			.add(bannerPatternLookup, BannerPatterns.STRIPE_MIDDLE, DyeColor.BLACK)
+			.add(bannerPatternLookup, BannerPatterns.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY)
+			.add(bannerPatternLookup, BannerPatterns.CIRCLE, DyeColor.LIGHT_GRAY)
+			.add(bannerPatternLookup, BannerPatterns.BORDER, DyeColor.BLACK)
 			.build();
 		itemStack.set(DataComponentTypes.BANNER_PATTERNS, bannerPatternsComponent);
 		itemStack.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
@@ -680,7 +683,7 @@ public class Raid {
 
 	public void setWaveCaptain(int wave, RaiderEntity entity) {
 		this.waveToCaptain.put(wave, entity);
-		entity.equipStack(EquipmentSlot.HEAD, getOminousBanner());
+		entity.equipStack(EquipmentSlot.HEAD, getOminousBanner(entity.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
 		entity.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 	}
 

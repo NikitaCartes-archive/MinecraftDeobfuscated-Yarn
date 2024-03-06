@@ -978,6 +978,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 											CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY)
 												.add(DataComponentTypes.PROFILE)
 												.add(DataComponentTypes.NOTE_BLOCK_SOUND)
+												.add(DataComponentTypes.CUSTOM_NAME)
 										)
 								)
 						)

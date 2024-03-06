@@ -108,6 +108,8 @@ public final class ComponentMapImpl implements ComponentMap {
 			}
 		} else if (object != null) {
 			this.changedComponents.put(type, Optional.empty());
+		} else {
+			this.changedComponents.remove(type);
 		}
 	}
 

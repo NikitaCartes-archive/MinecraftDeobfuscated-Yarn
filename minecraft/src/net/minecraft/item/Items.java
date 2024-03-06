@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.Sherds;
@@ -322,7 +323,9 @@ public class Items {
 	public static final Item SMOOTH_STONE = register(Blocks.SMOOTH_STONE);
 	public static final Item BRICKS = register(Blocks.BRICKS);
 	public static final Item BOOKSHELF = register(Blocks.BOOKSHELF);
-	public static final Item CHISELED_BOOKSHELF = register(Blocks.CHISELED_BOOKSHELF);
+	public static final Item CHISELED_BOOKSHELF = register(
+		Blocks.CHISELED_BOOKSHELF, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)
+	);
 	public static final Item DECORATED_POT = register(
 		new BlockItem(Blocks.DECORATED_POT, new Item.Settings().component(DataComponentTypes.POT_DECORATIONS, Sherds.DEFAULT))
 	);
@@ -336,10 +339,10 @@ public class Items {
 	public static final Item PURPUR_PILLAR = register(Blocks.PURPUR_PILLAR);
 	public static final Item PURPUR_STAIRS = register(Blocks.PURPUR_STAIRS);
 	public static final Item SPAWNER = register(Blocks.SPAWNER);
-	public static final Item CHEST = register(Blocks.CHEST);
+	public static final Item CHEST = register(Blocks.CHEST, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item CRAFTING_TABLE = register(Blocks.CRAFTING_TABLE);
 	public static final Item FARMLAND = register(Blocks.FARMLAND);
-	public static final Item FURNACE = register(Blocks.FURNACE);
+	public static final Item FURNACE = register(Blocks.FURNACE, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item LADDER = register(Blocks.LADDER);
 	public static final Item COBBLESTONE_STAIRS = register(Blocks.COBBLESTONE_STAIRS);
 	public static final Item SNOW = register(Blocks.SNOW);
@@ -420,7 +423,7 @@ public class Items {
 	public static final Item END_STONE_BRICKS = register(Blocks.END_STONE_BRICKS);
 	public static final Item DRAGON_EGG = register(new BlockItem(Blocks.DRAGON_EGG, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item SANDSTONE_STAIRS = register(Blocks.SANDSTONE_STAIRS);
-	public static final Item ENDER_CHEST = register(Blocks.ENDER_CHEST);
+	public static final Item ENDER_CHEST = register(Blocks.ENDER_CHEST, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item EMERALD_BLOCK = register(Blocks.EMERALD_BLOCK);
 	public static final Item OAK_STAIRS = register(Blocks.OAK_STAIRS);
 	public static final Item SPRUCE_STAIRS = register(Blocks.SPRUCE_STAIRS);
@@ -762,9 +765,9 @@ public class Items {
 	public static final Item SLIME_BLOCK = register(Blocks.SLIME_BLOCK);
 	public static final Item HONEY_BLOCK = register(Blocks.HONEY_BLOCK);
 	public static final Item OBSERVER = register(Blocks.OBSERVER);
-	public static final Item HOPPER = register(Blocks.HOPPER);
-	public static final Item DISPENSER = register(Blocks.DISPENSER);
-	public static final Item DROPPER = register(Blocks.DROPPER);
+	public static final Item HOPPER = register(Blocks.HOPPER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
+	public static final Item DISPENSER = register(Blocks.DISPENSER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
+	public static final Item DROPPER = register(Blocks.DROPPER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item LECTERN = register(Blocks.LECTERN);
 	public static final Item TARGET = register(Blocks.TARGET);
 	public static final Item LEVER = register(Blocks.LEVER);
@@ -773,7 +776,9 @@ public class Items {
 	public static final Item SCULK_SENSOR = register(Blocks.SCULK_SENSOR);
 	public static final Item CALIBRATED_SCULK_SENSOR = register(Blocks.CALIBRATED_SCULK_SENSOR);
 	public static final Item TRIPWIRE_HOOK = register(Blocks.TRIPWIRE_HOOK);
-	public static final Item TRAPPED_CHEST = register(Blocks.TRAPPED_CHEST);
+	public static final Item TRAPPED_CHEST = register(
+		Blocks.TRAPPED_CHEST, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)
+	);
 	public static final Item TNT = register(Blocks.TNT);
 	public static final Item REDSTONE_LAMP = register(Blocks.REDSTONE_LAMP);
 	public static final Item NOTE_BLOCK = register(Blocks.NOTE_BLOCK);
@@ -1317,7 +1322,7 @@ public class Items {
 	public static final Item RED_BED = register(new BedItem(Blocks.RED_BED, new Item.Settings().maxCount(1)));
 	public static final Item BLACK_BED = register(new BedItem(Blocks.BLACK_BED, new Item.Settings().maxCount(1)));
 	public static final Item COOKIE = register("cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)));
-	public static final Item CRAFTER = register(new BlockItem(Blocks.CRAFTER, new Item.Settings()));
+	public static final Item CRAFTER = register(Blocks.CRAFTER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item FILLED_MAP = register(
 		"filled_map",
 		new FilledMapItem(
@@ -1349,7 +1354,9 @@ public class Items {
 	public static final Item FERMENTED_SPIDER_EYE = register("fermented_spider_eye", new Item(new Item.Settings()));
 	public static final Item BLAZE_POWDER = register("blaze_powder", new Item(new Item.Settings()));
 	public static final Item MAGMA_CREAM = register("magma_cream", new Item(new Item.Settings()));
-	public static final Item BREWING_STAND = register(Blocks.BREWING_STAND);
+	public static final Item BREWING_STAND = register(
+		Blocks.BREWING_STAND, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)
+	);
 	public static final Item CAULDRON = register(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
 	public static final Item ENDER_EYE = register("ender_eye", new EnderEyeItem(new Item.Settings()));
 	public static final Item GLISTERING_MELON_SLICE = register("glistering_melon_slice", new Item(new Item.Settings()));
@@ -1804,9 +1811,11 @@ public class Items {
 	);
 	public static final Item GOAT_HORN = register("goat_horn", new GoatHornItem(new Item.Settings().maxCount(1), InstrumentTags.GOAT_HORNS));
 	public static final Item COMPOSTER = register(Blocks.COMPOSTER);
-	public static final Item BARREL = register(Blocks.BARREL);
-	public static final Item SMOKER = register(Blocks.SMOKER);
-	public static final Item BLAST_FURNACE = register(Blocks.BLAST_FURNACE);
+	public static final Item BARREL = register(Blocks.BARREL, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
+	public static final Item SMOKER = register(Blocks.SMOKER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
+	public static final Item BLAST_FURNACE = register(
+		Blocks.BLAST_FURNACE, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)
+	);
 	public static final Item CARTOGRAPHY_TABLE = register(Blocks.CARTOGRAPHY_TABLE);
 	public static final Item FLETCHING_TABLE = register(Blocks.FLETCHING_TABLE);
 	public static final Item GRINDSTONE = register(Blocks.GRINDSTONE);
@@ -1821,8 +1830,10 @@ public class Items {
 	public static final Item GLOW_BERRIES = register(
 		"glow_berries", new AliasedBlockItem(Blocks.CAVE_VINES, new Item.Settings().food(FoodComponents.GLOW_BERRIES))
 	);
-	public static final Item CAMPFIRE = register(Blocks.CAMPFIRE);
-	public static final Item SOUL_CAMPFIRE = register(Blocks.SOUL_CAMPFIRE);
+	public static final Item CAMPFIRE = register(Blocks.CAMPFIRE, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
+	public static final Item SOUL_CAMPFIRE = register(
+		Blocks.SOUL_CAMPFIRE, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)
+	);
 	public static final Item SHROOMLIGHT = register(Blocks.SHROOMLIGHT);
 	public static final Item HONEYCOMB = register("honeycomb", new HoneycombItem(new Item.Settings()));
 	public static final Item BEE_NEST = register(new BlockItem(Blocks.BEE_NEST, new Item.Settings().component(DataComponentTypes.BEES, List.of())));
@@ -1943,6 +1954,10 @@ public class Items {
 
 	public static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));
+	}
+
+	public static Item register(Block block, UnaryOperator<Item.Settings> settingsOperator) {
+		return register(new BlockItem(block, (Item.Settings)settingsOperator.apply(new Item.Settings())));
 	}
 
 	public static Item register(Block block, Block... blocks) {

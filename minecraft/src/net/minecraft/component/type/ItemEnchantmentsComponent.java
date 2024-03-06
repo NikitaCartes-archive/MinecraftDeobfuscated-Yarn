@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.Enchantment;
@@ -23,13 +24,18 @@ import net.minecraft.util.dynamic.Codecs;
 public class ItemEnchantmentsComponent implements TooltipAppender {
 	public static final ItemEnchantmentsComponent DEFAULT = new ItemEnchantmentsComponent(new Object2IntLinkedOpenHashMap<>(), true);
 	private static final Codec<Integer> ENCHANTMENT_LEVEL_CODEC = Codec.intRange(0, 255);
-	public static final Codec<ItemEnchantmentsComponent> CODEC = RecordCodecBuilder.create(
+	private static final Codec<Object2IntLinkedOpenHashMap<RegistryEntry<Enchantment>>> INLINE_CODEC = Codec.unboundedMap(
+			Registries.ENCHANTMENT.getEntryCodec(), ENCHANTMENT_LEVEL_CODEC
+		)
+		.xmap(Object2IntLinkedOpenHashMap::new, Function.identity());
+	private static final Codec<ItemEnchantmentsComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.unboundedMap(Registries.ENCHANTMENT.getEntryCodec(), ENCHANTMENT_LEVEL_CODEC).fieldOf("levels").forGetter(component -> component.enchantments),
+					INLINE_CODEC.fieldOf("levels").forGetter(component -> component.enchantments),
 					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(component -> component.showInTooltip)
 				)
-				.apply(instance, (enchantments, showInTooltip) -> new ItemEnchantmentsComponent(new Object2IntLinkedOpenHashMap<>(enchantments), showInTooltip))
+				.apply(instance, ItemEnchantmentsComponent::new)
 	);
+	public static final Codec<ItemEnchantmentsComponent> CODEC = Codecs.either(BASE_CODEC, INLINE_CODEC, map -> new ItemEnchantmentsComponent(map, true));
 	public static final PacketCodec<RegistryByteBuf, ItemEnchantmentsComponent> PACKET_CODEC = PacketCodec.tuple(
 		PacketCodecs.map(Object2IntLinkedOpenHashMap::new, PacketCodecs.registryEntry(RegistryKeys.ENCHANTMENT), PacketCodecs.VAR_INT),
 		component -> component.enchantments,

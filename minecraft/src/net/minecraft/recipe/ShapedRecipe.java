@@ -95,7 +95,7 @@ public class ShapedRecipe implements CraftingRecipe {
 						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
 						CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(recipe -> recipe.category),
 						RawShapedRecipe.CODEC.forGetter(recipe -> recipe.raw),
-						ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+						ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
 						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_notification", true).forGetter(recipe -> recipe.showNotification)
 					)
 					.apply(instance, ShapedRecipe::new)

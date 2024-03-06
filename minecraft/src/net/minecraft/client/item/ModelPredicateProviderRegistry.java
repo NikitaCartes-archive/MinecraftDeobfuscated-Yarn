@@ -11,7 +11,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.component.type.CustomModelDataComponent;
-import net.minecraft.component.type.LodestoneTargetComponent;
+import net.minecraft.component.type.LodestoneTrackerComponent;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -155,8 +155,8 @@ public class ModelPredicateProviderRegistry {
 			}
 		});
 		register(Items.COMPASS, new Identifier("angle"), new CompassAnglePredicateProvider((world, stack, entity) -> {
-			LodestoneTargetComponent lodestoneTargetComponent = stack.get(DataComponentTypes.LODESTONE_TARGET);
-			return lodestoneTargetComponent != null ? lodestoneTargetComponent.pos() : CompassItem.createSpawnPos(world);
+			LodestoneTrackerComponent lodestoneTrackerComponent = stack.get(DataComponentTypes.LODESTONE_TRACKER);
+			return lodestoneTrackerComponent != null ? (GlobalPos)lodestoneTrackerComponent.target().orElse(null) : CompassItem.createSpawnPos(world);
 		}));
 		register(
 			Items.RECOVERY_COMPASS,

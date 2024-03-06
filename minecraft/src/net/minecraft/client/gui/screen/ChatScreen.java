@@ -32,7 +32,7 @@ public class ChatScreen extends Screen {
 	private static final Text USAGE_TEXT = Text.translatable("chat_screen.usage");
 	private static final int MAX_INDICATOR_TOOLTIP_WIDTH = 210;
 	private String chatLastMessage = "";
-	private int messageHistorySize = -1;
+	private int messageHistoryIndex = -1;
 	protected TextFieldWidget chatField;
 	private String originalChatText;
 	ChatInputSuggestor chatInputSuggestor;
@@ -44,7 +44,7 @@ public class ChatScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size();
+		this.messageHistoryIndex = this.client.inGameHud.getChatHud().getMessageHistory().size();
 		this.chatField = new TextFieldWidget(this.client.advanceValidatingTextRenderer, 4, this.height - 12, this.width - 4, 12, Text.translatable("chat.editBox")) {
 			@Override
 			protected MutableText getNarrationMessage() {
@@ -163,21 +163,21 @@ public class ChatScreen extends Screen {
 	}
 
 	public void setChatFromHistory(int offset) {
-		int i = this.messageHistorySize + offset;
+		int i = this.messageHistoryIndex + offset;
 		int j = this.client.inGameHud.getChatHud().getMessageHistory().size();
 		i = MathHelper.clamp(i, 0, j);
-		if (i != this.messageHistorySize) {
+		if (i != this.messageHistoryIndex) {
 			if (i == j) {
-				this.messageHistorySize = j;
+				this.messageHistoryIndex = j;
 				this.chatField.setText(this.chatLastMessage);
 			} else {
-				if (this.messageHistorySize == j) {
+				if (this.messageHistoryIndex == j) {
 					this.chatLastMessage = this.chatField.getText();
 				}
 
 				this.chatField.setText(this.client.inGameHud.getChatHud().getMessageHistory().get(i));
 				this.chatInputSuggestor.setWindowActive(false);
-				this.messageHistorySize = i;
+				this.messageHistoryIndex = i;
 			}
 		}
 	}

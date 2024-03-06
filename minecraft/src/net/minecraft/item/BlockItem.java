@@ -2,7 +2,6 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -209,16 +208,6 @@ public class BlockItem extends Item {
 		if (containerComponent != null) {
 			ItemUsage.spawnItemContents(entity, containerComponent.stream());
 		}
-	}
-
-	public static void setBlockEntityData(ItemStack stack, BlockEntityType<?> type, Consumer<NbtCompound> setter) {
-		NbtComponent.set(DataComponentTypes.BLOCK_ENTITY_DATA, stack, nbt -> {
-			setter.accept(nbt);
-			nbt.remove("id");
-			if (!nbt.isEmpty()) {
-				BlockEntity.writeIdToNbt(nbt, type);
-			}
-		});
 	}
 
 	public static void setBlockEntityData(ItemStack stack, BlockEntityType<?> type, NbtCompound nbt) {

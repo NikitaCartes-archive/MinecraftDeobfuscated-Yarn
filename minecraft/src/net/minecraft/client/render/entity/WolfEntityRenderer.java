@@ -13,10 +13,6 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
-	private static final Identifier WILD_TEXTURE = new Identifier("textures/entity/wolf/wolf.png");
-	private static final Identifier TAMED_TEXTURE = new Identifier("textures/entity/wolf/wolf_tame.png");
-	private static final Identifier ANGRY_TEXTURE = new Identifier("textures/entity/wolf/wolf_angry.png");
-
 	public WolfEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WolfEntityModel<>(context.getPart(EntityModelLayers.WOLF)), 0.5F);
 		this.addFeature(new WolfArmorFeatureRenderer(this, context.getModelLoader()));
@@ -40,10 +36,6 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 	}
 
 	public Identifier getTexture(WolfEntity wolfEntity) {
-		if (wolfEntity.isTamed()) {
-			return TAMED_TEXTURE;
-		} else {
-			return wolfEntity.hasAngerTime() ? ANGRY_TEXTURE : WILD_TEXTURE;
-		}
+		return wolfEntity.getTextureId();
 	}
 }

@@ -67,7 +67,7 @@ import net.minecraft.world.WorldEvents;
 public class ZombieEntity extends HostileEntity {
 	private static final UUID BABY_SPEED_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
 	private static final EntityAttributeModifier BABY_SPEED_BONUS = new EntityAttributeModifier(
-		BABY_SPEED_ID, "Baby speed boost", 0.5, EntityAttributeModifier.Operation.MULTIPLY_BASE
+		BABY_SPEED_ID, "Baby speed boost", 0.5, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 	);
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	/**
@@ -179,7 +179,7 @@ public class ZombieEntity extends HostileEntity {
 		this.getDataTracker().set(BABY, baby);
 		if (this.getWorld() != null && !this.getWorld().isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-			entityAttributeInstance.removeModifier(BABY_SPEED_BONUS.getId());
+			entityAttributeInstance.removeModifier(BABY_SPEED_BONUS.uuid());
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BONUS);
 			}
@@ -312,9 +312,9 @@ public class ZombieEntity extends HostileEntity {
 							zombieEntity.initialize(serverWorld, this.getWorld().getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null);
 							serverWorld.spawnEntityAndPassengers(zombieEntity);
 							this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
-								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement caller charge", -0.05F, EntityAttributeModifier.Operation.ADDITION));
+								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement caller charge", -0.05F, EntityAttributeModifier.Operation.ADD_VALUE));
 							zombieEntity.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
-								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement callee charge", -0.05F, EntityAttributeModifier.Operation.ADDITION));
+								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement callee charge", -0.05F, EntityAttributeModifier.Operation.ADD_VALUE));
 							break;
 						}
 					}
@@ -499,21 +499,21 @@ public class ZombieEntity extends HostileEntity {
 	protected void applyAttributeModifiers(float chanceMultiplier) {
 		this.initAttributes();
 		this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
-			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADDITION));
+			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADD_VALUE));
 		double d = this.random.nextDouble() * 1.5 * (double)chanceMultiplier;
 		if (d > 1.0) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
-				.addPersistentModifier(new EntityAttributeModifier("Random zombie-spawn bonus", d, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+				.addPersistentModifier(new EntityAttributeModifier("Random zombie-spawn bonus", d, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 		}
 
 		if (this.random.nextFloat() < chanceMultiplier * 0.05F) {
 			this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
 				.addPersistentModifier(
-					new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 0.25 + 0.5, EntityAttributeModifier.Operation.ADDITION)
+					new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 0.25 + 0.5, EntityAttributeModifier.Operation.ADD_VALUE)
 				);
 			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)
 				.addPersistentModifier(
-					new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 3.0 + 1.0, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
+					new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 3.0 + 1.0, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
 				);
 			this.setCanBreakDoors(this.shouldBreakDoors());
 		}

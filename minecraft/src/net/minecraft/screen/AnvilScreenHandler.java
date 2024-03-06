@@ -113,7 +113,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		int i = 0;
 		int j = 0;
 		int k = 0;
-		if (!itemStack.isEmpty() && EnchantmentHelper.hasEnchantments(itemStack)) {
+		if (!itemStack.isEmpty() && EnchantmentHelper.canHaveEnchantments(itemStack)) {
 			ItemStack itemStack2 = itemStack.copy();
 			ItemStack itemStack3 = this.input.getStack(1);
 			ItemEnchantmentsComponent.Builder builder = new ItemEnchantmentsComponent.Builder(EnchantmentHelper.getEnchantments(itemStack2));

@@ -119,6 +119,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	public static final int field_30645 = 100;
 	public static final int field_30646 = 10;
 	public static final int field_30647 = 200;
+	public static final int field_49734 = 499;
+	public static final int field_49735 = 500;
 	public static final float field_47819 = 4.5F;
 	public static final float field_47820 = 3.0F;
 	public static final float field_30648 = 1.5F;
@@ -150,7 +152,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected static final TrackedData<NbtCompound> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 	protected static final TrackedData<NbtCompound> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 	private long shoulderEntityAddedTime;
-	private final PlayerInventory inventory = new PlayerInventory(this);
+	final PlayerInventory inventory = new PlayerInventory(this);
 	protected EnderChestInventory enderChestInventory = new EnderChestInventory();
 	public final PlayerScreenHandler playerScreenHandler;
 	public ScreenHandler currentScreenHandler;
@@ -1959,11 +1961,41 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public StackReference getStackReference(int mappedIndex) {
-		if (mappedIndex >= 0 && mappedIndex < this.inventory.main.size()) {
-			return StackReference.of(this.inventory, mappedIndex);
+		if (mappedIndex == 499) {
+			return new StackReference() {
+				@Override
+				public ItemStack get() {
+					return PlayerEntity.this.currentScreenHandler.getCursorStack();
+				}
+
+				@Override
+				public boolean set(ItemStack stack) {
+					PlayerEntity.this.currentScreenHandler.setCursorStack(stack);
+					return true;
+				}
+			};
 		} else {
-			int i = mappedIndex - 200;
-			return i >= 0 && i < this.enderChestInventory.size() ? StackReference.of(this.enderChestInventory, i) : super.getStackReference(mappedIndex);
+			final int i = mappedIndex - 500;
+			if (i >= 0 && i < 4) {
+				return new StackReference() {
+					@Override
+					public ItemStack get() {
+						return PlayerEntity.this.playerScreenHandler.getCraftingInput().getStack(i);
+					}
+
+					@Override
+					public boolean set(ItemStack stack) {
+						PlayerEntity.this.playerScreenHandler.getCraftingInput().setStack(i, stack);
+						PlayerEntity.this.playerScreenHandler.onContentChanged(PlayerEntity.this.inventory);
+						return true;
+					}
+				};
+			} else if (mappedIndex >= 0 && mappedIndex < this.inventory.main.size()) {
+				return StackReference.of(this.inventory, mappedIndex);
+			} else {
+				int j = mappedIndex - 200;
+				return j >= 0 && j < this.enderChestInventory.size() ? StackReference.of(this.enderChestInventory, j) : super.getStackReference(mappedIndex);
+			}
 		}
 	}
 

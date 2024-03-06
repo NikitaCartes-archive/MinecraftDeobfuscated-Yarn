@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
@@ -19,74 +18,32 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
 
-public class EntityAttributeModifier {
+public record EntityAttributeModifier(UUID uuid, String name, double value, EntityAttributeModifier.Operation operation) {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final MapCodec<EntityAttributeModifier> field_49232 = RecordCodecBuilder.mapCodec(
+	public static final MapCodec<EntityAttributeModifier> MAP_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Uuids.INT_STREAM_CODEC.fieldOf("uuid").forGetter(EntityAttributeModifier::getId),
+					Uuids.INT_STREAM_CODEC.fieldOf("uuid").forGetter(EntityAttributeModifier::uuid),
 					Codec.STRING.fieldOf("name").forGetter(modifier -> modifier.name),
-					Codec.DOUBLE.fieldOf("amount").forGetter(EntityAttributeModifier::getValue),
-					EntityAttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(EntityAttributeModifier::getOperation)
+					Codec.DOUBLE.fieldOf("amount").forGetter(EntityAttributeModifier::value),
+					EntityAttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(EntityAttributeModifier::operation)
 				)
 				.apply(instance, EntityAttributeModifier::new)
 	);
-	public static final Codec<EntityAttributeModifier> CODEC = field_49232.codec();
-	public static final PacketCodec<ByteBuf, EntityAttributeModifier> field_49233 = PacketCodec.tuple(
+	public static final Codec<EntityAttributeModifier> CODEC = MAP_CODEC.codec();
+	public static final PacketCodec<ByteBuf, EntityAttributeModifier> PACKET_CODEC = PacketCodec.tuple(
 		Uuids.PACKET_CODEC,
-		EntityAttributeModifier::getId,
+		EntityAttributeModifier::uuid,
 		PacketCodecs.STRING,
-		entityAttributeModifier -> entityAttributeModifier.name,
+		modifier -> modifier.name,
 		PacketCodecs.DOUBLE,
-		EntityAttributeModifier::getValue,
+		EntityAttributeModifier::value,
 		EntityAttributeModifier.Operation.PACKET_CODEC,
-		EntityAttributeModifier::getOperation,
+		EntityAttributeModifier::operation,
 		EntityAttributeModifier::new
 	);
-	private final double value;
-	private final EntityAttributeModifier.Operation operation;
-	private final String name;
-	private final UUID uuid;
 
 	public EntityAttributeModifier(String name, double value, EntityAttributeModifier.Operation operation) {
 		this(MathHelper.randomUuid(Random.createLocal()), name, value, operation);
-	}
-
-	public EntityAttributeModifier(UUID uuid, String name, double value, EntityAttributeModifier.Operation operation) {
-		this.uuid = uuid;
-		this.name = name;
-		this.value = value;
-		this.operation = operation;
-	}
-
-	public UUID getId() {
-		return this.uuid;
-	}
-
-	public EntityAttributeModifier.Operation getOperation() {
-		return this.operation;
-	}
-
-	public double getValue() {
-		return this.value;
-	}
-
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)o;
-			return Objects.equals(this.uuid, entityAttributeModifier.uuid);
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		return this.uuid.hashCode();
-	}
-
-	public String toString() {
-		return "AttributeModifier{amount=" + this.value + ", operation=" + this.operation + ", name='" + this.name + "', id=" + this.uuid + "}";
 	}
 
 	public NbtCompound toNbt() {
@@ -118,19 +75,19 @@ public class EntityAttributeModifier {
 		/**
 		 * Adds to the base value of an attribute.
 		 */
-		ADDITION("add_value", 0),
+		ADD_VALUE("add_value", 0),
 		/**
 		 * Multiplies the base value of the attribute.
 		 * 
 		 * <p>Is applied after addition.
 		 */
-		MULTIPLY_BASE("add_multiplied_base", 1),
+		ADD_MULTIPLIED_BASE("add_multiplied_base", 1),
 		/**
 		 * Multiplies the total value of the attribute.
 		 * 
 		 * <p>The total value is equal to the sum of all additions and base multiplications applied by an attribute modifier.
 		 */
-		MULTIPLY_TOTAL("add_multiplied_total", 2);
+		ADD_MULTIPLIED_TOTAL("add_multiplied_total", 2);
 
 		public static final IntFunction<EntityAttributeModifier.Operation> ID_TO_VALUE = ValueLists.createIdToValueFunction(
 			EntityAttributeModifier.Operation::getId, values(), ValueLists.OutOfBoundsHandling.ZERO

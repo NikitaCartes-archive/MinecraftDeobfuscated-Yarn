@@ -9,8 +9,6 @@ import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 
@@ -74,10 +72,6 @@ public class SetBannerPatternLootFunction extends ConditionalLootFunction {
 		@Override
 		public LootFunction build() {
 			return new SetBannerPatternLootFunction(this.getConditions(), this.patterns.build(), this.append);
-		}
-
-		public SetBannerPatternLootFunction.Builder pattern(RegistryKey<BannerPattern> pattern, DyeColor color) {
-			return this.pattern(Registries.BANNER_PATTERN.entryOf(pattern), color);
 		}
 
 		public SetBannerPatternLootFunction.Builder pattern(RegistryEntry<BannerPattern> pattern, DyeColor color) {

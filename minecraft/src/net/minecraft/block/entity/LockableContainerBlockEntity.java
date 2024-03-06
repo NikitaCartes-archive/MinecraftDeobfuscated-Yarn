@@ -4,10 +4,13 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
@@ -17,6 +20,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NamedScreenHandlerFactory, Nameable {
@@ -78,6 +82,61 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 		}
 	}
 
+	protected abstract DefaultedList<ItemStack> getHeldStacks();
+
+	protected abstract void setHeldStacks(DefaultedList<ItemStack> inventory);
+
+	@Override
+	public boolean isEmpty() {
+		for (ItemStack itemStack : this.getHeldStacks()) {
+			if (!itemStack.isEmpty()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public ItemStack getStack(int slot) {
+		return this.getHeldStacks().get(slot);
+	}
+
+	@Override
+	public ItemStack removeStack(int slot, int amount) {
+		ItemStack itemStack = Inventories.splitStack(this.getHeldStacks(), slot, amount);
+		if (!itemStack.isEmpty()) {
+			this.markDirty();
+		}
+
+		return itemStack;
+	}
+
+	@Override
+	public ItemStack removeStack(int slot) {
+		return Inventories.removeStack(this.getHeldStacks(), slot);
+	}
+
+	@Override
+	public void setStack(int slot, ItemStack stack) {
+		this.getHeldStacks().set(slot, stack);
+		if (stack.getCount() > this.getMaxCountPerStack()) {
+			stack.setCount(this.getMaxCountPerStack());
+		}
+
+		this.markDirty();
+	}
+
+	@Override
+	public boolean canPlayerUse(PlayerEntity player) {
+		return Inventory.canPlayerUse(this, player);
+	}
+
+	@Override
+	public void clear() {
+		this.getHeldStacks().clear();
+	}
+
 	@Nullable
 	@Override
 	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
@@ -90,17 +149,23 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	public void readComponents(ComponentMap components) {
 		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
 		this.lock = components.getOrDefault(DataComponentTypes.LOCK, ContainerLock.EMPTY);
+		components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyTo(this.getHeldStacks());
 	}
 
 	@Override
 	public void addComponents(ComponentMap.Builder componentMapBuilder) {
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
-		componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);
+		if (!this.lock.equals(ContainerLock.EMPTY)) {
+			componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);
+		}
+
+		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.getHeldStacks()));
 	}
 
 	@Override
 	public void removeFromCopiedStackNbt(NbtCompound nbt) {
 		nbt.remove("CustomName");
 		nbt.remove("Lock");
+		nbt.remove("Items");
 	}
 }

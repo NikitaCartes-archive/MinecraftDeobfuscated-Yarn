@@ -67,11 +67,11 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	public static record Entry(RegistryEntry<EntityAttribute> attribute, double base, Collection<EntityAttributeModifier> modifiers) {
 		public static final PacketCodec<ByteBuf, EntityAttributeModifier> MODIFIER_CODEC = PacketCodec.tuple(
 			Uuids.PACKET_CODEC,
-			EntityAttributeModifier::getId,
+			EntityAttributeModifier::uuid,
 			PacketCodecs.DOUBLE,
-			EntityAttributeModifier::getValue,
+			EntityAttributeModifier::value,
 			EntityAttributeModifier.Operation.PACKET_CODEC,
-			EntityAttributeModifier::getOperation,
+			EntityAttributeModifier::operation,
 			(attribute, base, modifiers) -> new EntityAttributeModifier(attribute, "Unknown synced attribute modifier", base, modifiers)
 		);
 		public static final PacketCodec<RegistryByteBuf, EntityAttributesS2CPacket.Entry> CODEC = PacketCodec.tuple(

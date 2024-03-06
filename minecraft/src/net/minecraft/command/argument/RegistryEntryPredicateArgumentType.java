@@ -75,7 +75,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 				TagKey<T> tagKey = TagKey.of(this.registryRef, identifier);
 				RegistryEntryList.Named<T> named = (RegistryEntryList.Named<T>)this.registryWrapper
 					.getOptional(tagKey)
-					.orElseThrow(() -> NOT_FOUND_EXCEPTION.create(identifier, this.registryRef.getValue()));
+					.orElseThrow(() -> NOT_FOUND_EXCEPTION.createWithContext(stringReader, identifier, this.registryRef.getValue()));
 				return new RegistryEntryPredicateArgumentType.TagBased<>(named);
 			} catch (CommandSyntaxException var6) {
 				stringReader.setCursor(i);
@@ -86,7 +86,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 			RegistryKey<T> registryKey = RegistryKey.of(this.registryRef, identifier2);
 			RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)this.registryWrapper
 				.getOptional(registryKey)
-				.orElseThrow(() -> RegistryEntryArgumentType.NOT_FOUND_EXCEPTION.create(identifier2, this.registryRef.getValue()));
+				.orElseThrow(() -> RegistryEntryArgumentType.NOT_FOUND_EXCEPTION.createWithContext(stringReader, identifier2, this.registryRef.getValue()));
 			return new RegistryEntryPredicateArgumentType.EntryBased<>(reference);
 		}
 	}

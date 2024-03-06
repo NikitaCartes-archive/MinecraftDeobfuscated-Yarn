@@ -84,8 +84,8 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected void setHeldStacks(DefaultedList<ItemStack> list) {
-		this.inventory = list;
+	protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+		this.inventory = inventory;
 	}
 
 	@Override

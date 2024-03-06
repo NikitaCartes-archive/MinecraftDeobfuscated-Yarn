@@ -47,7 +47,7 @@ public class ScoreboardCriterionArgumentType implements ArgumentType<ScoreboardC
 		String string = stringReader.getString().substring(i, stringReader.getCursor());
 		return (ScoreboardCriterion)ScoreboardCriterion.getOrCreateStatCriterion(string).orElseThrow(() -> {
 			stringReader.setCursor(i);
-			return INVALID_CRITERION_EXCEPTION.create(string);
+			return INVALID_CRITERION_EXCEPTION.createWithContext(stringReader, string);
 		});
 	}
 

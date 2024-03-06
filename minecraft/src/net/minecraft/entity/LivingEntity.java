@@ -107,6 +107,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
@@ -115,6 +116,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -136,7 +138,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
 	private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
 	private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(
-		UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D"), "Sprinting speed boost", 0.3F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+		UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D"), "Sprinting speed boost", 0.3F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 	);
 	public static final int field_30069 = 2;
 	public static final int field_30070 = 4;
@@ -170,6 +172,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(0.2F);
 	public static final float BABY_SCALE_FACTOR = 0.5F;
 	public static final float field_47756 = 0.5F;
+	private static final int DEFAULT_POTION_SWIRLS_COLOR = -1;
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.<RegistryEntry<StatusEffect>, StatusEffectInstance>newHashMap();
@@ -282,7 +285,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		builder.add(LIVING_FLAGS, (byte)0);
-		builder.add(POTION_SWIRLS_COLOR, 0);
+		builder.add(POTION_SWIRLS_COLOR, -1);
 		builder.add(POTION_SWIRLS_AMBIENT, false);
 		builder.add(STUCK_ARROW_COUNT, 0);
 		builder.add(STINGER_COUNT, 0);
@@ -520,7 +523,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 				entityAttributeInstance.addTemporaryModifier(
 					new EntityAttributeModifier(
-						SOUL_SPEED_BOOST_ID, "Soul speed boost", (double)(0.03F * (1.0F + (float)i * 0.35F)), EntityAttributeModifier.Operation.ADDITION
+						SOUL_SPEED_BOOST_ID, "Soul speed boost", (double)(0.03F * (1.0F + (float)i * 0.35F)), EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				);
 				if (this.getRandom().nextFloat() < 0.04F) {
@@ -551,7 +554,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 				float f = -0.05F * this.getFreezingScale();
 				entityAttributeInstance.addTemporaryModifier(
-					new EntityAttributeModifier(POWDER_SNOW_SLOW_ID, "Powder snow slow", (double)f, EntityAttributeModifier.Operation.ADDITION)
+					new EntityAttributeModifier(POWDER_SNOW_SLOW_ID, "Powder snow slow", (double)f, EntityAttributeModifier.Operation.ADD_VALUE)
 				);
 			}
 		}
@@ -841,7 +844,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					this.onStatusEffectUpgraded(statusEffectInstance, false, null);
 				}
 			}
-		} catch (ConcurrentModificationException var11) {
+		} catch (ConcurrentModificationException var8) {
 		}
 
 		if (this.effectsChanged) {
@@ -855,7 +858,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		int i = this.dataTracker.get(POTION_SWIRLS_COLOR);
 		boolean bl = this.dataTracker.get(POTION_SWIRLS_AMBIENT);
-		if (i > 0) {
+		if (i != Colors.WHITE) {
 			boolean bl2;
 			if (this.isInvisible()) {
 				bl2 = this.random.nextInt(15) == 0;
@@ -867,13 +870,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				bl2 &= this.random.nextInt(5) == 0;
 			}
 
-			if (bl2 && i > 0) {
-				double d = (double)(i >> 16 & 0xFF) / 255.0;
-				double e = (double)(i >> 8 & 0xFF) / 255.0;
-				double f = (double)(i >> 0 & 0xFF) / 255.0;
+			if (bl2) {
+				float f = (float)ColorHelper.Argb.getRed(i) / 255.0F;
+				float g = (float)ColorHelper.Argb.getGreen(i) / 255.0F;
+				float h = (float)ColorHelper.Argb.getBlue(i) / 255.0F;
 				this.getWorld()
 					.addParticle(
-						bl ? ParticleTypes.AMBIENT_ENTITY_EFFECT : ParticleTypes.ENTITY_EFFECT, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), d, e, f
+						bl ? ParticleTypes.AMBIENT_ENTITY_EFFECT : ParticleTypes.ENTITY_EFFECT,
+						this.getParticleX(0.5),
+						this.getRandomBodyY(),
+						this.getParticleZ(0.5),
+						(double)f,
+						(double)g,
+						(double)h
 					);
 			}
 		}
@@ -885,8 +894,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.setInvisible(false);
 		} else {
 			Collection<StatusEffectInstance> collection = this.activeStatusEffects.values();
+			int i = PotionContentsComponent.mixColors(collection);
 			this.dataTracker.set(POTION_SWIRLS_AMBIENT, containsOnlyAmbientEffects(collection));
-			this.dataTracker.set(POTION_SWIRLS_COLOR, PotionContentsComponent.getColor(collection));
+			this.dataTracker.set(POTION_SWIRLS_COLOR, i != -1 ? i : -1);
 			this.setInvisible(this.hasStatusEffect(StatusEffects.INVISIBILITY));
 		}
 	}
@@ -956,7 +966,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	protected void clearPotionSwirls() {
 		this.dataTracker.set(POTION_SWIRLS_AMBIENT, false);
-		this.dataTracker.set(POTION_SWIRLS_COLOR, 0);
+		this.dataTracker.set(POTION_SWIRLS_COLOR, -1);
 	}
 
 	public boolean clearStatusEffects() {
@@ -2113,7 +2123,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public void setSprinting(boolean sprinting) {
 		super.setSprinting(sprinting);
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-		entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST.getId());
+		entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST.uuid());
 		if (sprinting) {
 			entityAttributeInstance.addTemporaryModifier(SPRINTING_SPEED_BOOST);
 		}
@@ -2619,7 +2629,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					itemStack2.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
 						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
 						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(modifier.getId());
+							entityAttributeInstance.removeModifier(modifier.uuid());
 							entityAttributeInstance.addTemporaryModifier(modifier);
 						}
 					});

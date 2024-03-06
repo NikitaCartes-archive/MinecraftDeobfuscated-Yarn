@@ -20,17 +20,18 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.ColorHelper;
 
 public record DyedColorComponent(int rgb, boolean showInTooltip) implements TooltipAppender {
-	public static final Codec<DyedColorComponent> CODEC = RecordCodecBuilder.create(
+	private static final Codec<DyedColorComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.INT.fieldOf("rgb").forGetter(DyedColorComponent::rgb),
 					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(DyedColorComponent::showInTooltip)
 				)
 				.apply(instance, DyedColorComponent::new)
 	);
+	public static final Codec<DyedColorComponent> CODEC = Codecs.either(BASE_CODEC, Codec.INT, rgb -> new DyedColorComponent(rgb, true));
 	public static final PacketCodec<ByteBuf, DyedColorComponent> PACKET_CODEC = PacketCodec.tuple(
 		PacketCodecs.INTEGER, DyedColorComponent::rgb, PacketCodecs.BOOL, DyedColorComponent::showInTooltip, DyedColorComponent::new
 	);
-	public static final int field_49314 = -6265536;
+	public static final int DEFAULT_COLOR = -6265536;
 
 	public static int getColor(ItemStack stack, int defaultColor) {
 		DyedColorComponent dyedColorComponent = stack.get(DataComponentTypes.DYED_COLOR);

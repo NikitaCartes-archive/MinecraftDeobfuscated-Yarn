@@ -65,7 +65,11 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	@Override
 	public final void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
-			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
+			this.hovered = context.scissorContains(mouseX, mouseY)
+				&& mouseX >= this.getX()
+				&& mouseY >= this.getY()
+				&& mouseX < this.getX() + this.width
+				&& mouseY < this.getY() + this.height;
 			this.renderWidget(context, mouseX, mouseY, delta);
 			this.tooltip.render(this.isHovered(), this.isFocused(), this.getNavigationFocus());
 		}

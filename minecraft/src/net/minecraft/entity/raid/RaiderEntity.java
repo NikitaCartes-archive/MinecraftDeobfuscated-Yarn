@@ -31,6 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -49,7 +50,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isAlive()
-			&& ItemStack.areEqual(itemEntity.getStack(), Raid.getOminousBanner());
+			&& ItemStack.areEqual(itemEntity.getStack(), Raid.getOminousBanner(itemEntity.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
 	@Nullable
 	protected Raid raid;
 	private int wave;
@@ -143,7 +144,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 					}
 				}
 
-				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.getOminousBanner()) && playerEntity != null) {
+				if (!itemStack.isEmpty()
+					&& ItemStack.areEqual(itemStack, Raid.getOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)))
+					&& playerEntity != null) {
 					StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.BAD_OMEN);
 					int i = 1;
 					if (statusEffectInstance != null) {
@@ -232,7 +235,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
 		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
-		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.getOminousBanner())) {
+		if (this.hasActiveRaid()
+			&& !bl
+			&& ItemStack.areEqual(itemStack, Raid.getOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)))) {
 			EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
@@ -520,7 +525,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.actor.hasActiveRaid()
 				&& !this.actor.getRaid().isFinished()
 				&& this.actor.canLead()
-				&& !ItemStack.areEqual(this.actor.getEquippedStack(EquipmentSlot.HEAD), Raid.getOminousBanner())) {
+				&& !ItemStack.areEqual(
+					this.actor.getEquippedStack(EquipmentSlot.HEAD), Raid.getOminousBanner(this.actor.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN))
+				)) {
 				RaiderEntity raiderEntity = raid.getCaptain(this.actor.getWave());
 				if (raiderEntity == null || !raiderEntity.isAlive()) {
 					List<ItemEntity> list = this.actor

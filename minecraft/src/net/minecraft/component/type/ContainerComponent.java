@@ -97,6 +97,10 @@ public final class ContainerComponent implements Iterable<ItemStack> {
 		}
 	}
 
+	public ItemStack copyFirstStack() {
+		return this.stacks.isEmpty() ? ItemStack.EMPTY : this.stacks.get(0).copy();
+	}
+
 	public Stream<ItemStack> stream() {
 		return this.stacks.stream().filter(stack -> !stack.isEmpty()).map(ItemStack::copy);
 	}

@@ -17,6 +17,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -51,6 +53,7 @@ import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.HeightmapArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.argument.ItemPredicateArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
 import net.minecraft.command.argument.RegistryEntryArgumentType;
@@ -58,6 +61,7 @@ import net.minecraft.command.argument.RegistryEntryPredicateArgumentType;
 import net.minecraft.command.argument.RotationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
+import net.minecraft.command.argument.SlotRangeArgumentType;
 import net.minecraft.command.argument.SwizzleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
@@ -69,6 +73,10 @@ import net.minecraft.entity.Tameable;
 import net.minecraft.entity.Targeter;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SlotRange;
+import net.minecraft.inventory.StackReference;
+import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootCondition;
@@ -655,6 +663,81 @@ public class ExecuteCommand {
 							.suggests(FunctionCommand.SUGGESTION_PROVIDER)
 							.fork(root, new ExecuteCommand.IfUnlessRedirector(positive))
 					)
+			)
+			.then(
+				CommandManager.literal("items")
+					.then(
+						CommandManager.literal("entity")
+							.then(
+								CommandManager.argument("entities", EntityArgumentType.entities())
+									.then(
+										CommandManager.argument("slots", SlotRangeArgumentType.slotRange())
+											.then(
+												CommandManager.argument("item_predicate", ItemPredicateArgumentType.itemPredicate(commandRegistryAccess))
+													.fork(
+														root,
+														commandContext -> getSourceOrEmptyForConditionFork(
+																commandContext,
+																positive,
+																countMatchingItems(
+																		EntityArgumentType.getEntities(commandContext, "entities"),
+																		SlotRangeArgumentType.getSlotRange(commandContext, "slots"),
+																		ItemPredicateArgumentType.getItemStackPredicate(commandContext, "item_predicate")
+																	)
+																	> 0
+															)
+													)
+													.executes(
+														getExistsConditionExecute(
+															positive,
+															commandContext -> countMatchingItems(
+																	EntityArgumentType.getEntities(commandContext, "entities"),
+																	SlotRangeArgumentType.getSlotRange(commandContext, "slots"),
+																	ItemPredicateArgumentType.getItemStackPredicate(commandContext, "item_predicate")
+																)
+														)
+													)
+											)
+									)
+							)
+					)
+					.then(
+						CommandManager.literal("block")
+							.then(
+								CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+									.then(
+										CommandManager.argument("slots", SlotRangeArgumentType.slotRange())
+											.then(
+												CommandManager.argument("item_predicate", ItemPredicateArgumentType.itemPredicate(commandRegistryAccess))
+													.fork(
+														root,
+														commandContext -> getSourceOrEmptyForConditionFork(
+																commandContext,
+																positive,
+																countMatchingItems(
+																		commandContext.getSource(),
+																		BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																		SlotRangeArgumentType.getSlotRange(commandContext, "slots"),
+																		ItemPredicateArgumentType.getItemStackPredicate(commandContext, "item_predicate")
+																	)
+																	> 0
+															)
+													)
+													.executes(
+														getExistsConditionExecute(
+															positive,
+															commandContext -> countMatchingItems(
+																	commandContext.getSource(),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																	SlotRangeArgumentType.getSlotRange(commandContext, "slots"),
+																	ItemPredicateArgumentType.getItemStackPredicate(commandContext, "item_predicate")
+																)
+														)
+													)
+											)
+									)
+							)
+					)
 			);
 
 		for (DataCommand.ObjectType objectType : DataCommand.SOURCE_OBJECT_TYPES) {
@@ -678,6 +761,44 @@ public class ExecuteCommand {
 		}
 
 		return argumentBuilder;
+	}
+
+	private static int countMatchingItems(Iterable<? extends Entity> entities, SlotRange slotRange, Predicate<ItemStack> predicate) {
+		int i = 0;
+
+		for (Entity entity : entities) {
+			IntList intList = slotRange.getSlotIds();
+
+			for (int j = 0; j < intList.size(); j++) {
+				int k = intList.getInt(j);
+				StackReference stackReference = entity.getStackReference(k);
+				ItemStack itemStack = stackReference.get();
+				if (predicate.test(itemStack)) {
+					i += itemStack.getCount();
+				}
+			}
+		}
+
+		return i;
+	}
+
+	private static int countMatchingItems(ServerCommandSource source, BlockPos pos, SlotRange slotRange, Predicate<ItemStack> predicate) throws CommandSyntaxException {
+		int i = 0;
+		Inventory inventory = ItemCommand.getInventoryAtPos(source, pos, ItemCommand.NOT_A_CONTAINER_SOURCE_EXCEPTION);
+		int j = inventory.size();
+		IntList intList = slotRange.getSlotIds();
+
+		for (int k = 0; k < intList.size(); k++) {
+			int l = intList.getInt(k);
+			if (l >= 0 && l < j) {
+				ItemStack itemStack = inventory.getStack(l);
+				if (predicate.test(itemStack)) {
+					i += itemStack.getCount();
+				}
+			}
+		}
+
+		return i;
 	}
 
 	private static Command<ServerCommandSource> getExistsConditionExecute(boolean positive, ExecuteCommand.ExistsCondition condition) {

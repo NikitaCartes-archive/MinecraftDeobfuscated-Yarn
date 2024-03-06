@@ -28,8 +28,8 @@ public class WitherRoseBlock extends FlowerBlock {
 		return CODEC;
 	}
 
-	public WitherRoseBlock(RegistryEntry<StatusEffect> registryEntry, int i, AbstractBlock.Settings settings) {
-		this(createStewEffectList(registryEntry, i), settings);
+	public WitherRoseBlock(RegistryEntry<StatusEffect> registryEntry, float f, AbstractBlock.Settings settings) {
+		this(createStewEffectList(registryEntry, f), settings);
 	}
 
 	public WitherRoseBlock(SuspiciousStewEffectsComponent suspiciousStewEffectsComponent, AbstractBlock.Settings settings) {

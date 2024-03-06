@@ -43,7 +43,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.ZOMBIFIED_PIGLIN.getDimensions().scaled(0.5F).withEyeHeight(0.97F);
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
+		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	private static final UniformIntProvider ANGRY_SOUND_DELAY_RANGE = TimeHelper.betweenSeconds(0, 1);
 	private int angrySoundDelay;
@@ -101,7 +101,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 			this.tickAngrySound();
 		} else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
-			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST.getId());
+			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST.uuid());
 		}
 
 		this.tickAngerLogic((ServerWorld)this.getWorld(), true);

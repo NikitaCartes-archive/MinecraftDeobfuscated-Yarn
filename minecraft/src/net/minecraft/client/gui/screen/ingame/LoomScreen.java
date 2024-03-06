@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.model.ModelPart;
@@ -118,6 +117,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			context.getMatrices().scale(0.6666667F, 0.6666667F, -0.6666667F);
 			this.bannerField.pitch = 0.0F;
 			this.bannerField.pivotY = -32.0F;
+			DyeColor dyeColor = ((BannerItem)slot4.getStack().getItem()).getColor();
 			BannerBlockEntityRenderer.renderCanvas(
 				context.getMatrices(),
 				context.getVertexConsumers(),
@@ -126,6 +126,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 				this.bannerField,
 				ModelLoader.BANNER_BASE,
 				true,
+				dyeColor,
 				this.bannerPatterns
 			);
 			context.getMatrices().pop();
@@ -180,12 +181,17 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
-		BannerPatternsComponent bannerPatternsComponent = new BannerPatternsComponent.Builder()
-			.add(BannerPatterns.BASE, DyeColor.GRAY)
-			.add(pattern, DyeColor.WHITE)
-			.build();
+		BannerPatternsComponent bannerPatternsComponent = new BannerPatternsComponent.Builder().add(pattern, DyeColor.WHITE).build();
 		BannerBlockEntityRenderer.renderCanvas(
-			matrixStack, context.getVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, bannerPatternsComponent
+			matrixStack,
+			context.getVertexConsumers(),
+			15728880,
+			OverlayTexture.DEFAULT_UV,
+			this.bannerField,
+			ModelLoader.BANNER_BASE,
+			true,
+			DyeColor.GRAY,
+			bannerPatternsComponent
 		);
 		matrixStack.pop();
 		context.draw();
@@ -259,8 +265,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		if (itemStack.isEmpty()) {
 			this.bannerPatterns = null;
 		} else {
-			this.bannerPatterns = itemStack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
-				.withBase(((BannerItem)itemStack.getItem()).getColor());
+			this.bannerPatterns = itemStack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
 		}
 
 		ItemStack itemStack2 = this.handler.getBannerSlot().getStack();

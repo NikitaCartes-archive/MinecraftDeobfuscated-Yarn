@@ -42,7 +42,7 @@ public class ItemCommand {
 	static final Dynamic3CommandExceptionType NOT_A_CONTAINER_TARGET_EXCEPTION = new Dynamic3CommandExceptionType(
 		(x, y, z) -> Text.stringifiedTranslatable("commands.item.target.not_a_container", x, y, z)
 	);
-	private static final Dynamic3CommandExceptionType NOT_A_CONTAINER_SOURCE_EXCEPTION = new Dynamic3CommandExceptionType(
+	static final Dynamic3CommandExceptionType NOT_A_CONTAINER_SOURCE_EXCEPTION = new Dynamic3CommandExceptionType(
 		(x, y, z) -> Text.stringifiedTranslatable("commands.item.source.not_a_container", x, y, z)
 	);
 	static final DynamicCommandExceptionType NO_SUCH_SLOT_TARGET_EXCEPTION = new DynamicCommandExceptionType(
@@ -377,7 +377,7 @@ public class ItemCommand {
 		}
 	}
 
-	private static Inventory getInventoryAtPos(ServerCommandSource source, BlockPos pos, Dynamic3CommandExceptionType exception) throws CommandSyntaxException {
+	static Inventory getInventoryAtPos(ServerCommandSource source, BlockPos pos, Dynamic3CommandExceptionType exception) throws CommandSyntaxException {
 		BlockEntity blockEntity = source.getWorld().getBlockEntity(pos);
 		if (!(blockEntity instanceof Inventory)) {
 			throw exception.create(pos.getX(), pos.getY(), pos.getZ());

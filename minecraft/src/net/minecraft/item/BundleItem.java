@@ -125,8 +125,9 @@ public class BundleItem extends Item {
 	}
 
 	private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
-		BundleContentsComponent bundleContentsComponent = stack.set(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
+		BundleContentsComponent bundleContentsComponent = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
 		if (bundleContentsComponent != null && !bundleContentsComponent.isEmpty()) {
+			stack.set(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
 			if (player instanceof ServerPlayerEntity) {
 				bundleContentsComponent.stream().forEach(stackx -> player.dropItem(stackx, true));
 			}
@@ -152,8 +153,9 @@ public class BundleItem extends Item {
 
 	@Override
 	public void onItemEntityDestroyed(ItemEntity entity) {
-		BundleContentsComponent bundleContentsComponent = entity.getStack().set(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
+		BundleContentsComponent bundleContentsComponent = entity.getStack().get(DataComponentTypes.BUNDLE_CONTENTS);
 		if (bundleContentsComponent != null) {
+			entity.getStack().set(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
 			ItemUsage.spawnItemContents(entity, bundleContentsComponent.stream());
 		}
 	}

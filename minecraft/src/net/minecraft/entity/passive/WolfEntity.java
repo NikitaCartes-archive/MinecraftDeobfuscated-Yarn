@@ -1,16 +1,19 @@
 package net.minecraft.entity.passive;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
@@ -52,6 +55,9 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
@@ -60,20 +66,25 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
 
-public class WolfEntity extends TameableEntity implements Angerable {
+public class WolfEntity extends TameableEntity implements Angerable, VariantHolder<RegistryEntry<WolfVariant>> {
 	private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> ANGER_TIME = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<RegistryEntry<WolfVariant>> VARIANT = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.WOLF_VARIANT);
 	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = entity -> {
 		EntityType<?> entityType = entity.getType();
 		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
@@ -122,6 +133,19 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		this.targetSelector.add(8, new UniversalAngerGoal<>(this, true));
 	}
 
+	public Identifier getTextureId() {
+		WolfVariant wolfVariant = this.getVariant().value();
+		return this.isTamed() ? wolfVariant.tameTexture() : (this.hasAngerTime() ? wolfVariant.angryTexture() : wolfVariant.texture());
+	}
+
+	public RegistryEntry<WolfVariant> getVariant() {
+		return this.dataTracker.get(VARIANT);
+	}
+
+	public void setVariant(RegistryEntry<WolfVariant> registryEntry) {
+		this.dataTracker.set(VARIANT, registryEntry);
+	}
+
 	public static DefaultAttributeContainer.Builder createWolfAttributes() {
 		return MobEntity.createMobAttributes()
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
@@ -132,6 +156,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
+		builder.add(VARIANT, this.getRegistryManager().get(RegistryKeys.WOLF_VARIANT).entryOf(WolfVariants.PALE));
 		builder.add(BEGGING, false);
 		builder.add(COLLAR_COLOR, DyeColor.RED.getId());
 		builder.add(ANGER_TIME, 0);
@@ -146,17 +171,38 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
+		nbt.putString("variant", ((RegistryKey)this.getVariant().getKey().orElse(WolfVariants.PALE)).getValue().toString());
 		this.writeAngerToNbt(nbt);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
+		Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
+			.map(variantId -> RegistryKey.of(RegistryKeys.WOLF_VARIANT, variantId))
+			.flatMap(variantKey -> this.getRegistryManager().get(RegistryKeys.WOLF_VARIANT).getEntry(variantKey))
+			.ifPresent(this::setVariant);
 		if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
 			this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
 		}
 
 		this.readAngerFromNbt(this.getWorld(), nbt);
+	}
+
+	@Nullable
+	@Override
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
+		RegistryEntry<WolfVariant> registryEntry2;
+		if (entityData instanceof WolfEntity.WolfData wolfData) {
+			registryEntry2 = wolfData.variant;
+		} else {
+			registryEntry2 = WolfVariants.fromBiome(this.getRegistryManager(), registryEntry);
+			entityData = new WolfEntity.WolfData(registryEntry2);
+		}
+
+		this.setVariant(registryEntry2);
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	@Override
@@ -529,11 +575,21 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	@Nullable
 	public WolfEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		WolfEntity wolfEntity = EntityType.WOLF.create(serverWorld);
-		if (wolfEntity != null) {
-			UUID uUID = this.getOwnerUuid();
-			if (uUID != null) {
-				wolfEntity.setOwnerUuid(uUID);
+		if (wolfEntity != null && passiveEntity instanceof WolfEntity wolfEntity2) {
+			if (this.random.nextBoolean()) {
+				wolfEntity.setVariant(this.getVariant());
+			} else {
+				wolfEntity.setVariant(wolfEntity2.getVariant());
+			}
+
+			if (this.isTamed()) {
+				wolfEntity.setOwnerUuid(this.getOwnerUuid());
 				wolfEntity.setTamed(true, true);
+				if (this.random.nextBoolean()) {
+					wolfEntity.setCollarColor(this.getCollarColor());
+				} else {
+					wolfEntity.setCollarColor(wolfEntity2.getCollarColor());
+				}
 			}
 		}
 
@@ -619,6 +675,15 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		public void tick() {
 			WolfEntity.this.setTarget(null);
 			super.tick();
+		}
+	}
+
+	public static class WolfData extends PassiveEntity.PassiveData {
+		public final RegistryEntry<WolfVariant> variant;
+
+		public WolfData(RegistryEntry<WolfVariant> variant) {
+			super(false);
+			this.variant = variant;
 		}
 	}
 

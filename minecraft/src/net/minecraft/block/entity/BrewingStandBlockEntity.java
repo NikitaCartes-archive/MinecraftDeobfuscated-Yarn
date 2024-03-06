@@ -5,10 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -45,14 +43,11 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
 		public int get(int index) {
-			switch (index) {
-				case 0:
-					return BrewingStandBlockEntity.this.brewTime;
-				case 1:
-					return BrewingStandBlockEntity.this.fuel;
-				default:
-					return 0;
-			}
+			return switch (index) {
+				case 0 -> BrewingStandBlockEntity.this.brewTime;
+				case 1 -> BrewingStandBlockEntity.this.fuel;
+				default -> 0;
+			};
 		}
 
 		@Override
@@ -87,14 +82,13 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public boolean isEmpty() {
-		for (ItemStack itemStack : this.inventory) {
-			if (!itemStack.isEmpty()) {
-				return false;
-			}
-		}
+	protected DefaultedList<ItemStack> getHeldStacks() {
+		return this.inventory;
+	}
 
-		return true;
+	@Override
+	protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+		this.inventory = inventory;
 	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity) {
@@ -210,33 +204,6 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public ItemStack getStack(int slot) {
-		return slot >= 0 && slot < this.inventory.size() ? this.inventory.get(slot) : ItemStack.EMPTY;
-	}
-
-	@Override
-	public ItemStack removeStack(int slot, int amount) {
-		return Inventories.splitStack(this.inventory, slot, amount);
-	}
-
-	@Override
-	public ItemStack removeStack(int slot) {
-		return Inventories.removeStack(this.inventory, slot);
-	}
-
-	@Override
-	public void setStack(int slot, ItemStack stack) {
-		if (slot >= 0 && slot < this.inventory.size()) {
-			this.inventory.set(slot, stack);
-		}
-	}
-
-	@Override
-	public boolean canPlayerUse(PlayerEntity player) {
-		return Inventory.canPlayerUse(this, player);
-	}
-
-	@Override
 	public boolean isValid(int slot, ItemStack stack) {
 		if (slot == 3) {
 			return BrewingRecipeRegistry.isValidIngredient(stack);
@@ -265,11 +232,6 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	@Override
 	public boolean canExtract(int slot, ItemStack stack, Direction dir) {
 		return slot == 3 ? stack.isOf(Items.GLASS_BOTTLE) : true;
-	}
-
-	@Override
-	public void clear() {
-		this.inventory.clear();
 	}
 
 	@Override

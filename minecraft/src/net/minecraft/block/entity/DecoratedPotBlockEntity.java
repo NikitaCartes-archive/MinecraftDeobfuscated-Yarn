@@ -1,9 +1,11 @@
 package net.minecraft.block.entity;
 
+import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.inventory.LootableInventory;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
@@ -74,7 +76,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 		return this.sherds;
 	}
 
-	public void readNbtFromStack(ItemStack stack) {
+	public void readFrom(ItemStack stack) {
 		this.readComponents(stack.getComponents());
 	}
 
@@ -114,17 +116,20 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	@Override
 	public void addComponents(ComponentMap.Builder componentMapBuilder) {
 		componentMapBuilder.add(DataComponentTypes.POT_DECORATIONS, this.sherds);
+		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(List.of(this.stack)));
 	}
 
 	@Override
 	public void readComponents(ComponentMap components) {
 		this.sherds = components.getOrDefault(DataComponentTypes.POT_DECORATIONS, Sherds.DEFAULT);
+		this.stack = components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyFirstStack();
 	}
 
 	@Override
 	public void removeFromCopiedStackNbt(NbtCompound nbt) {
 		super.removeFromCopiedStackNbt(nbt);
 		nbt.remove("sherds");
+		nbt.remove("item");
 	}
 
 	@Override

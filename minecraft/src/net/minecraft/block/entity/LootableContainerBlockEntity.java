@@ -7,14 +7,11 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerLootComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.LootableInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class LootableContainerBlockEntity extends LockableContainerBlockEntity implements LootableInventory {
@@ -50,63 +47,32 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	@Override
 	public boolean isEmpty() {
 		this.generateLoot(null);
-
-		for (ItemStack itemStack : this.getHeldStacks()) {
-			if (!itemStack.isEmpty()) {
-				return false;
-			}
-		}
-
-		return true;
+		return super.isEmpty();
 	}
 
 	@Override
 	public ItemStack getStack(int slot) {
 		this.generateLoot(null);
-		return this.getHeldStacks().get(slot);
+		return super.getStack(slot);
 	}
 
 	@Override
 	public ItemStack removeStack(int slot, int amount) {
 		this.generateLoot(null);
-		ItemStack itemStack = Inventories.splitStack(this.getHeldStacks(), slot, amount);
-		if (!itemStack.isEmpty()) {
-			this.markDirty();
-		}
-
-		return itemStack;
+		return super.removeStack(slot, amount);
 	}
 
 	@Override
 	public ItemStack removeStack(int slot) {
 		this.generateLoot(null);
-		return Inventories.removeStack(this.getHeldStacks(), slot);
+		return super.removeStack(slot);
 	}
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		this.generateLoot(null);
-		this.getHeldStacks().set(slot, stack);
-		if (stack.getCount() > this.getMaxCountPerStack()) {
-			stack.setCount(this.getMaxCountPerStack());
-		}
-
-		this.markDirty();
+		super.setStack(slot, stack);
 	}
-
-	@Override
-	public boolean canPlayerUse(PlayerEntity player) {
-		return Inventory.canPlayerUse(this, player);
-	}
-
-	@Override
-	public void clear() {
-		this.getHeldStacks().clear();
-	}
-
-	protected abstract DefaultedList<ItemStack> getHeldStacks();
-
-	protected abstract void setHeldStacks(DefaultedList<ItemStack> list);
 
 	@Override
 	public boolean checkUnlocked(PlayerEntity player) {

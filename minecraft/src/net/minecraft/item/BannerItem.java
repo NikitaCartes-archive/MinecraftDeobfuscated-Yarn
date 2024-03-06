@@ -15,8 +15,6 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 
 public class BannerItem extends VerticallyAttachableBlockItem {
-	private static final String TRANSLATION_KEY_PREFIX = "block.minecraft.banner.";
-
 	public BannerItem(Block bannerBlock, Block wallBannerBlock, Item.Settings settings) {
 		super(bannerBlock, wallBannerBlock, settings, Direction.DOWN);
 		Validate.isInstanceOf(AbstractBannerBlock.class, bannerBlock);
@@ -28,12 +26,7 @@ public class BannerItem extends VerticallyAttachableBlockItem {
 		if (bannerPatternsComponent != null) {
 			for (int i = 0; i < Math.min(bannerPatternsComponent.layers().size(), 6); i++) {
 				BannerPatternsComponent.Layer layer = (BannerPatternsComponent.Layer)bannerPatternsComponent.layers().get(i);
-				layer.pattern()
-					.getKey()
-					.map(key -> key.getValue().toShortTranslationKey())
-					.ifPresent(
-						translationKey -> tooltip.add(Text.translatable("block.minecraft.banner." + translationKey + "." + layer.color().getName()).formatted(Formatting.GRAY))
-					);
+				tooltip.add(layer.getTooltipText().formatted(Formatting.GRAY));
 			}
 		}
 	}

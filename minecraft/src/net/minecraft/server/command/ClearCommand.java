@@ -26,15 +26,15 @@ public class ClearCommand {
 		dispatcher.register(
 			CommandManager.literal("clear")
 				.requires(source -> source.hasPermissionLevel(2))
-				.executes(context -> execute(context.getSource(), Collections.singleton(context.getSource().getPlayerOrThrow()), stack -> true, -1))
+				.executes(context -> execute(context.getSource(), Collections.singleton(context.getSource().getPlayerOrThrow()), stack -> true))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
-						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), stack -> true, -1))
+						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), stack -> true))
 						.then(
 							CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate(commandRegistryAccess))
 								.executes(
 									context -> execute(
-											context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemStackPredicate(context, "item"), -1
+											context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemStackPredicate(context, "item")
 										)
 								)
 								.then(
@@ -51,6 +51,10 @@ public class ClearCommand {
 						)
 				)
 		);
+	}
+
+	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Predicate<ItemStack> item) throws CommandSyntaxException {
+		return execute(source, targets, item, -1);
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Predicate<ItemStack> item, int maxCount) throws CommandSyntaxException {

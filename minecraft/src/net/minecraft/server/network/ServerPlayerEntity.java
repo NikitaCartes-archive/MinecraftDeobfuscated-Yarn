@@ -167,10 +167,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private static final int field_46928 = 25;
 	public static final double field_47708 = 1.0;
 	private static final EntityAttributeModifier CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
-		UUID.fromString("736565d2-e1a7-403d-a3f8-1aeb3e302542"), "Creative block interaction range modifier", 0.5, EntityAttributeModifier.Operation.ADDITION
+		UUID.fromString("736565d2-e1a7-403d-a3f8-1aeb3e302542"), "Creative block interaction range modifier", 0.5, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	private static final EntityAttributeModifier CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
-		UUID.fromString("98491ef6-97b1-4584-ae82-71a8cc85cf73"), "Creative entity interaction range modifier", 2.0, EntityAttributeModifier.Operation.ADDITION
+		UUID.fromString("98491ef6-97b1-4584-ae82-71a8cc85cf73"), "Creative entity interaction range modifier", 2.0, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
@@ -1777,7 +1777,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public void setGameMode(@Nullable NbtCompound nbt) {
+	public void readGameModeNbt(@Nullable NbtCompound nbt) {
 		this.interactionManager.setGameMode(this.getServerGameMode(gameModeFromNbt(nbt, "playerGameType")), gameModeFromNbt(nbt, "previousPlayerGameType"));
 	}
 

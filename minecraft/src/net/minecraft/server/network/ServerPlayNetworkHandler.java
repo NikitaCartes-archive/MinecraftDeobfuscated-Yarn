@@ -307,8 +307,13 @@ public class ServerPlayNetworkHandler
 	}
 
 	private int getMaxAllowedFloatingTicks(Entity vehicle) {
-		double d = 0.08 / vehicle.getFinalGravity();
-		return MathHelper.ceil(80.0 * Math.max(d, 1.0));
+		double d = vehicle.getFinalGravity();
+		if (d < 1.0E-5F) {
+			return Integer.MAX_VALUE;
+		} else {
+			double e = 0.08 / d;
+			return MathHelper.ceil(80.0 * Math.max(e, 1.0));
+		}
 	}
 
 	public void syncWithPlayerPosition() {

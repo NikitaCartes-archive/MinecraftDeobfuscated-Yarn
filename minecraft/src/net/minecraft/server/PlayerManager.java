@@ -171,7 +171,7 @@ public abstract class PlayerManager {
 			"{}[{}] logged in with entity id {} at ({}, {}, {})", player.getName().getString(), string2, player.getId(), player.getX(), player.getY(), player.getZ()
 		);
 		WorldProperties worldProperties = serverWorld2.getLevelProperties();
-		player.setGameMode((NbtCompound)optional.orElse(null));
+		player.readGameModeNbt((NbtCompound)optional.orElse(null));
 		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player, clientData);
 		connection.transitionInbound(PlayStateFactories.C2S.bind(RegistryByteBuf.makeFactory(this.server.getRegistryManager())), serverPlayNetworkHandler);
 		GameRules gameRules = serverWorld2.getGameRules();
