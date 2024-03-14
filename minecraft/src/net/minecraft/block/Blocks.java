@@ -6347,6 +6347,18 @@ public class Blocks {
 				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);
+	public static final Block HEAVY_CORE = register(
+		"heavy_core",
+		new HeavyCoreBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.BLACK)
+				.instrument(Instrument.SNARE)
+				.sounds(BlockSoundGroup.HEAVY_CORE)
+				.strength(30.0F)
+				.pistonBehavior(PistonBehavior.DESTROY)
+				.requires(FeatureFlags.UPDATE_1_21)
+		)
+	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;

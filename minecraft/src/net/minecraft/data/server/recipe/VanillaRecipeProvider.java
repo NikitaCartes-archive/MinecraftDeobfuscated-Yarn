@@ -2595,7 +2595,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.DEEPSLATE_TILE_SLAB, Blocks.DEEPSLATE_TILES, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILES);
 		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.DEEPSLATE_TILE_WALL, Blocks.DEEPSLATE_TILES);
-		getTrimSmithingTemplateMap().forEach(template -> offerSmithingTrimRecipe(exporter, template.template(), template.id()));
+		streamSmithingTemplates().forEach(template -> offerSmithingTrimRecipe(exporter, template.template(), template.id()));
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_CHESTPLATE, RecipeCategory.COMBAT, Items.NETHERITE_CHESTPLATE);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_LEGGINGS, RecipeCategory.COMBAT, Items.NETHERITE_LEGGINGS);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_HELMET, RecipeCategory.COMBAT, Items.NETHERITE_HELMET);
@@ -2673,7 +2673,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		ComplexRecipeJsonBuilder.create(CraftingDecoratedPotRecipe::new).offerTo(exporter, "decorated_pot");
 	}
 
-	public static Stream<VanillaRecipeProvider.SmithingTemplate> getTrimSmithingTemplateMap() {
+	public static Stream<VanillaRecipeProvider.SmithingTemplate> streamSmithingTemplates() {
 		return Stream.of(
 				Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE,

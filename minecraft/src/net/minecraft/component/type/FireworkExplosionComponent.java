@@ -26,7 +26,7 @@ public record FireworkExplosionComponent(FireworkExplosionComponent.Type shape, 
 	public static final FireworkExplosionComponent DEFAULT = new FireworkExplosionComponent(
 		FireworkExplosionComponent.Type.SMALL_BALL, IntList.of(), IntList.of(), false, false
 	);
-	private static final Codec<IntList> COLORS_CODEC = Codec.INT.listOf().xmap(IntArrayList::new, ArrayList::new);
+	public static final Codec<IntList> COLORS_CODEC = Codec.INT.listOf().xmap(IntArrayList::new, ArrayList::new);
 	public static final Codec<FireworkExplosionComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					FireworkExplosionComponent.Type.CODEC.fieldOf("shape").forGetter(FireworkExplosionComponent::shape),

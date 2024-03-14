@@ -30,9 +30,9 @@ public class OneTwentyOneEntityLootTableGenerator extends EntityLootTableGenerat
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
-							ItemEntry.builder(Items.WIND_CHARGE)
-								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 6.0F)))
-								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+							ItemEntry.builder(Items.BREEZE_ROD)
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F)))
 						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)

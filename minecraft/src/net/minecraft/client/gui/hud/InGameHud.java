@@ -185,8 +185,7 @@ public class InGameHud {
 			.addLayer(this::renderTitleAndSubtitle)
 			.addLayer(this::renderChat)
 			.addLayer(this::renderPlayerList)
-			.addLayer((context, tickDelta) -> this.subtitlesHud.render(context))
-			.addLayer(this::renderAutosaveIndicator);
+			.addLayer((context, tickDelta) -> this.subtitlesHud.render(context));
 		this.layeredDrawer
 			.addSubDrawer(layeredDrawer, () -> !client.options.hudHidden)
 			.addLayer(this::renderSleepOverlay)
@@ -1269,7 +1268,7 @@ public class InGameHud {
 		this.debugHud.resetChunk();
 	}
 
-	private void renderAutosaveIndicator(DrawContext context, float tickDelta) {
+	public void renderAutosaveIndicator(DrawContext context, float tickDelta) {
 		if (this.client.options.getShowAutosaveIndicator().getValue() && (this.autosaveIndicatorAlpha > 0.0F || this.lastAutosaveIndicatorAlpha > 0.0F)) {
 			int i = MathHelper.floor(
 				255.0F * MathHelper.clamp(MathHelper.lerp(this.client.getTickDelta(), this.lastAutosaveIndicatorAlpha, this.autosaveIndicatorAlpha), 0.0F, 1.0F)

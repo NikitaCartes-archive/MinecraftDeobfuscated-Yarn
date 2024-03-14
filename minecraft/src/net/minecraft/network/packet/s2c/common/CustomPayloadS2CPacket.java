@@ -1,5 +1,6 @@
 package net.minecraft.network.packet.s2c.common;
 
+import com.google.common.collect.Lists;
 import java.util.List;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
@@ -29,31 +30,36 @@ import net.minecraft.network.packet.s2c.custom.DebugRaidsCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugStructuresCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugVillageSectionsCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugWorldgenAttemptCustomPayload;
+import net.minecraft.util.Util;
 
 public record CustomPayloadS2CPacket(CustomPayload payload) implements Packet<ClientCommonPacketListener> {
 	private static final int MAX_PAYLOAD_SIZE = 1048576;
 	public static final PacketCodec<RegistryByteBuf, CustomPayloadS2CPacket> PLAY_CODEC = CustomPayload.<RegistryByteBuf>createCodec(
 			id -> UnknownCustomPayload.createCodec(id, 1048576),
-			List.of(
-				new CustomPayload.Type<>(BrandCustomPayload.ID, BrandCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugBeeCustomPayload.ID, DebugBeeCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugBrainCustomPayload.ID, DebugBrainCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugBreezeCustomPayload.ID, DebugBreezeCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugGameEventCustomPayload.ID, DebugGameEventCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugGameEventListenersCustomPayload.ID, DebugGameEventListenersCustomPayload.PACKET_CODEC),
-				new CustomPayload.Type<>(DebugGameTestAddMarkerCustomPayload.ID, DebugGameTestAddMarkerCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugGameTestClearCustomPayload.ID, DebugGameTestClearCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugGoalSelectorCustomPayload.ID, DebugGoalSelectorCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugHiveCustomPayload.ID, DebugHiveCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugNeighborsUpdateCustomPayload.ID, DebugNeighborsUpdateCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugPathCustomPayload.ID, DebugPathCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugPoiAddedCustomPayload.ID, DebugPoiAddedCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugPoiRemovedCustomPayload.ID, DebugPoiRemovedCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugPoiTicketCountCustomPayload.ID, DebugPoiTicketCountCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugRaidsCustomPayload.ID, DebugRaidsCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugStructuresCustomPayload.ID, DebugStructuresCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugVillageSectionsCustomPayload.ID, DebugVillageSectionsCustomPayload.CODEC),
-				new CustomPayload.Type<>(DebugWorldgenAttemptCustomPayload.ID, DebugWorldgenAttemptCustomPayload.CODEC)
+			Util.make(
+				Lists.<CustomPayload.Type<? super RegistryByteBuf, ?>>newArrayList(
+					new CustomPayload.Type<>(BrandCustomPayload.ID, BrandCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugBeeCustomPayload.ID, DebugBeeCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugBrainCustomPayload.ID, DebugBrainCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugBreezeCustomPayload.ID, DebugBreezeCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugGameEventCustomPayload.ID, DebugGameEventCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugGameEventListenersCustomPayload.ID, DebugGameEventListenersCustomPayload.PACKET_CODEC),
+					new CustomPayload.Type<>(DebugGameTestAddMarkerCustomPayload.ID, DebugGameTestAddMarkerCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugGameTestClearCustomPayload.ID, DebugGameTestClearCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugGoalSelectorCustomPayload.ID, DebugGoalSelectorCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugHiveCustomPayload.ID, DebugHiveCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugNeighborsUpdateCustomPayload.ID, DebugNeighborsUpdateCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugPathCustomPayload.ID, DebugPathCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugPoiAddedCustomPayload.ID, DebugPoiAddedCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugPoiRemovedCustomPayload.ID, DebugPoiRemovedCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugPoiTicketCountCustomPayload.ID, DebugPoiTicketCountCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugRaidsCustomPayload.ID, DebugRaidsCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugStructuresCustomPayload.ID, DebugStructuresCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugVillageSectionsCustomPayload.ID, DebugVillageSectionsCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugWorldgenAttemptCustomPayload.ID, DebugWorldgenAttemptCustomPayload.CODEC)
+				),
+				types -> {
+				}
 			)
 		)
 		.xmap(CustomPayloadS2CPacket::new, CustomPayloadS2CPacket::payload);

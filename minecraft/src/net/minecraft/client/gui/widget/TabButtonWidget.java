@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tab.Tab;
@@ -46,9 +47,13 @@ public class TabButtonWidget extends ClickableWidget {
 		int i = this.active ? -1 : -6250336;
 		this.drawMessage(context, textRenderer, i);
 		if (this.isCurrentTab()) {
-			this.drawBackground(context, this.getX() + 2, this.getY() + 2, this.getRight() - 2, this.getBottom());
+			this.renderBackgroundTexture(context, this.getX() + 2, this.getY() + 2, this.getRight() - 2, this.getBottom());
 			this.drawCurrentTabLine(context, textRenderer, i);
 		}
+	}
+
+	protected void renderBackgroundTexture(DrawContext context, int left, int top, int right, int bottom) {
+		Screen.renderBackgroundTexture(context, Screen.MENU_BACKGROUND_TEXTURE, left, top, 0.0F, 0.0F, right - left, bottom - top);
 	}
 
 	public void drawMessage(DrawContext context, TextRenderer textRenderer, int color) {

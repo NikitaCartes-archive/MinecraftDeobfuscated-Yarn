@@ -47,5 +47,8 @@ public class OneTwentyOneItemTagProvider extends ItemTagProvider {
 				Items.WAXED_WEATHERED_COPPER_TRAPDOOR,
 				Items.WAXED_OXIDIZED_COPPER_TRAPDOOR
 			);
+		this.getOrCreateTagBuilder(ItemTags.DECORATED_POT_SHERDS).add(Items.FLOW_POTTERY_SHERD, Items.GUSTER_POTTERY_SHERD, Items.SCRAPE_POTTERY_SHERD);
+		this.getOrCreateTagBuilder(ItemTags.DECORATED_POT_INGREDIENTS).add(Items.FLOW_POTTERY_SHERD).add(Items.GUSTER_POTTERY_SHERD).add(Items.SCRAPE_POTTERY_SHERD);
+		this.getOrCreateTagBuilder(ItemTags.TRIM_TEMPLATES).add(Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE).add(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE);
 	}
 }

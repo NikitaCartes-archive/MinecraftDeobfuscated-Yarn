@@ -59,6 +59,7 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.MaceItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
@@ -67,6 +68,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeEntry;
@@ -145,6 +147,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		)
 		.put(EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(1.62F))
 		.build();
+	private static final float field_49811 = 2.5F;
+	private static final float field_49812 = 0.6F;
 	private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -1180,43 +1184,85 @@ public abstract class PlayerEntity extends LivingEntity {
 						bl2 = true;
 					}
 
-					boolean bl3 = bl
+					boolean bl3 = this.getStackInHand(Hand.MAIN_HAND).getItem() instanceof MaceItem && this.fallDistance > 1.5F;
+					if (bl3) {
+						f += f * 0.5F * this.fallDistance;
+						this.getWorld()
+							.getEntitiesByClass(
+								LivingEntity.class,
+								target.getBoundingBox().expand(2.5),
+								livingEntity -> livingEntity != this
+										&& livingEntity != target
+										&& !this.isTeammate(livingEntity)
+										&& (!(livingEntity instanceof ArmorStandEntity) || !((ArmorStandEntity)livingEntity).isMarker())
+										&& target.squaredDistanceTo(livingEntity) <= Math.pow(2.5, 2.0)
+							)
+							.forEach(
+								livingEntity -> {
+									Vec3d vec3dx = livingEntity.getPos().subtract(target.getPos());
+									double dx = (2.5 - vec3dx.length()) * 0.6F * (1.0 - livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+									Vec3d vec3d2 = vec3dx.normalize().multiply(dx);
+									if (dx > 0.0) {
+										livingEntity.addVelocity(vec3d2.x, 0.6F, vec3d2.z);
+										if (!this.getWorld().isClient()) {
+											BlockPos blockPos = livingEntity.getSteppingPos();
+											Vec3d vec3d3 = blockPos.toCenterPos().add(0.0, 0.5, 0.0);
+											int ix = (int)(100.0 * dx);
+											((ServerWorld)this.getWorld())
+												.spawnParticles(
+													new BlockStateParticleEffect(ParticleTypes.BLOCK, this.getWorld().getBlockState(blockPos)),
+													vec3d3.x,
+													vec3d3.y,
+													vec3d3.z,
+													ix,
+													0.3F,
+													0.3F,
+													0.3F,
+													0.15F
+												);
+										}
+									}
+								}
+							);
+					}
+
+					boolean bl4 = bl
 						&& this.fallDistance > 0.0F
 						&& !this.isOnGround()
 						&& !this.isClimbing()
 						&& !this.isTouchingWater()
 						&& !this.hasStatusEffect(StatusEffects.BLINDNESS)
 						&& !this.hasVehicle()
-						&& target instanceof LivingEntity;
-					bl3 = bl3 && !this.isSprinting();
-					if (bl3) {
+						&& target instanceof LivingEntity
+						&& !this.isSprinting();
+					if (bl4) {
 						f *= 1.5F;
 					}
 
 					f += g;
-					boolean bl4 = false;
+					boolean bl5 = false;
 					double d = (double)(this.horizontalSpeed - this.prevHorizontalSpeed);
-					if (bl && !bl3 && !bl2 && this.isOnGround() && d < (double)this.getMovementSpeed()) {
+					if (bl && !bl4 && !bl2 && this.isOnGround() && d < (double)this.getMovementSpeed()) {
 						ItemStack itemStack = this.getStackInHand(Hand.MAIN_HAND);
 						if (itemStack.getItem() instanceof SwordItem) {
-							bl4 = true;
+							bl5 = true;
 						}
 					}
 
 					float j = 0.0F;
-					boolean bl5 = false;
+					boolean bl6 = false;
 					int k = EnchantmentHelper.getFireAspect(this);
 					if (target instanceof LivingEntity) {
 						j = ((LivingEntity)target).getHealth();
 						if (k > 0 && !target.isOnFire()) {
-							bl5 = true;
+							bl6 = true;
 							target.setOnFireFor(1);
 						}
 					}
 
 					Vec3d vec3d = target.getVelocity();
-					boolean bl6 = target.damage(this.getDamageSources().playerAttack(this), f);
-					if (bl6) {
+					boolean bl7 = target.damage(this.getDamageSources().playerAttack(this), f);
+					if (bl7) {
 						if (i > 0) {
 							if (target instanceof LivingEntity) {
 								((LivingEntity)target)
@@ -1237,7 +1283,7 @@ public abstract class PlayerEntity extends LivingEntity {
 							this.setSprinting(false);
 						}
 
-						if (bl4) {
+						if (bl5) {
 							float l = 1.0F + EnchantmentHelper.getSweepingMultiplier(this) * f;
 
 							for (LivingEntity livingEntity : this.getWorld().getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0))) {
@@ -1263,12 +1309,12 @@ public abstract class PlayerEntity extends LivingEntity {
 							target.setVelocity(vec3d);
 						}
 
-						if (bl3) {
+						if (bl4) {
 							this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, this.getSoundCategory(), 1.0F, 1.0F);
 							this.addCritParticles(target);
 						}
 
-						if (!bl3 && !bl4) {
+						if (!bl4 && !bl5) {
 							if (bl) {
 								this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_STRONG, this.getSoundCategory(), 1.0F, 1.0F);
 							} else {
@@ -1316,7 +1362,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						this.addExhaustion(0.1F);
 					} else {
 						this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_NODAMAGE, this.getSoundCategory(), 1.0F, 1.0F);
-						if (bl5) {
+						if (bl6) {
 							target.extinguish();
 						}
 					}

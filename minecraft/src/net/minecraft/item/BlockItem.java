@@ -199,7 +199,7 @@ public class BlockItem extends Item {
 
 	@Override
 	public boolean canBeNested() {
-		return !(this.block instanceof ShulkerBoxBlock);
+		return !(this.getBlock() instanceof ShulkerBoxBlock);
 	}
 
 	@Override

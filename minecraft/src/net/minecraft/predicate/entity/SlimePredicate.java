@@ -10,7 +10,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
-public record SlimePredicate(NumberRange.IntRange size) implements TypeSpecificPredicate {
+public record SlimePredicate(NumberRange.IntRange size) implements EntitySubPredicate {
 	public static final MapCodec<SlimePredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "size", NumberRange.IntRange.ANY).forGetter(SlimePredicate::size)
@@ -28,7 +28,7 @@ public record SlimePredicate(NumberRange.IntRange size) implements TypeSpecificP
 	}
 
 	@Override
-	public TypeSpecificPredicate.Type type() {
-		return TypeSpecificPredicate.Deserializers.SLIME;
+	public MapCodec<SlimePredicate> getCodec() {
+		return EntitySubPredicateTypes.SLIME;
 	}
 }

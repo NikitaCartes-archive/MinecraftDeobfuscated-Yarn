@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -102,5 +103,10 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	public void awaitAll(boolean sync) {
 		this.storage.completeAll(sync).join();
 		this.taskExecutor.awaitAll();
+	}
+
+	@Override
+	public void close() throws IOException {
+		this.storage.close();
 	}
 }

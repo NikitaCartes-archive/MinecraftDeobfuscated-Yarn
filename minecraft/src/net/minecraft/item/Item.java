@@ -616,7 +616,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 
 	protected static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
 		Vec3d vec3d = player.getEyePos();
-		Vec3d vec3d2 = vec3d.add(player.getRotationVec(1.0F).multiply(player.getBlockInteractionRange()));
+		Vec3d vec3d2 = vec3d.add(player.getRotationVector(player.getPitch(), player.getYaw()).multiply(player.getBlockInteractionRange()));
 		return world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
 	}
 

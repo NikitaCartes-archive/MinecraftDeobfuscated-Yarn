@@ -100,8 +100,7 @@ public class CreateWorldScreen extends Screen {
 	private static final Text PREPARING_TEXT = Text.translatable("createWorld.preparing");
 	private static final int field_42170 = 10;
 	private static final int field_42171 = 8;
-	public static final Identifier HEADER_SEPARATOR_TEXTURE = new Identifier("textures/gui/header_separator.png");
-	public static final Identifier FOOTER_SEPARATOR_TEXTURE = new Identifier("textures/gui/footer_separator.png");
+	public static final Identifier TAB_HEADER_BACKGROUND_TEXTURE = new Identifier("textures/gui/tab_header_background.png");
 	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	final WorldCreator worldCreator;
 	private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove(child));
@@ -303,12 +302,13 @@ public class CreateWorldScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		RenderSystem.enableBlend();
-		context.drawTexture(FOOTER_SEPARATOR_TEXTURE, 0, this.height - this.layout.getFooterHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2);
+		context.drawTexture(Screen.FOOTER_SEPARATOR_TEXTURE, 0, this.height - this.layout.getFooterHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2);
 		RenderSystem.disableBlend();
 	}
 
 	@Override
 	protected void renderDarkening(DrawContext context) {
+		context.drawTexture(TAB_HEADER_BACKGROUND_TEXTURE, 0, 0, 0.0F, 0.0F, this.width, this.layout.getHeaderHeight(), 16, 16);
 		this.renderDarkening(context, 0, this.layout.getHeaderHeight(), this.width, this.height);
 	}
 

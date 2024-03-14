@@ -45,6 +45,11 @@ public class LootFunctionTypes {
 	public static final LootFunctionType REFERENCE = register("reference", ReferenceLootFunction.CODEC);
 	public static final LootFunctionType SEQUENCE = register("sequence", AndLootFunction.CODEC);
 	public static final LootFunctionType COPY_COMPONENTS = register("copy_components", CopyComponentsLootFunction.CODEC);
+	public static final LootFunctionType SET_FIREWORKS = register("set_fireworks", SetFireworksLootFunction.CODEC);
+	public static final LootFunctionType SET_FIREWORK_EXPLOSION = register("set_firework_explosion", SetFireworkExplosionLootFunction.CODEC);
+	public static final LootFunctionType SET_BOOK_COVER = register("set_book_cover", SetBookCoverLootFunction.CODEC);
+	public static final LootFunctionType SET_WRITTEN_BOOK_PAGES = register("set_written_book_pages", SetWrittenBookPagesLootFunction.CODEC);
+	public static final LootFunctionType SET_WRITABLE_BOOK_PAGES = register("set_writable_book_pages", SetWritableBookPagesLootFunction.CODEC);
 
 	private static LootFunctionType register(String id, Codec<? extends LootFunction> codec) {
 		return Registry.register(Registries.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(codec));

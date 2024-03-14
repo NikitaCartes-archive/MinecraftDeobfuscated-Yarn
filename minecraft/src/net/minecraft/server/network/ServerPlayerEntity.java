@@ -96,6 +96,8 @@ import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
+import net.minecraft.particle.BlockStateParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
@@ -226,6 +228,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private final TextStream textStream;
 	private boolean filterText;
 	private boolean allowServerListing;
+	private boolean spawnExtraParticlesOnFall;
 	private SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
@@ -273,6 +276,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	};
 	@Nullable
 	private PublicPlayerSession session;
+	@Nullable
+	public final Object field_49777;
 	private int screenHandlerSyncId;
 	public boolean notInAnyWorld;
 
@@ -285,6 +290,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.moveToSpawn(world);
 		this.setClientOptions(clientOptions);
+		this.field_49777 = null;
 	}
 
 	private void moveToSpawn(ServerWorld world) {
@@ -366,6 +372,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 					.orElse(World.OVERWORLD);
 			}
 		}
+
+		this.spawnExtraParticlesOnFall = nbt.getBoolean("spawn_extra_particles_on_fall");
 	}
 
 	@Override
@@ -409,6 +417,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(encoded -> nbt.put("SpawnDimension", encoded));
 		}
+
+		nbt.putBoolean("spawn_extra_particles_on_fall", this.spawnExtraParticlesOnFall);
 	}
 
 	public void setExperiencePoints(int points) {
@@ -997,8 +1007,17 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void handleFall(double xDifference, double yDifference, double zDifference, boolean onGround) {
 		if (!this.isRegionUnloaded()) {
 			this.updateSupportingBlockPos(onGround, new Vec3d(xDifference, yDifference, zDifference));
-			BlockPos blockPos = this.getLandingPos();
-			super.fall(yDifference, onGround, this.getWorld().getBlockState(blockPos), blockPos);
+			BlockPos blockPos = this.getSteppingPos();
+			BlockState blockState = this.getWorld().getBlockState(blockPos);
+			if (this.spawnExtraParticlesOnFall && onGround && this.fallDistance > 0.0F) {
+				Vec3d vec3d = blockPos.toCenterPos().add(0.0, 0.5, 0.0);
+				int i = (int)(50.0F * this.fallDistance);
+				((ServerWorld)this.getWorld())
+					.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), vec3d.x, vec3d.y, vec3d.z, i, 0.3F, 0.3F, 0.3F, 0.15F);
+				this.spawnExtraParticlesOnFall = false;
+			}
+
+			super.fall(yDifference, onGround, blockState, blockPos);
 		}
 	}
 
@@ -1825,6 +1844,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public Optional<SculkShriekerWarningManager> getSculkShriekerWarningManager() {
 		return Optional.of(this.sculkShriekerWarningManager);
+	}
+
+	public void setSpawnExtraParticlesOnFall(boolean spawnExtraParticlesOnFall) {
+		this.spawnExtraParticlesOnFall = spawnExtraParticlesOnFall;
 	}
 
 	@Override

@@ -48,12 +48,6 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public void close() {
-		this.gameOptions.write();
-		super.close();
-	}
-
-	@Override
 	protected void initTabNavigation() {
 		super.initTabNavigation();
 		this.buttonList.position(this.width, this.layout);

@@ -24,7 +24,7 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
-import net.minecraft.predicate.entity.TypeSpecificPredicate;
+import net.minecraft.predicate.entity.EntitySubPredicateTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -117,7 +117,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	protected LootCondition.Builder killedByFrog(FrogVariant variant) {
 		return DamageSourcePropertiesLootCondition.builder(
 			DamageSourcePredicate.Builder.create()
-				.sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(TypeSpecificPredicate.frog(variant)))
+				.sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant(variant)))
 		);
 	}
 

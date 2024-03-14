@@ -15,6 +15,7 @@ import net.minecraft.util.Util;
 
 public class SlotRanges {
 	private static final List<SlotRange> SLOT_RANGES = Util.make(new ArrayList(), list -> {
+		createAndAdd(list, "contents", 0);
 		createAndAdd(list, "container.", 0, 54);
 		createAndAdd(list, "hotbar.", 0, 9);
 		createAndAdd(list, "inventory.", 9, 27);

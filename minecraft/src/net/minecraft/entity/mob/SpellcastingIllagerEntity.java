@@ -10,6 +10,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.function.ValueLists;
@@ -78,16 +79,34 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		super.tick();
 		if (this.getWorld().isClient && this.isSpellcasting()) {
 			SpellcastingIllagerEntity.Spell spell = this.getSpell();
-			double d = spell.particleVelocity[0];
-			double e = spell.particleVelocity[1];
-			double f = spell.particleVelocity[2];
-			float g = this.bodyYaw * (float) (Math.PI / 180.0) + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
-			float h = MathHelper.cos(g);
-			float i = MathHelper.sin(g);
-			double j = 0.6 * (double)this.getScale();
-			double k = 1.8 * (double)this.getScale();
-			this.getWorld().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)h * j, this.getY() + k, this.getZ() + (double)i * j, d, e, f);
-			this.getWorld().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)h * j, this.getY() + k, this.getZ() - (double)i * j, d, e, f);
+			float f = (float)spell.particleVelocity[0];
+			float g = (float)spell.particleVelocity[1];
+			float h = (float)spell.particleVelocity[2];
+			float i = this.bodyYaw * (float) (Math.PI / 180.0) + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
+			float j = MathHelper.cos(i);
+			float k = MathHelper.sin(i);
+			double d = 0.6 * (double)this.getScale();
+			double e = 1.8 * (double)this.getScale();
+			this.getWorld()
+				.addParticle(
+					EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h),
+					this.getX() + (double)j * d,
+					this.getY() + e,
+					this.getZ() + (double)k * d,
+					0.0,
+					0.0,
+					0.0
+				);
+			this.getWorld()
+				.addParticle(
+					EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h),
+					this.getX() - (double)j * d,
+					this.getY() + e,
+					this.getZ() - (double)k * d,
+					0.0,
+					0.0,
+					0.0
+				);
 		}
 	}
 

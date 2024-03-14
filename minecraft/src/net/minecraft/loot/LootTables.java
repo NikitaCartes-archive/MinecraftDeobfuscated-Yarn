@@ -53,6 +53,9 @@ public class LootTables {
 	public static final Identifier ANCIENT_CITY_ICE_BOX_CHEST = register("chests/ancient_city_ice_box");
 	public static final Identifier RUINED_PORTAL_CHEST = register("chests/ruined_portal");
 	public static final Identifier TRIAL_CHAMBERS_REWARD_CHEST = register("chests/trial_chambers/reward");
+	public static final Identifier TRIAL_CHAMBERS_REWARD_COMMON_CHEST = register("chests/trial_chambers/reward_common");
+	public static final Identifier TRIAL_CHAMBERS_REWARD_RARE_CHEST = register("chests/trial_chambers/reward_rare");
+	public static final Identifier TRIAL_CHAMBERS_REWARD_UNIQUE_CHEST = register("chests/trial_chambers/reward_unique");
 	public static final Identifier TRIAL_CHAMBERS_SUPPLY_CHEST = register("chests/trial_chambers/supply");
 	public static final Identifier TRIAL_CHAMBERS_CORRIDOR_CHEST = register("chests/trial_chambers/corridor");
 	public static final Identifier TRIAL_CHAMBERS_INTERSECTION_CHEST = register("chests/trial_chambers/intersection");

@@ -11,7 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
-public record FishingHookPredicate(Optional<Boolean> inOpenWater) implements TypeSpecificPredicate {
+public record FishingHookPredicate(Optional<Boolean> inOpenWater) implements EntitySubPredicate {
 	public static final FishingHookPredicate ALL = new FishingHookPredicate(Optional.empty());
 	public static final MapCodec<FishingHookPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "in_open_water").forGetter(FishingHookPredicate::inOpenWater))
@@ -23,8 +23,8 @@ public record FishingHookPredicate(Optional<Boolean> inOpenWater) implements Typ
 	}
 
 	@Override
-	public TypeSpecificPredicate.Type type() {
-		return TypeSpecificPredicate.Deserializers.FISHING_HOOK;
+	public MapCodec<FishingHookPredicate> getCodec() {
+		return EntitySubPredicateTypes.FISHING_HOOK;
 	}
 
 	@Override

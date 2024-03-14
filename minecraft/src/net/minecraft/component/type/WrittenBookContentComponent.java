@@ -20,7 +20,9 @@ import net.minecraft.text.TextCodecs;
 import net.minecraft.text.Texts;
 import net.minecraft.util.dynamic.Codecs;
 
-public record WrittenBookContentComponent(RawFilteredPair<String> title, String author, int generation, List<RawFilteredPair<Text>> pages, boolean resolved) {
+public record WrittenBookContentComponent(RawFilteredPair<String> title, String author, int generation, List<RawFilteredPair<Text>> pages, boolean resolved)
+	implements BookContent<Text, WrittenBookContentComponent> {
+	public static final WrittenBookContentComponent DEFAULT = new WrittenBookContentComponent(RawFilteredPair.of(""), "", 0, List.of(), true);
 	public static final int MAX_SERIALIZED_PAGE_LENGTH = 32767;
 	public static final int MAX_PAGE_COUNT = 100;
 	public static final int field_49377 = 16;
@@ -28,7 +30,7 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 	public static final int MAX_GENERATION = 3;
 	public static final int UNCOPIABLE_GENERATION = 2;
 	private static final Codec<RawFilteredPair<Text>> PAGE_CODEC = RawFilteredPair.createCodec(TextCodecs.codec(32767));
-	private static final Codec<List<RawFilteredPair<Text>>> PAGES_CODEC = Codecs.list(PAGE_CODEC.listOf(), 100);
+	public static final Codec<List<RawFilteredPair<Text>>> PAGES_CODEC = Codecs.list(PAGE_CODEC.listOf(), 100);
 	public static final Codec<WrittenBookContentComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					RawFilteredPair.createCodec(Codecs.string(0, 32)).fieldOf("title").forGetter(WrittenBookContentComponent::title),
@@ -99,5 +101,9 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 
 	public List<Text> getPages(boolean shouldFilter) {
 		return Lists.transform(this.pages, page -> (Text)page.get(shouldFilter));
+	}
+
+	public WrittenBookContentComponent withPages(List<RawFilteredPair<Text>> list) {
+		return new WrittenBookContentComponent(this.title, this.author, this.generation, list, false);
 	}
 }

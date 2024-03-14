@@ -160,7 +160,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			int i = ControlsListWidget.this.getScrollbarPositionX() - this.resetButton.getWidth() - 10;
+			int i = ControlsListWidget.this.getScrollbarX() - this.resetButton.getWidth() - 10;
 			int j = y - 2;
 			this.resetButton.setPosition(i, j);
 			this.resetButton.render(context, mouseX, mouseY, tickDelta);

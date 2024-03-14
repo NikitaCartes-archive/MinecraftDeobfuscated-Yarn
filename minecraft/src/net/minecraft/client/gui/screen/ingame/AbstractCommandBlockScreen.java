@@ -161,4 +161,9 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		this.commandSuggestor.render(context, mouseX, mouseY);
 	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderInGameBackground(context);
+	}
 }

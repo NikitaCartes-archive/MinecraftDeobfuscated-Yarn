@@ -127,8 +127,9 @@ public class StatsScreen extends Screen {
 	public void onStatsReady() {
 		if (this.downloadingStats) {
 			this.createLists();
-			this.createButtons();
 			this.selectStatList(this.generalStats);
+			this.createButtons();
+			this.setInitialFocus();
 			this.downloadingStats = false;
 		}
 	}
@@ -204,8 +205,10 @@ public class StatsScreen extends Screen {
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.entityTypeName, x + 2, y + 1, Colors.WHITE);
-				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.killedText, x + 2 + 10, y + 1 + 9, this.killedAny ? Colors.LIGHT_GRAY : Colors.GRAY);
-				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.killedByText, x + 2 + 10, y + 1 + 9 * 2, this.killedByAny ? Colors.LIGHT_GRAY : Colors.GRAY);
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.killedText, x + 2 + 10, y + 1 + 9, this.killedAny ? Colors.ALTERNATE_WHITE : Colors.GRAY);
+				context.drawTextWithShadow(
+					StatsScreen.this.textRenderer, this.killedByText, x + 2 + 10, y + 1 + 9 * 2, this.killedByAny ? Colors.ALTERNATE_WHITE : Colors.GRAY
+				);
 			}
 
 			@Override
@@ -218,7 +221,7 @@ public class StatsScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	class GeneralStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.GeneralStatsListWidget.Entry> {
 		public GeneralStatsListWidget(MinecraftClient client) {
-			super(client, StatsScreen.this.width, StatsScreen.this.height - 33 - 58, 33, 11);
+			super(client, StatsScreen.this.width, StatsScreen.this.height - 33 - 58, 33, 14);
 			ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<>(Stats.CUSTOM.iterator());
 			objectArrayList.sort(Comparator.comparing(statx -> I18n.translate(StatsScreen.getStatTranslationKey(statx))));
 
@@ -248,11 +251,11 @@ public class StatsScreen extends Screen {
 
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.displayName, x + 2, y, index % 2 == 0 ? Colors.WHITE : Colors.GRAY);
+				int i = y + entryHeight / 2 - 9 / 2;
+				int j = index % 2 == 0 ? Colors.WHITE : Colors.ALTERNATE_WHITE;
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.displayName, x + 2, i, j);
 				String string = this.getFormatted();
-				context.drawTextWithShadow(
-					StatsScreen.this.textRenderer, string, x + entryWidth - StatsScreen.this.textRenderer.getWidth(string) - 3, y, index % 2 == 0 ? Colors.WHITE : Colors.GRAY
-				);
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, string, x + entryWidth - StatsScreen.this.textRenderer.getWidth(string) - 4, i, j);
 			}
 
 			@Override
@@ -485,7 +488,9 @@ public class StatsScreen extends Screen {
 
 			protected void render(DrawContext context, @Nullable Stat<?> stat, int x, int y, boolean white) {
 				Text text = (Text)(stat == null ? StatsScreen.NONE_TEXT : Text.literal(stat.format(StatsScreen.this.statHandler.getStat(stat))));
-				context.drawTextWithShadow(StatsScreen.this.textRenderer, text, x - StatsScreen.this.textRenderer.getWidth(text), y, white ? Colors.WHITE : Colors.GRAY);
+				context.drawTextWithShadow(
+					StatsScreen.this.textRenderer, text, x - StatsScreen.this.textRenderer.getWidth(text), y, white ? Colors.WHITE : Colors.ALTERNATE_WHITE
+				);
 			}
 
 			@Override

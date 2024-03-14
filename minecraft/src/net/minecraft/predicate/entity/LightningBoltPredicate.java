@@ -11,7 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
-public record LightningBoltPredicate(NumberRange.IntRange blocksSetOnFire, Optional<EntityPredicate> entityStruck) implements TypeSpecificPredicate {
+public record LightningBoltPredicate(NumberRange.IntRange blocksSetOnFire, Optional<EntityPredicate> entityStruck) implements EntitySubPredicate {
 	public static final MapCodec<LightningBoltPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "blocks_set_on_fire", NumberRange.IntRange.ANY)
@@ -26,8 +26,8 @@ public record LightningBoltPredicate(NumberRange.IntRange blocksSetOnFire, Optio
 	}
 
 	@Override
-	public TypeSpecificPredicate.Type type() {
-		return TypeSpecificPredicate.Deserializers.LIGHTNING;
+	public MapCodec<LightningBoltPredicate> getCodec() {
+		return EntitySubPredicateTypes.LIGHTNING;
 	}
 
 	@Override

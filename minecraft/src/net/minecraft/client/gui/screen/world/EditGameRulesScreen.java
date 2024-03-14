@@ -32,6 +32,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameRules;
 
@@ -42,9 +43,11 @@ public class EditGameRulesScreen extends Screen {
 	final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private final Consumer<Optional<GameRules>> ruleSaver;
 	private final Set<EditGameRulesScreen.AbstractRuleWidget> invalidRuleWidgets = Sets.<EditGameRulesScreen.AbstractRuleWidget>newHashSet();
+	private final GameRules gameRules;
+	@Nullable
+	private EditGameRulesScreen.RuleListWidget ruleListWidget;
 	@Nullable
 	private ButtonWidget doneButton;
-	private final GameRules gameRules;
 
 	public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
 		super(TITLE);
@@ -55,10 +58,10 @@ public class EditGameRulesScreen extends Screen {
 	@Override
 	protected void init() {
 		this.layout.addHeader(TITLE, this.textRenderer);
-		this.layout.addBody(new EditGameRulesScreen.RuleListWidget(this.gameRules));
+		this.ruleListWidget = this.layout.addBody(new EditGameRulesScreen.RuleListWidget(this.gameRules));
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
 		this.doneButton = directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules))).build());
-		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.CANCEL, buttonWidget -> this.close()).build());
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
@@ -68,6 +71,9 @@ public class EditGameRulesScreen extends Screen {
 	@Override
 	protected void initTabNavigation() {
 		this.layout.refreshPositions();
+		if (this.ruleListWidget != null) {
+			this.ruleListWidget.position(this.width, this.layout);
+		}
 	}
 
 	@Override
@@ -136,7 +142,7 @@ public class EditGameRulesScreen extends Screen {
 					this.valueWidget.setEditableColor(14737632);
 					EditGameRulesScreen.this.markValid(this);
 				} else {
-					this.valueWidget.setEditableColor(16711680);
+					this.valueWidget.setEditableColor(-65536);
 					EditGameRulesScreen.this.markInvalid(this);
 				}
 			});
@@ -174,10 +180,10 @@ public class EditGameRulesScreen extends Screen {
 
 		protected void drawName(DrawContext context, int x, int y) {
 			if (this.name.size() == 1) {
-				context.drawText(EditGameRulesScreen.this.client.textRenderer, (OrderedText)this.name.get(0), y, x + 5, 16777215, false);
+				context.drawText(EditGameRulesScreen.this.client.textRenderer, (OrderedText)this.name.get(0), y, x + 5, -1, false);
 			} else if (this.name.size() >= 2) {
-				context.drawText(EditGameRulesScreen.this.client.textRenderer, (OrderedText)this.name.get(0), y, x, 16777215, false);
-				context.drawText(EditGameRulesScreen.this.client.textRenderer, (OrderedText)this.name.get(1), y, x + 10, 16777215, false);
+				context.drawText(EditGameRulesScreen.this.client.textRenderer, (OrderedText)this.name.get(0), y, x, -1, false);
+				context.drawText(EditGameRulesScreen.this.client.textRenderer, (OrderedText)this.name.get(1), y, x + 10, -1, false);
 			}
 		}
 	}
@@ -193,7 +199,7 @@ public class EditGameRulesScreen extends Screen {
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			context.drawCenteredTextWithShadow(EditGameRulesScreen.this.client.textRenderer, this.name, x + entryWidth / 2, y + 5, 16777215);
+			context.drawCenteredTextWithShadow(EditGameRulesScreen.this.client.textRenderer, this.name, x + entryWidth / 2, y + 5, Colors.WHITE);
 		}
 
 		@Override

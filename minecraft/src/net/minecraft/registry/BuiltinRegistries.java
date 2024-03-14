@@ -52,7 +52,7 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::bootstrap)
 		.addRegistry(RegistryKeys.WOLF_VARIANT, WolfVariants::bootstrap)
 		.addRegistry(RegistryKeys.DAMAGE_TYPE, DamageTypes::bootstrap)
-		.addRegistry(RegistryKeys.BANNER_PATTERN, BannerPatterns::registerAndGetDefault);
+		.addRegistry(RegistryKeys.BANNER_PATTERN, BannerPatterns::bootstrap);
 
 	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
 		validate(wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME));

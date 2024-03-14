@@ -11,6 +11,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -86,12 +87,11 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	private void spawnParticles(int amount) {
 		int i = this.getColor();
 		if (i != -1 && amount > 0) {
-			double d = (double)(i >> 16 & 0xFF) / 255.0;
-			double e = (double)(i >> 8 & 0xFF) / 255.0;
-			double f = (double)(i >> 0 & 0xFF) / 255.0;
-
 			for (int j = 0; j < amount; j++) {
-				this.getWorld().addParticle(ParticleTypes.ENTITY_EFFECT, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), d, e, f);
+				this.getWorld()
+					.addParticle(
+						EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, i), this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 0.0, 0.0, 0.0
+					);
 			}
 		}
 	}
@@ -135,12 +135,21 @@ public class ArrowEntity extends PersistentProjectileEntity {
 		if (status == 0) {
 			int i = this.getColor();
 			if (i != -1) {
-				double d = (double)(i >> 16 & 0xFF) / 255.0;
-				double e = (double)(i >> 8 & 0xFF) / 255.0;
-				double f = (double)(i >> 0 & 0xFF) / 255.0;
+				float f = (float)(i >> 16 & 0xFF) / 255.0F;
+				float g = (float)(i >> 8 & 0xFF) / 255.0F;
+				float h = (float)(i >> 0 & 0xFF) / 255.0F;
 
 				for (int j = 0; j < 20; j++) {
-					this.getWorld().addParticle(ParticleTypes.ENTITY_EFFECT, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), d, e, f);
+					this.getWorld()
+						.addParticle(
+							EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h),
+							this.getParticleX(0.5),
+							this.getRandomBodyY(),
+							this.getParticleZ(0.5),
+							0.0,
+							0.0,
+							0.0
+						);
 				}
 			}
 		} else {

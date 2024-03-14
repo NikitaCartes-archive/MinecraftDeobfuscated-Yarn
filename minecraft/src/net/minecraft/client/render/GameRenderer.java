@@ -85,6 +85,7 @@ import org.slf4j.Logger;
 public class GameRenderer implements AutoCloseable {
 	private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
 	private static final Identifier BLUR_PROCESSOR = new Identifier("shaders/post/blur.json");
+	private static final float field_49904 = 10.0F;
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final boolean field_32688 = false;
 	/**
@@ -128,34 +129,6 @@ public class GameRenderer implements AutoCloseable {
 	PostEffectProcessor postProcessor;
 	@Nullable
 	private PostEffectProcessor blurPostProcessor;
-	static final Identifier[] SUPER_SECRET_SETTING_PROGRAMS = new Identifier[]{
-		new Identifier("shaders/post/notch.json"),
-		new Identifier("shaders/post/fxaa.json"),
-		new Identifier("shaders/post/art.json"),
-		new Identifier("shaders/post/bumpy.json"),
-		new Identifier("shaders/post/blobs2.json"),
-		new Identifier("shaders/post/pencil.json"),
-		new Identifier("shaders/post/color_convolve.json"),
-		new Identifier("shaders/post/deconverge.json"),
-		new Identifier("shaders/post/flip.json"),
-		new Identifier("shaders/post/invert.json"),
-		new Identifier("shaders/post/ntsc.json"),
-		new Identifier("shaders/post/outline.json"),
-		new Identifier("shaders/post/phosphor.json"),
-		new Identifier("shaders/post/scan_pincushion.json"),
-		new Identifier("shaders/post/sobel.json"),
-		new Identifier("shaders/post/bits.json"),
-		new Identifier("shaders/post/desaturate.json"),
-		new Identifier("shaders/post/green.json"),
-		BLUR_PROCESSOR,
-		new Identifier("shaders/post/wobble.json"),
-		new Identifier("shaders/post/blobs.json"),
-		new Identifier("shaders/post/antialias.json"),
-		new Identifier("shaders/post/creeper.json"),
-		new Identifier("shaders/post/spider.json")
-	};
-	public static final int SUPER_SECRET_SETTING_COUNT = SUPER_SECRET_SETTING_PROGRAMS.length;
-	int superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
 	private boolean postProcessorEnabled;
 	private final Camera camera = new Camera();
 	public ShaderProgram blitScreenProgram;
@@ -320,7 +293,6 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		this.postProcessor = null;
-		this.superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
 	}
 
 	public void togglePostProcessorEnabled() {
@@ -342,22 +314,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	public void cycleSuperSecretSetting() {
-		if (this.client.getCameraEntity() instanceof PlayerEntity) {
-			if (this.postProcessor != null) {
-				this.postProcessor.close();
-			}
-
-			this.superSecretSettingIndex = (this.superSecretSettingIndex + 1) % (SUPER_SECRET_SETTING_PROGRAMS.length + 1);
-			if (this.superSecretSettingIndex == SUPER_SECRET_SETTING_COUNT) {
-				this.postProcessor = null;
-			} else {
-				this.loadPostProcessor(SUPER_SECRET_SETTING_PROGRAMS[this.superSecretSettingIndex]);
-			}
-		}
-	}
-
-	void loadPostProcessor(Identifier id) {
+	private void loadPostProcessor(Identifier id) {
 		if (this.postProcessor != null) {
 			this.postProcessor.close();
 		}
@@ -368,11 +325,9 @@ public class GameRenderer implements AutoCloseable {
 			this.postProcessorEnabled = true;
 		} catch (IOException var3) {
 			LOGGER.warn("Failed to load shader: {}", id, var3);
-			this.superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
 			this.postProcessorEnabled = false;
 		} catch (JsonSyntaxException var4) {
 			LOGGER.warn("Failed to parse shader: {}", id, var4);
-			this.superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
 			this.postProcessorEnabled = false;
 		}
 	}
@@ -393,9 +348,11 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	public void renderBlur(float delta) {
-		if (this.blurPostProcessor != null) {
-			this.blurPostProcessor.setUniforms("Alpha", (float)this.client.options.getMenuBackgroundBlurrinessValue());
+		float f = (float)this.client.options.getMenuBackgroundBlurrinessValue();
+		float g = f * 10.0F;
+		if (this.blurPostProcessor != null && g >= 1.0F) {
 			RenderSystem.enableBlend();
+			this.blurPostProcessor.setUniforms("Radius", g);
 			this.blurPostProcessor.render(delta);
 			RenderSystem.disableBlend();
 		}
@@ -451,11 +408,7 @@ public class GameRenderer implements AutoCloseable {
 				}
 
 				GameRenderer.this.postProcessor = null;
-				if (GameRenderer.this.superSecretSettingIndex == GameRenderer.SUPER_SECRET_SETTING_COUNT) {
-					GameRenderer.this.onCameraEntitySet(GameRenderer.this.client.getCameraEntity());
-				} else {
-					GameRenderer.this.loadPostProcessor(GameRenderer.SUPER_SECRET_SETTING_PROGRAMS[GameRenderer.this.superSecretSettingIndex]);
-				}
+				GameRenderer.this.onCameraEntitySet(GameRenderer.this.client.getCameraEntity());
 			}
 
 			@Override
@@ -521,9 +474,7 @@ public class GameRenderer implements AutoCloseable {
 			list2.add(Pair.of(new ShaderProgram(factory, "position_tex", VertexFormats.POSITION_TEXTURE), program -> positionTexProgram = program));
 			list2.add(Pair.of(new ShaderProgram(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR), program -> positionTexColorProgram = program));
 			list2.add(
-				Pair.of(
-					new ShaderProgram(factory, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shaderProgram -> renderTypeSolidProgram = shaderProgram
-				)
+				Pair.of(new ShaderProgram(factory, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), program -> renderTypeSolidProgram = program)
 			);
 			list2.add(
 				Pair.of(
@@ -929,11 +880,15 @@ public class GameRenderer implements AutoCloseable {
 		this.zoom = 1.0F;
 	}
 
-	private void renderHand(Camera camera, float tickDelta) {
+	private void renderHand(Camera camera, float tickDelta, Matrix4f matrix4f) {
 		if (!this.renderingPanorama) {
 			this.loadProjectionMatrix(this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false)));
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.push();
+			matrixStack.multiplyPositionMatrix(matrix4f.invert(new Matrix4f()));
+			Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+			matrix4fStack.pushMatrix().mul(matrix4f);
+			RenderSystem.applyModelViewMatrix();
 			this.tiltViewWhenHurt(matrixStack, tickDelta);
 			if (this.client.options.getBobView().getValue()) {
 				this.bobView(matrixStack, tickDelta);
@@ -956,6 +911,8 @@ public class GameRenderer implements AutoCloseable {
 				this.lightmapTextureManager.disable();
 			}
 
+			matrix4fStack.popMatrix();
+			RenderSystem.applyModelViewMatrix();
 			matrixStack.pop();
 			if (this.client.options.getPerspective().isFirstPerson() && !bl) {
 				InGameOverlayRenderer.renderOverlays(this.client, matrixStack);
@@ -1109,6 +1066,10 @@ public class GameRenderer implements AutoCloseable {
 				}
 			}
 
+			if (bl && tick && this.client.world != null) {
+				this.client.inGameHud.renderAutosaveIndicator(drawContext, f);
+			}
+
 			if (bl) {
 				this.client.getProfiler().push("toasts");
 				this.client.getToastManager().draw(drawContext);
@@ -1246,7 +1207,7 @@ public class GameRenderer implements AutoCloseable {
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
 			RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-			this.renderHand(camera, tickDelta);
+			this.renderHand(camera, tickDelta, matrix4f2);
 		}
 
 		this.client.getProfiler().pop();

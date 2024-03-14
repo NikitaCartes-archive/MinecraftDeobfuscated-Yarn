@@ -96,7 +96,6 @@ public class ParticleManager implements ResourceReloader {
 	}
 
 	private void registerDefaultFactories() {
-		this.registerFactory(ParticleTypes.AMBIENT_ENTITY_EFFECT, SpellParticle.EntityAmbientFactory::new);
 		this.registerFactory(ParticleTypes.ANGRY_VILLAGER, EmotionParticle.AngryVillagerFactory::new);
 		this.registerFactory(ParticleTypes.BLOCK_MARKER, new BlockMarkerParticle.Factory());
 		this.registerFactory(ParticleTypes.BLOCK, new BlockDustParticle.Factory());

@@ -37,10 +37,12 @@ import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.EntitySubPredicateTypes;
 import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.predicate.entity.TypeSpecificPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
+import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
@@ -400,7 +402,11 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				"silk_touch_nest",
 				BeeNestDestroyedCriterion.Conditions.create(
 					Blocks.BEE_NEST,
-					ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))),
+					ItemPredicate.Builder.create()
+						.subPredicate(
+							ItemSubPredicateTypes.ENCHANTMENTS,
+							EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))))
+						),
 					NumberRange.IntRange.exactly(3)
 				)
 			)
@@ -580,7 +586,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 							ItemPredicate.Builder.create().items(Items.LEAD),
 							Optional.of(
 								EntityPredicate.contextPredicateFromEntityPredicate(
-									EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(TypeSpecificPredicate.frog((FrogVariant)variant.value()))
+									EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant((FrogVariant)variant.value()))
 								)
 							)
 						)
@@ -641,7 +647,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.forEach(
 				entry -> builder.criterion(
 						((RegistryKey)entry.getKey()).getValue().toString(),
-						TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(TypeSpecificPredicate.cat((CatVariant)entry.getValue())))
+						TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(EntitySubPredicateTypes.catVariant((CatVariant)entry.getValue())))
 					)
 			);
 		return builder;

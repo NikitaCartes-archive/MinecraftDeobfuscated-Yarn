@@ -39,12 +39,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		this(type, world);
 		this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
 		this.refreshPosition();
-		double d = Math.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
-		if (d != 0.0) {
-			this.powerX = directionX / d * 0.1;
-			this.powerY = directionY / d * 0.1;
-			this.powerZ = directionZ / d * 0.1;
-		}
+		this.setPower(directionX, directionY, directionZ);
 	}
 
 	public ExplosiveProjectileEntity(
@@ -116,6 +111,12 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		} else {
 			this.discard();
 		}
+	}
+
+	@Override
+	public void setVelocityClient(double x, double y, double z) {
+		super.setVelocityClient(x, y, z);
+		this.setPower(x, y, z);
 	}
 
 	@Override
@@ -223,11 +224,15 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		double d = packet.getVelocityX();
 		double e = packet.getVelocityY();
 		double f = packet.getVelocityZ();
-		double g = Math.sqrt(d * d + e * e + f * f);
-		if (g != 0.0) {
-			this.powerX = d / g * 0.1;
-			this.powerY = e / g * 0.1;
-			this.powerZ = f / g * 0.1;
+		this.setPower(d, e, f);
+	}
+
+	private void setPower(double velocityX, double velocityY, double velocityZ) {
+		double d = Math.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
+		if (d != 0.0) {
+			this.powerX = velocityX / d * 0.1;
+			this.powerY = velocityY / d * 0.1;
+			this.powerZ = velocityZ / d * 0.1;
 		}
 	}
 }

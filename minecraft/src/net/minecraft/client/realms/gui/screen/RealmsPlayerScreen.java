@@ -40,7 +40,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	private final RealmsConfigureWorldScreen parent;
 	final RealmsServer serverData;
 	@Nullable
-	private RealmsPlayerScreen.InvitedObjectSelectionList selectionList;
+	RealmsPlayerScreen.InvitedObjectSelectionList selectionList;
 	boolean stateChanged;
 
 	public RealmsPlayerScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData) {
@@ -220,6 +220,9 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 					RealmsPlayerScreen.this.stateChanged = true;
 					RealmsPlayerScreen.this.client.setScreen(RealmsPlayerScreen.this);
+					if (RealmsPlayerScreen.this.selectionList != null) {
+						RealmsPlayerScreen.this.selectionList.children().remove(this);
+					}
 				}, RealmsPlayerScreen.QUESTION_TEXT, Text.translatable("mco.configure.world.uninvite.player", playerInfo.getName()));
 				RealmsPlayerScreen.this.client.setScreen(realmsConfirmScreen);
 			}

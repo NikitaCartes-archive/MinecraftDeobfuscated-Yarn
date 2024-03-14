@@ -208,4 +208,16 @@ public final class BitSetVoxelSet extends VoxelSet {
 	private void clearColumn(int z1, int z2, int x, int y) {
 		this.storage.clear(this.getIndex(x, y, z1), this.getIndex(x, y, z2));
 	}
+
+	public boolean surrounded(int x, int y, int z) {
+		boolean bl = x > 0 && x < this.sizeX - 1 && y > 0 && y < this.sizeY - 1 && z > 0 && z < this.sizeZ - 1;
+		return bl
+			&& this.contains(x, y, z)
+			&& this.contains(x - 1, y, z)
+			&& this.contains(x + 1, y, z)
+			&& this.contains(x, y - 1, z)
+			&& this.contains(x, y + 1, z)
+			&& this.contains(x, y, z - 1)
+			&& this.contains(x, y, z + 1);
+	}
 }

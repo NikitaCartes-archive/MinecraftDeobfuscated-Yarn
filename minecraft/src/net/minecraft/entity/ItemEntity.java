@@ -8,6 +8,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -494,5 +495,21 @@ public class ItemEntity extends Entity implements Ownable {
 	@Override
 	public float getBodyYaw() {
 		return 180.0F - this.getRotation(0.5F) / (float) (Math.PI * 2) * 360.0F;
+	}
+
+	@Override
+	public StackReference getStackReference(int mappedIndex) {
+		return mappedIndex == 0 ? new StackReference() {
+			@Override
+			public ItemStack get() {
+				return ItemEntity.this.getStack();
+			}
+
+			@Override
+			public boolean set(ItemStack stack) {
+				ItemEntity.this.setStack(stack);
+				return true;
+			}
+		} : super.getStackReference(mappedIndex);
 	}
 }

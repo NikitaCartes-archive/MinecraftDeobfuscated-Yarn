@@ -115,7 +115,6 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 	}
 
 	public static TexturedModelData getTexturedModelData() {
-		float f = 19.0F;
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BONE, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 19.0F, 0.0F));

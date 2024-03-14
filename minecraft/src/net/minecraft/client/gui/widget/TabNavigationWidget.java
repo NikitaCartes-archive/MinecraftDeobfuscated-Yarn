@@ -21,7 +21,6 @@ import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.text.Text;
@@ -130,18 +129,10 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		RenderSystem.enableBlend();
 		context.drawTexture(
-			CreateWorldScreen.HEADER_SEPARATOR_TEXTURE,
-			0,
-			this.grid.getY() + this.grid.getHeight() - 2,
-			0.0F,
-			0.0F,
-			((TabButtonWidget)this.tabButtons.get(0)).getX(),
-			2,
-			32,
-			2
+			Screen.HEADER_SEPARATOR_TEXTURE, 0, this.grid.getY() + this.grid.getHeight() - 2, 0.0F, 0.0F, ((TabButtonWidget)this.tabButtons.get(0)).getX(), 2, 32, 2
 		);
 		int i = ((TabButtonWidget)this.tabButtons.get(this.tabButtons.size() - 1)).getRight();
-		context.drawTexture(CreateWorldScreen.HEADER_SEPARATOR_TEXTURE, i, this.grid.getY() + this.grid.getHeight() - 2, 0.0F, 0.0F, this.tabNavWidth, 2, 32, 2);
+		context.drawTexture(Screen.HEADER_SEPARATOR_TEXTURE, i, this.grid.getY() + this.grid.getHeight() - 2, 0.0F, 0.0F, this.tabNavWidth, 2, 32, 2);
 		RenderSystem.disableBlend();
 
 		for (TabButtonWidget tabButtonWidget : this.tabButtons) {

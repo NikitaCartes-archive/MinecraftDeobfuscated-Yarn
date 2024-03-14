@@ -26,11 +26,13 @@ public class PostEffectPass implements AutoCloseable {
 	private final List<Integer> samplerWidths = Lists.<Integer>newArrayList();
 	private final List<Integer> samplerHeights = Lists.<Integer>newArrayList();
 	private Matrix4f projectionMatrix;
+	private final int texFilter;
 
-	public PostEffectPass(ResourceFactory resourceFactory, String programName, Framebuffer input, Framebuffer output) throws IOException {
+	public PostEffectPass(ResourceFactory resourceFactory, String programName, Framebuffer input, Framebuffer output, boolean linear) throws IOException {
 		this.program = new JsonEffectShaderProgram(resourceFactory, programName);
 		this.input = input;
 		this.output = output;
+		this.texFilter = linear ? 9729 : 9728;
 	}
 
 	public void close() {
@@ -99,5 +101,9 @@ public class PostEffectPass implements AutoCloseable {
 
 	public JsonEffectShaderProgram getProgram() {
 		return this.program;
+	}
+
+	public int getTexFilter() {
+		return this.texFilter;
 	}
 }

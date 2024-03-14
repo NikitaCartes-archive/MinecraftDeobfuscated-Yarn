@@ -47,12 +47,14 @@ public class BannerPatterns {
 	public static final RegistryKey<BannerPattern> FLOWER = of("flower");
 	public static final RegistryKey<BannerPattern> MOJANG = of("mojang");
 	public static final RegistryKey<BannerPattern> PIGLIN = of("piglin");
+	public static final RegistryKey<BannerPattern> FLOW = of("flow");
+	public static final RegistryKey<BannerPattern> GUSTER = of("guster");
 
 	private static RegistryKey<BannerPattern> of(String id) {
 		return RegistryKey.of(RegistryKeys.BANNER_PATTERN, new Identifier(id));
 	}
 
-	public static void registerAndGetDefault(Registerable<BannerPattern> registry) {
+	public static void bootstrap(Registerable<BannerPattern> registry) {
 		register(registry, BASE);
 		register(registry, SQUARE_BOTTOM_LEFT);
 		register(registry, SQUARE_BOTTOM_RIGHT);
@@ -96,7 +98,7 @@ public class BannerPatterns {
 		register(registry, PIGLIN);
 	}
 
-	private static void register(Registerable<BannerPattern> registry, RegistryKey<BannerPattern> key) {
+	public static void register(Registerable<BannerPattern> registry, RegistryKey<BannerPattern> key) {
 		registry.register(key, new BannerPattern(key.getValue(), "block.minecraft.banner." + key.getValue().toShortTranslationKey()));
 	}
 }

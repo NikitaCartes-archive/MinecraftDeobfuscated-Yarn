@@ -224,6 +224,11 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderInGameBackground(context);
+	}
+
+	@Override
 	public void resize(MinecraftClient client, int width, int height) {
 		String string = this.inputName.getText();
 		String string2 = this.inputPosX.getText();

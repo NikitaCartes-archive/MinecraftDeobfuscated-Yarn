@@ -78,14 +78,14 @@ public class ArmorItem extends Item implements Equipment {
 		this.attributeModifiers = Suppliers.memoize(
 			() -> {
 				int i = material.value().getProtection(type);
-				float f = material.value().getToughness();
+				float f = material.value().toughness();
 				Builder<RegistryEntry<EntityAttribute>, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 				UUID uUID = (UUID)MODIFIERS.get(type);
 				builder.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(uUID, "Armor modifier", (double)i, EntityAttributeModifier.Operation.ADD_VALUE));
 				builder.put(
 					EntityAttributes.GENERIC_ARMOR_TOUGHNESS, new EntityAttributeModifier(uUID, "Armor toughness", (double)f, EntityAttributeModifier.Operation.ADD_VALUE)
 				);
-				float g = material.value().getKnockbackResistance();
+				float g = material.value().knockbackResistance();
 				if (g > 0.0F) {
 					builder.put(
 						EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
@@ -104,7 +104,7 @@ public class ArmorItem extends Item implements Equipment {
 
 	@Override
 	public int getEnchantability() {
-		return this.material.value().getEnchantability();
+		return this.material.value().enchantability();
 	}
 
 	public RegistryEntry<ArmorMaterial> getMaterial() {
@@ -113,7 +113,7 @@ public class ArmorItem extends Item implements Equipment {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return ((Ingredient)this.material.value().getRepairIngredient().get()).test(ingredient) || super.canRepair(stack, ingredient);
+		return ((Ingredient)this.material.value().repairIngredient().get()).test(ingredient) || super.canRepair(stack, ingredient);
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class ArmorItem extends Item implements Equipment {
 	}
 
 	public float getToughness() {
-		return this.material.value().getToughness();
+		return this.material.value().toughness();
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class ArmorItem extends Item implements Equipment {
 
 	@Override
 	public RegistryEntry<SoundEvent> getEquipSound() {
-		return this.getMaterial().value().getEquipSound();
+		return this.getMaterial().value().equipSound();
 	}
 
 	public static enum Type implements StringIdentifiable {

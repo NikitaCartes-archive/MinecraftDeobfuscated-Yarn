@@ -48,7 +48,7 @@ public record PlayerPredicate(
 	Object2BooleanMap<Identifier> recipes,
 	Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements,
 	Optional<EntityPredicate> lookingAt
-) implements TypeSpecificPredicate {
+) implements EntitySubPredicate {
 	public static final int LOOKING_AT_DISTANCE = 100;
 	public static final MapCodec<PlayerPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
@@ -123,8 +123,8 @@ public record PlayerPredicate(
 	}
 
 	@Override
-	public TypeSpecificPredicate.Type type() {
-		return TypeSpecificPredicate.Deserializers.PLAYER;
+	public MapCodec<PlayerPredicate> getCodec() {
+		return EntitySubPredicateTypes.PLAYER;
 	}
 
 	static record AdvancementCriteriaPredicate(Object2BooleanMap<String> criteria) implements PlayerPredicate.AdvancementPredicate {

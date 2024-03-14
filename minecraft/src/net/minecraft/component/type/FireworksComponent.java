@@ -15,7 +15,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.dynamic.Codecs;
 
 public record FireworksComponent(int flightDuration, List<FireworkExplosionComponent> explosions) implements TooltipAppender {
-	private static final int MAX_EXPLOSIONS = 256;
+	public static final int MAX_EXPLOSIONS = 256;
 	public static final Codec<FireworksComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(Codecs.UNSIGNED_BYTE, "flight_duration", 0).forGetter(FireworksComponent::flightDuration),

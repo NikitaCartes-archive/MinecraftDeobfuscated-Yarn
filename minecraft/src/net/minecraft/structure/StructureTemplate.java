@@ -375,20 +375,26 @@ public class StructureTemplate {
 		}
 	}
 
+	public static void updateCorner(WorldAccess world, int flags, VoxelSet set, BlockPos startPos) {
+		updateCorner(world, flags, set, startPos.getX(), startPos.getY(), startPos.getZ());
+	}
+
 	public static void updateCorner(WorldAccess world, int flags, VoxelSet set, int startX, int startY, int startZ) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 		set.forEachDirection((direction, x, y, z) -> {
-			BlockPos blockPos = new BlockPos(startX + x, startY + y, startZ + z);
-			BlockPos blockPos2 = blockPos.offset(direction);
-			BlockState blockState = world.getBlockState(blockPos);
-			BlockState blockState2 = world.getBlockState(blockPos2);
-			BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2, world, blockPos, blockPos2);
+			mutable.set(startX + x, startY + y, startZ + z);
+			mutable2.set(mutable, direction);
+			BlockState blockState = world.getBlockState(mutable);
+			BlockState blockState2 = world.getBlockState(mutable2);
+			BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2, world, mutable, mutable2);
 			if (blockState != blockState3) {
-				world.setBlockState(blockPos, blockState3, flags & ~Block.NOTIFY_NEIGHBORS);
+				world.setBlockState(mutable, blockState3, flags & ~Block.NOTIFY_NEIGHBORS);
 			}
 
-			BlockState blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, world, blockPos2, blockPos);
+			BlockState blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, world, mutable2, mutable);
 			if (blockState2 != blockState4) {
-				world.setBlockState(blockPos2, blockState4, flags & ~Block.NOTIFY_NEIGHBORS);
+				world.setBlockState(mutable2, blockState4, flags & ~Block.NOTIFY_NEIGHBORS);
 			}
 		});
 	}

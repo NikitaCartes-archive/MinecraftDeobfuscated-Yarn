@@ -103,11 +103,13 @@ import org.slf4j.Logger;
  * is never stored in multiple places. When two inventories hold the same instance, it
  * will duplicate the item stack (and become two instances) when one is saved and reloaded.
  * 
- * <h2 id="nbt-operations">NBT operations</h2>
+ * <h2 id="components">Components</h2>
+ * <p>Components can be used to store data specific to the item stack.
+ * Use {@link ComponentHolder#get} or {@link ComponentHolder#getOrDefault} to
+ * get the component values. Use {@link #set} or {@link #remove} to set the components.
  * 
- * <h3>NBT serialization</h3>
- * 
- * An Item Stack can be serialized with {@link #encode(RegistryWrapper.WrapperLookup)}, and deserialized with {@link #fromNbt(RegistryWrapper.WrapperLookup, NbtCompound)}.
+ * <h2 id="nbt-serialization">NBT serialization</h2>
+ * <p>An Item Stack can be serialized with {@link #encode(RegistryWrapper.WrapperLookup)}, and deserialized with {@link #fromNbt(RegistryWrapper.WrapperLookup, NbtCompound)}.
  * 
  * <div class="fabric">
  * <table border=1>
@@ -840,22 +842,69 @@ public final class ItemStack implements ComponentHolder {
 		return this.getItem().isUsedOnRelease(this);
 	}
 
+	/**
+	 * Sets the component {@code type} for this item stack to {@code value}.
+	 * 
+	 * <p>If {@code value} is {@code null}, the component is removed and the base component
+	 * is unset. To reverse the stack-specific change, instead pass the default value
+	 * as {@code value}.
+	 * 
+	 * @return the previous value set
+	 * @see #apply(DataComponentType, Object, UnaryOperator)
+	 * @see #apply(DataComponentType, Object, Object, BiFunction)
+	 */
 	@Nullable
 	public <T> T set(DataComponentType<? super T> type, @Nullable T value) {
 		return this.components.set(type, value);
 	}
 
+	/**
+	 * Sets the component {@code type} by passing the current value and {@code change}
+	 * to {@code applier}, then setting its return value as the value. If the component is
+	 * missing, {@code defaultValue} is used as the default.
+	 * 
+	 * <p>In practice, {@code applier} is a reference to a method of the component
+	 * class with one parameter, that returns a new instance of the component with the
+	 * specific value changed to {@code change}. For example, adding a lore can be accomplished
+	 * by passing reference to {@link net.minecraft.component.type.LoreComponent#with}
+	 * and the added lore, like
+	 * {@code stack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, text, LoreComponent::with)}.
+	 * 
+	 * @implNote This is the same as setting {@code applier.apply(stack.getOrDefault(type, defaultValue), change)}.
+	 * 
+	 * @return the previous value set
+	 * @see #apply(DataComponentType, Object, UnaryOperator)
+	 * @see #set
+	 */
 	@Nullable
 	public <T, U> T apply(DataComponentType<T> type, T defaultValue, U change, BiFunction<T, U, T> applier) {
 		return this.set(type, (T)applier.apply(this.getOrDefault(type, defaultValue), change));
 	}
 
+	/**
+	 * Sets the component {@code type} by passing the current value (or {@code defaultValue}
+	 * if the component is missing) to {@code applier} and then setting its return value as
+	 * the value.
+	 * 
+	 * @implNote This is the same as setting {@code applier.apply(stack.getOrDefault(type, defaultValue))}.
+	 * 
+	 * @return the previous value set
+	 * @see #set
+	 * @see #apply(DataComponentType, Object, Object, BiFunction)
+	 */
 	@Nullable
 	public <T> T apply(DataComponentType<T> type, T defaultValue, UnaryOperator<T> applier) {
 		T object = this.getOrDefault(type, defaultValue);
 		return this.set(type, (T)applier.apply(object));
 	}
 
+	/**
+	 * Removes the component {@code type}. If it is in the stack's base component,
+	 * it is unset and the component becomes missing. To reverse the stack-specific change,
+	 * instead pass the default value as {@code value}.
+	 * 
+	 * @return the previous value set
+	 */
 	@Nullable
 	public <T> T remove(DataComponentType<? extends T> type) {
 		return this.components.remove(type);

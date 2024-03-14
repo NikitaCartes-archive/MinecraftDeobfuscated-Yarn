@@ -13,6 +13,7 @@ import joptsimple.OptionSpec;
 import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.data.client.ModelProvider;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BiomeParametersProvider;
@@ -30,6 +31,7 @@ import net.minecraft.data.server.recipe.BundleRecipeProvider;
 import net.minecraft.data.server.recipe.OneTwentyOneRecipeProvider;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.data.server.tag.TagProvider;
+import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBannerPatternTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBiomeTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBlockTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneDamageTypeTagProvider;
@@ -138,7 +140,7 @@ public class Main {
 		TagProvider<Block> tagProvider = pack3.addProvider(toFactory(VanillaBlockTagProvider::new, completableFuture));
 		TagProvider<Item> tagProvider2 = pack3.addProvider(outputx -> new VanillaItemTagProvider(outputx, completableFuture, tagProvider.getTagLookupFuture()));
 		TagProvider<Biome> tagProvider3 = pack3.addProvider(toFactory(VanillaBiomeTagProvider::new, completableFuture));
-		pack3.addProvider(toFactory(VanillaBannerPatternTagProvider::new, completableFuture));
+		TagProvider<BannerPattern> tagProvider4 = pack3.addProvider(toFactory(VanillaBannerPatternTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaCatVariantTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaDamageTypeTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaEntityTypeTagProvider::new, completableFuture));
@@ -172,11 +174,11 @@ public class Main {
 		DataGenerator.Pack pack4 = dataGenerator.createVanillaSubPack(includeServer, "update_1_21");
 		pack4.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches)));
 		pack4.addProvider(toFactory(OneTwentyOneRecipeProvider::new, completableFuture3));
-		TagProvider<Block> tagProvider4 = pack4.addProvider(
+		TagProvider<Block> tagProvider5 = pack4.addProvider(
 			outputx -> new OneTwentyOneBlockTagProvider(outputx, completableFuture3, tagProvider.getTagLookupFuture())
 		);
 		pack4.addProvider(
-			outputx -> new OneTwentyOneItemTagProvider(outputx, completableFuture3, tagProvider2.getTagLookupFuture(), tagProvider4.getTagLookupFuture())
+			outputx -> new OneTwentyOneItemTagProvider(outputx, completableFuture3, tagProvider2.getTagLookupFuture(), tagProvider5.getTagLookupFuture())
 		);
 		pack4.addProvider(outputx -> new OneTwentyOneBiomeTagProvider(outputx, completableFuture3, tagProvider3.getTagLookupFuture()));
 		pack4.addProvider(toFactory(OneTwentyOneLootTableProviders::createOneTwentyOneProvider, completableFuture3));
@@ -184,6 +186,7 @@ public class Main {
 		pack4.addProvider(toFactory(OneTwentyOneEntityTypeTagProvider::new, completableFuture3));
 		pack4.addProvider(toFactory(OneTwentyOneDamageTypeTagProvider::new, completableFuture3));
 		pack4.addProvider(toFactory(OneTwentyOneAdvancementProviders::createOneTwentyOneProvider, completableFuture3));
+		pack4.addProvider(outputx -> new OneTwentyOneBannerPatternTagProvider(outputx, completableFuture3, tagProvider4.getTagLookupFuture()));
 		return dataGenerator;
 	}
 }

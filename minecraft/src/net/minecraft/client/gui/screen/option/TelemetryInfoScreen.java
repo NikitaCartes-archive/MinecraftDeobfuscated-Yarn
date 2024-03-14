@@ -18,13 +18,13 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class TelemetryInfoScreen extends Screen {
 	private static final Text TITLE_TEXT = Text.translatable("telemetry_info.screen.title");
-	private static final Text DESCRIPTION_TEXT = Text.translatable("telemetry_info.screen.description").formatted(Formatting.GRAY);
+	private static final Text DESCRIPTION_TEXT = Text.translatable("telemetry_info.screen.description").withColor(Colors.ALTERNATE_WHITE);
 	private static final Text PRIVACY_STATEMENT_TEXT = Text.translatable("telemetry_info.button.privacy_statement");
 	private static final Text GIVE_FEEDBACK_TEXT = Text.translatable("telemetry_info.button.give_feedback");
 	private static final Text SHOW_DATA_TEXT = Text.translatable("telemetry_info.button.show_data");
@@ -69,7 +69,7 @@ public class TelemetryInfoScreen extends Screen {
 
 		DirectionalLayoutWidget directionalLayoutWidget4 = directionalLayoutWidget3.add(DirectionalLayoutWidget.horizontal().spacing(8));
 		directionalLayoutWidget4.add(ButtonWidget.builder(SHOW_DATA_TEXT, this::openLogDirectory).build());
-		directionalLayoutWidget4.add(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).build());
+		directionalLayoutWidget4.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).build());
 		DirectionalLayoutWidget directionalLayoutWidget5 = this.layout.addBody(DirectionalLayoutWidget.vertical().spacing(8));
 		this.telemetryEventWidget = directionalLayoutWidget5.add(new TelemetryEventWidget(0, 0, this.width - 40, this.layout.getContentHeight(), this.textRenderer));
 		this.telemetryEventWidget.setScrollConsumer(scroll -> this.scroll = scroll);

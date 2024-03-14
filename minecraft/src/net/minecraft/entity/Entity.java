@@ -222,6 +222,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * {@link #setId(int)} calls.
 	 */
 	private static final AtomicInteger CURRENT_ID = new AtomicInteger();
+	public static final int field_49791 = 0;
 	/**
 	 * @see Entity#removePassenger
 	 */
@@ -2042,6 +2043,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return this.getRotationVector(this.getPitch(tickDelta), this.getYaw(tickDelta));
 	}
 
+	public Direction getFacing() {
+		return Direction.getFacing(this.getRotationVec(1.0F));
+	}
+
 	public float getPitch(float tickDelta) {
 		return tickDelta == 1.0F ? this.getPitch() : MathHelper.lerp(tickDelta, this.prevPitch, this.getPitch());
 	}
@@ -2050,7 +2055,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return tickDelta == 1.0F ? this.getYaw() : MathHelper.lerp(tickDelta, this.prevYaw, this.getYaw());
 	}
 
-	protected final Vec3d getRotationVector(float pitch, float yaw) {
+	public final Vec3d getRotationVector(float pitch, float yaw) {
 		float f = pitch * (float) (Math.PI / 180.0);
 		float g = -yaw * (float) (Math.PI / 180.0);
 		float h = MathHelper.cos(g);

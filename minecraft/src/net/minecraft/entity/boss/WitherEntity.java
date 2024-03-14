@@ -37,6 +37,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -220,13 +221,13 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			if (bl && this.getWorld().random.nextInt(4) == 0) {
 				this.getWorld()
 					.addParticle(
-						ParticleTypes.ENTITY_EFFECT,
+						EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, 0.7F, 0.7F, 0.5F),
 						p + this.random.nextGaussian() * (double)s,
 						q + this.random.nextGaussian() * (double)s,
 						r + this.random.nextGaussian() * (double)s,
-						0.7F,
-						0.7F,
-						0.5
+						0.0,
+						0.0,
+						0.0
 					);
 			}
 		}
@@ -237,13 +238,13 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			for (int u = 0; u < 3; u++) {
 				this.getWorld()
 					.addParticle(
-						ParticleTypes.ENTITY_EFFECT,
+						EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, 0.7F, 0.7F, 0.9F),
 						this.getX() + this.random.nextGaussian(),
 						this.getY() + (double)(this.random.nextFloat() * t),
 						this.getZ() + this.random.nextGaussian(),
-						0.7F,
-						0.7F,
-						0.9F
+						0.0,
+						0.0,
+						0.0
 					);
 			}
 		}

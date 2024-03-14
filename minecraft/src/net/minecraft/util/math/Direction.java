@@ -346,6 +346,10 @@ public enum Direction implements StringIdentifiable {
 		return direction;
 	}
 
+	public static Direction getFacing(Vec3d vec) {
+		return getFacing(vec.x, vec.y, vec.z);
+	}
+
 	public String toString() {
 		return this.name;
 	}

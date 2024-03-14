@@ -19,6 +19,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -69,7 +70,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		builder.add(COLOR, 0);
 		builder.add(RADIUS, 3.0F);
 		builder.add(WAITING, false);
-		builder.add(PARTICLE_ID, ParticleTypes.ENTITY_EFFECT);
+		builder.add(PARTICLE_ID, EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, 0.0F, 0.0F, 0.0F));
 	}
 
 	public void setRadius(float radius) {

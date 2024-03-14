@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -74,32 +75,19 @@ public class SpellParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class EntityAmbientFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider spriteProvider;
-
-		public EntityAmbientFactory(SpriteProvider spriteProvider) {
-			this.spriteProvider = spriteProvider;
-		}
-
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
-			particle.setAlpha(0.15F);
-			particle.setColor((float)g, (float)h, (float)i);
-			return particle;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class EntityFactory implements ParticleFactory<DefaultParticleType> {
+	public static class EntityFactory implements ParticleFactory<EntityEffectParticleEffect> {
 		private final SpriteProvider spriteProvider;
 
 		public EntityFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(
+			EntityEffectParticleEffect entityEffectParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
+		) {
 			Particle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
-			particle.setColor((float)g, (float)h, (float)i);
+			particle.setColor(entityEffectParticleEffect.getRed(), entityEffectParticleEffect.getGreen(), entityEffectParticleEffect.getBlue());
+			particle.setAlpha(entityEffectParticleEffect.getAlpha());
 			return particle;
 		}
 	}

@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -80,9 +81,10 @@ public class SmithingTemplateItem extends Item {
 		Text baseSlotDescriptionText,
 		Text additionsSlotDescriptionText,
 		List<Identifier> emptyBaseSlotTextures,
-		List<Identifier> emptyAdditionsSlotTextures
+		List<Identifier> emptyAdditionsSlotTextures,
+		FeatureFlag... requiredFeatures
 	) {
-		super(new Item.Settings());
+		super(new Item.Settings().requires(requiredFeatures));
 		this.appliesToText = appliesToText;
 		this.ingredientsText = ingredientsText;
 		this.titleText = titleText;
@@ -92,11 +94,11 @@ public class SmithingTemplateItem extends Item {
 		this.emptyAdditionsSlotTextures = emptyAdditionsSlotTextures;
 	}
 
-	public static SmithingTemplateItem of(RegistryKey<ArmorTrimPattern> trimPattern) {
-		return of(trimPattern.getValue());
+	public static SmithingTemplateItem of(RegistryKey<ArmorTrimPattern> trimPattern, FeatureFlag... requiredFeatures) {
+		return of(trimPattern.getValue(), requiredFeatures);
 	}
 
-	public static SmithingTemplateItem of(Identifier trimPatternIn) {
+	public static SmithingTemplateItem of(Identifier trimPatternIn, FeatureFlag... requiredFeatures) {
 		return new SmithingTemplateItem(
 			ARMOR_TRIM_APPLIES_TO_TEXT,
 			ARMOR_TRIM_INGREDIENTS_TEXT,
@@ -104,7 +106,8 @@ public class SmithingTemplateItem extends Item {
 			ARMOR_TRIM_BASE_SLOT_DESCRIPTION_TEXT,
 			ARMOR_TRIM_ADDITIONS_SLOT_DESCRIPTION_TEXT,
 			getArmorTrimEmptyBaseSlotTextures(),
-			getArmorTrimEmptyAdditionsSlotTextures()
+			getArmorTrimEmptyAdditionsSlotTextures(),
+			requiredFeatures
 		);
 	}
 

@@ -1161,6 +1161,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		if (this.currentScreen != null) {
 			this.currentScreen.removed();
+		} else {
+			this.setNavigationType(GuiNavigationType.NONE);
 		}
 
 		if (screen == null && this.disconnecting) {
@@ -2521,7 +2523,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		blockEntity.removeFromCopiedStackNbt(nbtCompound);
 		BlockItem.setBlockEntityData(stack, blockEntity.getType(), nbtCompound);
 		stack.applyComponentsFrom(blockEntity.createComponentMap());
-		stack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, NBT_TOOLTIP_TEXT, LoreComponent::of);
+		stack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, NBT_TOOLTIP_TEXT, LoreComponent::with);
 	}
 
 	public CrashReport addDetailsToCrashReport(CrashReport report) {

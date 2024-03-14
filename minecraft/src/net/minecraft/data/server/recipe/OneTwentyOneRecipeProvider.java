@@ -1,6 +1,7 @@
 package net.minecraft.data.server.recipe;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
 import net.minecraft.item.Items;
@@ -8,6 +9,7 @@ import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.util.Identifier;
 
 public class OneTwentyOneRecipeProvider extends RecipeProvider {
 	public OneTwentyOneRecipeProvider(DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
@@ -92,6 +94,26 @@ public class OneTwentyOneRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_EXPOSED_COPPER_GRATE, Blocks.WAXED_EXPOSED_COPPER, 4);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_WEATHERED_COPPER_GRATE, Blocks.WAXED_WEATHERED_COPPER, 4);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_OXIDIZED_COPPER_GRATE, Blocks.WAXED_OXIDIZED_COPPER, 4);
+		streamSmithingTemplates().forEach(template -> offerSmithingTrimRecipe(exporter, template.template(), template.id()));
+		offerSmithingTemplateCopyingRecipe(exporter, Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, Items.BREEZE_ROD);
+		offerSmithingTemplateCopyingRecipe(exporter, Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Items.COPPER_BLOCK);
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.WIND_CHARGE, 4)
+			.input(Items.BREEZE_ROD)
+			.criterion("has_breeze_rod", conditionsFromItem(Items.BREEZE_ROD))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.MACE, 1)
+			.input('A', Items.BREEZE_ROD)
+			.input('B', Blocks.HEAVY_CORE)
+			.pattern(" B ")
+			.pattern(" A ")
+			.criterion("has_breeze_rod", conditionsFromItem(Items.BREEZE_ROD))
+			.criterion("has_heavy_core", conditionsFromItem(Blocks.HEAVY_CORE))
+			.offerTo(exporter);
 		offerWaxingRecipes(exporter, FeatureSet.of(FeatureFlags.UPDATE_1_21));
+	}
+
+	public static Stream<VanillaRecipeProvider.SmithingTemplate> streamSmithingTemplates() {
+		return Stream.of(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE)
+			.map(item -> new VanillaRecipeProvider.SmithingTemplate(item, new Identifier(getItemPath(item) + "_smithing_trim")));
 	}
 }

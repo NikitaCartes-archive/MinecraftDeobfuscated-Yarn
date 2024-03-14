@@ -109,10 +109,10 @@ public class FireworksSparkParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class FireworkParticle extends NoRenderParticle {
-		private static final double[][] field_49565 = new double[][]{
+		private static final double[][] CREEPER_PATTERN = new double[][]{
 			{0.0, 0.2}, {0.2, 0.2}, {0.2, 0.6}, {0.6, 0.6}, {0.6, 0.2}, {0.2, 0.2}, {0.2, 0.0}, {0.4, 0.0}, {0.4, -0.6}, {0.2, -0.6}, {0.2, -0.4}, {0.0, -0.4}
 		};
-		private static final double[][] field_49566 = new double[][]{
+		private static final double[][] STAR_PATTERN = new double[][]{
 			{0.0, 1.0},
 			{0.3455, 0.309},
 			{0.9511, 0.309},
@@ -134,20 +134,20 @@ public class FireworksSparkParticle {
 			double velocityY,
 			double velocityZ,
 			ParticleManager particleManager,
-			List<FireworkExplosionComponent> list
+			List<FireworkExplosionComponent> fireworkExplosions
 		) {
 			super(world, x, y, z);
 			this.velocityX = velocityX;
 			this.velocityY = velocityY;
 			this.velocityZ = velocityZ;
 			this.particleManager = particleManager;
-			if (list.isEmpty()) {
+			if (fireworkExplosions.isEmpty()) {
 				throw new IllegalArgumentException("Cannot create firework starter with no explosions");
 			} else {
-				this.explosions = list;
-				this.maxAge = list.size() * 2 - 1;
+				this.explosions = fireworkExplosions;
+				this.maxAge = fireworkExplosions.size() * 2 - 1;
 
-				for (FireworkExplosionComponent fireworkExplosionComponent : list) {
+				for (FireworkExplosionComponent fireworkExplosionComponent : fireworkExplosions) {
 					if (fireworkExplosionComponent.hasTwinkle()) {
 						this.flicker = true;
 						this.maxAge += 15;
@@ -202,10 +202,10 @@ public class FireworksSparkParticle {
 						this.explodeBall(0.5, 4, intList, intList2, bl3, bl4);
 						break;
 					case STAR:
-						this.explodeStar(0.5, field_49566, intList, intList2, bl3, bl4, false);
+						this.explodeStar(0.5, STAR_PATTERN, intList, intList2, bl3, bl4, false);
 						break;
 					case CREEPER:
-						this.explodeStar(0.5, field_49565, intList, intList2, bl3, bl4, true);
+						this.explodeStar(0.5, CREEPER_PATTERN, intList, intList2, bl3, bl4, true);
 						break;
 					case BURST:
 						this.explodeBurst(intList, intList2, bl3, bl4);
@@ -234,20 +234,20 @@ public class FireworksSparkParticle {
 		}
 
 		private void addExplosionParticle(
-			double x, double y, double z, double velocityX, double velocityY, double velocityZ, IntList intList, IntList intList2, boolean trail, boolean flicker
+			double x, double y, double z, double velocityX, double velocityY, double velocityZ, IntList colors, IntList targetColors, boolean trail, boolean flicker
 		) {
 			FireworksSparkParticle.Explosion explosion = (FireworksSparkParticle.Explosion)this.particleManager
 				.addParticle(ParticleTypes.FIREWORK, x, y, z, velocityX, velocityY, velocityZ);
 			explosion.setTrail(trail);
 			explosion.setFlicker(flicker);
 			explosion.setAlpha(0.99F);
-			explosion.setColor(Util.<Integer>getRandom(intList, this.random));
-			if (!intList2.isEmpty()) {
-				explosion.setTargetColor(Util.<Integer>getRandom(intList2, this.random));
+			explosion.setColor(Util.<Integer>getRandom(colors, this.random));
+			if (!targetColors.isEmpty()) {
+				explosion.setTargetColor(Util.<Integer>getRandom(targetColors, this.random));
 			}
 		}
 
-		private void explodeBall(double size, int amount, IntList intList, IntList intList2, boolean trail, boolean flicker) {
+		private void explodeBall(double size, int amount, IntList colors, IntList targetColors, boolean trail, boolean flicker) {
 			double d = this.x;
 			double e = this.y;
 			double f = this.z;
@@ -259,7 +259,7 @@ public class FireworksSparkParticle {
 						double h = (double)i + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
 						double l = (double)k + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
 						double m = Math.sqrt(g * g + h * h + l * l) / size + this.random.nextGaussian() * 0.05;
-						this.addExplosionParticle(d, e, f, g / m, h / m, l / m, intList, intList2, trail, flicker);
+						this.addExplosionParticle(d, e, f, g / m, h / m, l / m, colors, targetColors, trail, flicker);
 						if (i != -amount && i != amount && j != -amount && j != amount) {
 							k += amount * 2 - 1;
 						}
@@ -268,10 +268,10 @@ public class FireworksSparkParticle {
 			}
 		}
 
-		private void explodeStar(double size, double[][] pattern, IntList intList, IntList intList2, boolean trail, boolean flicker, boolean keepShape) {
+		private void explodeStar(double size, double[][] pattern, IntList colors, IntList targetColors, boolean trail, boolean flicker, boolean keepShape) {
 			double d = pattern[0][0];
 			double e = pattern[0][1];
-			this.addExplosionParticle(this.x, this.y, this.z, d * size, e * size, 0.0, intList, intList2, trail, flicker);
+			this.addExplosionParticle(this.x, this.y, this.z, d * size, e * size, 0.0, colors, targetColors, trail, flicker);
 			float f = this.random.nextFloat() * (float) Math.PI;
 			double g = keepShape ? 0.034 : 0.34;
 
@@ -291,7 +291,7 @@ public class FireworksSparkParticle {
 						p *= Math.cos(h);
 
 						for (double s = -1.0; s <= 1.0; s += 2.0) {
-							this.addExplosionParticle(this.x, this.y, this.z, p * s, q, r * s, intList, intList2, trail, flicker);
+							this.addExplosionParticle(this.x, this.y, this.z, p * s, q, r * s, colors, targetColors, trail, flicker);
 						}
 					}
 
@@ -301,7 +301,7 @@ public class FireworksSparkParticle {
 			}
 		}
 
-		private void explodeBurst(IntList intList, IntList intList2, boolean trail, boolean flicker) {
+		private void explodeBurst(IntList colors, IntList targetColors, boolean trail, boolean flicker) {
 			double d = this.random.nextGaussian() * 0.05;
 			double e = this.random.nextGaussian() * 0.05;
 
@@ -309,7 +309,7 @@ public class FireworksSparkParticle {
 				double f = this.velocityX * 0.5 + this.random.nextGaussian() * 0.15 + d;
 				double g = this.velocityZ * 0.5 + this.random.nextGaussian() * 0.15 + e;
 				double h = this.velocityY * 0.5 + this.random.nextDouble() * 0.5;
-				this.addExplosionParticle(this.x, this.y, this.z, f, h, g, intList, intList2, trail, flicker);
+				this.addExplosionParticle(this.x, this.y, this.z, f, h, g, colors, targetColors, trail, flicker);
 			}
 		}
 	}

@@ -29,7 +29,6 @@ import net.minecraft.block.LadderBlock;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
-import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.FrostWalkerEnchantment;
@@ -87,6 +86,7 @@ import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ItemStackParticleEffect;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -107,16 +107,15 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Arm;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -162,17 +161,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected static final int USING_RIPTIDE_FLAG = 4;
 	protected static final TrackedData<Byte> LIVING_FLAGS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
-	private static final TrackedData<Integer> POTION_SWIRLS_COLOR = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<List<ParticleEffect>> POTION_SWIRLS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.PARTICLE_LIST);
 	private static final TrackedData<Boolean> POTION_SWIRLS_AMBIENT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> STUCK_ARROW_COUNT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> STINGER_COUNT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Optional<BlockPos>> SLEEPING_POSITION = DataTracker.registerData(
 		LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS
 	);
+	private static final int field_49793 = 15;
 	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(0.2F);
 	public static final float BABY_SCALE_FACTOR = 0.5F;
 	public static final float field_47756 = 0.5F;
-	private static final int DEFAULT_POTION_SWIRLS_COLOR = -1;
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.<RegistryEntry<StatusEffect>, StatusEffectInstance>newHashMap();
@@ -245,7 +244,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private float lastLeaningPitch;
 	protected Brain<?> brain;
 	private boolean experienceDroppingDisabled;
-	protected float field_47757 = 1.0F;
+	protected float prevScale = 1.0F;
 
 	protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
 		super(entityType, world);
@@ -285,7 +284,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		builder.add(LIVING_FLAGS, (byte)0);
-		builder.add(POTION_SWIRLS_COLOR, -1);
+		builder.add(POTION_SWIRLS, List.of());
 		builder.add(POTION_SWIRLS_AMBIENT, false);
 		builder.add(STUCK_ARROW_COUNT, 0);
 		builder.add(STINGER_COUNT, 0);
@@ -844,7 +843,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					this.onStatusEffectUpgraded(statusEffectInstance, false, null);
 				}
 			}
-		} catch (ConcurrentModificationException var8) {
+		} catch (ConcurrentModificationException var6) {
 		}
 
 		if (this.effectsChanged) {
@@ -856,34 +855,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.effectsChanged = false;
 		}
 
-		int i = this.dataTracker.get(POTION_SWIRLS_COLOR);
-		boolean bl = this.dataTracker.get(POTION_SWIRLS_AMBIENT);
-		if (i != Colors.WHITE) {
-			boolean bl2;
-			if (this.isInvisible()) {
-				bl2 = this.random.nextInt(15) == 0;
-			} else {
-				bl2 = this.random.nextBoolean();
-			}
-
-			if (bl) {
-				bl2 &= this.random.nextInt(5) == 0;
-			}
-
-			if (bl2) {
-				float f = (float)ColorHelper.Argb.getRed(i) / 255.0F;
-				float g = (float)ColorHelper.Argb.getGreen(i) / 255.0F;
-				float h = (float)ColorHelper.Argb.getBlue(i) / 255.0F;
-				this.getWorld()
-					.addParticle(
-						bl ? ParticleTypes.AMBIENT_ENTITY_EFFECT : ParticleTypes.ENTITY_EFFECT,
-						this.getParticleX(0.5),
-						this.getRandomBodyY(),
-						this.getParticleZ(0.5),
-						(double)f,
-						(double)g,
-						(double)h
-					);
+		List<ParticleEffect> list = this.dataTracker.get(POTION_SWIRLS);
+		if (!list.isEmpty()) {
+			boolean bl = this.dataTracker.get(POTION_SWIRLS_AMBIENT);
+			int i = this.isInvisible() ? 15 : 4;
+			int j = bl ? 5 : 1;
+			if (this.random.nextInt(i * j) == 0) {
+				this.getWorld().addParticle(Util.getRandom(list, this.random), this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 1.0, 1.0, 1.0);
 			}
 		}
 	}
@@ -893,12 +871,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.clearPotionSwirls();
 			this.setInvisible(false);
 		} else {
-			Collection<StatusEffectInstance> collection = this.activeStatusEffects.values();
-			int i = PotionContentsComponent.mixColors(collection);
-			this.dataTracker.set(POTION_SWIRLS_AMBIENT, containsOnlyAmbientEffects(collection));
-			this.dataTracker.set(POTION_SWIRLS_COLOR, i != -1 ? i : -1);
 			this.setInvisible(this.hasStatusEffect(StatusEffects.INVISIBILITY));
+			this.updatePotionSwirls();
 		}
+	}
+
+	private void updatePotionSwirls() {
+		List<ParticleEffect> list = this.activeStatusEffects
+			.values()
+			.stream()
+			.filter(StatusEffectInstance::shouldShowParticles)
+			.map(StatusEffectInstance::createParticle)
+			.toList();
+		this.dataTracker.set(POTION_SWIRLS, list);
+		this.dataTracker.set(POTION_SWIRLS_AMBIENT, containsOnlyAmbientEffects(this.activeStatusEffects.values()));
 	}
 
 	private void updateGlowing() {
@@ -965,8 +951,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected void clearPotionSwirls() {
-		this.dataTracker.set(POTION_SWIRLS_AMBIENT, false);
-		this.dataTracker.set(POTION_SWIRLS_COLOR, -1);
+		this.dataTracker.set(POTION_SWIRLS, List.of());
 	}
 
 	public boolean clearStatusEffects() {
@@ -2344,7 +2329,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				if (this.hasNoDrag()) {
 					this.setVelocity(vec3d6.x, q, vec3d6.z);
 				} else {
-					this.setVelocity(vec3d6.x * (double)fxx, q * 0.98F, vec3d6.z * (double)fxx);
+					this.setVelocity(vec3d6.x * (double)fxx, this instanceof Flutterer ? q * (double)fxx : q * 0.98F, vec3d6.z * (double)fxx);
 				}
 			}
 		}
@@ -2575,8 +2560,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		this.updateAttributes();
 		float l = this.getScale();
-		if (l != this.field_47757) {
-			this.field_47757 = l;
+		if (l != this.prevScale) {
+			this.prevScale = l;
 			this.calculateDimensions();
 		}
 	}

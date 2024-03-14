@@ -112,7 +112,7 @@ public class AccessibilityOnboardingScreen extends Screen {
 
 	@Override
 	protected void renderPanoramaBackground(DrawContext context, float delta) {
-		ROTATING_PANORAMA_RENDERER.render(0.0F);
+		ROTATING_PANORAMA_RENDERER.render(context, this.width, this.height, 1.0F, 0.0F);
 	}
 
 	private void tickNarratorPrompt() {

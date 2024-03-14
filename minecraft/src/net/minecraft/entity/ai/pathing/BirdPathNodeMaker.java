@@ -15,7 +15,8 @@ import net.minecraft.world.chunk.ChunkCache;
 
 public class BirdPathNodeMaker extends LandPathNodeMaker {
 	private final Long2ObjectMap<PathNodeType> pathNodes = new Long2ObjectOpenHashMap<>();
-	private static final float field_41681 = 1.5F;
+	private static final float field_49843 = 1.0F;
+	private static final float field_41681 = 1.1F;
 	private static final int field_41682 = 10;
 
 	@Override
@@ -321,7 +322,6 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	 * the current position (e.g. because it is dangerous).
 	 */
 	private Iterable<BlockPos> getPotentialEscapePositions(MobEntity entity) {
-		float f = 1.0F;
 		Box box = entity.getBoundingBox();
 		boolean bl = box.getAverageSideLength() < 1.0;
 		if (!bl) {
@@ -332,10 +332,10 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 				BlockPos.ofFloored(box.maxX, (double)entity.getBlockY(), box.maxZ)
 			);
 		} else {
-			double d = Math.max(0.0, (1.5 - box.getLengthZ()) / 2.0);
-			double e = Math.max(0.0, (1.5 - box.getLengthX()) / 2.0);
-			double g = Math.max(0.0, (1.5 - box.getLengthY()) / 2.0);
-			Box box2 = box.expand(e, g, d);
+			double d = Math.max(0.0, 1.1F - box.getLengthZ());
+			double e = Math.max(0.0, 1.1F - box.getLengthX());
+			double f = Math.max(0.0, 1.1F - box.getLengthY());
+			Box box2 = box.expand(e, f, d);
 			return BlockPos.iterateRandomly(
 				entity.getRandom(),
 				10,

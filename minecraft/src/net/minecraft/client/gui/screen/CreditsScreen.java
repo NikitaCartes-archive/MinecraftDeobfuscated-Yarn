@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class CreditsScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
+	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/credits_vignette.png");
 	private static final Text SEPARATOR_LINE = Text.literal("============").formatted(Formatting.WHITE);
 	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
@@ -295,6 +295,12 @@ public class CreditsScreen extends Screen {
 		} else {
 			super.renderBackground(context, mouseX, mouseY, delta);
 		}
+	}
+
+	@Override
+	protected void renderDarkening(DrawContext context, int x, int y, int width, int height) {
+		float f = this.time * 0.5F;
+		Screen.renderBackgroundTexture(context, Screen.MENU_BACKGROUND_TEXTURE, 0, 0, 0.0F, f, width, height);
 	}
 
 	@Override

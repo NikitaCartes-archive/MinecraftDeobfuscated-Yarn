@@ -29,7 +29,7 @@ import org.joml.Matrix4f;
 public class PostEffectProcessor implements AutoCloseable {
 	private static final String MAIN_TARGET_NAME = "minecraft:main";
 	private final Framebuffer mainTarget;
-	private final ResourceFactory field_49569;
+	private final ResourceFactory resourceFactory;
 	private final String name;
 	private final List<PostEffectPass> passes = Lists.<PostEffectPass>newArrayList();
 	private final Map<String, Framebuffer> targetsByName = Maps.<String, Framebuffer>newHashMap();
@@ -41,7 +41,7 @@ public class PostEffectProcessor implements AutoCloseable {
 	private float lastTickDelta;
 
 	public PostEffectProcessor(TextureManager textureManager, ResourceFactory resourceFactory, Framebuffer framebuffer, Identifier id) throws IOException, JsonSyntaxException {
-		this.field_49569 = resourceFactory;
+		this.resourceFactory = resourceFactory;
 		this.mainTarget = framebuffer;
 		this.time = 0.0F;
 		this.lastTickDelta = 0.0F;
@@ -53,7 +53,7 @@ public class PostEffectProcessor implements AutoCloseable {
 	}
 
 	private void parseEffect(TextureManager textureManager, Identifier id) throws IOException, JsonSyntaxException {
-		Resource resource = this.field_49569.getResourceOrThrow(id);
+		Resource resource = this.resourceFactory.getResourceOrThrow(id);
 
 		try {
 			Reader reader = resource.getReader();
@@ -138,12 +138,13 @@ public class PostEffectProcessor implements AutoCloseable {
 		String string3 = JsonHelper.getString(jsonObject, "outtarget");
 		Framebuffer framebuffer = this.getTarget(string2);
 		Framebuffer framebuffer2 = this.getTarget(string3);
+		boolean bl = JsonHelper.getBoolean(jsonObject, "use_linear_filter", false);
 		if (framebuffer == null) {
 			throw new InvalidHierarchicalFileException("Input target '" + string2 + "' does not exist");
 		} else if (framebuffer2 == null) {
 			throw new InvalidHierarchicalFileException("Output target '" + string3 + "' does not exist");
 		} else {
-			PostEffectPass postEffectPass = this.addPass(string, framebuffer, framebuffer2);
+			PostEffectPass postEffectPass = this.addPass(string, framebuffer, framebuffer2, bl);
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "auxtargets", null);
 			if (jsonArray != null) {
 				int i = 0;
@@ -153,24 +154,24 @@ public class PostEffectProcessor implements AutoCloseable {
 						JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "auxtarget");
 						String string4 = JsonHelper.getString(jsonObject2, "name");
 						String string5 = JsonHelper.getString(jsonObject2, "id");
-						boolean bl;
+						boolean bl2;
 						String string6;
 						if (string5.endsWith(":depth")) {
-							bl = true;
+							bl2 = true;
 							string6 = string5.substring(0, string5.lastIndexOf(58));
 						} else {
-							bl = false;
+							bl2 = false;
 							string6 = string5;
 						}
 
 						Framebuffer framebuffer3 = this.getTarget(string6);
 						if (framebuffer3 == null) {
-							if (bl) {
+							if (bl2) {
 								throw new InvalidHierarchicalFileException("Render target '" + string6 + "' can't be used as depth buffer");
 							}
 
 							Identifier identifier = new Identifier("textures/effect/" + string6 + ".png");
-							this.field_49569
+							this.resourceFactory
 								.getResource(identifier)
 								.orElseThrow(() -> new InvalidHierarchicalFileException("Render target or texture '" + string6 + "' does not exist"));
 							RenderSystem.setShaderTexture(0, identifier);
@@ -178,8 +179,8 @@ public class PostEffectProcessor implements AutoCloseable {
 							AbstractTexture abstractTexture = textureManager.getTexture(identifier);
 							int j = JsonHelper.getInt(jsonObject2, "width");
 							int k = JsonHelper.getInt(jsonObject2, "height");
-							boolean bl2 = JsonHelper.getBoolean(jsonObject2, "bilinear");
-							if (bl2) {
+							boolean bl3 = JsonHelper.getBoolean(jsonObject2, "bilinear");
+							if (bl3) {
 								RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
 								RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
 							} else {
@@ -188,13 +189,13 @@ public class PostEffectProcessor implements AutoCloseable {
 							}
 
 							postEffectPass.addAuxTarget(string4, abstractTexture::getGlId, j, k);
-						} else if (bl) {
+						} else if (bl2) {
 							postEffectPass.addAuxTarget(string4, framebuffer3::getDepthAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
 						} else {
 							postEffectPass.addAuxTarget(string4, framebuffer3::getColorAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
 						}
-					} catch (Exception var26) {
-						InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var26);
+					} catch (Exception var27) {
+						InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var27);
 						invalidHierarchicalFileException.addInvalidKey("auxtargets[" + i + "]");
 						throw invalidHierarchicalFileException;
 					}
@@ -210,8 +211,8 @@ public class PostEffectProcessor implements AutoCloseable {
 				for (JsonElement jsonElement2 : jsonArray2) {
 					try {
 						this.parseUniform(jsonElement2);
-					} catch (Exception var25) {
-						InvalidHierarchicalFileException invalidHierarchicalFileException2 = InvalidHierarchicalFileException.wrap(var25);
+					} catch (Exception var26) {
+						InvalidHierarchicalFileException invalidHierarchicalFileException2 = InvalidHierarchicalFileException.wrap(var26);
 						invalidHierarchicalFileException2.addInvalidKey("uniforms[" + l + "]");
 						throw invalidHierarchicalFileException2;
 					}
@@ -288,8 +289,8 @@ public class PostEffectProcessor implements AutoCloseable {
 		this.passes.clear();
 	}
 
-	public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest) throws IOException {
-		PostEffectPass postEffectPass = new PostEffectPass(this.field_49569, programName, source, dest);
+	public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest, boolean linear) throws IOException {
+		PostEffectPass postEffectPass = new PostEffectPass(this.resourceFactory, programName, source, dest, linear);
 		this.passes.add(this.passes.size(), postEffectPass);
 		return postEffectPass;
 	}
@@ -312,6 +313,14 @@ public class PostEffectProcessor implements AutoCloseable {
 		}
 	}
 
+	private void setTexFilter(int texFilter) {
+		this.mainTarget.setTexFilter(texFilter);
+
+		for (Framebuffer framebuffer : this.targetsByName.values()) {
+			framebuffer.setTexFilter(texFilter);
+		}
+	}
+
 	public void render(float tickDelta) {
 		if (tickDelta < this.lastTickDelta) {
 			this.time = this.time + (1.0F - this.lastTickDelta);
@@ -326,9 +335,19 @@ public class PostEffectProcessor implements AutoCloseable {
 			this.time -= 20.0F;
 		}
 
+		int i = GlConst.GL_NEAREST;
+
 		for (PostEffectPass postEffectPass : this.passes) {
+			int j = postEffectPass.getTexFilter();
+			if (i != j) {
+				this.setTexFilter(j);
+				i = j;
+			}
+
 			postEffectPass.render(this.time / 20.0F);
 		}
+
+		this.setTexFilter(GlConst.GL_NEAREST);
 	}
 
 	public void setUniforms(String name, float value) {

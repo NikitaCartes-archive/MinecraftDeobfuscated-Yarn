@@ -4093,6 +4093,7 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.RAW_COPPER_BLOCK);
 		this.registerSimpleCubeAll(Blocks.RAW_GOLD_BLOCK);
 		this.registerMirrorable(Blocks.SCULK);
+		this.registerSimpleState(Blocks.HEAVY_CORE);
 		this.registerPetrifiedOakSlab();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.DEEPSLATE_COPPER_ORE);

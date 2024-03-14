@@ -20,6 +20,7 @@ import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.gui.screen.option.SimpleOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.util.Clipboard;
@@ -382,19 +383,23 @@ public class Keyboard {
 				}
 			}
 
-			if (this.client.getNarratorManager().isActive() && this.client.options.getNarratorHotkey().getValue()) {
-				boolean bl2 = screen == null || !(screen.getFocused() instanceof TextFieldWidget textFieldWidget) || !textFieldWidget.isActive();
-				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl2) {
-					boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
-					this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));
-					this.client.options.write();
-					if (screen instanceof SimpleOptionsScreen) {
-						((SimpleOptionsScreen)screen).updateNarratorButtonText();
+			if (action != 0) {
+				boolean bl2 = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
+				if (bl2) {
+					if (Screen.hasControlDown() && key == GLFW.GLFW_KEY_B && this.client.getNarratorManager().isActive()) {
+						boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
+						this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));
+						this.client.options.write();
+						if (screen instanceof SimpleOptionsScreen) {
+							((SimpleOptionsScreen)screen).updateNarratorButtonText();
+						}
+
+						if (bl3 && screen != null) {
+							screen.applyNarratorModeChangeDelay();
+						}
 					}
 
-					if (bl3 && screen != null) {
-						screen.applyNarratorModeChangeDelay();
-					}
+					ClientPlayerEntity var16 = this.client.player;
 				}
 			}
 
@@ -415,24 +420,24 @@ public class Keyboard {
 
 			InputUtil.Key key2;
 			boolean bl3x;
-			boolean var20;
+			boolean var10000;
 			label185: {
 				key2 = InputUtil.fromKeyCode(key, scancode);
 				bl3x = this.client.currentScreen == null;
-				label144:
+				label145:
 				if (!bl3x) {
 					if (this.client.currentScreen instanceof GameMenuScreen gameMenuScreen && !gameMenuScreen.shouldShowMenu()) {
-						break label144;
+						break label145;
 					}
 
-					var20 = false;
+					var10000 = false;
 					break label185;
 				}
 
-				var20 = true;
+				var10000 = true;
 			}
 
-			boolean bl4 = var20;
+			boolean bl4 = var10000;
 			if (action == 0) {
 				KeyBinding.setKeyPressed(key2, false);
 				if (bl4 && key == GLFW.GLFW_KEY_F3) {

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.advancement.AdvancementCriterion;
@@ -75,14 +76,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 
 			for (int i = 0; i < items.length; i++) {
 				itemPredicates[i] = new ItemPredicate(
-					Optional.of(RegistryEntryList.of(items[i].asItem().getRegistryEntry())),
-					NumberRange.IntRange.ANY,
-					NumberRange.IntRange.ANY,
-					List.of(),
-					List.of(),
-					Optional.empty(),
-					Optional.empty(),
-					ComponentPredicate.EMPTY
+					Optional.of(RegistryEntryList.of(items[i].asItem().getRegistryEntry())), NumberRange.IntRange.ANY, ComponentPredicate.EMPTY, Map.of()
 				);
 			}
 

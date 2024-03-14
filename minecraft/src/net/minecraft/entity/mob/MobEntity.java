@@ -1377,6 +1377,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		if (this.holdingEntity != null) {
 			this.holdingEntity = null;
 			this.leashNbt = null;
+			this.clearPositionTarget();
 			if (!this.getWorld().isClient && dropItem) {
 				this.dropItem(Items.LEAD);
 			}
@@ -1393,6 +1394,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 	public boolean isLeashed() {
 		return this.holdingEntity != null;
+	}
+
+	public boolean mightBeLeashed() {
+		return this.isLeashed() || this.leashNbt != null;
 	}
 
 	@Nullable

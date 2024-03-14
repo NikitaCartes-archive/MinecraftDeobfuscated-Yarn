@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -12,15 +13,22 @@ import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.particle.EntityEffectParticleEffect;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 
 public class StatusEffect {
+	private static final int AMBIENT_PARTICLE_ALPHA = MathHelper.floor(38.25F);
 	private final Map<RegistryEntry<EntityAttribute>, StatusEffect.EffectAttributeModifierCreator> attributeModifiers = new Object2ObjectOpenHashMap<>();
 	private final StatusEffectCategory category;
 	private final int color;
+	private final Function<StatusEffectInstance, ParticleEffect> particleFactory;
 	@Nullable
 	private String translationKey;
 	private int fadeTicks;
@@ -28,6 +36,16 @@ public class StatusEffect {
 	protected StatusEffect(StatusEffectCategory category, int color) {
 		this.category = category;
 		this.color = color;
+		this.particleFactory = effect -> {
+			int j = effect.isAmbient() ? AMBIENT_PARTICLE_ALPHA : 255;
+			return EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, ColorHelper.Argb.withAlpha(j, color));
+		};
+	}
+
+	protected StatusEffect(StatusEffectCategory category, int color, ParticleEffect particleEffect) {
+		this.category = category;
+		this.color = color;
+		this.particleFactory = effect -> particleEffect;
 	}
 
 	public int getFadeTicks() {
@@ -120,6 +138,10 @@ public class StatusEffect {
 
 	public boolean isBeneficial() {
 		return this.category == StatusEffectCategory.BENEFICIAL;
+	}
+
+	public ParticleEffect createParticle(StatusEffectInstance effect) {
+		return (ParticleEffect)this.particleFactory.apply(effect);
 	}
 
 	static record EffectAttributeModifierCreator(UUID uuid, double baseValue, EntityAttributeModifier.Operation operation) {

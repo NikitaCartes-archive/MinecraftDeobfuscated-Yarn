@@ -57,7 +57,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			gameOptions.getFovEffectScale(),
 			gameOptions.getShowAutosaveIndicator(),
 			gameOptions.getGlintSpeed(),
-			gameOptions.getGlintStrength()
+			gameOptions.getGlintStrength(),
+			gameOptions.getMenuBackgroundBlurriness()
 		};
 	}
 
@@ -124,7 +125,6 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void close() {
-		this.client.options.write();
 		this.client.getWindow().applyVideoMode();
 		super.close();
 	}

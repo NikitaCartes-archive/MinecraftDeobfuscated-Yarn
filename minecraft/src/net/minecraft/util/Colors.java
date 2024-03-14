@@ -21,6 +21,11 @@ public class Colors {
 	 */
 	public static final int LIGHT_GRAY = -6250336;
 	/**
+	 * Represents a variant of the color white, used so that the two alternate with
+	 * each other, {@code 0xFFBABABA}.
+	 */
+	public static final int ALTERNATE_WHITE = -4539718;
+	/**
 	 * Represents the color red, {@code 0xFFFF0000}.
 	 */
 	public static final int RED = -65536;

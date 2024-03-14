@@ -29,6 +29,9 @@ public class DatapackCommand {
 	private static final DynamicCommandExceptionType ALREADY_DISABLED_EXCEPTION = new DynamicCommandExceptionType(
 		name -> Text.stringifiedTranslatable("commands.datapack.disable.failed", name)
 	);
+	private static final DynamicCommandExceptionType CANNOT_DISABLE_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
+		name -> Text.stringifiedTranslatable("commands.datapack.disable.failed.feature", name)
+	);
 	private static final Dynamic2CommandExceptionType NO_FLAGS_EXCEPTION = new Dynamic2CommandExceptionType(
 		(name, flags) -> Text.stringifiedTranslatable("commands.datapack.enable.failed.no_flags", name, flags)
 	);
@@ -191,7 +194,9 @@ public class DatapackCommand {
 			} else {
 				FeatureSet featureSet = context.getSource().getEnabledFeatures();
 				FeatureSet featureSet2 = resourcePackProfile.getRequestedFeatures();
-				if (!featureSet2.isSubsetOf(featureSet)) {
+				if (!enable && featureSet2.isSubsetOf(featureSet)) {
+					throw CANNOT_DISABLE_FEATURE_EXCEPTION.create(string);
+				} else if (!featureSet2.isSubsetOf(featureSet)) {
 					throw NO_FLAGS_EXCEPTION.create(string, FeatureFlags.printMissingFlags(featureSet, featureSet2));
 				} else {
 					return resourcePackProfile;

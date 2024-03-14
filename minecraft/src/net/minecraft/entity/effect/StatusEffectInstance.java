@@ -16,6 +16,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -135,6 +136,10 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	 */
 	public float getFadeFactor(LivingEntity entity, float tickDelta) {
 		return this.fading.calculate(entity, tickDelta);
+	}
+
+	public ParticleEffect createParticle() {
+		return this.type.value().createParticle(this);
 	}
 
 	void copyFrom(StatusEffectInstance that) {

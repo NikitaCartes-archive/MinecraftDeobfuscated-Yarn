@@ -74,7 +74,9 @@ public class SpawnArmorTrimsCommand {
 		ArmorTrimPatterns.SHAPER,
 		ArmorTrimPatterns.SILENCE,
 		ArmorTrimPatterns.RAISER,
-		ArmorTrimPatterns.HOST
+		ArmorTrimPatterns.HOST,
+		ArmorTrimPatterns.FLOW,
+		ArmorTrimPatterns.BOLT
 	);
 	private static final List<RegistryKey<ArmorTrimMaterial>> MATERIALS = List.of(
 		ArmorTrimMaterials.QUARTZ,

@@ -70,7 +70,7 @@ public class FollowOwnerGoal extends Goal {
 	}
 
 	private boolean cannotFollow() {
-		return this.tameable.isSitting() || this.tameable.hasVehicle() || this.tameable.isLeashed();
+		return this.tameable.isSitting() || this.tameable.hasVehicle() || this.tameable.mightBeLeashed();
 	}
 
 	@Override

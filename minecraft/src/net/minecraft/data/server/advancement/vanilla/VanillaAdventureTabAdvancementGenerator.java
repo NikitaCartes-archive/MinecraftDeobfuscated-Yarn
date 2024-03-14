@@ -753,7 +753,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE,
 			Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE
 		);
-		VanillaRecipeProvider.getTrimSmithingTemplateMap()
+		VanillaRecipeProvider.streamSmithingTemplates()
 			.filter(template -> set.contains(template.template()))
 			.forEach(templatex -> builder.criterion("armor_trimmed_" + templatex.id(), RecipeCraftedCriterion.Conditions.create(templatex.id())));
 		return builder;
@@ -761,7 +761,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 
 	private static Advancement.Builder requireTrimmedArmor(Advancement.Builder builder) {
 		builder.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
-		VanillaRecipeProvider.getTrimSmithingTemplateMap()
+		VanillaRecipeProvider.streamSmithingTemplates()
 			.map(VanillaRecipeProvider.SmithingTemplate::id)
 			.forEach(template -> builder.criterion("armor_trimmed_" + template, RecipeCraftedCriterion.Conditions.create(template)));
 		return builder;

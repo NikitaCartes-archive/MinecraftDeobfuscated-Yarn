@@ -624,6 +624,9 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 				)
 		);
 		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_COMMON_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_RARE_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_UNIQUE_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_SUPPLY_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_ENTRANCE_CHEST, LootTable.builder());

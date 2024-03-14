@@ -31,6 +31,8 @@ public class ArmorTrimPatterns {
 	public static final RegistryKey<ArmorTrimPattern> SILENCE = of("silence");
 	public static final RegistryKey<ArmorTrimPattern> RAISER = of("raiser");
 	public static final RegistryKey<ArmorTrimPattern> HOST = of("host");
+	public static final RegistryKey<ArmorTrimPattern> FLOW = of("flow");
+	public static final RegistryKey<ArmorTrimPattern> BOLT = of("bolt");
 
 	public static void bootstrap(Registerable<ArmorTrimPattern> registry) {
 		register(registry, Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, SENTRY);
@@ -58,7 +60,7 @@ public class ArmorTrimPatterns {
 			.findFirst();
 	}
 
-	private static void register(Registerable<ArmorTrimPattern> registry, Item template, RegistryKey<ArmorTrimPattern> key) {
+	public static void register(Registerable<ArmorTrimPattern> registry, Item template, RegistryKey<ArmorTrimPattern> key) {
 		ArmorTrimPattern armorTrimPattern = new ArmorTrimPattern(
 			key.getValue(), Registries.ITEM.getEntry(template), Text.translatable(Util.createTranslationKey("trim_pattern", key.getValue())), false
 		);

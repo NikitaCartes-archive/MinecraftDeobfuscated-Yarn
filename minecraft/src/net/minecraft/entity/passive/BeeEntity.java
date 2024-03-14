@@ -988,7 +988,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 		private boolean startMovingToFar(BlockPos pos) {
 			BeeEntity.this.navigation.setRangeMultiplier(10.0F);
-			BeeEntity.this.navigation.startMovingTo((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), 1.0);
+			BeeEntity.this.navigation.startMovingTo((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), 2, 1.0);
 			return BeeEntity.this.navigation.getCurrentPath() != null && BeeEntity.this.navigation.getCurrentPath().reachesTarget();
 		}
 

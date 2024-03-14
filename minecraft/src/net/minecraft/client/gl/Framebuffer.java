@@ -113,7 +113,7 @@ public abstract class Framebuffer {
 				);
 			}
 
-			this.setTexFilter(GlConst.GL_NEAREST);
+			this.setTexFilter(GlConst.GL_NEAREST, true);
 			GlStateManager._bindTexture(this.colorAttachment);
 			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
 			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
@@ -135,12 +135,18 @@ public abstract class Framebuffer {
 	}
 
 	public void setTexFilter(int texFilter) {
+		this.setTexFilter(texFilter, false);
+	}
+
+	private void setTexFilter(int texFilter, boolean force) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		this.texFilter = texFilter;
-		GlStateManager._bindTexture(this.colorAttachment);
-		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, texFilter);
-		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, texFilter);
-		GlStateManager._bindTexture(0);
+		if (force || texFilter != this.texFilter) {
+			this.texFilter = texFilter;
+			GlStateManager._bindTexture(this.colorAttachment);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, texFilter);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, texFilter);
+			GlStateManager._bindTexture(0);
+		}
 	}
 
 	public void checkFramebufferStatus() {

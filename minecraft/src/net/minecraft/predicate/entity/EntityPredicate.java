@@ -32,7 +32,7 @@ public record EntityPredicate(
 	Optional<NbtPredicate> nbt,
 	Optional<EntityFlagsPredicate> flags,
 	Optional<EntityEquipmentPredicate> equipment,
-	Optional<TypeSpecificPredicate> typeSpecific,
+	Optional<EntitySubPredicate> typeSpecific,
 	Optional<EntityPredicate> vehicle,
 	Optional<EntityPredicate> passenger,
 	Optional<EntityPredicate> targetedEntity,
@@ -51,7 +51,7 @@ public record EntityPredicate(
 							Codecs.createStrictOptionalFieldCodec(NbtPredicate.CODEC, "nbt").forGetter(EntityPredicate::nbt),
 							Codecs.createStrictOptionalFieldCodec(EntityFlagsPredicate.CODEC, "flags").forGetter(EntityPredicate::flags),
 							Codecs.createStrictOptionalFieldCodec(EntityEquipmentPredicate.CODEC, "equipment").forGetter(EntityPredicate::equipment),
-							Codecs.createStrictOptionalFieldCodec(TypeSpecificPredicate.CODEC, "type_specific").forGetter(EntityPredicate::typeSpecific),
+							Codecs.createStrictOptionalFieldCodec(EntitySubPredicate.CODEC, "type_specific").forGetter(EntityPredicate::typeSpecific),
 							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "vehicle").forGetter(EntityPredicate::vehicle),
 							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "passenger").forGetter(EntityPredicate::passenger),
 							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "targeted_entity").forGetter(EntityPredicate::targetedEntity),
@@ -112,13 +112,11 @@ public record EntityPredicate(
 
 				if (this.effects.isPresent() && !((EntityEffectPredicate)this.effects.get()).test(entity)) {
 					return false;
-				} else if (this.nbt.isPresent() && !((NbtPredicate)this.nbt.get()).test(entity)) {
-					return false;
 				} else if (this.flags.isPresent() && !((EntityFlagsPredicate)this.flags.get()).test(entity)) {
 					return false;
 				} else if (this.equipment.isPresent() && !((EntityEquipmentPredicate)this.equipment.get()).test(entity)) {
 					return false;
-				} else if (this.typeSpecific.isPresent() && !((TypeSpecificPredicate)this.typeSpecific.get()).test(entity, world, pos)) {
+				} else if (this.typeSpecific.isPresent() && !((EntitySubPredicate)this.typeSpecific.get()).test(entity, world, pos)) {
 					return false;
 				} else if (this.vehicle.isPresent() && !((EntityPredicate)this.vehicle.get()).test(world, pos, entity.getVehicle())) {
 					return false;
@@ -136,7 +134,9 @@ public record EntityPredicate(
 						}
 					}
 
-					return !this.slots.isPresent() || ((SlotsPredicate)this.slots.get()).matches(entity);
+					return this.nbt.isPresent() && !((NbtPredicate)this.nbt.get()).test(entity)
+						? false
+						: !this.slots.isPresent() || ((SlotsPredicate)this.slots.get()).matches(entity);
 				}
 			}
 		}
@@ -159,7 +159,7 @@ public record EntityPredicate(
 		private Optional<NbtPredicate> nbt = Optional.empty();
 		private Optional<EntityFlagsPredicate> flags = Optional.empty();
 		private Optional<EntityEquipmentPredicate> equipment = Optional.empty();
-		private Optional<TypeSpecificPredicate> typeSpecific = Optional.empty();
+		private Optional<EntitySubPredicate> typeSpecific = Optional.empty();
 		private Optional<EntityPredicate> vehicle = Optional.empty();
 		private Optional<EntityPredicate> passenger = Optional.empty();
 		private Optional<EntityPredicate> targetedEntity = Optional.empty();
@@ -225,7 +225,7 @@ public record EntityPredicate(
 			return this;
 		}
 
-		public EntityPredicate.Builder typeSpecific(TypeSpecificPredicate typeSpecific) {
+		public EntityPredicate.Builder typeSpecific(EntitySubPredicate typeSpecific) {
 			this.typeSpecific = Optional.of(typeSpecific);
 			return this;
 		}

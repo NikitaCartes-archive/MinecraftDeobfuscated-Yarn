@@ -40,7 +40,6 @@ import net.minecraft.client.gui.screen.narration.ScreenNarrator;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
@@ -66,8 +65,12 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Text SCREEN_USAGE_TEXT = Text.translatable("narrator.screen.usage");
 	protected static final CubeMapRenderer PANORAMA_RENDERER = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	protected static final RotatingCubeMapRenderer ROTATING_PANORAMA_RENDERER = new RotatingCubeMapRenderer(PANORAMA_RENDERER);
-	protected static final Identifier PANORAMA_OVERLAY_TEXTURE = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	public static final Identifier MENU_BACKGROUND_TEXTURE = new Identifier("textures/gui/menu_background.png");
+	public static final Identifier HEADER_SEPARATOR_TEXTURE = new Identifier("textures/gui/header_separator.png");
+	public static final Identifier FOOTER_SEPARATOR_TEXTURE = new Identifier("textures/gui/footer_separator.png");
+	private static final Identifier INWORLD_MENU_BACKGROUND_TEXTURE = new Identifier("textures/gui/inworld_menu_background.png");
+	public static final Identifier INWORLD_HEADER_SEPARATOR_TEXTURE = new Identifier("textures/gui/inworld_header_separator.png");
+	public static final Identifier INWORLD_FOOTER_SEPARATOR_TEXTURE = new Identifier("textures/gui/inworld_footer_separator.png");
 	protected final Text title;
 	private final List<Element> children = Lists.<Element>newArrayList();
 	private final List<Selectable> selectables = Lists.<Selectable>newArrayList();
@@ -393,7 +396,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	protected void renderPanoramaBackground(DrawContext context, float delta) {
-		ROTATING_PANORAMA_RENDERER.render(delta);
+		ROTATING_PANORAMA_RENDERER.render(context, this.width, this.height, 1.0F, delta);
 	}
 
 	protected void renderDarkening(DrawContext context) {
@@ -401,13 +404,13 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	protected void renderDarkening(DrawContext context, int x, int y, int width, int height) {
-		renderBackgroundTexture(context, x, y, width, height);
+		renderBackgroundTexture(context, this.client.world == null ? MENU_BACKGROUND_TEXTURE : INWORLD_MENU_BACKGROUND_TEXTURE, x, y, 0.0F, 0.0F, width, height);
 	}
 
-	public static void renderBackgroundTexture(DrawContext context, int x, int y, int width, int height) {
+	public static void renderBackgroundTexture(DrawContext context, Identifier texture, int x, int y, float u, float v, int width, int height) {
 		int i = 32;
 		RenderSystem.enableBlend();
-		context.drawTexture(MENU_BACKGROUND_TEXTURE, x, y, 0, 0.0F, 0.0F, width, height, 32, 32);
+		context.drawTexture(texture, x, y, 0, u, v, width, height, 32, 32);
 		RenderSystem.disableBlend();
 	}
 
@@ -647,12 +650,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public void setTooltip(Tooltip tooltip, TooltipPositioner positioner, boolean focused) {
 		this.setTooltip(tooltip.getLines(this.client), positioner, focused);
-	}
-
-	protected static void hide(ClickableWidget... widgets) {
-		for (ClickableWidget clickableWidget : widgets) {
-			clickableWidget.visible = false;
-		}
 	}
 
 	@Override

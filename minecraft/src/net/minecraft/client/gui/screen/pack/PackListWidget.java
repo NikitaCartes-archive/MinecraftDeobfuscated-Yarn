@@ -54,7 +54,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	}
 
 	@Override
-	protected int getScrollbarPositionX() {
+	protected int getScrollbarX() {
 		return this.getRight() - 6;
 	}
 

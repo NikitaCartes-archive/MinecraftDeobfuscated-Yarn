@@ -71,6 +71,10 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 		}
 	}
 
+	@Override
+	public void addVelocity(double deltaX, double deltaY, double deltaZ) {
+	}
+
 	protected abstract void createExplosion();
 
 	@Override
