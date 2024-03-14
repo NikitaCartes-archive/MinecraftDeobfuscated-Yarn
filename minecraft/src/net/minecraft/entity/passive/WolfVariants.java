@@ -7,6 +7,8 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -27,12 +29,18 @@ public class WolfVariants {
 	}
 
 	static void register(Registerable<WolfVariant> registry, RegistryKey<WolfVariant> key, String textureName, RegistryKey<Biome> biome) {
+		register(registry, key, textureName, RegistryEntryList.of(registry.getRegistryLookup(RegistryKeys.BIOME).getOrThrow(biome)));
+	}
+
+	static void register(Registerable<WolfVariant> registry, RegistryKey<WolfVariant> key, String textureName, TagKey<Biome> biomeTag) {
+		register(registry, key, textureName, registry.getRegistryLookup(RegistryKeys.BIOME).getOrThrow(biomeTag));
+	}
+
+	static void register(Registerable<WolfVariant> registry, RegistryKey<WolfVariant> key, String textureName, RegistryEntryList<Biome> biomes) {
 		Identifier identifier = new Identifier("textures/entity/wolf/" + textureName + ".png");
 		Identifier identifier2 = new Identifier("textures/entity/wolf/" + textureName + "_tame.png");
 		Identifier identifier3 = new Identifier("textures/entity/wolf/" + textureName + "_angry.png");
-		registry.register(
-			key, new WolfVariant(identifier, identifier2, identifier3, RegistryEntryList.of(registry.getRegistryLookup(RegistryKeys.BIOME).getOrThrow(biome)))
-		);
+		registry.register(key, new WolfVariant(identifier, identifier2, identifier3, biomes));
 	}
 
 	public static RegistryEntry<WolfVariant> fromBiome(DynamicRegistryManager dynamicRegistryManager, RegistryEntry<Biome> biome) {
@@ -45,13 +53,13 @@ public class WolfVariants {
 
 	public static void bootstrap(Registerable<WolfVariant> registry) {
 		register(registry, PALE, "wolf", BiomeKeys.TAIGA);
-		register(registry, SPOTTED, "wolf_spotted", BiomeKeys.SAVANNA_PLATEAU);
+		register(registry, SPOTTED, "wolf_spotted", BiomeTags.IS_SAVANNA);
 		register(registry, SNOWY, "wolf_snowy", BiomeKeys.GROVE);
 		register(registry, BLACK, "wolf_black", BiomeKeys.OLD_GROWTH_PINE_TAIGA);
 		register(registry, ASHEN, "wolf_ashen", BiomeKeys.SNOWY_TAIGA);
-		register(registry, RUSTY, "wolf_rusty", BiomeKeys.SPARSE_JUNGLE);
+		register(registry, RUSTY, "wolf_rusty", BiomeTags.IS_JUNGLE);
 		register(registry, WOODS, "wolf_woods", BiomeKeys.FOREST);
 		register(registry, CHESTNUT, "wolf_chestnut", BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA);
-		register(registry, STRIPED, "wolf_striped", BiomeKeys.WOODED_BADLANDS);
+		register(registry, STRIPED, "wolf_striped", BiomeTags.IS_BADLANDS);
 	}
 }

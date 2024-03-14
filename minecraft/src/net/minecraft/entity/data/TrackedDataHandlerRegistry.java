@@ -1,6 +1,7 @@
 package net.minecraft.entity.data;
 
 import io.netty.buffer.ByteBuf;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.UUID;
@@ -73,6 +74,9 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = TrackedDataHandler.create(OPTIONAL_BLOCK_STATE_CODEC);
 	public static final TrackedDataHandler<Boolean> BOOLEAN = TrackedDataHandler.create(PacketCodecs.BOOL);
 	public static final TrackedDataHandler<ParticleEffect> PARTICLE = TrackedDataHandler.create(ParticleTypes.PACKET_CODEC);
+	public static final TrackedDataHandler<List<ParticleEffect>> PARTICLE_LIST = TrackedDataHandler.create(
+		ParticleTypes.PACKET_CODEC.collect(PacketCodecs.toList())
+	);
 	public static final TrackedDataHandler<EulerAngle> ROTATION = TrackedDataHandler.create(EulerAngle.PACKET_CODEC);
 	public static final TrackedDataHandler<BlockPos> BLOCK_POS = TrackedDataHandler.create(BlockPos.PACKET_CODEC);
 	public static final TrackedDataHandler<Optional<BlockPos>> OPTIONAL_BLOCK_POS = TrackedDataHandler.create(
@@ -154,6 +158,7 @@ public class TrackedDataHandlerRegistry {
 		register(OPTIONAL_BLOCK_STATE);
 		register(NBT_COMPOUND);
 		register(PARTICLE);
+		register(PARTICLE_LIST);
 		register(VILLAGER_DATA);
 		register(OPTIONAL_INT);
 		register(ENTITY_POSE);

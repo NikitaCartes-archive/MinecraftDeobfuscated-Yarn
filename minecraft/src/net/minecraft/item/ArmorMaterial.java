@@ -19,12 +19,12 @@ import net.minecraft.util.Identifier;
  */
 public record ArmorMaterial(
 	Map<ArmorItem.Type, Integer> defense,
-	int getEnchantability,
-	RegistryEntry<SoundEvent> getEquipSound,
-	Supplier<Ingredient> getRepairIngredient,
+	int enchantability,
+	RegistryEntry<SoundEvent> equipSound,
+	Supplier<Ingredient> repairIngredient,
 	List<ArmorMaterial.Layer> layers,
-	float getToughness,
-	float getKnockbackResistance
+	float toughness,
+	float knockbackResistance
 ) {
 	public static final Codec<RegistryEntry<ArmorMaterial>> CODEC = Registries.ARMOR_MATERIAL.getEntryCodec();
 
@@ -34,7 +34,7 @@ public record ArmorMaterial(
 	 * 
 	 * <p>
 	 * The protection value returned here is applied as an {@link net.minecraft.entity.attribute.EntityAttributeModifier}
-	 * to a player wearing the {@link ArmorItem} piece via the {@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADDITION} modifier.
+	 * to a player wearing the {@link ArmorItem} piece via the {@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADD_VALUE} modifier.
 	 * 
 	 * @return the amount of armor protection points offered by an {@link ArmorItem} with this {@link ArmorMaterial}
 	 * 

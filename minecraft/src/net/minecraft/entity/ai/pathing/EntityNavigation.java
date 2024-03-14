@@ -156,6 +156,10 @@ public abstract class EntityNavigation {
 		return this.startMovingAlong(this.findPathTo(x, y, z, 1), speed);
 	}
 
+	public boolean startMovingTo(double x, double y, double z, int distance, double speed) {
+		return this.startMovingAlong(this.findPathTo(x, y, z, distance), speed);
+	}
+
 	public boolean startMovingTo(Entity entity, double speed) {
 		Path path = this.findPathTo(entity, 1);
 		return path != null && this.startMovingAlong(path, speed);

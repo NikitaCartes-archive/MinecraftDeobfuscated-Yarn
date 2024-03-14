@@ -51,9 +51,9 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		directionalLayoutWidget.add(new TextWidget(LANGUAGE_WARNING_TEXT, this.textRenderer));
 		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.horizontal().spacing(8));
 		directionalLayoutWidget2.add(
-			ButtonWidget.builder(Text.translatable("options.font"), buttonWidget -> this.client.setScreen(new FontOptionsScreen(this, this.gameOptions))).build()
+			ButtonWidget.builder(Text.translatable("options.font"), button -> this.client.setScreen(new FontOptionsScreen(this, this.gameOptions))).build()
 		);
-		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).build());
+		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.onDone()).build());
 	}
 
 	void onDone() {
@@ -62,24 +62,9 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			this.languageManager.setLanguage(languageEntry.languageCode);
 			this.gameOptions.language = languageEntry.languageCode;
 			this.client.reloadResources();
-			this.gameOptions.write();
 		}
 
 		this.client.setScreen(this.parent);
-	}
-
-	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (KeyCodes.isToggle(keyCode)) {
-			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelectedOrNull();
-			if (languageEntry != null) {
-				languageEntry.onPressed();
-				this.onDone();
-				return true;
-			}
-		}
-
-		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -129,6 +114,17 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			}
 
 			@Override
+			public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+				if (KeyCodes.isToggle(keyCode)) {
+					this.onPressed();
+					LanguageOptionsScreen.this.onDone();
+					return true;
+				} else {
+					return super.keyPressed(keyCode, scanCode, modifiers);
+				}
+			}
+
+			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				this.onPressed();
 				if (Util.getMeasuringTimeMs() - this.clickTime < 250L) {
@@ -139,7 +135,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 				return super.mouseClicked(mouseX, mouseY, button);
 			}
 
-			void onPressed() {
+			private void onPressed() {
 				LanguageSelectionListWidget.this.setSelected(this);
 			}
 

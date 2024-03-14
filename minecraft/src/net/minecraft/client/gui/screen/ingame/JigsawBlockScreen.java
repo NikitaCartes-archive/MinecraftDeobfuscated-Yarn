@@ -171,6 +171,11 @@ public class JigsawBlockScreen extends Screen {
 		this.setInitialFocus(this.poolField);
 	}
 
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderInGameBackground(context);
+	}
+
 	private void updateDoneButtonState() {
 		boolean bl = Identifier.isValid(this.nameField.getText()) && Identifier.isValid(this.targetField.getText()) && Identifier.isValid(this.poolField.getText());
 		this.doneButton.active = bl;

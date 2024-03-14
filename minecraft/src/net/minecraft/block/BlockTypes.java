@@ -107,6 +107,7 @@ public class BlockTypes {
 		Registry.register(registry, "half_transparent", TranslucentBlock.CODEC);
 		Registry.register(registry, "hanging_roots", HangingRootsBlock.CODEC);
 		Registry.register(registry, "hay", HayBlock.CODEC);
+		Registry.register(registry, "heavy_core", HeavyCoreBlock.CODEC);
 		Registry.register(registry, "honey", HoneyBlock.CODEC);
 		Registry.register(registry, "hopper", HopperBlock.CODEC);
 		Registry.register(registry, "huge_mushroom", MushroomBlock.CODEC);

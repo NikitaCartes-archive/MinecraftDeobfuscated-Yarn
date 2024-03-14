@@ -670,6 +670,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_BULB, dropsNothing());
 		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_BULB, dropsNothing());
 		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_BULB, dropsNothing());
+		this.addDrop(Blocks.HEAVY_CORE, dropsNothing());
 		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
 		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
 		this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);

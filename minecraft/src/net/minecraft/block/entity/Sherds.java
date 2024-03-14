@@ -51,7 +51,7 @@ public record Sherds(Optional<Item> back, Optional<Item> left, Optional<Item> ri
 	}
 
 	public List<Item> stream() {
-		return Stream.of(this.back, this.left, this.right, this.front).map(optional -> (Item)optional.orElse(Items.BRICK)).toList();
+		return Stream.of(this.back, this.left, this.right, this.front).map(item -> (Item)item.orElse(Items.BRICK)).toList();
 	}
 
 	public static Sherds fromNbt(@Nullable NbtCompound nbt) {

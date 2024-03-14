@@ -10,7 +10,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 
 public class ParticleTypes {
-	public static final DefaultParticleType AMBIENT_ENTITY_EFFECT = register("ambient_entity_effect", false);
 	public static final DefaultParticleType ANGRY_VILLAGER = register("angry_villager", false);
 	public static final ParticleType<BlockStateParticleEffect> BLOCK = register(
 		"block", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
@@ -43,7 +42,9 @@ public class ParticleTypes {
 	public static final DefaultParticleType ENCHANTED_HIT = register("enchanted_hit", false);
 	public static final DefaultParticleType ENCHANT = register("enchant", false);
 	public static final DefaultParticleType END_ROD = register("end_rod", false);
-	public static final DefaultParticleType ENTITY_EFFECT = register("entity_effect", false);
+	public static final ParticleType<EntityEffectParticleEffect> ENTITY_EFFECT = register(
+		"entity_effect", false, EntityEffectParticleEffect.PARAMETERS_FACTORY, EntityEffectParticleEffect::createCodec, EntityEffectParticleEffect::createPacketCodec
+	);
 	public static final DefaultParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final DefaultParticleType EXPLOSION = register("explosion", true);
 	public static final DefaultParticleType GUST = register("gust", true);

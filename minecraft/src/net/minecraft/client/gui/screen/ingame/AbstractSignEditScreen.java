@@ -109,6 +109,11 @@ public abstract class AbstractSignEditScreen extends Screen {
 	}
 
 	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderInGameBackground(context);
+	}
+
+	@Override
 	public void close() {
 		this.finishEditing();
 	}

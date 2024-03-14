@@ -155,9 +155,9 @@ public class EntityAttributeInstance {
 	 * Computes this attribute's value, taking modifiers into account.
 	 * 
 	 * <p>Attribute modifiers are applied in order by operation:
-	 * <ul><li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADDITION ADDITION} // Adds the value of the modifier to the attribute's base value.</li>
-	 * <li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#MULTIPLY_BASE MULTIPLY_BASE} // Multiplies the value of the modifier to the attributes base value, and then adds it to the total value.</li>
-	 * <li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#MULTIPLY_TOTAL MULTIPLY_TOTAL} // Adds 1 to the value of the attribute modifier. Then multiplies the attribute's value by the total value of the attribute after addition and multiplication of the base value occur.</li>
+	 * <ul><li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADD_VALUE ADD_VALUE} // Adds the value of the modifier to the attribute's base value.</li>
+	 * <li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADD_MULTIPLIED_BASE ADD_MULTIPLIED_BASE} // Multiplies the value of the modifier to the attributes base value, and then adds it to the total value.</li>
+	 * <li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADD_MULTIPLIED_TOTAL ADD_MULTIPLIED_TOTAL} // Adds 1 to the value of the attribute modifier. Then multiplies the attribute's value by the total value of the attribute after addition and multiplication of the base value occur.</li>
 	 * </ul>
 	 */
 	private double computeValue() {

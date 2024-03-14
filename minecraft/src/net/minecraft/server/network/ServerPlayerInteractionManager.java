@@ -124,20 +124,20 @@ public class ServerPlayerInteractionManager {
 		return f;
 	}
 
-	private void method_41250(BlockPos pos, boolean success, int sequence, String reason) {
+	private void onBlockBreakingAction(BlockPos pos, boolean success, int sequence, String reason) {
 	}
 
 	public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence) {
 		if (!this.player.canInteractWithBlockAt(pos, 1.0)) {
-			this.method_41250(pos, false, sequence, "too far");
+			this.onBlockBreakingAction(pos, false, sequence, "too far");
 		} else if (pos.getY() >= worldHeight) {
 			this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
-			this.method_41250(pos, false, sequence, "too high");
+			this.onBlockBreakingAction(pos, false, sequence, "too high");
 		} else {
 			if (action == PlayerActionC2SPacket.Action.START_DESTROY_BLOCK) {
 				if (!this.world.canPlayerModifyAt(this.player, pos)) {
 					this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
-					this.method_41250(pos, false, sequence, "may not interact");
+					this.onBlockBreakingAction(pos, false, sequence, "may not interact");
 					return;
 				}
 
@@ -148,7 +148,7 @@ public class ServerPlayerInteractionManager {
 
 				if (this.player.isBlockBreakingRestricted(this.world, pos, this.gameMode)) {
 					this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
-					this.method_41250(pos, false, sequence, "block action restricted");
+					this.onBlockBreakingAction(pos, false, sequence, "block action restricted");
 					return;
 				}
 
@@ -165,14 +165,14 @@ public class ServerPlayerInteractionManager {
 				} else {
 					if (this.mining) {
 						this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.miningPos, this.world.getBlockState(this.miningPos)));
-						this.method_41250(pos, false, sequence, "abort destroying since another started (client insta mine, server disagreed)");
+						this.onBlockBreakingAction(pos, false, sequence, "abort destroying since another started (client insta mine, server disagreed)");
 					}
 
 					this.mining = true;
 					this.miningPos = pos.toImmutable();
 					int i = (int)(f * 10.0F);
 					this.world.setBlockBreakingInfo(this.player.getId(), pos, i);
-					this.method_41250(pos, true, sequence, "actual start of destroying");
+					this.onBlockBreakingAction(pos, true, sequence, "actual start of destroying");
 					this.blockBreakingProgress = i;
 				}
 			} else if (action == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
@@ -197,27 +197,27 @@ public class ServerPlayerInteractionManager {
 					}
 				}
 
-				this.method_41250(pos, true, sequence, "stopped destroying");
+				this.onBlockBreakingAction(pos, true, sequence, "stopped destroying");
 			} else if (action == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK) {
 				this.mining = false;
 				if (!Objects.equals(this.miningPos, pos)) {
 					LOGGER.warn("Mismatch in destroy block pos: {} {}", this.miningPos, pos);
 					this.world.setBlockBreakingInfo(this.player.getId(), this.miningPos, -1);
-					this.method_41250(pos, true, sequence, "aborted mismatched destroying");
+					this.onBlockBreakingAction(pos, true, sequence, "aborted mismatched destroying");
 				}
 
 				this.world.setBlockBreakingInfo(this.player.getId(), pos, -1);
-				this.method_41250(pos, true, sequence, "aborted destroying");
+				this.onBlockBreakingAction(pos, true, sequence, "aborted destroying");
 			}
 		}
 	}
 
 	public void finishMining(BlockPos pos, int sequence, String reason) {
 		if (this.tryBreakBlock(pos)) {
-			this.method_41250(pos, true, sequence, reason);
+			this.onBlockBreakingAction(pos, true, sequence, reason);
 		} else {
 			this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
-			this.method_41250(pos, false, sequence, reason);
+			this.onBlockBreakingAction(pos, false, sequence, reason);
 		}
 	}
 

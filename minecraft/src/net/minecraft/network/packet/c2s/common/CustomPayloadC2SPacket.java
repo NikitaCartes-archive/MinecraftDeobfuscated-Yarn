@@ -1,6 +1,7 @@
 package net.minecraft.network.packet.c2s.common;
 
-import java.util.List;
+import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.listener.ServerCommonPacketListener;
@@ -11,12 +12,14 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.UnknownCustomPayload;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 public record CustomPayloadC2SPacket(CustomPayload payload) implements Packet<ServerCommonPacketListener> {
 	private static final int MAX_PAYLOAD_SIZE = 32767;
 	public static final PacketCodec<PacketByteBuf, CustomPayloadC2SPacket> CODEC = CustomPayload.<PacketByteBuf>createCodec(
-			identifier -> UnknownCustomPayload.createCodec(identifier, 32767),
-			List.of(new CustomPayload.Type<PacketByteBuf, BrandCustomPayload>(BrandCustomPayload.ID, BrandCustomPayload.CODEC))
+			id -> UnknownCustomPayload.createCodec(id, 32767),
+			Util.make(Lists.newArrayList(new CustomPayload.Type<>(BrandCustomPayload.ID, BrandCustomPayload.CODEC)), types -> {
+			})
 		)
 		.xmap(CustomPayloadC2SPacket::new, CustomPayloadC2SPacket::payload);
 

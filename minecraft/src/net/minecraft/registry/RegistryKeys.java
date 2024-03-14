@@ -37,6 +37,8 @@ import net.minecraft.loot.provider.score.LootScoreProviderType;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.potion.Potion;
+import net.minecraft.predicate.entity.EntitySubPredicate;
+import net.minecraft.predicate.item.ItemSubPredicate;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.scoreboard.number.NumberFormatType;
@@ -168,6 +170,8 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<NumberFormatType<?>>> NUMBER_FORMAT_TYPE = of("number_format_type");
 	public static final RegistryKey<Registry<ArmorMaterial>> ARMOR_MATERIAL = of("armor_material");
 	public static final RegistryKey<Registry<DataComponentType<?>>> DATA_COMPONENT_TYPE = of("data_component_type");
+	public static final RegistryKey<Registry<MapCodec<? extends EntitySubPredicate>>> ENTITY_SUB_PREDICATE_TYPE = of("entity_sub_predicate_type");
+	public static final RegistryKey<Registry<ItemSubPredicate.Type<?>>> ITEM_SUB_PREDICATE_TYPE = of("item_sub_predicate_type");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");

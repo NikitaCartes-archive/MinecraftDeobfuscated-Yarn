@@ -1368,6 +1368,7 @@ public class ItemGroups {
 						entries.add(Items.DIAMOND_AXE);
 						entries.add(Items.NETHERITE_AXE);
 						entries.add(Items.TRIDENT);
+						entries.add(Items.MACE);
 						entries.add(Items.SHIELD);
 						entries.add(Items.LEATHER_HELMET);
 						entries.add(Items.LEATHER_CHESTPLATE);
@@ -1524,6 +1525,8 @@ public class ItemGroups {
 						entries.add(Items.HEART_OF_THE_SEA);
 						entries.add(Items.FIRE_CHARGE);
 						entries.add(Items.BLAZE_ROD);
+						entries.add(Items.BREEZE_ROD);
+						entries.add(Items.HEAVY_CORE);
 						entries.add(Items.NETHER_STAR);
 						entries.add(Items.ENDER_PEARL);
 						entries.add(Items.ENDER_EYE);
@@ -1577,6 +1580,8 @@ public class ItemGroups {
 						entries.add(Items.MOJANG_BANNER_PATTERN);
 						entries.add(Items.GLOBE_BANNER_PATTERN);
 						entries.add(Items.PIGLIN_BANNER_PATTERN);
+						entries.add(Items.FLOW_BANNER_PATTERN);
+						entries.add(Items.GUSTER_BANNER_PATTERN);
 						entries.add(Items.ANGLER_POTTERY_SHERD);
 						entries.add(Items.ARCHER_POTTERY_SHERD);
 						entries.add(Items.ARMS_UP_POTTERY_SHERD);
@@ -1584,8 +1589,10 @@ public class ItemGroups {
 						entries.add(Items.BREWER_POTTERY_SHERD);
 						entries.add(Items.BURN_POTTERY_SHERD);
 						entries.add(Items.DANGER_POTTERY_SHERD);
+						entries.add(Items.FLOW_POTTERY_SHERD);
 						entries.add(Items.EXPLORER_POTTERY_SHERD);
 						entries.add(Items.FRIEND_POTTERY_SHERD);
+						entries.add(Items.GUSTER_POTTERY_SHERD);
 						entries.add(Items.HEART_POTTERY_SHERD);
 						entries.add(Items.HEARTBREAK_POTTERY_SHERD);
 						entries.add(Items.HOWL_POTTERY_SHERD);
@@ -1593,6 +1600,7 @@ public class ItemGroups {
 						entries.add(Items.MOURNER_POTTERY_SHERD);
 						entries.add(Items.PLENTY_POTTERY_SHERD);
 						entries.add(Items.PRIZE_POTTERY_SHERD);
+						entries.add(Items.SCRAPE_POTTERY_SHERD);
 						entries.add(Items.SHEAF_POTTERY_SHERD);
 						entries.add(Items.SHELTER_POTTERY_SHERD);
 						entries.add(Items.SKULL_POTTERY_SHERD);
@@ -1614,6 +1622,8 @@ public class ItemGroups {
 						entries.add(Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE);
 						entries.add(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE);
 						entries.add(Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE);
+						entries.add(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE);
 						entries.add(Items.EXPERIENCE_BOTTLE);
 						entries.add(Items.TRIAL_KEY);
 						Set<TagKey<Item>> set = Set.of(

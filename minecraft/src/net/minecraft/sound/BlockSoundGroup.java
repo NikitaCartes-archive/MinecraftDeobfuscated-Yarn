@@ -940,6 +940,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_VAULT_HIT,
 		SoundEvents.BLOCK_VAULT_FALL
 	);
+	public static final BlockSoundGroup HEAVY_CORE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_HEAVY_CORE_BREAK,
+		SoundEvents.BLOCK_HEAVY_CORE_STEP,
+		SoundEvents.BLOCK_HEAVY_CORE_PLACE,
+		SoundEvents.BLOCK_HEAVY_CORE_HIT,
+		SoundEvents.BLOCK_HEAVY_CORE_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

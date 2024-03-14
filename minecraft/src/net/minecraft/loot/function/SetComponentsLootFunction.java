@@ -13,7 +13,7 @@ import net.minecraft.loot.context.LootContext;
 public class SetComponentsLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetComponentsLootFunction> CODEC = RecordCodecBuilder.create(
 		instance -> addConditionsField(instance)
-				.and(ComponentChanges.CODEC.fieldOf("components").forGetter(setComponentsLootFunction -> setComponentsLootFunction.changes))
+				.and(ComponentChanges.CODEC.fieldOf("components").forGetter(function -> function.changes))
 				.apply(instance, SetComponentsLootFunction::new)
 	);
 	private final ComponentChanges changes;

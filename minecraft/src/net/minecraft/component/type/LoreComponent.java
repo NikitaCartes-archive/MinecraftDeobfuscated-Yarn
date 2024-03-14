@@ -30,7 +30,7 @@ public record LoreComponent(List<Text> lines, List<Text> styledLines) implements
 		this(lines, Lists.transform(lines, style -> Texts.setStyleIfAbsent(style.copy(), STYLE)));
 	}
 
-	public LoreComponent of(Text line) {
+	public LoreComponent with(Text line) {
 		return new LoreComponent(Util.listWith(this.lines, line));
 	}
 

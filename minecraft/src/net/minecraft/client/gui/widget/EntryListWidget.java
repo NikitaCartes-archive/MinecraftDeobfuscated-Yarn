@@ -16,9 +16,9 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.NavigationDirection;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -30,6 +30,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	private static final Identifier SCROLLER_TEXTURE = new Identifier("widget/scroller");
 	private static final Identifier SCROLLER_BACKGROUND_TEXTURE = new Identifier("widget/scroller_background");
 	private static final Identifier MENU_LIST_BACKGROUND_TEXTURE = new Identifier("textures/gui/menu_list_background.png");
+	private static final Identifier INWORLD_MENU_LIST_BACKGROUND_TEXTURE = new Identifier("textures/gui/inworld_menu_list_background.png");
 	protected final MinecraftClient client;
 	protected final int itemHeight;
 	private final List<E> children = new EntryListWidget.Entries();
@@ -181,7 +182,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		context.disableScissor();
 		this.drawHeaderAndFooterSeparators(context);
 		if (this.isScrollbarVisible()) {
-			int i = this.getScrollbarPositionX();
+			int i = this.getScrollbarX();
 			int j = (int)((float)(this.height * this.height) / (float)this.getMaxPosition());
 			j = MathHelper.clamp(j, 32, this.height - 8);
 			int k = (int)this.getScrollAmount() * (this.height - j) / this.getMaxScroll() + this.getY();
@@ -205,15 +206,18 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	protected void drawHeaderAndFooterSeparators(DrawContext context) {
 		RenderSystem.enableBlend();
-		context.drawTexture(CreateWorldScreen.HEADER_SEPARATOR_TEXTURE, this.getX(), this.getY() - 2, 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
-		context.drawTexture(CreateWorldScreen.FOOTER_SEPARATOR_TEXTURE, this.getX(), this.getBottom(), 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
+		Identifier identifier = this.client.world == null ? Screen.HEADER_SEPARATOR_TEXTURE : Screen.INWORLD_HEADER_SEPARATOR_TEXTURE;
+		Identifier identifier2 = this.client.world == null ? Screen.FOOTER_SEPARATOR_TEXTURE : Screen.INWORLD_FOOTER_SEPARATOR_TEXTURE;
+		context.drawTexture(identifier, this.getX(), this.getY() - 2, 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
+		context.drawTexture(identifier2, this.getX(), this.getBottom(), 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
 		RenderSystem.disableBlend();
 	}
 
 	protected void drawMenuListBackground(DrawContext context) {
 		RenderSystem.enableBlend();
+		Identifier identifier = this.client.world == null ? MENU_LIST_BACKGROUND_TEXTURE : INWORLD_MENU_LIST_BACKGROUND_TEXTURE;
 		context.drawTexture(
-			MENU_LIST_BACKGROUND_TEXTURE,
+			identifier,
 			this.getX(),
 			this.getY(),
 			(float)this.getRight(),
@@ -264,18 +268,18 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	protected void updateScrollingState(double mouseX, double mouseY, int button) {
-		this.scrolling = button == 0 && mouseX >= (double)this.getScrollbarPositionX() && mouseX < (double)(this.getScrollbarPositionX() + 6);
+		this.scrolling = button == 0 && mouseX >= (double)this.getScrollbarX() && mouseX < (double)(this.getScrollbarX() + 6);
 	}
 
-	protected int getScrollbarPositionX() {
-		return this.method_57718();
+	protected int getScrollbarX() {
+		return this.getDefaultScrollbarX();
 	}
 
-	protected int method_57718() {
-		return this.method_57711() + this.method_57716();
+	protected int getDefaultScrollbarX() {
+		return this.getBorderBoxRight() + this.getScrollbarMarginX();
 	}
 
-	private int method_57716() {
+	private int getScrollbarMarginX() {
 		return 10;
 	}
 
@@ -444,7 +448,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.getX() + this.width / 2 - this.getRowWidth() / 2 + 2;
 	}
 
-	private int method_57710() {
+	private int getBorderBoxLeft() {
 		return this.getX() + this.width / 2 - this.getRowWidth() / 2;
 	}
 
@@ -452,8 +456,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.getRowLeft() + this.getRowWidth();
 	}
 
-	private int method_57711() {
-		return this.method_57710() + this.getRowWidth();
+	private int getBorderBoxRight() {
+		return this.getBorderBoxLeft() + this.getRowWidth();
 	}
 
 	protected int getRowTop(int index) {

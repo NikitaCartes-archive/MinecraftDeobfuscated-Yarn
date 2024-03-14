@@ -110,5 +110,9 @@ public class ColorHelper {
 		public static int fullAlpha(int argb) {
 			return argb | 0xFF000000;
 		}
+
+		public static int withAlpha(int alpha, int rgb) {
+			return alpha << 24 | rgb & 16777215;
+		}
 	}
 }

@@ -83,6 +83,7 @@ import net.minecraft.network.message.SignedCommandArguments;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
+import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
 import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
@@ -196,6 +197,7 @@ public class ServerPlayNetworkHandler
 	private static final int MAX_PENDING_ACKNOWLEDGMENTS = 4096;
 	private static final int field_49027 = 80;
 	private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
+	private static final int field_49778 = 1000;
 	public ServerPlayerEntity player;
 	public final ChunkDataSender chunkDataSender;
 	private int ticks;
@@ -528,7 +530,14 @@ public class ServerPlayNetworkHandler
 			.getCommandManager()
 			.getDispatcher()
 			.getCompletionSuggestions(parseResults)
-			.thenAccept(suggestions -> this.sendPacket(new CommandSuggestionsS2CPacket(packet.getCompletionId(), suggestions)));
+			.thenAccept(
+				suggestions -> {
+					Suggestions suggestions2 = suggestions.getList().size() <= 1000
+						? suggestions
+						: new Suggestions(suggestions.getRange(), suggestions.getList().subList(0, 1000));
+					this.sendPacket(new CommandSuggestionsS2CPacket(packet.getCompletionId(), suggestions2));
+				}
+			);
 	}
 
 	@Override
@@ -1752,6 +1761,10 @@ public class ServerPlayNetworkHandler
 			this.player.setSession(session);
 			this.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(EnumSet.of(PlayerListS2CPacket.Action.INITIALIZE_CHAT), List.of(this.player)));
 		});
+	}
+
+	@Override
+	public void onCustomPayload(CustomPayloadC2SPacket packet) {
 	}
 
 	@Override
