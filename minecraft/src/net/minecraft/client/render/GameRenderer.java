@@ -254,7 +254,7 @@ public class GameRenderer implements AutoCloseable {
 		this.client = client;
 		this.resourceManager = resourceManager;
 		this.firstPersonRenderer = heldItemRenderer;
-		this.mapRenderer = new MapRenderer(client.getTextureManager());
+		this.mapRenderer = new MapRenderer(client.getTextureManager(), client.getMapDecorationsAtlasManager());
 		this.lightmapTextureManager = new LightmapTextureManager(this, client);
 		this.buffers = buffers;
 		this.postProcessor = null;

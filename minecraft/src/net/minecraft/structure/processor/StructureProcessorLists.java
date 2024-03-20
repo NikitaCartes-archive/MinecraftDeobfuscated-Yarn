@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.PaneBlock;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryEntryLookup;
@@ -748,7 +749,7 @@ public class StructureProcessorLists {
 		);
 	}
 
-	private static CappedStructureProcessor createTrailRuinsTowerTopProcessor(Identifier lootTableId, int limit) {
+	private static CappedStructureProcessor createTrailRuinsTowerTopProcessor(RegistryKey<LootTable> lootTable, int limit) {
 		return new CappedStructureProcessor(
 			new RuleStructureProcessor(
 				List.of(
@@ -757,7 +758,7 @@ public class StructureProcessorLists {
 						AlwaysTrueRuleTest.INSTANCE,
 						AlwaysTruePosRuleTest.INSTANCE,
 						Blocks.SUSPICIOUS_GRAVEL.getDefaultState(),
-						new AppendLootRuleBlockEntityModifier(lootTableId)
+						new AppendLootRuleBlockEntityModifier(lootTable)
 					)
 				)
 			),

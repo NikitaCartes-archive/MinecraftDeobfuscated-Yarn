@@ -5,29 +5,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.random.Random;
 
 public class ThornsEnchantment extends Enchantment {
 	private static final float ATTACK_CHANCE_PER_LEVEL = 0.15F;
 
-	public ThornsEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, ItemTags.ARMOR_ENCHANTABLE, slotTypes);
-	}
-
-	@Override
-	public int getMinPower(int level) {
-		return 10 + 20 * (level - 1);
-	}
-
-	@Override
-	public int getMaxPower(int level) {
-		return super.getMinPower(level) + 50;
-	}
-
-	@Override
-	public int getMaxLevel() {
-		return 3;
+	public ThornsEnchantment(Enchantment.Properties properties) {
+		super(properties);
 	}
 
 	@Override

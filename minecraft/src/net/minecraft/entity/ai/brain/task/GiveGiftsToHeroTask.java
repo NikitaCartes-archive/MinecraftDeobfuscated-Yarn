@@ -20,8 +20,8 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
@@ -31,7 +31,7 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 	private static final int DEFAULT_DURATION = 600;
 	private static final int MAX_NEXT_GIFT_DELAY = 6600;
 	private static final int RUN_TIME = 20;
-	private static final Map<VillagerProfession, Identifier> GIFTS = Util.make(Maps.newHashMap(), gifts -> {
+	private static final Map<VillagerProfession, RegistryKey<LootTable>> GIFTS = Util.make(Maps.newHashMap(), gifts -> {
 		gifts.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);
 		gifts.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY);
 		gifts.put(VillagerProfession.CARTOGRAPHER, LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY);
@@ -122,7 +122,7 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 		} else {
 			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
 			if (GIFTS.containsKey(villagerProfession)) {
-				LootTable lootTable = villager.getWorld().getServer().getLootManager().getLootTable((Identifier)GIFTS.get(villagerProfession));
+				LootTable lootTable = villager.getWorld().getServer().getReloadableRegistries().getLootTable((RegistryKey<LootTable>)GIFTS.get(villagerProfession));
 				LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)villager.getWorld())
 					.add(LootContextParameters.ORIGIN, villager.getPos())
 					.add(LootContextParameters.THIS_ENTITY, villager)

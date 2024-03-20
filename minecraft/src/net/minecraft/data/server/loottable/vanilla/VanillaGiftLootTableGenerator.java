@@ -13,12 +13,12 @@ import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Identifier;
 
 public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
 		consumer.accept(
 			LootTables.CAT_MORNING_GIFT_GAMEPLAY,
 			LootTable.builder()

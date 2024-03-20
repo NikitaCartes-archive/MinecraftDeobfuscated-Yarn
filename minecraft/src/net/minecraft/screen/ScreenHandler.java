@@ -943,12 +943,8 @@ public abstract class ScreenHandler {
 				Slot slot = this.slots.get(i);
 				ItemStack itemStack = slot.getStack();
 				if (itemStack.isEmpty() && slot.canInsert(stack)) {
-					if (stack.getCount() > slot.getMaxItemCount()) {
-						slot.setStack(stack.split(slot.getMaxItemCount()));
-					} else {
-						slot.setStack(stack.split(stack.getCount()));
-					}
-
+					int j = slot.getMaxItemCount(stack);
+					slot.setStack(stack.split(Math.min(stack.getCount(), j)));
 					slot.markDirty();
 					bl = true;
 					break;
@@ -1027,7 +1023,7 @@ public abstract class ScreenHandler {
 			for(int i = 0; i < inventory.size(); ++i) {
 				ItemStack itemStack = inventory.getStack(i);
 				if (!itemStack.isEmpty()) {
-					f += (float)itemStack.getCount() / (float)Math.min(inventory.getMaxCountPerStack(), itemStack.getMaxCount());
+					f += (float)itemStack.getCount() / (float)inventory.getMaxCount(itemStack);
 				}
 			}
 

@@ -3,6 +3,9 @@ package net.minecraft.loot.condition;
 import com.mojang.serialization.Codec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -11,6 +14,7 @@ public class LootConditionTypes {
 		.getCodec()
 		.dispatch("condition", LootCondition::getType, LootConditionType::codec);
 	public static final Codec<LootCondition> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AllOfLootCondition.INLINE_CODEC));
+	public static final Codec<RegistryEntry<LootCondition>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PREDICATE, CODEC);
 	public static final LootConditionType INVERTED = register("inverted", InvertedLootCondition.CODEC);
 	public static final LootConditionType ANY_OF = register("any_of", AnyOfLootCondition.CODEC);
 	public static final LootConditionType ALL_OF = register("all_of", AllOfLootCondition.CODEC);

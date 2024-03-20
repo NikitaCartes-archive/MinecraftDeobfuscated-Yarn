@@ -18,7 +18,7 @@ public class EnchantmentLevelEntry extends Weighted.Absent {
 	public final int level;
 
 	public EnchantmentLevelEntry(Enchantment enchantment, int level) {
-		super(enchantment.getRarity().getWeight());
+		super(enchantment.getWeight());
 		this.enchantment = enchantment;
 		this.level = level;
 	}

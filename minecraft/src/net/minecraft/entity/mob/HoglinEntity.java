@@ -27,8 +27,8 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -260,7 +260,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.isOf(Items.CRIMSON_FUNGUS);
+		return stack.isIn(ItemTags.HOGLIN_FOOD);
 	}
 
 	public boolean isAdult() {

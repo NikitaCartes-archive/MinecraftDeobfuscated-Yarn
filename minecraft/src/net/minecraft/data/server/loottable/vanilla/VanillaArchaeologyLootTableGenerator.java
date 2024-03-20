@@ -11,12 +11,12 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Identifier;
 
 public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
 		consumer.accept(
 			LootTables.DESERT_WELL_ARCHAEOLOGY,
 			LootTable.builder()

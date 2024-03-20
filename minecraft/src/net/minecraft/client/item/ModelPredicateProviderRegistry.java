@@ -57,8 +57,8 @@ public class ModelPredicateProviderRegistry {
 	}
 
 	@Nullable
-	public static ModelPredicateProvider get(Item item, Identifier id) {
-		if (item.getMaxDamage() > 0) {
+	public static ModelPredicateProvider get(ItemStack stack, Identifier id) {
+		if (stack.getMaxDamage() > 0) {
 			if (DAMAGE_ID.equals(id)) {
 				return DAMAGE_PROVIDER;
 			}
@@ -72,7 +72,7 @@ public class ModelPredicateProviderRegistry {
 		if (modelPredicateProvider != null) {
 			return modelPredicateProvider;
 		} else {
-			Map<Identifier, ModelPredicateProvider> map = (Map)ITEM_SPECIFIC.get(item);
+			Map<Identifier, ModelPredicateProvider> map = (Map)ITEM_SPECIFIC.get(stack.getItem());
 			return map == null ? null : (ModelPredicateProvider)map.get(id);
 		}
 	}

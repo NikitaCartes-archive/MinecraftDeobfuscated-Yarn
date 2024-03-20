@@ -2,7 +2,7 @@ package net.minecraft.recipe;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 
 public abstract class SpecialCraftingRecipe implements CraftingRecipe {
 	private final CraftingRecipeCategory category;
@@ -17,7 +17,7 @@ public abstract class SpecialCraftingRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
 		return ItemStack.EMPTY;
 	}
 

@@ -24,7 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -35,9 +35,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ChickenEntity extends AnimalEntity {
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
-		Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD
-	);
 	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.CHICKEN.getDimensions().scaled(0.5F).withEyeHeight(0.2975F);
 	public float flapProgress;
 	public float maxWingDeviation;
@@ -58,7 +55,7 @@ public class ChickenEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.0, BREEDING_INGREDIENT, false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.0, stack -> stack.isIn(ItemTags.CHICKEN_FOOD), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -137,7 +134,7 @@ public class ChickenEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.CHICKEN_FOOD);
 	}
 
 	@Override

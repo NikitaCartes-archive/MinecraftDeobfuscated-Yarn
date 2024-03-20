@@ -288,7 +288,7 @@ public class NbtIo {
 	 * Writes the {@code nbt} to the file at {@code path}.
 	 * 
 	 * @throws IOException if the IO operation fails
-	 * @see #write(NbtCompound, DataOutput)
+	 * @see #writeCompound(NbtCompound, DataOutput)
 	 */
 	public static void write(NbtCompound nbt, Path path) throws IOException {
 		OutputStream outputStream = Files.newOutputStream(path, OPEN_OPTIONS);

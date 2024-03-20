@@ -6,7 +6,7 @@ import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class TippedArrowRecipe extends SpecialCraftingRecipe {
@@ -39,7 +39,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		ItemStack itemStack = recipeInputInventory.getStack(1 + recipeInputInventory.getWidth());
 		if (!itemStack.isOf(Items.LINGERING_POTION)) {
 			return ItemStack.EMPTY;

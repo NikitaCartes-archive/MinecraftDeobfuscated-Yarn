@@ -4,11 +4,11 @@ import java.util.Optional;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -53,8 +53,8 @@ public class ArmorTrimPatterns {
 		register(registry, Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE, HOST);
 	}
 
-	public static Optional<RegistryEntry.Reference<ArmorTrimPattern>> get(DynamicRegistryManager registryManager, ItemStack stack) {
-		return registryManager.get(RegistryKeys.TRIM_PATTERN)
+	public static Optional<RegistryEntry.Reference<ArmorTrimPattern>> get(RegistryWrapper.WrapperLookup registriesLookup, ItemStack stack) {
+		return registriesLookup.getWrapperOrThrow(RegistryKeys.TRIM_PATTERN)
 			.streamEntries()
 			.filter(pattern -> stack.itemMatches(((ArmorTrimPattern)pattern.value()).templateItem()))
 			.findFirst();

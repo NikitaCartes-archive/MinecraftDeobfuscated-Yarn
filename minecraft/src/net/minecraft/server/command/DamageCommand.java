@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
+import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
@@ -36,14 +36,14 @@ public class DamageCommand {
 								)
 								.then(
 									((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument(
-													"damageType", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.DAMAGE_TYPE)
+													"damageType", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, RegistryKeys.DAMAGE_TYPE)
 												)
 												.executes(
 													context -> execute(
 															(ServerCommandSource)context.getSource(),
 															EntityArgumentType.getEntity(context, "target"),
 															FloatArgumentType.getFloat(context, "amount"),
-															new DamageSource(RegistryEntryArgumentType.getRegistryEntry(context, "damageType", RegistryKeys.DAMAGE_TYPE))
+															new DamageSource(RegistryEntryReferenceArgumentType.getRegistryEntry(context, "damageType", RegistryKeys.DAMAGE_TYPE))
 														)
 												))
 											.then(
@@ -56,7 +56,8 @@ public class DamageCommand {
 																		EntityArgumentType.getEntity(context, "target"),
 																		FloatArgumentType.getFloat(context, "amount"),
 																		new DamageSource(
-																			RegistryEntryArgumentType.getRegistryEntry(context, "damageType", RegistryKeys.DAMAGE_TYPE), Vec3ArgumentType.getVec3(context, "location")
+																			RegistryEntryReferenceArgumentType.getRegistryEntry(context, "damageType", RegistryKeys.DAMAGE_TYPE),
+																			Vec3ArgumentType.getVec3(context, "location")
 																		)
 																	)
 															)
@@ -72,7 +73,8 @@ public class DamageCommand {
 																	EntityArgumentType.getEntity(context, "target"),
 																	FloatArgumentType.getFloat(context, "amount"),
 																	new DamageSource(
-																		RegistryEntryArgumentType.getRegistryEntry(context, "damageType", RegistryKeys.DAMAGE_TYPE), EntityArgumentType.getEntity(context, "entity")
+																		RegistryEntryReferenceArgumentType.getRegistryEntry(context, "damageType", RegistryKeys.DAMAGE_TYPE),
+																		EntityArgumentType.getEntity(context, "entity")
 																	)
 																)
 														)
@@ -86,7 +88,7 @@ public class DamageCommand {
 																					EntityArgumentType.getEntity(context, "target"),
 																					FloatArgumentType.getFloat(context, "amount"),
 																					new DamageSource(
-																						RegistryEntryArgumentType.getRegistryEntry(context, "damageType", RegistryKeys.DAMAGE_TYPE),
+																						RegistryEntryReferenceArgumentType.getRegistryEntry(context, "damageType", RegistryKeys.DAMAGE_TYPE),
 																						EntityArgumentType.getEntity(context, "entity"),
 																						EntityArgumentType.getEntity(context, "cause")
 																					)

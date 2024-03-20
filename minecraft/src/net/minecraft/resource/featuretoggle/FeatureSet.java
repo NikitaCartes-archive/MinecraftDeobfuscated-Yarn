@@ -59,6 +59,10 @@ public final class FeatureSet {
 		}
 	}
 
+	public boolean isEmpty() {
+		return this.equals(EMPTY);
+	}
+
 	public boolean isSubsetOf(FeatureSet features) {
 		if (this.universe == null) {
 			return true;

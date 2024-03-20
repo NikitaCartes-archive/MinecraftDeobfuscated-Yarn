@@ -19,7 +19,7 @@ import net.minecraft.util.dynamic.Codecs;
 
 public record LoreComponent(List<Text> lines, List<Text> styledLines) implements TooltipAppender {
 	public static final LoreComponent DEFAULT = new LoreComponent(List.of());
-	private static final int MAX_LORES = 256;
+	public static final int MAX_LORES = 256;
 	private static final Style STYLE = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
 	public static final Codec<LoreComponent> CODEC = Codecs.list(TextCodecs.STRINGIFIED_CODEC.listOf(), 256).xmap(LoreComponent::new, LoreComponent::lines);
 	public static final PacketCodec<RegistryByteBuf, LoreComponent> PACKET_CODEC = TextCodecs.REGISTRY_PACKET_CODEC
@@ -31,7 +31,7 @@ public record LoreComponent(List<Text> lines, List<Text> styledLines) implements
 	}
 
 	public LoreComponent with(Text line) {
-		return new LoreComponent(Util.listWith(this.lines, line));
+		return new LoreComponent(Util.withAppended(this.lines, line));
 	}
 
 	@Override

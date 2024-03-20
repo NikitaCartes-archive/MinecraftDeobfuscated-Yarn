@@ -8,11 +8,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -20,7 +21,7 @@ import net.minecraft.world.World;
 public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements VehicleInventory {
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	@Nullable
-	private Identifier lootTableId;
+	private RegistryKey<LootTable> lootTable;
 	private long lootSeed;
 
 	protected StorageMinecartEntity(EntityType<?> entityType, World world) {
@@ -100,7 +101,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	protected void applySlowdown() {
 		float f = 0.98F;
-		if (this.lootTableId == null) {
+		if (this.lootTable == null) {
 			int i = 15 - ScreenHandler.calculateComparatorOutput(this);
 			f += (float)i * 0.001F;
 		}
@@ -117,15 +118,15 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		this.clearInventory();
 	}
 
-	public void setLootTable(Identifier id, long lootSeed) {
-		this.lootTableId = id;
+	public void setLootTable(RegistryKey<LootTable> lootTable, long lootSeed) {
+		this.lootTable = lootTable;
 		this.lootSeed = lootSeed;
 	}
 
 	@Nullable
 	@Override
 	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		if (this.lootTableId != null && playerEntity.isSpectator()) {
+		if (this.lootTable != null && playerEntity.isSpectator()) {
 			return null;
 		} else {
 			this.generateInventoryLoot(playerInventory.player);
@@ -137,13 +138,13 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Nullable
 	@Override
-	public Identifier getLootTableId() {
-		return this.lootTableId;
+	public RegistryKey<LootTable> getLootTable() {
+		return this.lootTable;
 	}
 
 	@Override
-	public void setLootTableId(@Nullable Identifier lootTableId) {
-		this.lootTableId = lootTableId;
+	public void setLootTable(@Nullable RegistryKey<LootTable> lootTable) {
+		this.lootTable = lootTable;
 	}
 
 	@Override

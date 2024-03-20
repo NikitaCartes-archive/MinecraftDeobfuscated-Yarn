@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -28,13 +29,12 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -53,7 +53,6 @@ public class OcelotEntity extends AnimalEntity {
 	public static final double CROUCHING_SPEED = 0.6;
 	public static final double NORMAL_SPEED = 0.8;
 	public static final double SPRINTING_SPEED = 1.33;
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
 	private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	@Nullable
 	private OcelotEntity.FleeGoal<PlayerEntity> fleeGoal;
@@ -94,7 +93,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Override
 	protected void initGoals() {
-		this.temptGoal = new OcelotEntity.OcelotTemptGoal(this, 0.6, TAMING_INGREDIENT, true);
+		this.temptGoal = new OcelotEntity.OcelotTemptGoal(this, 0.6, stack -> stack.isIn(ItemTags.OCELOT_FOOD), true);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(3, this.temptGoal);
 		this.goalSelector.add(7, new PounceAtTargetGoal(this, 0.3F));
@@ -233,7 +232,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return TAMING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.OCELOT_FOOD);
 	}
 
 	public static boolean canSpawn(EntityType<OcelotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -299,8 +298,8 @@ public class OcelotEntity extends AnimalEntity {
 	static class OcelotTemptGoal extends TemptGoal {
 		private final OcelotEntity ocelot;
 
-		public OcelotTemptGoal(OcelotEntity ocelot, double speed, Ingredient food, boolean canBeScared) {
-			super(ocelot, speed, food, canBeScared);
+		public OcelotTemptGoal(OcelotEntity ocelot, double speed, Predicate<ItemStack> foodPredicate, boolean canBeScared) {
+			super(ocelot, speed, foodPredicate, canBeScared);
 			this.ocelot = ocelot;
 		}
 

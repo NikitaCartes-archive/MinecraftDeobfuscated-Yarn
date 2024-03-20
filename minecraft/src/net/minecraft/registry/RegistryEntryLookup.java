@@ -25,5 +25,9 @@ public interface RegistryEntryLookup<T> {
 			return (RegistryEntryLookup<T>)this.getOptional(registryRef)
 				.orElseThrow(() -> new IllegalStateException("Registry " + registryRef.getValue() + " not found"));
 		}
+
+		default <T> Optional<RegistryEntry.Reference<T>> getOptionalEntry(RegistryKey<? extends Registry<? extends T>> registryRef, RegistryKey<T> key) {
+			return this.getOptional(registryRef).flatMap(registryEntryLookup -> registryEntryLookup.getOptional(key));
+		}
 	}
 }

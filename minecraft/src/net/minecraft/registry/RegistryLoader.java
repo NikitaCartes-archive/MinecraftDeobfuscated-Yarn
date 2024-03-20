@@ -78,7 +78,7 @@ public class RegistryLoader {
 		new RegistryLoader.Entry(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPreset.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC),
-		new RegistryLoader.Entry(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterList.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC)
@@ -89,7 +89,7 @@ public class RegistryLoader {
 		new RegistryLoader.Entry(RegistryKeys.MESSAGE_TYPE, MessageType.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC),
-		new RegistryLoader.Entry(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC),
+		new RegistryLoader.Entry<WolfVariant>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
 		new RegistryLoader.Entry(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC)

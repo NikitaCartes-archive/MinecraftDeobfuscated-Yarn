@@ -13,7 +13,7 @@ public interface OneTwentyOneStructureSets {
 		RegistryEntryLookup<Structure> registryEntryLookup = structureSetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE);
 		structureSetRegisterable.register(
 			StructureSetKeys.TRIAL_CHAMBERS,
-			new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.TRIAL_CHAMBERS), new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 94251327))
+			new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.TRIAL_CHAMBERS), new RandomSpreadStructurePlacement(34, 12, SpreadType.LINEAR, 94251327))
 		);
 	}
 }

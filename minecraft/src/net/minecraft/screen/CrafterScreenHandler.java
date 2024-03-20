@@ -9,6 +9,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.slot.CrafterInputSlot;
 import net.minecraft.screen.slot.CrafterOutputSlot;
 import net.minecraft.screen.slot.Slot;
@@ -127,7 +128,7 @@ public class CrafterScreenHandler extends ScreenHandler implements ScreenHandler
 		if (world instanceof ServerPlayerEntity serverPlayerEntity) {
 			World worldx = serverPlayerEntity.getWorld();
 			ItemStack itemStack = (ItemStack)CrafterBlock.getCraftingRecipe(worldx, this.inputInventory)
-				.map(recipe -> recipe.craft(this.inputInventory, world.getRegistryManager()))
+				.map(recipeEntry -> ((CraftingRecipe)recipeEntry.value()).craft(this.inputInventory, world.getRegistryManager()))
 				.orElse(ItemStack.EMPTY);
 			this.resultInventory.setStack(0, itemStack);
 		}

@@ -1,6 +1,10 @@
 package net.minecraft.item;
 
+import java.util.List;
+import net.minecraft.block.Block;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.TagKey;
 
 /**
  * Defines the material stats of a {@link net.minecraft.item.ToolItem} item.
@@ -20,8 +24,6 @@ public interface ToolMaterial {
 	/**
 	 * {@return the mining speed bonus applied when a {@link net.minecraft.item.ToolItem} using this material is breaking an appropriate block}
 	 * {@code 1.0f} will result in no speed change.
-	 * <p>
-	 * <b>Note:</b> for default vanilla tool classes, this bonus is only applied in {@link net.minecraft.item.MiningToolItem#getMiningSpeedMultiplier(ItemStack, BlockState)}.
 	 */
 	float getMiningSpeedMultiplier();
 
@@ -33,13 +35,7 @@ public interface ToolMaterial {
 	 */
 	float getAttackDamage();
 
-	/**
-	 * {@return the mining level of a {@link net.minecraft.item.ToolItem} using this {@link ToolMaterial}}
-	 * To prevent this tool from successfully harvesting any mining level gated blocks, return {@link net.fabricmc.yarn.constants.MiningLevels#HAND}.
-	 * <p>
-	 * For more information on mining levels, visit {@link net.fabricmc.yarn.constants.MiningLevels}.
-	 */
-	int getMiningLevel();
+	TagKey<Block> getInverseTag();
 
 	/**
 	 * {@return the enchantment value sent back to {@link net.minecraft.item.Item#getEnchantability()} for tools using this material}
@@ -59,4 +55,10 @@ public interface ToolMaterial {
 	 * back to this method.
 	 */
 	Ingredient getRepairIngredient();
+
+	default ToolComponent createComponent(TagKey<Block> tag) {
+		return new ToolComponent(
+			List.of(ToolComponent.Rule.ofNeverDropping(this.getInverseTag()), ToolComponent.Rule.ofAlwaysDropping(tag, this.getMiningSpeedMultiplier())), 1.0F, 1
+		);
+	}
 }

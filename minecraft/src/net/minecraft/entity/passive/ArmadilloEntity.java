@@ -28,6 +28,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -211,7 +212,7 @@ public class ArmadilloEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return ArmadilloBrain.BREEDING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.ARMADILLO_FOOD);
 	}
 
 	public static boolean canSpawn(EntityType<ArmadilloEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

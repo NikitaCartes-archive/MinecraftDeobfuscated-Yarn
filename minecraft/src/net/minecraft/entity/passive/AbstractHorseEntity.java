@@ -53,8 +53,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -95,9 +95,6 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		.setBaseMaxDistance(16.0)
 		.ignoreVisibility()
 		.setPredicate(IS_BRED_HORSE);
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
-		Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE
-	);
 	private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int TAMED_FLAG = 2;
 	private static final int SADDLED_FLAG = 4;
@@ -171,7 +168,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	protected void initCustomGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.ofItems(Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.25, stack -> stack.isIn(ItemTags.HORSE_TEMPT_ITEMS), false));
 	}
 
 	@Override
@@ -549,7 +546,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.HORSE_FOOD);
 	}
 
 	private void wagTail() {

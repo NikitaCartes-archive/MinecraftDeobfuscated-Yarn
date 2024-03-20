@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.FrogEntityModel;
 import net.minecraft.entity.passive.FrogEntity;
+import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -14,6 +15,6 @@ public class FrogEntityRenderer extends MobEntityRenderer<FrogEntity, FrogEntity
 	}
 
 	public Identifier getTexture(FrogEntity frogEntity) {
-		return frogEntity.getVariant().texture();
+		return ((FrogVariant)frogEntity.getVariant().value()).texture();
 	}
 }

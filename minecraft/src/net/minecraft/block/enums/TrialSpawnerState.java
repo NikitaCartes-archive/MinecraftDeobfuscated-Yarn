@@ -9,10 +9,10 @@ import net.minecraft.block.spawner.TrialSpawnerData;
 import net.minecraft.block.spawner.TrialSpawnerLogic;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.BlockPos;
@@ -112,7 +112,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 						trialSpawnerData.rewardLootTable = trialSpawnerConfig.lootTablesToEject().getDataOrEmpty(world.getRandom());
 					}
 
-					trialSpawnerData.rewardLootTable.ifPresent(lootTable -> logic.ejectLootTable(world, pos, lootTable));
+					trialSpawnerData.rewardLootTable.ifPresent(registryKey -> logic.ejectLootTable(world, pos, registryKey));
 					trialSpawnerData.players.remove(trialSpawnerData.players.iterator().next());
 					var10000 = this;
 				}

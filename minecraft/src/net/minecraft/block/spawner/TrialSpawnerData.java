@@ -16,12 +16,14 @@ import javax.annotation.Nullable;
 import net.minecraft.block.enums.TrialSpawnerState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.DataPool;
@@ -42,7 +44,7 @@ public class TrialSpawnerData {
 					Codec.LONG.optionalFieldOf("next_mob_spawns_at", Long.valueOf(0L)).forGetter(data -> data.nextMobSpawnsAt),
 					Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("total_mobs_spawned", 0).forGetter(data -> data.totalSpawnedMobs),
 					MobSpawnerEntry.CODEC.optionalFieldOf("spawn_data").forGetter(data -> data.spawnData),
-					Identifier.CODEC.optionalFieldOf("ejecting_loot_table").forGetter(data -> data.rewardLootTable)
+					RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).optionalFieldOf("ejecting_loot_table").forGetter(data -> data.rewardLootTable)
 				)
 				.apply(instance, TrialSpawnerData::new)
 	);
@@ -52,7 +54,7 @@ public class TrialSpawnerData {
 	public long nextMobSpawnsAt;
 	public int totalSpawnedMobs;
 	public Optional<MobSpawnerEntry> spawnData;
-	public Optional<Identifier> rewardLootTable;
+	public Optional<RegistryKey<LootTable>> rewardLootTable;
 	public DataPool<MobSpawnerEntry> spawnDataPool;
 	@Nullable
 	protected Entity displayEntity;
@@ -70,7 +72,7 @@ public class TrialSpawnerData {
 		long nextMobSpawnsAt,
 		int totalSpawnedMobs,
 		Optional<MobSpawnerEntry> spawnData,
-		Optional<Identifier> rewardLootTable
+		Optional<RegistryKey<LootTable>> rewardLootTable
 	) {
 		this.players.addAll(players);
 		this.spawnedMobsAlive.addAll(spawnedMobsAlive);

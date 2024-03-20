@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.NbtCompoundArgumentType;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
+import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
@@ -34,11 +34,15 @@ public class SummonCommand {
 			CommandManager.literal("summon")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.ENTITY_TYPE))
+					CommandManager.argument("entity", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, RegistryKeys.ENTITY_TYPE))
 						.suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
 						.executes(
 							context -> execute(
-									context.getSource(), RegistryEntryArgumentType.getSummonableEntityType(context, "entity"), context.getSource().getPosition(), new NbtCompound(), true
+									context.getSource(),
+									RegistryEntryReferenceArgumentType.getSummonableEntityType(context, "entity"),
+									context.getSource().getPosition(),
+									new NbtCompound(),
+									true
 								)
 						)
 						.then(
@@ -46,7 +50,7 @@ public class SummonCommand {
 								.executes(
 									context -> execute(
 											context.getSource(),
-											RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
+											RegistryEntryReferenceArgumentType.getSummonableEntityType(context, "entity"),
 											Vec3ArgumentType.getVec3(context, "pos"),
 											new NbtCompound(),
 											true
@@ -57,7 +61,7 @@ public class SummonCommand {
 										.executes(
 											context -> execute(
 													context.getSource(),
-													RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
+													RegistryEntryReferenceArgumentType.getSummonableEntityType(context, "entity"),
 													Vec3ArgumentType.getVec3(context, "pos"),
 													NbtCompoundArgumentType.getNbtCompound(context, "nbt"),
 													false

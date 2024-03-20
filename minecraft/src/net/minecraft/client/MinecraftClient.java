@@ -157,6 +157,7 @@ import net.minecraft.client.sound.MusicTracker;
 import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.texture.GuiAtlasManager;
+import net.minecraft.client.texture.MapDecorationsAtlasManager;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.texture.Sprite;
@@ -393,6 +394,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final BlockRenderManager blockRenderManager;
 	private final PaintingManager paintingManager;
 	private final StatusEffectSpriteManager statusEffectSpriteManager;
+	private final MapDecorationsAtlasManager mapDecorationsAtlasManager;
 	private final GuiAtlasManager guiAtlasManager;
 	private final ToastManager toastManager;
 	private final TutorialManager tutorialManager;
@@ -648,20 +650,22 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this, this.textureManager, this.itemRenderer, this.blockRenderManager, this.textRenderer, this.options, this.entityModelLoader
 		);
 		this.resourceManager.registerReloader(this.entityRenderDispatcher);
-		this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getHeldItemRenderer(), this.resourceManager, this.bufferBuilders);
-		this.resourceManager.registerReloader(this.gameRenderer.createProgramReloader());
-		this.worldRenderer = new WorldRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.bufferBuilders);
-		this.resourceManager.registerReloader(this.worldRenderer);
-		this.initializeSearchProviders();
-		this.resourceManager.registerReloader(this.searchManager);
 		this.particleManager = new ParticleManager(this.world, this.textureManager);
 		this.resourceManager.registerReloader(this.particleManager);
 		this.paintingManager = new PaintingManager(this.textureManager);
 		this.resourceManager.registerReloader(this.paintingManager);
 		this.statusEffectSpriteManager = new StatusEffectSpriteManager(this.textureManager);
 		this.resourceManager.registerReloader(this.statusEffectSpriteManager);
+		this.mapDecorationsAtlasManager = new MapDecorationsAtlasManager(this.textureManager);
+		this.resourceManager.registerReloader(this.mapDecorationsAtlasManager);
 		this.guiAtlasManager = new GuiAtlasManager(this.textureManager);
 		this.resourceManager.registerReloader(this.guiAtlasManager);
+		this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getHeldItemRenderer(), this.resourceManager, this.bufferBuilders);
+		this.resourceManager.registerReloader(this.gameRenderer.createProgramReloader());
+		this.worldRenderer = new WorldRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.bufferBuilders);
+		this.resourceManager.registerReloader(this.worldRenderer);
+		this.initializeSearchProviders();
+		this.resourceManager.registerReloader(this.searchManager);
 		this.videoWarningManager = new VideoWarningManager();
 		this.resourceManager.registerReloader(this.videoWarningManager);
 		this.resourceManager.registerReloader(this.regionalComplianciesManager);
@@ -1254,6 +1258,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.particleManager.clearAtlas();
 			this.statusEffectSpriteManager.close();
 			this.paintingManager.close();
+			this.mapDecorationsAtlasManager.close();
 			this.guiAtlasManager.close();
 			this.textureManager.close();
 			this.resourceManager.close();
@@ -2873,6 +2878,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public StatusEffectSpriteManager getStatusEffectSpriteManager() {
 		return this.statusEffectSpriteManager;
+	}
+
+	public MapDecorationsAtlasManager getMapDecorationsAtlasManager() {
+		return this.mapDecorationsAtlasManager;
 	}
 
 	public GuiAtlasManager getGuiAtlasManager() {

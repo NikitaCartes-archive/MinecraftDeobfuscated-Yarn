@@ -37,6 +37,7 @@ import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBlockTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneDamageTypeTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneEntityTypeTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneItemTagProvider;
+import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneStructureTagProvider;
 import net.minecraft.data.server.tag.rebalance.RebalanceStructureTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBannerPatternTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBiomeTagProvider;
@@ -65,6 +66,7 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.structure.Structure;
 
 public class Main {
 	@DontObfuscate
@@ -141,6 +143,7 @@ public class Main {
 		TagProvider<Item> tagProvider2 = pack3.addProvider(outputx -> new VanillaItemTagProvider(outputx, completableFuture, tagProvider.getTagLookupFuture()));
 		TagProvider<Biome> tagProvider3 = pack3.addProvider(toFactory(VanillaBiomeTagProvider::new, completableFuture));
 		TagProvider<BannerPattern> tagProvider4 = pack3.addProvider(toFactory(VanillaBannerPatternTagProvider::new, completableFuture));
+		TagProvider<Structure> tagProvider5 = pack3.addProvider(toFactory(VanillaStructureTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaCatVariantTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaDamageTypeTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaEntityTypeTagProvider::new, completableFuture));
@@ -150,7 +153,6 @@ public class Main {
 		pack3.addProvider(toFactory(VanillaInstrumentTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaPaintingVariantTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaPointOfInterestTypeTagProvider::new, completableFuture));
-		pack3.addProvider(toFactory(VanillaStructureTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaWorldPresetTagProvider::new, completableFuture));
 		pack3 = dataGenerator.createVanillaPack(includeDev);
 		pack3.addProvider(outputx -> new NbtProvider(outputx, inputs));
@@ -174,11 +176,11 @@ public class Main {
 		DataGenerator.Pack pack4 = dataGenerator.createVanillaSubPack(includeServer, "update_1_21");
 		pack4.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches)));
 		pack4.addProvider(toFactory(OneTwentyOneRecipeProvider::new, completableFuture3));
-		TagProvider<Block> tagProvider5 = pack4.addProvider(
+		TagProvider<Block> tagProvider6 = pack4.addProvider(
 			outputx -> new OneTwentyOneBlockTagProvider(outputx, completableFuture3, tagProvider.getTagLookupFuture())
 		);
 		pack4.addProvider(
-			outputx -> new OneTwentyOneItemTagProvider(outputx, completableFuture3, tagProvider2.getTagLookupFuture(), tagProvider5.getTagLookupFuture())
+			outputx -> new OneTwentyOneItemTagProvider(outputx, completableFuture3, tagProvider2.getTagLookupFuture(), tagProvider6.getTagLookupFuture())
 		);
 		pack4.addProvider(outputx -> new OneTwentyOneBiomeTagProvider(outputx, completableFuture3, tagProvider3.getTagLookupFuture()));
 		pack4.addProvider(toFactory(OneTwentyOneLootTableProviders::createOneTwentyOneProvider, completableFuture3));
@@ -187,6 +189,7 @@ public class Main {
 		pack4.addProvider(toFactory(OneTwentyOneDamageTypeTagProvider::new, completableFuture3));
 		pack4.addProvider(toFactory(OneTwentyOneAdvancementProviders::createOneTwentyOneProvider, completableFuture3));
 		pack4.addProvider(outputx -> new OneTwentyOneBannerPatternTagProvider(outputx, completableFuture3, tagProvider4.getTagLookupFuture()));
+		pack4.addProvider(outputx -> new OneTwentyOneStructureTagProvider(outputx, completableFuture3, tagProvider5.getTagLookupFuture()));
 		return dataGenerator;
 	}
 }

@@ -88,12 +88,13 @@ public class BossBarHud {
 	}
 
 	private void renderBossBar(DrawContext context, int x, int y, BossBar bossBar, int width, Identifier[] textures, Identifier[] notchedTextures) {
+		RenderSystem.enableBlend();
 		context.drawGuiTexture(textures[bossBar.getColor().ordinal()], 182, 5, 0, 0, x, y, width, 5);
 		if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
-			RenderSystem.enableBlend();
 			context.drawGuiTexture(notchedTextures[bossBar.getStyle().ordinal() - 1], 182, 5, 0, 0, x, y, width, 5);
-			RenderSystem.disableBlend();
 		}
+
+		RenderSystem.disableBlend();
 	}
 
 	public void handlePacket(BossBarS2CPacket packet) {

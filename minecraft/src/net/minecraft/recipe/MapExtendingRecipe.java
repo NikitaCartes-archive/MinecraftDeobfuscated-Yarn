@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class MapExtendingRecipe extends ShapedRecipe {
@@ -34,7 +34,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 				MapState mapState = FilledMapItem.getMapState(itemStack, world);
 				if (mapState == null) {
 					return false;
-				} else if (mapState.hasMonumentIcon()) {
+				} else if (mapState.hasExplorationMapDecoration()) {
 					return false;
 				} else {
 					return mapState.scale < 4;
@@ -44,7 +44,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		ItemStack itemStack = findFilledMap(recipeInputInventory).copyWithCount(1);
 		itemStack.set(DataComponentTypes.MAP_POST_PROCESSING, MapPostProcessingComponent.SCALE);
 		return itemStack;

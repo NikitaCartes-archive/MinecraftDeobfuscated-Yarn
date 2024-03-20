@@ -67,10 +67,7 @@ public class MerchantInventory implements Inventory {
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		this.inventory.set(slot, stack);
-		if (!stack.isEmpty() && stack.getCount() > this.getMaxCountPerStack()) {
-			stack.setCount(this.getMaxCountPerStack());
-		}
-
+		stack.capCount(this.getMaxCount(stack));
 		if (this.needsOfferUpdate(slot)) {
 			this.updateOffers();
 		}

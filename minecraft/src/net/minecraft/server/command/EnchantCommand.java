@@ -10,7 +10,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
+import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -42,10 +42,13 @@ public class EnchantCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("enchantment", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.ENCHANTMENT))
+							CommandManager.argument("enchantment", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, RegistryKeys.ENCHANTMENT))
 								.executes(
 									context -> execute(
-											context.getSource(), EntityArgumentType.getEntities(context, "targets"), RegistryEntryArgumentType.getEnchantment(context, "enchantment"), 1
+											context.getSource(),
+											EntityArgumentType.getEntities(context, "targets"),
+											RegistryEntryReferenceArgumentType.getEnchantment(context, "enchantment"),
+											1
 										)
 								)
 								.then(
@@ -54,7 +57,7 @@ public class EnchantCommand {
 											context -> execute(
 													context.getSource(),
 													EntityArgumentType.getEntities(context, "targets"),
-													RegistryEntryArgumentType.getEnchantment(context, "enchantment"),
+													RegistryEntryReferenceArgumentType.getEnchantment(context, "enchantment"),
 													IntegerArgumentType.getInteger(context, "level")
 												)
 										)

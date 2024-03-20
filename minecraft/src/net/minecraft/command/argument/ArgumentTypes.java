@@ -81,11 +81,21 @@ public class ArgumentTypes {
 		register(registry, "time", TimeArgumentType.class, new TimeArgumentType.Serializer());
 		register(registry, "resource_or_tag", upcast(RegistryEntryPredicateArgumentType.class), new RegistryEntryPredicateArgumentType.Serializer());
 		register(registry, "resource_or_tag_key", upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
-		register(registry, "resource", upcast(RegistryEntryArgumentType.class), new RegistryEntryArgumentType.Serializer());
+		register(registry, "resource", upcast(RegistryEntryReferenceArgumentType.class), new RegistryEntryReferenceArgumentType.Serializer());
 		register(registry, "resource_key", upcast(RegistryKeyArgumentType.class), new RegistryKeyArgumentType.Serializer());
 		register(registry, "template_mirror", BlockMirrorArgumentType.class, ConstantArgumentSerializer.of(BlockMirrorArgumentType::blockMirror));
 		register(registry, "template_rotation", BlockRotationArgumentType.class, ConstantArgumentSerializer.of(BlockRotationArgumentType::blockRotation));
 		register(registry, "heightmap", HeightmapArgumentType.class, ConstantArgumentSerializer.of(HeightmapArgumentType::heightmap));
+		register(registry, "loot_table", RegistryEntryArgumentType.LootTableArgumentType.class, ConstantArgumentSerializer.of(RegistryEntryArgumentType::lootTable));
+		register(
+			registry,
+			"loot_predicate",
+			RegistryEntryArgumentType.LootConditionArgumentType.class,
+			ConstantArgumentSerializer.of(RegistryEntryArgumentType::lootCondition)
+		);
+		register(
+			registry, "loot_modifier", RegistryEntryArgumentType.LootFunctionArgumentType.class, ConstantArgumentSerializer.of(RegistryEntryArgumentType::lootFunction)
+		);
 		if (SharedConstants.isDevelopment) {
 			register(registry, "test_argument", TestFunctionArgumentType.class, ConstantArgumentSerializer.of(TestFunctionArgumentType::testFunction));
 			register(registry, "test_class", TestClassArgumentType.class, ConstantArgumentSerializer.of(TestClassArgumentType::testClass));

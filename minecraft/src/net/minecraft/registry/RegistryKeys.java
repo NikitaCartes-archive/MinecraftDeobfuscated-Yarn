@@ -26,10 +26,14 @@ import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.map.MapDecorationType;
 import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimPattern;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.entry.LootPoolEntryType;
+import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.nbt.LootNbtProviderType;
 import net.minecraft.loot.provider.number.LootNumberProviderType;
@@ -172,6 +176,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<DataComponentType<?>>> DATA_COMPONENT_TYPE = of("data_component_type");
 	public static final RegistryKey<Registry<MapCodec<? extends EntitySubPredicate>>> ENTITY_SUB_PREDICATE_TYPE = of("entity_sub_predicate_type");
 	public static final RegistryKey<Registry<ItemSubPredicate.Type<?>>> ITEM_SUB_PREDICATE_TYPE = of("item_sub_predicate_type");
+	public static final RegistryKey<Registry<MapDecorationType>> MAP_DECORATION_TYPE = of("map_decoration_type");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");
@@ -195,6 +200,9 @@ public class RegistryKeys {
 	);
 	public static final RegistryKey<Registry<World>> WORLD = of("dimension");
 	public static final RegistryKey<Registry<DimensionOptions>> DIMENSION = of("dimension");
+	public static final RegistryKey<Registry<LootTable>> LOOT_TABLE = of("loot_table");
+	public static final RegistryKey<Registry<LootFunction>> ITEM_MODIFIER = of("item_modifier");
+	public static final RegistryKey<Registry<LootCondition>> PREDICATE = of("predicate");
 
 	public static RegistryKey<World> toWorldKey(RegistryKey<DimensionOptions> key) {
 		return RegistryKey.of(WORLD, key.getValue());

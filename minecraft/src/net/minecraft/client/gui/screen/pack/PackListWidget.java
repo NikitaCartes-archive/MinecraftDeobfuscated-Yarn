@@ -146,7 +146,8 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			ResourcePackCompatibility resourcePackCompatibility = this.pack.getCompatibility();
 			if (!resourcePackCompatibility.isCompatible()) {
-				context.fill(x - 1, y - 1, x + entryWidth - 3, y + entryHeight + 1, -8978432);
+				int i = x + entryWidth - 3 - (this.widget.isScrollbarVisible() ? 7 : 0);
+				context.fill(x - 1, y - 1, i, y + entryHeight + 1, -8978432);
 			}
 
 			context.drawTexture(this.pack.getIconId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
@@ -155,22 +156,22 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 			if (this.isSelectable()
 				&& (this.client.options.getTouchscreen().getValue() || hovered || this.widget.getSelectedOrNull() == this && this.widget.isFocused())) {
 				context.fill(x, y, x + 32, y + 32, -1601138544);
-				int i = mouseX - x;
-				int j = mouseY - y;
+				int j = mouseX - x;
+				int k = mouseY - y;
 				if (!this.pack.getCompatibility().isCompatible()) {
 					orderedText = this.incompatibleText;
 					multilineText = this.compatibilityNotificationText;
 				}
 
 				if (this.pack.canBeEnabled()) {
-					if (i < 32) {
+					if (j < 32) {
 						context.drawGuiTexture(PackListWidget.SELECT_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
 						context.drawGuiTexture(PackListWidget.SELECT_TEXTURE, x, y, 32, 32);
 					}
 				} else {
 					if (this.pack.canBeDisabled()) {
-						if (i < 16) {
+						if (j < 16) {
 							context.drawGuiTexture(PackListWidget.UNSELECT_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
 							context.drawGuiTexture(PackListWidget.UNSELECT_TEXTURE, x, y, 32, 32);
@@ -178,7 +179,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 					}
 
 					if (this.pack.canMoveTowardStart()) {
-						if (i < 32 && i > 16 && j < 16) {
+						if (j < 32 && j > 16 && k < 16) {
 							context.drawGuiTexture(PackListWidget.MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
 							context.drawGuiTexture(PackListWidget.MOVE_UP_TEXTURE, x, y, 32, 32);
@@ -186,7 +187,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 					}
 
 					if (this.pack.canMoveTowardEnd()) {
-						if (i < 32 && i > 16 && j > 16) {
+						if (j < 32 && j > 16 && k > 16) {
 							context.drawGuiTexture(PackListWidget.MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
 							context.drawGuiTexture(PackListWidget.MOVE_DOWN_TEXTURE, x, y, 32, 32);

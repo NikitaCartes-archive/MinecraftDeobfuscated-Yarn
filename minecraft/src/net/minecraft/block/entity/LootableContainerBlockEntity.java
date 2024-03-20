@@ -9,14 +9,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.LootableInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class LootableContainerBlockEntity extends LockableContainerBlockEntity implements LootableInventory {
 	@Nullable
-	protected Identifier lootTableId;
+	protected RegistryKey<LootTable> lootTable;
 	protected long lootTableSeed = 0L;
 
 	protected LootableContainerBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
@@ -25,13 +26,13 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 	@Nullable
 	@Override
-	public Identifier getLootTableId() {
-		return this.lootTableId;
+	public RegistryKey<LootTable> getLootTable() {
+		return this.lootTable;
 	}
 
 	@Override
-	public void setLootTableId(@Nullable Identifier lootTableId) {
-		this.lootTableId = lootTableId;
+	public void setLootTable(@Nullable RegistryKey<LootTable> lootTable) {
+		this.lootTable = lootTable;
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 	@Override
 	public boolean checkUnlocked(PlayerEntity player) {
-		return super.checkUnlocked(player) && (this.lootTableId == null || !player.isSpectator());
+		return super.checkUnlocked(player) && (this.lootTable == null || !player.isSpectator());
 	}
 
 	@Nullable
@@ -95,7 +96,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		super.readComponents(components);
 		ContainerLootComponent containerLootComponent = components.get(DataComponentTypes.CONTAINER_LOOT);
 		if (containerLootComponent != null) {
-			this.lootTableId = containerLootComponent.lootTable();
+			this.lootTable = containerLootComponent.lootTable();
 			this.lootTableSeed = containerLootComponent.seed();
 		}
 	}
@@ -103,8 +104,8 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	@Override
 	public void addComponents(ComponentMap.Builder componentMapBuilder) {
 		super.addComponents(componentMapBuilder);
-		if (this.lootTableId != null) {
-			componentMapBuilder.add(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.lootTableId, this.lootTableSeed));
+		if (this.lootTable != null) {
+			componentMapBuilder.add(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.lootTable, this.lootTableSeed));
 		}
 	}
 

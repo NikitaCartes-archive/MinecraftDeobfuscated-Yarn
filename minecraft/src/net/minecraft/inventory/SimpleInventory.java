@@ -176,10 +176,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		this.heldStacks.set(slot, stack);
-		if (!stack.isEmpty() && stack.getCount() > this.getMaxCountPerStack()) {
-			stack.setCount(this.getMaxCountPerStack());
-		}
-
+		stack.capCount(this.getMaxCount(stack));
 		this.markDirty();
 	}
 
@@ -253,7 +250,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	}
 
 	private void transfer(ItemStack source, ItemStack target) {
-		int i = Math.min(this.getMaxCountPerStack(), target.getMaxCount());
+		int i = this.getMaxCount(target);
 		int j = Math.min(source.getCount(), i - target.getCount());
 		if (j > 0) {
 			target.increment(j);

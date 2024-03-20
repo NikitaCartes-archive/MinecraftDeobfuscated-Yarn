@@ -41,8 +41,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -69,7 +69,6 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<BlockPos> TRAVEL_POS = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 	private static final TrackedData<Boolean> LAND_BOUND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> ACTIVELY_TRAVELING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	public static final Ingredient BREEDING_ITEM = Ingredient.ofItems(Blocks.SEAGRASS.asItem());
 	private static final float BABY_SCALE = 0.3F;
 	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.TURTLE
 		.getDimensions()
@@ -190,7 +189,7 @@ public class TurtleEntity extends AnimalEntity {
 		this.goalSelector.add(0, new TurtleEntity.TurtleEscapeDangerGoal(this, 1.2));
 		this.goalSelector.add(1, new TurtleEntity.MateGoal(this, 1.0));
 		this.goalSelector.add(1, new TurtleEntity.LayEggGoal(this, 1.0));
-		this.goalSelector.add(2, new TemptGoal(this, 1.1, BREEDING_ITEM, false));
+		this.goalSelector.add(2, new TemptGoal(this, 1.1, stack -> stack.isIn(ItemTags.TURTLE_FOOD), false));
 		this.goalSelector.add(3, new TurtleEntity.WanderInWaterGoal(this, 1.0));
 		this.goalSelector.add(4, new TurtleEntity.GoHomeGoal(this, 1.0));
 		this.goalSelector.add(7, new TurtleEntity.TravelGoal(this, 1.0));
@@ -277,7 +276,7 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.isOf(Blocks.SEAGRASS.asItem());
+		return stack.isIn(ItemTags.TURTLE_FOOD);
 	}
 
 	@Override

@@ -7,10 +7,10 @@ import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -42,8 +42,8 @@ public class ArmorTrimMaterials {
 		register(registry, AMETHYST, Items.AMETHYST_SHARD, Style.EMPTY.withColor(10116294), 1.0F);
 	}
 
-	public static Optional<RegistryEntry.Reference<ArmorTrimMaterial>> get(DynamicRegistryManager registryManager, ItemStack stack) {
-		return registryManager.get(RegistryKeys.TRIM_MATERIAL)
+	public static Optional<RegistryEntry.Reference<ArmorTrimMaterial>> get(RegistryWrapper.WrapperLookup registriesLookup, ItemStack stack) {
+		return registriesLookup.getWrapperOrThrow(RegistryKeys.TRIM_MATERIAL)
 			.streamEntries()
 			.filter(recipe -> stack.itemMatches(((ArmorTrimMaterial)recipe.value()).ingredient()))
 			.findFirst();

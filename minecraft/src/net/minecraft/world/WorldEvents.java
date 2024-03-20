@@ -272,7 +272,7 @@ public class WorldEvents {
 	/**
 	 * A crafter crafts an item.
 	 * <br>Plays the crafter craft sound event.
-	 * <p>Called by {@link net.minecraft.block.CrafterBlock#transferOrSpawnStack(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.entity.CrafterBlockEntity, net.minecraft.item.ItemStack, net.minecraft.block.BlockState) CrafterBlock#transferOrSpawnStack}
+	 * <p>Called by {@link net.minecraft.block.CrafterBlock#transferOrSpawnStack CrafterBlock#transferOrSpawnStack}
 	 */
 	public static final int CRAFTER_CRAFTS = 1049;
 	/**

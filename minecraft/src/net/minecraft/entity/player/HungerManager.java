@@ -1,7 +1,7 @@
 package net.minecraft.entity.player;
 
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -24,10 +24,10 @@ public class HungerManager {
 		this.saturationLevel = Math.min(this.saturationLevel + (float)food * saturationModifier * 2.0F, (float)this.foodLevel);
 	}
 
-	public void eat(Item item, ItemStack stack) {
-		if (item.isFood()) {
-			FoodComponent foodComponent = item.getFoodComponent();
-			this.add(foodComponent.getHunger(), foodComponent.getSaturationModifier());
+	public void eat(ItemStack stack) {
+		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
+		if (foodComponent != null) {
+			this.add(foodComponent.nutrition(), foodComponent.saturationModifier());
 		}
 	}
 

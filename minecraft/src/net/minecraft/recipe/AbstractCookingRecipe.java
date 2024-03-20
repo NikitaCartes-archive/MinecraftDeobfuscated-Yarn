@@ -3,7 +3,7 @@ package net.minecraft.recipe;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CookingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -34,7 +34,7 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
+	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
 		return this.result.copy();
 	}
 
@@ -55,7 +55,7 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public ItemStack getResult(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
 		return this.result;
 	}
 

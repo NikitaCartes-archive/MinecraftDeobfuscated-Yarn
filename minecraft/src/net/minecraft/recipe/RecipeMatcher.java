@@ -41,7 +41,7 @@ public class RecipeMatcher {
 	 * <p>This is equivalent to calling {@code addInput(stack, Item.DEFAULT_MAX_COUNT)}.
 	 */
 	public void addInput(ItemStack stack) {
-		this.addInput(stack, 64);
+		this.addInput(stack, stack.getMaxCount());
 	}
 
 	/**

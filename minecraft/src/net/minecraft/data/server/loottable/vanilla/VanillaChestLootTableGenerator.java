@@ -6,7 +6,7 @@ import net.minecraft.data.server.loottable.LootTableGenerator;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapIcon;
+import net.minecraft.item.map.MapDecorationTypes;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
@@ -24,15 +24,15 @@ import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 public class VanillaChestLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
 		consumer.accept(
 			LootTables.ABANDONED_MINESHAFT_CHEST,
 			LootTable.builder()
@@ -288,7 +288,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 								.apply(
 									ExplorationMapLootFunction.builder()
 										.withDestination(StructureTags.ON_TREASURE_MAPS)
-										.withDecoration(MapIcon.Type.RED_X)
+										.withDecoration(MapDecorationTypes.RED_X)
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
@@ -320,7 +320,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 								.apply(
 									ExplorationMapLootFunction.builder()
 										.withDestination(StructureTags.ON_TREASURE_MAPS)
-										.withDecoration(MapIcon.Type.RED_X)
+										.withDecoration(MapDecorationTypes.RED_X)
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
@@ -639,7 +639,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 		acceptTrialSpawnerTables(consumer);
 	}
 
-	public static void acceptTrialSpawnerTables(BiConsumer<Identifier, LootTable.Builder> exporter) {
+	public static void acceptTrialSpawnerTables(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> exporter) {
 		exporter.accept(LootTables.TRIAL_CHAMBER_KEY_SPAWNER, LootTable.builder());
 		exporter.accept(LootTables.TRIAL_CHAMBER_CONSUMABLES_SPAWNER, LootTable.builder());
 	}
@@ -697,7 +697,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 							.apply(
 								ExplorationMapLootFunction.builder()
 									.withDestination(StructureTags.ON_TREASURE_MAPS)
-									.withDecoration(MapIcon.Type.RED_X)
+									.withDecoration(MapDecorationTypes.RED_X)
 									.withZoom((byte)1)
 									.withSkipExistingChunks(false)
 							)

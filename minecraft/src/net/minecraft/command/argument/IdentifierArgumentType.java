@@ -8,10 +8,6 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.loot.LootDataType;
-import net.minecraft.loot.LootManager;
-import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.function.LootFunction;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -25,12 +21,6 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	);
 	private static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(
 		id -> Text.stringifiedTranslatable("recipe.notFound", id)
-	);
-	private static final DynamicCommandExceptionType UNKNOWN_PREDICATE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.stringifiedTranslatable("predicate.unknown", id)
-	);
-	private static final DynamicCommandExceptionType UNKNOWN_ITEM_MODIFIER_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.stringifiedTranslatable("item_modifier.unknown", id)
 	);
 
 	public static IdentifierArgumentType identifier() {
@@ -51,28 +41,6 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		RecipeManager recipeManager = context.getSource().getServer().getRecipeManager();
 		Identifier identifier = getIdentifier(context, argumentName);
 		return (RecipeEntry<?>)recipeManager.get(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
-	}
-
-	public static LootCondition getPredicateArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-		Identifier identifier = getIdentifier(context, argumentName);
-		LootManager lootManager = context.getSource().getServer().getLootManager();
-		LootCondition lootCondition = lootManager.getElement(LootDataType.PREDICATES, identifier);
-		if (lootCondition == null) {
-			throw UNKNOWN_PREDICATE_EXCEPTION.create(identifier);
-		} else {
-			return lootCondition;
-		}
-	}
-
-	public static LootFunction getItemModifierArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-		Identifier identifier = getIdentifier(context, argumentName);
-		LootManager lootManager = context.getSource().getServer().getLootManager();
-		LootFunction lootFunction = lootManager.getElement(LootDataType.ITEM_MODIFIERS, identifier);
-		if (lootFunction == null) {
-			throw UNKNOWN_ITEM_MODIFIER_EXCEPTION.create(identifier);
-		} else {
-			return lootFunction;
-		}
 	}
 
 	public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {

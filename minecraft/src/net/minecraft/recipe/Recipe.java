@@ -8,9 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -55,7 +55,7 @@ public interface Recipe<C extends Inventory> {
 	 * 
 	 * @param inventory the input inventory
 	 */
-	ItemStack craft(C inventory, DynamicRegistryManager registryManager);
+	ItemStack craft(C inventory, RegistryWrapper.WrapperLookup lookup);
 
 	/**
 	 * {@return whether this recipe will fit into the given grid size}
@@ -73,7 +73,7 @@ public interface Recipe<C extends Inventory> {
 	 * <p>The returned stack should not be modified. To obtain the actual output,
 	 * call {@link #craft(Inventory, DynamicRegistryManager)}.
 	 */
-	ItemStack getResult(DynamicRegistryManager registryManager);
+	ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup);
 
 	/**
 	 * {@return the remaining stacks to be left in the {@code inventory} after the recipe is used}

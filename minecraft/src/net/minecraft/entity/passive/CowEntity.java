@@ -21,7 +21,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -42,11 +42,16 @@ public class CowEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.ofItems(Items.WHEAT), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.25, stack -> stack.isIn(ItemTags.COW_FOOD), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
+	}
+
+	@Override
+	public boolean isBreedingItem(ItemStack stack) {
+		return stack.isIn(ItemTags.COW_FOOD);
 	}
 
 	public static DefaultAttributeContainer.Builder createCowAttributes() {

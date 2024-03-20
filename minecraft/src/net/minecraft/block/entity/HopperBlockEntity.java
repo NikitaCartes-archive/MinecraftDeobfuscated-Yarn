@@ -78,9 +78,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public void setStack(int slot, ItemStack stack) {
 		this.generateLoot(null);
 		this.getHeldStacks().set(slot, stack);
-		if (stack.getCount() > this.getMaxCountPerStack()) {
-			stack.setCount(this.getMaxCountPerStack());
-		}
+		stack.capCount(this.getMaxCount(stack));
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
@@ -46,7 +46,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		return bl2 && bl;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		IntList intList = new IntArrayList();
 		ItemStack itemStack = null;
 

@@ -39,19 +39,25 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<NearestVisibleAdultSensor> NEAREST_ADULT = register("nearest_adult", NearestVisibleAdultSensor::new);
 	public static final SensorType<AxolotlAttackablesSensor> AXOLOTL_ATTACKABLES = register("axolotl_attackables", AxolotlAttackablesSensor::new);
 	public static final SensorType<TemptationsSensor> AXOLOTL_TEMPTATIONS = register(
-		"axolotl_temptations", () -> new TemptationsSensor(AxolotlBrain.getTemptItems())
+		"axolotl_temptations", () -> new TemptationsSensor(AxolotlBrain.getTemptItemPredicate())
 	);
-	public static final SensorType<TemptationsSensor> GOAT_TEMPTATIONS = register("goat_temptations", () -> new TemptationsSensor(GoatBrain.getTemptItems()));
-	public static final SensorType<TemptationsSensor> FROG_TEMPTATIONS = register("frog_temptations", () -> new TemptationsSensor(FrogBrain.getTemptItems()));
-	public static final SensorType<TemptationsSensor> CAMEL_TEMPTATIONS = register("camel_temptations", () -> new TemptationsSensor(CamelBrain.getTemptItems()));
+	public static final SensorType<TemptationsSensor> GOAT_TEMPTATIONS = register(
+		"goat_temptations", () -> new TemptationsSensor(GoatBrain.getTemptItemPredicate())
+	);
+	public static final SensorType<TemptationsSensor> FROG_TEMPTATIONS = register(
+		"frog_temptations", () -> new TemptationsSensor(FrogBrain.getTemptItemPredicate())
+	);
+	public static final SensorType<TemptationsSensor> CAMEL_TEMPTATIONS = register(
+		"camel_temptations", () -> new TemptationsSensor(CamelBrain.getTemptItemPredicate())
+	);
 	public static final SensorType<TemptationsSensor> ARMADILLO_TEMPTATIONS = register(
-		"armadillo_temptations", () -> new TemptationsSensor(ArmadilloBrain.getBreedingIngredient())
+		"armadillo_temptations", () -> new TemptationsSensor(ArmadilloBrain.getTemptItemPredicate())
 	);
 	public static final SensorType<FrogAttackablesSensor> FROG_ATTACKABLES = register("frog_attackables", FrogAttackablesSensor::new);
 	public static final SensorType<IsInWaterSensor> IS_IN_WATER = register("is_in_water", IsInWaterSensor::new);
 	public static final SensorType<WardenAttackablesSensor> WARDEN_ENTITY_SENSOR = register("warden_entity_sensor", WardenAttackablesSensor::new);
 	public static final SensorType<TemptationsSensor> SNIFFER_TEMPTATIONS = register(
-		"sniffer_temptations", () -> new TemptationsSensor(SnifferBrain.getTemptItems())
+		"sniffer_temptations", () -> new TemptationsSensor(SnifferBrain.getTemptItemPredicate())
 	);
 	public static final SensorType<BreezeAttackablesSensor> BREEZE_ATTACK_ENTITY_SENSOR = register("breeze_attack_entity_sensor", BreezeAttackablesSensor::new);
 	private final Supplier<U> factory;

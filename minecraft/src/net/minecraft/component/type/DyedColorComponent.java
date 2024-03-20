@@ -98,4 +98,8 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 			}
 		}
 	}
+
+	public DyedColorComponent withShowInTooltip(boolean showInTooltip) {
+		return new DyedColorComponent(this.rgb, showInTooltip);
+	}
 }

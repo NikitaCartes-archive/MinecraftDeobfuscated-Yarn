@@ -137,7 +137,7 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	private void dropShearedItems() {
 		World lootTable = this.getWorld();
 		if (lootTable instanceof ServerWorld serverWorld && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			LootTable lootTablex = serverWorld.getServer().getLootManager().getLootTable(LootTables.BOGGED_SHEARING);
+			LootTable lootTablex = serverWorld.getServer().getReloadableRegistries().getLootTable(LootTables.BOGGED_SHEARING);
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
 				.add(LootContextParameters.ORIGIN, this.getPos())
 				.add(LootContextParameters.THIS_ENTITY, this)

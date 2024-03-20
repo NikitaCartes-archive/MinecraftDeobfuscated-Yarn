@@ -2,17 +2,17 @@ package net.minecraft.predicate.entity;
 
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.loot.LootDataLookup;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.util.ErrorReporter;
 
 public class LootContextPredicateValidator {
 	private final ErrorReporter errorReporter;
-	private final LootDataLookup conditionsLookup;
+	private final RegistryEntryLookup.RegistryLookup conditionsLookup;
 
-	public LootContextPredicateValidator(ErrorReporter errorReporter, LootDataLookup conditionsLookup) {
+	public LootContextPredicateValidator(ErrorReporter errorReporter, RegistryEntryLookup.RegistryLookup conditionsLookup) {
 		this.errorReporter = errorReporter;
 		this.conditionsLookup = conditionsLookup;
 	}

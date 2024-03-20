@@ -6353,11 +6353,12 @@ public class Blocks {
 		"heavy_core",
 		new HeavyCoreBlock(
 			AbstractBlock.Settings.create()
-				.mapColor(MapColor.BLACK)
+				.mapColor(MapColor.IRON_GRAY)
 				.instrument(Instrument.SNARE)
 				.sounds(BlockSoundGroup.HEAVY_CORE)
-				.strength(30.0F)
-				.pistonBehavior(PistonBehavior.DESTROY)
+				.strength(10.0F)
+				.pistonBehavior(PistonBehavior.NORMAL)
+				.resistance(1200.0F)
 				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);

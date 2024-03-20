@@ -27,11 +27,10 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -49,7 +48,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Saddleable {
-	public static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CACTUS);
 	public static final float field_45127 = 0.45F;
 	public static final int field_40132 = 55;
 	public static final int field_41764 = 30;
@@ -337,7 +335,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.CAMEL_FOOD);
 	}
 
 	@Override

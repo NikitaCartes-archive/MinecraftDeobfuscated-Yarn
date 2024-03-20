@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
@@ -42,7 +42,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 		return i == 1 && j == 1;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		DyeItem dyeItem = (DyeItem)Items.WHITE_DYE;
 

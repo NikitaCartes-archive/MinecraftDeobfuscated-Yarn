@@ -6,7 +6,7 @@ import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.World;
 
@@ -44,7 +44,7 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		Sherds sherds = new Sherds(
 			recipeInputInventory.getStack(1).getItem(),
 			recipeInputInventory.getStack(3).getItem(),

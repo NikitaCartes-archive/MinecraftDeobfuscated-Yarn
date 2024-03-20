@@ -4,7 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Map;
-import net.minecraft.item.map.MapIcon;
+import net.minecraft.item.map.MapDecorationType;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 
 public record MapDecorationsComponent(Map<String, MapDecorationsComponent.Decoration> decorations) {
@@ -16,10 +17,10 @@ public record MapDecorationsComponent(Map<String, MapDecorationsComponent.Decora
 		return new MapDecorationsComponent(Util.mapWith(this.decorations, id, decoration));
 	}
 
-	public static record Decoration(MapIcon.Type type, double x, double z, float rotation) {
+	public static record Decoration(RegistryEntry<MapDecorationType> type, double x, double z, float rotation) {
 		public static final Codec<MapDecorationsComponent.Decoration> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						MapIcon.Type.CODEC.fieldOf("type").forGetter(MapDecorationsComponent.Decoration::type),
+						MapDecorationType.CODEC.fieldOf("type").forGetter(MapDecorationsComponent.Decoration::type),
 						Codec.DOUBLE.fieldOf("x").forGetter(MapDecorationsComponent.Decoration::x),
 						Codec.DOUBLE.fieldOf("z").forGetter(MapDecorationsComponent.Decoration::z),
 						Codec.FLOAT.fieldOf("rotation").forGetter(MapDecorationsComponent.Decoration::rotation)

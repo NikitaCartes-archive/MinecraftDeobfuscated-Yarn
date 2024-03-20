@@ -17,6 +17,7 @@ import net.minecraft.component.type.DebugStickStateComponent;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.LodestoneTrackerComponent;
 import net.minecraft.component.type.LoreComponent;
@@ -28,6 +29,7 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.component.type.WrittenBookContentComponent;
@@ -44,11 +46,18 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.Codecs;
 
 public class DataComponentTypes {
 	public static final DataComponentType<NbtComponent> CUSTOM_DATA = register("custom_data", builder -> builder.codec(NbtComponent.CODEC));
+	public static final DataComponentType<Integer> MAX_STACK_SIZE = register(
+		"max_stack_size", builder -> builder.codec(Codecs.rangedInt(1, 99)).packetCodec(PacketCodecs.VAR_INT)
+	);
+	public static final DataComponentType<Integer> MAX_DAMAGE = register(
+		"max_damage", builder -> builder.codec(Codecs.POSITIVE_INT).packetCodec(PacketCodecs.VAR_INT)
+	);
 	public static final DataComponentType<Integer> DAMAGE = register("damage", builder -> builder.codec(Codecs.NONNEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
 	public static final DataComponentType<UnbreakableComponent> UNBREAKABLE = register(
 		"unbreakable", builder -> builder.codec(UnbreakableComponent.CODEC).packetCodec(UnbreakableComponent.PACKET_CODEC)
@@ -59,6 +68,7 @@ public class DataComponentTypes {
 	public static final DataComponentType<LoreComponent> LORE = register(
 		"lore", builder -> builder.codec(LoreComponent.CODEC).packetCodec(LoreComponent.PACKET_CODEC)
 	);
+	public static final DataComponentType<Rarity> RARITY = register("rarity", builder -> builder.codec(Rarity.CODEC).packetCodec(Rarity.PACKET_CODEC));
 	public static final DataComponentType<ItemEnchantmentsComponent> ENCHANTMENTS = register(
 		"enchantments", builder -> builder.codec(ItemEnchantmentsComponent.CODEC).packetCodec(ItemEnchantmentsComponent.PACKET_CODEC)
 	);
@@ -77,6 +87,9 @@ public class DataComponentTypes {
 	public static final DataComponentType<Unit> HIDE_ADDITIONAL_TOOLTIP = register(
 		"hide_additional_tooltip", builder -> builder.codec(Codec.unit(Unit.INSTANCE)).packetCodec(PacketCodec.unit(Unit.INSTANCE))
 	);
+	public static final DataComponentType<Unit> HIDE_TOOLTIP = register(
+		"hide_tooltip", builder -> builder.codec(Codec.unit(Unit.INSTANCE)).packetCodec(PacketCodec.unit(Unit.INSTANCE))
+	);
 	public static final DataComponentType<Integer> REPAIR_COST = register(
 		"repair_cost", builder -> builder.codec(Codecs.NONNEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT)
 	);
@@ -87,6 +100,15 @@ public class DataComponentTypes {
 		"enchantment_glint_override", builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOL)
 	);
 	public static final DataComponentType<Unit> INTANGIBLE_PROJECTILE = register("intangible_projectile", builder -> builder.codec(Codec.unit(Unit.INSTANCE)));
+	public static final DataComponentType<FoodComponent> FOOD = register(
+		"food", builder -> builder.codec(FoodComponent.CODEC).packetCodec(FoodComponent.PACKET_CODEC)
+	);
+	public static final DataComponentType<Unit> FIRE_RESISTANT = register(
+		"fire_resistant", builder -> builder.codec(Codec.unit(Unit.INSTANCE)).packetCodec(PacketCodec.unit(Unit.INSTANCE))
+	);
+	public static final DataComponentType<ToolComponent> TOOL = register(
+		"tool", builder -> builder.codec(ToolComponent.CODEC).packetCodec(ToolComponent.PACKET_CODEC)
+	);
 	public static final DataComponentType<ItemEnchantmentsComponent> STORED_ENCHANTMENTS = register(
 		"stored_enchantments", builder -> builder.codec(ItemEnchantmentsComponent.CODEC).packetCodec(ItemEnchantmentsComponent.PACKET_CODEC)
 	);
@@ -178,10 +200,12 @@ public class DataComponentTypes {
 		"container_loot", builder -> builder.codec(ContainerLootComponent.CODEC)
 	);
 	public static final ComponentMap DEFAULT_ITEM_COMPONENTS = ComponentMap.builder()
+		.add(MAX_STACK_SIZE, 64)
 		.add(LORE, LoreComponent.DEFAULT)
 		.add(ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT)
 		.add(REPAIR_COST, 0)
 		.add(ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT)
+		.add(RARITY, Rarity.COMMON)
 		.build();
 
 	public static DataComponentType<?> getDefault(Registry<DataComponentType<?>> registry) {

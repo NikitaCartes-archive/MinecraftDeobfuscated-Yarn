@@ -17,6 +17,7 @@ public interface StructureTags {
 	TagKey<Structure> ON_JUNGLE_EXPLORER_MAPS = of("on_jungle_explorer_maps");
 	TagKey<Structure> ON_SWAMP_EXPLORER_MAPS = of("on_swamp_explorer_maps");
 	TagKey<Structure> ON_TREASURE_MAPS = of("on_treasure_maps");
+	TagKey<Structure> ON_TRIAL_CHAMBERS_MAPS = of("on_trial_chambers_maps");
 	TagKey<Structure> CATS_SPAWN_IN = of("cats_spawn_in");
 	TagKey<Structure> CATS_SPAWN_AS_BLACK = of("cats_spawn_as_black");
 	TagKey<Structure> VILLAGE = of("village");

@@ -2,12 +2,10 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -45,11 +43,10 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -77,10 +74,6 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 			return mobEntity != null && ParrotEntity.MOB_SOUNDS.containsKey(mobEntity.getType());
 		}
 	};
-	private static final Item COOKIE = Items.COOKIE;
-	private static final Set<Item> TAMING_INGREDIENTS = Sets.<Item>newHashSet(
-		Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD
-	);
 	static final Map<EntityType<?>, SoundEvent> MOB_SOUNDS = Util.make(Maps.<EntityType<?>, SoundEvent>newHashMap(), map -> {
 		map.put(EntityType.BLAZE, SoundEvents.ENTITY_PARROT_IMITATE_BLAZE);
 		map.put(EntityType.BOGGED, SoundEvents.ENTITY_PARROT_IMITATE_BOGGED);
@@ -247,7 +240,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
+		if (!this.isTamed() && itemStack.isIn(ItemTags.PARROT_FOOD)) {
 			itemStack.decrementUnlessCreative(1, player);
 			if (!this.isSilent()) {
 				this.getWorld()
@@ -273,7 +266,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 			}
 
 			return ActionResult.success(this.getWorld().isClient);
-		} else if (!itemStack.isOf(COOKIE)) {
+		} else if (!itemStack.isIn(ItemTags.PARROT_POISONOUS_FOOD)) {
 			if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
 				if (!this.getWorld().isClient) {
 					this.setSitting(!this.isSitting());
