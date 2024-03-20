@@ -29,6 +29,8 @@ import net.minecraft.block.LadderBlock;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.FrostWalkerEnchantment;
@@ -65,7 +67,6 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.Equipment;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -89,6 +90,7 @@ import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -108,7 +110,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
@@ -150,7 +151,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public static final double field_30075 = 0.003;
 	public static final double GRAVITY = 0.08;
 	public static final int DEATH_TICKS = 20;
-	private static final int FALL_FLYING_FLAG = 7;
 	private static final int field_30080 = 10;
 	private static final int field_30081 = 2;
 	public static final int field_30063 = 4;
@@ -172,6 +172,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(0.2F);
 	public static final float BABY_SCALE_FACTOR = 0.5F;
 	public static final float field_47756 = 0.5F;
+	private static final float field_49972 = 0.21875F;
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.<RegistryEntry<StatusEffect>, StatusEffectInstance>newHashMap();
@@ -1523,7 +1524,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
 	}
 
-	public Identifier getLootTable() {
+	public RegistryKey<LootTable> getLootTable() {
 		return this.getType().getLootTableId();
 	}
 
@@ -1532,8 +1533,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
-		Identifier identifier = this.getLootTable();
-		LootTable lootTable = this.getWorld().getServer().getLootManager().getLootTable(identifier);
+		RegistryKey<LootTable> registryKey = this.getLootTable();
+		LootTable lootTable = this.getWorld().getServer().getReloadableRegistries().getLootTable(registryKey);
 		LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
 			.add(LootContextParameters.THIS_ENTITY, this)
 			.add(LootContextParameters.ORIGIN, this.getPos())
@@ -1724,7 +1725,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			for (EquipmentSlot equipmentSlot : slots) {
 				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-				if ((!source.isIn(DamageTypeTags.IS_FIRE) || !itemStack.getItem().isFireproof()) && itemStack.getItem() instanceof ArmorItem) {
+				if (itemStack.getItem() instanceof ArmorItem && itemStack.takesDamageFrom(source)) {
 					itemStack.damage(i, this, equipmentSlot);
 				}
 			}
@@ -3133,11 +3134,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	private boolean shouldSpawnConsumptionEffects() {
-		int i = this.getItemUseTimeLeft();
-		FoodComponent foodComponent = this.activeItemStack.getItem().getFoodComponent();
-		boolean bl = foodComponent != null && foodComponent.isSnack();
-		bl |= i <= this.activeItemStack.getMaxUseTime() - 7;
-		return bl && i % 4 == 0;
+		int i = this.activeItemStack.getMaxUseTime() - this.getItemUseTimeLeft();
+		int j = (int)((float)this.activeItemStack.getMaxUseTime() * 0.21875F);
+		boolean bl = i > j;
+		return bl && this.getItemUseTimeLeft() % 4 == 0;
 	}
 
 	private void updateLeaningPitch() {
@@ -3494,7 +3494,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public ItemStack eatFood(World world, ItemStack stack) {
-		if (stack.isFood()) {
+		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
+		if (foodComponent != null) {
 			world.playSound(
 				null,
 				this.getX(),
@@ -3505,7 +3506,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				1.0F,
 				1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F
 			);
-			this.applyFoodEffects(stack, world, this);
+			this.applyFoodEffects(foodComponent);
 			stack.decrementUnlessCreative(1, this);
 			this.emitGameEvent(GameEvent.EAT);
 		}
@@ -3513,12 +3514,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return stack;
 	}
 
-	private void applyFoodEffects(ItemStack stack, World world, LivingEntity targetEntity) {
-		Item item = stack.getItem();
-		if (item.isFood()) {
-			for (Pair<StatusEffectInstance, Float> pair : item.getFoodComponent().getStatusEffects()) {
-				if (!world.isClient && pair.getFirst() != null && world.random.nextFloat() < pair.getSecond()) {
-					targetEntity.addStatusEffect(new StatusEffectInstance(pair.getFirst()));
+	private void applyFoodEffects(FoodComponent component) {
+		if (!this.getWorld().isClient()) {
+			for (FoodComponent.StatusEffectEntry statusEffectEntry : component.effects()) {
+				if (this.random.nextFloat() < statusEffectEntry.probability()) {
+					this.addStatusEffect(statusEffectEntry.effect());
 				}
 			}
 		}

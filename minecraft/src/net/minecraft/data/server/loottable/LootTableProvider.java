@@ -1,9 +1,9 @@
 package net.minecraft.data.server.loottable;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.nio.file.Path;
 import java.util.List;
@@ -11,18 +11,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
-import net.minecraft.loot.LootDataKey;
-import net.minecraft.loot.LootDataLookup;
-import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.MutableRegistry;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -33,13 +36,13 @@ import org.slf4j.Logger;
 public class LootTableProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final DataOutput.PathResolver pathResolver;
-	private final Set<Identifier> lootTableIds;
+	private final Set<RegistryKey<LootTable>> lootTableIds;
 	private final List<LootTableProvider.LootTypeGenerator> lootTypeGenerators;
 	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
 
 	public LootTableProvider(
 		DataOutput output,
-		Set<Identifier> lootTableIds,
+		Set<RegistryKey<LootTable>> lootTableIds,
 		List<LootTableProvider.LootTypeGenerator> lootTypeGenerators,
 		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture
 	) {
@@ -55,47 +58,52 @@ public class LootTableProvider implements DataProvider {
 	}
 
 	private CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup) {
-		final Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
-		Map<RandomSeed.XoroshiroSeed, Identifier> map2 = new Object2ObjectOpenHashMap<>();
-		this.lootTypeGenerators.forEach(generator -> ((LootTableGenerator)generator.provider().get()).accept(registryLookup, (id, builder) -> {
-				Identifier identifierx = (Identifier)map2.put(RandomSequence.createSeed(id), id);
-				if (identifierx != null) {
-					Util.error("Loot table random sequence seed collision on " + identifierx + " and " + id);
-				}
+		MutableRegistry<LootTable> mutableRegistry = new SimpleRegistry<>(RegistryKeys.LOOT_TABLE, Lifecycle.experimental());
+		Map<RandomSeed.XoroshiroSeed, Identifier> map = new Object2ObjectOpenHashMap<>();
+		this.lootTypeGenerators
+			.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().get()).accept(registryLookup, (lootTable, builder) -> {
+					Identifier identifier = getId(lootTable);
+					Identifier identifier2 = (Identifier)map.put(RandomSequence.createSeed(identifier), identifier);
+					if (identifier2 != null) {
+						Util.error("Loot table random sequence seed collision on " + identifier2 + " and " + lootTable.getValue());
+					}
 
-				builder.randomSequenceId(id);
-				if (map.put(id, builder.type(generator.paramSet).build()) != null) {
-					throw new IllegalStateException("Duplicate loot table " + id);
-				}
-			}));
+					builder.randomSequenceId(identifier);
+					LootTable lootTable2 = builder.type(lootTypeGenerator.paramSet).build();
+					mutableRegistry.add(lootTable, lootTable2, RegistryEntryInfo.DEFAULT);
+				}));
+		mutableRegistry.freeze();
 		ErrorReporter.Impl impl = new ErrorReporter.Impl();
-		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, new LootDataLookup() {
-			@Nullable
-			@Override
-			public <T> T getElement(LootDataKey<T> lootDataKey) {
-				return (T)(lootDataKey.type() == LootDataType.LOOT_TABLES ? map.get(lootDataKey.id()) : null);
-			}
-		});
+		RegistryEntryLookup.RegistryLookup registryLookup2 = new DynamicRegistryManager.ImmutableImpl(List.of(mutableRegistry)).toImmutable().createRegistryLookup();
+		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, registryLookup2);
 
-		for (Identifier identifier : Sets.difference(this.lootTableIds, map.keySet())) {
-			impl.report("Missing built-in table: " + identifier);
+		for (RegistryKey<LootTable> registryKey : Sets.difference(this.lootTableIds, mutableRegistry.getKeys())) {
+			impl.report("Missing built-in table: " + registryKey.getValue());
 		}
 
-		map.forEach(
-			(id, table) -> table.validate(lootTableReporter.withContextType(table.getType()).makeChild("{" + id + "}", new LootDataKey<>(LootDataType.LOOT_TABLES, id)))
-		);
+		mutableRegistry.streamEntries()
+			.forEach(
+				entry -> ((LootTable)entry.value())
+						.validate(
+							lootTableReporter.withContextType(((LootTable)entry.value()).getType()).makeChild("{" + entry.registryKey().getValue() + "}", entry.registryKey())
+						)
+			);
 		Multimap<String, String> multimap = impl.getErrors();
 		if (!multimap.isEmpty()) {
 			multimap.forEach((name, message) -> LOGGER.warn("Found validation problem in {}: {}", name, message));
 			throw new IllegalStateException("Failed to validate loot tables, see logs");
 		} else {
-			return CompletableFuture.allOf((CompletableFuture[])map.entrySet().stream().map(entry -> {
-				Identifier identifierx = (Identifier)entry.getKey();
+			return CompletableFuture.allOf((CompletableFuture[])mutableRegistry.getEntrySet().stream().map(entry -> {
+				RegistryKey<LootTable> registryKeyx = (RegistryKey<LootTable>)entry.getKey();
 				LootTable lootTable = (LootTable)entry.getValue();
-				Path path = this.pathResolver.resolveJson(identifierx);
+				Path path = this.pathResolver.resolveJson(registryKeyx.getValue());
 				return DataProvider.writeCodecToPath(writer, registryLookup, LootTable.CODEC, lootTable, path);
 			}).toArray(CompletableFuture[]::new));
 		}
+	}
+
+	private static Identifier getId(RegistryKey<LootTable> lootTableKey) {
+		return lootTableKey.getValue();
 	}
 
 	@Override

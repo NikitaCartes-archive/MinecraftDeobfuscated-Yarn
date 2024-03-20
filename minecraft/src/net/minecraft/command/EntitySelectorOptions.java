@@ -20,7 +20,6 @@ import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
@@ -31,7 +30,9 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ReadableScoreboardScore;
@@ -454,15 +455,19 @@ public class EntitySelectorOptions {
 				"predicate",
 				reader -> {
 					boolean bl = reader.readNegationCharacter();
-					Identifier identifier = Identifier.fromCommandInput(reader.getReader());
+					RegistryKey<LootCondition> registryKey = RegistryKey.of(RegistryKeys.PREDICATE, Identifier.fromCommandInput(reader.getReader()));
 					reader.setPredicate(
 						entity -> {
 							if (!(entity.getWorld() instanceof ServerWorld)) {
 								return false;
 							} else {
 								ServerWorld serverWorld = (ServerWorld)entity.getWorld();
-								LootCondition lootCondition = serverWorld.getServer().getLootManager().getElement(LootDataType.PREDICATES, identifier);
-								if (lootCondition == null) {
+								Optional<LootCondition> optional = serverWorld.getServer()
+									.getReloadableRegistries()
+									.createRegistryLookup()
+									.getOptionalEntry(RegistryKeys.PREDICATE, registryKey)
+									.map(RegistryEntry::value);
+								if (optional.isEmpty()) {
 									return false;
 								} else {
 									LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
@@ -470,8 +475,8 @@ public class EntitySelectorOptions {
 										.add(LootContextParameters.ORIGIN, entity.getPos())
 										.build(LootContextTypes.SELECTOR);
 									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
-									lootContext.markActive(LootContext.predicate(lootCondition));
-									return bl ^ lootCondition.test(lootContext);
+									lootContext.markActive(LootContext.predicate((LootCondition)optional.get()));
+									return bl ^ ((LootCondition)optional.get()).test(lootContext);
 								}
 							}
 						}

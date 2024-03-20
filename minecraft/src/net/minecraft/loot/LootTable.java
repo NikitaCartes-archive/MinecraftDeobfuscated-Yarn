@@ -20,6 +20,9 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -42,6 +45,7 @@ public class LootTable {
 				)
 				.apply(instance, LootTable::new)
 	);
+	public static final Codec<RegistryEntry<LootTable>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.LOOT_TABLE, CODEC);
 	private final LootContextType type;
 	private final Optional<Identifier> randomSequenceId;
 	private final List<LootPool> pools;

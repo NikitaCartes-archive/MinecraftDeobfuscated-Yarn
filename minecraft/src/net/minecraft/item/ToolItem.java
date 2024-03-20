@@ -22,7 +22,7 @@ public class ToolItem extends Item {
 	private final ToolMaterial material;
 
 	public ToolItem(ToolMaterial material, Item.Settings settings) {
-		super(settings.maxDamageIfAbsent(material.getDurability()));
+		super(settings.maxDamage(material.getDurability()));
 		this.material = material;
 	}
 

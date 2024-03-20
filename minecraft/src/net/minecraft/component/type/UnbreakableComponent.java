@@ -27,4 +27,8 @@ public record UnbreakableComponent(boolean showInTooltip) implements TooltipAppe
 			textConsumer.accept(TOOLTIP_TEXT);
 		}
 	}
+
+	public UnbreakableComponent withShowInTooltip(boolean showInTooltip) {
+		return new UnbreakableComponent(showInTooltip);
+	}
 }

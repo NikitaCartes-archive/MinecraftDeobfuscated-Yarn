@@ -28,6 +28,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.BlockPredicate;
@@ -516,10 +517,10 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				false
 			)
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
-			.criterion("loot_bastion_other", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_other")))
-			.criterion("loot_bastion_treasure", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_treasure")))
-			.criterion("loot_bastion_hoglin_stable", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_hoglin_stable")))
-			.criterion("loot_bastion_bridge", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_bridge")))
+			.criterion("loot_bastion_other", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.BASTION_OTHER_CHEST))
+			.criterion("loot_bastion_treasure", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.BASTION_TREASURE_CHEST))
+			.criterion("loot_bastion_hoglin_stable", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.BASTION_HOGLIN_STABLE_CHEST))
+			.criterion("loot_bastion_bridge", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.BASTION_BRIDGE_CHEST))
 			.build(exporter, "nether/loot_bastion");
 		Advancement.Builder.create()
 			.parent(advancementEntry)

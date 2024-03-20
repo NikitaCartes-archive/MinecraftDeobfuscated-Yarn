@@ -18,7 +18,7 @@ public class RecipeCache {
 		this.cache = new RecipeCache.CachedRecipe[size];
 	}
 
-	public Optional<CraftingRecipe> getRecipe(World world, RecipeInputInventory inputInventory) {
+	public Optional<RecipeEntry<CraftingRecipe>> getRecipe(World world, RecipeInputInventory inputInventory) {
 		if (inputInventory.isEmpty()) {
 			return Optional.empty();
 		} else {
@@ -44,10 +44,10 @@ public class RecipeCache {
 		}
 	}
 
-	private Optional<CraftingRecipe> getAndCacheRecipe(RecipeInputInventory inputInventory, World world) {
+	private Optional<RecipeEntry<CraftingRecipe>> getAndCacheRecipe(RecipeInputInventory inputInventory, World world) {
 		Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, inputInventory, world);
-		this.cache(inputInventory.getHeldStacks(), (CraftingRecipe)optional.map(RecipeEntry::value).orElse(null));
-		return optional.map(RecipeEntry::value);
+		this.cache(inputInventory.getHeldStacks(), (RecipeEntry<CraftingRecipe>)optional.orElse(null));
+		return optional;
 	}
 
 	private void sendToFront(int index) {
@@ -58,7 +58,7 @@ public class RecipeCache {
 		}
 	}
 
-	private void cache(List<ItemStack> inputStacks, @Nullable CraftingRecipe recipe) {
+	private void cache(List<ItemStack> inputStacks, @Nullable RecipeEntry<CraftingRecipe> recipe) {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inputStacks.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < inputStacks.size(); i++) {
@@ -69,7 +69,7 @@ public class RecipeCache {
 		this.cache[0] = new RecipeCache.CachedRecipe(defaultedList, recipe);
 	}
 
-	static record CachedRecipe(DefaultedList<ItemStack> key, @Nullable CraftingRecipe value) {
+	static record CachedRecipe(DefaultedList<ItemStack> key, @Nullable RecipeEntry<CraftingRecipe> value) {
 		public boolean matches(List<ItemStack> inputs) {
 			if (this.key.size() != inputs.size()) {
 				return false;

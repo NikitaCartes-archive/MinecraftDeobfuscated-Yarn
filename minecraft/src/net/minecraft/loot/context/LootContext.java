@@ -7,11 +7,11 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataLookup;
 import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -21,13 +21,13 @@ import net.minecraft.util.math.random.Random;
 public class LootContext {
 	private final LootContextParameterSet parameters;
 	private final Random random;
-	private final LootDataLookup dataLookup;
+	private final RegistryEntryLookup.RegistryLookup lookup;
 	private final Set<LootContext.Entry<?>> activeEntries = Sets.<LootContext.Entry<?>>newLinkedHashSet();
 
-	LootContext(LootContextParameterSet parameters, Random random, LootDataLookup dataLookup) {
+	LootContext(LootContextParameterSet parameters, Random random, RegistryEntryLookup.RegistryLookup lookup) {
 		this.parameters = parameters;
 		this.random = random;
-		this.dataLookup = dataLookup;
+		this.lookup = lookup;
 	}
 
 	public boolean hasParameter(LootContextParameter<?> parameter) {
@@ -59,8 +59,8 @@ public class LootContext {
 		this.activeEntries.remove(entry);
 	}
 
-	public LootDataLookup getDataLookup() {
-		return this.dataLookup;
+	public RegistryEntryLookup.RegistryLookup getLookup() {
+		return this.lookup;
 	}
 
 	public Random getRandom() {
@@ -112,7 +112,7 @@ public class LootContext {
 			ServerWorld serverWorld = this.getWorld();
 			MinecraftServer minecraftServer = serverWorld.getServer();
 			Random random = (Random)Optional.ofNullable(this.random).or(() -> randomId.map(serverWorld::getOrCreateRandom)).orElseGet(serverWorld::getRandom);
-			return new LootContext(this.parameters, random, minecraftServer.getLootManager());
+			return new LootContext(this.parameters, random, minecraftServer.getReloadableRegistries().createRegistryLookup());
 		}
 	}
 

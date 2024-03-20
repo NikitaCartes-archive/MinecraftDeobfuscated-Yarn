@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Activity;
@@ -26,8 +27,8 @@ import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
@@ -168,7 +169,7 @@ public class GoatBrain {
 		goat.getBrain().resetPossibleActivities(ImmutableList.of(Activity.RAM, Activity.LONG_JUMP, Activity.IDLE));
 	}
 
-	public static Ingredient getTemptItems() {
-		return Ingredient.ofItems(Items.WHEAT);
+	public static Predicate<ItemStack> getTemptItemPredicate() {
+		return stack -> stack.isIn(ItemTags.GOAT_FOOD);
 	}
 }

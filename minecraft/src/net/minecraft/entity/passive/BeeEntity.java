@@ -63,7 +63,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.PointOfInterestTypeTags;
@@ -174,7 +173,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.goalSelector.add(0, new BeeEntity.StingGoal(this, 1.4F, true));
 		this.goalSelector.add(1, new BeeEntity.EnterHiveGoal());
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.fromTag(ItemTags.FLOWERS), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.25, stack -> stack.isIn(ItemTags.BEE_FOOD), false));
 		this.pollinateGoal = new BeeEntity.PollinateGoal();
 		this.goalSelector.add(4, this.pollinateGoal);
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.25));
@@ -565,7 +564,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.isIn(ItemTags.FLOWERS);
+		return stack.isIn(ItemTags.BEE_FOOD);
 	}
 
 	boolean isFlowers(BlockPos pos) {

@@ -59,7 +59,6 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.MaceItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
@@ -68,7 +67,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeEntry;
@@ -147,8 +145,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		)
 		.put(EntityPose.DYING, EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(1.62F))
 		.build();
-	private static final float field_49811 = 2.5F;
-	private static final float field_49812 = 0.6F;
 	private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -189,7 +185,10 @@ public abstract class PlayerEntity extends LivingEntity {
 	public FishingBobberEntity fishHook;
 	protected float damageTiltYaw;
 	@Nullable
-	public Double ignoreFallDamageAboveY;
+	public Vec3d currentExplosionImpactPos;
+	@Nullable
+	public Entity explodedBy;
+	public boolean ignoreFallDamageFromCurrentExplosion;
 
 	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
 		super(EntityType.PLAYER, world);
@@ -787,7 +786,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	 * whether the held item is effective for that block, otherwise
 	 * it returns {@code true}.
 	 * 
-	 * @see net.minecraft.item.Item#isSuitableFor(BlockState)
+	 * @see net.minecraft.item.ItemStack#isSuitableFor(BlockState)
 	 */
 	public boolean canHarvest(BlockState state) {
 		return !state.isToolRequired() || this.inventory.getMainHandStack().isSuitableFor(state);
@@ -829,9 +828,14 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.setLastDeathPos(GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("LastDeathLocation")).resultOrPartial(LOGGER::error));
 		}
 
-		if (nbt.contains("ignore_fall_damage_above_y", NbtElement.DOUBLE_TYPE)) {
-			this.ignoreFallDamageAboveY = nbt.getDouble("ignore_fall_damage_above_y");
+		if (nbt.contains("current_explosion_impact_pos", NbtElement.LIST_TYPE)) {
+			Vec3d.CODEC
+				.parse(NbtOps.INSTANCE, nbt.get("current_explosion_impact_pos"))
+				.resultOrPartial(LOGGER::error)
+				.ifPresent(currentExplosionImpactPos -> this.currentExplosionImpactPos = currentExplosionImpactPos);
 		}
+
+		this.ignoreFallDamageFromCurrentExplosion = nbt.getBoolean("ignore_fall_damage_from_current_explosion");
 	}
 
 	@Override
@@ -860,9 +864,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.getLastDeathPos()
 			.flatMap(pos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).resultOrPartial(LOGGER::error))
 			.ifPresent(pos -> nbt.put("LastDeathLocation", pos));
-		if (this.ignoreFallDamageAboveY != null) {
-			nbt.putDouble("ignore_fall_damage_above_y", this.ignoreFallDamageAboveY);
+		if (this.currentExplosionImpactPos != null) {
+			nbt.put("current_explosion_impact_pos", Util.getResult(Vec3d.CODEC.encodeStart(NbtOps.INSTANCE, this.currentExplosionImpactPos), IllegalStateException::new));
 		}
+
+		nbt.putBoolean("ignore_fall_damage_from_current_explosion", this.ignoreFallDamageFromCurrentExplosion);
 	}
 
 	@Override
@@ -1184,49 +1190,8 @@ public abstract class PlayerEntity extends LivingEntity {
 						bl2 = true;
 					}
 
-					boolean bl3 = this.getStackInHand(Hand.MAIN_HAND).getItem() instanceof MaceItem && this.fallDistance > 1.5F;
-					if (bl3) {
-						f += f * 0.5F * this.fallDistance;
-						this.getWorld()
-							.getEntitiesByClass(
-								LivingEntity.class,
-								target.getBoundingBox().expand(2.5),
-								livingEntity -> livingEntity != this
-										&& livingEntity != target
-										&& !this.isTeammate(livingEntity)
-										&& (!(livingEntity instanceof ArmorStandEntity) || !((ArmorStandEntity)livingEntity).isMarker())
-										&& target.squaredDistanceTo(livingEntity) <= Math.pow(2.5, 2.0)
-							)
-							.forEach(
-								livingEntity -> {
-									Vec3d vec3dx = livingEntity.getPos().subtract(target.getPos());
-									double dx = (2.5 - vec3dx.length()) * 0.6F * (1.0 - livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
-									Vec3d vec3d2 = vec3dx.normalize().multiply(dx);
-									if (dx > 0.0) {
-										livingEntity.addVelocity(vec3d2.x, 0.6F, vec3d2.z);
-										if (!this.getWorld().isClient()) {
-											BlockPos blockPos = livingEntity.getSteppingPos();
-											Vec3d vec3d3 = blockPos.toCenterPos().add(0.0, 0.5, 0.0);
-											int ix = (int)(100.0 * dx);
-											((ServerWorld)this.getWorld())
-												.spawnParticles(
-													new BlockStateParticleEffect(ParticleTypes.BLOCK, this.getWorld().getBlockState(blockPos)),
-													vec3d3.x,
-													vec3d3.y,
-													vec3d3.z,
-													ix,
-													0.3F,
-													0.3F,
-													0.3F,
-													0.15F
-												);
-										}
-									}
-								}
-							);
-					}
-
-					boolean bl4 = bl
+					f += this.getStackInHand(Hand.MAIN_HAND).getItem().getBonusAttackDamage(this, f);
+					boolean bl3 = bl
 						&& this.fallDistance > 0.0F
 						&& !this.isOnGround()
 						&& !this.isClimbing()
@@ -1235,34 +1200,34 @@ public abstract class PlayerEntity extends LivingEntity {
 						&& !this.hasVehicle()
 						&& target instanceof LivingEntity
 						&& !this.isSprinting();
-					if (bl4) {
+					if (bl3) {
 						f *= 1.5F;
 					}
 
 					f += g;
-					boolean bl5 = false;
+					boolean bl4 = false;
 					double d = (double)(this.horizontalSpeed - this.prevHorizontalSpeed);
-					if (bl && !bl4 && !bl2 && this.isOnGround() && d < (double)this.getMovementSpeed()) {
+					if (bl && !bl3 && !bl2 && this.isOnGround() && d < (double)this.getMovementSpeed()) {
 						ItemStack itemStack = this.getStackInHand(Hand.MAIN_HAND);
 						if (itemStack.getItem() instanceof SwordItem) {
-							bl5 = true;
+							bl4 = true;
 						}
 					}
 
 					float j = 0.0F;
-					boolean bl6 = false;
+					boolean bl5 = false;
 					int k = EnchantmentHelper.getFireAspect(this);
 					if (target instanceof LivingEntity) {
 						j = ((LivingEntity)target).getHealth();
 						if (k > 0 && !target.isOnFire()) {
-							bl6 = true;
+							bl5 = true;
 							target.setOnFireFor(1);
 						}
 					}
 
 					Vec3d vec3d = target.getVelocity();
-					boolean bl7 = target.damage(this.getDamageSources().playerAttack(this), f);
-					if (bl7) {
+					boolean bl6 = target.damage(this.getDamageSources().playerAttack(this), f);
+					if (bl6) {
 						if (i > 0) {
 							if (target instanceof LivingEntity) {
 								((LivingEntity)target)
@@ -1283,7 +1248,7 @@ public abstract class PlayerEntity extends LivingEntity {
 							this.setSprinting(false);
 						}
 
-						if (bl5) {
+						if (bl4) {
 							float l = 1.0F + EnchantmentHelper.getSweepingMultiplier(this) * f;
 
 							for (LivingEntity livingEntity : this.getWorld().getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0))) {
@@ -1309,12 +1274,12 @@ public abstract class PlayerEntity extends LivingEntity {
 							target.setVelocity(vec3d);
 						}
 
-						if (bl4) {
+						if (bl3) {
 							this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, this.getSoundCategory(), 1.0F, 1.0F);
 							this.addCritParticles(target);
 						}
 
-						if (!bl4 && !bl5) {
+						if (!bl3 && !bl4) {
 							if (bl) {
 								this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_STRONG, this.getSoundCategory(), 1.0F, 1.0F);
 							} else {
@@ -1362,7 +1327,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						this.addExhaustion(0.1F);
 					} else {
 						this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_NODAMAGE, this.getSoundCategory(), 1.0F, 1.0F);
-						if (bl6) {
+						if (bl5) {
 							target.extinguish();
 						}
 					}
@@ -1645,10 +1610,10 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.increaseStat(Stats.FALL_ONE_CM, (int)Math.round((double)fallDistance * 100.0));
 			}
 
-			if (this.ignoreFallDamageAboveY != null) {
-				float f = this.ignoreFallDamageAboveY.floatValue();
-				this.ignoreFallDamageAboveY = null;
-				return (double)f < this.getY() ? false : super.handleFallDamage(f - (float)this.getY(), damageMultiplier, damageSource);
+			if (this.ignoreFallDamageFromCurrentExplosion && this.currentExplosionImpactPos != null) {
+				double d = this.currentExplosionImpactPos.y;
+				this.clearCurrentExplosion();
+				return d < this.getY() ? false : super.handleFallDamage((float)(d - this.getY()), damageMultiplier, damageSource);
 			} else {
 				return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 			}
@@ -1720,7 +1685,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			super.slowMovement(state, multiplier);
 		}
 
-		this.ignoreFallDamageAboveY = null;
+		this.clearCurrentExplosion();
 	}
 
 	public void addExperience(int experience) {
@@ -2154,7 +2119,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public ItemStack eatFood(World world, ItemStack stack) {
-		this.getHungerManager().eat(stack.getItem(), stack);
+		this.getHungerManager().eat(stack);
 		this.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 		world.playSound(
 			null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F
@@ -2288,6 +2253,12 @@ public abstract class PlayerEntity extends LivingEntity {
 	public boolean canInteractWithBlockAt(BlockPos pos, double additionalRange) {
 		double d = this.getBlockInteractionRange() + additionalRange;
 		return new Box(pos).squaredMagnitude(this.getEyePos()) < d * d;
+	}
+
+	public void clearCurrentExplosion() {
+		this.explodedBy = null;
+		this.currentExplosionImpactPos = null;
+		this.ignoreFallDamageFromCurrentExplosion = false;
 	}
 
 	/**

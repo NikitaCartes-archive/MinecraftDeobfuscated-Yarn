@@ -110,11 +110,13 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = TrackedDataHandler.create(OPTIONAL_INT_CODEC);
 	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.create(EntityPose.PACKET_CODEC);
-	public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.create(PacketCodecs.registryValue(RegistryKeys.CAT_VARIANT));
+	public static final TrackedDataHandler<RegistryEntry<CatVariant>> CAT_VARIANT = TrackedDataHandler.create(PacketCodecs.registryEntry(RegistryKeys.CAT_VARIANT));
 	public static final TrackedDataHandler<RegistryEntry<WolfVariant>> WOLF_VARIANT = TrackedDataHandler.create(
 		PacketCodecs.registryEntry(RegistryKeys.WOLF_VARIANT)
 	);
-	public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.create(PacketCodecs.registryValue(RegistryKeys.FROG_VARIANT));
+	public static final TrackedDataHandler<RegistryEntry<FrogVariant>> FROG_VARIANT = TrackedDataHandler.create(
+		PacketCodecs.registryEntry(RegistryKeys.FROG_VARIANT)
+	);
 	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.create(
 		PacketCodecs.registryEntry(RegistryKeys.PAINTING_VARIANT)
 	);

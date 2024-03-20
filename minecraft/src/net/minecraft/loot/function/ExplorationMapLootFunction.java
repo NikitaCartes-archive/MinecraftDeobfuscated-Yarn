@@ -8,13 +8,15 @@ import java.util.Set;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapIcon;
+import net.minecraft.item.map.MapDecorationType;
+import net.minecraft.item.map.MapDecorationTypes;
 import net.minecraft.item.map.MapState;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
@@ -25,17 +27,17 @@ import net.minecraft.world.gen.structure.Structure;
 
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	public static final TagKey<Structure> DEFAULT_DESTINATION = StructureTags.ON_TREASURE_MAPS;
-	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
+	public static final RegistryEntry<MapDecorationType> DEFAULT_DECORATION = MapDecorationTypes.MANSION;
 	public static final byte DEFAULT_ZOOM = 2;
 	public static final int DEFAULT_SEARCH_RADIUS = 50;
 	public static final boolean DEFAULT_SKIP_EXISTING_CHUNKS = true;
 	public static final Codec<ExplorationMapLootFunction> CODEC = RecordCodecBuilder.create(
 		instance -> addConditionsField(instance)
-				.<TagKey<Structure>, MapIcon.Type, byte, int, boolean>and(
+				.<TagKey<Structure>, RegistryEntry<MapDecorationType>, byte, int, boolean>and(
 					instance.group(
 						Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.STRUCTURE), "destination", DEFAULT_DESTINATION)
 							.forGetter(function -> function.destination),
-						MapIcon.Type.CODEC.optionalFieldOf("decoration", DEFAULT_DECORATION).forGetter(function -> function.decoration),
+						MapDecorationType.CODEC.optionalFieldOf("decoration", DEFAULT_DECORATION).forGetter(function -> function.decoration),
 						Codecs.createStrictOptionalFieldCodec(Codec.BYTE, "zoom", (byte)2).forGetter(function -> function.zoom),
 						Codecs.createStrictOptionalFieldCodec(Codec.INT, "search_radius", 50).forGetter(function -> function.searchRadius),
 						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "skip_existing_chunks", true).forGetter(function -> function.skipExistingChunks)
@@ -44,13 +46,18 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 				.apply(instance, ExplorationMapLootFunction::new)
 	);
 	private final TagKey<Structure> destination;
-	private final MapIcon.Type decoration;
+	private final RegistryEntry<MapDecorationType> decoration;
 	private final byte zoom;
 	private final int searchRadius;
 	private final boolean skipExistingChunks;
 
 	ExplorationMapLootFunction(
-		List<LootCondition> conditions, TagKey<Structure> destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks
+		List<LootCondition> conditions,
+		TagKey<Structure> destination,
+		RegistryEntry<MapDecorationType> decoration,
+		byte zoom,
+		int searchRadius,
+		boolean skipExistingChunks
 	) {
 		super(conditions);
 		this.destination = destination;
@@ -97,7 +104,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 
 	public static class Builder extends ConditionalLootFunction.Builder<ExplorationMapLootFunction.Builder> {
 		private TagKey<Structure> destination = ExplorationMapLootFunction.DEFAULT_DESTINATION;
-		private MapIcon.Type decoration = ExplorationMapLootFunction.DEFAULT_DECORATION;
+		private RegistryEntry<MapDecorationType> decoration = ExplorationMapLootFunction.DEFAULT_DECORATION;
 		private byte zoom = 2;
 		private int searchRadius = 50;
 		private boolean skipExistingChunks = true;
@@ -111,7 +118,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public ExplorationMapLootFunction.Builder withDecoration(MapIcon.Type decoration) {
+		public ExplorationMapLootFunction.Builder withDecoration(RegistryEntry<MapDecorationType> decoration) {
 			this.decoration = decoration;
 			return this;
 		}

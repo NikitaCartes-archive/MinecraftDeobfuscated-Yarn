@@ -1,8 +1,10 @@
 package net.minecraft.item;
 
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -46,6 +48,10 @@ public class TridentItem extends Item {
 				AttributeModifierSlot.MAINHAND
 			)
 			.build();
+	}
+
+	public static ToolComponent createToolComponent() {
+		return new ToolComponent(List.of(), 1.0F, 2);
 	}
 
 	@Override
@@ -138,15 +144,6 @@ public class TridentItem extends Item {
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
-		return true;
-	}
-
-	@Override
-	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-		if ((double)state.getHardness(world, pos) != 0.0) {
-			stack.damage(2, miner, EquipmentSlot.MAINHAND);
-		}
-
 		return true;
 	}
 

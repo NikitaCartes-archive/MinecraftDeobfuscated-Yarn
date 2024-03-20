@@ -15,12 +15,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -399,8 +400,8 @@ public abstract class StructurePiece {
 		return state.isAir() || state.isLiquid() || state.isOf(Blocks.GLOW_LICHEN) || state.isOf(Blocks.SEAGRASS) || state.isOf(Blocks.TALL_SEAGRASS);
 	}
 
-	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
-		return this.addChest(world, boundingBox, random, this.offsetPos(x, y, z), lootTableId, null);
+	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, RegistryKey<LootTable> lootTable) {
+		return this.addChest(world, boundingBox, random, this.offsetPos(x, y, z), lootTable, null);
 	}
 
 	public static BlockState orientateChest(BlockView world, BlockPos pos, BlockState state) {
@@ -447,7 +448,9 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addChest(ServerWorldAccess world, BlockBox boundingBox, Random random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block) {
+	protected boolean addChest(
+		ServerWorldAccess world, BlockBox boundingBox, Random random, BlockPos pos, RegistryKey<LootTable> lootTable, @Nullable BlockState block
+	) {
 		if (boundingBox.contains(pos) && !world.getBlockState(pos).isOf(Blocks.CHEST)) {
 			if (block == null) {
 				block = orientateChest(world, pos, Blocks.CHEST.getDefaultState());
@@ -456,7 +459,7 @@ public abstract class StructurePiece {
 			world.setBlockState(pos, block, Block.NOTIFY_LISTENERS);
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof ChestBlockEntity) {
-				((ChestBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
+				((ChestBlockEntity)blockEntity).setLootTable(lootTable, random.nextLong());
 			}
 
 			return true;
@@ -465,13 +468,15 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addDispenser(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId) {
+	protected boolean addDispenser(
+		StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, RegistryKey<LootTable> lootTable
+	) {
 		BlockPos blockPos = this.offsetPos(x, y, z);
 		if (boundingBox.contains(blockPos) && !world.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
 			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				((DispenserBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
+				((DispenserBlockEntity)blockEntity).setLootTable(lootTable, random.nextLong());
 			}
 
 			return true;

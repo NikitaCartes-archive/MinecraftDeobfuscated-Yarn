@@ -3,6 +3,7 @@ package net.minecraft.entity;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -263,7 +264,7 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Override
 	public boolean isFireImmune() {
-		return this.getStack().getItem().isFireproof() || super.isFireImmune();
+		return this.getStack().contains(DataComponentTypes.FIRE_RESISTANT) || super.isFireImmune();
 	}
 
 	@Override
@@ -272,7 +273,7 @@ public class ItemEntity extends Entity implements Ownable {
 			return false;
 		} else if (!this.getStack().isEmpty() && this.getStack().isOf(Items.NETHER_STAR) && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 			return false;
-		} else if (!this.getStack().getItem().damage(source)) {
+		} else if (!this.getStack().takesDamageFrom(source)) {
 			return false;
 		} else if (this.getWorld().isClient) {
 			return true;

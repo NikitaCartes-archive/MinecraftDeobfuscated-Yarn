@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
@@ -47,7 +47,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
 		return this.result;
 	}
 
@@ -70,8 +70,8 @@ public class ShapedRecipe implements CraftingRecipe {
 		return this.raw.matches(recipeInputInventory);
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
-		return this.getResult(dynamicRegistryManager).copy();
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+		return this.getResult(wrapperLookup).copy();
 	}
 
 	public int getWidth() {

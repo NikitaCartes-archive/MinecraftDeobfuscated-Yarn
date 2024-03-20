@@ -106,7 +106,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 						trialSpawnerData.rewardLootTable = trialSpawnerConfig.lootTablesToEject().getDataOrEmpty(world.getRandom());
 					}
 
-					trialSpawnerData.rewardLootTable.ifPresent(lootTable -> logic.ejectLootTable(world, pos, lootTable));
+					trialSpawnerData.rewardLootTable.ifPresent(registryKey -> logic.ejectLootTable(world, pos, registryKey));
 					trialSpawnerData.players.remove(trialSpawnerData.players.iterator().next());
 					yield this;
 				}

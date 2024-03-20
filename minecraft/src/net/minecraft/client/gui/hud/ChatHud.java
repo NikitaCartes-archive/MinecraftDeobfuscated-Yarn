@@ -411,7 +411,7 @@ public class ChatHud {
 	}
 
 	private int getMessageLineIndex(double chatLineX, double chatLineY) {
-		if (this.isChatFocused() && !this.client.options.hudHidden && !this.isChatHidden()) {
+		if (this.isChatFocused() && !this.isChatHidden()) {
 			if (!(chatLineX < -4.0) && !(chatLineX > (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()))) {
 				int i = Math.min(this.getVisibleLineCount(), this.visibleMessages.size());
 				if (chatLineY >= 0.0 && chatLineY < (double)i) {

@@ -5,24 +5,24 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataKey;
-import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.slf4j.Logger;
 
 public class ReferenceLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<ReferenceLootFunction> CODEC = RecordCodecBuilder.create(
 		instance -> addConditionsField(instance)
-				.and(Identifier.CODEC.fieldOf("name").forGetter(function -> function.name))
+				.and(RegistryKey.createCodec(RegistryKeys.ITEM_MODIFIER).fieldOf("name").forGetter(function -> function.name))
 				.apply(instance, ReferenceLootFunction::new)
 	);
-	private final Identifier name;
+	private final RegistryKey<LootFunction> name;
 
-	private ReferenceLootFunction(List<LootCondition> conditions, Identifier name) {
+	private ReferenceLootFunction(List<LootCondition> conditions, RegistryKey<LootFunction> name) {
 		super(conditions);
 		this.name = name;
 	}
@@ -34,25 +34,24 @@ public class ReferenceLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public void validate(LootTableReporter reporter) {
-		LootDataKey<LootFunction> lootDataKey = new LootDataKey<>(LootDataType.ITEM_MODIFIERS, this.name);
-		if (reporter.isInStack(lootDataKey)) {
-			reporter.report("Function " + this.name + " is recursively called");
+		if (reporter.isInStack(this.name)) {
+			reporter.report("Function " + this.name.getValue() + " is recursively called");
 		} else {
 			super.validate(reporter);
 			reporter.getDataLookup()
-				.getElementOptional(lootDataKey)
+				.getOptionalEntry(RegistryKeys.ITEM_MODIFIER, this.name)
 				.ifPresentOrElse(
-					itemModifier -> itemModifier.validate(reporter.makeChild(".{" + this.name + "}", lootDataKey)),
-					() -> reporter.report("Unknown function table called " + this.name)
+					reference -> ((LootFunction)reference.value()).validate(reporter.makeChild(".{" + this.name.getValue() + "}", this.name)),
+					() -> reporter.report("Unknown function table called " + this.name.getValue())
 				);
 		}
 	}
 
 	@Override
 	protected ItemStack process(ItemStack stack, LootContext context) {
-		LootFunction lootFunction = context.getDataLookup().getElement(LootDataType.ITEM_MODIFIERS, this.name);
+		LootFunction lootFunction = (LootFunction)context.getLookup().getOptionalEntry(RegistryKeys.ITEM_MODIFIER, this.name).map(RegistryEntry::value).orElse(null);
 		if (lootFunction == null) {
-			LOGGER.warn("Unknown function: {}", this.name);
+			LOGGER.warn("Unknown function: {}", this.name.getValue());
 			return stack;
 		} else {
 			LootContext.Entry<?> entry = LootContext.itemModifier(lootFunction);
@@ -72,7 +71,7 @@ public class ReferenceLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(Identifier name) {
+	public static ConditionalLootFunction.Builder<?> builder(RegistryKey<LootFunction> name) {
 		return builder(conditions -> new ReferenceLootFunction(conditions, name));
 	}
 }

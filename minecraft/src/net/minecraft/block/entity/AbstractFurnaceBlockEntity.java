@@ -418,10 +418,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		ItemStack itemStack = this.inventory.get(slot);
 		boolean bl = !stack.isEmpty() && ItemStack.areItemsAndComponentsEqual(itemStack, stack);
 		this.inventory.set(slot, stack);
-		if (stack.getCount() > this.getMaxCountPerStack()) {
-			stack.setCount(this.getMaxCountPerStack());
-		}
-
+		stack.capCount(this.getMaxCount(stack));
 		if (slot == 0 && !bl) {
 			this.cookTimeTotal = getCookTime(this.world, this);
 			this.cookTime = 0;

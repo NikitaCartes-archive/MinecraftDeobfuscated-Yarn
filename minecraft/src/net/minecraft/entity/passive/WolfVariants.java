@@ -37,16 +37,16 @@ public class WolfVariants {
 	}
 
 	static void register(Registerable<WolfVariant> registry, RegistryKey<WolfVariant> key, String textureName, RegistryEntryList<Biome> biomes) {
-		Identifier identifier = new Identifier("textures/entity/wolf/" + textureName + ".png");
-		Identifier identifier2 = new Identifier("textures/entity/wolf/" + textureName + "_tame.png");
-		Identifier identifier3 = new Identifier("textures/entity/wolf/" + textureName + "_angry.png");
+		Identifier identifier = new Identifier("entity/wolf/" + textureName);
+		Identifier identifier2 = new Identifier("entity/wolf/" + textureName + "_tame");
+		Identifier identifier3 = new Identifier("entity/wolf/" + textureName + "_angry");
 		registry.register(key, new WolfVariant(identifier, identifier2, identifier3, biomes));
 	}
 
 	public static RegistryEntry<WolfVariant> fromBiome(DynamicRegistryManager dynamicRegistryManager, RegistryEntry<Biome> biome) {
 		Registry<WolfVariant> registry = dynamicRegistryManager.get(RegistryKeys.WOLF_VARIANT);
 		return (RegistryEntry<WolfVariant>)registry.streamEntries()
-			.filter(entry -> ((WolfVariant)entry.value()).biomes().contains(biome))
+			.filter(entry -> ((WolfVariant)entry.value()).getBiomes().contains(biome))
 			.findFirst()
 			.orElse(registry.entryOf(PALE));
 	}

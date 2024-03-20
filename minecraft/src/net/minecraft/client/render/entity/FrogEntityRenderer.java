@@ -14,6 +14,6 @@ public class FrogEntityRenderer extends MobEntityRenderer<FrogEntity, FrogEntity
 	}
 
 	public Identifier getTexture(FrogEntity frogEntity) {
-		return frogEntity.getVariant().texture();
+		return frogEntity.getVariant().value().texture();
 	}
 }

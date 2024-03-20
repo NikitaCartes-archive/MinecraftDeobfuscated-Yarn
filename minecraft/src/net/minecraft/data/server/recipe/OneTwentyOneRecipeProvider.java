@@ -102,10 +102,10 @@ public class OneTwentyOneRecipeProvider extends RecipeProvider {
 			.criterion("has_breeze_rod", conditionsFromItem(Items.BREEZE_ROD))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.MACE, 1)
-			.input('A', Items.BREEZE_ROD)
-			.input('B', Blocks.HEAVY_CORE)
-			.pattern(" B ")
-			.pattern(" A ")
+			.input('I', Items.BREEZE_ROD)
+			.input('#', Blocks.HEAVY_CORE)
+			.pattern(" # ")
+			.pattern(" I ")
 			.criterion("has_breeze_rod", conditionsFromItem(Items.BREEZE_ROD))
 			.criterion("has_heavy_core", conditionsFromItem(Blocks.HEAVY_CORE))
 			.offerTo(exporter);

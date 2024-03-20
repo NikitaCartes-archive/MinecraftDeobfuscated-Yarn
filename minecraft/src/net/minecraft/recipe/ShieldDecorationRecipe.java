@@ -7,7 +7,7 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
@@ -50,7 +50,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && !itemStack2.isEmpty();
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		ItemStack itemStack2 = ItemStack.EMPTY;
 

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
@@ -31,15 +32,14 @@ import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class ArmadilloBrain {
-	public static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.SPIDER_EYE);
 	private static final float field_47797 = 2.0F;
 	private static final float field_47798 = 1.0F;
 	private static final float field_47799 = 1.25F;
@@ -152,8 +152,8 @@ public class ArmadilloBrain {
 		armadillo.getBrain().resetPossibleActivities(ImmutableList.of(Activity.PANIC, Activity.IDLE));
 	}
 
-	public static Ingredient getBreedingIngredient() {
-		return BREEDING_INGREDIENT;
+	public static Predicate<ItemStack> getTemptItemPredicate() {
+		return stack -> stack.isIn(ItemTags.ARMADILLO_FOOD);
 	}
 
 	public static class RollUpTask extends MultiTickTask<ArmadilloEntity> {

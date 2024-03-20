@@ -20,6 +20,8 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -47,7 +49,7 @@ public class BrushableBlockEntity extends BlockEntity {
 	@Nullable
 	private Direction hitDirection;
 	@Nullable
-	private Identifier lootTable;
+	private RegistryKey<LootTable> lootTable;
 	private long lootTableSeed;
 
 	public BrushableBlockEntity(BlockPos pos, BlockState state) {
@@ -85,7 +87,7 @@ public class BrushableBlockEntity extends BlockEntity {
 
 	public void generateItem(PlayerEntity player) {
 		if (this.lootTable != null && this.world != null && !this.world.isClient() && this.world.getServer() != null) {
-			LootTable lootTable = this.world.getServer().getLootManager().getLootTable(this.lootTable);
+			LootTable lootTable = this.world.getServer().getReloadableRegistries().getLootTable(this.lootTable);
 			if (player instanceof ServerPlayerEntity serverPlayerEntity) {
 				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger(serverPlayerEntity, this.lootTable);
 			}
@@ -101,7 +103,7 @@ public class BrushableBlockEntity extends BlockEntity {
 				case 0 -> ItemStack.EMPTY;
 				case 1 -> (ItemStack)objectArrayList.get(0);
 				default -> {
-					LOGGER.warn("Expected max 1 loot from loot table " + this.lootTable + " got " + objectArrayList.size());
+					LOGGER.warn("Expected max 1 loot from loot table {}, but got {}", this.lootTable.getValue(), objectArrayList.size());
 					yield objectArrayList.get(0);
 				}
 			};
@@ -172,7 +174,7 @@ public class BrushableBlockEntity extends BlockEntity {
 
 	private boolean readLootTableFromNbt(NbtCompound nbt) {
 		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
-			this.lootTable = new Identifier(nbt.getString("LootTable"));
+			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier(nbt.getString("LootTable")));
 			this.lootTableSeed = nbt.getLong("LootTableSeed");
 			return true;
 		} else {
@@ -184,7 +186,7 @@ public class BrushableBlockEntity extends BlockEntity {
 		if (this.lootTable == null) {
 			return false;
 		} else {
-			nbt.putString("LootTable", this.lootTable.toString());
+			nbt.putString("LootTable", this.lootTable.getValue().toString());
 			if (this.lootTableSeed != 0L) {
 				nbt.putLong("LootTableSeed", this.lootTableSeed);
 			}
@@ -231,7 +233,7 @@ public class BrushableBlockEntity extends BlockEntity {
 		}
 	}
 
-	public void setLootTable(Identifier lootTable, long seed) {
+	public void setLootTable(RegistryKey<LootTable> lootTable, long seed) {
 		this.lootTable = lootTable;
 		this.lootTableSeed = seed;
 	}

@@ -12,8 +12,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
@@ -116,7 +118,7 @@ public class OceanRuinGenerator {
 		new Identifier("underwater_ruin/big_warm_7")
 	};
 
-	private static StructureProcessor createArchaeologyStructureProcessor(Block baseBlock, Block suspiciousBlock, Identifier lootTableId) {
+	private static StructureProcessor createArchaeologyStructureProcessor(Block baseBlock, Block suspiciousBlock, RegistryKey<LootTable> lootTable) {
 		return new CappedStructureProcessor(
 			new RuleStructureProcessor(
 				List.of(
@@ -125,7 +127,7 @@ public class OceanRuinGenerator {
 						AlwaysTrueRuleTest.INSTANCE,
 						AlwaysTruePosRuleTest.INSTANCE,
 						suspiciousBlock.getDefaultState(),
-						new AppendLootRuleBlockEntityModifier(lootTableId)
+						new AppendLootRuleBlockEntityModifier(lootTable)
 					)
 				)
 			),

@@ -7,7 +7,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class SmithingTransformRecipe implements SmithingRecipe {
@@ -29,12 +29,14 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
-		return inventory.getStack(1).copyComponentsToNewStack(this.result.getItem(), this.result.getCount());
+	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
+		ItemStack itemStack = inventory.getStack(1).copyComponentsToNewStack(this.result.getItem(), this.result.getCount());
+		itemStack.applyChanges(this.result.getComponentChanges());
+		return itemStack;
 	}
 
 	@Override
-	public ItemStack getResult(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
 		return this.result;
 	}
 

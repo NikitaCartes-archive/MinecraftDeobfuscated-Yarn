@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
+import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -35,7 +36,7 @@ import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -226,7 +227,7 @@ public class AxolotlBrain {
 		return LookTargetUtil.hasBreedTarget(axolotl) ? Optional.empty() : axolotl.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE);
 	}
 
-	public static Ingredient getTemptItems() {
-		return Ingredient.fromTag(ItemTags.AXOLOTL_TEMPT_ITEMS);
+	public static Predicate<ItemStack> getTemptItemPredicate() {
+		return stack -> stack.isIn(ItemTags.AXOLOTL_FOOD);
 	}
 }

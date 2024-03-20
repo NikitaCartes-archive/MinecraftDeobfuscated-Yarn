@@ -28,7 +28,8 @@ import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
@@ -127,8 +128,8 @@ public class CamelBrain {
 		camel.getBrain().resetPossibleActivities(ImmutableList.of(Activity.IDLE));
 	}
 
-	public static Ingredient getTemptItems() {
-		return CamelEntity.BREEDING_INGREDIENT;
+	public static Predicate<ItemStack> getTemptItemPredicate() {
+		return stack -> stack.isIn(ItemTags.CAMEL_FOOD);
 	}
 
 	public static class CamelWalkTask extends FleeTask<CamelEntity> {

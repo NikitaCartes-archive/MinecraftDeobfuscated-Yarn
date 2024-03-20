@@ -22,16 +22,16 @@ import net.minecraft.potion.Potions;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.FishingHookPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
 public class VanillaFishingLootTableGenerator implements LootTableGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
 		RegistryWrapper.Impl<Biome> impl = registryLookup.getWrapperOrThrow(RegistryKeys.BIOME);
 		consumer.accept(
 			LootTables.FISHING_GAMEPLAY,

@@ -6,11 +6,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.EmptyWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.TextWidget;
@@ -137,9 +139,10 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		}).start();
 		GridWidget gridWidget = this.layout.addBody(new GridWidget());
 		GridWidget.Adder adder = gridWidget.createAdder(3);
-		adder.getMainPositioner().margin(16);
+		adder.getMainPositioner().marginX(16);
 		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
+				this.client.textRenderer,
 				RealmsResetNormalWorldScreen.TITLE,
 				NEW_WORLD_TEXTURE,
 				button -> this.client.setScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
@@ -147,6 +150,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		);
 		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
+				this.client.textRenderer,
 				RealmsSelectFileToUploadScreen.TITLE,
 				UPLOAD_TEXTURE,
 				button -> this.client.setScreen(new RealmsSelectFileToUploadScreen(this.creationTask, this.serverData.id, this.slot, this))
@@ -154,14 +158,17 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		);
 		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
+				this.client.textRenderer,
 				TEMPLATE_TEXT,
 				SURVIVAL_SPAWN_TEXTURE,
 				button -> this.client
 						.setScreen(new RealmsSelectWorldTemplateScreen(TEMPLATE_TEXT, this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates))
 			)
 		);
+		adder.add(EmptyWidget.ofHeight(16), 3);
 		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
+				this.client.textRenderer,
 				ADVENTURE_TEXT,
 				ADVENTURE_TEXTURE,
 				button -> this.client
@@ -172,6 +179,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		);
 		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
+				this.client.textRenderer,
 				EXPERIENCE_TEXT,
 				EXPERIENCE_TEXTURE,
 				button -> this.client
@@ -182,6 +190,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		);
 		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
+				this.client.textRenderer,
 				INSPIRATION_TEXT,
 				INSPIRATION_TEXTURE,
 				button -> this.client
@@ -249,8 +258,8 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		private static final int TEXTURE_SIZE = 56;
 		private final Identifier image;
 
-		FrameButton(Text message, Identifier image, ButtonWidget.PressAction onPress) {
-			super(0, 0, 60, 60, message, onPress, DEFAULT_NARRATION_SUPPLIER);
+		FrameButton(TextRenderer textRenderer, Text message, Identifier image, ButtonWidget.PressAction onPress) {
+			super(0, 0, 60, 60 + 9, message, onPress, DEFAULT_NARRATION_SUPPLIER);
 			this.image = image;
 		}
 

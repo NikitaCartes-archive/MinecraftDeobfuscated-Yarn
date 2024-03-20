@@ -297,7 +297,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.isIn(ItemTags.AXOLOTL_TEMPT_ITEMS);
+		return stack.isIn(ItemTags.AXOLOTL_FOOD);
 	}
 
 	@Override
@@ -378,12 +378,12 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	@Override
 	public void copyDataToStack(ItemStack stack) {
 		Bucketable.copyDataToStack(this, stack);
-		NbtComponent.set(DataComponentTypes.BUCKET_ENTITY_DATA, stack, nbtCompound -> {
-			nbtCompound.putInt("Variant", this.getVariant().getId());
-			nbtCompound.putInt("Age", this.getBreedingAge());
+		NbtComponent.set(DataComponentTypes.BUCKET_ENTITY_DATA, stack, nbt -> {
+			nbt.putInt("Variant", this.getVariant().getId());
+			nbt.putInt("Age", this.getBreedingAge());
 			Brain<?> brain = this.getBrain();
 			if (brain.hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN)) {
-				nbtCompound.putLong("HuntingCooldown", brain.getMemoryExpiry(MemoryModuleType.HAS_HUNTING_COOLDOWN));
+				nbt.putLong("HuntingCooldown", brain.getMemoryExpiry(MemoryModuleType.HAS_HUNTING_COOLDOWN));
 			}
 		});
 	}

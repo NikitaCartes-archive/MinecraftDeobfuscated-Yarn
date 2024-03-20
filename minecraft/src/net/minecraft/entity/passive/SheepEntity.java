@@ -36,11 +36,13 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.CraftingRecipe;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.world.ServerWorld;
@@ -50,7 +52,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -111,12 +112,17 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.ofItems(Items.WHEAT), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.1, stack -> stack.isIn(ItemTags.SHEEP_FOOD), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(5, this.eatGrassGoal);
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
+	}
+
+	@Override
+	public boolean isBreedingItem(ItemStack stack) {
+		return stack.isIn(ItemTags.SHEEP_FOOD);
 	}
 
 	@Override
@@ -145,7 +151,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	public Identifier getLootTableId() {
+	public RegistryKey<LootTable> getLootTableId() {
 		if (this.isSheared()) {
 			return this.getType().getLootTableId();
 		} else {

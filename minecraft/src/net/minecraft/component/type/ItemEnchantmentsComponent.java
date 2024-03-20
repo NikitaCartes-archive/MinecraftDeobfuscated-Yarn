@@ -23,6 +23,7 @@ import net.minecraft.util.dynamic.Codecs;
 
 public class ItemEnchantmentsComponent implements TooltipAppender {
 	public static final ItemEnchantmentsComponent DEFAULT = new ItemEnchantmentsComponent(new Object2IntLinkedOpenHashMap<>(), true);
+	public static final int MAX_ENCHANTMENT_LEVEL = 255;
 	private static final Codec<Integer> ENCHANTMENT_LEVEL_CODEC = Codec.intRange(0, 255);
 	private static final Codec<Object2IntLinkedOpenHashMap<RegistryEntry<Enchantment>>> INLINE_CODEC = Codec.unboundedMap(
 			Registries.ENCHANTMENT.getEntryCodec(), ENCHANTMENT_LEVEL_CODEC
@@ -62,6 +63,10 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 				textConsumer.accept(((Enchantment)((RegistryEntry)entry.getKey()).value()).getName(entry.getIntValue()));
 			}
 		}
+	}
+
+	public ItemEnchantmentsComponent withShowInTooltip(boolean showInTooltip) {
+		return new ItemEnchantmentsComponent(this.enchantments, showInTooltip);
 	}
 
 	public Set<RegistryEntry<Enchantment>> getEnchantments() {

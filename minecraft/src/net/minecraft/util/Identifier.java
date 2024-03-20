@@ -111,7 +111,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Identifier implements Comparable<Identifier> {
 	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::validate, Identifier::toString).stable();
 	public static final PacketCodec<ByteBuf, Identifier> PACKET_CODEC = PacketCodecs.STRING.xmap(Identifier::new, Identifier::toString);
-	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.id.invalid"));
+	public static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.id.invalid"));
 	public static final char NAMESPACE_SEPARATOR = ':';
 	public static final String DEFAULT_NAMESPACE = "minecraft";
 	public static final String REALMS_NAMESPACE = "realms";
@@ -295,20 +295,40 @@ public class Identifier implements Comparable<Identifier> {
 		return prefix + "." + this.toTranslationKey() + "." + suffix;
 	}
 
-	public static Identifier fromCommandInput(StringReader reader) throws CommandSyntaxException {
+	private static String readString(StringReader reader) {
 		int i = reader.getCursor();
 
 		while (reader.canRead() && isCharValid(reader.peek())) {
 			reader.skip();
 		}
 
-		String string = reader.getString().substring(i, reader.getCursor());
+		return reader.getString().substring(i, reader.getCursor());
+	}
+
+	public static Identifier fromCommandInput(StringReader reader) throws CommandSyntaxException {
+		int i = reader.getCursor();
+		String string = readString(reader);
 
 		try {
 			return new Identifier(string);
 		} catch (InvalidIdentifierException var4) {
 			reader.setCursor(i);
 			throw COMMAND_EXCEPTION.createWithContext(reader);
+		}
+	}
+
+	public static Identifier fromCommandInputNonEmpty(StringReader reader) throws CommandSyntaxException {
+		int i = reader.getCursor();
+		String string = readString(reader);
+		if (string.isEmpty()) {
+			throw COMMAND_EXCEPTION.createWithContext(reader);
+		} else {
+			try {
+				return new Identifier(string);
+			} catch (InvalidIdentifierException var4) {
+				reader.setCursor(i);
+				throw COMMAND_EXCEPTION.createWithContext(reader);
+			}
 		}
 	}
 

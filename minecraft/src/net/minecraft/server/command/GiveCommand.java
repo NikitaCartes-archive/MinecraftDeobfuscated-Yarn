@@ -48,9 +48,9 @@ public class GiveCommand {
 	}
 
 	private static int execute(ServerCommandSource source, ItemStackArgument item, Collection<ServerPlayerEntity> targets, int count) throws CommandSyntaxException {
-		int i = item.getItem().getMaxCount();
-		int j = i * 100;
 		ItemStack itemStack = item.createStack(1, false);
+		int i = itemStack.getMaxCount();
+		int j = i * 100;
 		if (count > j) {
 			source.sendError(Text.translatable("commands.give.failed.toomanyitems", j, itemStack.toHoverableText()));
 			return 0;

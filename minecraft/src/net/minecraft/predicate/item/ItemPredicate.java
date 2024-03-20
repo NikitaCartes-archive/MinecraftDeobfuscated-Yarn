@@ -35,7 +35,7 @@ public record ItemPredicate(
 	);
 
 	public boolean test(ItemStack stack) {
-		if (this.items.isPresent() && !stack.itemMatches((RegistryEntryList<Item>)this.items.get())) {
+		if (this.items.isPresent() && !stack.isIn((RegistryEntryList<Item>)this.items.get())) {
 			return false;
 		} else if (!this.count.test(stack.getCount())) {
 			return false;

@@ -2,6 +2,7 @@ package net.minecraft.enchantment;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -19,29 +20,52 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
-public abstract class Enchantment {
-	private final EquipmentSlot[] slotTypes;
-	private final Enchantment.Rarity rarity;
-	private final TagKey<Item> applicableItems;
+public class Enchantment {
+	private final Enchantment.Properties properties;
 	@Nullable
 	protected String translationKey;
 	private final RegistryEntry.Reference<Enchantment> registryEntry = Registries.ENCHANTMENT.createEntry(this);
+
+	public static Enchantment.Cost constantCost(int base) {
+		return new Enchantment.Cost(base, 0);
+	}
+
+	public static Enchantment.Cost leveledCost(int base, int perLevel) {
+		return new Enchantment.Cost(base, perLevel);
+	}
+
+	public static Enchantment.Properties properties(
+		TagKey<Item> supportedItems,
+		TagKey<Item> primaryItems,
+		int weight,
+		int maxLevel,
+		Enchantment.Cost minCost,
+		Enchantment.Cost maxCost,
+		int anvilCost,
+		EquipmentSlot... slots
+	) {
+		return new Enchantment.Properties(supportedItems, Optional.of(primaryItems), weight, maxLevel, minCost, maxCost, anvilCost, slots);
+	}
+
+	public static Enchantment.Properties properties(
+		TagKey<Item> supportedItems, int weight, int maxLevel, Enchantment.Cost minCost, Enchantment.Cost maxCost, int anvilCost, EquipmentSlot... slots
+	) {
+		return new Enchantment.Properties(supportedItems, Optional.empty(), weight, maxLevel, minCost, maxCost, anvilCost, slots);
+	}
 
 	@Nullable
 	public static Enchantment byRawId(int id) {
 		return Registries.ENCHANTMENT.get(id);
 	}
 
-	protected Enchantment(Enchantment.Rarity rarity, TagKey<Item> applicableItems, EquipmentSlot[] slotTypes) {
-		this.rarity = rarity;
-		this.applicableItems = applicableItems;
-		this.slotTypes = slotTypes;
+	public Enchantment(Enchantment.Properties properties) {
+		this.properties = properties;
 	}
 
 	public Map<EquipmentSlot, ItemStack> getEquipment(LivingEntity entity) {
 		Map<EquipmentSlot, ItemStack> map = Maps.newEnumMap(EquipmentSlot.class);
 
-		for (EquipmentSlot equipmentSlot : this.slotTypes) {
+		for (EquipmentSlot equipmentSlot : this.properties.slots()) {
 			ItemStack itemStack = entity.getEquippedStack(equipmentSlot);
 			if (!itemStack.isEmpty()) {
 				map.put(equipmentSlot, itemStack);
@@ -51,28 +75,36 @@ public abstract class Enchantment {
 		return map;
 	}
 
-	public TagKey<Item> getApplicableItems() {
-		return this.applicableItems;
+	public final TagKey<Item> getApplicableItems() {
+		return this.properties.supportedItems();
 	}
 
-	public Enchantment.Rarity getRarity() {
-		return this.rarity;
+	public final boolean isPrimaryItem(ItemStack stack) {
+		return this.properties.primaryItems.isEmpty() || stack.isIn((TagKey<Item>)this.properties.primaryItems.get());
 	}
 
-	public int getMinLevel() {
+	public final int getWeight() {
+		return this.properties.weight();
+	}
+
+	public final int getAnvilCost() {
+		return this.properties.anvilCost();
+	}
+
+	public final int getMinLevel() {
 		return 1;
 	}
 
-	public int getMaxLevel() {
-		return 1;
+	public final int getMaxLevel() {
+		return this.properties.maxLevel();
 	}
 
-	public int getMinPower(int level) {
-		return 1 + level * 10;
+	public final int getMinPower(int level) {
+		return this.properties.minCost().forLevel(level);
 	}
 
-	public int getMaxPower(int level) {
-		return this.getMinPower(level) + 5;
+	public final int getMaxPower(int level) {
+		return this.properties.maxCost().forLevel(level);
 	}
 
 	public int getProtectionAmount(int level, DamageSource source) {
@@ -128,7 +160,7 @@ public abstract class Enchantment {
 	}
 
 	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.getItem().getRegistryEntry().isIn(this.applicableItems);
+		return stack.getItem().getRegistryEntry().isIn(this.properties.supportedItems());
 	}
 
 	public void onTargetDamaged(LivingEntity user, Entity target, int level) {
@@ -166,29 +198,21 @@ public abstract class Enchantment {
 		return this.registryEntry;
 	}
 
-	/**
-	 * The rarity is an attribute of an enchantment.
-	 * 
-	 * <p>It affects the chance of getting an enchantment from enchanting or
-	 * loots as well as the combination cost in anvil.
-	 */
-	public static enum Rarity {
-		COMMON(10),
-		UNCOMMON(5),
-		RARE(2),
-		VERY_RARE(1);
-
-		private final int weight;
-
-		private Rarity(int weight) {
-			this.weight = weight;
+	public static record Cost(int base, int perLevel) {
+		public int forLevel(int level) {
+			return this.base + this.perLevel * (level - 1);
 		}
+	}
 
-		/**
-		 * {@return the weight of an enchantment in weighted pickers}
-		 */
-		public int getWeight() {
-			return this.weight;
-		}
+	public static record Properties(
+		TagKey<Item> supportedItems,
+		Optional<TagKey<Item>> primaryItems,
+		int weight,
+		int maxLevel,
+		Enchantment.Cost minCost,
+		Enchantment.Cost maxCost,
+		int anvilCost,
+		EquipmentSlot[] slots
+	) {
 	}
 }

@@ -12,12 +12,14 @@ import java.util.stream.Stream;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.loot.LootManager;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.ReloadableRegistries;
+import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.registry.tag.TagManagerLoader;
@@ -41,27 +43,27 @@ import org.slf4j.Logger;
 public class DataPackContents {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final CompletableFuture<Unit> COMPLETED_UNIT = CompletableFuture.completedFuture(Unit.INSTANCE);
+	private final ReloadableRegistries.Lookup reloadableRegistries;
 	private final DataPackContents.ConfigurableWrapperLookup registryLookup;
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager;
 	private final TagManagerLoader registryTagManager;
-	private final LootManager lootManager;
 	private final ServerAdvancementLoader serverAdvancementLoader;
 	private final FunctionLoader functionLoader;
 
-	public DataPackContents(
+	private DataPackContents(
 		DynamicRegistryManager.Immutable dynamicRegistryManager,
 		FeatureSet enabledFeatures,
 		CommandManager.RegistrationEnvironment environment,
 		int functionPermissionLevel
 	) {
+		this.reloadableRegistries = new ReloadableRegistries.Lookup(dynamicRegistryManager);
 		this.registryLookup = new DataPackContents.ConfigurableWrapperLookup(dynamicRegistryManager);
 		this.registryLookup.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.CREATE_NEW);
 		this.recipeManager = new RecipeManager(this.registryLookup);
 		this.registryTagManager = new TagManagerLoader(dynamicRegistryManager);
 		this.commandManager = new CommandManager(environment, CommandRegistryAccess.of(this.registryLookup, enabledFeatures));
-		this.lootManager = new LootManager(this.registryLookup);
-		this.serverAdvancementLoader = new ServerAdvancementLoader(this.registryLookup, this.lootManager);
+		this.serverAdvancementLoader = new ServerAdvancementLoader(this.registryLookup);
 		this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());
 	}
 
@@ -75,11 +77,8 @@ public class DataPackContents {
 		return this.functionLoader;
 	}
 
-	/**
-	 * @see MinecraftServer#getLootManager
-	 */
-	public LootManager getLootManager() {
-		return this.lootManager;
+	public ReloadableRegistries.Lookup getReloadableRegistries() {
+		return this.reloadableRegistries;
 	}
 
 	/**
@@ -104,7 +103,7 @@ public class DataPackContents {
 	}
 
 	public List<ResourceReloader> getContents() {
-		return List.of(this.registryTagManager, this.lootManager, this.recipeManager, this.functionLoader, this.serverAdvancementLoader);
+		return List.of(this.registryTagManager, this.recipeManager, this.functionLoader, this.serverAdvancementLoader);
 	}
 
 	/**
@@ -114,22 +113,29 @@ public class DataPackContents {
 	 */
 	public static CompletableFuture<DataPackContents> reload(
 		ResourceManager manager,
-		DynamicRegistryManager.Immutable dynamicRegistryManager,
+		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistries,
 		FeatureSet enabledFeatures,
 		CommandManager.RegistrationEnvironment environment,
 		int functionPermissionLevel,
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		DataPackContents dataPackContents = new DataPackContents(dynamicRegistryManager, enabledFeatures, environment, functionPermissionLevel);
-		return SimpleResourceReload.start(manager, dataPackContents.getContents(), prepareExecutor, applyExecutor, COMPLETED_UNIT, LOGGER.isDebugEnabled())
-			.whenComplete()
-			.whenComplete((void_, throwable) -> dataPackContents.registryLookup.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.FAIL))
-			.thenApply(void_ -> dataPackContents);
+		return ReloadableRegistries.reload(dynamicRegistries, manager, prepareExecutor)
+			.thenCompose(
+				reloadedDynamicRegistries -> {
+					DataPackContents dataPackContents = new DataPackContents(
+						reloadedDynamicRegistries.getCombinedRegistryManager(), enabledFeatures, environment, functionPermissionLevel
+					);
+					return SimpleResourceReload.start(manager, dataPackContents.getContents(), prepareExecutor, applyExecutor, COMPLETED_UNIT, LOGGER.isDebugEnabled())
+						.whenComplete()
+						.whenComplete((void_, throwable) -> dataPackContents.registryLookup.setEntryListCreationPolicy(DataPackContents.EntryListCreationPolicy.FAIL))
+						.thenApply(void_ -> dataPackContents);
+				}
+			);
 	}
 
-	public void refresh(DynamicRegistryManager dynamicRegistryManager) {
-		this.registryTagManager.getRegistryTags().forEach(tags -> repopulateTags(dynamicRegistryManager, tags));
+	public void refresh() {
+		this.registryTagManager.getRegistryTags().forEach(tags -> repopulateTags(this.reloadableRegistries.getRegistryManager(), tags));
 		AbstractFurnaceBlockEntity.clearFuelTimes();
 		Blocks.refreshShapeCache();
 	}

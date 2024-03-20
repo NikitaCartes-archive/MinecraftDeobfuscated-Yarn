@@ -3,8 +3,10 @@ package net.minecraft.block.spawner;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.collection.DataPool;
 
 public record TrialSpawnerConfig(
@@ -17,9 +19,9 @@ public record TrialSpawnerConfig(
 	int ticksBetweenSpawn,
 	int targetCooldownLength,
 	DataPool<MobSpawnerEntry> spawnPotentialsDefinition,
-	DataPool<Identifier> lootTablesToEject
+	DataPool<RegistryKey<LootTable>> lootTablesToEject
 ) {
-	public static TrialSpawnerConfig defaultInstance = new TrialSpawnerConfig(
+	public static final TrialSpawnerConfig DEFAULT = new TrialSpawnerConfig(
 		14,
 		4,
 		6.0F,
@@ -29,31 +31,27 @@ public record TrialSpawnerConfig(
 		40,
 		36000,
 		DataPool.empty(),
-		DataPool.<Identifier>builder().add(LootTables.TRIAL_CHAMBER_CONSUMABLES_SPAWNER).add(LootTables.TRIAL_CHAMBER_KEY_SPAWNER).build()
+		DataPool.<RegistryKey<LootTable>>builder().add(LootTables.TRIAL_CHAMBER_CONSUMABLES_SPAWNER).add(LootTables.TRIAL_CHAMBER_KEY_SPAWNER).build()
 	);
-	public static MapCodec<TrialSpawnerConfig> codec = RecordCodecBuilder.mapCodec(
+	public static final MapCodec<TrialSpawnerConfig> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codec.intRange(1, 128).optionalFieldOf("required_player_range", defaultInstance.requiredPlayerRange).forGetter(TrialSpawnerConfig::requiredPlayerRange),
-					Codec.intRange(1, 128).optionalFieldOf("spawn_range", defaultInstance.spawnRange).forGetter(TrialSpawnerConfig::spawnRange),
-					Codec.floatRange(0.0F, Float.MAX_VALUE).optionalFieldOf("total_mobs", defaultInstance.totalMobs).forGetter(TrialSpawnerConfig::totalMobs),
+					Codec.intRange(1, 128).optionalFieldOf("required_player_range", DEFAULT.requiredPlayerRange).forGetter(TrialSpawnerConfig::requiredPlayerRange),
+					Codec.intRange(1, 128).optionalFieldOf("spawn_range", DEFAULT.spawnRange).forGetter(TrialSpawnerConfig::spawnRange),
+					Codec.floatRange(0.0F, Float.MAX_VALUE).optionalFieldOf("total_mobs", DEFAULT.totalMobs).forGetter(TrialSpawnerConfig::totalMobs),
+					Codec.floatRange(0.0F, Float.MAX_VALUE).optionalFieldOf("simultaneous_mobs", DEFAULT.simultaneousMobs).forGetter(TrialSpawnerConfig::simultaneousMobs),
 					Codec.floatRange(0.0F, Float.MAX_VALUE)
-						.optionalFieldOf("simultaneous_mobs", defaultInstance.simultaneousMobs)
-						.forGetter(TrialSpawnerConfig::simultaneousMobs),
-					Codec.floatRange(0.0F, Float.MAX_VALUE)
-						.optionalFieldOf("total_mobs_added_per_player", defaultInstance.totalMobsAddedPerPlayer)
+						.optionalFieldOf("total_mobs_added_per_player", DEFAULT.totalMobsAddedPerPlayer)
 						.forGetter(TrialSpawnerConfig::totalMobsAddedPerPlayer),
 					Codec.floatRange(0.0F, Float.MAX_VALUE)
-						.optionalFieldOf("simultaneous_mobs_added_per_player", defaultInstance.simultaneousMobsAddedPerPlayer)
+						.optionalFieldOf("simultaneous_mobs_added_per_player", DEFAULT.simultaneousMobsAddedPerPlayer)
 						.forGetter(TrialSpawnerConfig::simultaneousMobsAddedPerPlayer),
+					Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("ticks_between_spawn", DEFAULT.ticksBetweenSpawn).forGetter(TrialSpawnerConfig::ticksBetweenSpawn),
 					Codec.intRange(0, Integer.MAX_VALUE)
-						.optionalFieldOf("ticks_between_spawn", defaultInstance.ticksBetweenSpawn)
-						.forGetter(TrialSpawnerConfig::ticksBetweenSpawn),
-					Codec.intRange(0, Integer.MAX_VALUE)
-						.optionalFieldOf("target_cooldown_length", defaultInstance.targetCooldownLength)
+						.optionalFieldOf("target_cooldown_length", DEFAULT.targetCooldownLength)
 						.forGetter(TrialSpawnerConfig::targetCooldownLength),
 					MobSpawnerEntry.DATA_POOL_CODEC.optionalFieldOf("spawn_potentials", DataPool.empty()).forGetter(TrialSpawnerConfig::spawnPotentialsDefinition),
-					DataPool.createEmptyAllowedCodec(Identifier.CODEC)
-						.optionalFieldOf("loot_tables_to_eject", defaultInstance.lootTablesToEject)
+					DataPool.createEmptyAllowedCodec(RegistryKey.createCodec(RegistryKeys.LOOT_TABLE))
+						.optionalFieldOf("loot_tables_to_eject", DEFAULT.lootTablesToEject)
 						.forGetter(TrialSpawnerConfig::lootTablesToEject)
 				)
 				.apply(instance, TrialSpawnerConfig::new)

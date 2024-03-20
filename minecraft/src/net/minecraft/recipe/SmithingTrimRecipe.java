@@ -15,8 +15,8 @@ import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 
@@ -37,11 +37,11 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
+	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
 		ItemStack itemStack = inventory.getStack(1);
 		if (this.base.test(itemStack)) {
-			Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional = ArmorTrimMaterials.get(registryManager, inventory.getStack(2));
-			Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional2 = ArmorTrimPatterns.get(registryManager, inventory.getStack(0));
+			Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional = ArmorTrimMaterials.get(lookup, inventory.getStack(2));
+			Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional2 = ArmorTrimPatterns.get(lookup, inventory.getStack(0));
 			if (optional.isPresent() && optional2.isPresent()) {
 				ArmorTrim armorTrim = itemStack.get(DataComponentTypes.TRIM);
 				if (armorTrim != null && armorTrim.equals((RegistryEntry<ArmorTrimPattern>)optional2.get(), (RegistryEntry<ArmorTrimMaterial>)optional.get())) {
@@ -58,10 +58,11 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
 		ItemStack itemStack = new ItemStack(Items.IRON_CHESTPLATE);
-		Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional = registryManager.get(RegistryKeys.TRIM_PATTERN).streamEntries().findFirst();
-		Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional2 = registryManager.get(RegistryKeys.TRIM_MATERIAL).getEntry(ArmorTrimMaterials.REDSTONE);
+		Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional = registriesLookup.getWrapperOrThrow(RegistryKeys.TRIM_PATTERN).streamEntries().findFirst();
+		Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional2 = registriesLookup.getWrapperOrThrow(RegistryKeys.TRIM_MATERIAL)
+			.getOptional(ArmorTrimMaterials.REDSTONE);
 		if (optional.isPresent() && optional2.isPresent()) {
 			itemStack.set(DataComponentTypes.TRIM, new ArmorTrim((RegistryEntry<ArmorTrimMaterial>)optional2.get(), (RegistryEntry<ArmorTrimPattern>)optional.get()));
 		}

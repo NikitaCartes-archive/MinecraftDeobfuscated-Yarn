@@ -75,6 +75,10 @@ public class EnchantmentHelper {
 			|| !stack.getOrDefault(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT).isEmpty();
 	}
 
+	public static float getSweepingMultiplier(int level) {
+		return 1.0F - 1.0F / (float)(level + 1);
+	}
+
 	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, ItemStack stack) {
 		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
@@ -103,7 +107,7 @@ public class EnchantmentHelper {
 
 	public static float getSweepingMultiplier(LivingEntity entity) {
 		int i = getEquipmentLevel(Enchantments.SWEEPING_EDGE, entity);
-		return i > 0 ? SweepingEnchantment.getMultiplier(i) : 0.0F;
+		return i > 0 ? getSweepingMultiplier(i) : 0.0F;
 	}
 
 	public static void onUserDamaged(LivingEntity user, Entity attacker) {
@@ -394,7 +398,9 @@ public class EnchantmentHelper {
 		boolean bl = stack.isOf(Items.BOOK);
 
 		for (Enchantment enchantment : Registries.ENCHANTMENT) {
-			if ((!enchantment.isTreasure() || treasureAllowed) && enchantment.isAvailableForRandomSelection() && (enchantment.isAcceptableItem(stack) || bl)) {
+			if ((!enchantment.isTreasure() || treasureAllowed)
+				&& enchantment.isAvailableForRandomSelection()
+				&& (bl || enchantment.isAcceptableItem(stack) && enchantment.isPrimaryItem(stack))) {
 				for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; i--) {
 					if (power >= enchantment.getMinPower(i) && power <= enchantment.getMaxPower(i)) {
 						list.add(new EnchantmentLevelEntry(enchantment, i));

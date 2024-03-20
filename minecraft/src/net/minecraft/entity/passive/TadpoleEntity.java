@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -144,7 +145,7 @@ public class TadpoleEntity extends FishEntity {
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (this.isSlimeBall(itemStack)) {
+		if (this.isFrogFood(itemStack)) {
 			this.eatSlimeBall(player, itemStack);
 			return ActionResult.success(this.getWorld().isClient);
 		} else {
@@ -191,8 +192,8 @@ public class TadpoleEntity extends FishEntity {
 		return SoundEvents.ITEM_BUCKET_FILL_TADPOLE;
 	}
 
-	private boolean isSlimeBall(ItemStack stack) {
-		return FrogEntity.SLIME_BALL.test(stack);
+	private boolean isFrogFood(ItemStack stack) {
+		return stack.isIn(ItemTags.FROG_FOOD);
 	}
 
 	private void eatSlimeBall(PlayerEntity player, ItemStack stack) {

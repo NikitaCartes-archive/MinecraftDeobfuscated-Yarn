@@ -60,6 +60,10 @@ public class ServerPlayerInteractionManager {
 			this.player.sendAbilitiesUpdate();
 			this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, this.player));
 			this.world.updateSleepingPlayers();
+			if (gameMode == GameMode.CREATIVE) {
+				this.player.clearCurrentExplosion();
+			}
+
 			return true;
 		}
 	}

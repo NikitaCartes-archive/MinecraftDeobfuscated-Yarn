@@ -9,6 +9,8 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -28,33 +30,21 @@ public interface LootableInventory extends Inventory {
 	String LOOT_TABLE_KEY = "LootTable";
 	String LOOT_TABLE_SEED_KEY = "LootTableSeed";
 
-	/**
-	 * {@return the loot table ID, or {@code null} if there is no associated loot table}
-	 * 
-	 * <p>This is usually stored under the {@value LOOT_TABLE_KEY} NBT key.
-	 */
 	@Nullable
-	Identifier getLootTableId();
+	RegistryKey<LootTable> getLootTable();
+
+	void setLootTable(@Nullable RegistryKey<LootTable> lootTable);
 
 	/**
-	 * Sets the loot table ID.
-	 * 
-	 * <p>This is usually stored under the {@value LOOT_TABLE_KEY} NBT key.
-	 * 
-	 * @param lootTableId the loot table ID, or {@code null} to remove the loot table
-	 */
-	void setLootTableId(@Nullable Identifier lootTableId);
-
-	/**
-	 * Sets the loot table ID and seed at once.
+	 * Sets the loot table and seed at once.
 	 * This is useful for code-based structure generation.
 	 * 
-	 * @see #setLootTableId(Identifier)
+	 * @see #setLootTable(RegistryKey)
 	 * @see #setLootTableSeed(long)
-	 * @see #setLootTable(BlockView, Random, BlockPos, Identifier)
+	 * @see #setLootTable(BlockView, Random, BlockPos, RegistryKey)
 	 */
-	default void setLootTable(Identifier lootTableId, long lootTableSeed) {
-		this.setLootTableId(lootTableId);
+	default void setLootTable(RegistryKey<LootTable> lootTableId, long lootTableSeed) {
+		this.setLootTable(lootTableId);
 		this.setLootTableSeed(lootTableSeed);
 	}
 
@@ -85,31 +75,31 @@ public interface LootableInventory extends Inventory {
 
 	/**
 	 * Queries the block entity at {@code pos}, checks if it is a {@link LootableInventory},
-	 * and sets the loot table ID and seed if applicable.
+	 * and sets the loot table and seed if applicable.
 	 * This is useful for code-based structure generation.
 	 * 
-	 * @see #setLootTableId(Identifier)
+	 * @see #setLootTable(RegistryKey)
 	 * @see #setLootTableSeed(long)
-	 * @see #setLootTable(Identifier, long)
+	 * @see #setLootTable(RegistryKey, long)
 	 */
-	static void setLootTable(BlockView world, Random random, BlockPos pos, Identifier lootTableId) {
+	static void setLootTable(BlockView world, Random random, BlockPos pos, RegistryKey<LootTable> lootTableId) {
 		if (world.getBlockEntity(pos) instanceof LootableInventory lootableInventory) {
 			lootableInventory.setLootTable(lootTableId, random.nextLong());
 		}
 	}
 
 	/**
-	 * Reads the loot table ID and seed from {@code nbt}, if the loot table ID
+	 * Reads the loot table and seed from {@code nbt}, if the loot table
 	 * exists in {@code nbt}. Implementations should skip reading the contents of
 	 * the inventory if this returns {@code true}.
 	 * 
-	 * @return whether the loot table ID was found
+	 * @return whether the loot table was found
 	 */
-	default boolean readLootTable(NbtCompound nbtCompound) {
-		if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
-			this.setLootTableId(new Identifier(nbtCompound.getString("LootTable")));
-			if (nbtCompound.contains("LootTableSeed", NbtElement.LONG_TYPE)) {
-				this.setLootTableSeed(nbtCompound.getLong("LootTableSeed"));
+	default boolean readLootTable(NbtCompound nbt) {
+		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
+			this.setLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier(nbt.getString("LootTable"))));
+			if (nbt.contains("LootTableSeed", NbtElement.LONG_TYPE)) {
+				this.setLootTableSeed(nbt.getLong("LootTableSeed"));
 			} else {
 				this.setLootTableSeed(0L);
 			}
@@ -121,21 +111,21 @@ public interface LootableInventory extends Inventory {
 	}
 
 	/**
-	 * Writes the loot table ID and seed to {@code nbt}, if {@linkplain #getLootTableId
-	 * the loot table ID} is not {@code null}. Implementations should skip writing the
+	 * Writes the loot table and seed to {@code nbt}, if {@linkplain #getLootTable
+	 * the loot table} is not {@code null}. Implementations should skip writing the
 	 * contents of the inventory if this returns {@code true}.
 	 * 
 	 * <p>This skips writing the seed if it equals {@code 0L}. This has no practical
 	 * difference in-game, as getting nonexistent {@code long} values return {@code 0L}.
 	 * 
-	 * @return whether the loot table ID was non-{@code null}
+	 * @return whether the loot table was non-{@code null}
 	 */
 	default boolean writeLootTable(NbtCompound nbt) {
-		Identifier identifier = this.getLootTableId();
-		if (identifier == null) {
+		RegistryKey<LootTable> registryKey = this.getLootTable();
+		if (registryKey == null) {
 			return false;
 		} else {
-			nbt.putString("LootTable", identifier.toString());
+			nbt.putString("LootTable", registryKey.getValue().toString());
 			long l = this.getLootTableSeed();
 			if (l != 0L) {
 				nbt.putLong("LootTableSeed", l);
@@ -158,14 +148,14 @@ public interface LootableInventory extends Inventory {
 	default void generateLoot(@Nullable PlayerEntity player) {
 		World world = this.getWorld();
 		BlockPos blockPos = this.getPos();
-		Identifier identifier = this.getLootTableId();
-		if (identifier != null && world != null && world.getServer() != null) {
-			LootTable lootTable = world.getServer().getLootManager().getLootTable(identifier);
+		RegistryKey<LootTable> registryKey = this.getLootTable();
+		if (registryKey != null && world != null && world.getServer() != null) {
+			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(registryKey);
 			if (player instanceof ServerPlayerEntity) {
-				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, identifier);
+				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, registryKey);
 			}
 
-			this.setLootTableId(null);
+			this.setLootTable(null);
 			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)world)
 				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos));
 			if (player != null) {

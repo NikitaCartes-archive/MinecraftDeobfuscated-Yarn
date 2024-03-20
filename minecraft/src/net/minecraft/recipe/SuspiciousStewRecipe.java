@@ -7,7 +7,7 @@ import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.World;
 
@@ -44,7 +44,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		return bl && bl3 && bl2 && bl4;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
 
 		for (int i = 0; i < recipeInputInventory.size(); i++) {

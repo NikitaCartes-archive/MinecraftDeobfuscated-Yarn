@@ -76,8 +76,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		return !existingStack.isEmpty()
 			&& ItemStack.areItemsAndComponentsEqual(existingStack, stack)
 			&& existingStack.isStackable()
-			&& existingStack.getCount() < existingStack.getMaxCount()
-			&& existingStack.getCount() < this.getMaxCountPerStack();
+			&& existingStack.getCount() < this.getMaxCount(existingStack);
 	}
 
 	public int getEmptySlot() {
@@ -215,20 +214,13 @@ public class PlayerInventory implements Inventory, Nameable {
 			this.setStack(slot, itemStack);
 		}
 
-		int j = i;
-		if (i > itemStack.getMaxCount() - itemStack.getCount()) {
-			j = itemStack.getMaxCount() - itemStack.getCount();
-		}
-
-		if (j > this.getMaxCountPerStack() - itemStack.getCount()) {
-			j = this.getMaxCountPerStack() - itemStack.getCount();
-		}
-
-		if (j == 0) {
+		int j = this.getMaxCount(itemStack) - itemStack.getCount();
+		int k = Math.min(i, j);
+		if (k == 0) {
 			return i;
 		} else {
-			i -= j;
-			itemStack.increment(j);
+			i -= k;
+			itemStack.increment(k);
 			itemStack.setBobbingAnimationTime(5);
 			return i;
 		}

@@ -7,11 +7,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.MapColor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.texture.MapDecorationsAtlasManager;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.MapIdComponent;
-import net.minecraft.item.map.MapIcon;
+import net.minecraft.item.map.MapDecoration;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -22,15 +24,15 @@ import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class MapRenderer implements AutoCloseable {
-	private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
-	static final RenderLayer MAP_ICONS_RENDER_LAYER = RenderLayer.getText(MAP_ICONS_TEXTURE);
 	private static final int DEFAULT_IMAGE_WIDTH = 128;
 	private static final int DEFAULT_IMAGE_HEIGHT = 128;
 	final TextureManager textureManager;
+	final MapDecorationsAtlasManager mapDecorationsAtlasManager;
 	private final Int2ObjectMap<MapRenderer.MapTexture> mapTextures = new Int2ObjectOpenHashMap<>();
 
-	public MapRenderer(TextureManager textureManager) {
+	public MapRenderer(TextureManager textureManager, MapDecorationsAtlasManager mapDecorationsAtlasManager) {
 		this.textureManager = textureManager;
+		this.mapDecorationsAtlasManager = mapDecorationsAtlasManager;
 	}
 
 	public void updateTexture(MapIdComponent id, MapState state) {
@@ -116,33 +118,33 @@ public class MapRenderer implements AutoCloseable {
 			vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(light).next();
 			int k = 0;
 
-			for (MapIcon mapIcon : this.state.getIcons()) {
-				if (!hidePlayerIcons || mapIcon.isAlwaysRendered()) {
+			for (MapDecoration mapDecoration : this.state.getDecorations()) {
+				if (!hidePlayerIcons || mapDecoration.isAlwaysRendered()) {
 					matrices.push();
-					matrices.translate(0.0F + (float)mapIcon.x() / 2.0F + 64.0F, 0.0F + (float)mapIcon.z() / 2.0F + 64.0F, -0.02F);
-					matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)(mapIcon.rotation() * 360) / 16.0F));
+					matrices.translate(0.0F + (float)mapDecoration.x() / 2.0F + 64.0F, 0.0F + (float)mapDecoration.z() / 2.0F + 64.0F, -0.02F);
+					matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)(mapDecoration.rotation() * 360) / 16.0F));
 					matrices.scale(4.0F, 4.0F, 3.0F);
 					matrices.translate(-0.125F, 0.125F, 0.0F);
-					byte b = mapIcon.getTypeId();
-					float g = (float)(b % 16 + 0) / 16.0F;
-					float h = (float)(b / 16 + 0) / 16.0F;
-					float l = (float)(b % 16 + 1) / 16.0F;
-					float m = (float)(b / 16 + 1) / 16.0F;
 					Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
-					float n = -0.001F;
-					VertexConsumer vertexConsumer2 = vertexConsumers.getBuffer(MapRenderer.MAP_ICONS_RENDER_LAYER);
-					vertexConsumer2.vertex(matrix4f2, -1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(g, h).light(light).next();
-					vertexConsumer2.vertex(matrix4f2, 1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(l, h).light(light).next();
-					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(l, m).light(light).next();
-					vertexConsumer2.vertex(matrix4f2, -1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(g, m).light(light).next();
+					float g = -0.001F;
+					Sprite sprite = MapRenderer.this.mapDecorationsAtlasManager.getSprite(mapDecoration);
+					float h = sprite.getMinU();
+					float l = sprite.getMinV();
+					float m = sprite.getMaxU();
+					float n = sprite.getMaxV();
+					VertexConsumer vertexConsumer2 = vertexConsumers.getBuffer(RenderLayer.getText(sprite.getAtlasId()));
+					vertexConsumer2.vertex(matrix4f2, -1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(h, l).light(light).next();
+					vertexConsumer2.vertex(matrix4f2, 1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(m, l).light(light).next();
+					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(m, n).light(light).next();
+					vertexConsumer2.vertex(matrix4f2, -1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(h, n).light(light).next();
 					matrices.pop();
-					if (mapIcon.name().isPresent()) {
+					if (mapDecoration.name().isPresent()) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-						Text text = (Text)mapIcon.name().get();
+						Text text = (Text)mapDecoration.name().get();
 						float o = (float)textRenderer.getWidth(text);
 						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / 9.0F);
 						matrices.push();
-						matrices.translate(0.0F + (float)mapIcon.x() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.z() / 2.0F + 64.0F + 4.0F, -0.025F);
+						matrices.translate(0.0F + (float)mapDecoration.x() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapDecoration.z() / 2.0F + 64.0F + 4.0F, -0.025F);
 						matrices.scale(p, p, 1.0F);
 						matrices.translate(0.0F, 0.0F, -0.1F);
 						textRenderer.draw(

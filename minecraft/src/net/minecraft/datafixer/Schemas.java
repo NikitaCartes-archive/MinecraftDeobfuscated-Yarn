@@ -285,7 +285,6 @@ import net.minecraft.datafixer.schema.Schema3816;
 import net.minecraft.datafixer.schema.Schema3818;
 import net.minecraft.datafixer.schema.Schema3818_3;
 import net.minecraft.datafixer.schema.Schema3818_4;
-import net.minecraft.datafixer.schema.Schema3822;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1267,8 +1266,6 @@ public class Schemas {
 		Schema schema217 = builder.addSchema(3820, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new PlayerHeadBlockProfileFix(schema217));
 		builder.addFixer(new LodestoneCompassComponentFix(schema217));
-		Schema schema218 = builder.addSchema(3822, Schema3822::new);
-		builder.addFixer(new ChoiceTypesFix(schema218, "Added Breeze Rod and Mace", TypeReferences.ENTITY));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

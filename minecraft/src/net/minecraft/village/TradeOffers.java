@@ -32,7 +32,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapIcon;
+import net.minecraft.item.map.MapDecorationType;
+import net.minecraft.item.map.MapDecorationTypes;
 import net.minecraft.item.map.MapState;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
@@ -330,12 +331,13 @@ public class TradeOffers {
 						2,
 						new TradeOffers.Factory[]{
 							new TradeOffers.BuyItemFactory(Items.GLASS_PANE, 11, 16, 10),
-							new TradeOffers.SellMapFactory(13, StructureTags.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapIcon.Type.MONUMENT, 12, 5)
+							new TradeOffers.SellMapFactory(13, StructureTags.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapDecorationTypes.MONUMENT, 12, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
 							new TradeOffers.BuyItemFactory(Items.COMPASS, 1, 12, 20),
-							new TradeOffers.SellMapFactory(14, StructureTags.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapIcon.Type.MANSION, 12, 10)
+							new TradeOffers.SellMapFactory(14, StructureTags.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapDecorationTypes.MANSION, 12, 10),
+							new TradeOffers.SellMapFactory(12, StructureTags.ON_TRIAL_CHAMBERS_MAPS, "filled_map.trial_chambers", MapDecorationTypes.TRIAL_CHAMBERS, 12, 10)
 						},
 						4,
 						new TradeOffers.Factory[]{
@@ -688,25 +690,25 @@ public class TradeOffers {
 		)
 	);
 	private static final TradeOffers.SellMapFactory SELL_DESERT_VILLAGE_MAP_TRADE = new TradeOffers.SellMapFactory(
-		8, StructureTags.ON_DESERT_VILLAGE_MAPS, "filled_map.village_desert", MapIcon.Type.DESERT_VILLAGE, 12, 5
+		8, StructureTags.ON_DESERT_VILLAGE_MAPS, "filled_map.village_desert", MapDecorationTypes.VILLAGE_DESERT, 12, 5
 	);
 	private static final TradeOffers.SellMapFactory SELL_SAVANNA_VILLAGE_MAP_TRADE = new TradeOffers.SellMapFactory(
-		8, StructureTags.ON_SAVANNA_VILLAGE_MAPS, "filled_map.village_savanna", MapIcon.Type.SAVANNA_VILLAGE, 12, 5
+		8, StructureTags.ON_SAVANNA_VILLAGE_MAPS, "filled_map.village_savanna", MapDecorationTypes.VILLAGE_SAVANNA, 12, 5
 	);
 	private static final TradeOffers.SellMapFactory SELL_PLAINS_VILLAGE_MAP_TRADE = new TradeOffers.SellMapFactory(
-		8, StructureTags.ON_PLAINS_VILLAGE_MAPS, "filled_map.village_plains", MapIcon.Type.PLAINS_VILLAGE, 12, 5
+		8, StructureTags.ON_PLAINS_VILLAGE_MAPS, "filled_map.village_plains", MapDecorationTypes.VILLAGE_PLAINS, 12, 5
 	);
 	private static final TradeOffers.SellMapFactory SELL_TAIGA_VILLAGE_MAP_TRADE = new TradeOffers.SellMapFactory(
-		8, StructureTags.ON_TAIGA_VILLAGE_MAPS, "filled_map.village_taiga", MapIcon.Type.TAIGA_VILLAGE, 12, 5
+		8, StructureTags.ON_TAIGA_VILLAGE_MAPS, "filled_map.village_taiga", MapDecorationTypes.VILLAGE_TAIGA, 12, 5
 	);
 	private static final TradeOffers.SellMapFactory SELL_SNOWY_VILLAGE_MAP_TRADE = new TradeOffers.SellMapFactory(
-		8, StructureTags.ON_SNOWY_VILLAGE_MAPS, "filled_map.village_snowy", MapIcon.Type.SNOWY_VILLAGE, 12, 5
+		8, StructureTags.ON_SNOWY_VILLAGE_MAPS, "filled_map.village_snowy", MapDecorationTypes.VILLAGE_SNOWY, 12, 5
 	);
 	private static final TradeOffers.SellMapFactory SELL_JUNGLE_TEMPLE_MAP_TRADE = new TradeOffers.SellMapFactory(
-		8, StructureTags.ON_JUNGLE_EXPLORER_MAPS, "filled_map.explorer_jungle", MapIcon.Type.JUNGLE_TEMPLE, 12, 5
+		8, StructureTags.ON_JUNGLE_EXPLORER_MAPS, "filled_map.explorer_jungle", MapDecorationTypes.JUNGLE_TEMPLE, 12, 5
 	);
 	private static final TradeOffers.SellMapFactory SELL_SWAMP_HUT_MAP_TRADE = new TradeOffers.SellMapFactory(
-		8, StructureTags.ON_SWAMP_EXPLORER_MAPS, "filled_map.explorer_swamp", MapIcon.Type.SWAMP_HUT, 12, 5
+		8, StructureTags.ON_SWAMP_EXPLORER_MAPS, "filled_map.explorer_swamp", MapDecorationTypes.SWAMP_HUT, 12, 5
 	);
 	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> REBALANCED_PROFESSION_TO_LEVELED_TRADE = Map.of(
 		VillagerProfession.LIBRARIAN,
@@ -990,7 +992,8 @@ public class TradeOffers {
 				3,
 				new TradeOffers.Factory[]{
 					new TradeOffers.BuyItemFactory(Items.COMPASS, 1, 12, 20),
-					new TradeOffers.SellMapFactory(13, StructureTags.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapIcon.Type.MONUMENT, 12, 10)
+					new TradeOffers.SellMapFactory(13, StructureTags.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapDecorationTypes.MONUMENT, 12, 10),
+					new TradeOffers.SellMapFactory(12, StructureTags.ON_TRIAL_CHAMBERS_MAPS, "filled_map.trial_chambers", MapDecorationTypes.TRIAL_CHAMBERS, 12, 10)
 				},
 				4,
 				new TradeOffers.Factory[]{
@@ -1015,7 +1018,7 @@ public class TradeOffers {
 				5,
 				new TradeOffers.Factory[]{
 					new TradeOffers.SellItemFactory(Items.GLOBE_BANNER_PATTERN, 8, 1, 30),
-					new TradeOffers.SellMapFactory(14, StructureTags.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapIcon.Type.MANSION, 1, 30)
+					new TradeOffers.SellMapFactory(14, StructureTags.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapDecorationTypes.MANSION, 1, 30)
 				}
 			)
 		)
@@ -1419,15 +1422,15 @@ public class TradeOffers {
 		private final int price;
 		private final TagKey<Structure> structure;
 		private final String nameKey;
-		private final MapIcon.Type iconType;
+		private final RegistryEntry<MapDecorationType> decoration;
 		private final int maxUses;
 		private final int experience;
 
-		public SellMapFactory(int price, TagKey<Structure> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience) {
+		public SellMapFactory(int price, TagKey<Structure> structure, String nameKey, RegistryEntry<MapDecorationType> decoration, int maxUses, int experience) {
 			this.price = price;
 			this.structure = structure;
 			this.nameKey = nameKey;
-			this.iconType = iconType;
+			this.decoration = decoration;
 			this.maxUses = maxUses;
 			this.experience = experience;
 		}
@@ -1443,7 +1446,7 @@ public class TradeOffers {
 				if (blockPos != null) {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
-					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.iconType);
+					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.decoration);
 					itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable(this.nameKey));
 					return new TradeOffer(
 						new TradedItem(Items.EMERALD, this.price), Optional.of(new TradedItem(Items.COMPASS)), itemStack, this.maxUses, this.experience, 0.2F

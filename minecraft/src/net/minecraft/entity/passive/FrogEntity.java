@@ -38,14 +38,15 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -62,8 +63,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 
-public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVariant> {
-	public static final Ingredient SLIME_BALL = Ingredient.ofItems(Items.SLIME_BALL);
+public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEntry<FrogVariant>> {
 	protected static final ImmutableList<SensorType<? extends Sensor<? super FrogEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY, SensorType.FROG_ATTACKABLES, SensorType.FROG_TEMPTATIONS, SensorType.IS_IN_WATER
 	);
@@ -89,10 +89,11 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		MemoryModuleType.IS_PANICKING,
 		MemoryModuleType.UNREACHABLE_TONGUE_TARGETS
 	);
-	private static final TrackedData<FrogVariant> VARIANT = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.FROG_VARIANT);
+	private static final TrackedData<RegistryEntry<FrogVariant>> VARIANT = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.FROG_VARIANT);
 	private static final TrackedData<OptionalInt> TARGET = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
 	private static final int field_37459 = 5;
 	public static final String VARIANT_KEY = "variant";
+	private static final RegistryKey<FrogVariant> DEFAULT_VARIANT_KEY = FrogVariant.TEMPERATE;
 	public final AnimationState longJumpingAnimationState = new AnimationState();
 	public final AnimationState croakingAnimationState = new AnimationState();
 	public final AnimationState usingTongueAnimationState = new AnimationState();
@@ -124,7 +125,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
-		builder.add(VARIANT, FrogVariant.TEMPERATE);
+		builder.add(VARIANT, Registries.FROG_VARIANT.entryOf(DEFAULT_VARIANT_KEY));
 		builder.add(TARGET, OptionalInt.empty());
 	}
 
@@ -150,27 +151,27 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		return 5;
 	}
 
-	public FrogVariant getVariant() {
+	public RegistryEntry<FrogVariant> getVariant() {
 		return this.dataTracker.get(VARIANT);
 	}
 
-	public void setVariant(FrogVariant variant) {
-		this.dataTracker.set(VARIANT, variant);
+	public void setVariant(RegistryEntry<FrogVariant> registryEntry) {
+		this.dataTracker.set(VARIANT, registryEntry);
 	}
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putString("variant", Registries.FROG_VARIANT.getId(this.getVariant()).toString());
+		nbt.putString("variant", ((RegistryKey)this.getVariant().getKey().orElse(DEFAULT_VARIANT_KEY)).getValue().toString());
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		FrogVariant frogVariant = Registries.FROG_VARIANT.get(Identifier.tryParse(nbt.getString("variant")));
-		if (frogVariant != null) {
-			this.setVariant(frogVariant);
-		}
+		Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
+			.map(variant -> RegistryKey.of(RegistryKeys.FROG_VARIANT, variant))
+			.flatMap(Registries.FROG_VARIANT::getEntry)
+			.ifPresent(this::setVariant);
 	}
 
 	@Override
@@ -261,11 +262,11 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
 		if (registryEntry.isIn(BiomeTags.SPAWNS_COLD_VARIANT_FROGS)) {
-			this.setVariant(FrogVariant.COLD);
+			this.setVariant(Registries.FROG_VARIANT.entryOf(FrogVariant.COLD));
 		} else if (registryEntry.isIn(BiomeTags.SPAWNS_WARM_VARIANT_FROGS)) {
-			this.setVariant(FrogVariant.WARM);
+			this.setVariant(Registries.FROG_VARIANT.entryOf(FrogVariant.WARM));
 		} else {
-			this.setVariant(FrogVariant.TEMPERATE);
+			this.setVariant(Registries.FROG_VARIANT.entryOf(DEFAULT_VARIANT_KEY));
 		}
 
 		FrogBrain.coolDownLongJump(this, world.getRandom());
@@ -345,7 +346,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return SLIME_BALL.test(stack);
+		return stack.isIn(ItemTags.FROG_FOOD);
 	}
 
 	public static boolean canSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {

@@ -1440,6 +1440,18 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.WAXED_OXIDIZED_CUT_COPPER,
 				Blocks.LIGHTNING_ROD
 			);
+		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_NETHERITE_TOOL);
+		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_DIAMOND_TOOL);
+		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_IRON_TOOL).addTag(BlockTags.NEEDS_DIAMOND_TOOL);
+		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_STONE_TOOL).addTag(BlockTags.NEEDS_DIAMOND_TOOL).addTag(BlockTags.NEEDS_IRON_TOOL);
+		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_GOLD_TOOL)
+			.addTag(BlockTags.NEEDS_DIAMOND_TOOL)
+			.addTag(BlockTags.NEEDS_IRON_TOOL)
+			.addTag(BlockTags.NEEDS_STONE_TOOL);
+		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_WOODEN_TOOL)
+			.addTag(BlockTags.NEEDS_DIAMOND_TOOL)
+			.addTag(BlockTags.NEEDS_IRON_TOOL)
+			.addTag(BlockTags.NEEDS_STONE_TOOL);
 		this.getOrCreateTagBuilder(BlockTags.FEATURES_CANNOT_REPLACE)
 			.add(Blocks.BEDROCK, Blocks.SPAWNER, Blocks.CHEST, Blocks.END_PORTAL_FRAME, Blocks.REINFORCED_DEEPSLATE);
 		this.getOrCreateTagBuilder(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE)

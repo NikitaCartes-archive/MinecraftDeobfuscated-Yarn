@@ -7,7 +7,7 @@ import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.World;
 
@@ -42,7 +42,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && !list.isEmpty();
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		List<DyeItem> list = Lists.<DyeItem>newArrayList();
 		ItemStack itemStack = ItemStack.EMPTY;
 

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
@@ -15,7 +16,20 @@ import net.minecraft.util.dynamic.Codecs;
 import org.slf4j.Logger;
 
 public interface ListOperation {
-	ListOperation.Type getType();
+	static MapCodec<ListOperation> createCodec(int maxSize) {
+		return Codecs.validate(ListOperation.Mode.CODEC.dispatchMap("mode", ListOperation::getMode, mode -> mode.codec.codec()), operation -> {
+			if (operation instanceof ListOperation.ReplaceSection replaceSection && replaceSection.size().isPresent()) {
+				int j = (Integer)replaceSection.size().get();
+				if (j > maxSize) {
+					return DataResult.error(() -> "Size value too large: " + j + ", max size is " + maxSize);
+				}
+			}
+
+			return DataResult.success(operation);
+		});
+	}
+
+	ListOperation.Mode getMode();
 
 	<T> List<T> apply(List<T> current, List<T> values, int maxSize);
 
@@ -28,8 +42,8 @@ public interface ListOperation {
 		}
 
 		@Override
-		public ListOperation.Type getType() {
-			return ListOperation.Type.APPEND;
+		public ListOperation.Mode getMode() {
+			return ListOperation.Mode.APPEND;
 		}
 
 		@Override
@@ -51,8 +65,8 @@ public interface ListOperation {
 		);
 
 		@Override
-		public ListOperation.Type getType() {
-			return ListOperation.Type.INSERT;
+		public ListOperation.Mode getMode() {
+			return ListOperation.Mode.INSERT;
 		}
 
 		@Override
@@ -74,6 +88,31 @@ public interface ListOperation {
 		}
 	}
 
+	public static enum Mode implements StringIdentifiable {
+		REPLACE_ALL("replace_all", ListOperation.ReplaceAll.CODEC),
+		REPLACE_SECTION("replace_section", ListOperation.ReplaceSection.CODEC),
+		INSERT("insert", ListOperation.Insert.CODEC),
+		APPEND("append", ListOperation.Append.CODEC);
+
+		public static final Codec<ListOperation.Mode> CODEC = StringIdentifiable.createCodec(ListOperation.Mode::values);
+		private final String id;
+		final MapCodec<? extends ListOperation> codec;
+
+		private Mode(String id, MapCodec<? extends ListOperation> codec) {
+			this.id = id;
+			this.codec = codec;
+		}
+
+		public MapCodec<? extends ListOperation> getCodec() {
+			return this.codec;
+		}
+
+		@Override
+		public String asString() {
+			return this.id;
+		}
+	}
+
 	public static class ReplaceAll implements ListOperation {
 		public static final ListOperation.ReplaceAll INSTANCE = new ListOperation.ReplaceAll();
 		public static final MapCodec<ListOperation.ReplaceAll> CODEC = MapCodec.unit((Supplier<ListOperation.ReplaceAll>)(() -> INSTANCE));
@@ -82,8 +121,8 @@ public interface ListOperation {
 		}
 
 		@Override
-		public ListOperation.Type getType() {
-			return ListOperation.Type.REPLACE_ALL;
+		public ListOperation.Mode getMode() {
+			return ListOperation.Mode.REPLACE_ALL;
 		}
 
 		@Override
@@ -107,8 +146,8 @@ public interface ListOperation {
 		}
 
 		@Override
-		public ListOperation.Type getType() {
-			return ListOperation.Type.REPLACE_SECTION;
+		public ListOperation.Mode getMode() {
+			return ListOperation.Mode.REPLACE_SECTION;
 		}
 
 		@Override
@@ -134,32 +173,6 @@ public interface ListOperation {
 					return list;
 				}
 			}
-		}
-	}
-
-	public static enum Type implements StringIdentifiable {
-		REPLACE_ALL("replace_all", ListOperation.ReplaceAll.CODEC),
-		REPLACE_SECTION("replace_section", ListOperation.ReplaceSection.CODEC),
-		INSERT("insert", ListOperation.Insert.CODEC),
-		APPEND("append", ListOperation.Append.CODEC);
-
-		public static final Codec<ListOperation.Type> CODEC = StringIdentifiable.createCodec(ListOperation.Type::values);
-		public static final MapCodec<ListOperation> MAP_CODEC = CODEC.dispatchMap("mode", ListOperation::getType, type -> type.codec.codec());
-		private final String id;
-		private final MapCodec<? extends ListOperation> codec;
-
-		private Type(String id, MapCodec<? extends ListOperation> codec) {
-			this.id = id;
-			this.codec = codec;
-		}
-
-		public MapCodec<? extends ListOperation> getCodec() {
-			return this.codec;
-		}
-
-		@Override
-		public String asString() {
-			return this.id;
 		}
 	}
 }

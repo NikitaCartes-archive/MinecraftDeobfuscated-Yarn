@@ -47,10 +47,9 @@ public class SaveLoading {
 			CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries3 = combinedDynamicRegistries2.with(
 				ServerDynamicRegistryType.DIMENSIONS, loadContext.dimensionsRegistryManager
 			);
-			DynamicRegistryManager.Immutable immutable3 = combinedDynamicRegistries3.getPrecedingRegistryManagers(ServerDynamicRegistryType.RELOADABLE);
 			return DataPackContents.reload(
 					lifecycledResourceManager,
-					immutable3,
+					combinedDynamicRegistries3,
 					dataConfiguration.enabledFeatures(),
 					serverConfig.commandEnvironment(),
 					serverConfig.functionPermissionLevel(),
@@ -63,11 +62,11 @@ public class SaveLoading {
 					}
 				})
 				.thenApplyAsync(dataPackContents -> {
-					dataPackContents.refresh(immutable3);
+					dataPackContents.refresh();
 					return saveApplierFactory.create(lifecycledResourceManager, dataPackContents, combinedDynamicRegistries3, loadContext.extraData);
 				}, applyExecutor);
-		} catch (Exception var15) {
-			return CompletableFuture.failedFuture(var15);
+		} catch (Exception var14) {
+			return CompletableFuture.failedFuture(var14);
 		}
 	}
 

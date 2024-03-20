@@ -44,7 +44,6 @@ import net.minecraft.world.World;
  * @see net.minecraft.block.entity.LockableContainerBlockEntity
  */
 public interface Inventory extends Clearable {
-	int MAX_COUNT_PER_STACK = 64;
 	float DEFAULT_MAX_INTERACTION_RANGE = 4.0F;
 
 	/**
@@ -96,7 +95,11 @@ public interface Inventory extends Clearable {
 	 * stacking limit for this inventory's slots.
 	 */
 	default int getMaxCountPerStack() {
-		return 64;
+		return 99;
+	}
+
+	default int getMaxCount(ItemStack stack) {
+		return Math.min(this.getMaxCountPerStack(), stack.getMaxCount());
 	}
 
 	/**

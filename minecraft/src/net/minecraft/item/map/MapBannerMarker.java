@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerBlockEntity;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.DyeColor;
@@ -39,24 +40,24 @@ public record MapBannerMarker(BlockPos pos, DyeColor color, Optional<Text> name)
 		}
 	}
 
-	public MapIcon.Type getIconType() {
+	public RegistryEntry<MapDecorationType> getDecorationType() {
 		return switch (this.color) {
-			case WHITE -> MapIcon.Type.BANNER_WHITE;
-			case ORANGE -> MapIcon.Type.BANNER_ORANGE;
-			case MAGENTA -> MapIcon.Type.BANNER_MAGENTA;
-			case LIGHT_BLUE -> MapIcon.Type.BANNER_LIGHT_BLUE;
-			case YELLOW -> MapIcon.Type.BANNER_YELLOW;
-			case LIME -> MapIcon.Type.BANNER_LIME;
-			case PINK -> MapIcon.Type.BANNER_PINK;
-			case GRAY -> MapIcon.Type.BANNER_GRAY;
-			case LIGHT_GRAY -> MapIcon.Type.BANNER_LIGHT_GRAY;
-			case CYAN -> MapIcon.Type.BANNER_CYAN;
-			case PURPLE -> MapIcon.Type.BANNER_PURPLE;
-			case BLUE -> MapIcon.Type.BANNER_BLUE;
-			case BROWN -> MapIcon.Type.BANNER_BROWN;
-			case GREEN -> MapIcon.Type.BANNER_GREEN;
-			case RED -> MapIcon.Type.BANNER_RED;
-			default -> MapIcon.Type.BANNER_BLACK;
+			case WHITE -> MapDecorationTypes.BANNER_WHITE;
+			case ORANGE -> MapDecorationTypes.BANNER_ORANGE;
+			case MAGENTA -> MapDecorationTypes.BANNER_MAGENTA;
+			case LIGHT_BLUE -> MapDecorationTypes.BANNER_LIGHT_BLUE;
+			case YELLOW -> MapDecorationTypes.BANNER_YELLOW;
+			case LIME -> MapDecorationTypes.BANNER_LIME;
+			case PINK -> MapDecorationTypes.BANNER_PINK;
+			case GRAY -> MapDecorationTypes.BANNER_GRAY;
+			case LIGHT_GRAY -> MapDecorationTypes.BANNER_LIGHT_GRAY;
+			case CYAN -> MapDecorationTypes.BANNER_CYAN;
+			case PURPLE -> MapDecorationTypes.BANNER_PURPLE;
+			case BLUE -> MapDecorationTypes.BANNER_BLUE;
+			case BROWN -> MapDecorationTypes.BANNER_BROWN;
+			case GREEN -> MapDecorationTypes.BANNER_GREEN;
+			case RED -> MapDecorationTypes.BANNER_RED;
+			case BLACK -> MapDecorationTypes.BANNER_BLACK;
 		};
 	}
 

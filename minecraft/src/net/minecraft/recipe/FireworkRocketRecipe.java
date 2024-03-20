@@ -9,7 +9,7 @@ import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class FireworkRocketRecipe extends SpecialCraftingRecipe {
@@ -47,7 +47,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		return bl && i >= 1;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		List<FireworkExplosionComponent> list = new ArrayList();
 		int i = 0;
 
@@ -76,7 +76,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
 		return new ItemStack(Items.FIREWORK_ROCKET);
 	}
 

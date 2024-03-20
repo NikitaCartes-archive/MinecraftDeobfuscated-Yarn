@@ -63,10 +63,10 @@ import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -85,7 +85,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	private static final LootCondition.Builder WITHOUT_SILK_TOUCH_NOR_SHEARS = WITH_SILK_TOUCH_OR_SHEARS.invert();
 	protected final Set<Item> explosionImmuneItems;
 	protected final FeatureSet requiredFeatures;
-	protected final Map<Identifier, LootTable.Builder> lootTables;
+	protected final Map<RegistryKey<LootTable>, LootTable.Builder> lootTables;
 	protected static final float[] SAPLING_DROP_CHANCE = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
 	private static final float[] LEAVES_STICK_DROP_CHANCE = new float[]{0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F};
 
@@ -93,7 +93,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 		this(explosionImmuneItems, requiredFeatures, new HashMap());
 	}
 
-	protected BlockLootTableGenerator(Set<Item> explosionImmuneItems, FeatureSet requiredFeatures, Map<Identifier, LootTable.Builder> lootTables) {
+	protected BlockLootTableGenerator(Set<Item> explosionImmuneItems, FeatureSet requiredFeatures, Map<RegistryKey<LootTable>, LootTable.Builder> lootTables) {
 		this.explosionImmuneItems = explosionImmuneItems;
 		this.requiredFeatures = requiredFeatures;
 		this.lootTables = lootTables;
@@ -570,20 +570,20 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	protected abstract void generate();
 
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
 		this.generate();
-		Set<Identifier> set = new HashSet();
+		Set<RegistryKey<LootTable>> set = new HashSet();
 
 		for (Block block : Registries.BLOCK) {
 			if (block.isEnabled(this.requiredFeatures)) {
-				Identifier identifier = block.getLootTableId();
-				if (identifier != LootTables.EMPTY && set.add(identifier)) {
-					LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(identifier);
+				RegistryKey<LootTable> registryKey = block.getLootTableId();
+				if (registryKey != LootTables.EMPTY && set.add(registryKey)) {
+					LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(registryKey);
 					if (builder == null) {
-						throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, Registries.BLOCK.getId(block)));
+						throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", registryKey.getValue(), Registries.BLOCK.getId(block)));
 					}
 
-					consumer.accept(identifier, builder);
+					consumer.accept(registryKey, builder);
 				}
 			}
 		}

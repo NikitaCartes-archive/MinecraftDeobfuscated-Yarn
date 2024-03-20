@@ -120,10 +120,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		this.getHeldStacks().set(slot, stack);
-		if (stack.getCount() > this.getMaxCountPerStack()) {
-			stack.setCount(this.getMaxCountPerStack());
-		}
-
+		stack.capCount(this.getMaxCount(stack));
 		this.markDirty();
 	}
 

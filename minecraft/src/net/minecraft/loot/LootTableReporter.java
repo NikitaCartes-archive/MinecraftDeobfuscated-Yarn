@@ -4,19 +4,23 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import net.minecraft.loot.context.LootContextAware;
 import net.minecraft.loot.context.LootContextType;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.ErrorReporter;
 
 public class LootTableReporter {
 	private final ErrorReporter errorReporter;
 	private final LootContextType contextType;
-	private final LootDataLookup dataLookup;
-	private final Set<LootDataKey<?>> referenceStack;
+	private final RegistryEntryLookup.RegistryLookup dataLookup;
+	private final Set<RegistryKey<?>> referenceStack;
 
-	public LootTableReporter(ErrorReporter errorReporter, LootContextType contextType, LootDataLookup dataLookup) {
+	public LootTableReporter(ErrorReporter errorReporter, LootContextType contextType, RegistryEntryLookup.RegistryLookup dataLookup) {
 		this(errorReporter, contextType, dataLookup, Set.of());
 	}
 
-	private LootTableReporter(ErrorReporter errorReporter, LootContextType contextType, LootDataLookup dataLookup, Set<LootDataKey<?>> referenceStack) {
+	private LootTableReporter(
+		ErrorReporter errorReporter, LootContextType contextType, RegistryEntryLookup.RegistryLookup dataLookup, Set<RegistryKey<?>> referenceStack
+	) {
 		this.errorReporter = errorReporter;
 		this.contextType = contextType;
 		this.dataLookup = dataLookup;
@@ -27,12 +31,12 @@ public class LootTableReporter {
 		return new LootTableReporter(this.errorReporter.makeChild(name), this.contextType, this.dataLookup, this.referenceStack);
 	}
 
-	public LootTableReporter makeChild(String name, LootDataKey<?> currentKey) {
-		ImmutableSet<LootDataKey<?>> immutableSet = ImmutableSet.<LootDataKey<?>>builder().addAll(this.referenceStack).add(currentKey).build();
-		return new LootTableReporter(this.errorReporter.makeChild(name), this.contextType, this.dataLookup, immutableSet);
+	public LootTableReporter makeChild(String name, RegistryKey<?> key) {
+		Set<RegistryKey<?>> set = ImmutableSet.<RegistryKey<?>>builder().addAll(this.referenceStack).add(key).build();
+		return new LootTableReporter(this.errorReporter.makeChild(name), this.contextType, this.dataLookup, set);
 	}
 
-	public boolean isInStack(LootDataKey<?> key) {
+	public boolean isInStack(RegistryKey<?> key) {
 		return this.referenceStack.contains(key);
 	}
 
@@ -44,7 +48,7 @@ public class LootTableReporter {
 		this.contextType.validate(this, contextAware);
 	}
 
-	public LootDataLookup getDataLookup() {
+	public RegistryEntryLookup.RegistryLookup getDataLookup() {
 		return this.dataLookup;
 	}
 

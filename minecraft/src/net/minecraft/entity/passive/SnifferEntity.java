@@ -270,7 +270,7 @@ public class SnifferEntity extends AnimalEntity {
 	private void dropSeeds() {
 		if (!this.getWorld().isClient() && this.dataTracker.get(FINISH_DIG_TIME) == this.age) {
 			ServerWorld serverWorld = (ServerWorld)this.getWorld();
-			LootTable lootTable = serverWorld.getServer().getLootManager().getLootTable(LootTables.SNIFFER_DIGGING_GAMEPLAY);
+			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(LootTables.SNIFFER_DIGGING_GAMEPLAY);
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
 				.add(LootContextParameters.ORIGIN, this.getDigLocation())
 				.add(LootContextParameters.THIS_ENTITY, this)

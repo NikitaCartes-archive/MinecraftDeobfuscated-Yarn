@@ -15,12 +15,13 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BiomeTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -293,7 +294,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+		protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, RegistryKey<LootTable> lootTable) {
 			BlockPos blockPos = this.offsetPos(x, y, z);
 			if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos.down()).isAir()) {
 				BlockState blockState = Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
@@ -301,7 +302,7 @@ public class MineshaftGenerator {
 				ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
 					world.toServerWorld(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5
 				);
-				chestMinecartEntity.setLootTable(lootTableId, random.nextLong());
+				chestMinecartEntity.setLootTable(lootTable, random.nextLong());
 				world.spawnEntity(chestMinecartEntity);
 				return true;
 			} else {

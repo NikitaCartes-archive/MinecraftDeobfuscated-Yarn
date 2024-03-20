@@ -55,6 +55,10 @@ public final class FeatureSet {
 		return this.universe != feature.universe ? false : (this.featuresMask & feature.mask) != 0L;
 	}
 
+	public boolean isEmpty() {
+		return this.equals(EMPTY);
+	}
+
 	public boolean isSubsetOf(FeatureSet features) {
 		if (this.universe == null) {
 			return true;

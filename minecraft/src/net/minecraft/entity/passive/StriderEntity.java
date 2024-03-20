@@ -49,9 +49,9 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -77,8 +77,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	);
 	private static final float COLD_SADDLED_SPEED = 0.35F;
 	private static final float DEFAULT_SADDLED_SPEED = 0.55F;
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS);
-	private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
 	private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> COLD = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -156,7 +154,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	protected void initGoals() {
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.65));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.temptGoal = new TemptGoal(this, 1.4, ATTRACTING_INGREDIENT, false);
+		this.temptGoal = new TemptGoal(this, 1.4, stack -> stack.isIn(ItemTags.STRIDER_TEMPT_ITEMS), false);
 		this.goalSelector.add(3, this.temptGoal);
 		this.goalSelector.add(4, new StriderEntity.GoBackToLavaGoal(this, 1.0));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.0));
@@ -408,7 +406,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.STRIDER_FOOD);
 	}
 
 	@Override

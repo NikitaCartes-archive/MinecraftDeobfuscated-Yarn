@@ -4,7 +4,6 @@ import com.google.common.collect.BiMap;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.advancement.Advancement;
@@ -28,8 +27,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.CatVariant;
-import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -44,7 +41,6 @@ import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -121,9 +117,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		Items.HONEY_BOTTLE,
 		Items.GLOW_BERRIES
 	};
-	private static final Item[] AXE_ITEMS = new Item[]{
-		Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE
-	};
+	public static final Item[] AXE_ITEMS = new Item[]{Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE};
 
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
@@ -586,7 +580,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 							ItemPredicate.Builder.create().items(Items.LEAD),
 							Optional.of(
 								EntityPredicate.contextPredicateFromEntityPredicate(
-									EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant((FrogVariant)variant.value()))
+									EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant(variant))
 								)
 							)
 						)
@@ -641,13 +635,12 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 
 	private static Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
 		Registries.CAT_VARIANT
-			.getEntrySet()
-			.stream()
-			.sorted(Entry.comparingByKey(Comparator.comparing(RegistryKey::getValue)))
+			.streamEntries()
+			.sorted(Comparator.comparing(entry -> entry.registryKey().getValue()))
 			.forEach(
 				entry -> builder.criterion(
-						((RegistryKey)entry.getKey()).getValue().toString(),
-						TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(EntitySubPredicateTypes.catVariant((CatVariant)entry.getValue())))
+						entry.registryKey().getValue().toString(),
+						TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(EntitySubPredicateTypes.catVariant(entry)))
 					)
 			);
 		return builder;

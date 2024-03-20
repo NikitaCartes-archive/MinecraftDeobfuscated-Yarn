@@ -1,9 +1,12 @@
 package net.minecraft.item;
 
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -15,7 +18,13 @@ import net.minecraft.world.World;
 
 public class SwordItem extends ToolItem {
 	public SwordItem(ToolMaterial toolMaterial, Item.Settings settings) {
-		super(toolMaterial, settings);
+		super(toolMaterial, settings.component(DataComponentTypes.TOOL, createToolComponent()));
+	}
+
+	private static ToolComponent createToolComponent() {
+		return new ToolComponent(
+			List.of(ToolComponent.Rule.ofAlwaysDropping(List.of(Blocks.COBWEB), 15.0F), ToolComponent.Rule.of(BlockTags.SWORD_EFFICIENT, 1.5F)), 1.0F, 2
+		);
 	}
 
 	public static AttributeModifiersComponent createAttributeModifiers(ToolMaterial material, int baseAttackDamage, float attackSpeed) {
@@ -41,31 +50,8 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-		if (state.isOf(Blocks.COBWEB)) {
-			return 15.0F;
-		} else {
-			return state.isIn(BlockTags.SWORD_EFFICIENT) ? 1.5F : 1.0F;
-		}
-	}
-
-	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
 		return true;
-	}
-
-	@Override
-	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-		if (state.getHardness(world, pos) != 0.0F) {
-			stack.damage(2, miner, EquipmentSlot.MAINHAND);
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean isSuitableFor(BlockState state) {
-		return state.isOf(Blocks.COBWEB);
 	}
 }

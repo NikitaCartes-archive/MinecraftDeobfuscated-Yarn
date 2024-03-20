@@ -119,8 +119,7 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 		return hopperInventory.containsAny(
 			(Predicate<ItemStack>)(stack2 -> stack2.isEmpty()
 					? true
-					: ItemStack.areItemsAndComponentsEqual(stack, stack2)
-						&& stack2.getCount() + stack.getCount() <= Math.min(stack2.getMaxCount(), hopperInventory.getMaxCountPerStack()))
+					: ItemStack.areItemsAndComponentsEqual(stack, stack2) && stack2.getCount() + stack.getCount() <= hopperInventory.getMaxCount(stack2))
 		);
 	}
 

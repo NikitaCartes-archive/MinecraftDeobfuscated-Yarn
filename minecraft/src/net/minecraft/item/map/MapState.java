@@ -32,6 +32,7 @@ import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -49,7 +50,7 @@ public class MapState extends PersistentState {
 	private static final int SIZE = 128;
 	private static final int SIZE_HALF = 64;
 	public static final int MAX_SCALE = 4;
-	public static final int MAX_ICONS = 256;
+	public static final int MAX_DECORATIONS = 256;
 	/**
 	 * The scaled center coordinate of the map state on the X axis.
 	 * <p>
@@ -63,7 +64,7 @@ public class MapState extends PersistentState {
 	 */
 	public final int centerZ;
 	public final RegistryKey<World> dimension;
-	private final boolean showIcons;
+	private final boolean showDecorations;
 	private final boolean unlimitedTracking;
 	public final byte scale;
 	public byte[] colors = new byte[16384];
@@ -76,9 +77,9 @@ public class MapState extends PersistentState {
 	 * Empty for the client.
 	 */
 	private final Map<String, MapBannerMarker> banners = Maps.<String, MapBannerMarker>newHashMap();
-	final Map<String, MapIcon> icons = Maps.<String, MapIcon>newLinkedHashMap();
+	final Map<String, MapDecoration> decorations = Maps.<String, MapDecoration>newLinkedHashMap();
 	private final Map<String, MapFrameMarker> frames = Maps.<String, MapFrameMarker>newHashMap();
-	private int iconCount;
+	private int decorationCount;
 
 	public static PersistentState.Type<MapState> getPersistentStateType() {
 		return new PersistentState.Type<>(() -> {
@@ -86,12 +87,12 @@ public class MapState extends PersistentState {
 		}, MapState::fromNbt, DataFixTypes.SAVED_DATA_MAP_DATA);
 	}
 
-	private MapState(int centerX, int centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
+	private MapState(int centerX, int centerZ, byte scale, boolean showDecorations, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
 		this.scale = scale;
 		this.centerX = centerX;
 		this.centerZ = centerZ;
 		this.dimension = dimension;
-		this.showIcons = showIcons;
+		this.showDecorations = showDecorations;
 		this.unlimitedTracking = unlimitedTracking;
 		this.locked = locked;
 		this.markDirty();
@@ -103,13 +104,13 @@ public class MapState extends PersistentState {
 	 * @param centerX the absolute center X-coordinate
 	 * @param centerZ the absolute center Z-coordinate
 	 */
-	public static MapState of(double centerX, double centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
+	public static MapState of(double centerX, double centerZ, byte scale, boolean showDecorations, boolean unlimitedTracking, RegistryKey<World> dimension) {
 		int i = 128 * (1 << scale);
 		int j = MathHelper.floor((centerX + 64.0) / (double)i);
 		int k = MathHelper.floor((centerZ + 64.0) / (double)i);
 		int l = j * i + i / 2 - 64;
 		int m = k * i + i / 2 - 64;
-		return new MapState(l, m, scale, showIcons, unlimitedTracking, false, dimension);
+		return new MapState(l, m, scale, showDecorations, unlimitedTracking, false, dimension);
 	}
 
 	/**
@@ -141,11 +142,11 @@ public class MapState extends PersistentState {
 
 		for (MapBannerMarker mapBannerMarker : (List)MapBannerMarker.LIST_CODEC
 			.parse(registryOps, nbt.get("banners"))
-			.resultOrPartial(string -> LOGGER.warn("Failed to parse map banner: '{}'", string))
+			.resultOrPartial(banner -> LOGGER.warn("Failed to parse map banner: '{}'", banner))
 			.orElse(List.of())) {
 			mapState.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-			mapState.addIcon(
-				mapBannerMarker.getIconType(),
+			mapState.addDecoration(
+				mapBannerMarker.getDecorationType(),
 				null,
 				mapBannerMarker.getKey(),
 				(double)mapBannerMarker.pos().getX(),
@@ -161,8 +162,8 @@ public class MapState extends PersistentState {
 			MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(nbtList.getCompound(k));
 			if (mapFrameMarker != null) {
 				mapState.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
-				mapState.addIcon(
-					MapIcon.Type.FRAME,
+				mapState.addDecoration(
+					MapDecorationTypes.FRAME,
 					null,
 					"frame-" + mapFrameMarker.getEntityId(),
 					(double)mapFrameMarker.getPos().getX(),
@@ -186,7 +187,7 @@ public class MapState extends PersistentState {
 		nbt.putInt("zCenter", this.centerZ);
 		nbt.putByte("scale", this.scale);
 		nbt.putByteArray("colors", this.colors);
-		nbt.putBoolean("trackingPosition", this.showIcons);
+		nbt.putBoolean("trackingPosition", this.showDecorations);
 		nbt.putBoolean("unlimitedTracking", this.unlimitedTracking);
 		nbt.putBoolean("locked", this.locked);
 		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
@@ -202,10 +203,10 @@ public class MapState extends PersistentState {
 	}
 
 	public MapState copy() {
-		MapState mapState = new MapState(this.centerX, this.centerZ, this.scale, this.showIcons, this.unlimitedTracking, true, this.dimension);
+		MapState mapState = new MapState(this.centerX, this.centerZ, this.scale, this.showDecorations, this.unlimitedTracking, true, this.dimension);
 		mapState.banners.putAll(this.banners);
-		mapState.icons.putAll(this.icons);
-		mapState.iconCount = this.iconCount;
+		mapState.decorations.putAll(this.decorations);
+		mapState.decorationCount = this.decorationCount;
 		System.arraycopy(this.colors, 0, mapState.colors, 0, this.colors.length);
 		mapState.markDirty();
 		return mapState;
@@ -216,10 +217,12 @@ public class MapState extends PersistentState {
 	 * <p>
 	 * The scale of the new map state is {@code currentScale + zoomOutScale} and clamped between {@code 0} and {@code 4}.
 	 * <p>
-	 * The colors are not copied, neither are the icons.
+	 * The colors are not copied, neither are the decorations.
 	 */
 	public MapState zoomOut() {
-		return of((double)this.centerX, (double)this.centerZ, (byte)MathHelper.clamp(this.scale + 1, 0, 4), this.showIcons, this.unlimitedTracking, this.dimension);
+		return of(
+			(double)this.centerX, (double)this.centerZ, (byte)MathHelper.clamp(this.scale + 1, 0, 4), this.showDecorations, this.unlimitedTracking, this.dimension
+		);
 	}
 
 	private static Predicate<ItemStack> getEqualPredicate(ItemStack stack) {
@@ -236,16 +239,16 @@ public class MapState extends PersistentState {
 
 		Predicate<ItemStack> predicate = getEqualPredicate(stack);
 		if (!player.getInventory().contains(predicate)) {
-			this.removeIcon(player.getName().getString());
+			this.removeDecoration(player.getName().getString());
 		}
 
 		for (int i = 0; i < this.updateTrackers.size(); i++) {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
 			String string = playerUpdateTracker2.player.getName().getString();
 			if (!playerUpdateTracker2.player.isRemoved() && (playerUpdateTracker2.player.getInventory().contains(predicate) || stack.isInFrame())) {
-				if (!stack.isInFrame() && playerUpdateTracker2.player.getWorld().getRegistryKey() == this.dimension && this.showIcons) {
-					this.addIcon(
-						MapIcon.Type.PLAYER,
+				if (!stack.isInFrame() && playerUpdateTracker2.player.getWorld().getRegistryKey() == this.dimension && this.showDecorations) {
+					this.addDecoration(
+						MapDecorationTypes.PLAYER,
 						playerUpdateTracker2.player.getWorld(),
 						string,
 						playerUpdateTracker2.player.getX(),
@@ -257,21 +260,21 @@ public class MapState extends PersistentState {
 			} else {
 				this.updateTrackersByPlayer.remove(playerUpdateTracker2.player);
 				this.updateTrackers.remove(playerUpdateTracker2);
-				this.removeIcon(string);
+				this.removeDecoration(string);
 			}
 		}
 
-		if (stack.isInFrame() && this.showIcons) {
+		if (stack.isInFrame() && this.showDecorations) {
 			ItemFrameEntity itemFrameEntity = stack.getFrame();
 			BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
 			MapFrameMarker mapFrameMarker = (MapFrameMarker)this.frames.get(MapFrameMarker.getKey(blockPos));
 			if (mapFrameMarker != null && itemFrameEntity.getId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
-				this.removeIcon("frame-" + mapFrameMarker.getEntityId());
+				this.removeDecoration("frame-" + mapFrameMarker.getEntityId());
 			}
 
 			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getId());
-			this.addIcon(
-				MapIcon.Type.FRAME,
+			this.addDecoration(
+				MapDecorationTypes.FRAME,
 				player.getWorld(),
 				"frame-" + itemFrameEntity.getId(),
 				(double)blockPos.getX(),
@@ -283,33 +286,35 @@ public class MapState extends PersistentState {
 		}
 
 		MapDecorationsComponent mapDecorationsComponent = stack.getOrDefault(DataComponentTypes.MAP_DECORATIONS, MapDecorationsComponent.DEFAULT);
-		if (!this.icons.keySet().containsAll(mapDecorationsComponent.decorations().keySet())) {
+		if (!this.decorations.keySet().containsAll(mapDecorationsComponent.decorations().keySet())) {
 			mapDecorationsComponent.decorations().forEach((id, decoration) -> {
-				if (!this.icons.containsKey(id)) {
-					this.addIcon(decoration.type(), player.getWorld(), id, decoration.x(), decoration.z(), (double)decoration.rotation(), null);
+				if (!this.decorations.containsKey(id)) {
+					this.addDecoration(decoration.type(), player.getWorld(), id, decoration.x(), decoration.z(), (double)decoration.rotation(), null);
 				}
 			});
 		}
 	}
 
-	private void removeIcon(String id) {
-		MapIcon mapIcon = (MapIcon)this.icons.remove(id);
-		if (mapIcon != null && mapIcon.type().shouldUseIconCountLimit()) {
-			this.iconCount--;
+	private void removeDecoration(String id) {
+		MapDecoration mapDecoration = (MapDecoration)this.decorations.remove(id);
+		if (mapDecoration != null && mapDecoration.type().value().trackCount()) {
+			this.decorationCount--;
 		}
 
-		this.markIconsDirty();
+		this.markDecorationsDirty();
 	}
 
-	public static void addDecorationsNbt(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
-		MapDecorationsComponent.Decoration decoration = new MapDecorationsComponent.Decoration(type, (double)pos.getX(), (double)pos.getZ(), 180.0F);
+	public static void addDecorationsNbt(ItemStack stack, BlockPos pos, String id, RegistryEntry<MapDecorationType> decorationType) {
+		MapDecorationsComponent.Decoration decoration = new MapDecorationsComponent.Decoration(decorationType, (double)pos.getX(), (double)pos.getZ(), 180.0F);
 		stack.apply(DataComponentTypes.MAP_DECORATIONS, MapDecorationsComponent.DEFAULT, decorations -> decorations.with(id, decoration));
-		if (type.hasTintColor()) {
-			stack.set(DataComponentTypes.MAP_COLOR, new MapColorComponent(type.getTintColor()));
+		if (decorationType.value().hasMapColor()) {
+			stack.set(DataComponentTypes.MAP_COLOR, new MapColorComponent(decorationType.value().mapColor()));
 		}
 	}
 
-	private void addIcon(MapIcon.Type type, @Nullable WorldAccess world, String key, double x, double z, double rotation, @Nullable Text text) {
+	private void addDecoration(
+		RegistryEntry<MapDecorationType> type, @Nullable WorldAccess world, String key, double x, double z, double rotation, @Nullable Text text
+	) {
 		int i = 1 << this.scale;
 		float f = (float)(x - (double)this.centerX) / (float)i;
 		float g = (float)(z - (double)this.centerZ) / (float)i;
@@ -325,21 +330,21 @@ public class MapState extends PersistentState {
 				d = (byte)(k * k * 34187121 + k * 121 >> 15 & 15);
 			}
 		} else {
-			if (type != MapIcon.Type.PLAYER) {
-				this.removeIcon(key);
+			if (!type.matches(MapDecorationTypes.PLAYER)) {
+				this.removeDecoration(key);
 				return;
 			}
 
 			int k = 320;
 			if (Math.abs(f) < 320.0F && Math.abs(g) < 320.0F) {
-				type = MapIcon.Type.PLAYER_OFF_MAP;
+				type = MapDecorationTypes.PLAYER_OFF_MAP;
 			} else {
 				if (!this.unlimitedTracking) {
-					this.removeIcon(key);
+					this.removeDecoration(key);
 					return;
 				}
 
-				type = MapIcon.Type.PLAYER_OFF_LIMITS;
+				type = MapDecorationTypes.PLAYER_OFF_LIMITS;
 			}
 
 			d = 0;
@@ -360,18 +365,18 @@ public class MapState extends PersistentState {
 			}
 		}
 
-		MapIcon mapIcon = new MapIcon(type, b, c, d, Optional.ofNullable(text));
-		MapIcon mapIcon2 = (MapIcon)this.icons.put(key, mapIcon);
-		if (!mapIcon.equals(mapIcon2)) {
-			if (mapIcon2 != null && mapIcon2.type().shouldUseIconCountLimit()) {
-				this.iconCount--;
+		MapDecoration mapDecoration = new MapDecoration(type, b, c, d, Optional.ofNullable(text));
+		MapDecoration mapDecoration2 = (MapDecoration)this.decorations.put(key, mapDecoration);
+		if (!mapDecoration.equals(mapDecoration2)) {
+			if (mapDecoration2 != null && mapDecoration2.type().value().trackCount()) {
+				this.decorationCount--;
 			}
 
-			if (type.shouldUseIconCountLimit()) {
-				this.iconCount++;
+			if (type.value().trackCount()) {
+				this.decorationCount++;
 			}
 
-			this.markIconsDirty();
+			this.markDecorationsDirty();
 		}
 	}
 
@@ -389,9 +394,9 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	private void markIconsDirty() {
+	private void markDecorationsDirty() {
 		this.markDirty();
-		this.updateTrackers.forEach(MapState.PlayerUpdateTracker::markIconsDirty);
+		this.updateTrackers.forEach(MapState.PlayerUpdateTracker::markDecorationsDirty);
 	}
 
 	public MapState.PlayerUpdateTracker getPlayerSyncData(PlayerEntity player) {
@@ -419,13 +424,13 @@ public class MapState extends PersistentState {
 			}
 
 			if (this.banners.remove(mapBannerMarker.getKey(), mapBannerMarker)) {
-				this.removeIcon(mapBannerMarker.getKey());
+				this.removeDecoration(mapBannerMarker.getKey());
 				return true;
 			}
 
-			if (!this.iconCountNotLessThan(256)) {
+			if (!this.decorationCountNotLessThan(256)) {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-				this.addIcon(mapBannerMarker.getIconType(), world, mapBannerMarker.getKey(), d, e, 180.0, (Text)mapBannerMarker.name().orElse(null));
+				this.addDecoration(mapBannerMarker.getDecorationType(), world, mapBannerMarker.getKey(), d, e, 180.0, (Text)mapBannerMarker.name().orElse(null));
 				return true;
 			}
 		}
@@ -442,7 +447,7 @@ public class MapState extends PersistentState {
 				MapBannerMarker mapBannerMarker2 = MapBannerMarker.fromWorldBlock(world, mapBannerMarker.pos());
 				if (!mapBannerMarker.equals(mapBannerMarker2)) {
 					iterator.remove();
-					this.removeIcon(mapBannerMarker.getKey());
+					this.removeDecoration(mapBannerMarker.getKey());
 				}
 			}
 		}
@@ -453,7 +458,7 @@ public class MapState extends PersistentState {
 	}
 
 	public void removeFrame(BlockPos pos, int id) {
-		this.removeIcon("frame-" + id);
+		this.removeDecoration("frame-" + id);
 		this.frames.remove(MapFrameMarker.getKey(pos));
 	}
 
@@ -477,9 +482,9 @@ public class MapState extends PersistentState {
 		this.markDirty(x, z);
 	}
 
-	public boolean hasMonumentIcon() {
-		for (MapIcon mapIcon : this.icons.values()) {
-			if (mapIcon.type().isStructure()) {
+	public boolean hasExplorationMapDecoration() {
+		for (MapDecoration mapDecoration : this.decorations.values()) {
+			if (mapDecoration.type().value().explorationMapElement()) {
 				return true;
 			}
 		}
@@ -487,25 +492,25 @@ public class MapState extends PersistentState {
 		return false;
 	}
 
-	public void replaceIcons(List<MapIcon> icons) {
-		this.icons.clear();
-		this.iconCount = 0;
+	public void replaceDecorations(List<MapDecoration> decorations) {
+		this.decorations.clear();
+		this.decorationCount = 0;
 
-		for (int i = 0; i < icons.size(); i++) {
-			MapIcon mapIcon = (MapIcon)icons.get(i);
-			this.icons.put("icon-" + i, mapIcon);
-			if (mapIcon.type().shouldUseIconCountLimit()) {
-				this.iconCount++;
+		for (int i = 0; i < decorations.size(); i++) {
+			MapDecoration mapDecoration = (MapDecoration)decorations.get(i);
+			this.decorations.put("icon-" + i, mapDecoration);
+			if (mapDecoration.type().value().trackCount()) {
+				this.decorationCount++;
 			}
 		}
 	}
 
-	public Iterable<MapIcon> getIcons() {
-		return this.icons.values();
+	public Iterable<MapDecoration> getDecorations() {
+		return this.decorations.values();
 	}
 
-	public boolean iconCountNotLessThan(int iconCount) {
-		return this.iconCount >= iconCount;
+	public boolean decorationCountNotLessThan(int decorationCount) {
+		return this.decorationCount >= decorationCount;
 	}
 
 	public class PlayerUpdateTracker {
@@ -515,7 +520,7 @@ public class MapState extends PersistentState {
 		private int startZ;
 		private int endX = 127;
 		private int endZ = 127;
-		private boolean iconsDirty = true;
+		private boolean decorationsDirty = true;
 		private int emptyPacketsRequested;
 		public int field_131;
 
@@ -549,10 +554,10 @@ public class MapState extends PersistentState {
 				updateData = null;
 			}
 
-			Collection<MapIcon> collection;
-			if (this.iconsDirty && this.emptyPacketsRequested++ % 5 == 0) {
-				this.iconsDirty = false;
-				collection = MapState.this.icons.values();
+			Collection<MapDecoration> collection;
+			if (this.decorationsDirty && this.emptyPacketsRequested++ % 5 == 0) {
+				this.decorationsDirty = false;
+				collection = MapState.this.decorations.values();
 			} else {
 				collection = null;
 			}
@@ -575,8 +580,8 @@ public class MapState extends PersistentState {
 			}
 		}
 
-		private void markIconsDirty() {
-			this.iconsDirty = true;
+		private void markDecorationsDirty() {
+			this.decorationsDirty = true;
 		}
 	}
 

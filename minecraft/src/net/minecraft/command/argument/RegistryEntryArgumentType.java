@@ -1,114 +1,112 @@
 package net.minecraft.command.argument;
 
-import com.google.gson.JsonObject;
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
-import com.mojang.brigadier.exceptions.Dynamic3CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import java.util.Arrays;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.serialization.Codec;
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.serialize.ArgumentSerializer;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionTypes;
+import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.util.Util;
 
-public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry.Reference<T>> {
-	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
-	private static final DynamicCommandExceptionType NOT_SUMMONABLE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.stringifiedTranslatable("entity.not_summonable", id)
+public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry<T>> {
+	private static final Collection<String> EXAMPLES = List.of("foo", "foo:bar", "012", "{}", "true");
+	public static final DynamicCommandExceptionType FAILED_TO_PARSE_EXCEPTION = new DynamicCommandExceptionType(
+		argument -> Text.stringifiedTranslatable("argument.resource_or_id.failed_to_parse", argument)
 	);
-	public static final Dynamic2CommandExceptionType NOT_FOUND_EXCEPTION = new Dynamic2CommandExceptionType(
-		(element, type) -> Text.stringifiedTranslatable("argument.resource.not_found", element, type)
-	);
-	public static final Dynamic3CommandExceptionType INVALID_TYPE_EXCEPTION = new Dynamic3CommandExceptionType(
-		(element, type, expectedType) -> Text.stringifiedTranslatable("argument.resource.invalid_type", element, type, expectedType)
-	);
-	final RegistryKey<? extends Registry<T>> registryRef;
-	private final RegistryWrapper<T> registryWrapper;
+	private static final SimpleCommandExceptionType INVALID_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.resource_or_id.invalid"));
+	private final RegistryWrapper.WrapperLookup registryLookup;
+	private final boolean canLookupRegistry;
+	private final Codec<RegistryEntry<T>> entryCodec;
 
-	public RegistryEntryArgumentType(CommandRegistryAccess registryAccess, RegistryKey<? extends Registry<T>> registryRef) {
-		this.registryRef = registryRef;
-		this.registryWrapper = registryAccess.getWrapperOrThrow(registryRef);
+	protected RegistryEntryArgumentType(CommandRegistryAccess registryAccess, RegistryKey<Registry<T>> registry, Codec<RegistryEntry<T>> entryCodec) {
+		this.registryLookup = registryAccess;
+		this.canLookupRegistry = registryAccess.getOptionalWrapper(registry).isPresent();
+		this.entryCodec = entryCodec;
 	}
 
-	public static <T> RegistryEntryArgumentType<T> registryEntry(CommandRegistryAccess registryAccess, RegistryKey<? extends Registry<T>> registryRef) {
-		return new RegistryEntryArgumentType<>(registryAccess, registryRef);
+	public static RegistryEntryArgumentType.LootTableArgumentType lootTable(CommandRegistryAccess registryAccess) {
+		return new RegistryEntryArgumentType.LootTableArgumentType(registryAccess);
 	}
 
-	public static <T> RegistryEntry.Reference<T> getRegistryEntry(CommandContext<ServerCommandSource> context, String name, RegistryKey<Registry<T>> registryRef) throws CommandSyntaxException {
-		RegistryEntry.Reference<T> reference = context.getArgument(name, RegistryEntry.Reference.class);
-		RegistryKey<?> registryKey = reference.registryKey();
-		if (registryKey.isOf(registryRef)) {
-			return reference;
+	public static RegistryEntry<LootTable> getLootTable(CommandContext<ServerCommandSource> context, String argument) throws CommandSyntaxException {
+		return getArgument(context, argument);
+	}
+
+	public static RegistryEntryArgumentType.LootFunctionArgumentType lootFunction(CommandRegistryAccess registryAccess) {
+		return new RegistryEntryArgumentType.LootFunctionArgumentType(registryAccess);
+	}
+
+	public static RegistryEntry<LootFunction> getLootFunction(CommandContext<ServerCommandSource> context, String argument) {
+		return getArgument(context, argument);
+	}
+
+	public static RegistryEntryArgumentType.LootConditionArgumentType lootCondition(CommandRegistryAccess registryAccess) {
+		return new RegistryEntryArgumentType.LootConditionArgumentType(registryAccess);
+	}
+
+	public static RegistryEntry<LootCondition> getLootCondition(CommandContext<ServerCommandSource> context, String argument) {
+		return getArgument(context, argument);
+	}
+
+	private static <T> RegistryEntry<T> getArgument(CommandContext<ServerCommandSource> context, String argument) {
+		return context.getArgument(argument, RegistryEntry.class);
+	}
+
+	@Nullable
+	public RegistryEntry<T> parse(StringReader stringReader) throws CommandSyntaxException {
+		NbtElement nbtElement = parseAsNbt(stringReader);
+		if (!this.canLookupRegistry) {
+			return null;
 		} else {
-			throw INVALID_TYPE_EXCEPTION.create(registryKey.getValue(), registryKey.getRegistry(), registryRef.getValue());
+			RegistryOps<NbtElement> registryOps = this.registryLookup.getOps(NbtOps.INSTANCE);
+			return Util.getResult(this.entryCodec.parse(registryOps, nbtElement), argument -> FAILED_TO_PARSE_EXCEPTION.createWithContext(stringReader, argument));
 		}
 	}
 
-	public static RegistryEntry.Reference<EntityAttribute> getEntityAttribute(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.ATTRIBUTE);
-	}
-
-	public static RegistryEntry.Reference<ConfiguredFeature<?, ?>> getConfiguredFeature(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE);
-	}
-
-	public static RegistryEntry.Reference<Structure> getStructure(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.STRUCTURE);
-	}
-
-	public static RegistryEntry.Reference<EntityType<?>> getEntityType(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.ENTITY_TYPE);
-	}
-
-	public static RegistryEntry.Reference<EntityType<?>> getSummonableEntityType(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		RegistryEntry.Reference<EntityType<?>> reference = getRegistryEntry(context, name, RegistryKeys.ENTITY_TYPE);
-		if (!reference.value().isSummonable()) {
-			throw NOT_SUMMONABLE_EXCEPTION.create(reference.registryKey().getValue().toString());
+	@VisibleForTesting
+	static NbtElement parseAsNbt(StringReader stringReader) throws CommandSyntaxException {
+		int i = stringReader.getCursor();
+		NbtElement nbtElement = new StringNbtReader(stringReader).parseElement();
+		if (hasFinishedReading(stringReader)) {
+			return nbtElement;
 		} else {
-			return reference;
+			stringReader.setCursor(i);
+			Identifier identifier = Identifier.fromCommandInput(stringReader);
+			if (hasFinishedReading(stringReader)) {
+				return NbtString.of(identifier.toString());
+			} else {
+				stringReader.setCursor(i);
+				throw INVALID_EXCEPTION.createWithContext(stringReader);
+			}
 		}
 	}
 
-	public static RegistryEntry.Reference<StatusEffect> getStatusEffect(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.STATUS_EFFECT);
-	}
-
-	public static RegistryEntry.Reference<Enchantment> getEnchantment(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.ENCHANTMENT);
-	}
-
-	public RegistryEntry.Reference<T> parse(StringReader stringReader) throws CommandSyntaxException {
-		Identifier identifier = Identifier.fromCommandInput(stringReader);
-		RegistryKey<T> registryKey = RegistryKey.of(this.registryRef, identifier);
-		return (RegistryEntry.Reference<T>)this.registryWrapper
-			.getOptional(registryKey)
-			.orElseThrow(() -> NOT_FOUND_EXCEPTION.createWithContext(stringReader, identifier, this.registryRef.getValue()));
-	}
-
-	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return CommandSource.suggestIdentifiers(this.registryWrapper.streamKeys().map(RegistryKey::getValue), builder);
+	private static boolean hasFinishedReading(StringReader stringReader) {
+		return !stringReader.canRead() || stringReader.peek() == ' ';
 	}
 
 	@Override
@@ -116,38 +114,21 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry.
 		return EXAMPLES;
 	}
 
-	public static class Serializer<T> implements ArgumentSerializer<RegistryEntryArgumentType<T>, RegistryEntryArgumentType.Serializer<T>.Properties> {
-		public void writePacket(RegistryEntryArgumentType.Serializer<T>.Properties properties, PacketByteBuf packetByteBuf) {
-			packetByteBuf.writeRegistryKey(properties.registryRef);
+	public static class LootConditionArgumentType extends RegistryEntryArgumentType<LootCondition> {
+		protected LootConditionArgumentType(CommandRegistryAccess registryAccess) {
+			super(registryAccess, RegistryKeys.PREDICATE, LootConditionTypes.ENTRY_CODEC);
 		}
+	}
 
-		public RegistryEntryArgumentType.Serializer<T>.Properties fromPacket(PacketByteBuf packetByteBuf) {
-			return new RegistryEntryArgumentType.Serializer.Properties(packetByteBuf.readRegistryRefKey());
+	public static class LootFunctionArgumentType extends RegistryEntryArgumentType<LootFunction> {
+		protected LootFunctionArgumentType(CommandRegistryAccess registryAccess) {
+			super(registryAccess, RegistryKeys.ITEM_MODIFIER, LootFunctionTypes.ENTRY_CODEC);
 		}
+	}
 
-		public void writeJson(RegistryEntryArgumentType.Serializer<T>.Properties properties, JsonObject jsonObject) {
-			jsonObject.addProperty("registry", properties.registryRef.getValue().toString());
-		}
-
-		public RegistryEntryArgumentType.Serializer<T>.Properties getArgumentTypeProperties(RegistryEntryArgumentType<T> registryEntryArgumentType) {
-			return new RegistryEntryArgumentType.Serializer.Properties(registryEntryArgumentType.registryRef);
-		}
-
-		public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<RegistryEntryArgumentType<T>> {
-			final RegistryKey<? extends Registry<T>> registryRef;
-
-			Properties(RegistryKey<? extends Registry<T>> registryRef) {
-				this.registryRef = registryRef;
-			}
-
-			public RegistryEntryArgumentType<T> createType(CommandRegistryAccess commandRegistryAccess) {
-				return new RegistryEntryArgumentType<>(commandRegistryAccess, this.registryRef);
-			}
-
-			@Override
-			public ArgumentSerializer<RegistryEntryArgumentType<T>, ?> getSerializer() {
-				return Serializer.this;
-			}
+	public static class LootTableArgumentType extends RegistryEntryArgumentType<LootTable> {
+		protected LootTableArgumentType(CommandRegistryAccess registryAccess) {
+			super(registryAccess, RegistryKeys.LOOT_TABLE, LootTable.ENTRY_CODEC);
 		}
 	}
 }

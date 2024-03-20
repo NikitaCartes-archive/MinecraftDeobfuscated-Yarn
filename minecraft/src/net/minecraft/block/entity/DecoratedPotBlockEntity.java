@@ -10,12 +10,13 @@ import net.minecraft.inventory.LootableInventory;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -29,7 +30,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	private Sherds sherds;
 	private ItemStack stack = ItemStack.EMPTY;
 	@Nullable
-	protected Identifier lootTableId;
+	protected RegistryKey<LootTable> lootTableId;
 	protected long lootTableSeed;
 
 	public DecoratedPotBlockEntity(BlockPos pos, BlockState state) {
@@ -94,13 +95,13 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 
 	@Nullable
 	@Override
-	public Identifier getLootTableId() {
+	public RegistryKey<LootTable> getLootTable() {
 		return this.lootTableId;
 	}
 
 	@Override
-	public void setLootTableId(@Nullable Identifier lootTableId) {
-		this.lootTableId = lootTableId;
+	public void setLootTable(@Nullable RegistryKey<LootTable> lootTable) {
+		this.lootTableId = lootTable;
 	}
 
 	@Override

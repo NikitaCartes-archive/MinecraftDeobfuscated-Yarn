@@ -389,7 +389,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 				if (bl2 && !this.isRemoved()) {
 					if (itemStack.isOf(Items.FILLED_MAP)) {
 						MapState mapState = FilledMapItem.getMapState(itemStack, this.getWorld());
-						if (mapState != null && mapState.iconCountNotLessThan(256)) {
+						if (mapState != null && mapState.decorationCountNotLessThan(256)) {
 							return ActionResult.FAIL;
 						}
 					}

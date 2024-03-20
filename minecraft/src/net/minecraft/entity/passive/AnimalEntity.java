@@ -13,7 +13,6 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
@@ -124,9 +123,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 		return 1 + this.getWorld().random.nextInt(3);
 	}
 
-	public boolean isBreedingItem(ItemStack stack) {
-		return stack.isOf(Items.WHEAT);
-	}
+	public abstract boolean isBreedingItem(ItemStack stack);
 
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {

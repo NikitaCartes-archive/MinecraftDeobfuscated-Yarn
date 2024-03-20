@@ -58,6 +58,7 @@ import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
 import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.RegistryEntryPredicateArgumentType;
+import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
 import net.minecraft.command.argument.RotationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
@@ -77,8 +78,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SlotRange;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataType;
-import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
@@ -95,6 +94,7 @@ import net.minecraft.nbt.NbtShort;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.ReloadableRegistries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.ScoreAccess;
@@ -131,8 +131,8 @@ public class ExecuteCommand {
 		(function, message) -> Text.stringifiedTranslatable("commands.execute.function.instantiationFailure", function, message)
 	);
 	private static final SuggestionProvider<ServerCommandSource> LOOT_CONDITIONS = (context, builder) -> {
-		LootManager lootManager = context.getSource().getServer().getLootManager();
-		return CommandSource.suggestIdentifiers(lootManager.getIds(LootDataType.PREDICATES), builder);
+		ReloadableRegistries.Lookup lookup = context.getSource().getServer().getReloadableRegistries();
+		return CommandSource.suggestIdentifiers(lookup.getIds(RegistryKeys.PREDICATE), builder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -270,9 +270,9 @@ public class ExecuteCommand {
 				.then(
 					CommandManager.literal("summon")
 						.then(
-							CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(commandRegistryAccess, RegistryKeys.ENTITY_TYPE))
+							CommandManager.argument("entity", RegistryEntryReferenceArgumentType.registryEntry(commandRegistryAccess, RegistryKeys.ENTITY_TYPE))
 								.suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
-								.redirect(literalCommandNode, context -> summon(context.getSource(), RegistryEntryArgumentType.getSummonableEntityType(context, "entity")))
+								.redirect(literalCommandNode, context -> summon(context.getSource(), RegistryEntryReferenceArgumentType.getSummonableEntityType(context, "entity")))
 						)
 				)
 				.then(addOnArguments(literalCommandNode, CommandManager.literal("on")))
@@ -650,9 +650,9 @@ public class ExecuteCommand {
 					.then(
 						addConditionLogic(
 							root,
-							CommandManager.argument("predicate", IdentifierArgumentType.identifier()).suggests(LOOT_CONDITIONS),
+							CommandManager.argument("predicate", RegistryEntryArgumentType.lootCondition(commandRegistryAccess)).suggests(LOOT_CONDITIONS),
 							positive,
-							context -> testLootCondition(context.getSource(), IdentifierArgumentType.getPredicateArgument(context, "predicate"))
+							context -> testLootCondition(context.getSource(), RegistryEntryArgumentType.getLootCondition(context, "predicate"))
 						)
 					)
 			)
@@ -846,15 +846,15 @@ public class ExecuteCommand {
 		return readableScoreboardScore == null ? false : range.test(readableScoreboardScore.getScore());
 	}
 
-	private static boolean testLootCondition(ServerCommandSource source, LootCondition condition) {
+	private static boolean testLootCondition(ServerCommandSource source, RegistryEntry<LootCondition> lootCondition) {
 		ServerWorld serverWorld = source.getWorld();
 		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
 			.add(LootContextParameters.ORIGIN, source.getPosition())
 			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
 		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
-		lootContext.markActive(LootContext.predicate(condition));
-		return condition.test(lootContext);
+		lootContext.markActive(LootContext.predicate(lootCondition.value()));
+		return lootCondition.value().test(lootContext);
 	}
 
 	private static Collection<ServerCommandSource> getSourceOrEmptyForConditionFork(CommandContext<ServerCommandSource> context, boolean positive, boolean value) {

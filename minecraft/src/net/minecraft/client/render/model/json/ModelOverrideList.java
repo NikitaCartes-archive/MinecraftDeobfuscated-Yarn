@@ -15,7 +15,6 @@ import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
@@ -67,13 +66,12 @@ public class ModelOverrideList {
 	@Nullable
 	public BakedModel apply(BakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
 		if (this.overrides.length != 0) {
-			Item item = stack.getItem();
 			int i = this.conditionTypes.length;
 			float[] fs = new float[i];
 
 			for (int j = 0; j < i; j++) {
 				Identifier identifier = this.conditionTypes[j];
-				ModelPredicateProvider modelPredicateProvider = ModelPredicateProviderRegistry.get(item, identifier);
+				ModelPredicateProvider modelPredicateProvider = ModelPredicateProviderRegistry.get(stack, identifier);
 				if (modelPredicateProvider != null) {
 					fs[j] = modelPredicateProvider.call(stack, world, entity, seed);
 				} else {

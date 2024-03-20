@@ -7,16 +7,18 @@ import java.util.Optional;
 import net.minecraft.block.spawner.EntityDetector;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.dynamic.Codecs;
 
 public record VaultConfig(
-	Identifier lootTable,
+	RegistryKey<LootTable> lootTable,
 	double activationRange,
 	double deactivationRange,
 	ItemStack keyItem,
-	Optional<Identifier> overrideLootTableToDisplay,
+	Optional<RegistryKey<LootTable>> overrideLootTableToDisplay,
 	EntityDetector playerDetector,
 	EntityDetector.Selector entitySelector
 ) {
@@ -25,11 +27,11 @@ public record VaultConfig(
 	public static Codec<VaultConfig> codec = Codecs.validate(
 		RecordCodecBuilder.create(
 			instance -> instance.group(
-						Identifier.CODEC.optionalFieldOf("loot_table", DEFAULT.lootTable()).forGetter(VaultConfig::lootTable),
+						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).optionalFieldOf("loot_table", DEFAULT.lootTable()).forGetter(VaultConfig::lootTable),
 						Codec.DOUBLE.optionalFieldOf("activation_range", Double.valueOf(DEFAULT.activationRange())).forGetter(VaultConfig::activationRange),
 						Codec.DOUBLE.optionalFieldOf("deactivation_range", Double.valueOf(DEFAULT.deactivationRange())).forGetter(VaultConfig::deactivationRange),
 						ItemStack.createOptionalCodec("key_item").forGetter(VaultConfig::keyItem),
-						Identifier.CODEC.optionalFieldOf("override_loot_table_to_display").forGetter(VaultConfig::overrideLootTableToDisplay)
+						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).optionalFieldOf("override_loot_table_to_display").forGetter(VaultConfig::overrideLootTableToDisplay)
 					)
 					.apply(instance, VaultConfig::new)
 		),
@@ -48,7 +50,13 @@ public record VaultConfig(
 		);
 	}
 
-	public VaultConfig(Identifier lootTable, double activationRange, double deactivationRange, ItemStack keyItem, Optional<Identifier> overrideLootTableToDisplay) {
+	public VaultConfig(
+		RegistryKey<LootTable> lootTable,
+		double activationRange,
+		double deactivationRange,
+		ItemStack keyItem,
+		Optional<RegistryKey<LootTable>> overrideLootTableToDisplay
+	) {
 		this(lootTable, activationRange, deactivationRange, keyItem, overrideLootTableToDisplay, DEFAULT.playerDetector(), DEFAULT.entitySelector());
 	}
 

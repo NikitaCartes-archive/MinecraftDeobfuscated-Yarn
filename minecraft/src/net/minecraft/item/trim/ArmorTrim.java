@@ -46,17 +46,31 @@ public class ArmorTrim implements TooltipAppender {
 	private final Function<RegistryEntry<ArmorMaterial>, Identifier> leggingsModelIdGetter;
 	private final Function<RegistryEntry<ArmorMaterial>, Identifier> genericModelIdGetter;
 
+	private ArmorTrim(
+		RegistryEntry<ArmorTrimMaterial> material,
+		RegistryEntry<ArmorTrimPattern> pattern,
+		boolean showInTooltip,
+		Function<RegistryEntry<ArmorMaterial>, Identifier> leggingsModelIdGetter,
+		Function<RegistryEntry<ArmorMaterial>, Identifier> genericModelIdGetter
+	) {
+		this.material = material;
+		this.pattern = pattern;
+		this.showInTooltip = showInTooltip;
+		this.leggingsModelIdGetter = leggingsModelIdGetter;
+		this.genericModelIdGetter = genericModelIdGetter;
+	}
+
 	public ArmorTrim(RegistryEntry<ArmorTrimMaterial> material, RegistryEntry<ArmorTrimPattern> pattern, boolean showInTooltip) {
 		this.material = material;
 		this.pattern = pattern;
 		this.leggingsModelIdGetter = Util.memoize((Function<RegistryEntry<ArmorMaterial>, Identifier>)(materialEntry -> {
 			Identifier identifier = pattern.value().assetId();
-			String string = this.getMaterialAssetNameFor(materialEntry);
+			String string = getMaterialAssetNameFor(material, materialEntry);
 			return identifier.withPath((UnaryOperator<String>)(materialName -> "trims/models/armor/" + materialName + "_leggings_" + string));
 		}));
 		this.genericModelIdGetter = Util.memoize((Function<RegistryEntry<ArmorMaterial>, Identifier>)(materialEntry -> {
 			Identifier identifier = pattern.value().assetId();
-			String string = this.getMaterialAssetNameFor(materialEntry);
+			String string = getMaterialAssetNameFor(material, materialEntry);
 			return identifier.withPath((UnaryOperator<String>)(materialName -> "trims/models/armor/" + materialName + "_" + string));
 		}));
 		this.showInTooltip = showInTooltip;
@@ -66,10 +80,10 @@ public class ArmorTrim implements TooltipAppender {
 		this(material, pattern, true);
 	}
 
-	private String getMaterialAssetNameFor(RegistryEntry<ArmorMaterial> armorMaterial) {
-		Map<RegistryEntry<ArmorMaterial>, String> map = this.material.value().overrideArmorMaterials();
+	private static String getMaterialAssetNameFor(RegistryEntry<ArmorTrimMaterial> material, RegistryEntry<ArmorMaterial> armorMaterial) {
+		Map<RegistryEntry<ArmorMaterial>, String> map = material.value().overrideArmorMaterials();
 		String string = (String)map.get(armorMaterial);
-		return string != null ? string : this.material.value().assetName();
+		return string != null ? string : material.value().assetName();
 	}
 
 	public boolean equals(RegistryEntry<ArmorTrimPattern> pattern, RegistryEntry<ArmorTrimMaterial> material) {
@@ -111,5 +125,9 @@ public class ArmorTrim implements TooltipAppender {
 			textConsumer.accept(ScreenTexts.space().append(this.pattern.value().getDescription(this.material)));
 			textConsumer.accept(ScreenTexts.space().append(this.material.value().description()));
 		}
+	}
+
+	public ArmorTrim withShowInTooltip(boolean showInTooltip) {
+		return new ArmorTrim(this.material, this.pattern, showInTooltip, this.leggingsModelIdGetter, this.genericModelIdGetter);
 	}
 }

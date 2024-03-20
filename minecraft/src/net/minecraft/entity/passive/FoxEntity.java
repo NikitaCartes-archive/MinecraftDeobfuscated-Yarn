@@ -14,6 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CaveVines;
 import net.minecraft.block.SweetBerryBushBlock;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -52,7 +53,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -226,7 +226,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	private boolean canEat(ItemStack stack) {
-		return stack.getItem().isFood() && this.getTarget() == null && this.isOnGround() && !this.isSleeping();
+		return stack.contains(DataComponentTypes.FOOD) && this.getTarget() == null && this.isOnGround() && !this.isSleeping();
 	}
 
 	@Override
@@ -466,9 +466,8 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 
 	@Override
 	public boolean canPickupItem(ItemStack stack) {
-		Item item = stack.getItem();
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
-		return itemStack.isEmpty() || this.eatingTime > 0 && item.isFood() && !itemStack.getItem().isFood();
+		return itemStack.isEmpty() || this.eatingTime > 0 && stack.contains(DataComponentTypes.FOOD) && !itemStack.contains(DataComponentTypes.FOOD);
 	}
 
 	private void spit(ItemStack stack) {

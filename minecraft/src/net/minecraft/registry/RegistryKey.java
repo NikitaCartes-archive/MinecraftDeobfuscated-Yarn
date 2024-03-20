@@ -110,6 +110,10 @@ public class RegistryKey<T> {
 		return this.registry;
 	}
 
+	public RegistryKey<Registry<T>> getRegistryRef() {
+		return ofRegistry(this.registry);
+	}
+
 	static record RegistryIdPair(Identifier registry, Identifier id) {
 	}
 }

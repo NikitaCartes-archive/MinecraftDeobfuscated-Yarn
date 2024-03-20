@@ -19,20 +19,21 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.command.argument.ItemStackArgumentType;
+import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataType;
-import net.minecraft.loot.LootManager;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.ReloadableRegistries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -58,8 +59,8 @@ public class ItemCommand {
 		(itemName, slot) -> Text.stringifiedTranslatable("commands.item.target.no_changed.known_item", itemName, slot)
 	);
 	private static final SuggestionProvider<ServerCommandSource> MODIFIER_SUGGESTION_PROVIDER = (context, builder) -> {
-		LootManager lootManager = context.getSource().getServer().getLootManager();
-		return CommandSource.suggestIdentifiers(lootManager.getIds(LootDataType.ITEM_MODIFIERS), builder);
+		ReloadableRegistries.Lookup lookup = context.getSource().getServer().getReloadableRegistries();
+		return CommandSource.suggestIdentifiers(lookup.getIds(RegistryKeys.ITEM_MODIFIER), builder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -117,16 +118,16 @@ public class ItemCommand {
 																						)
 																				)
 																				.then(
-																					CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+																					CommandManager.argument("modifier", RegistryEntryArgumentType.lootFunction(commandRegistryAccess))
 																						.suggests(MODIFIER_SUGGESTION_PROVIDER)
 																						.executes(
 																							context -> executeBlockCopyBlock(
-																									context.getSource(),
+																									(ServerCommandSource)context.getSource(),
 																									BlockPosArgumentType.getLoadedBlockPos(context, "source"),
 																									ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
 																									BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 																									ItemSlotArgumentType.getItemSlot(context, "slot"),
-																									IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																									RegistryEntryArgumentType.getLootFunction(context, "modifier")
 																								)
 																						)
 																				)
@@ -149,16 +150,16 @@ public class ItemCommand {
 																						)
 																				)
 																				.then(
-																					CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+																					CommandManager.argument("modifier", RegistryEntryArgumentType.lootFunction(commandRegistryAccess))
 																						.suggests(MODIFIER_SUGGESTION_PROVIDER)
 																						.executes(
 																							context -> executeBlockCopyEntity(
-																									context.getSource(),
+																									(ServerCommandSource)context.getSource(),
 																									EntityArgumentType.getEntity(context, "source"),
 																									ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
 																									BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 																									ItemSlotArgumentType.getItemSlot(context, "slot"),
-																									IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																									RegistryEntryArgumentType.getLootFunction(context, "modifier")
 																								)
 																						)
 																				)
@@ -218,16 +219,16 @@ public class ItemCommand {
 																						)
 																				)
 																				.then(
-																					CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+																					CommandManager.argument("modifier", RegistryEntryArgumentType.lootFunction(commandRegistryAccess))
 																						.suggests(MODIFIER_SUGGESTION_PROVIDER)
 																						.executes(
 																							context -> executeEntityCopyBlock(
-																									context.getSource(),
+																									(ServerCommandSource)context.getSource(),
 																									BlockPosArgumentType.getLoadedBlockPos(context, "source"),
 																									ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
 																									EntityArgumentType.getEntities(context, "targets"),
 																									ItemSlotArgumentType.getItemSlot(context, "slot"),
-																									IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																									RegistryEntryArgumentType.getLootFunction(context, "modifier")
 																								)
 																						)
 																				)
@@ -250,16 +251,16 @@ public class ItemCommand {
 																						)
 																				)
 																				.then(
-																					CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+																					CommandManager.argument("modifier", RegistryEntryArgumentType.lootFunction(commandRegistryAccess))
 																						.suggests(MODIFIER_SUGGESTION_PROVIDER)
 																						.executes(
 																							context -> executeEntityCopyEntity(
-																									context.getSource(),
+																									(ServerCommandSource)context.getSource(),
 																									EntityArgumentType.getEntity(context, "source"),
 																									ItemSlotArgumentType.getItemSlot(context, "sourceSlot"),
 																									EntityArgumentType.getEntities(context, "targets"),
 																									ItemSlotArgumentType.getItemSlot(context, "slot"),
-																									IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																									RegistryEntryArgumentType.getLootFunction(context, "modifier")
 																								)
 																						)
 																				)
@@ -280,14 +281,14 @@ public class ItemCommand {
 										.then(
 											CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
 												.then(
-													CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+													CommandManager.argument("modifier", RegistryEntryArgumentType.lootFunction(commandRegistryAccess))
 														.suggests(MODIFIER_SUGGESTION_PROVIDER)
 														.executes(
 															context -> executeBlockModify(
-																	context.getSource(),
+																	(ServerCommandSource)context.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 																	ItemSlotArgumentType.getItemSlot(context, "slot"),
-																	IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																	RegistryEntryArgumentType.getLootFunction(context, "modifier")
 																)
 														)
 												)
@@ -301,14 +302,14 @@ public class ItemCommand {
 										.then(
 											CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
 												.then(
-													CommandManager.argument("modifier", IdentifierArgumentType.identifier())
+													CommandManager.argument("modifier", RegistryEntryArgumentType.lootFunction(commandRegistryAccess))
 														.suggests(MODIFIER_SUGGESTION_PROVIDER)
 														.executes(
 															context -> executeEntityModify(
-																	context.getSource(),
+																	(ServerCommandSource)context.getSource(),
 																	EntityArgumentType.getEntities(context, "targets"),
 																	ItemSlotArgumentType.getItemSlot(context, "slot"),
-																	IdentifierArgumentType.getItemModifierArgument(context, "modifier")
+																	RegistryEntryArgumentType.getLootFunction(context, "modifier")
 																)
 														)
 												)
@@ -319,10 +320,10 @@ public class ItemCommand {
 		);
 	}
 
-	private static int executeBlockModify(ServerCommandSource source, BlockPos pos, int slot, LootFunction modifier) throws CommandSyntaxException {
+	private static int executeBlockModify(ServerCommandSource source, BlockPos pos, int slot, RegistryEntry<LootFunction> lootFunction) throws CommandSyntaxException {
 		Inventory inventory = getInventoryAtPos(source, pos, NOT_A_CONTAINER_TARGET_EXCEPTION);
 		if (slot >= 0 && slot < inventory.size()) {
-			ItemStack itemStack = getStackWithModifier(source, modifier, inventory.getStack(slot));
+			ItemStack itemStack = getStackWithModifier(source, lootFunction, inventory.getStack(slot));
 			inventory.setStack(slot, itemStack);
 			source.sendFeedback(() -> Text.translatable("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), itemStack.toHoverableText()), true);
 			return 1;
@@ -331,13 +332,13 @@ public class ItemCommand {
 		}
 	}
 
-	private static int executeEntityModify(ServerCommandSource source, Collection<? extends Entity> targets, int slot, LootFunction modifier) throws CommandSyntaxException {
+	private static int executeEntityModify(ServerCommandSource source, Collection<? extends Entity> targets, int slot, RegistryEntry<LootFunction> lootFunction) throws CommandSyntaxException {
 		Map<Entity, ItemStack> map = Maps.<Entity, ItemStack>newHashMapWithExpectedSize(targets.size());
 
 		for (Entity entity : targets) {
 			StackReference stackReference = entity.getStackReference(slot);
 			if (stackReference != StackReference.EMPTY) {
-				ItemStack itemStack = getStackWithModifier(source, modifier, stackReference.get().copy());
+				ItemStack itemStack = getStackWithModifier(source, lootFunction, stackReference.get().copy());
 				if (stackReference.set(itemStack)) {
 					map.put(entity, itemStack);
 					if (entity instanceof ServerPlayerEntity) {
@@ -419,25 +420,29 @@ public class ItemCommand {
 	}
 
 	private static int executeEntityCopyBlock(
-		ServerCommandSource source, BlockPos sourcePos, int sourceSlot, Collection<? extends Entity> targets, int slot, LootFunction modifier
+		ServerCommandSource source, BlockPos sourcePos, int sourceSlot, Collection<? extends Entity> targets, int slot, RegistryEntry<LootFunction> lootFunction
 	) throws CommandSyntaxException {
-		return executeEntityReplace(source, targets, slot, getStackWithModifier(source, modifier, getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot)));
+		return executeEntityReplace(source, targets, slot, getStackWithModifier(source, lootFunction, getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot)));
 	}
 
 	private static int executeBlockCopyBlock(ServerCommandSource source, BlockPos sourcePos, int sourceSlot, BlockPos pos, int slot) throws CommandSyntaxException {
 		return executeBlockReplace(source, pos, slot, getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot));
 	}
 
-	private static int executeBlockCopyBlock(ServerCommandSource source, BlockPos sourcePos, int sourceSlot, BlockPos pos, int slot, LootFunction modifier) throws CommandSyntaxException {
-		return executeBlockReplace(source, pos, slot, getStackWithModifier(source, modifier, getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot)));
+	private static int executeBlockCopyBlock(
+		ServerCommandSource source, BlockPos sourcePos, int sourceSlot, BlockPos pos, int slot, RegistryEntry<LootFunction> lootFunction
+	) throws CommandSyntaxException {
+		return executeBlockReplace(source, pos, slot, getStackWithModifier(source, lootFunction, getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot)));
 	}
 
 	private static int executeBlockCopyEntity(ServerCommandSource source, Entity sourceEntity, int sourceSlot, BlockPos pos, int slot) throws CommandSyntaxException {
 		return executeBlockReplace(source, pos, slot, getStackInSlot(sourceEntity, sourceSlot));
 	}
 
-	private static int executeBlockCopyEntity(ServerCommandSource source, Entity sourceEntity, int sourceSlot, BlockPos pos, int slot, LootFunction modifier) throws CommandSyntaxException {
-		return executeBlockReplace(source, pos, slot, getStackWithModifier(source, modifier, getStackInSlot(sourceEntity, sourceSlot)));
+	private static int executeBlockCopyEntity(
+		ServerCommandSource source, Entity sourceEntity, int sourceSlot, BlockPos pos, int slot, RegistryEntry<LootFunction> lootFunction
+	) throws CommandSyntaxException {
+		return executeBlockReplace(source, pos, slot, getStackWithModifier(source, lootFunction, getStackInSlot(sourceEntity, sourceSlot)));
 	}
 
 	private static int executeEntityCopyEntity(ServerCommandSource source, Entity sourceEntity, int sourceSlot, Collection<? extends Entity> targets, int slot) throws CommandSyntaxException {
@@ -445,20 +450,20 @@ public class ItemCommand {
 	}
 
 	private static int executeEntityCopyEntity(
-		ServerCommandSource source, Entity sourceEntity, int sourceSlot, Collection<? extends Entity> targets, int slot, LootFunction modifier
+		ServerCommandSource source, Entity sourceEntity, int sourceSlot, Collection<? extends Entity> targets, int slot, RegistryEntry<LootFunction> lootFunction
 	) throws CommandSyntaxException {
-		return executeEntityReplace(source, targets, slot, getStackWithModifier(source, modifier, getStackInSlot(sourceEntity, sourceSlot)));
+		return executeEntityReplace(source, targets, slot, getStackWithModifier(source, lootFunction, getStackInSlot(sourceEntity, sourceSlot)));
 	}
 
-	private static ItemStack getStackWithModifier(ServerCommandSource source, LootFunction modifier, ItemStack stack) {
+	private static ItemStack getStackWithModifier(ServerCommandSource source, RegistryEntry<LootFunction> lootFunction, ItemStack stack) {
 		ServerWorld serverWorld = source.getWorld();
 		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
 			.add(LootContextParameters.ORIGIN, source.getPosition())
 			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
 		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
-		lootContext.markActive(LootContext.itemModifier(modifier));
-		return (ItemStack)modifier.apply(stack, lootContext);
+		lootContext.markActive(LootContext.itemModifier(lootFunction.value()));
+		return (ItemStack)lootFunction.value().apply(stack, lootContext);
 	}
 
 	private static ItemStack getStackInSlot(Entity entity, int slotId) throws CommandSyntaxException {

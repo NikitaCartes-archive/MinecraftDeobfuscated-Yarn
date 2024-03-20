@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
@@ -12,16 +13,15 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 
 public class TemptationsSensor extends Sensor<PathAwareEntity> {
 	public static final int MAX_DISTANCE = 10;
 	private static final TargetPredicate TEMPTER_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(10.0).ignoreVisibility();
-	private final Ingredient ingredient;
+	private final Predicate<ItemStack> predicate;
 
-	public TemptationsSensor(Ingredient ingredient) {
-		this.ingredient = ingredient;
+	public TemptationsSensor(Predicate<ItemStack> predicate) {
+		this.predicate = predicate;
 	}
 
 	protected void sense(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
@@ -48,7 +48,7 @@ public class TemptationsSensor extends Sensor<PathAwareEntity> {
 	}
 
 	private boolean test(ItemStack stack) {
-		return this.ingredient.test(stack);
+		return this.predicate.test(stack);
 	}
 
 	@Override

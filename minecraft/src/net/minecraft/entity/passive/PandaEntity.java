@@ -50,7 +50,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -267,7 +267,7 @@ public class PandaEntity extends AnimalEntity {
 		this.goalSelector.add(2, new PandaEntity.PandaEscapeDangerGoal(this, 2.0));
 		this.goalSelector.add(2, new PandaEntity.PandaMateGoal(this, 1.0));
 		this.goalSelector.add(3, new PandaEntity.AttackGoal(this, 1.2F, true));
-		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.BAMBOO.asItem()), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.0, stack -> stack.isIn(ItemTags.PANDA_FOOD), false));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, PlayerEntity.class, 8.0F, 2.0, 2.0));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, HostileEntity.class, 4.0F, 2.0, 2.0));
 		this.goalSelector.add(7, new PandaEntity.PickUpFoodGoal());
@@ -529,7 +529,7 @@ public class PandaEntity extends AnimalEntity {
 
 		if (!world.isClient() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 			ServerWorld serverWorld = (ServerWorld)world;
-			LootTable lootTable = serverWorld.getServer().getLootManager().getLootTable(LootTables.PANDA_SNEEZE_GAMEPLAY);
+			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(LootTables.PANDA_SNEEZE_GAMEPLAY);
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
 				.add(LootContextParameters.ORIGIN, this.getPos())
 				.add(LootContextParameters.THIS_ENTITY, this)
@@ -682,7 +682,7 @@ public class PandaEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.isOf(Blocks.BAMBOO.asItem());
+		return stack.isIn(ItemTags.PANDA_FOOD);
 	}
 
 	private boolean canEat(ItemStack stack) {

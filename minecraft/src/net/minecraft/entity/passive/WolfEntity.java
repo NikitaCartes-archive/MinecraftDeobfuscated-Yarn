@@ -5,6 +5,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -61,6 +63,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -136,7 +139,11 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 
 	public Identifier getTextureId() {
 		WolfVariant wolfVariant = this.getVariant().value();
-		return this.isTamed() ? wolfVariant.tameTexture() : (this.hasAngerTime() ? wolfVariant.angryTexture() : wolfVariant.texture());
+		if (this.isTamed()) {
+			return wolfVariant.getTameTextureId();
+		} else {
+			return this.hasAngerTime() ? wolfVariant.getAngryTextureId() : wolfVariant.getWildTextureId();
+		}
 	}
 
 	public RegistryEntry<WolfVariant> getVariant() {
@@ -430,7 +437,9 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 			if (this.isTamed()) {
 				if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 					itemStack.decrementUnlessCreative(1, player);
-					this.heal(2.0F * (float)item.getFoodComponent().getHunger());
+					FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
+					float f = foodComponent != null ? (float)foodComponent.nutrition() : 1.0F;
+					this.heal(2.0F * f);
 					return ActionResult.success(this.getWorld().isClient());
 				} else {
 					if (item instanceof DyeItem dyeItem && this.isOwner(player)) {
@@ -531,8 +540,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		Item item = stack.getItem();
-		return item.isFood() && item.getFoodComponent().isMeat();
+		return stack.isIn(ItemTags.WOLF_FOOD);
 	}
 
 	@Override

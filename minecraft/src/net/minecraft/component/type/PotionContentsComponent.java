@@ -97,7 +97,7 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 	}
 
 	public PotionContentsComponent with(StatusEffectInstance customEffect) {
-		return new PotionContentsComponent(this.potion, this.customColor, Util.listWith(this.customEffects, customEffect));
+		return new PotionContentsComponent(this.potion, this.customColor, Util.withAppended(this.customEffects, customEffect));
 	}
 
 	public int getColor() {

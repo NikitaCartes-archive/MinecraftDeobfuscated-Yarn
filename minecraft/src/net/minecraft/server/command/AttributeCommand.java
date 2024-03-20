@@ -10,7 +10,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.UUID;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
+import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
 import net.minecraft.command.argument.UuidArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -43,12 +43,15 @@ public class AttributeCommand {
 				.then(
 					CommandManager.argument("target", EntityArgumentType.entity())
 						.then(
-							CommandManager.argument("attribute", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.ATTRIBUTE))
+							CommandManager.argument("attribute", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, RegistryKeys.ATTRIBUTE))
 								.then(
 									CommandManager.literal("get")
 										.executes(
 											context -> executeValueGet(
-													context.getSource(), EntityArgumentType.getEntity(context, "target"), RegistryEntryArgumentType.getEntityAttribute(context, "attribute"), 1.0
+													context.getSource(),
+													EntityArgumentType.getEntity(context, "target"),
+													RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
+													1.0
 												)
 										)
 										.then(
@@ -57,7 +60,7 @@ public class AttributeCommand {
 													context -> executeValueGet(
 															context.getSource(),
 															EntityArgumentType.getEntity(context, "target"),
-															RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+															RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 															DoubleArgumentType.getDouble(context, "scale")
 														)
 												)
@@ -73,7 +76,7 @@ public class AttributeCommand {
 															context -> executeBaseValueSet(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																	RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 																	DoubleArgumentType.getDouble(context, "value")
 																)
 														)
@@ -83,7 +86,10 @@ public class AttributeCommand {
 											CommandManager.literal("get")
 												.executes(
 													context -> executeBaseValueGet(
-															context.getSource(), EntityArgumentType.getEntity(context, "target"), RegistryEntryArgumentType.getEntityAttribute(context, "attribute"), 1.0
+															context.getSource(),
+															EntityArgumentType.getEntity(context, "target"),
+															RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
+															1.0
 														)
 												)
 												.then(
@@ -92,7 +98,7 @@ public class AttributeCommand {
 															context -> executeBaseValueGet(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																	RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 																	DoubleArgumentType.getDouble(context, "scale")
 																)
 														)
@@ -115,7 +121,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																							RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -129,7 +135,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																							RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -143,7 +149,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																							RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -163,7 +169,7 @@ public class AttributeCommand {
 															context -> executeModifierRemove(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																	RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 																	UuidArgumentType.getUuid(context, "uuid")
 																)
 														)
@@ -179,7 +185,7 @@ public class AttributeCommand {
 																	context -> executeModifierValueGet(
 																			context.getSource(),
 																			EntityArgumentType.getEntity(context, "target"),
-																			RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																			RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 																			UuidArgumentType.getUuid(context, "uuid"),
 																			1.0
 																		)
@@ -190,7 +196,7 @@ public class AttributeCommand {
 																			context -> executeModifierValueGet(
 																					context.getSource(),
 																					EntityArgumentType.getEntity(context, "target"),
-																					RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
+																					RegistryEntryReferenceArgumentType.getEntityAttribute(context, "attribute"),
 																					UuidArgumentType.getUuid(context, "uuid"),
 																					DoubleArgumentType.getDouble(context, "scale")
 																				)

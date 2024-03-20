@@ -931,8 +931,8 @@ public class ServerPlayNetworkHandler
 									this.player.onLanding();
 								}
 
-								if (packet.isOnGround() || this.player.isInFluid() || this.player.isClimbing() || this.player.isSpectator() || this.player.isCreative() || bl || bl5) {
-									this.player.ignoreFallDamageAboveY = null;
+								if (packet.isOnGround() || this.player.isInFluid() || this.player.isClimbing() || this.player.isSpectator() || bl || bl5) {
+									this.player.clearCurrentExplosion();
 								}
 
 								this.player.increaseTravelMotionStats(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
@@ -980,7 +980,7 @@ public class ServerPlayNetworkHandler
 		}
 
 		this.teleportRequestTick = this.ticks;
-		this.player.ignoreFallDamageAboveY = null;
+		this.player.clearCurrentExplosion();
 		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
 		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId));
 	}
@@ -1624,7 +1624,7 @@ public class ServerPlayNetworkHandler
 			}
 
 			boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;
-			boolean bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 64 && !itemStack.isEmpty();
+			boolean bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= itemStack.getMaxCount() && !itemStack.isEmpty();
 			if (bl2 && bl3) {
 				this.player.playerScreenHandler.getSlot(packet.getSlot()).setStack(itemStack);
 				this.player.playerScreenHandler.sendContentUpdates();

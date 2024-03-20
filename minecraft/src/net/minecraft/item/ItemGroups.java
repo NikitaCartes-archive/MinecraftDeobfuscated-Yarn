@@ -1633,6 +1633,7 @@ public class ItemGroups {
 							ItemTags.SWORD_ENCHANTABLE,
 							ItemTags.WEAPON_ENCHANTABLE,
 							ItemTags.MINING_ENCHANTABLE,
+							ItemTags.MINING_LOOT_ENCHANTABLE,
 							ItemTags.FISHING_ENCHANTABLE,
 							ItemTags.TRIDENT_ENCHANTABLE,
 							ItemTags.DURABILITY_ENCHANTABLE,

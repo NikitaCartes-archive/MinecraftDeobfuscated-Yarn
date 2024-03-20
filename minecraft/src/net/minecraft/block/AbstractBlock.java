@@ -39,6 +39,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.FluidTags;
@@ -371,7 +372,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see #getDroppedStacks
 	 */
 	@Nullable
-	protected Identifier lootTableId;
+	protected RegistryKey<LootTable> lootTableId;
 
 	public AbstractBlock(AbstractBlock.Settings settings) {
 		this.collidable = settings.collidable;
@@ -758,13 +759,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see net.minecraft.loot.context.LootContextParameters
 	 */
 	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-		Identifier identifier = this.getLootTableId();
-		if (identifier == LootTables.EMPTY) {
+		RegistryKey<LootTable> registryKey = this.getLootTableId();
+		if (registryKey == LootTables.EMPTY) {
 			return Collections.emptyList();
 		} else {
 			LootContextParameterSet lootContextParameterSet = builder.add(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContextParameterSet.getWorld();
-			LootTable lootTable = serverWorld.getServer().getLootManager().getLootTable(identifier);
+			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(registryKey);
 			return lootTable.generateLoot(lootContextParameterSet);
 		}
 	}
@@ -1077,10 +1078,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		return 0;
 	}
 
-	public final Identifier getLootTableId() {
+	public final RegistryKey<LootTable> getLootTableId() {
 		if (this.lootTableId == null) {
 			Identifier identifier = Registries.BLOCK.getId(this.asBlock());
-			this.lootTableId = identifier.withPrefixedPath("blocks/");
+			this.lootTableId = RegistryKey.of(RegistryKeys.LOOT_TABLE, identifier.withPrefixedPath("blocks/"));
 		}
 
 		return this.lootTableId;
@@ -1711,7 +1712,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		float slipperiness = 0.6F;
 		float velocityMultiplier = 1.0F;
 		float jumpVelocityMultiplier = 1.0F;
-		Identifier lootTableId;
+		RegistryKey<LootTable> lootTableId;
 		boolean opaque = true;
 		boolean isAir;
 		boolean burnable;

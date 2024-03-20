@@ -18,7 +18,6 @@ import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementPositioner;
 import net.minecraft.advancement.PlacedAdvancement;
-import net.minecraft.loot.LootManager;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
@@ -35,12 +34,10 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	private Map<Identifier, AdvancementEntry> advancements = Map.of();
 	private AdvancementManager manager = new AdvancementManager();
 	private final RegistryWrapper.WrapperLookup registryLookup;
-	private final LootManager conditionManager;
 
-	public ServerAdvancementLoader(RegistryWrapper.WrapperLookup registryLookup, LootManager conditionManager) {
+	public ServerAdvancementLoader(RegistryWrapper.WrapperLookup registryLookup) {
 		super(GSON, "advancements");
 		this.registryLookup = registryLookup;
-		this.conditionManager = conditionManager;
 	}
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
@@ -70,7 +67,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 
 	private void validate(Identifier id, Advancement advancement) {
 		ErrorReporter.Impl impl = new ErrorReporter.Impl();
-		advancement.validate(impl, this.conditionManager);
+		advancement.validate(impl, this.registryLookup.createRegistryLookup());
 		Multimap<String, String> multimap = impl.getErrors();
 		if (!multimap.isEmpty()) {
 			String string = (String)multimap.asMap()

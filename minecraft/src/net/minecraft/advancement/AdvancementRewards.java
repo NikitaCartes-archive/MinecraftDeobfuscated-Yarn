@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.LazyContainer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,11 +21,11 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 
-public record AdvancementRewards(int experience, List<Identifier> loot, List<Identifier> recipes, Optional<LazyContainer> function) {
+public record AdvancementRewards(int experience, List<RegistryKey<LootTable>> loot, List<Identifier> recipes, Optional<LazyContainer> function) {
 	public static final Codec<AdvancementRewards> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.createStrictOptionalFieldCodec(Codec.INT, "experience", 0).forGetter(AdvancementRewards::experience),
-					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC.listOf(), "loot", List.of()).forGetter(AdvancementRewards::loot),
+					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).listOf(), "loot", List.of()).forGetter(AdvancementRewards::loot),
 					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC.listOf(), "recipes", List.of()).forGetter(AdvancementRewards::recipes),
 					Codecs.createStrictOptionalFieldCodec(LazyContainer.CODEC, "function").forGetter(AdvancementRewards::function)
 				)
@@ -38,8 +41,8 @@ public record AdvancementRewards(int experience, List<Identifier> loot, List<Ide
 			.build(LootContextTypes.ADVANCEMENT_REWARD);
 		boolean bl = false;
 
-		for (Identifier identifier : this.loot) {
-			for (ItemStack itemStack : player.server.getLootManager().getLootTable(identifier).generateLoot(lootContextParameterSet)) {
+		for (RegistryKey<LootTable> registryKey : this.loot) {
+			for (ItemStack itemStack : player.server.getReloadableRegistries().getLootTable(registryKey).generateLoot(lootContextParameterSet)) {
 				if (player.giveItemStack(itemStack)) {
 					player.getWorld()
 						.playSound(
@@ -79,7 +82,7 @@ public record AdvancementRewards(int experience, List<Identifier> loot, List<Ide
 
 	public static class Builder {
 		private int experience;
-		private final ImmutableList.Builder<Identifier> loot = ImmutableList.builder();
+		private final ImmutableList.Builder<RegistryKey<LootTable>> loot = ImmutableList.builder();
 		private final ImmutableList.Builder<Identifier> recipes = ImmutableList.builder();
 		private Optional<Identifier> function = Optional.empty();
 
@@ -92,11 +95,11 @@ public record AdvancementRewards(int experience, List<Identifier> loot, List<Ide
 			return this;
 		}
 
-		public static AdvancementRewards.Builder loot(Identifier loot) {
+		public static AdvancementRewards.Builder loot(RegistryKey<LootTable> loot) {
 			return new AdvancementRewards.Builder().addLoot(loot);
 		}
 
-		public AdvancementRewards.Builder addLoot(Identifier loot) {
+		public AdvancementRewards.Builder addLoot(RegistryKey<LootTable> loot) {
 			this.loot.add(loot);
 			return this;
 		}

@@ -25,6 +25,7 @@ import net.minecraft.util.Formatting;
 @Environment(EnvType.CLIENT)
 public class ExperimentsScreen extends Screen {
 	private static final Text TITLE = Text.translatable("selectWorld.experiments");
+	private static final Text INFO_TEXT = Text.translatable("selectWorld.experiments.info").formatted(Formatting.RED);
 	private static final int INFO_WIDTH = 310;
 	private final ThreePartsLayoutWidget experimentToggleList = new ThreePartsLayoutWidget(this);
 	private final Screen parent;
@@ -49,10 +50,7 @@ public class ExperimentsScreen extends Screen {
 	protected void init() {
 		this.experimentToggleList.addHeader(TITLE, this.textRenderer);
 		DirectionalLayoutWidget directionalLayoutWidget = this.experimentToggleList.addBody(DirectionalLayoutWidget.vertical());
-		directionalLayoutWidget.add(
-			new MultilineTextWidget(Text.translatable("selectWorld.experiments.info").formatted(Formatting.RED), this.textRenderer).setMaxWidth(310),
-			positioner -> positioner.marginBottom(15)
-		);
+		directionalLayoutWidget.add(new MultilineTextWidget(INFO_TEXT, this.textRenderer).setMaxWidth(310), positioner -> positioner.marginBottom(15));
 		WorldScreenOptionGrid.Builder builder = WorldScreenOptionGrid.builder(310).withTooltipBox(2, true).setRowSpacing(4);
 		this.experiments
 			.forEach(
@@ -77,6 +75,16 @@ public class ExperimentsScreen extends Screen {
 	}
 
 	@Override
+	protected void initTabNavigation() {
+		this.experimentToggleList.refreshPositions();
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinSentences(super.getNarratedTitle(), INFO_TEXT);
+	}
+
+	@Override
 	public void close() {
 		this.client.setScreen(this.parent);
 	}
@@ -93,10 +101,5 @@ public class ExperimentsScreen extends Screen {
 		list.addAll(Lists.reverse(list2));
 		this.resourcePackManager.setEnabledProfiles(list.stream().map(ResourcePackProfile::getId).toList());
 		this.applier.accept(this.resourcePackManager);
-	}
-
-	@Override
-	protected void initTabNavigation() {
-		this.experimentToggleList.refreshPositions();
 	}
 }

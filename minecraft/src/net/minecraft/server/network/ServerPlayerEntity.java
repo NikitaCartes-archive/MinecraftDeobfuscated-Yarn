@@ -619,6 +619,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void tickFallStartPos() {
 		if (this.fallDistance > 0.0F && this.fallStartPos == null) {
 			this.fallStartPos = this.getPos();
+			if (this.currentExplosionImpactPos != null) {
+				Criteria.FALL_AFTER_EXPLOSION.trigger(this, this.currentExplosionImpactPos, this.explodedBy);
+			}
 		}
 	}
 
@@ -1007,13 +1010,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void handleFall(double xDifference, double yDifference, double zDifference, boolean onGround) {
 		if (!this.isRegionUnloaded()) {
 			this.updateSupportingBlockPos(onGround, new Vec3d(xDifference, yDifference, zDifference));
-			BlockPos blockPos = this.getSteppingPos();
+			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			if (this.spawnExtraParticlesOnFall && onGround && this.fallDistance > 0.0F) {
 				Vec3d vec3d = blockPos.toCenterPos().add(0.0, 0.5, 0.0);
 				int i = (int)(50.0F * this.fallDistance);
-				((ServerWorld)this.getWorld())
-					.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), vec3d.x, vec3d.y, vec3d.z, i, 0.3F, 0.3F, 0.3F, 0.15F);
+				this.getServerWorld().spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), vec3d.x, vec3d.y, vec3d.z, i, 0.3F, 0.3F, 0.3F, 0.15F);
 				this.spawnExtraParticlesOnFall = false;
 			}
 
@@ -1024,9 +1026,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void onExplodedBy(@Nullable Entity entity) {
 		super.onExplodedBy(entity);
-		if (entity != null && entity.getType() == EntityType.WIND_CHARGE) {
-			this.ignoreFallDamageAboveY = this.getY();
-		}
+		this.currentExplosionImpactPos = this.getPos();
+		this.explodedBy = entity;
+		this.ignoreFallDamageFromCurrentExplosion = entity != null && entity.getType() == EntityType.WIND_CHARGE;
 	}
 
 	@Override

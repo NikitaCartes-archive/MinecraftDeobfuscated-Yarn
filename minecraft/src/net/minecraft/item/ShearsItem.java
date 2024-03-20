@@ -1,9 +1,11 @@
 package net.minecraft.item;
 
+import java.util.List;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,39 +23,34 @@ public class ShearsItem extends Item {
 		super(settings);
 	}
 
+	public static ToolComponent createToolComponent() {
+		return new ToolComponent(
+			List.of(
+				ToolComponent.Rule.ofAlwaysDropping(List.of(Blocks.COBWEB), 15.0F),
+				ToolComponent.Rule.of(BlockTags.LEAVES, 15.0F),
+				ToolComponent.Rule.of(BlockTags.WOOL, 5.0F),
+				ToolComponent.Rule.of(List.of(Blocks.VINE, Blocks.GLOW_LICHEN), 2.0F)
+			),
+			1.0F,
+			1
+		);
+	}
+
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		if (!world.isClient && !state.isIn(BlockTags.FIRE)) {
 			stack.damage(1, miner, EquipmentSlot.MAINHAND);
 		}
 
-		return !state.isIn(BlockTags.LEAVES)
-				&& !state.isOf(Blocks.COBWEB)
-				&& !state.isOf(Blocks.SHORT_GRASS)
-				&& !state.isOf(Blocks.FERN)
-				&& !state.isOf(Blocks.DEAD_BUSH)
-				&& !state.isOf(Blocks.HANGING_ROOTS)
-				&& !state.isOf(Blocks.VINE)
-				&& !state.isOf(Blocks.TRIPWIRE)
-				&& !state.isIn(BlockTags.WOOL)
-			? super.postMine(stack, world, state, pos, miner)
-			: true;
-	}
-
-	@Override
-	public boolean isSuitableFor(BlockState state) {
-		return state.isOf(Blocks.COBWEB) || state.isOf(Blocks.REDSTONE_WIRE) || state.isOf(Blocks.TRIPWIRE);
-	}
-
-	@Override
-	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-		if (state.isOf(Blocks.COBWEB) || state.isIn(BlockTags.LEAVES)) {
-			return 15.0F;
-		} else if (state.isIn(BlockTags.WOOL)) {
-			return 5.0F;
-		} else {
-			return !state.isOf(Blocks.VINE) && !state.isOf(Blocks.GLOW_LICHEN) ? super.getMiningSpeedMultiplier(stack, state) : 2.0F;
-		}
+		return state.isIn(BlockTags.LEAVES)
+			|| state.isOf(Blocks.COBWEB)
+			|| state.isOf(Blocks.SHORT_GRASS)
+			|| state.isOf(Blocks.FERN)
+			|| state.isOf(Blocks.DEAD_BUSH)
+			|| state.isOf(Blocks.HANGING_ROOTS)
+			|| state.isOf(Blocks.VINE)
+			|| state.isOf(Blocks.TRIPWIRE)
+			|| state.isIn(BlockTags.WOOL);
 	}
 
 	@Override

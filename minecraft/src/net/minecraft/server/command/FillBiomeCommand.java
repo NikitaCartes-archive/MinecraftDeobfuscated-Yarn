@@ -13,8 +13,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.RegistryEntryPredicateArgumentType;
+import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
@@ -45,13 +45,13 @@ public class FillBiomeCommand {
 						.then(
 							CommandManager.argument("to", BlockPosArgumentType.blockPos())
 								.then(
-									CommandManager.argument("biome", RegistryEntryArgumentType.registryEntry(commandRegistryAccess, RegistryKeys.BIOME))
+									CommandManager.argument("biome", RegistryEntryReferenceArgumentType.registryEntry(commandRegistryAccess, RegistryKeys.BIOME))
 										.executes(
 											context -> execute(
 													context.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(context, "from"),
 													BlockPosArgumentType.getLoadedBlockPos(context, "to"),
-													RegistryEntryArgumentType.getRegistryEntry(context, "biome", RegistryKeys.BIOME),
+													RegistryEntryReferenceArgumentType.getRegistryEntry(context, "biome", RegistryKeys.BIOME),
 													registryEntry -> true
 												)
 										)
@@ -64,7 +64,7 @@ public class FillBiomeCommand {
 																	context.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(context, "from"),
 																	BlockPosArgumentType.getLoadedBlockPos(context, "to"),
-																	RegistryEntryArgumentType.getRegistryEntry(context, "biome", RegistryKeys.BIOME),
+																	RegistryEntryReferenceArgumentType.getRegistryEntry(context, "biome", RegistryKeys.BIOME),
 																	RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "filter", RegistryKeys.BIOME)::test
 																)
 														)

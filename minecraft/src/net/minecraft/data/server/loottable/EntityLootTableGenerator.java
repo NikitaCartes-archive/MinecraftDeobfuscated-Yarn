@@ -2,8 +2,8 @@ package net.minecraft.data.server.loottable;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -26,9 +26,9 @@ import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.EntitySubPredicateTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.util.Identifier;
 
 public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	protected static final EntityPredicate.Builder NEEDS_ENTITY_ON_FIRE = EntityPredicate.Builder.create()
@@ -38,7 +38,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	);
 	private final FeatureSet requiredFeatures;
 	private final FeatureSet featureSet;
-	private final Map<EntityType<?>, Map<Identifier, LootTable.Builder>> lootTables = Maps.<EntityType<?>, Map<Identifier, LootTable.Builder>>newHashMap();
+	private final Map<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>> lootTables = Maps.<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>>newHashMap();
 
 	protected EntityLootTableGenerator(FeatureSet requiredFeatures) {
 		this(requiredFeatures, requiredFeatures);
@@ -58,9 +58,9 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	public abstract void generate();
 
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<Identifier, LootTable.Builder> consumer) {
+	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
 		this.generate();
-		Set<Identifier> set = Sets.<Identifier>newHashSet();
+		Set<RegistryKey<LootTable>> set = new HashSet();
 		Registries.ENTITY_TYPE
 			.streamEntries()
 			.forEach(
@@ -68,29 +68,29 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 					EntityType<?> entityType2 = (EntityType<?>)entityType.value();
 					if (entityType2.isEnabled(this.requiredFeatures)) {
 						if (shouldCheck(entityType2)) {
-							Map<Identifier, LootTable.Builder> map = (Map<Identifier, LootTable.Builder>)this.lootTables.remove(entityType2);
-							Identifier identifier = entityType2.getLootTableId();
-							if (!identifier.equals(LootTables.EMPTY) && entityType2.isEnabled(this.featureSet) && (map == null || !map.containsKey(identifier))) {
-								throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, entityType.registryKey().getValue()));
+							Map<RegistryKey<LootTable>, LootTable.Builder> map = (Map<RegistryKey<LootTable>, LootTable.Builder>)this.lootTables.remove(entityType2);
+							RegistryKey<LootTable> registryKey = entityType2.getLootTableId();
+							if (registryKey != LootTables.EMPTY && entityType2.isEnabled(this.featureSet) && (map == null || !map.containsKey(registryKey))) {
+								throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", registryKey, entityType.registryKey().getValue()));
 							}
 
 							if (map != null) {
-								map.forEach((lootTableId, lootTableBuilder) -> {
-									if (!set.add(lootTableId)) {
-										throw new IllegalStateException(String.format(Locale.ROOT, "Duplicate loottable '%s' for '%s'", lootTableId, entityType.registryKey().getValue()));
+								map.forEach((tableKey, lootTableBuilder) -> {
+									if (!set.add(tableKey)) {
+										throw new IllegalStateException(String.format(Locale.ROOT, "Duplicate loottable '%s' for '%s'", tableKey, entityType.registryKey().getValue()));
 									} else {
-										consumer.accept(lootTableId, lootTableBuilder);
+										consumer.accept(tableKey, lootTableBuilder);
 									}
 								});
 							}
 						} else {
-							Map<Identifier, LootTable.Builder> mapx = (Map<Identifier, LootTable.Builder>)this.lootTables.remove(entityType2);
+							Map<RegistryKey<LootTable>, LootTable.Builder> mapx = (Map<RegistryKey<LootTable>, LootTable.Builder>)this.lootTables.remove(entityType2);
 							if (mapx != null) {
 								throw new IllegalStateException(
 									String.format(
 										Locale.ROOT,
 										"Weird loottables '%s' for '%s', not a LivingEntity so should not have loot",
-										mapx.keySet().stream().map(Identifier::toString).collect(Collectors.joining(",")),
+										mapx.keySet().stream().map(registryKeyx -> registryKeyx.getValue().toString()).collect(Collectors.joining(",")),
 										entityType.registryKey().getValue()
 									)
 								);
@@ -114,10 +114,12 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 		);
 	}
 
-	protected LootCondition.Builder killedByFrog(FrogVariant variant) {
+	protected LootCondition.Builder killedByFrog(RegistryKey<FrogVariant> frogVariant) {
 		return DamageSourcePropertiesLootCondition.builder(
 			DamageSourcePredicate.Builder.create()
-				.sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant(variant)))
+				.sourceEntity(
+					EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant(Registries.FROG_VARIANT.entryOf(frogVariant)))
+				)
 		);
 	}
 
@@ -125,7 +127,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 		this.register(entityType, entityType.getLootTableId(), lootTable);
 	}
 
-	protected void register(EntityType<?> entityType, Identifier entityId, LootTable.Builder lootTable) {
-		((Map)this.lootTables.computeIfAbsent(entityType, type -> new HashMap())).put(entityId, lootTable);
+	protected void register(EntityType<?> entityType, RegistryKey<LootTable> tableKey, LootTable.Builder lootTable) {
+		((Map)this.lootTables.computeIfAbsent(entityType, type -> new HashMap())).put(tableKey, lootTable);
 	}
 }

@@ -55,7 +55,6 @@ import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.loot.LootManager;
 import net.minecraft.network.QueryableServer;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -72,6 +71,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.ReloadableRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
@@ -80,6 +80,7 @@ import net.minecraft.resource.LifecycledResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -1532,7 +1533,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * @see CompletableFuture
 	 */
 	public CompletableFuture<Void> reloadResources(Collection<String> dataPacks) {
-		DynamicRegistryManager.Immutable immutable = this.combinedDynamicRegistries.getPrecedingRegistryManagers(ServerDynamicRegistryType.RELOADABLE);
 		CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(
 				() -> (ImmutableList)dataPacks.stream()
 						.map(this.dataPackManager::getProfile)
@@ -1546,7 +1546,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					LifecycledResourceManager lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, resourcePacks);
 					return DataPackContents.reload(
 							lifecycledResourceManager,
-							immutable,
+							this.combinedDynamicRegistries,
 							this.saveProperties.getEnabledFeatures(),
 							this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED,
 							this.getFunctionPermissionLevel(),
@@ -1567,7 +1567,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.dataPackManager.setEnabledProfiles(dataPacks);
 				DataConfiguration dataConfiguration = new DataConfiguration(createDataPackSettings(this.dataPackManager), this.saveProperties.getEnabledFeatures());
 				this.saveProperties.updateLevelInfo(dataConfiguration);
-				this.resourceManagerHolder.dataPackContents.refresh(this.getRegistryManager());
+				this.resourceManagerHolder.dataPackContents.refresh();
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
 				this.commandFunctionManager.setFunctions(this.resourceManagerHolder.dataPackContents.getFunctionLoader());
@@ -1600,26 +1600,30 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			for (ResourcePackProfile resourcePackProfile : resourcePackManager.getProfiles()) {
 				String string2 = resourcePackProfile.getId();
-				if (!dataPackSettings.getDisabled().contains(string2)) {
-					FeatureSet featureSet = resourcePackProfile.getRequestedFeatures();
-					boolean bl = set.contains(string2);
-					if (!bl && resourcePackProfile.getSource().canBeEnabledLater()) {
-						if (featureSet.isSubsetOf(enabledFeatures)) {
-							LOGGER.info("Found new data pack {}, loading it automatically", string2);
-							set.add(string2);
-						} else {
-							LOGGER.info("Found new data pack {}, but can't load it due to missing features {}", string2, FeatureFlags.printMissingFlags(enabledFeatures, featureSet));
-						}
-					}
+				FeatureSet featureSet = resourcePackProfile.getRequestedFeatures();
+				FeatureSet featureSet2 = resourcePackManager.getRequestedFeatures();
+				if (resourcePackProfile.getSource() == ResourcePackSource.FEATURE && !featureSet.isEmpty() && featureSet.isSubsetOf(featureSet2) && !set.contains(string2)) {
+					LOGGER.info("Found feature pack for requested feature, forcing to enabled");
+					set.add(string2);
+				} else if (dataPackSettings.getDisabled().contains(string2)) {
+					continue;
+				}
 
-					if (bl && !featureSet.isSubsetOf(enabledFeatures)) {
-						LOGGER.warn(
-							"Pack {} requires features {} that are not enabled for this world, disabling pack.",
-							string2,
-							FeatureFlags.printMissingFlags(enabledFeatures, featureSet)
-						);
-						set.remove(string2);
+				boolean bl = set.contains(string2);
+				if (!bl && resourcePackProfile.getSource().canBeEnabledLater()) {
+					if (featureSet.isSubsetOf(enabledFeatures)) {
+						LOGGER.info("Found new data pack {}, loading it automatically", string2);
+						set.add(string2);
+					} else {
+						LOGGER.info("Found new data pack {}, but can't load it due to missing features {}", string2, FeatureFlags.printMissingFlags(enabledFeatures, featureSet));
 					}
+				}
+
+				if (bl && !featureSet.isSubsetOf(enabledFeatures)) {
+					LOGGER.warn(
+						"Pack {} requires features {} that are not enabled for this world, disabling pack.", string2, FeatureFlags.printMissingFlags(enabledFeatures, featureSet)
+					);
+					set.remove(string2);
 				}
 			}
 
@@ -1630,8 +1634,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			resourcePackManager.setEnabledProfiles(set);
 			DataPackSettings dataPackSettings2 = createDataPackSettings(resourcePackManager);
-			FeatureSet featureSet2 = resourcePackManager.getRequestedFeatures();
-			return new DataConfiguration(dataPackSettings2, featureSet2);
+			FeatureSet featureSet3 = resourcePackManager.getRequestedFeatures();
+			return new DataConfiguration(dataPackSettings2, featureSet3);
 		}
 	}
 
@@ -1704,10 +1708,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		} else {
 			return this.dataCommandStorage;
 		}
-	}
-
-	public LootManager getLootManager() {
-		return this.resourceManagerHolder.dataPackContents.getLootManager();
 	}
 
 	public GameRules getGameRules() {
@@ -2029,6 +2029,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public CombinedDynamicRegistries<ServerDynamicRegistryType> getCombinedDynamicRegistries() {
 		return this.combinedDynamicRegistries;
+	}
+
+	public ReloadableRegistries.Lookup getReloadableRegistries() {
+		return this.resourceManagerHolder.dataPackContents.getReloadableRegistries();
 	}
 
 	public TextStream createFilterer(ServerPlayerEntity player) {

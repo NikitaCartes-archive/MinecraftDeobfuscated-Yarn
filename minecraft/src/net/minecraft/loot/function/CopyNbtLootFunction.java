@@ -2,10 +2,8 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
@@ -99,7 +97,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		public CopyNbtLootFunction.Builder withOperation(String source, String target, CopyNbtLootFunction.Operator operator) {
 			try {
-				this.operations.add(new CopyNbtLootFunction.Operation(CopyNbtLootFunction.Path.parse(source), CopyNbtLootFunction.Path.parse(target), operator));
+				this.operations.add(new CopyNbtLootFunction.Operation(NbtPathArgumentType.NbtPath.parse(source), NbtPathArgumentType.NbtPath.parse(target), operator));
 				return this;
 			} catch (CommandSyntaxException var5) {
 				throw new IllegalArgumentException(var5);
@@ -120,11 +118,11 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	static record Operation(CopyNbtLootFunction.Path parsedSourcePath, CopyNbtLootFunction.Path parsedTargetPath, CopyNbtLootFunction.Operator operator) {
+	static record Operation(NbtPathArgumentType.NbtPath parsedSourcePath, NbtPathArgumentType.NbtPath parsedTargetPath, CopyNbtLootFunction.Operator operator) {
 		public static final Codec<CopyNbtLootFunction.Operation> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						CopyNbtLootFunction.Path.CODEC.fieldOf("source").forGetter(CopyNbtLootFunction.Operation::parsedSourcePath),
-						CopyNbtLootFunction.Path.CODEC.fieldOf("target").forGetter(CopyNbtLootFunction.Operation::parsedTargetPath),
+						NbtPathArgumentType.NbtPath.CODEC.fieldOf("source").forGetter(CopyNbtLootFunction.Operation::parsedSourcePath),
+						NbtPathArgumentType.NbtPath.CODEC.fieldOf("target").forGetter(CopyNbtLootFunction.Operation::parsedTargetPath),
 						CopyNbtLootFunction.Operator.CODEC.fieldOf("op").forGetter(CopyNbtLootFunction.Operation::operator)
 					)
 					.apply(instance, CopyNbtLootFunction.Operation::new)
@@ -132,9 +130,9 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		public void execute(Supplier<NbtElement> itemNbtGetter, NbtElement sourceEntityNbt) {
 			try {
-				List<NbtElement> list = this.parsedSourcePath.path().get(sourceEntityNbt);
+				List<NbtElement> list = this.parsedSourcePath.get(sourceEntityNbt);
 				if (!list.isEmpty()) {
-					this.operator.merge((NbtElement)itemNbtGetter.get(), this.parsedTargetPath.path(), list);
+					this.operator.merge((NbtElement)itemNbtGetter.get(), this.parsedTargetPath, list);
 				}
 			} catch (CommandSyntaxException var4) {
 			}
@@ -187,21 +185,6 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		@Override
 		public String asString() {
 			return this.name;
-		}
-	}
-
-	static record Path(String string, NbtPathArgumentType.NbtPath path) {
-		public static final Codec<CopyNbtLootFunction.Path> CODEC = Codec.STRING.comapFlatMap(path -> {
-			try {
-				return DataResult.success(parse(path));
-			} catch (CommandSyntaxException var2) {
-				return DataResult.error(() -> "Failed to parse path " + path + ": " + var2.getMessage());
-			}
-		}, CopyNbtLootFunction.Path::string);
-
-		public static CopyNbtLootFunction.Path parse(String path) throws CommandSyntaxException {
-			NbtPathArgumentType.NbtPath nbtPath = new NbtPathArgumentType().parse(new StringReader(path));
-			return new CopyNbtLootFunction.Path(path, nbtPath);
 		}
 	}
 }

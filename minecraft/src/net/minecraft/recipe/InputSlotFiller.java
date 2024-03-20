@@ -108,7 +108,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		if (craftAll) {
 			i = limit;
 		} else if (recipeInCraftingSlots) {
-			i = 64;
+			i = Integer.MAX_VALUE;
 
 			for (int j = 0; j < this.handler.getCraftingWidth() * this.handler.getCraftingHeight() + 1; j++) {
 				if (j != this.handler.getCraftingResultSlotIndex()) {
@@ -119,7 +119,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 				}
 			}
 
-			if (i < 64) {
+			if (i != Integer.MAX_VALUE) {
 				i++;
 			}
 		}

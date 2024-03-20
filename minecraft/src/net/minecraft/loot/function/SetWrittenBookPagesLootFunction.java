@@ -11,15 +11,21 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.collection.ListOperation;
+import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.dynamic.RuntimeOps;
 
 public class SetWrittenBookPagesLootFunction extends ConditionalLootFunction {
+	public static final Codec<Text> TEXT_CODEC = Codecs.validate(
+		TextCodecs.CODEC, text -> WrittenBookContentComponent.PAGE_CODEC.encodeStart(RuntimeOps.INSTANCE, text).map(value -> text)
+	);
 	public static final Codec<SetWrittenBookPagesLootFunction> CODEC = RecordCodecBuilder.create(
 		instance -> addConditionsField(instance)
 				.<List<RawFilteredPair<Text>>, ListOperation>and(
 					instance.group(
-						WrittenBookContentComponent.PAGES_CODEC.fieldOf("pages").forGetter(function -> function.pages),
-						ListOperation.Type.MAP_CODEC.forGetter(function -> function.operation)
+						WrittenBookContentComponent.createPagesCodec(TEXT_CODEC).fieldOf("pages").forGetter(function -> function.pages),
+						ListOperation.createCodec(100).forGetter(function -> function.operation)
 					)
 				)
 				.apply(instance, SetWrittenBookPagesLootFunction::new)

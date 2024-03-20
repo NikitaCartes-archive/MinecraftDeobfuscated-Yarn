@@ -4,36 +4,19 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FrostedIceBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class FrostWalkerEnchantment extends Enchantment {
-	public FrostWalkerEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, ItemTags.FOOT_ARMOR_ENCHANTABLE, slotTypes);
-	}
-
-	@Override
-	public int getMinPower(int level) {
-		return level * 10;
-	}
-
-	@Override
-	public int getMaxPower(int level) {
-		return this.getMinPower(level) + 15;
+	public FrostWalkerEnchantment(Enchantment.Properties properties) {
+		super(properties);
 	}
 
 	@Override
 	public boolean isTreasure() {
 		return true;
-	}
-
-	@Override
-	public int getMaxLevel() {
-		return 2;
 	}
 
 	public static void freezeWater(LivingEntity entity, World world, BlockPos blockPos, int level) {

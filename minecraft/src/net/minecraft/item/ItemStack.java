@@ -44,6 +44,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
@@ -58,6 +59,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenTexts;
@@ -381,7 +383,7 @@ public final class ItemStack implements ComponentHolder {
 		return this.getItem().getRegistryEntry() == itemEntry;
 	}
 
-	public boolean itemMatches(RegistryEntryList<Item> registryEntryList) {
+	public boolean isIn(RegistryEntryList<Item> registryEntryList) {
 		return registryEntryList.contains(this.getRegistryEntry());
 	}
 
@@ -411,7 +413,7 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public float getMiningSpeedMultiplier(BlockState state) {
-		return this.getItem().getMiningSpeedMultiplier(this, state);
+		return this.getItem().getMiningSpeed(this, state);
 	}
 
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -443,7 +445,7 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public int getMaxCount() {
-		return this.getItem().getMaxCount();
+		return this.getOrDefault(DataComponentTypes.MAX_STACK_SIZE, Integer.valueOf(1));
 	}
 
 	/**
@@ -459,15 +461,15 @@ public final class ItemStack implements ComponentHolder {
 	/**
 	 * {@return whether the item can be damaged (lose durability)}
 	 * 
-	 * <p>Items with {@linkplain Item#getMaxDamage 0 max damage} or item stacks with {@link
+	 * <p>Items with {@linkplain #getMaxDamage 0 max damage} or item stacks with {@link
 	 * net.minecraft.component.DataComponentTypes#UNBREAKABLE} component cannot be damaged.
 	 * 
-	 * @see Item#getMaxDamage
+	 * @see #getMaxDamage
 	 * @see #isDamaged
 	 * @see #getDamage
 	 */
 	public boolean isDamageable() {
-		return !this.isEmpty() && this.getItem().isDamageable() ? !this.contains(DataComponentTypes.UNBREAKABLE) && this.contains(DataComponentTypes.DAMAGE) : false;
+		return this.contains(DataComponentTypes.MAX_DAMAGE) && !this.contains(DataComponentTypes.UNBREAKABLE) && this.contains(DataComponentTypes.DAMAGE);
 	}
 
 	/**
@@ -497,7 +499,7 @@ public final class ItemStack implements ComponentHolder {
 	/**
 	 * Sets the stack's damage to {@code damage}.
 	 * 
-	 * <p>This does not break the item if the damage reaches {@linkplain Item#getMaxDamage
+	 * <p>This does not break the item if the damage reaches {@linkplain #getMaxDamage
 	 * the maximum}, unlike {@link #damage(int, LivingEntity, EquipmentSlot)}.
 	 * 
 	 * @see #getDamage
@@ -509,7 +511,7 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public int getMaxDamage() {
-		return this.getItem().getMaxDamage();
+		return this.getOrDefault(DataComponentTypes.MAX_DAMAGE, Integer.valueOf(0));
 	}
 
 	/**
@@ -522,7 +524,7 @@ public final class ItemStack implements ComponentHolder {
 	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
 	 * 
 	 * <p>When the item "breaks", that is, the stack's damage is equal to or above
-	 * {@linkplain Item#getMaxDamage the maximum damage}, {@code breakCallback} is run.
+	 * {@linkplain #getMaxDamage the maximum damage}, {@code breakCallback} is run.
 	 * Callers should decrement the stack size inside the callback.
 	 * 
 	 * @param player the player that damaged the stack, or {@code null} if no player is involved
@@ -568,7 +570,7 @@ public final class ItemStack implements ComponentHolder {
 	 * <p>If {@code entity} is a player, this triggers {@link
 	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
 	 * 
-	 * <p>If the stack's damage is equal to or above {@linkplain Item#getMaxDamage the maximum
+	 * <p>If the stack's damage is equal to or above {@linkplain #getMaxDamage the maximum
 	 * damage} (i.e. the item is "broken"), this will {@linkplain
 	 * LivingEntity#sendEquipmentBreakStatus send the equipment break status}, decrement the
 	 * stack, and increment {@link net.minecraft.stat.Stats#BROKEN} if the stack is held
@@ -645,7 +647,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @see Item#isSuitableFor(BlockState)
 	 */
 	public boolean isSuitableFor(BlockState state) {
-		return this.getItem().isSuitableFor(state);
+		return this.getItem().isCorrectForDrops(this, state);
 	}
 
 	public ActionResult useOnEntity(PlayerEntity user, LivingEntity entity, Hand hand) {
@@ -936,63 +938,67 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
-		List<Text> list = Lists.<Text>newArrayList();
-		MutableText mutableText = Text.empty().append(this.getName()).formatted(this.getRarity().formatting);
-		if (this.contains(DataComponentTypes.CUSTOM_NAME)) {
-			mutableText.formatted(Formatting.ITALIC);
-		}
-
-		list.add(mutableText);
-		if (!context.isAdvanced() && !this.contains(DataComponentTypes.CUSTOM_NAME) && this.isOf(Items.FILLED_MAP)) {
-			MapIdComponent mapIdComponent = this.get(DataComponentTypes.MAP_ID);
-			if (mapIdComponent != null) {
-				list.add(FilledMapItem.getIdText(mapIdComponent));
-			}
-		}
-
-		Consumer<Text> consumer = list::add;
-		if (!this.contains(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP)) {
-			this.getItem().appendTooltip(this, player == null ? null : player.getWorld(), list, context);
-		}
-
-		this.appendTooltip(DataComponentTypes.TRIM, consumer, context);
-		this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, consumer, context);
-		this.appendTooltip(DataComponentTypes.ENCHANTMENTS, consumer, context);
-		this.appendTooltip(DataComponentTypes.DYED_COLOR, consumer, context);
-		this.appendTooltip(DataComponentTypes.LORE, consumer, context);
-		this.appendAttributeModifiersTooltip(consumer, player);
-		this.appendTooltip(DataComponentTypes.UNBREAKABLE, consumer, context);
-		BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_BREAK);
-		if (blockPredicatesChecker != null && blockPredicatesChecker.showInTooltip()) {
-			consumer.accept(ScreenTexts.EMPTY);
-			consumer.accept(BlockPredicatesChecker.CAN_BREAK_TEXT);
-			blockPredicatesChecker.addTooltips(consumer);
-		}
-
-		BlockPredicatesChecker blockPredicatesChecker2 = this.get(DataComponentTypes.CAN_PLACE_ON);
-		if (blockPredicatesChecker2 != null && blockPredicatesChecker2.showInTooltip()) {
-			consumer.accept(ScreenTexts.EMPTY);
-			consumer.accept(BlockPredicatesChecker.CAN_PLACE_TEXT);
-			blockPredicatesChecker2.addTooltips(consumer);
-		}
-
-		if (context.isAdvanced()) {
-			if (this.isDamaged()) {
-				list.add(Text.translatable("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
+		if (!context.isCreative() && this.contains(DataComponentTypes.HIDE_TOOLTIP)) {
+			return List.of();
+		} else {
+			List<Text> list = Lists.<Text>newArrayList();
+			MutableText mutableText = Text.empty().append(this.getName()).formatted(this.getRarity().getFormatting());
+			if (this.contains(DataComponentTypes.CUSTOM_NAME)) {
+				mutableText.formatted(Formatting.ITALIC);
 			}
 
-			list.add(Text.literal(Registries.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
-			int i = this.components.size();
-			if (i > 0) {
-				list.add(Text.translatable("item.components", i).formatted(Formatting.DARK_GRAY));
+			list.add(mutableText);
+			if (!context.isAdvanced() && !this.contains(DataComponentTypes.CUSTOM_NAME) && this.isOf(Items.FILLED_MAP)) {
+				MapIdComponent mapIdComponent = this.get(DataComponentTypes.MAP_ID);
+				if (mapIdComponent != null) {
+					list.add(FilledMapItem.getIdText(mapIdComponent));
+				}
 			}
-		}
 
-		if (player != null && !this.getItem().isEnabled(player.getWorld().getEnabledFeatures())) {
-			list.add(DISABLED_TEXT);
-		}
+			Consumer<Text> consumer = list::add;
+			if (!this.contains(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP)) {
+				this.getItem().appendTooltip(this, player == null ? null : player.getWorld(), list, context);
+			}
 
-		return list;
+			this.appendTooltip(DataComponentTypes.TRIM, consumer, context);
+			this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, consumer, context);
+			this.appendTooltip(DataComponentTypes.ENCHANTMENTS, consumer, context);
+			this.appendTooltip(DataComponentTypes.DYED_COLOR, consumer, context);
+			this.appendTooltip(DataComponentTypes.LORE, consumer, context);
+			this.appendAttributeModifiersTooltip(consumer, player);
+			this.appendTooltip(DataComponentTypes.UNBREAKABLE, consumer, context);
+			BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_BREAK);
+			if (blockPredicatesChecker != null && blockPredicatesChecker.showInTooltip()) {
+				consumer.accept(ScreenTexts.EMPTY);
+				consumer.accept(BlockPredicatesChecker.CAN_BREAK_TEXT);
+				blockPredicatesChecker.addTooltips(consumer);
+			}
+
+			BlockPredicatesChecker blockPredicatesChecker2 = this.get(DataComponentTypes.CAN_PLACE_ON);
+			if (blockPredicatesChecker2 != null && blockPredicatesChecker2.showInTooltip()) {
+				consumer.accept(ScreenTexts.EMPTY);
+				consumer.accept(BlockPredicatesChecker.CAN_PLACE_TEXT);
+				blockPredicatesChecker2.addTooltips(consumer);
+			}
+
+			if (context.isAdvanced()) {
+				if (this.isDamaged()) {
+					list.add(Text.translatable("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
+				}
+
+				list.add(Text.literal(Registries.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
+				int i = this.components.size();
+				if (i > 0) {
+					list.add(Text.translatable("item.components", i).formatted(Formatting.DARK_GRAY));
+				}
+			}
+
+			if (player != null && !this.getItem().isEnabled(player.getWorld().getEnabledFeatures())) {
+				list.add(DISABLED_TEXT);
+			}
+
+			return list;
+		}
 	}
 
 	private void appendAttributeModifiersTooltip(Consumer<Text> textConsumer, @Nullable PlayerEntity player) {
@@ -1078,7 +1084,16 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public Rarity getRarity() {
-		return this.getItem().getRarity(this);
+		Rarity rarity = this.getOrDefault(DataComponentTypes.RARITY, Rarity.COMMON);
+		if (!this.hasEnchantments()) {
+			return rarity;
+		} else {
+			return switch (rarity) {
+				case COMMON, UNCOMMON -> Rarity.RARE;
+				case RARE -> Rarity.EPIC;
+				default -> rarity;
+			};
+		}
 	}
 
 	/**
@@ -1193,7 +1208,7 @@ public final class ItemStack implements ComponentHolder {
 
 		MutableText mutableText2 = Texts.bracketed(mutableText);
 		if (!this.isEmpty()) {
-			mutableText2.formatted(this.getRarity().formatting)
+			mutableText2.formatted(this.getRarity().getFormatting())
 				.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackContent(this))));
 		}
 
@@ -1235,6 +1250,15 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	/**
+	 * Sets the count of items in this item stack to not exceed {@code maxCount}.
+	 */
+	public void capCount(int maxCount) {
+		if (!this.isEmpty() && this.getCount() > maxCount) {
+			this.setCount(maxCount);
+		}
+	}
+
+	/**
 	 * Increments the count of items in this item stack.
 	 * 
 	 * @param amount the amount to increment
@@ -1270,10 +1294,6 @@ public final class ItemStack implements ComponentHolder {
 		this.getItem().onItemEntityDestroyed(entity);
 	}
 
-	public boolean isFood() {
-		return this.getItem().isFood();
-	}
-
 	public SoundEvent getDrinkSound() {
 		return this.getItem().getDrinkSound();
 	}
@@ -1284,5 +1304,9 @@ public final class ItemStack implements ComponentHolder {
 
 	public SoundEvent getBreakSound() {
 		return this.getItem().getBreakSound();
+	}
+
+	public boolean takesDamageFrom(DamageSource source) {
+		return !this.contains(DataComponentTypes.FIRE_RESISTANT) || !source.isIn(DamageTypeTags.IS_FIRE);
 	}
 }

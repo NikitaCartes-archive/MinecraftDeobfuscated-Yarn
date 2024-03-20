@@ -45,6 +45,10 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 			return Criteria.RECIPE_CRAFTED.create(new RecipeCraftedCriterion.Conditions(Optional.empty(), recipeId, List.of()));
 		}
 
+		public static AdvancementCriterion<RecipeCraftedCriterion.Conditions> createCrafterRecipeCrafted(Identifier recipeId) {
+			return Criteria.CRAFTER_RECIPE_CRAFTED.create(new RecipeCraftedCriterion.Conditions(Optional.empty(), recipeId, List.of()));
+		}
+
 		boolean matches(Identifier recipeId, List<ItemStack> ingredients) {
 			if (!recipeId.equals(this.recipeId)) {
 				return false;

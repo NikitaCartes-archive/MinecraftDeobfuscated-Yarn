@@ -1169,8 +1169,12 @@ public class Util {
 		}
 	}
 
-	public static <T> List<T> listWith(List<T> list, T valueToAppend) {
+	public static <T> List<T> withAppended(List<T> list, T valueToAppend) {
 		return ImmutableList.<T>builderWithExpectedSize(list.size() + 1).addAll(list).add(valueToAppend).build();
+	}
+
+	public static <T> List<T> withPrepended(T valueToPrepend, List<T> list) {
+		return ImmutableList.<T>builderWithExpectedSize(list.size() + 1).add(valueToPrepend).addAll(list).build();
 	}
 
 	public static <K, V> Map<K, V> mapWith(Map<K, V> map, K keyToAppend, V valueToAppend) {

@@ -138,11 +138,14 @@ import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
@@ -971,7 +974,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	@Nullable
 	private Text name;
 	@Nullable
-	private Identifier lootTableId;
+	private RegistryKey<LootTable> lootTableId;
 	private final EntityDimensions dimensions;
 	private final FeatureSet requiredFeatures;
 
@@ -1158,10 +1161,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		return i == -1 ? this.getTranslationKey() : this.getTranslationKey().substring(i + 1);
 	}
 
-	public Identifier getLootTableId() {
+	public RegistryKey<LootTable> getLootTableId() {
 		if (this.lootTableId == null) {
 			Identifier identifier = Registries.ENTITY_TYPE.getId(this);
-			this.lootTableId = identifier.withPrefixedPath("entities/");
+			this.lootTableId = RegistryKey.of(RegistryKeys.LOOT_TABLE, identifier.withPrefixedPath("entities/"));
 		}
 
 		return this.lootTableId;

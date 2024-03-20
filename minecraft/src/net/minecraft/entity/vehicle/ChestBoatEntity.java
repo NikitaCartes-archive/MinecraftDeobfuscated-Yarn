@@ -12,12 +12,13 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -27,7 +28,7 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 	private static final int INVENTORY_SIZE = 27;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	@Nullable
-	private Identifier lootTableId;
+	private RegistryKey<LootTable> lootTable;
 	private long lootTableSeed;
 
 	public ChestBoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
@@ -165,7 +166,7 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 	@Nullable
 	@Override
 	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		if (this.lootTableId != null && playerEntity.isSpectator()) {
+		if (this.lootTable != null && playerEntity.isSpectator()) {
 			return null;
 		} else {
 			this.generateLoot(playerInventory.player);
@@ -179,13 +180,13 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 
 	@Nullable
 	@Override
-	public Identifier getLootTableId() {
-		return this.lootTableId;
+	public RegistryKey<LootTable> getLootTable() {
+		return this.lootTable;
 	}
 
 	@Override
-	public void setLootTableId(@Nullable Identifier lootTableId) {
-		this.lootTableId = lootTableId;
+	public void setLootTable(@Nullable RegistryKey<LootTable> lootTable) {
+		this.lootTable = lootTable;
 	}
 
 	@Override

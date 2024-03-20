@@ -30,12 +30,12 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -297,17 +297,17 @@ public class VaultBlockEntity extends BlockEntity {
 			if (!canBeUnlocked(config, state)) {
 				sharedData.setDisplayItem(ItemStack.EMPTY);
 			} else {
-				ItemStack itemStack = generateDisplayItem(world, pos, (Identifier)config.overrideLootTableToDisplay().orElse(config.lootTable()));
+				ItemStack itemStack = generateDisplayItem(world, pos, (RegistryKey<LootTable>)config.overrideLootTableToDisplay().orElse(config.lootTable()));
 				sharedData.setDisplayItem(itemStack);
 			}
 		}
 
-		private static ItemStack generateDisplayItem(ServerWorld world, BlockPos pos, Identifier lootTable) {
-			LootTable lootTable2 = world.getServer().getLootManager().getLootTable(lootTable);
+		private static ItemStack generateDisplayItem(ServerWorld world, BlockPos pos, RegistryKey<LootTable> registryKey) {
+			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(registryKey);
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
 				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 				.build(LootContextTypes.VAULT);
-			List<ItemStack> list = lootTable2.generateLoot(lootContextParameterSet);
+			List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
 			return list.isEmpty() ? ItemStack.EMPTY : Util.getRandom(list, world.getRandom());
 		}
 
@@ -321,7 +321,7 @@ public class VaultBlockEntity extends BlockEntity {
 		}
 
 		private static List<ItemStack> generateLoot(ServerWorld world, VaultConfig config, BlockPos pos, PlayerEntity player) {
-			LootTable lootTable = world.getServer().getLootManager().getLootTable(config.lootTable());
+			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(config.lootTable());
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
 				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 				.luck(player.getLuck())
@@ -331,7 +331,7 @@ public class VaultBlockEntity extends BlockEntity {
 		}
 
 		private static boolean canBeUnlocked(VaultConfig config, VaultState state) {
-			return !config.lootTable().equals(LootTables.EMPTY) && !config.keyItem().isEmpty() && state != VaultState.INACTIVE;
+			return config.lootTable() != LootTables.EMPTY && !config.keyItem().isEmpty() && state != VaultState.INACTIVE;
 		}
 
 		private static boolean isValidKey(VaultConfig config, ItemStack stack) {

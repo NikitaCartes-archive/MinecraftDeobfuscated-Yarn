@@ -1,5 +1,7 @@
 package net.minecraft.particle;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import java.util.Locale;
@@ -9,11 +11,25 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
+import org.joml.Vector3f;
 
 public class EntityEffectParticleEffect implements ParticleEffect {
-	public static final ParticleEffect.Factory<EntityEffectParticleEffect> PARAMETERS_FACTORY = (type, reader, registryLookup) -> new EntityEffectParticleEffect(
-			type, reader.readInt()
-		);
+	public static final ParticleEffect.Factory<EntityEffectParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<EntityEffectParticleEffect>() {
+		public EntityEffectParticleEffect read(
+			ParticleType<EntityEffectParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup
+		) throws CommandSyntaxException {
+			Vector3f vector3f = AbstractDustParticleEffect.readColor(stringReader);
+			stringReader.expect(' ');
+			float f = stringReader.readFloat();
+			int i = ColorHelper.Argb.getArgb(
+				EntityEffectParticleEffect.toInt(f),
+				EntityEffectParticleEffect.toInt(vector3f.x),
+				EntityEffectParticleEffect.toInt(vector3f.y),
+				EntityEffectParticleEffect.toInt(vector3f.z)
+			);
+			return new EntityEffectParticleEffect(particleType, i);
+		}
+	};
 	private final ParticleType<? extends EntityEffectParticleEffect> type;
 	private final int color;
 
@@ -25,7 +41,7 @@ public class EntityEffectParticleEffect implements ParticleEffect {
 		return PacketCodecs.INTEGER.xmap(color -> new EntityEffectParticleEffect(type, color), particleEffect -> particleEffect.color);
 	}
 
-	private EntityEffectParticleEffect(ParticleType<? extends EntityEffectParticleEffect> type, int color) {
+	EntityEffectParticleEffect(ParticleType<? extends EntityEffectParticleEffect> type, int color) {
 		this.type = type;
 		this.color = color;
 	}
@@ -64,7 +80,7 @@ public class EntityEffectParticleEffect implements ParticleEffect {
 		return create(type, ColorHelper.Argb.getArgb(toInt(r), toInt(g), toInt(b)));
 	}
 
-	private static int toInt(float value) {
+	static int toInt(float value) {
 		return MathHelper.floor(value * 255.0F);
 	}
 }

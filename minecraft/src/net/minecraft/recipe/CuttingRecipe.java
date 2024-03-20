@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -46,7 +46,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public ItemStack getResult(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
 		return this.result;
 	}
 
@@ -63,7 +63,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
+	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
 		return this.result.copy();
 	}
 

@@ -16,9 +16,9 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.command.argument.ItemStackArgumentType;
+import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -28,23 +28,24 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataType;
-import net.minecraft.loot.LootManager;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.ReloadableRegistries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class LootCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
-		LootManager lootManager = context.getSource().getServer().getLootManager();
-		return CommandSource.suggestIdentifiers(lootManager.getIds(LootDataType.LOOT_TABLES), builder);
+		ReloadableRegistries.Lookup lookup = context.getSource().getServer().getReloadableRegistries();
+		return CommandSource.suggestIdentifiers(lookup.getIds(RegistryKeys.LOOT_TABLE), builder);
 	};
 	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
 		entityName -> Text.stringifiedTranslatable("commands.drop.no_held_items", entityName)
@@ -60,14 +61,14 @@ public class LootCommand {
 				(builder, constructor) -> builder.then(
 							CommandManager.literal("fish")
 								.then(
-									CommandManager.argument("loot_table", IdentifierArgumentType.identifier())
+									CommandManager.argument("loot_table", RegistryEntryArgumentType.lootTable(commandRegistryAccess))
 										.suggests(SUGGESTION_PROVIDER)
 										.then(
 											CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 												.executes(
 													context -> executeFish(
 															context,
-															IdentifierArgumentType.getIdentifier(context, "loot_table"),
+															RegistryEntryArgumentType.getLootTable(context, "loot_table"),
 															BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 															ItemStack.EMPTY,
 															constructor
@@ -78,7 +79,7 @@ public class LootCommand {
 														.executes(
 															context -> executeFish(
 																	context,
-																	IdentifierArgumentType.getIdentifier(context, "loot_table"),
+																	RegistryEntryArgumentType.getLootTable(context, "loot_table"),
 																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 																	ItemStackArgumentType.getItemStackArgument(context, "tool").createStack(1, false),
 																	constructor
@@ -90,7 +91,7 @@ public class LootCommand {
 														.executes(
 															context -> executeFish(
 																	context,
-																	IdentifierArgumentType.getIdentifier(context, "loot_table"),
+																	RegistryEntryArgumentType.getLootTable(context, "loot_table"),
 																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 																	getHeldItem(context.getSource(), EquipmentSlot.MAINHAND),
 																	constructor
@@ -102,7 +103,7 @@ public class LootCommand {
 														.executes(
 															context -> executeFish(
 																	context,
-																	IdentifierArgumentType.getIdentifier(context, "loot_table"),
+																	RegistryEntryArgumentType.getLootTable(context, "loot_table"),
 																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 																	getHeldItem(context.getSource(), EquipmentSlot.OFFHAND),
 																	constructor
@@ -115,9 +116,9 @@ public class LootCommand {
 						.then(
 							CommandManager.literal("loot")
 								.then(
-									CommandManager.argument("loot_table", IdentifierArgumentType.identifier())
+									CommandManager.argument("loot_table", RegistryEntryArgumentType.lootTable(commandRegistryAccess))
 										.suggests(SUGGESTION_PROVIDER)
-										.executes(context -> executeLoot(context, IdentifierArgumentType.getIdentifier(context, "loot_table"), constructor))
+										.executes(context -> executeLoot(context, RegistryEntryArgumentType.getLootTable(context, "loot_table"), constructor))
 								)
 						)
 						.then(
@@ -398,14 +399,14 @@ public class LootCommand {
 		}
 	}
 
-	private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks, Identifier lootTable) {
+	private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks, RegistryKey<LootTable> lootTable) {
 		if (stacks.size() == 1) {
 			ItemStack itemStack = (ItemStack)stacks.get(0);
 			source.sendFeedback(
-				() -> Text.translatable("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), Text.of(lootTable)), false
+				() -> Text.translatable("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), Text.of(lootTable.getValue())), false
 			);
 		} else {
-			source.sendFeedback(() -> Text.translatable("commands.drop.success.multiple_with_table", stacks.size(), Text.of(lootTable)), false);
+			source.sendFeedback(() -> Text.translatable("commands.drop.success.multiple_with_table", stacks.size(), Text.of(lootTable.getValue())), false);
 		}
 	}
 
@@ -437,7 +438,7 @@ public class LootCommand {
 		if (!(entity instanceof LivingEntity)) {
 			throw NO_LOOT_TABLE_EXCEPTION.create(entity.getDisplayName());
 		} else {
-			Identifier identifier = ((LivingEntity)entity).getLootTable();
+			RegistryKey<LootTable> registryKey = ((LivingEntity)entity).getLootTable();
 			ServerCommandSource serverCommandSource = context.getSource();
 			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(serverCommandSource.getWorld());
 			Entity entity2 = serverCommandSource.getEntity();
@@ -451,13 +452,13 @@ public class LootCommand {
 			builder.add(LootContextParameters.THIS_ENTITY, entity);
 			builder.add(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
 			LootContextParameterSet lootContextParameterSet = builder.build(LootContextTypes.ENTITY);
-			LootTable lootTable = serverCommandSource.getServer().getLootManager().getLootTable(identifier);
+			LootTable lootTable = serverCommandSource.getServer().getReloadableRegistries().getLootTable(registryKey);
 			List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
-			return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks, identifier));
+			return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks, registryKey));
 		}
 	}
 
-	private static int executeLoot(CommandContext<ServerCommandSource> context, Identifier lootTable, LootCommand.Target constructor) throws CommandSyntaxException {
+	private static int executeLoot(CommandContext<ServerCommandSource> context, RegistryEntry<LootTable> lootTable, LootCommand.Target constructor) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = context.getSource();
 		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverCommandSource.getWorld())
 			.addOptional(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
@@ -467,7 +468,7 @@ public class LootCommand {
 	}
 
 	private static int executeFish(
-		CommandContext<ServerCommandSource> context, Identifier lootTable, BlockPos pos, ItemStack stack, LootCommand.Target constructor
+		CommandContext<ServerCommandSource> context, RegistryEntry<LootTable> lootTable, BlockPos pos, ItemStack stack, LootCommand.Target constructor
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = context.getSource();
 		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverCommandSource.getWorld())
@@ -479,11 +480,13 @@ public class LootCommand {
 	}
 
 	private static int getFeedbackMessageSingle(
-		CommandContext<ServerCommandSource> context, Identifier lootTable, LootContextParameterSet lootContextParameters, LootCommand.Target constructor
+		CommandContext<ServerCommandSource> context,
+		RegistryEntry<LootTable> lootTable,
+		LootContextParameterSet lootContextParameters,
+		LootCommand.Target constructor
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = context.getSource();
-		LootTable lootTable2 = serverCommandSource.getServer().getLootManager().getLootTable(lootTable);
-		List<ItemStack> list = lootTable2.generateLoot(lootContextParameters);
+		List<ItemStack> list = lootTable.value().generateLoot(lootContextParameters);
 		return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks));
 	}
 

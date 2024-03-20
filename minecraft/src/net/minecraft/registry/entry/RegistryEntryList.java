@@ -77,6 +77,10 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		};
 	}
 
+	static <T> RegistryEntryList<T> empty() {
+		return (RegistryEntryList<T>)RegistryEntryList.Direct.EMPTY;
+	}
+
 	/**
 	 * {@return a new direct list of {@code entries}}
 	 */
@@ -111,6 +115,7 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 	 * A direct registry entry list that holds the values directly, instead of using tags.
 	 */
 	public static final class Direct<T> extends RegistryEntryList.ListBacked<T> {
+		static final RegistryEntryList.Direct<?> EMPTY = new RegistryEntryList.Direct(List.of());
 		private final List<RegistryEntry<T>> entries;
 		@Nullable
 		private Set<RegistryEntry<T>> entrySet;

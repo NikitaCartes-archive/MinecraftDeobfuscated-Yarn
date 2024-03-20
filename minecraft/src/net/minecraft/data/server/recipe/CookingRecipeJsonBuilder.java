@@ -9,6 +9,7 @@ import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -113,7 +114,7 @@ public class CookingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	}
 
 	private static CookingRecipeCategory getSmeltingRecipeCategory(ItemConvertible output) {
-		if (output.asItem().isFood()) {
+		if (output.asItem().getComponents().contains(DataComponentTypes.FOOD)) {
 			return CookingRecipeCategory.FOOD;
 		} else {
 			return output.asItem() instanceof BlockItem ? CookingRecipeCategory.BLOCKS : CookingRecipeCategory.MISC;

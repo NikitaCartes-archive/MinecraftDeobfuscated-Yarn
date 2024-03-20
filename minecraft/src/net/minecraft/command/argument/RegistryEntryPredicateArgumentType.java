@@ -58,7 +58,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 		Optional<RegistryEntryPredicateArgumentType.EntryPredicate<T>> optional = entryPredicate.tryCast(registryRef);
 		return (RegistryEntryPredicateArgumentType.EntryPredicate<T>)optional.orElseThrow(() -> entryPredicate.getEntry().map(entry -> {
 				RegistryKey<?> registryKey2 = entry.registryKey();
-				return RegistryEntryArgumentType.INVALID_TYPE_EXCEPTION.create(registryKey2.getValue(), registryKey2.getRegistry(), registryRef.getValue());
+				return RegistryEntryReferenceArgumentType.INVALID_TYPE_EXCEPTION.create(registryKey2.getValue(), registryKey2.getRegistry(), registryRef.getValue());
 			}, entryList -> {
 				TagKey<?> tagKey = entryList.getTag();
 				return WRONG_TYPE_EXCEPTION.create(tagKey.id(), tagKey.registry(), registryRef.getValue());
@@ -86,7 +86,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 			RegistryKey<T> registryKey = RegistryKey.of(this.registryRef, identifier2);
 			RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)this.registryWrapper
 				.getOptional(registryKey)
-				.orElseThrow(() -> RegistryEntryArgumentType.NOT_FOUND_EXCEPTION.createWithContext(stringReader, identifier2, this.registryRef.getValue()));
+				.orElseThrow(() -> RegistryEntryReferenceArgumentType.NOT_FOUND_EXCEPTION.createWithContext(stringReader, identifier2, this.registryRef.getValue()));
 			return new RegistryEntryPredicateArgumentType.EntryBased<>(reference);
 		}
 	}

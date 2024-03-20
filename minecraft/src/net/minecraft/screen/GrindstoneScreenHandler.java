@@ -12,7 +12,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -152,11 +151,10 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 		if (!firstInput.isOf(secondInput.getItem())) {
 			return ItemStack.EMPTY;
 		} else {
-			Item item = firstInput.getItem();
-			int i = item.getMaxDamage() - firstInput.getDamage();
-			int j = item.getMaxDamage() - secondInput.getDamage();
-			int k = i + j + item.getMaxDamage() * 5 / 100;
-			int l = Math.max(item.getMaxDamage() - k, 0);
+			int i = Math.max(firstInput.getMaxDamage(), secondInput.getMaxDamage());
+			int j = firstInput.getMaxDamage() - firstInput.getDamage();
+			int k = secondInput.getMaxDamage() - secondInput.getDamage();
+			int l = j + k + i * 5 / 100;
 			int m = 1;
 			if (!firstInput.isDamageable()) {
 				if (firstInput.getMaxCount() < 2 || !ItemStack.areEqual(firstInput, secondInput)) {
@@ -168,10 +166,11 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 
 			ItemStack itemStack = firstInput.copyWithCount(m);
 			if (itemStack.isDamageable()) {
-				itemStack.setDamage(l);
+				itemStack.set(DataComponentTypes.MAX_DAMAGE, i);
+				itemStack.setDamage(Math.max(i - l, 0));
 			}
 
-			this.transferEnchantments(firstInput, secondInput);
+			this.transferEnchantments(itemStack, secondInput);
 			return this.grind(itemStack);
 		}
 	}

@@ -68,6 +68,8 @@ public class Criteria {
 	public static final ItemCriterion ALLAY_DROP_ITEM_ON_BLOCK = register("allay_drop_item_on_block", new ItemCriterion());
 	public static final TickCriterion AVOID_VIBRATION = register("avoid_vibration", new TickCriterion());
 	public static final RecipeCraftedCriterion RECIPE_CRAFTED = register("recipe_crafted", new RecipeCraftedCriterion());
+	public static final RecipeCraftedCriterion CRAFTER_RECIPE_CRAFTED = register("crafter_recipe_crafted", new RecipeCraftedCriterion());
+	public static final FallAfterExplosionCriterion FALL_AFTER_EXPLOSION = register("fall_after_explosion", new FallAfterExplosionCriterion());
 
 	private static <T extends Criterion<?>> T register(String id, T criterion) {
 		return Registry.register(Registries.CRITERION, id, criterion);

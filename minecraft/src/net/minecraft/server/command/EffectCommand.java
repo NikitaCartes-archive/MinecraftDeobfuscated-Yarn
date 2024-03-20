@@ -10,7 +10,7 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
+import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -39,10 +39,10 @@ public class EffectCommand {
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.executes(context -> executeClear(context.getSource(), EntityArgumentType.getEntities(context, "targets")))
 								.then(
-									CommandManager.argument("effect", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.STATUS_EFFECT))
+									CommandManager.argument("effect", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, RegistryKeys.STATUS_EFFECT))
 										.executes(
 											context -> executeClear(
-													context.getSource(), EntityArgumentType.getEntities(context, "targets"), RegistryEntryArgumentType.getStatusEffect(context, "effect")
+													context.getSource(), EntityArgumentType.getEntities(context, "targets"), RegistryEntryReferenceArgumentType.getStatusEffect(context, "effect")
 												)
 										)
 								)
@@ -53,12 +53,12 @@ public class EffectCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									CommandManager.argument("effect", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.STATUS_EFFECT))
+									CommandManager.argument("effect", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, RegistryKeys.STATUS_EFFECT))
 										.executes(
 											context -> executeGive(
 													context.getSource(),
 													EntityArgumentType.getEntities(context, "targets"),
-													RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+													RegistryEntryReferenceArgumentType.getStatusEffect(context, "effect"),
 													null,
 													0,
 													true
@@ -70,7 +70,7 @@ public class EffectCommand {
 													context -> executeGive(
 															context.getSource(),
 															EntityArgumentType.getEntities(context, "targets"),
-															RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+															RegistryEntryReferenceArgumentType.getStatusEffect(context, "effect"),
 															IntegerArgumentType.getInteger(context, "seconds"),
 															0,
 															true
@@ -82,7 +82,7 @@ public class EffectCommand {
 															context -> executeGive(
 																	context.getSource(),
 																	EntityArgumentType.getEntities(context, "targets"),
-																	RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+																	RegistryEntryReferenceArgumentType.getStatusEffect(context, "effect"),
 																	IntegerArgumentType.getInteger(context, "seconds"),
 																	IntegerArgumentType.getInteger(context, "amplifier"),
 																	true
@@ -94,7 +94,7 @@ public class EffectCommand {
 																	context -> executeGive(
 																			context.getSource(),
 																			EntityArgumentType.getEntities(context, "targets"),
-																			RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+																			RegistryEntryReferenceArgumentType.getStatusEffect(context, "effect"),
 																			IntegerArgumentType.getInteger(context, "seconds"),
 																			IntegerArgumentType.getInteger(context, "amplifier"),
 																			!BoolArgumentType.getBool(context, "hideParticles")
@@ -109,7 +109,7 @@ public class EffectCommand {
 													context -> executeGive(
 															context.getSource(),
 															EntityArgumentType.getEntities(context, "targets"),
-															RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+															RegistryEntryReferenceArgumentType.getStatusEffect(context, "effect"),
 															-1,
 															0,
 															true
@@ -121,7 +121,7 @@ public class EffectCommand {
 															context -> executeGive(
 																	context.getSource(),
 																	EntityArgumentType.getEntities(context, "targets"),
-																	RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+																	RegistryEntryReferenceArgumentType.getStatusEffect(context, "effect"),
 																	-1,
 																	IntegerArgumentType.getInteger(context, "amplifier"),
 																	true
@@ -133,7 +133,7 @@ public class EffectCommand {
 																	context -> executeGive(
 																			context.getSource(),
 																			EntityArgumentType.getEntities(context, "targets"),
-																			RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+																			RegistryEntryReferenceArgumentType.getStatusEffect(context, "effect"),
 																			-1,
 																			IntegerArgumentType.getInteger(context, "amplifier"),
 																			!BoolArgumentType.getBool(context, "hideParticles")

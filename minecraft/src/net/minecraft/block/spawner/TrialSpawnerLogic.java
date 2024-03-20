@@ -22,10 +22,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -54,18 +54,13 @@ public final class TrialSpawnerLogic {
 
 	public Codec<TrialSpawnerLogic> codec() {
 		return RecordCodecBuilder.create(
-			instance -> instance.group(TrialSpawnerConfig.codec.forGetter(TrialSpawnerLogic::getConfig), TrialSpawnerData.codec.forGetter(TrialSpawnerLogic::getData))
-					.apply(
-						instance,
-						(trialSpawnerConfig, trialSpawnerData) -> new TrialSpawnerLogic(
-								trialSpawnerConfig, trialSpawnerData, this.trialSpawner, this.entityDetector, this.entitySelector
-							)
-					)
+			instance -> instance.group(TrialSpawnerConfig.CODEC.forGetter(TrialSpawnerLogic::getConfig), TrialSpawnerData.codec.forGetter(TrialSpawnerLogic::getData))
+					.apply(instance, (config, data) -> new TrialSpawnerLogic(config, data, this.trialSpawner, this.entityDetector, this.entitySelector))
 		);
 	}
 
 	public TrialSpawnerLogic(TrialSpawnerLogic.TrialSpawner trialSpawner, EntityDetector entityDetector, EntityDetector.Selector entitySelector) {
-		this(TrialSpawnerConfig.defaultInstance, new TrialSpawnerData(), trialSpawner, entityDetector, entitySelector);
+		this(TrialSpawnerConfig.DEFAULT, new TrialSpawnerData(), trialSpawner, entityDetector, entitySelector);
 	}
 
 	public TrialSpawnerLogic(
@@ -185,8 +180,8 @@ public final class TrialSpawnerLogic {
 		}
 	}
 
-	public void ejectLootTable(ServerWorld world, BlockPos pos, Identifier lootTable) {
-		LootTable lootTable2 = world.getServer().getLootManager().getLootTable(lootTable);
+	public void ejectLootTable(ServerWorld world, BlockPos pos, RegistryKey<LootTable> lootTable) {
+		LootTable lootTable2 = world.getServer().getReloadableRegistries().getLootTable(lootTable);
 		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world).build(LootContextTypes.EMPTY);
 		ObjectArrayList<ItemStack> objectArrayList = lootTable2.generateLoot(lootContextParameterSet);
 		if (!objectArrayList.isEmpty()) {

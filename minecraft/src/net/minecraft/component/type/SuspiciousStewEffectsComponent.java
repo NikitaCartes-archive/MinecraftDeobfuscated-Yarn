@@ -23,7 +23,7 @@ public record SuspiciousStewEffectsComponent(List<SuspiciousStewEffectsComponent
 		.xmap(SuspiciousStewEffectsComponent::new, SuspiciousStewEffectsComponent::effects);
 
 	public SuspiciousStewEffectsComponent with(SuspiciousStewEffectsComponent.StewEffect stewEffect) {
-		return new SuspiciousStewEffectsComponent(Util.listWith(this.effects, stewEffect));
+		return new SuspiciousStewEffectsComponent(Util.withAppended(this.effects, stewEffect));
 	}
 
 	public static record StewEffect(RegistryEntry<StatusEffect> effect, int duration) {

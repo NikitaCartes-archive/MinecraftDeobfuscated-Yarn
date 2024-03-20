@@ -1,16 +1,17 @@
 package net.minecraft.recipe;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import com.mojang.datafixers.util.Pair;
+import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 
 public class RepairItemRecipe extends SpecialCraftingRecipe {
@@ -18,71 +19,74 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
-		List<ItemStack> list = Lists.<ItemStack>newArrayList();
+	@Nullable
+	private Pair<ItemStack, ItemStack> findPair(RecipeInputInventory inventory) {
+		ItemStack itemStack = null;
+		ItemStack itemStack2 = null;
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack = recipeInputInventory.getStack(i);
-			if (!itemStack.isEmpty()) {
-				list.add(itemStack);
-				if (list.size() > 1) {
-					ItemStack itemStack2 = (ItemStack)list.get(0);
-					if (!itemStack.isOf(itemStack2.getItem()) || itemStack2.getCount() != 1 || itemStack.getCount() != 1 || !itemStack2.getItem().isDamageable()) {
-						return false;
+		for (int i = 0; i < inventory.size(); i++) {
+			ItemStack itemStack3 = inventory.getStack(i);
+			if (!itemStack3.isEmpty()) {
+				if (itemStack == null) {
+					itemStack = itemStack3;
+				} else {
+					if (itemStack2 != null) {
+						return null;
 					}
+
+					itemStack2 = itemStack3;
 				}
 			}
 		}
 
-		return list.size() == 2;
+		return itemStack != null && itemStack2 != null && canCombineStacks(itemStack, itemStack2) ? Pair.of(itemStack, itemStack2) : null;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
-		List<ItemStack> list = Lists.<ItemStack>newArrayList();
+	private static boolean canCombineStacks(ItemStack first, ItemStack second) {
+		return second.isOf(first.getItem())
+			&& first.getCount() == 1
+			&& second.getCount() == 1
+			&& first.contains(DataComponentTypes.MAX_DAMAGE)
+			&& second.contains(DataComponentTypes.MAX_DAMAGE)
+			&& first.contains(DataComponentTypes.DAMAGE)
+			&& second.contains(DataComponentTypes.DAMAGE);
+	}
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack = recipeInputInventory.getStack(i);
-			if (!itemStack.isEmpty()) {
-				list.add(itemStack);
-				if (list.size() > 1) {
-					ItemStack itemStack2 = (ItemStack)list.get(0);
-					if (!itemStack.isOf(itemStack2.getItem()) || itemStack2.getCount() != 1 || itemStack.getCount() != 1 || !itemStack2.getItem().isDamageable()) {
-						return ItemStack.EMPTY;
-					}
-				}
-			}
-		}
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+		return this.findPair(recipeInputInventory) != null;
+	}
 
-		if (list.size() == 2) {
-			ItemStack itemStack3 = (ItemStack)list.get(0);
-			ItemStack itemStack = (ItemStack)list.get(1);
-			if (itemStack3.isOf(itemStack.getItem()) && itemStack3.getCount() == 1 && itemStack.getCount() == 1 && itemStack3.getItem().isDamageable()) {
-				Item item = itemStack3.getItem();
-				int j = item.getMaxDamage() - itemStack3.getDamage();
-				int k = item.getMaxDamage() - itemStack.getDamage();
-				int l = j + k + item.getMaxDamage() * 5 / 100;
-				int m = item.getMaxDamage() - l;
-				if (m < 0) {
-					m = 0;
-				}
-
-				ItemStack itemStack4 = new ItemStack(itemStack3.getItem());
-				itemStack4.setDamage(m);
-				ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(itemStack3);
-				ItemEnchantmentsComponent itemEnchantmentsComponent2 = EnchantmentHelper.getEnchantments(itemStack);
-				EnchantmentHelper.apply(
-					itemStack4, builder -> dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT).stream().filter(Enchantment::isCursed).forEach(enchantment -> {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+		Pair<ItemStack, ItemStack> pair = this.findPair(recipeInputInventory);
+		if (pair == null) {
+			return ItemStack.EMPTY;
+		} else {
+			ItemStack itemStack = pair.getFirst();
+			ItemStack itemStack2 = pair.getSecond();
+			int i = Math.max(itemStack.getMaxDamage(), itemStack2.getMaxDamage());
+			int j = itemStack.getMaxDamage() - itemStack.getDamage();
+			int k = itemStack2.getMaxDamage() - itemStack2.getDamage();
+			int l = j + k + i * 5 / 100;
+			ItemStack itemStack3 = new ItemStack(itemStack.getItem());
+			itemStack3.set(DataComponentTypes.MAX_DAMAGE, i);
+			itemStack3.setDamage(Math.max(i - l, 0));
+			ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(itemStack);
+			ItemEnchantmentsComponent itemEnchantmentsComponent2 = EnchantmentHelper.getEnchantments(itemStack2);
+			EnchantmentHelper.apply(
+				itemStack3,
+				builder -> wrapperLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
+						.streamEntries()
+						.map(RegistryEntry::value)
+						.filter(Enchantment::isCursed)
+						.forEach(enchantment -> {
 							int ix = Math.max(itemEnchantmentsComponent.getLevel(enchantment), itemEnchantmentsComponent2.getLevel(enchantment));
 							if (ix > 0) {
 								builder.add(enchantment, ix);
 							}
 						})
-				);
-				return itemStack4;
-			}
+			);
+			return itemStack3;
 		}
-
-		return ItemStack.EMPTY;
 	}
 
 	@Override

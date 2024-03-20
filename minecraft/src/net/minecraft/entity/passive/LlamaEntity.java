@@ -45,7 +45,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -63,7 +62,6 @@ import net.minecraft.world.World;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<LlamaEntity.Variant>, RangedAttackMob {
 	private static final int MAX_STRENGTH = 5;
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
 	private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.LLAMA
@@ -119,7 +117,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		this.goalSelector.add(3, new ProjectileAttackGoal(this, 1.25, 40, 20.0F));
 		this.goalSelector.add(3, new EscapeDangerGoal(this, 1.2));
 		this.goalSelector.add(4, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(5, new TemptGoal(this, 1.25, Ingredient.ofItems(Items.HAY_BLOCK), false));
+		this.goalSelector.add(5, new TemptGoal(this, 1.25, stack -> stack.isIn(ItemTags.LLAMA_TEMPT_ITEMS), false));
 		this.goalSelector.add(6, new FollowParentGoal(this, 1.0));
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 0.7));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -154,7 +152,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return TAMING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.LLAMA_FOOD);
 	}
 
 	@Override

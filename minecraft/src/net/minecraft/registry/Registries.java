@@ -44,6 +44,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
+import net.minecraft.item.map.MapDecorationType;
+import net.minecraft.item.map.MapDecorationTypes;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.entry.LootPoolEntryType;
@@ -221,7 +223,7 @@ public class Registries {
 		RegistryKeys.POOL_ALIAS_BINDING, StructurePoolAliasBindings::registerAndGetDefault
 	);
 	public static final Registry<CatVariant> CAT_VARIANT = create(RegistryKeys.CAT_VARIANT, CatVariant::registerAndGetDefault);
-	public static final Registry<FrogVariant> FROG_VARIANT = create(RegistryKeys.FROG_VARIANT, registry -> FrogVariant.TEMPERATE);
+	public static final Registry<FrogVariant> FROG_VARIANT = create(RegistryKeys.FROG_VARIANT, FrogVariant::registerAndGetDefault);
 	public static final Registry<Instrument> INSTRUMENT = create(RegistryKeys.INSTRUMENT, Instruments::registerAndGetDefault);
 	public static final Registry<String> DECORATED_POT_PATTERN = create(RegistryKeys.DECORATED_POT_PATTERN, DecoratedPotPatterns::registerAndGetDefault);
 	public static final Registry<ItemGroup> ITEM_GROUP = create(RegistryKeys.ITEM_GROUP, ItemGroups::registerAndGetDefault);
@@ -235,6 +237,7 @@ public class Registries {
 	public static final Registry<ItemSubPredicate.Type<?>> ITEM_SUB_PREDICATE_TYPE = create(
 		RegistryKeys.ITEM_SUB_PREDICATE_TYPE, ItemSubPredicateTypes::getDefault
 	);
+	public static final Registry<MapDecorationType> MAP_DECORATION_TYPE = create(RegistryKeys.MAP_DECORATION_TYPE, MapDecorationTypes::getDefault);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {

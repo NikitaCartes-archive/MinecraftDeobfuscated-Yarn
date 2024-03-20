@@ -20,18 +20,18 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -45,6 +45,7 @@ import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.Unit;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -86,20 +87,14 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	public static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
 	public static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
 	public static final int DEFAULT_MAX_COUNT = 64;
-	public static final int DEFAULT_MAX_USE_TIME = 32;
+	public static final int MAX_MAX_COUNT = 99;
 	public static final int ITEM_BAR_STEPS = 13;
 	private final RegistryEntry.Reference<Item> registryEntry = Registries.ITEM.createEntry(this);
 	private final ComponentMap components;
-	private final Rarity rarity;
-	private final int maxCount;
-	private final int maxDamage;
-	private final boolean fireproof;
 	@Nullable
 	private final Item recipeRemainder;
 	@Nullable
 	private String translationKey;
-	@Nullable
-	private final FoodComponent foodComponent;
 	private final FeatureSet requiredFeatures;
 
 	/**
@@ -125,13 +120,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	public Item(Item.Settings settings) {
-		this.components = settings.getComponents();
-		this.rarity = settings.rarity;
+		this.components = settings.getValidatedComponents();
 		this.recipeRemainder = settings.recipeRemainder;
-		this.maxDamage = settings.maxDamage;
-		this.maxCount = settings.maxCount;
-		this.foodComponent = settings.foodComponent;
-		this.fireproof = settings.fireproof;
 		this.requiredFeatures = settings.requiredFeatures;
 		if (SharedConstants.isDevelopment) {
 			String string = this.getClass().getSimpleName();
@@ -148,6 +138,13 @@ public class Item implements ToggleableFeature, ItemConvertible {
 
 	public ComponentMap getComponents() {
 		return this.components;
+	}
+
+	/**
+	 * {@return the maximum stack count of any ItemStack with this item} Can be configured through {@link Item.Settings#maxCount(int) settings.maxCount()}.
+	 */
+	public int getMaxCount() {
+		return this.components.getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1);
 	}
 
 	/**
@@ -213,18 +210,9 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return ActionResult.PASS;
 	}
 
-	/**
-	 * {@return the multiplier applied to the mining speed of {@code stack} when mining
-	 * {@code state}}
-	 * 
-	 * <p>The default value is {@code 1.0f}. Returning larger integer will cause the block
-	 * to be mined faster. Enchantments, status effects, and other effects that affect
-	 * mining speed are instead handled in {@link PlayerEntity#getBlockBreakingSpeed}.
-	 * 
-	 * @see MiningToolItem
-	 */
-	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-		return 1.0F;
+	public float getMiningSpeed(ItemStack stack, BlockState state) {
+		ToolComponent toolComponent = stack.get(DataComponentTypes.TOOL);
+		return toolComponent != null ? toolComponent.getSpeed(state) : 1.0F;
 	}
 
 	/**
@@ -249,9 +237,10 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * @param hand the hand used
 	 */
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		if (this.isFood()) {
-			ItemStack itemStack = user.getStackInHand(hand);
-			if (user.canConsume(this.getFoodComponent().isAlwaysEdible())) {
+		ItemStack itemStack = user.getStackInHand(hand);
+		FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
+		if (foodComponent != null) {
+			if (user.canConsume(foodComponent.canAlwaysEat())) {
 				user.setCurrentHand(hand);
 				return TypedActionResult.consume(itemStack);
 			} else {
@@ -276,28 +265,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * @return the new item stack after using the item
 	 */
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		return this.isFood() ? user.eatFood(world, stack) : stack;
-	}
-
-	/**
-	 * {@return the maximum stack count of any ItemStack with this item} Can be configured through {@link Item.Settings#maxCount(int) settings.maxCount()}.
-	 */
-	public final int getMaxCount() {
-		return this.maxCount;
-	}
-
-	/**
-	 * {@return the maximum durability of this item} Can be configured through {@link Item.Settings#maxDamage(int) settings.maxDamage()}.
-	 */
-	public final int getMaxDamage() {
-		return this.maxDamage;
-	}
-
-	/**
-	 * {@return whether this item can lose durability}
-	 */
-	public boolean isDamageable() {
-		return this.maxDamage > 0;
+		return stack.contains(DataComponentTypes.FOOD) ? user.eatFood(world, stack) : stack;
 	}
 
 	/**
@@ -323,7 +291,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * also be overridden.
 	 */
 	public int getItemBarStep(ItemStack stack) {
-		return MathHelper.clamp(Math.round(13.0F - (float)stack.getDamage() * 13.0F / (float)this.maxDamage), 0, 13);
+		return MathHelper.clamp(Math.round(13.0F - (float)stack.getDamage() * 13.0F / (float)stack.getMaxDamage()), 0, 13);
 	}
 
 	/**
@@ -333,7 +301,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * also be overridden.
 	 */
 	public int getItemBarColor(ItemStack stack) {
-		float f = Math.max(0.0F, ((float)this.maxDamage - (float)stack.getDamage()) / (float)this.maxDamage);
+		int i = stack.getMaxDamage();
+		float f = Math.max(0.0F, ((float)i - (float)stack.getDamage()) / (float)i);
 		return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
 	}
 
@@ -377,6 +346,10 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return false;
 	}
 
+	public float getBonusAttackDamage(PlayerEntity player, float baseAttackDamage) {
+		return 0.0F;
+	}
+
 	/**
 	 * Called on the server when the item is used to hit an entity.
 	 * 
@@ -400,20 +373,21 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * @see ItemStack#damage(int, LivingEntity, EquipmentSlot)
 	 */
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-		return false;
+		ToolComponent toolComponent = stack.get(DataComponentTypes.TOOL);
+		if (toolComponent == null) {
+			return false;
+		} else {
+			if (!world.isClient && state.getHardness(world, pos) != 0.0F && toolComponent.damagePerBlock() > 0) {
+				stack.damage(toolComponent.damagePerBlock(), miner, EquipmentSlot.MAINHAND);
+			}
+
+			return true;
+		}
 	}
 
-	/**
-	 * Determines whether this item can be used as a suitable tool for mining the specified block.
-	 * Depending on block implementation, when combined together, the correct item and block may achieve a better mining speed and yield
-	 * drops that would not be obtained when mining otherwise.
-	 * <p>
-	 * Note that this is not the <b>only</b> way to achieve "effectiveness" when mining.
-	 * Other items, such as shears on string, may use their own logic
-	 * and calls to this method might not return a value consistent to this rule for those items.
-	 */
-	public boolean isSuitableFor(BlockState state) {
-		return false;
+	public boolean isCorrectForDrops(ItemStack stack, BlockState state) {
+		ToolComponent toolComponent = stack.get(DataComponentTypes.TOOL);
+		return toolComponent != null && toolComponent.isCorrectForDrops(state);
 	}
 
 	/**
@@ -523,7 +497,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * {@return the use action the item should perform}
 	 */
 	public UseAction getUseAction(ItemStack stack) {
-		return stack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
+		return stack.contains(DataComponentTypes.FOOD) ? UseAction.EAT : UseAction.NONE;
 	}
 
 	/**
@@ -531,11 +505,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * Once a player has used an item for said number of ticks, they stop using it, and {@link Item#finishUsing} is called.
 	 */
 	public int getMaxUseTime(ItemStack stack) {
-		if (stack.getItem().isFood()) {
-			return this.getFoodComponent().isSnack() ? 16 : 32;
-		} else {
-			return 0;
-		}
+		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
+		return foodComponent != null ? foodComponent.getEatTicks() : 0;
 	}
 
 	/**
@@ -580,38 +551,12 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	/**
-	 * {@return this item's rarity, which changes the color of its name}
-	 * 
-	 * <p>By default, if an item has an enchantment, its rarity is modified:
-	 * <ul>
-	 * 	<li>Common and Uncommon -> Rare
-	 * 	<li>Rare -> Epic
-	 * </ul>
-	 */
-	public Rarity getRarity(ItemStack stack) {
-		if (!stack.hasEnchantments()) {
-			return this.rarity;
-		} else {
-			switch (this.rarity) {
-				case COMMON:
-				case UNCOMMON:
-					return Rarity.RARE;
-				case RARE:
-					return Rarity.EPIC;
-				case EPIC:
-				default:
-					return this.rarity;
-			}
-		}
-	}
-
-	/**
 	 * {@return whether the given {@link ItemStack} is enchantable}
 	 * 
 	 * <p>By default, ItemStacks are enchantable if their max stack count is 1 and they can be damaged.
 	 */
 	public boolean isEnchantable(ItemStack stack) {
-		return this.getMaxCount() == 1 && this.isDamageable();
+		return stack.getMaxCount() == 1 && stack.contains(DataComponentTypes.MAX_DAMAGE);
 	}
 
 	protected static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
@@ -666,21 +611,6 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	/**
-	 * Checks if this item is food and therefore is edible.
-	 */
-	public boolean isFood() {
-		return this.foodComponent != null;
-	}
-
-	/**
-	 * {@return this item's {@link #foodComponent FoodComponent}, or {@code null} if none was set}
-	 */
-	@Nullable
-	public FoodComponent getFoodComponent() {
-		return this.foodComponent;
-	}
-
-	/**
 	 * {@return the sound for drinking the item}
 	 */
 	public SoundEvent getDrinkSound() {
@@ -696,20 +626,6 @@ public class Item implements ToggleableFeature, ItemConvertible {
 
 	public SoundEvent getBreakSound() {
 		return SoundEvents.ENTITY_ITEM_BREAK;
-	}
-
-	/**
-	 * {@return whether this item is immune to fire and lava damage}
-	 */
-	public boolean isFireproof() {
-		return this.fireproof;
-	}
-
-	/**
-	 * {@return whether this item can be damaged by the given {@link DamageSource source}}
-	 */
-	public boolean damage(DamageSource source) {
-		return !this.fireproof || !source.isIn(DamageTypeTags.IS_FIRE);
 	}
 
 	/**
@@ -733,14 +649,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		private static final Interner<ComponentMap> COMPONENT_MAP_INTERNER = Interners.newStrongInterner();
 		@Nullable
 		private ComponentMap.Builder components;
-		int maxCount = 64;
-		int maxDamage;
 		@Nullable
 		Item recipeRemainder;
-		Rarity rarity = Rarity.COMMON;
-		@Nullable
-		FoodComponent foodComponent;
-		boolean fireproof;
 		FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
 		/**
@@ -751,8 +661,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		 * @param foodComponent configured food properties for any item using this Settings instance
 		 */
 		public Item.Settings food(FoodComponent foodComponent) {
-			this.foodComponent = foodComponent;
-			return this;
+			return this.component(DataComponentTypes.FOOD, foodComponent);
 		}
 
 		/**
@@ -768,25 +677,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		 * @param maxCount maximum stack count of any ItemStack with an item using this Settings instance
 		 */
 		public Item.Settings maxCount(int maxCount) {
-			if (this.maxDamage > 0) {
-				throw new RuntimeException("Unable to have damage AND stack.");
-			} else {
-				this.maxCount = maxCount;
-				return this;
-			}
-		}
-
-		/**
-		 * Calls {@link Item.Settings#maxDamage} If this Settings instance has not already set max damage (or if max damage is the default value, 0).
-		 * 
-		 * <p>Note that max stack count is set to 1 when maxDamage is called.
-		 * 
-		 * @return this instance
-		 * 
-		 * @param maxDamage maximum durability of an ItemStack using an item with this Item.Settings instance
-		 */
-		public Item.Settings maxDamageIfAbsent(int maxDamage) {
-			return this.maxDamage == 0 ? this.maxDamage(maxDamage) : this;
+			return this.component(DataComponentTypes.MAX_STACK_SIZE, maxCount);
 		}
 
 		/**
@@ -799,8 +690,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		 * @param maxDamage maximum durability of an ItemStack using an item with this Item.Settings instance
 		 */
 		public Item.Settings maxDamage(int maxDamage) {
-			this.maxDamage = maxDamage;
-			this.maxCount = 1;
+			this.component(DataComponentTypes.MAX_DAMAGE, maxDamage);
+			this.component(DataComponentTypes.MAX_STACK_SIZE, 1);
 			this.component(DataComponentTypes.DAMAGE, 0);
 			return this;
 		}
@@ -826,8 +717,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		 * @param rarity rarity to apply to items using this Settings instance
 		 */
 		public Item.Settings rarity(Rarity rarity) {
-			this.rarity = rarity;
-			return this;
+			return this.component(DataComponentTypes.RARITY, rarity);
 		}
 
 		/**
@@ -836,8 +726,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		 * @return this instance
 		 */
 		public Item.Settings fireproof() {
-			this.fireproof = true;
-			return this;
+			return this.component(DataComponentTypes.FIRE_RESISTANT, Unit.INSTANCE);
 		}
 
 		public Item.Settings requires(FeatureFlag... features) {
@@ -858,7 +747,16 @@ public class Item implements ToggleableFeature, ItemConvertible {
 			return this.component(DataComponentTypes.ATTRIBUTE_MODIFIERS, attributeModifiersComponent);
 		}
 
-		ComponentMap getComponents() {
+		ComponentMap getValidatedComponents() {
+			ComponentMap componentMap = this.getComponents();
+			if (componentMap.contains(DataComponentTypes.DAMAGE) && componentMap.getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1) > 1) {
+				throw new IllegalStateException("Item cannot have both durability and be stackable");
+			} else {
+				return componentMap;
+			}
+		}
+
+		private ComponentMap getComponents() {
 			return this.components == null ? DataComponentTypes.DEFAULT_ITEM_COMPONENTS : COMPONENT_MAP_INTERNER.intern(this.components.build());
 		}
 	}

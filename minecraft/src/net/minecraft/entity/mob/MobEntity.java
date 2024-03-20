@@ -56,6 +56,7 @@ import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
@@ -63,6 +64,8 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -159,7 +162,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	private boolean persistent;
 	private final Map<PathNodeType, Float> pathfindingPenalties = Maps.newEnumMap(PathNodeType.class);
 	@Nullable
-	private Identifier lootTable;
+	private RegistryKey<LootTable> lootTable;
 	private long lootTableSeed;
 	@Nullable
 	private Entity holdingEntity;
@@ -467,7 +470,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 		nbt.putBoolean("LeftHanded", this.isLeftHanded());
 		if (this.lootTable != null) {
-			nbt.putString("DeathLootTable", this.lootTable.toString());
+			nbt.putString("DeathLootTable", this.lootTable.getValue().toString());
 			if (this.lootTableSeed != 0L) {
 				nbt.putLong("DeathLootTableSeed", this.lootTableSeed);
 			}
@@ -537,7 +540,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 		this.setLeftHanded(nbt.getBoolean("LeftHanded"));
 		if (nbt.contains("DeathLootTable", NbtElement.STRING_TYPE)) {
-			this.lootTable = new Identifier(nbt.getString("DeathLootTable"));
+			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier(nbt.getString("DeathLootTable")));
 			this.lootTableSeed = nbt.getLong("DeathLootTableSeed");
 		}
 
@@ -551,11 +554,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	@Override
-	public final Identifier getLootTable() {
+	public final RegistryKey<LootTable> getLootTable() {
 		return this.lootTable == null ? this.getLootTableId() : this.lootTable;
 	}
 
-	protected Identifier getLootTableId() {
+	protected RegistryKey<LootTable> getLootTableId() {
 		return super.getLootTable();
 	}
 

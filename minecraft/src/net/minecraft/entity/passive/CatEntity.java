@@ -1,8 +1,12 @@
 package net.minecraft.entity.passive;
 
+import java.util.Optional;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
@@ -37,7 +41,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextParameterSet;
@@ -46,10 +49,13 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.CatVariantTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
@@ -70,15 +76,15 @@ import net.minecraft.world.World;
 /**
  * Meow.
  */
-public class CatEntity extends TameableEntity implements VariantHolder<CatVariant> {
+public class CatEntity extends TameableEntity implements VariantHolder<RegistryEntry<CatVariant>> {
 	public static final double CROUCHING_SPEED = 0.6;
 	public static final double NORMAL_SPEED = 0.8;
 	public static final double SPRINTING_SPEED = 1.33;
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
-	private static final TrackedData<CatVariant> CAT_VARIANT = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.CAT_VARIANT);
+	private static final TrackedData<RegistryEntry<CatVariant>> CAT_VARIANT = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.CAT_VARIANT);
 	private static final TrackedData<Boolean> IN_SLEEPING_POSE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final RegistryKey<CatVariant> DEFAULT_VARIANT = CatVariant.BLACK;
 	@Nullable
 	private CatEntity.CatFleeGoal<PlayerEntity> fleeGoal;
 	@Nullable
@@ -96,12 +102,12 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	}
 
 	public Identifier getTexture() {
-		return this.getVariant().texture();
+		return this.getVariant().value().texture();
 	}
 
 	@Override
 	protected void initGoals() {
-		this.temptGoal = new CatEntity.TemptGoal(this, 0.6, TAMING_INGREDIENT, true);
+		this.temptGoal = new CatEntity.TemptGoal(this, 0.6, stack -> stack.isIn(ItemTags.CAT_FOOD), true);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.5));
 		this.goalSelector.add(2, new SitGoal(this));
@@ -119,12 +125,12 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 		this.targetSelector.add(1, new UntamedActiveTargetGoal(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
-	public CatVariant getVariant() {
+	public RegistryEntry<CatVariant> getVariant() {
 		return this.dataTracker.get(CAT_VARIANT);
 	}
 
-	public void setVariant(CatVariant catVariant) {
-		this.dataTracker.set(CAT_VARIANT, catVariant);
+	public void setVariant(RegistryEntry<CatVariant> registryEntry) {
+		this.dataTracker.set(CAT_VARIANT, registryEntry);
 	}
 
 	/**
@@ -162,7 +168,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
-		builder.add(CAT_VARIANT, Registries.CAT_VARIANT.getOrThrow(CatVariant.BLACK));
+		builder.add(CAT_VARIANT, Registries.CAT_VARIANT.entryOf(DEFAULT_VARIANT));
 		builder.add(IN_SLEEPING_POSE, false);
 		builder.add(HEAD_DOWN, false);
 		builder.add(COLLAR_COLOR, DyeColor.RED.getId());
@@ -171,18 +177,17 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putString("variant", Registries.CAT_VARIANT.getId(this.getVariant()).toString());
+		nbt.putString("variant", ((RegistryKey)this.getVariant().getKey().orElse(DEFAULT_VARIANT)).getValue().toString());
 		nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		CatVariant catVariant = Registries.CAT_VARIANT.get(Identifier.tryParse(nbt.getString("variant")));
-		if (catVariant != null) {
-			this.setVariant(catVariant);
-		}
-
+		Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
+			.map(id -> RegistryKey.of(RegistryKeys.CAT_VARIANT, id))
+			.flatMap(Registries.CAT_VARIANT::getEntry)
+			.ifPresent(this::setVariant);
 		if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
 			this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
 		}
@@ -357,10 +362,10 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 		entityData = super.initialize(world, difficulty, spawnReason, entityData);
 		boolean bl = world.getMoonSize() > 0.9F;
 		TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
-		Registries.CAT_VARIANT.getRandomEntry(tagKey, world.getRandom()).ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
+		Registries.CAT_VARIANT.getRandomEntry(tagKey, world.getRandom()).ifPresent(this::setVariant);
 		ServerWorld serverWorld = world.toServerWorld();
 		if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
-			this.setVariant(Registries.CAT_VARIANT.getOrThrow(CatVariant.ALL_BLACK));
+			this.setVariant(Registries.CAT_VARIANT.entryOf(CatVariant.ALL_BLACK));
 			this.setPersistent();
 		}
 
@@ -384,10 +389,11 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 
 						return ActionResult.success(this.getWorld().isClient());
 					}
-				} else if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
+				} else if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 					if (!this.getWorld().isClient()) {
 						this.eat(player, hand, itemStack);
-						this.heal((float)item.getFoodComponent().getHunger());
+						FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
+						this.heal(foodComponent != null ? (float)foodComponent.nutrition() : 1.0F);
 					}
 
 					return ActionResult.success(this.getWorld().isClient());
@@ -421,7 +427,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return TAMING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.CAT_FOOD);
 	}
 
 	@Override
@@ -572,7 +578,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 					false
 				);
 			mutable.set(this.cat.getBlockPos());
-			LootTable lootTable = this.cat.getWorld().getServer().getLootManager().getLootTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+			LootTable lootTable = this.cat.getWorld().getServer().getReloadableRegistries().getLootTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)this.cat.getWorld())
 				.add(LootContextParameters.ORIGIN, this.cat.getPos())
 				.add(LootContextParameters.THIS_ENTITY, this.cat)
@@ -619,8 +625,8 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 		private PlayerEntity player;
 		private final CatEntity cat;
 
-		public TemptGoal(CatEntity cat, double speed, Ingredient food, boolean canBeScared) {
-			super(cat, speed, food, canBeScared);
+		public TemptGoal(CatEntity cat, double speed, Predicate<ItemStack> foodPredicate, boolean canBeScared) {
+			super(cat, speed, foodPredicate, canBeScared);
 			this.cat = cat;
 		}
 

@@ -43,12 +43,18 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 		new DecimalFormat("#.##"), format -> format.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
 	);
 
+	public AttributeModifiersComponent withShowInTooltip(boolean showInTooltip) {
+		return new AttributeModifiersComponent(this.modifiers, showInTooltip);
+	}
+
 	public static AttributeModifiersComponent.Builder builder() {
 		return new AttributeModifiersComponent.Builder();
 	}
 
 	public AttributeModifiersComponent with(RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier, AttributeModifierSlot slot) {
-		return new AttributeModifiersComponent(Util.listWith(this.modifiers, new AttributeModifiersComponent.Entry(attribute, modifier, slot)), this.showInTooltip);
+		return new AttributeModifiersComponent(
+			Util.withAppended(this.modifiers, new AttributeModifiersComponent.Entry(attribute, modifier, slot)), this.showInTooltip
+		);
 	}
 
 	public void applyModifiers(EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeConsumer) {

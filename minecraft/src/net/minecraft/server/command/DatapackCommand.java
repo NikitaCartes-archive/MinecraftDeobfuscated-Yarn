@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import net.minecraft.command.CommandSource;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
@@ -194,7 +195,7 @@ public class DatapackCommand {
 			} else {
 				FeatureSet featureSet = context.getSource().getEnabledFeatures();
 				FeatureSet featureSet2 = resourcePackProfile.getRequestedFeatures();
-				if (!enable && featureSet2.isSubsetOf(featureSet)) {
+				if (!enable && !featureSet2.isEmpty() && resourcePackProfile.getSource() == ResourcePackSource.FEATURE) {
 					throw CANNOT_DISABLE_FEATURE_EXCEPTION.create(string);
 				} else if (!featureSet2.isSubsetOf(featureSet)) {
 					throw NO_FLAGS_EXCEPTION.create(string, FeatureFlags.printMissingFlags(featureSet, featureSet2));

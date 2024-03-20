@@ -7,36 +7,37 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerLootComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataKey;
-import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 
 public class SetLootTableLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetLootTableLootFunction> CODEC = RecordCodecBuilder.create(
 		instance -> addConditionsField(instance)
-				.<Identifier, long, RegistryEntry<BlockEntityType<?>>>and(
+				.<RegistryKey<LootTable>, long, RegistryEntry<BlockEntityType<?>>>and(
 					instance.group(
-						Identifier.CODEC.fieldOf("name").forGetter(function -> function.id),
+						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).fieldOf("name").forGetter(function -> function.lootTable),
 						Codecs.createStrictOptionalFieldCodec(Codec.LONG, "seed", 0L).forGetter(function -> function.seed),
 						Registries.BLOCK_ENTITY_TYPE.getEntryCodec().fieldOf("type").forGetter(function -> function.type)
 					)
 				)
 				.apply(instance, SetLootTableLootFunction::new)
 	);
-	private final Identifier id;
+	private final RegistryKey<LootTable> lootTable;
 	private final long seed;
 	private final RegistryEntry<BlockEntityType<?>> type;
 
-	private SetLootTableLootFunction(List<LootCondition> conditions, Identifier id, long seed, RegistryEntry<BlockEntityType<?>> blockEntityType) {
+	private SetLootTableLootFunction(
+		List<LootCondition> conditions, RegistryKey<LootTable> lootTable, long seed, RegistryEntry<BlockEntityType<?>> blockEntityType
+	) {
 		super(conditions);
-		this.id = id;
+		this.lootTable = lootTable;
 		this.seed = seed;
 		this.type = blockEntityType;
 	}
@@ -51,7 +52,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 		if (stack.isEmpty()) {
 			return stack;
 		} else {
-			stack.set(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.id, this.seed));
+			stack.set(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.lootTable, this.seed));
 			return stack;
 		}
 	}
@@ -59,17 +60,16 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	@Override
 	public void validate(LootTableReporter reporter) {
 		super.validate(reporter);
-		LootDataKey<LootTable> lootDataKey = new LootDataKey<>(LootDataType.LOOT_TABLES, this.id);
-		if (reporter.getDataLookup().getElementOptional(lootDataKey).isEmpty()) {
-			reporter.report("Missing loot table used for container: " + this.id);
+		if (reporter.getDataLookup().getOptionalEntry(RegistryKeys.LOOT_TABLE, this.lootTable).isEmpty()) {
+			reporter.report("Missing loot table used for container: " + this.lootTable.getValue());
 		}
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, Identifier id) {
-		return builder(conditions -> new SetLootTableLootFunction(conditions, id, 0L, type.getRegistryEntry()));
+	public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, RegistryKey<LootTable> lootTable) {
+		return builder(conditions -> new SetLootTableLootFunction(conditions, lootTable, 0L, type.getRegistryEntry()));
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, Identifier id, long seed) {
-		return builder(conditions -> new SetLootTableLootFunction(conditions, id, seed, type.getRegistryEntry()));
+	public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, RegistryKey<LootTable> lootTable, long seed) {
+		return builder(conditions -> new SetLootTableLootFunction(conditions, lootTable, seed, type.getRegistryEntry()));
 	}
 }

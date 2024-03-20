@@ -12,6 +12,7 @@ import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.component.type.DebugStickStateComponent;
 import net.minecraft.component.type.FireworksComponent;
+import net.minecraft.component.type.FoodComponents;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapColorComponent;
 import net.minecraft.component.type.MapDecorationsComponent;
@@ -900,13 +901,13 @@ public class Items {
 	public static final Item STRUCTURE_BLOCK = register(new OperatorOnlyBlockItem(Blocks.STRUCTURE_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item JIGSAW = register(new OperatorOnlyBlockItem(Blocks.JIGSAW, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item TURTLE_HELMET = register(
-		"turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(25)))
+		"turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(25)))
 	);
 	public static final Item TURTLE_SCUTE = register("turtle_scute", new Item(new Item.Settings()));
 	public static final Item ARMADILLO_SCUTE = register("armadillo_scute", new Item(new Item.Settings()));
 	public static final Item WOLF_ARMOR = register(
 		"wolf_armor",
-		new AnimalArmorItem(ArmorMaterials.ARMADILLO, AnimalArmorItem.Type.CANINE, true, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BODY.getMaxDamage(4)))
+		new AnimalArmorItem(ArmorMaterials.ARMADILLO, AnimalArmorItem.Type.CANINE, true, new Item.Settings().maxDamage(ArmorItem.Type.BODY.getMaxDamage(4)))
 	);
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64)));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().food(FoodComponents.APPLE)));
@@ -1055,91 +1056,83 @@ public class Items {
 	public static final Item WHEAT = register("wheat", new Item(new Item.Settings()));
 	public static final Item BREAD = register("bread", new Item(new Item.Settings().food(FoodComponents.BREAD)));
 	public static final Item LEATHER_HELMET = register(
-		"leather_helmet", new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(5)))
+		"leather_helmet", new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(5)))
 	);
 	public static final Item LEATHER_CHESTPLATE = register(
 		"leather_chestplate",
-		new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(5)))
+		new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(5)))
 	);
 	public static final Item LEATHER_LEGGINGS = register(
-		"leather_leggings",
-		new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(5)))
+		"leather_leggings", new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(5)))
 	);
 	public static final Item LEATHER_BOOTS = register(
-		"leather_boots", new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(5)))
+		"leather_boots", new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(5)))
 	);
 	public static final Item CHAINMAIL_HELMET = register(
-		"chainmail_helmet", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(15)))
+		"chainmail_helmet", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(15)))
 	);
 	public static final Item CHAINMAIL_CHESTPLATE = register(
 		"chainmail_chestplate",
-		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(15)))
+		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(15)))
 	);
 	public static final Item CHAINMAIL_LEGGINGS = register(
-		"chainmail_leggings",
-		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(15)))
+		"chainmail_leggings", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(15)))
 	);
 	public static final Item CHAINMAIL_BOOTS = register(
-		"chainmail_boots", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(15)))
+		"chainmail_boots", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(15)))
 	);
 	public static final Item IRON_HELMET = register(
-		"iron_helmet", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(15)))
+		"iron_helmet", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(15)))
 	);
 	public static final Item IRON_CHESTPLATE = register(
-		"iron_chestplate",
-		new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(15)))
+		"iron_chestplate", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(15)))
 	);
 	public static final Item IRON_LEGGINGS = register(
-		"iron_leggings", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(15)))
+		"iron_leggings", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(15)))
 	);
 	public static final Item IRON_BOOTS = register(
-		"iron_boots", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(15)))
+		"iron_boots", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(15)))
 	);
 	public static final Item DIAMOND_HELMET = register(
-		"diamond_helmet", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(33)))
+		"diamond_helmet", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(33)))
 	);
 	public static final Item DIAMOND_CHESTPLATE = register(
 		"diamond_chestplate",
-		new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(33)))
+		new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(33)))
 	);
 	public static final Item DIAMOND_LEGGINGS = register(
-		"diamond_leggings",
-		new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(33)))
+		"diamond_leggings", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(33)))
 	);
 	public static final Item DIAMOND_BOOTS = register(
-		"diamond_boots", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(33)))
+		"diamond_boots", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(33)))
 	);
 	public static final Item GOLDEN_HELMET = register(
-		"golden_helmet", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.HELMET, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(7)))
+		"golden_helmet", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(7)))
 	);
 	public static final Item GOLDEN_CHESTPLATE = register(
-		"golden_chestplate",
-		new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(7)))
+		"golden_chestplate", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(7)))
 	);
 	public static final Item GOLDEN_LEGGINGS = register(
-		"golden_leggings",
-		new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(7)))
+		"golden_leggings", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(7)))
 	);
 	public static final Item GOLDEN_BOOTS = register(
-		"golden_boots", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Item.Settings().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(7)))
+		"golden_boots", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(7)))
 	);
 	public static final Item NETHERITE_HELMET = register(
 		"netherite_helmet",
-		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.HELMET, new Item.Settings().fireproof().maxDamageIfAbsent(ArmorItem.Type.HELMET.getMaxDamage(37)))
+		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.HELMET, new Item.Settings().fireproof().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(37)))
 	);
 	public static final Item NETHERITE_CHESTPLATE = register(
 		"netherite_chestplate",
-		new ArmorItem(
-			ArmorMaterials.NETHERITE, ArmorItem.Type.CHESTPLATE, new Item.Settings().fireproof().maxDamageIfAbsent(ArmorItem.Type.CHESTPLATE.getMaxDamage(37))
-		)
+		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.CHESTPLATE, new Item.Settings().fireproof().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(37)))
 	);
 	public static final Item NETHERITE_LEGGINGS = register(
 		"netherite_leggings",
-		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.LEGGINGS, new Item.Settings().fireproof().maxDamageIfAbsent(ArmorItem.Type.LEGGINGS.getMaxDamage(37)))
+		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.LEGGINGS, new Item.Settings().fireproof().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(37)))
 	);
 	public static final Item NETHERITE_BOOTS = register(
 		"netherite_boots",
-		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof().maxDamageIfAbsent(ArmorItem.Type.BOOTS.getMaxDamage(37)))
+		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(37)))
 	);
 	public static final Item FLINT = register("flint", new Item(new Item.Settings()));
 	public static final Item PORKCHOP = register("porkchop", new Item(new Item.Settings().food(FoodComponents.PORKCHOP)));
@@ -1332,7 +1325,9 @@ public class Items {
 				.component(DataComponentTypes.MAP_DECORATIONS, MapDecorationsComponent.DEFAULT)
 		)
 	);
-	public static final Item SHEARS = register("shears", new ShearsItem(new Item.Settings().maxDamage(238)));
+	public static final Item SHEARS = register(
+		"shears", new ShearsItem(new Item.Settings().maxDamage(238).component(DataComponentTypes.TOOL, ShearsItem.createToolComponent()))
+	);
 	public static final Item MELON_SLICE = register("melon_slice", new Item(new Item.Settings().food(FoodComponents.MELON_SLICE)));
 	public static final Item DRIED_KELP = register("dried_kelp", new Item(new Item.Settings().food(FoodComponents.DRIED_KELP)));
 	public static final Item PUMPKIN_SEEDS = register(ItemKeys.PUMPKIN_SEEDS, new AliasedBlockItem(Blocks.PUMPKIN_STEM, new Item.Settings()));
@@ -1491,7 +1486,10 @@ public class Items {
 	public static final Item WRITTEN_BOOK = register(
 		"written_book", new WrittenBookItem(new Item.Settings().maxCount(16).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
 	);
-	public static final Item MACE = register("mace", new MaceItem(new Item.Settings().maxDamageIfAbsent(250).requires(FeatureFlags.UPDATE_1_21)));
+	public static final Item MACE = register(
+		"mace",
+		new MaceItem(new Item.Settings().maxDamage(250).component(DataComponentTypes.TOOL, MaceItem.createToolComponent()).requires(FeatureFlags.UPDATE_1_21))
+	);
 	public static final Item ITEM_FRAME = register("item_frame", new ItemFrameItem(EntityType.ITEM_FRAME, new Item.Settings()));
 	public static final Item GLOW_ITEM_FRAME = register("glow_item_frame", new ItemFrameItem(EntityType.GLOW_ITEM_FRAME, new Item.Settings()));
 	public static final Item FLOWER_POT = register(Blocks.FLOWER_POT);
@@ -1774,7 +1772,13 @@ public class Items {
 	);
 	public static final Item DISC_FRAGMENT_5 = register("disc_fragment_5", new DiscFragmentItem(new Item.Settings()));
 	public static final Item TRIDENT = register(
-		"trident", new TridentItem(new Item.Settings().maxDamage(250).attributeModifiers(TridentItem.createAttributeModifiers()))
+		"trident",
+		new TridentItem(
+			new Item.Settings()
+				.maxDamage(250)
+				.attributeModifiers(TridentItem.createAttributeModifiers())
+				.component(DataComponentTypes.TOOL, TridentItem.createToolComponent())
+		)
 	);
 	public static final Item PHANTOM_MEMBRANE = register("phantom_membrane", new Item(new Item.Settings()));
 	public static final Item NAUTILUS_SHELL = register("nautilus_shell", new Item(new Item.Settings()));

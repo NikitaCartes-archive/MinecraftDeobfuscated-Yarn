@@ -586,6 +586,7 @@ public class InGameHud {
 		int i = 182;
 		int j = (int)(f * 183.0F);
 		int k = context.getScaledWindowHeight() - 32 + 3;
+		RenderSystem.enableBlend();
 		context.drawGuiTexture(JUMP_BAR_BACKGROUND_TEXTURE, x, k, 182, 5);
 		if (mount.getJumpCooldown() > 0) {
 			context.drawGuiTexture(JUMP_BAR_COOLDOWN_TEXTURE, x, k, 182, 5);
@@ -593,6 +594,7 @@ public class InGameHud {
 			context.drawGuiTexture(JUMP_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, k, j, 5);
 		}
 
+		RenderSystem.disableBlend();
 		this.client.getProfiler().pop();
 	}
 
@@ -603,10 +605,13 @@ public class InGameHud {
 			int j = 182;
 			int k = (int)(this.client.player.experienceProgress * 183.0F);
 			int l = context.getScaledWindowHeight() - 32 + 3;
+			RenderSystem.enableBlend();
 			context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, x, l, 182, 5);
 			if (k > 0) {
 				context.drawGuiTexture(EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, l, k, 5);
 			}
+
+			RenderSystem.disableBlend();
 		}
 
 		this.client.getProfiler().pop();
@@ -635,7 +640,7 @@ public class InGameHud {
 	private void renderHeldItemTooltip(DrawContext context) {
 		this.client.getProfiler().push("selectedItemName");
 		if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
-			MutableText mutableText = Text.empty().append(this.currentStack.getName()).formatted(this.currentStack.getRarity().formatting);
+			MutableText mutableText = Text.empty().append(this.currentStack.getName()).formatted(this.currentStack.getRarity().getFormatting());
 			if (this.currentStack.contains(DataComponentTypes.CUSTOM_NAME)) {
 				mutableText.formatted(Formatting.ITALIC);
 			}
@@ -800,101 +805,78 @@ public class InGameHud {
 			this.lastHealthValue = i;
 			int j = this.renderHealthValue;
 			this.random.setSeed((long)(this.ticks * 312871));
-			HungerManager hungerManager = playerEntity.getHungerManager();
-			int k = hungerManager.getFoodLevel();
-			int m = context.getScaledWindowWidth() / 2 - 91;
-			int n = context.getScaledWindowWidth() / 2 + 91;
-			int o = context.getScaledWindowHeight() - 39;
+			int k = context.getScaledWindowWidth() / 2 - 91;
+			int m = context.getScaledWindowWidth() / 2 + 91;
+			int n = context.getScaledWindowHeight() - 39;
 			float f = Math.max((float)playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH), (float)Math.max(j, i));
-			int p = MathHelper.ceil(playerEntity.getAbsorptionAmount());
-			int q = MathHelper.ceil((f + (float)p) / 2.0F / 10.0F);
-			int r = Math.max(10 - (q - 2), 3);
-			int s = o - (q - 1) * r - 10;
-			int t = o - 10;
-			int u = playerEntity.getArmor();
-			int v = -1;
+			int o = MathHelper.ceil(playerEntity.getAbsorptionAmount());
+			int p = MathHelper.ceil((f + (float)o) / 2.0F / 10.0F);
+			int q = Math.max(10 - (p - 2), 3);
+			int r = n - 10;
+			int s = -1;
 			if (playerEntity.hasStatusEffect(StatusEffects.REGENERATION)) {
-				v = this.ticks % MathHelper.ceil(f + 5.0F);
+				s = this.ticks % MathHelper.ceil(f + 5.0F);
 			}
 
 			this.client.getProfiler().push("armor");
-
-			for (int w = 0; w < 10; w++) {
-				if (u > 0) {
-					int x = m + w * 8;
-					if (w * 2 + 1 < u) {
-						context.drawGuiTexture(ARMOR_FULL_TEXTURE, x, s, 9, 9);
-					}
-
-					if (w * 2 + 1 == u) {
-						context.drawGuiTexture(ARMOR_HALF_TEXTURE, x, s, 9, 9);
-					}
-
-					if (w * 2 + 1 > u) {
-						context.drawGuiTexture(ARMOR_EMPTY_TEXTURE, x, s, 9, 9);
-					}
-				}
-			}
-
+			renderArmor(context, playerEntity, n, p, q, k);
 			this.client.getProfiler().swap("health");
-			this.renderHealthBar(context, playerEntity, m, o, r, v, f, i, j, p, bl);
+			this.renderHealthBar(context, playerEntity, k, n, q, s, f, i, j, o, bl);
 			LivingEntity livingEntity = this.getRiddenEntity();
-			int xx = this.getHeartCount(livingEntity);
-			if (xx == 0) {
+			int t = this.getHeartCount(livingEntity);
+			if (t == 0) {
 				this.client.getProfiler().swap("food");
-
-				for (int y = 0; y < 10; y++) {
-					int z = o;
-					Identifier identifier;
-					Identifier identifier2;
-					Identifier identifier3;
-					if (playerEntity.hasStatusEffect(StatusEffects.HUNGER)) {
-						identifier = FOOD_EMPTY_HUNGER_TEXTURE;
-						identifier2 = FOOD_HALF_HUNGER_TEXTURE;
-						identifier3 = FOOD_FULL_HUNGER_TEXTURE;
-					} else {
-						identifier = FOOD_EMPTY_TEXTURE;
-						identifier2 = FOOD_HALF_TEXTURE;
-						identifier3 = FOOD_FULL_TEXTURE;
-					}
-
-					if (playerEntity.getHungerManager().getSaturationLevel() <= 0.0F && this.ticks % (k * 3 + 1) == 0) {
-						z = o + (this.random.nextInt(3) - 1);
-					}
-
-					int aa = n - y * 8 - 9;
-					context.drawGuiTexture(identifier, aa, z, 9, 9);
-					if (y * 2 + 1 < k) {
-						context.drawGuiTexture(identifier3, aa, z, 9, 9);
-					}
-
-					if (y * 2 + 1 == k) {
-						context.drawGuiTexture(identifier2, aa, z, 9, 9);
-					}
-				}
-
-				t -= 10;
+				this.renderFood(context, playerEntity, n, m);
+				r -= 10;
 			}
 
 			this.client.getProfiler().swap("air");
-			int y = playerEntity.getMaxAir();
-			int zx = Math.min(playerEntity.getAir(), y);
-			if (playerEntity.isSubmergedIn(FluidTags.WATER) || zx < y) {
-				int ab = this.getHeartRows(xx) - 1;
-				t -= ab * 10;
-				int ac = MathHelper.ceil((double)(zx - 2) * 10.0 / (double)y);
-				int ad = MathHelper.ceil((double)zx * 10.0 / (double)y) - ac;
+			int u = playerEntity.getMaxAir();
+			int v = Math.min(playerEntity.getAir(), u);
+			if (playerEntity.isSubmergedIn(FluidTags.WATER) || v < u) {
+				int w = this.getHeartRows(t) - 1;
+				r -= w * 10;
+				int x = MathHelper.ceil((double)(v - 2) * 10.0 / (double)u);
+				int y = MathHelper.ceil((double)v * 10.0 / (double)u) - x;
+				RenderSystem.enableBlend();
 
-				for (int aax = 0; aax < ac + ad; aax++) {
-					if (aax < ac) {
-						context.drawGuiTexture(AIR_TEXTURE, n - aax * 8 - 9, t, 9, 9);
+				for (int z = 0; z < x + y; z++) {
+					if (z < x) {
+						context.drawGuiTexture(AIR_TEXTURE, m - z * 8 - 9, r, 9, 9);
 					} else {
-						context.drawGuiTexture(AIR_BURSTING_TEXTURE, n - aax * 8 - 9, t, 9, 9);
+						context.drawGuiTexture(AIR_BURSTING_TEXTURE, m - z * 8 - 9, r, 9, 9);
 					}
 				}
+
+				RenderSystem.disableBlend();
 			}
 
 			this.client.getProfiler().pop();
+		}
+	}
+
+	private static void renderArmor(DrawContext context, PlayerEntity player, int i, int j, int k, int x) {
+		int l = player.getArmor();
+		if (l > 0) {
+			RenderSystem.enableBlend();
+			int m = i - (j - 1) * k - 10;
+
+			for (int n = 0; n < 10; n++) {
+				int o = x + n * 8;
+				if (n * 2 + 1 < l) {
+					context.drawGuiTexture(ARMOR_FULL_TEXTURE, o, m, 9, 9);
+				}
+
+				if (n * 2 + 1 == l) {
+					context.drawGuiTexture(ARMOR_HALF_TEXTURE, o, m, 9, 9);
+				}
+
+				if (n * 2 + 1 > l) {
+					context.drawGuiTexture(ARMOR_EMPTY_TEXTURE, o, m, 9, 9);
+				}
+			}
+
+			RenderSystem.disableBlend();
 		}
 	}
 
@@ -954,7 +936,47 @@ public class InGameHud {
 	}
 
 	private void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half) {
+		RenderSystem.enableBlend();
 		context.drawGuiTexture(type.getTexture(hardcore, half, blinking), x, y, 9, 9);
+		RenderSystem.disableBlend();
+	}
+
+	private void renderFood(DrawContext context, PlayerEntity player, int top, int left) {
+		HungerManager hungerManager = player.getHungerManager();
+		int i = hungerManager.getFoodLevel();
+		RenderSystem.enableBlend();
+
+		for (int j = 0; j < 10; j++) {
+			int k = top;
+			Identifier identifier;
+			Identifier identifier2;
+			Identifier identifier3;
+			if (player.hasStatusEffect(StatusEffects.HUNGER)) {
+				identifier = FOOD_EMPTY_HUNGER_TEXTURE;
+				identifier2 = FOOD_HALF_HUNGER_TEXTURE;
+				identifier3 = FOOD_FULL_HUNGER_TEXTURE;
+			} else {
+				identifier = FOOD_EMPTY_TEXTURE;
+				identifier2 = FOOD_HALF_TEXTURE;
+				identifier3 = FOOD_FULL_TEXTURE;
+			}
+
+			if (player.getHungerManager().getSaturationLevel() <= 0.0F && this.ticks % (i * 3 + 1) == 0) {
+				k = top + (this.random.nextInt(3) - 1);
+			}
+
+			int l = left - j * 8 - 9;
+			context.drawGuiTexture(identifier, l, k, 9, 9);
+			if (j * 2 + 1 < i) {
+				context.drawGuiTexture(identifier3, l, k, 9, 9);
+			}
+
+			if (j * 2 + 1 == i) {
+				context.drawGuiTexture(identifier2, l, k, 9, 9);
+			}
+		}
+
+		RenderSystem.disableBlend();
 	}
 
 	private void renderMountHealth(DrawContext context) {
@@ -967,8 +989,10 @@ public class InGameHud {
 				int k = context.getScaledWindowHeight() - 39;
 				int l = context.getScaledWindowWidth() / 2 + 91;
 				int m = k;
+				int n = 0;
+				RenderSystem.enableBlend();
 
-				for (int n = 0; i > 0; n += 20) {
+				while (i > 0) {
 					int o = Math.min(i, 10);
 					i -= o;
 
@@ -985,7 +1009,10 @@ public class InGameHud {
 					}
 
 					m -= 10;
+					n += 20;
 				}
+
+				RenderSystem.disableBlend();
 			}
 		}
 	}

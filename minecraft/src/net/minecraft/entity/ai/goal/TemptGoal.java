@@ -1,12 +1,13 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.item.ItemStack;
 
 public class TemptGoal extends Goal {
 	private static final TargetPredicate TEMPTING_ENTITY_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(10.0).ignoreVisibility();
@@ -22,13 +23,13 @@ public class TemptGoal extends Goal {
 	protected PlayerEntity closestPlayer;
 	private int cooldown;
 	private boolean active;
-	private final Ingredient food;
+	private final Predicate<ItemStack> foodPredicate;
 	private final boolean canBeScared;
 
-	public TemptGoal(PathAwareEntity entity, double speed, Ingredient food, boolean canBeScared) {
+	public TemptGoal(PathAwareEntity entity, double speed, Predicate<ItemStack> foodPredicate, boolean canBeScared) {
 		this.mob = entity;
 		this.speed = speed;
-		this.food = food;
+		this.foodPredicate = foodPredicate;
 		this.canBeScared = canBeScared;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		this.predicate = TEMPTING_ENTITY_PREDICATE.copy().setPredicate(this::isTemptedBy);
@@ -46,7 +47,7 @@ public class TemptGoal extends Goal {
 	}
 
 	private boolean isTemptedBy(LivingEntity entity) {
-		return this.food.test(entity.getMainHandStack()) || this.food.test(entity.getOffHandStack());
+		return this.foodPredicate.test(entity.getMainHandStack()) || this.foodPredicate.test(entity.getOffHandStack());
 	}
 
 	@Override

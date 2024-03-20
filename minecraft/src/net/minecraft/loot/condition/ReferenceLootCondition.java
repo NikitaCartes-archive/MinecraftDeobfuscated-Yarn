@@ -3,17 +3,18 @@ package net.minecraft.loot.condition;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.loot.LootDataKey;
-import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.slf4j.Logger;
 
-public record ReferenceLootCondition(Identifier id) implements LootCondition {
+public record ReferenceLootCondition(RegistryKey<LootCondition> id) implements LootCondition {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<ReferenceLootCondition> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(ReferenceLootCondition::id)).apply(instance, ReferenceLootCondition::new)
+		instance -> instance.group(RegistryKey.createCodec(RegistryKeys.PREDICATE).fieldOf("name").forGetter(ReferenceLootCondition::id))
+				.apply(instance, ReferenceLootCondition::new)
 	);
 
 	@Override
@@ -23,23 +24,26 @@ public record ReferenceLootCondition(Identifier id) implements LootCondition {
 
 	@Override
 	public void validate(LootTableReporter reporter) {
-		LootDataKey<LootCondition> lootDataKey = new LootDataKey<>(LootDataType.PREDICATES, this.id);
-		if (reporter.isInStack(lootDataKey)) {
-			reporter.report("Condition " + this.id + " is recursively called");
+		if (reporter.isInStack(this.id)) {
+			reporter.report("Condition " + this.id.getValue() + " is recursively called");
 		} else {
 			LootCondition.super.validate(reporter);
 			reporter.getDataLookup()
-				.getElementOptional(lootDataKey)
+				.getOptionalEntry(RegistryKeys.PREDICATE, this.id)
 				.ifPresentOrElse(
-					predicate -> predicate.validate(reporter.makeChild(".{" + this.id + "}", lootDataKey)), () -> reporter.report("Unknown condition table called " + this.id)
+					entry -> ((LootCondition)entry.value()).validate(reporter.makeChild(".{" + this.id.getValue() + "}", this.id)),
+					() -> reporter.report("Unknown condition table called " + this.id.getValue())
 				);
 		}
 	}
 
 	public boolean test(LootContext lootContext) {
-		LootCondition lootCondition = lootContext.getDataLookup().getElement(LootDataType.PREDICATES, this.id);
+		LootCondition lootCondition = (LootCondition)lootContext.getLookup()
+			.getOptionalEntry(RegistryKeys.PREDICATE, this.id)
+			.map(RegistryEntry.Reference::value)
+			.orElse(null);
 		if (lootCondition == null) {
-			LOGGER.warn("Tried using unknown condition table called {}", this.id);
+			LOGGER.warn("Tried using unknown condition table called {}", this.id.getValue());
 			return false;
 		} else {
 			LootContext.Entry<?> entry = LootContext.predicate(lootCondition);
@@ -59,7 +63,7 @@ public record ReferenceLootCondition(Identifier id) implements LootCondition {
 		}
 	}
 
-	public static LootCondition.Builder builder(Identifier id) {
-		return () -> new ReferenceLootCondition(id);
+	public static LootCondition.Builder builder(RegistryKey<LootCondition> key) {
+		return () -> new ReferenceLootCondition(key);
 	}
 }

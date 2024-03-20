@@ -3,6 +3,7 @@ package net.minecraft.block;
 import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -18,6 +19,8 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeCache;
+import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -29,6 +32,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -43,6 +47,7 @@ public class CrafterBlock extends BlockWithEntity {
 	private static final int field_46802 = 6;
 	private static final int TRIGGER_DELAY = 4;
 	private static final RecipeCache recipeCache = new RecipeCache(10);
+	private static final int field_50015 = 17;
 
 	public CrafterBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -148,23 +153,23 @@ public class CrafterBlock extends BlockWithEntity {
 
 	protected void craft(BlockState state, ServerWorld world, BlockPos pos) {
 		if (world.getBlockEntity(pos) instanceof CrafterBlockEntity crafterBlockEntity) {
-			Optional<CraftingRecipe> optional = getCraftingRecipe(world, crafterBlockEntity);
+			Optional<RecipeEntry<CraftingRecipe>> optional = getCraftingRecipe(world, crafterBlockEntity);
 			if (optional.isEmpty()) {
 				world.syncWorldEvent(WorldEvents.CRAFTER_FAILS, pos, 0);
 			} else {
-				CraftingRecipe craftingRecipe = (CraftingRecipe)optional.get();
-				ItemStack itemStack = craftingRecipe.craft(crafterBlockEntity, world.getRegistryManager());
+				RecipeEntry<CraftingRecipe> recipeEntry = (RecipeEntry<CraftingRecipe>)optional.get();
+				ItemStack itemStack = recipeEntry.value().craft(crafterBlockEntity, world.getRegistryManager());
 				if (itemStack.isEmpty()) {
 					world.syncWorldEvent(WorldEvents.CRAFTER_FAILS, pos, 0);
 				} else {
 					crafterBlockEntity.setCraftingTicksRemaining(6);
 					world.setBlockState(pos, state.with(CRAFTING, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 					itemStack.onCraftByCrafter(world);
-					this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack, state);
+					this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack, state, recipeEntry);
 
-					for (ItemStack itemStack2 : craftingRecipe.getRemainder(crafterBlockEntity)) {
+					for (ItemStack itemStack2 : recipeEntry.value().getRemainder(crafterBlockEntity)) {
 						if (!itemStack2.isEmpty()) {
-							this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack2, state);
+							this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack2, state, recipeEntry);
 						}
 					}
 
@@ -179,15 +184,17 @@ public class CrafterBlock extends BlockWithEntity {
 		}
 	}
 
-	public static Optional<CraftingRecipe> getCraftingRecipe(World world, RecipeInputInventory inputInventory) {
+	public static Optional<RecipeEntry<CraftingRecipe>> getCraftingRecipe(World world, RecipeInputInventory inputInventory) {
 		return recipeCache.getRecipe(world, inputInventory);
 	}
 
-	private void transferOrSpawnStack(World world, BlockPos pos, CrafterBlockEntity blockEntity, ItemStack stack, BlockState state) {
+	private void transferOrSpawnStack(
+		ServerWorld world, BlockPos pos, CrafterBlockEntity blockEntity, ItemStack stack, BlockState state, RecipeEntry<CraftingRecipe> recipe
+	) {
 		Direction direction = ((Orientation)state.get(ORIENTATION)).getFacing();
 		Inventory inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
 		ItemStack itemStack = stack.copy();
-		if (inventory != null && (inventory instanceof CrafterBlockEntity || stack.getCount() > inventory.getMaxCountPerStack())) {
+		if (inventory != null && (inventory instanceof CrafterBlockEntity || stack.getCount() > inventory.getMaxCount(stack))) {
 			while (!itemStack.isEmpty()) {
 				ItemStack itemStack2 = itemStack.copyWithCount(1);
 				ItemStack itemStack3 = HopperBlockEntity.transfer(blockEntity, inventory, itemStack2, direction.getOpposite());
@@ -208,8 +215,14 @@ public class CrafterBlock extends BlockWithEntity {
 		}
 
 		if (!itemStack.isEmpty()) {
-			Vec3d vec3d = Vec3d.ofCenter(pos).offset(direction, 0.7);
-			ItemDispenserBehavior.spawnItem(world, itemStack, 6, direction, vec3d);
+			Vec3d vec3d = Vec3d.ofCenter(pos);
+			Vec3d vec3d2 = vec3d.offset(direction, 0.7);
+			ItemDispenserBehavior.spawnItem(world, itemStack, 6, direction, vec3d2);
+
+			for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, Box.of(vec3d, 17.0, 17.0, 17.0))) {
+				Criteria.CRAFTER_RECIPE_CRAFTED.trigger(serverPlayerEntity, recipe.id(), blockEntity.getHeldStacks());
+			}
+
 			world.syncWorldEvent(WorldEvents.CRAFTER_CRAFTS, pos, 0);
 			world.syncWorldEvent(WorldEvents.CRAFTER_SHOOTS, pos, direction.getId());
 		}

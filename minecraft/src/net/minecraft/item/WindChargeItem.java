@@ -21,9 +21,9 @@ public class WindChargeItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if (!world.isClient()) {
-			Vec3d vec3d = new Vec3d(user.getPos().getX(), user.getEyeY(), user.getPos().getZ()).add(user.getRotationVecClient().multiply(0.8F));
+			Vec3d vec3d = user.getEyePos().add(user.getRotationVecClient().multiply(0.8F));
 			if (!world.getBlockState(BlockPos.ofFloored(vec3d)).isReplaceable()) {
-				vec3d = new Vec3d(user.getPos().getX(), user.getEyeY(), user.getPos().getZ()).add(user.getRotationVecClient().multiply(0.05F));
+				vec3d = user.getEyePos().add(user.getRotationVecClient().multiply(0.05F));
 			}
 
 			WindChargeEntity windChargeEntity = new WindChargeEntity(user, world, vec3d.getX(), vec3d.getY(), vec3d.getZ());
@@ -44,10 +44,7 @@ public class WindChargeItem extends Item {
 		ItemStack itemStack = user.getStackInHand(hand);
 		user.getItemCooldownManager().set(this, 10);
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
-		if (!user.isCreative()) {
-			itemStack.decrement(1);
-		}
-
+		itemStack.decrementUnlessCreative(1, user);
 		return TypedActionResult.success(itemStack, world.isClient());
 	}
 }

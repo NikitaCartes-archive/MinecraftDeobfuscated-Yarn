@@ -2,8 +2,10 @@ package net.minecraft.structure;
 
 import java.util.Map;
 import net.minecraft.inventory.LootableInventory;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -57,7 +59,7 @@ public class ShipwreckGenerator {
 		new Identifier("shipwreck/rightsideup_fronthalf_degraded"),
 		new Identifier("shipwreck/rightsideup_backhalf_degraded")
 	};
-	static final Map<String, Identifier> LOOT_TABLES = Map.of(
+	static final Map<String, RegistryKey<LootTable>> LOOT_TABLES = Map.of(
 		"map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST
 	);
 
@@ -98,9 +100,9 @@ public class ShipwreckGenerator {
 
 		@Override
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
-			Identifier identifier = (Identifier)ShipwreckGenerator.LOOT_TABLES.get(metadata);
-			if (identifier != null) {
-				LootableInventory.setLootTable(world, random, pos.down(), identifier);
+			RegistryKey<LootTable> registryKey = (RegistryKey<LootTable>)ShipwreckGenerator.LOOT_TABLES.get(metadata);
+			if (registryKey != null) {
+				LootableInventory.setLootTable(world, random, pos.down(), registryKey);
 			}
 		}
 

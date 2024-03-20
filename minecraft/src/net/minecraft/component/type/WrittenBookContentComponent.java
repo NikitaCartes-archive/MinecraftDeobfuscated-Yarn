@@ -29,8 +29,8 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 	public static final int MAX_TITLE_LENGTH = 32;
 	public static final int MAX_GENERATION = 3;
 	public static final int UNCOPIABLE_GENERATION = 2;
-	private static final Codec<RawFilteredPair<Text>> PAGE_CODEC = RawFilteredPair.createCodec(TextCodecs.codec(32767));
-	public static final Codec<List<RawFilteredPair<Text>>> PAGES_CODEC = Codecs.list(PAGE_CODEC.listOf(), 100);
+	public static final Codec<Text> PAGE_CODEC = TextCodecs.codec(32767);
+	public static final Codec<List<RawFilteredPair<Text>>> PAGES_CODEC = createPagesCodec(PAGE_CODEC);
 	public static final Codec<WrittenBookContentComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					RawFilteredPair.createCodec(Codecs.string(0, 32)).fieldOf("title").forGetter(WrittenBookContentComponent::title),
@@ -54,6 +54,14 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 		WrittenBookContentComponent::resolved,
 		WrittenBookContentComponent::new
 	);
+
+	private static Codec<RawFilteredPair<Text>> createPageCodec(Codec<Text> textCodec) {
+		return RawFilteredPair.createCodec(textCodec);
+	}
+
+	public static Codec<List<RawFilteredPair<Text>>> createPagesCodec(Codec<Text> textCodec) {
+		return Codecs.list(createPageCodec(textCodec).listOf(), 100);
+	}
 
 	@Nullable
 	public WrittenBookContentComponent copy() {

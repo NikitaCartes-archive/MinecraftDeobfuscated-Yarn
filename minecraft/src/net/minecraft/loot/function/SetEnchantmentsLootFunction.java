@@ -22,6 +22,7 @@ import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.math.MathHelper;
 
 public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	public static final Codec<SetEnchantmentsLootFunction> CODEC = RecordCodecBuilder.create(
@@ -61,7 +62,8 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Object2IntMap<Enchantment> object2IntMap = new Object2IntOpenHashMap<>();
-		this.enchantments.forEach((enchantment, numberProvider) -> object2IntMap.put((Enchantment)enchantment.value(), numberProvider.nextInt(context)));
+		this.enchantments
+			.forEach((enchantment, numberProvider) -> object2IntMap.put((Enchantment)enchantment.value(), MathHelper.clamp(numberProvider.nextInt(context), 0, 255)));
 		if (stack.isOf(Items.BOOK)) {
 			stack = stack.copyComponentsToNewStack(Items.ENCHANTED_BOOK, stack.getCount());
 			stack.set(DataComponentTypes.STORED_ENCHANTMENTS, stack.remove(DataComponentTypes.ENCHANTMENTS));

@@ -12,7 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
 
@@ -98,7 +98,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		return bl && bl2;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
 		FireworkExplosionComponent.Type type = FireworkExplosionComponent.Type.SMALL_BALL;
 		boolean bl = false;
 		boolean bl2 = false;
@@ -130,7 +130,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(DynamicRegistryManager registryManager) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
 		return new ItemStack(Items.FIREWORK_STAR);
 	}
 

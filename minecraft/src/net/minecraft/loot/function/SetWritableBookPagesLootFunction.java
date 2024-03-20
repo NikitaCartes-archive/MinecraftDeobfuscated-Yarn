@@ -17,7 +17,7 @@ public class SetWritableBookPagesLootFunction extends ConditionalLootFunction {
 				.<List<RawFilteredPair<String>>, ListOperation>and(
 					instance.group(
 						WritableBookContentComponent.PAGES_CODEC.fieldOf("pages").forGetter(function -> function.pages),
-						ListOperation.Type.MAP_CODEC.forGetter(function -> function.operation)
+						ListOperation.createCodec(100).forGetter(function -> function.operation)
 					)
 				)
 				.apply(instance, SetWritableBookPagesLootFunction::new)

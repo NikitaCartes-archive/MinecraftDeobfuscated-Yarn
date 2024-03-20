@@ -121,7 +121,7 @@ public class TradeOffer {
 	private int getFirstBuyItemCount(TradedItem firstBuyItem) {
 		int i = firstBuyItem.count();
 		int j = Math.max(0, MathHelper.floor((float)(i * this.demandBonus) * this.priceMultiplier));
-		return MathHelper.clamp(i + j + this.specialPrice, 1, firstBuyItem.item().value().getMaxCount());
+		return MathHelper.clamp(i + j + this.specialPrice, 1, firstBuyItem.itemStack().getMaxCount());
 	}
 
 	/**

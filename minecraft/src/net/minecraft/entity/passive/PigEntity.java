@@ -31,7 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -48,7 +48,6 @@ import net.minecraft.world.World;
 public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable {
 	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CARROT, Items.POTATO, Items.BEETROOT);
 	private final SaddledComponent saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
 
 	public PigEntity(EntityType<? extends PigEntity> entityType, World world) {
@@ -60,8 +59,8 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.CARROT_ON_A_STICK), false));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, BREEDING_INGREDIENT, false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, stack -> stack.isOf(Items.CARROT_ON_A_STICK), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, stack -> stack.isIn(ItemTags.PIG_FOOD), false));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -259,7 +258,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.test(stack);
+		return stack.isIn(ItemTags.PIG_FOOD);
 	}
 
 	@Override

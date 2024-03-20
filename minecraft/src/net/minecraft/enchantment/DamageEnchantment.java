@@ -4,48 +4,18 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.tag.EntityTypeTags;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 
 public class DamageEnchantment extends Enchantment {
-	private final int basePower;
-	private final int powerPerLevel;
-	private final int minMaxPowerDifference;
 	private final Optional<TagKey<EntityType<?>>> applicableEntities;
 
-	public DamageEnchantment(
-		Enchantment.Rarity weight,
-		int basePower,
-		int powerPerLevel,
-		int minMaxPowerDifference,
-		Optional<TagKey<EntityType<?>>> applicableEntities,
-		EquipmentSlot... slotTypes
-	) {
-		super(weight, ItemTags.WEAPON_ENCHANTABLE, slotTypes);
-		this.basePower = basePower;
-		this.powerPerLevel = powerPerLevel;
-		this.minMaxPowerDifference = minMaxPowerDifference;
+	public DamageEnchantment(Enchantment.Properties properties, Optional<TagKey<EntityType<?>>> applicableEntities) {
+		super(properties);
 		this.applicableEntities = applicableEntities;
-	}
-
-	@Override
-	public int getMinPower(int level) {
-		return this.basePower + (level - 1) * this.powerPerLevel;
-	}
-
-	@Override
-	public int getMaxPower(int level) {
-		return this.getMinPower(level) + this.minMaxPowerDifference;
-	}
-
-	@Override
-	public int getMaxLevel() {
-		return 5;
 	}
 
 	@Override
@@ -66,7 +36,7 @@ public class DamageEnchantment extends Enchantment {
 	public void onTargetDamaged(LivingEntity user, Entity target, int level) {
 		if (this.applicableEntities.isPresent()
 			&& target instanceof LivingEntity livingEntity
-			&& this.applicableEntities.get() == EntityTypeTags.ARTHROPOD
+			&& this.applicableEntities.get() == EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS
 			&& level > 0
 			&& livingEntity.getType().isIn((TagKey<EntityType<?>>)this.applicableEntities.get())) {
 			int i = 20 + user.getRandom().nextInt(10 * level);

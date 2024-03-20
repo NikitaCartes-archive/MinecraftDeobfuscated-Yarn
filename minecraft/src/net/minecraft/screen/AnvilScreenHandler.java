@@ -19,6 +19,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldEvents;
 import org.slf4j.Logger;
 
@@ -111,31 +112,31 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		ItemStack itemStack = this.input.getStack(0);
 		this.levelCost.set(1);
 		int i = 0;
+		long l = 0L;
 		int j = 0;
-		int k = 0;
 		if (!itemStack.isEmpty() && EnchantmentHelper.canHaveEnchantments(itemStack)) {
 			ItemStack itemStack2 = itemStack.copy();
 			ItemStack itemStack3 = this.input.getStack(1);
 			ItemEnchantmentsComponent.Builder builder = new ItemEnchantmentsComponent.Builder(EnchantmentHelper.getEnchantments(itemStack2));
-			j += itemStack.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0))
-				+ itemStack3.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0));
+			l += (long)itemStack.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0)).intValue()
+				+ (long)itemStack3.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0)).intValue();
 			this.repairItemUsage = 0;
 			if (!itemStack3.isEmpty()) {
 				boolean bl = itemStack3.contains(DataComponentTypes.STORED_ENCHANTMENTS);
 				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
-					int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
-					if (l <= 0) {
+					int k = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
+					if (k <= 0) {
 						this.output.setStack(0, ItemStack.EMPTY);
 						this.levelCost.set(0);
 						return;
 					}
 
 					int m;
-					for (m = 0; l > 0 && m < itemStack3.getCount(); m++) {
-						int n = itemStack2.getDamage() - l;
+					for (m = 0; k > 0 && m < itemStack3.getCount(); m++) {
+						int n = itemStack2.getDamage() - k;
 						itemStack2.setDamage(n);
 						i++;
-						l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
+						k = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					}
 
 					this.repairItemUsage = m;
@@ -147,10 +148,10 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 					}
 
 					if (itemStack2.isDamageable() && !bl) {
-						int lx = itemStack.getMaxDamage() - itemStack.getDamage();
+						int kx = itemStack.getMaxDamage() - itemStack.getDamage();
 						int m = itemStack3.getMaxDamage() - itemStack3.getDamage();
 						int n = m + itemStack2.getMaxDamage() * 12 / 100;
-						int o = lx + n;
+						int o = kx + n;
 						int p = itemStack2.getMaxDamage() - o;
 						if (p < 0) {
 							p = 0;
@@ -193,13 +194,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 							}
 
 							builder.set(enchantment, r);
-
-							int s = switch (enchantment.getRarity()) {
-								case COMMON -> 1;
-								case UNCOMMON -> 2;
-								case RARE -> 4;
-								case VERY_RARE -> 8;
-							};
+							int s = enchantment.getAnvilCost();
 							if (bl) {
 								s = Math.max(1, s / 2);
 							}
@@ -221,22 +216,23 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 			if (this.newItemName != null && !StringHelper.isBlank(this.newItemName)) {
 				if (!this.newItemName.equals(itemStack.getName().getString())) {
-					k = 1;
-					i += k;
+					j = 1;
+					i += j;
 					itemStack2.set(DataComponentTypes.CUSTOM_NAME, Text.literal(this.newItemName));
 				}
 			} else if (itemStack.contains(DataComponentTypes.CUSTOM_NAME)) {
-				k = 1;
-				i += k;
+				j = 1;
+				i += j;
 				itemStack2.remove(DataComponentTypes.CUSTOM_NAME);
 			}
 
-			this.levelCost.set(j + i);
+			int t = (int)MathHelper.clamp(l + (long)i, 0L, 2147483647L);
+			this.levelCost.set(t);
 			if (i <= 0) {
 				itemStack2 = ItemStack.EMPTY;
 			}
 
-			if (k == i && k > 0 && this.levelCost.get() >= 40) {
+			if (j == i && j > 0 && this.levelCost.get() >= 40) {
 				this.levelCost.set(39);
 			}
 
@@ -245,16 +241,16 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			}
 
 			if (!itemStack2.isEmpty()) {
-				int t = itemStack2.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0));
-				if (t < itemStack3.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0))) {
-					t = itemStack3.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0));
+				int kxx = itemStack2.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0));
+				if (kxx < itemStack3.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0))) {
+					kxx = itemStack3.getOrDefault(DataComponentTypes.REPAIR_COST, Integer.valueOf(0));
 				}
 
-				if (k != i || k == 0) {
-					t = getNextCost(t);
+				if (j != i || j == 0) {
+					kxx = getNextCost(kxx);
 				}
 
-				itemStack2.set(DataComponentTypes.REPAIR_COST, t);
+				itemStack2.set(DataComponentTypes.REPAIR_COST, kxx);
 				EnchantmentHelper.set(itemStack2, builder.build());
 			}
 
@@ -267,7 +263,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 	}
 
 	public static int getNextCost(int cost) {
-		return cost * 2 + 1;
+		return (int)Math.min((long)cost * 2L + 1L, 2147483647L);
 	}
 
 	public boolean setNewItemName(String newItemName) {

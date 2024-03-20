@@ -10,12 +10,12 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataLookup;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -106,9 +106,9 @@ public record Advancement(
 		return this.parent.isEmpty();
 	}
 
-	public void validate(ErrorReporter errorReporter, LootDataLookup conditionsLookup) {
+	public void validate(ErrorReporter errorReporter, RegistryEntryLookup.RegistryLookup lookup) {
 		this.criteria.forEach((name, criterion) -> {
-			LootContextPredicateValidator lootContextPredicateValidator = new LootContextPredicateValidator(errorReporter.makeChild(name), conditionsLookup);
+			LootContextPredicateValidator lootContextPredicateValidator = new LootContextPredicateValidator(errorReporter.makeChild(name), lookup);
 			criterion.conditions().validate(lootContextPredicateValidator);
 		});
 	}

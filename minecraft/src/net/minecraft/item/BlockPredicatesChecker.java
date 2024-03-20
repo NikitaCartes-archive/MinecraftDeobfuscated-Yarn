@@ -59,6 +59,12 @@ public class BlockPredicatesChecker {
 	private boolean lastResult;
 	private boolean nbtAware;
 
+	private BlockPredicatesChecker(List<BlockPredicate> predicates, boolean showInTooltip, List<Text> tooltipText) {
+		this.predicates = predicates;
+		this.showInTooltip = showInTooltip;
+		this.tooltipText = tooltipText;
+	}
+
 	public BlockPredicatesChecker(List<BlockPredicate> predicates, boolean showInTooltip) {
 		this.predicates = predicates;
 		this.showInTooltip = showInTooltip;
@@ -106,6 +112,10 @@ public class BlockPredicatesChecker {
 
 	public void addTooltips(Consumer<Text> adder) {
 		this.tooltipText.forEach(adder);
+	}
+
+	public BlockPredicatesChecker withShowInTooltip(boolean showInTooltip) {
+		return new BlockPredicatesChecker(this.predicates, showInTooltip, this.tooltipText);
 	}
 
 	private static List<Text> getTooltipText(List<BlockPredicate> blockPredicates) {

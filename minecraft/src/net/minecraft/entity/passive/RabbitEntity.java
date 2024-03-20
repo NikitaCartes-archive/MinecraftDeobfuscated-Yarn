@@ -38,12 +38,11 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -97,7 +96,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 		this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.getWorld()));
 		this.goalSelector.add(1, new RabbitEntity.EscapeDangerGoal(this, 2.2));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 0.8));
-		this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.CARROT, Items.GOLDEN_CARROT, Blocks.DANDELION), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.0, stack -> stack.isIn(ItemTags.RABBIT_FOOD), false));
 		this.goalSelector.add(4, new RabbitEntity.FleeGoal(this, PlayerEntity.class, 8.0F, 2.2, 2.2));
 		this.goalSelector.add(4, new RabbitEntity.FleeGoal(this, WolfEntity.class, 10.0F, 2.2, 2.2));
 		this.goalSelector.add(4, new RabbitEntity.FleeGoal(this, HostileEntity.class, 4.0F, 2.2, 2.2));
@@ -316,10 +315,6 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 		return this.getVariant() == RabbitEntity.RabbitType.EVIL ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
 	}
 
-	private static boolean isTempting(ItemStack stack) {
-		return stack.isOf(Items.CARROT) || stack.isOf(Items.GOLDEN_CARROT) || stack.isOf(Blocks.DANDELION.asItem());
-	}
-
 	@Nullable
 	public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld);
@@ -344,7 +339,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return isTempting(stack);
+		return stack.isIn(ItemTags.RABBIT_FOOD);
 	}
 
 	public RabbitEntity.RabbitType getVariant() {

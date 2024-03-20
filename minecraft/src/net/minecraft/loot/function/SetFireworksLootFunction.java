@@ -20,7 +20,7 @@ public class SetFireworksLootFunction extends ConditionalLootFunction {
 					instance.group(
 						Codecs.createStrictOptionalFieldCodec(Codecs.list(FireworkExplosionComponent.CODEC.listOf(), 256), "explosions", List.of())
 							.forGetter(function -> function.explosions),
-						ListOperation.Type.MAP_CODEC.forGetter(function -> function.operation),
+						ListOperation.createCodec(256).forGetter(function -> function.operation),
 						Codecs.createStrictOptionalFieldCodec(Codecs.UNSIGNED_BYTE, "flight_duration").forGetter(function -> function.flightDuration)
 					)
 				)
